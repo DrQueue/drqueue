@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.24 2001/09/06 10:18:28 jorge Exp $ */
+/* $Id: master.c,v 1.25 2001/09/06 23:01:30 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -18,12 +18,11 @@
 #include "libdrqueue.h"
 
 struct database *wdb;		/* whole database */
-int sfd;			/* socket file descriptor */
 int icomp;			/* index to accepted computer, local to every child */
-
 
 int main (int argc, char *argv[])
 {
+  int sfd;			/* socket file descriptor */
   int csfd;			/* child sfd, the socket once accepted the connection */
   int shmid;			/* shared memory id */
   int force = 0;		/* force even if shmem already exists */
@@ -255,8 +254,6 @@ void clean_out (int signal, siginfo_t *info, void *data)
     printf ("Child arrived ! %i\n",(int)child_pid); 
   }
   log_master (L_INFO,"Cleaning...");
-
-  close (sfd);
 
   for (i=0;i<MAXJOBS;i++) {
     job_delete(&wdb->job[i]);
