@@ -1,4 +1,4 @@
-/* $Id: task.h,v 1.10 2001/07/17 15:09:41 jorge Exp $ */
+/* $Id: task.h,v 1.11 2001/07/24 10:31:02 jorge Exp $ */
 
 #ifndef _TASK_H_
 #define _TASK_H_
@@ -15,6 +15,14 @@
 
 #include "constants.h"
 
+#define DR_EXITEDFLAG (1<<8)
+#define DR_SIGNALEDFLAG (1<<9)
+
+#define DR_WIFEXITED(stat)   ((stat)&DR_EXITEDFLAG)
+#define DR_WEXITSTATUS(stat) ((stat)&0xff)
+#define DR_WIFSIGNALED(stat) ((stat)&DR_SIGNALEDFLAG)
+#define DR_WTERMSIG(stat)    ((stat)&0xff)
+
 typedef enum {
   TASKSTATUS_LOADING,		/* Assigned but not running yet */
   TASKSTATUS_RUNNING,
@@ -30,7 +38,7 @@ struct task {
   char owner[MAXNAMELEN];	/* owner of the job */
   uint32_t frame;		/* current _real_ frame number (!!not index!!) */
   int32_t pid;			/* pid */
-  int32_t exitstatus;		/* exit status, the library says only "int" on linux so I'll need to check this for Irix */
+  int32_t exitstatus;		/* exit status */
   uint8_t status;		/* status */
 };
 
