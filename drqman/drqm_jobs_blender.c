@@ -1,5 +1,5 @@
 /* 
- * $Id: drqm_jobs_blender.c,v 1.1 2003/12/18 04:11:07 jorge Exp $ 
+ * $Id: drqm_jobs_blender.c,v 1.2 2003/12/19 17:42:37 jorge Exp $ 
  */
 
 #include <string.h>
@@ -52,7 +52,8 @@ GtkWidget *dnj_koj_frame_blender (struct drqm_jobs_info *info)
   button = gtk_button_new_with_label ("Search");
   gtk_tooltips_set_tip(tooltips,button,"File selector for the blender scene file",NULL);
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
-  gtk_signal_connect (GTK_OBJECT(button),"clicked",dnj_koj_frame_blender_scene_search,&info->dnj.koji_blender);
+  g_signal_connect (G_OBJECT(button),"clicked",
+										G_CALLBACK(dnj_koj_frame_blender_scene_search),&info->dnj.koji_blender);
 
   /* View command */
   hbox = gtk_hbox_new (TRUE,2);
@@ -82,7 +83,8 @@ GtkWidget *dnj_koj_frame_blender (struct drqm_jobs_info *info)
   button = gtk_button_new_with_label ("Search");
   gtk_tooltips_set_tip(tooltips,button,"File selector for the script directory",NULL);
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
-  gtk_signal_connect (GTK_OBJECT(button),"clicked",dnj_koj_frame_blender_script_search,&info->dnj.koji_blender);
+  g_signal_connect (G_OBJECT(button),"clicked",
+										G_CALLBACK(dnj_koj_frame_blender_script_search),&info->dnj.koji_blender);
 
   /* Buttons */
   /* Create script */
@@ -94,8 +96,8 @@ GtkWidget *dnj_koj_frame_blender (struct drqm_jobs_info *info)
   gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,TRUE,2);
   switch (info->dnj.koj) {
   case KOJ_BLENDER:
-    gtk_signal_connect (GTK_OBJECT(button),"clicked",
-			dnj_koj_frame_blender_bcreate_pressed,&info->dnj);
+    g_signal_connect (G_OBJECT(button),"clicked",
+											G_CALLBACK(dnj_koj_frame_blender_bcreate_pressed),&info->dnj);
     break;
   default:
     fprintf (stderr,"What ?!\n");
