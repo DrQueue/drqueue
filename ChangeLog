@@ -1,3 +1,27 @@
+2004-10-11 13:33:54  Rev 712    jorge
+
+	* svn-scripts/build_release.sh:
+	  Fixed problem of tar not excluding .svn files.
+
+
+2004-10-11 13:26:15  Rev 711    jorge
+
+	* svn-scripts/build_release.sh:
+	  Added $VERSION to commit line.
+Also uncommented it.
+
+
+2004-10-11 13:24:08  Rev 710    jorge
+
+	* ChangeLog:
+	  Updated ChangeLog
+
+2004-10-11 13:23:38  Rev 709    jorge
+
+	* svn-scripts/build_release.sh:
+	  build_release.sh seems to work now. Let's test it !
+
+
 2004-10-11 13:04:55  Rev 708    jorge
 
 	* svn-scripts/build_release.sh ChangeLog svn-scripts Revision common.
