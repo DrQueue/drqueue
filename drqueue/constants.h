@@ -1,4 +1,4 @@
-/* $Id: constants.h,v 1.9 2001/07/05 10:53:24 jorge Exp $ */
+/* $Id: constants.h,v 1.10 2001/07/17 10:05:54 jorge Exp $ */
 
 #ifndef _CONSTANTS_H_
 #define _CONSTANTS_H_
@@ -10,7 +10,7 @@
 #define SLAVE 10
 #define SLAVE_CHANDLER 11	/* Connection handler */
 #define SLAVE_LAUNCHER 12	/* Child that launches the task and waits for it to finish */
-#define CLIENT 20		/* General to clients, like sendjob or so */
+#define CLIENT 20		/* General to clients, like sendjob or drqman or so */
 
 #define SLAVEDELAY 15		/* Delay between each loop on the slave */
 #define MAXJOBS 100		/* Maximum number of jobs */
