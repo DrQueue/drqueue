@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.28 2002/08/02 17:40:21 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.29 2002/12/02 22:24:08 jorge Exp $
  */
 
 #ifndef _DRQM_JOBS_H_
@@ -77,6 +77,7 @@ struct drqmj_jddi {		/* job details dialog */
   GtkWidget *menu;		/* Popup menu */
   gint row,column;		/* selected frame */
   int selected;			/* if a frame is selected */
+  struct job job;		/* The struct of the selected job */
   struct drqmj_limits limits;	/* Limits info */
   struct drqmj_sesframes sesframes; /* Info about start, end, step frames */
 };

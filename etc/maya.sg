@@ -52,7 +52,7 @@ else
   set FFORMAT = ""
 endif
 
-echo Render -s $FRAME -e $FRAME $RESX $RESY -rd $RD $CIMAGE $CAMERA $SCENE
+echo Render -s $FRAME -e $FRAME $RESX $RESY $FFORMAT -rd $RD $CIMAGE $CAMERA $SCENE
 
 Render -s $FRAME -e $FRAME $RESX $RESY $FFORMAT -rd $RD $CIMAGE $CAMERA $SCENE
 

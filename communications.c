@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.51 2002/06/27 09:23:30 jorge Exp $ */
+/* $Id: communications.c,v 1.52 2002/12/02 22:24:08 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -103,7 +103,7 @@ int connect_to_master (void)
   addr.sin_port = htons(MASTERPORT);		/* Whatever */
   hostinfo = gethostbyname (master);
   if (hostinfo == NULL) {
-    drerrno = DRE_NOTRESOLV;
+    drerrno = DRE_NOTRESOLVE;
     return -1;
   }
   addr.sin_addr = *(struct in_addr *) hostinfo->h_addr;
@@ -134,7 +134,7 @@ int connect_to_slave (char *slave)
   addr.sin_port = htons(SLAVEPORT); /* Whatever */
   hostinfo = gethostbyname (slave);
   if (hostinfo == NULL) {
-    drerrno = DRE_NOTRESOLV;
+    drerrno = DRE_NOTRESOLVE;
     return -1;
   }
   addr.sin_addr = *(struct in_addr *) hostinfo->h_addr;
