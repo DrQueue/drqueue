@@ -55,7 +55,9 @@ int main (int argc, char *argv[])
   int shmid;			/* shared memory id */
   int force = 0;		/* force even if shmem already exists */
   struct sockaddr_in addr;	/* Address of the remote host */
-  pid_t child;
+  pid_t child,child_wait;
+	int n_children = 0;
+	int rc; // Return code
 
 #ifdef COMM_REPORT
   bsent = brecv = 0;
@@ -103,37 +105,42 @@ int main (int argc, char *argv[])
 
   printf ("Waiting for connections...\n");
   while (1) {
-    if ((csfd = accept_socket (sfd,wdb,&addr)) != -1) {
+		if (n_children < MASTERNCHILDREN) {
       if ((child = fork()) == 0) {
-#ifdef COMM_REPORT
-				long int bsentb = bsent; /* Bytes sent before */
-				long int brecvb = brecv; /* Bytes received before */
-#endif
-				/* Create a connection handler */
-				fflush(stderr);
 				set_signal_handlers_child_conn_handler ();
-				close (sfd);
-				set_alarm ();
-				icomp = computer_index_addr (wdb,addr.sin_addr);
-				handle_request_master (csfd,wdb,icomp,&addr);
-				close (csfd);
+				if ((csfd = accept_socket (sfd,wdb,&addr)) != -1) {
+#ifdef COMM_REPORT
+					long int bsentb = bsent; /* Bytes sent before */
+					long int brecvb = brecv; /* Bytes received before */
+#endif
+					/* Create a connection handler */
+					fflush(stderr);
+					close (sfd);
+					set_alarm ();
+					icomp = computer_index_addr (wdb,addr.sin_addr);
+					handle_request_master (csfd,wdb,icomp,&addr);
+					close (csfd);
 #ifdef COMM_REPORT	
-				semaphore_lock(wdb->semid);
-				wdb->bsent += bsent - bsentb;
-				wdb->brecv += brecv - brecvb;
-				semaphore_release(wdb->semid);
+					semaphore_lock(wdb->semid);
+					wdb->bsent += bsent - bsentb;
+					wdb->brecv += brecv - brecvb;
+					semaphore_release(wdb->semid);
 #endif	
+				} else {
+					log_master (L_ERROR,"Accepting connection.");
+				}
 				exit (0);
       } else if (child != -1) {
-				close (csfd);
-				if (csfd > 4)
-					printf ("Growing !! csfd: %i\n",csfd);
+				n_children++;
       } else {
-				close (csfd);
 				log_master (L_ERROR,"Forking !!\n");
 				sleep (5);
       }
-    }
+    } else {
+			if ((child_wait = wait (&rc)) != -1) {
+				n_children--;
+			}
+		}
   }
 
   exit (0);
@@ -246,11 +253,11 @@ void set_signal_handlers (void)
   ignore.sa_handler = SIG_IGN;
   sigemptyset (&ignore.sa_mask);
   ignore.sa_flags = 0;
-  sigaction (SIGHUP, &ignore, NULL);
+  sigaction (SIGHUP, &ignore, NULL); // So we keep running as a daemon
 #ifdef __OSX
-	sigaction (SIGCHLD, &ignore, NULL);
+	//	sigaction (SIGCHLD, &ignore, NULL);
 #else
-  sigaction (SIGCLD, &ignore, NULL);
+	//  sigaction (SIGCLD, &ignore, NULL);
 #endif
 }
 

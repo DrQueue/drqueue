@@ -55,6 +55,7 @@
 #define MAXLISTEN 100		/* Maximum number of connections waiting to be accepted */
 #define MAXLOADAVG 80		/* Load average from which we consider a computer unavailable */
 #define DFLTAVGFTIME 120	/* Default average frame time in seconds */
+#define MASTERNCHILDREN 20 // Number of master listener procs
 
 // Autoenable
 #define AE_DELAY 120		/* The time between possible autoenables */

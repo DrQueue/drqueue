@@ -83,8 +83,6 @@ int get_socket (short port)
 
 int accept_socket (int sfd,struct database *wdb,struct sockaddr_in *addr)
 {
-  /* This function not just accepts the socket but also updates */
-  /* the lastconn time of the client if this exists */
   int fd;
   int len = sizeof (struct sockaddr_in);
 
