@@ -19,6 +19,10 @@
 // $Id$
 //
 
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
 void get_hwinfo (struct computer_hwinfo *hwinfo)
 {
   if (gethostname (hwinfo->name,MAXNAMELEN-1) == -1) {
@@ -31,6 +35,40 @@ void get_hwinfo (struct computer_hwinfo *hwinfo)
   hwinfo->procspeed = get_procspeed();
   hwinfo->ncpus = get_numproc();
   hwinfo->speedindex = get_speedindex (hwinfo);
+	hwinfo->memory = get_memory ();
+}
+
+uint32_t get_memory (void)
+{
+	uint32_t memory = 0;
+	FILE *meminfo;
+	char buf[BUFFERLEN];
+	int found = 0;
+	char *token;
+
+  if ((meminfo = fopen("/proc/meminfo","r")) == NULL) {
+    perror ("get_memory: fopen");
+    kill (0,SIGINT);
+  }
+
+  while (!(found || feof (meminfo))) {
+    fgets (buf,BUFFERLEN-1,meminfo);
+    if (strstr(buf,"MemTotal") != NULL) {
+			token = strtok (buf,": ");
+			token = strtok (NULL,": ");
+			memory = atoi(token) / 1024;
+      found = 1;
+    }
+  }
+
+  if (!found) {
+    fprintf (stderr,"ERROR: Memory not found on /proc/meminfo\n");
+    kill(0,SIGINT);
+  }
+
+  fclose (meminfo);
+
+  return memory;
 }
 
 t_proctype get_proctype (void)
