@@ -1,0 +1,24 @@
+#!/bin/sh
+#
+# $Id: sendjob 670 2004-04-26 16:25:51Z jorge $
+#
+
+if [ ! $DRQUEUE_ROOT ]; then
+  echo ERROR: DRQUEUE_ROOT not set in environment
+  exit 1
+fi
+
+if [ ! $DRQUEUE_MASTER ]; then
+  echo ERROR: DRQUEUE_MASTER not set in environment
+  exit 2
+fi
+
+JFI_CMD=$DRQUEUE_ROOT/bin/blockhost.`uname -s`
+
+if [ ! -x $JFI_CMD ]; then
+  echo ERROR: blockhost for your platform \(blockhost.`uname -s`\) does not exist in $DRQUEUE_ROOT/bin.
+  echo Perhaps you did not install it \(make miniinstall or make install\).
+  exit 3
+fi
+
+$JFI_CMD $*
