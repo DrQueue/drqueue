@@ -63,6 +63,12 @@ int main (int argc,char *argv[])
     exit (1);
   }
 
+	set_default_env();
+
+  if (!common_environment_check()) {
+    std::cerr << "Error checking the environment: " << drerrno_str() << std::endl;
+    exit (1);
+  }
   
   std::ifstream infile(argv[1]);
 	switch (toj) {
