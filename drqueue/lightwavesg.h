@@ -29,7 +29,8 @@ extern "C" {
 #endif 
 
 struct lightwavesgi {		/* Maya Script Generator Info */
-  char renderdir[BUFFERLEN];
+  char projectdir[BUFFERLEN];
+  char configdir[BUFFERLEN];
   char scene[BUFFERLEN];
   char image[BUFFERLEN];
   char scriptdir[BUFFERLEN];

@@ -32,9 +32,10 @@
 struct drqmj_koji_lightwave {
   GtkWidget *escene;
   GtkWidget *fsscene;		/* File selector for the scene */
-  GtkWidget *erenderdir;
-  GtkWidget *fsrenderdir;	/* File selector for the output directory */
-  GtkWidget *eimage;
+  GtkWidget *eprojectdir;
+  GtkWidget *fsprojectdir;	/* File selector for the project directory */
+  GtkWidget *econfigdir;
+  GtkWidget *fsconfigdir;	/* File selector for the config directory */
   GtkWidget *eviewcmd;
   GtkWidget *escript;		/* Entry script location */
   GtkWidget *fsscript;		/* File selectot for the script directory */
