@@ -1,4 +1,4 @@
-/* $Id: logger.c,v 1.3 2001/05/02 16:12:33 jorge Exp $ */
+/* $Id: logger.c,v 1.4 2001/05/30 15:11:47 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -11,7 +11,7 @@
 #include "job.h"
 #include "computer.h"
 
-void log_slave_task (struct t_task *task,char *msg)
+void log_slave_task (struct task *task,char *msg)
 {
   FILE *f_log;
   char name[MAXNAMELEN];
@@ -33,7 +33,7 @@ void log_slave_task (struct t_task *task,char *msg)
   fclose (f_log);
 }
 
-FILE *log_slave_open_task (struct t_task *task)
+FILE *log_slave_open_task (struct task *task)
 {
   FILE *f;
   char filename[BUFFERLEN];

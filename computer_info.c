@@ -1,4 +1,4 @@
-/* $Id: computer_info.c,v 1.1 2001/05/28 14:21:31 jorge Exp $ */
+/* $Id: computer_info.c,v 1.2 2001/05/30 15:11:47 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -6,7 +6,7 @@
 #include <ctype.h>
 
 #include "constants.h"
-#include "arch/computer_info.h"
+#include "computer_info.h"
 
 void get_hwinfo (struct computer_hwinfo *hwinfo)
 {

@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.3 2001/05/28 14:21:31 jorge Exp $ */
+/* $Id: request.c,v 1.4 2001/05/30 15:11:47 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -16,6 +16,7 @@
 #include "semaphores.h"
 #include "slave.h"
 #include "drerrno.h"
+#include "job.h"
 
 void handle_request_master (int sfd,struct database *wdb,int icomp)
 {
@@ -290,15 +291,13 @@ void handle_r_r_regisjob (int sfd,struct database *wdb)
   wdb->job[index].status = JOBSTATUS_WAITING;
   wdb->job[index].used = 1;
   /* We allocate the memory for the frame_info */
-  nframes = wdb->job[index].frame_end - wdb->job[index].frame_start;
-  nframes = (nframes < 0) ? -nframes : nframes;
-  nframes++;
+  nframes = job_nframes (&wdb->job[index]);
   wdb->job[index].frame_info = (struct frame_info *) malloc (sizeof (struct frame_info) * nframes);
   if (wdb->job[index].frame_info == NULL) {
     log_master ("Warning: Could not allocate memory for frame info");
     wdb->job[index].used = 0;
   } else {
-    job_init (&wdb->job[index]);
+    job_init_assigned (&wdb->job[index]);
   }
   semaphore_release(wdb->semid);
 
@@ -310,7 +309,6 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
 {
   /* The master handles this type of packages */
   struct request answer;
-  struct computer_status status;
   int ijob;
   int itask;
   int iframe;
@@ -324,7 +322,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
   }
 
   for (ijob=0;ijob<MAXJOBS;ijob++) {
-    if (job_available(&wdb->job[ijob],&iframe))
+    if (job_available(wdb,ijob,&iframe))
       break;
   }
 
@@ -367,8 +365,8 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
   }
 
   semaphore_lock(wdb->semid);
-  job_update_assigned (wdb,ijob);
-  computer_update_assigned (&wdb->computer[icomp],itask,iframe);
+  job_update_assigned (wdb,ijob,iframe,icomp,itask);
+  computer_update_assigned (wdb,ijob,iframe,icomp,itask);
   semaphore_release(wdb->semid);
 
   send_task (sfd,&wdb->computer[icomp].status.task[itask],MASTER);
@@ -383,6 +381,7 @@ int request_job_available (struct slave_database *sdb)
   struct request req;
   int sfd;
   char emsg[BUFFERLEN];
+  struct task task;		/* Temporary task */
 
   if ((sfd = connect_to_master ()) == -1) {
     snprintf(emsg,BUFFERLEN-1,"ERROR: %s",drerrno_str());
@@ -417,15 +416,21 @@ int request_job_available (struct slave_database *sdb)
     kill (0,SIGINT);
   }
 
-  if ((sdb->itask = task_available (sdb->comp)) == -1) {
+  if ((sdb->itask = task_available (sdb)) == -1) {
     /* No task structure available */
     log_slave_computer("Warning: No task available for job");
     req.type = R_A_AVAILJOB;
     req.data_s = RERR_NOSPACE;
     send_request(sfd,&req,SLAVE);
-    close (sfd);
+    close (sfd);		/* Finish */
     return 0;
+  } else {
+    /* We've got an available task so we send the index */
+    req.type = R_A_AVALJOB;
+    req.data_s = sdb->itask;
+    send_reques(sfd,&req,SLAVE);
   }
+    
 
   close (sfd);
   return 1;
