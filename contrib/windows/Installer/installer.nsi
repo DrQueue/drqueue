@@ -136,10 +136,13 @@ Section "SectionPrincipale" SEC01
   CreateShortCut "$SMPROGRAMS\drqueue\drqman.lnk" "$INSTDIR\bin\drqman.exe"
   SetOutPath "$INSTDIR\contrib"
   File "..\..\..\contrib\sendjob.blender.py"
+  File "..\..\..\contrib\windows\service.exe"
   File "..\..\..\contrib\windows\servicesController.exe"
   CreateShortCut "$SMSTARTUP\drqueue-services.lnk" "$INSTDIR\contrib\servicesController.exe"
   CreateShortCut "$SMPROGRAMS\drqueue\drqueue-services.lnk" "$INSTDIR\contrib\servicesController.exe"
   CreateShortCut "$DESKTOP\drqueue-services.lnk" "$INSTDIR\contrib\servicesController.exe"
+  File "..\..\..\contrib\windows\service-ipc.exe"
+  File "..\..\..\contrib\windows\service-master.exe"
   SetOutPath "$INSTDIR\etc"
   File "..\..\..\etc\3delight.sg"
   File "..\..\..\etc\aqsis.sg"
@@ -202,6 +205,25 @@ Section -Post
   Push "DRQUEUE_ISSLAVE"
   Push "$InstallationSlave"
   Call WriteEnvStr
+  
+  !insertmacro SERVICE "delete" "drqueue_master" ""
+  !insertmacro SERVICE "delete" "drqueue_ipc" ""
+
+  nsExec::Exec '$INSTDIR\contrib\service.exe i drqueue_ipc "$INSTDIR\contrib\service-ipc.exe" "Drqueue IPC Service" a'
+  !insertmacro SERVICE "start" "drqueue_ipc" ""
+
+  IntCmp $InstallationMaster 1 0 skip_master
+  DetailPrint "Installing master"
+   #MessageBox MB_OK '$INSTDIR\contrib\service.exe i drqueue_master "$INSTDIR\contrib\service-master.exe" "Drqueue Master Service" a drqueue_ipc'
+   nsExec::Exec '$INSTDIR\contrib\service.exe i drqueue_master "$INSTDIR\contrib\service-master.exe" "Drqueue Master Service" a drqueue_ipc'
+   !insertmacro SERVICE "start" "drqueue_master" ""
+  GoTo end_master
+skip_master:
+  nsExec::Exec '$INSTDIR\contrib\service.exe i drqueue_master "$INSTDIR\contrib\service-master.exe" "Drqueue Master Service" m drqueue_ipc'
+end_master:
+
+  Delete "$INSTDIR\contrib\service.exe"
+
 SectionEnd
 
 
@@ -232,6 +254,8 @@ Section Uninstall
   Delete "$INSTDIR\etc\3delight.sg~"
   Delete "$INSTDIR\etc\3delight.sg"
   Delete "$INSTDIR\contrib\sendjob.blender.py"
+  Delete "$INSTDIR\contrib\service-ipc.exe"
+  Delete "$INSTDIR\contrib\service-master.exe"
   Delete "$INSTDIR\contrib\servicesController.exe"
   Delete "$INSTDIR\bin\*.exe"
   Delete "$INSTDIR\bin\*.dll"
@@ -268,14 +292,14 @@ Section Uninstall
   Call un.DeleteEnvStr
   Push "DRQUEUE_MASTER"
   Call un.DeleteEnvStr
-  
+  Push "DRQUEUE_ISSLAVE"
+  Call un.DeleteEnvStr
+
   !undef UN
   !define UN "un."
   !insertmacro SERVICE "stop" "drqueue_master" ""
-  !insertmacro SERVICE "stop" "drqueue_slave" ""
   !insertmacro SERVICE "stop" "drqueue_ipc" ""
   !insertmacro SERVICE "delete" "drqueue_master" ""
-  !insertmacro SERVICE "delete" "drqueue_slave" ""
   !insertmacro SERVICE "delete" "drqueue_ipc" ""
 
 SectionEnd

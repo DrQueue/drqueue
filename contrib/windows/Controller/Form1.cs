@@ -26,7 +26,10 @@ namespace ServicesController
 		private System.Timers.Timer timer1;
 		private System.Windows.Forms.Button button_slave;
 		private System.Windows.Forms.Label statusBar1;
-	
+
+		private System.ServiceProcess.ServiceController serviceControllerIpc;
+		private System.ServiceProcess.ServiceController serviceControllerMaster;
+
 		private const string IPC = "ipc-daemon2";
 		private const string MASTER = "master";
 		private const string SLAVE = "slave";
@@ -37,6 +40,17 @@ namespace ServicesController
 			// Requis pour la prise en charge du Concepteur Windows Forms
 			//
 			InitializeComponent();
+
+			this.serviceControllerIpc = new System.ServiceProcess.ServiceController();
+			this.serviceControllerMaster = new System.ServiceProcess.ServiceController();
+			// 
+			// serviceControllerIpc
+			// 
+			this.serviceControllerIpc.ServiceName = "drqueue_ipc";
+			// 
+			// serviceControllerMaster
+			// 
+			this.serviceControllerMaster.ServiceName = "drqueue_master";
 		}
 
 		/// <summary>
@@ -219,12 +233,15 @@ namespace ServicesController
 
 		private void timer1_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
 		{
-			if (!IsActive(IPC))
+			serviceControllerIpc.Refresh();
+			serviceControllerMaster.Refresh();
+			
+			if (serviceControllerIpc.Status == System.ServiceProcess.ServiceControllerStatus.Stopped)
 				button_ipc.BackColor = System.Drawing.Color.DimGray;
 			else
 				button_ipc.BackColor = System.Drawing.Color.Red;
 
-			if (!IsActive(MASTER))
+			if (serviceControllerMaster.Status == System.ServiceProcess.ServiceControllerStatus.Stopped)
 				button_master.BackColor = System.Drawing.Color.DimGray;
 			else
 				button_master.BackColor = System.Drawing.Color.Red;
@@ -239,15 +256,14 @@ namespace ServicesController
 		{
 			try
 			{
-				if (!IsActive(IPC))
-					Activate(IPC);
+				if (serviceControllerIpc.Status == System.ServiceProcess.ServiceControllerStatus.Stopped)
+					serviceControllerIpc.Start();
 				else
 				{
 					if (IsActive(SLAVE))
-						Kill(SLAVE);					
-					if (IsActive(MASTER))
-						Kill(MASTER);					
-					Kill(IPC);
+						Kill(SLAVE);										
+					if (serviceControllerIpc.Status == System.ServiceProcess.ServiceControllerStatus.Running)
+						serviceControllerIpc.Stop();
 				}
 			}
 			catch(System.Exception ex)
@@ -260,23 +276,18 @@ namespace ServicesController
 		{
 			try
 			{
-				if (!IsActive(MASTER))
-				{
-					if (!IsActive(IPC))
-					{
-						Activate(IPC);
-						System.Threading.Thread.Sleep(1000);
-					}						
-					Activate(MASTER);
-				}
+				if (serviceControllerMaster.Status == System.ServiceProcess.ServiceControllerStatus.Stopped)
+					serviceControllerMaster.Start();
 				else
-					Kill(MASTER);
+				{
+					if (serviceControllerMaster.Status == System.ServiceProcess.ServiceControllerStatus.Running)
+						serviceControllerMaster.Stop();		
+				}
 			}
 			catch(System.Exception ex)
 			{
 				statusBar1.Text = ex.Message.ToString();
 			}
-
 		}
 
 		private void button_slave_Click(object sender, System.EventArgs e)
@@ -285,11 +296,8 @@ namespace ServicesController
 			{
 				if (!IsActive(SLAVE))
 				{
-					if (!IsActive(IPC))
-					{
-						Activate(IPC);
-						System.Threading.Thread.Sleep(1000);
-					}					
+					if (serviceControllerIpc.Status == System.ServiceProcess.ServiceControllerStatus.Stopped)
+						serviceControllerIpc.Start();
 					Activate(SLAVE);
 				}
 				else
@@ -306,21 +314,17 @@ namespace ServicesController
 			string MasterName = Environment.GetEnvironmentVariable("DRQUEUE_MASTER");
 			string ComputerName = Environment.GetEnvironmentVariable("COMPUTERNAME");
 			string IsSlave = Environment.GetEnvironmentVariable("DRQUEUE_ISSLAVE");
-			if ((ComputerName == MasterName) && !IsActive(MASTER))
-			{
-				if (!IsActive(IPC))
-				{
-					Activate(IPC);
-					System.Threading.Thread.Sleep(1000);
-				}
-				Activate(MASTER);
-			}
+
 			if ((IsSlave == "1") && !IsActive(SLAVE))
 			{
-				if (!IsActive(IPC))
+				try
 				{
-					Activate(IPC);
-					System.Threading.Thread.Sleep(1000);
+					if (serviceControllerIpc.Status == System.ServiceProcess.ServiceControllerStatus.Stopped)
+						serviceControllerIpc.Start();
+				}
+				catch(System.Exception ex)
+				{
+					statusBar1.Text = ex.Message;
 				}
 				Activate(SLAVE);
 			}
@@ -360,9 +364,6 @@ namespace ServicesController
 		void Form1Closed(object sender, System.EventArgs e)
 		{
 			Kill(SLAVE);
-			Kill(MASTER);
-			Kill(IPC);
 		}
-		
 	}
 }
