@@ -39,7 +39,7 @@ int main (int argc,char *argv[])
 	request_job_list_blocked_host (0,&bh,&nblocked,CLIENT);
 	fprintf (stderr,"Listing\n");
 	for (i=0;i<nblocked;i++) {
-		printf ("%s\n",bh[i].name);
+		printf ("%i %s\n",i,bh[i].name);
 	}
 //	fprintf (stderr,"About to delete blocked host\n");
 //	request_job_delete_blocked_host (0,0,CLIENT);

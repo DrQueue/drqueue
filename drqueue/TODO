@@ -7,6 +7,7 @@ TO DO:
 * User defined shell for script generators
 * Renice options
 * STEPFRAME included in all .sg files
+* sendjob accepting XML
 * Slave pools. 0.60
 * job dependencies
 
@@ -30,3 +31,4 @@ DRQMAN
 * Autorefresh configurable
 * Watching the output logs as tail -f does.
 * Names of computers instead of id numbers.
+* Subtype script generators
