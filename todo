@@ -2,7 +2,6 @@ TO DO:
 -----
 
 * If any directory does not exist at the beginning create them if there is an apropiate flag
-* configurable script generator
 * The slave must check that the requests come from the
   master.
 * job permissions.

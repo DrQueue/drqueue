@@ -1,4 +1,4 @@
-/* $Id: computer_status.h,v 1.6 2001/09/21 14:40:05 jorge Exp $ */
+/* $Id: computer_status.h,v 1.7 2002/02/15 11:51:00 jorge Exp $ */
 
 #ifndef _COMPUTER_STATUS_H_
 #define _COMPUTER_STATUS_H_
@@ -13,8 +13,11 @@
 # endif
 #endif
 
+#include <time.h>
+
 #include "constants.h"
 #include "task.h"
+
 
 struct computer_status {
   uint16_t loadavg[3];		/* load average last minute, last 5, and last 15 */

@@ -1,4 +1,4 @@
-/* $Id: computer.h,v 1.12 2001/09/25 15:50:44 jorge Exp $ */
+/* $Id: computer.h,v 1.13 2002/02/15 11:51:00 jorge Exp $ */
 
 #ifndef _COMPUTER_H_
 #define _COMPUTER_H_
@@ -12,6 +12,10 @@
 struct computer_limits {
   uint16_t nmaxcpus;		/* Maximum number of cpus running */
   uint16_t maxfreeloadcpu;	/* Maximum load that a cpu can have to be considered free */
+  struct autoenable {		/* I put autoenable on limits even */
+    time_t last;		/* Time of the last autoenable event happened */
+    unsigned char h,m;		/* Hour and minute of wished autoenable */
+  } autoenable;
 };
 
 struct computer {
