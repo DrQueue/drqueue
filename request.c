@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.35 2001/08/31 14:07:58 jorge Exp $ */
+/* $Id: request.c,v 1.36 2001/09/01 16:40:14 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -31,7 +31,7 @@ void handle_request_master (int sfd,struct database *wdb,int icomp)
   switch (request.type) {
   case R_R_REGISTER:
     log_master (L_DEBUG,"Registration of new slave request");
-    handle_r_r_register (sfd,wdb,icomp);
+    icomp = handle_r_r_register (sfd,wdb,icomp);
     break;
   case R_R_UCSTATUS:
     log_master (L_DEBUG,"Update computer status request");
@@ -116,56 +116,66 @@ void handle_request_slave (int sfd,struct slave_database *sdb)
   }
 }
 
-void handle_r_r_register (int sfd,struct database *wdb,int icomp)
+int handle_r_r_register (int sfd,struct database *wdb,int icomp)
 {
   /* The master handles this type of requests */
   struct request answer;
   struct computer_hwinfo hwinfo;
-  int index;
+  int index = -1;
+  char msg[BUFFERLEN];
 
   log_master (L_DEBUG,"Entering handle_r_r_register");
+
+  semaphore_lock(wdb->semid);	/* I put the lock here so no race condition can appear... */
 
   if (icomp != -1) {
     log_master (L_INFO,"Already registered computer requesting registration");
     answer.type = R_A_REGISTER;
     answer.data = RERR_ALREADY;
     if (!send_request (sfd,&answer,MASTER)) {
-      log_master (L_WARNING,"Error sending request (handle_r_r_register)");
+      log_master (L_ERROR,"Sending request (handle_r_r_register)");
     }
-    exit (0);
+    return -1;
   }
 
-  semaphore_lock(wdb->semid);	/* I put the lock here so no race condition can appear... */
   if ((index = computer_index_free(wdb)) == -1) {
     /* No space left on database */
     log_master (L_WARNING,"No space left for computer");
     answer.type = R_A_REGISTER;
     answer.data = RERR_NOSPACE;
     if (!send_request (sfd,&answer,MASTER)) {
-      log_master (L_WARNING,"Error sending request (handle_r_r_register)");
+      log_master (L_ERROR,"Sending request (handle_r_r_register)");
     }
-    exit (0);
+    return -1;
   }
   wdb->computer[index].used = 1;
   time(&wdb->computer[index].lastconn);
-  semaphore_release(wdb->semid);
 
   /* No errors, we (master) can receive the hwinfo from the remote */
   /* computer to be registered */
   answer.type = R_A_REGISTER;
   answer.data = RERR_NOERROR;
   if (!send_request (sfd,&answer,MASTER)) {
-    log_master (L_WARNING,"Error sending request (handle_r_r_register)");
-    exit (0);
+    log_master (L_ERROR,"Sending request (handle_r_r_register)");
+    wdb->computer[index].used = 0;
+    return -1;
   }
   
+  
   recv_computer_hwinfo (sfd, &hwinfo, MASTER);
-  semaphore_lock(wdb->semid);
+
   memcpy (&wdb->computer[index].hwinfo, &hwinfo, sizeof(hwinfo));
   wdb->computer[index].hwinfo.id = index;
+
   semaphore_release(wdb->semid);
 
   report_hwinfo(&wdb->computer[index].hwinfo);
+  
+  snprintf(msg,BUFFERLEN-1,"Exiting handle_r_r_register. Computer %s registered with id %i.",
+	   wdb->computer[index].hwinfo.name,index);
+  log_master (L_DEBUG,msg);
+
+  return index;
 }
 
 void update_computer_status (struct computer *computer)
@@ -399,6 +409,9 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
     exit (0);
   }
 
+
+  log_master (L_DEBUG,"Creating priority ordered list of jobs");
+
   for (i=0;i<MAXJOBS;i++) {
     pol[i].index = i;
     pol[i].pri = wdb->job[i].priority;
@@ -410,7 +423,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
     /* ATENTION job_available sets the available frame as FS_ASSIGNED !! */
     /* We need to set it back to FS_WAITING if something fails */
     if (job_available(wdb,ijob,&iframe)) {
-      snprintf(msg,BUFFERLEN,"Frame %i assigned",iframe);
+      snprintf(msg,BUFFERLEN-1,"Frame %i assigned",iframe);
       log_master_job(&wdb->job[ijob],L_INFO,msg);
       break;
     }
@@ -426,7 +439,8 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
     exit (0);
   } 
 
-  log_master (L_DEBUG,"Available job. Sending request RERR_NOERROR");
+  snprintf(msg,BUFFERLEN-1,"Available job (%i) on frame %i assigned. Sending RERR_NOERROR",ijob,iframe);
+  log_master (L_DEBUG,msg);
 
   /* ijob is now the index to the first available job */
   answer.type = R_A_AVAILJOB;
@@ -482,6 +496,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
   }
 
   log_master (L_DEBUG,"Updating structures to be sent");
+
   semaphore_lock(wdb->semid);
   job_update_assigned (wdb,ijob,iframe,icomp,itask);
   computer_update_assigned (wdb,ijob,iframe,icomp,itask);
@@ -593,7 +608,7 @@ int request_job_available (struct slave_database *sdb)
   /* that is not yet runnning so pid == 0 */
   semaphore_lock(sdb->semid);
   memcpy(&sdb->comp->status.task[sdb->itask],&ttask,sizeof(ttask));
-  sdb->comp->status.ntasks++;
+  sdb->comp->status.ntasks = computer_ntasks (sdb->comp);
   semaphore_release(sdb->semid);
 
   close (sfd);
@@ -694,8 +709,10 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
     return;
   }
 
-  if (task.ijob >= MAXJOBS)
+  if (task.ijob >= MAXJOBS) {
+    log_master (L_ERROR,"ijob out of range in handle_r_r_taskfini");
     return;
+  }
 
   semaphore_lock(wdb->semid);
   if ((!wdb->job[task.ijob].used) 
@@ -706,11 +723,6 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
 
   /* Once we have the task struct we need to update the information */
   /* on the job struct */
-  if (task.ijob > MAXJOBS) { /* ijob is always > 0 */
-    /* task.ijob out of range ! */
-    log_master (L_ERROR,"ijob out of range in handle_r_r_taskfini");
-  }
-
   fi = attach_frame_shared_memory(wdb->job[task.ijob].fishmid);
   if (job_frame_number_correct (&wdb->job[task.ijob],task.frame)) {
     log_master (L_DEBUG,"Frame number correct");
@@ -1279,10 +1291,10 @@ void handle_r_r_compxfer (int sfd,struct database *wdb,int icomp,struct request 
 
   log_master (L_DEBUG,"Entering handle_r_r_compxfer");
 
-  icomp2 = req->data;
+  icomp2 = (uint32_t) req->data;
   
   if ((icomp2 >= MAXCOMPUTERS) || !wdb->computer[icomp2].used) {
-    log_master_computer(&wdb->computer[icomp],L_INFO,"Computer asked to be transfered is not registered");
+    log_master (L_INFO,"Computer asked to be transfered is not registered");
     req->type = R_A_COMPXFER;
     req->data = RERR_NOREGIS;
     send_request(sfd,req,MASTER);
