@@ -1,4 +1,4 @@
-/* $Id: request.h,v 1.35 2004/04/26 16:25:51 jorge Exp $ */
+/* $Id$ */
 /* The request structure is not just used for the requests themselves */
 /* but also for the answers to the requests */
 
@@ -90,7 +90,8 @@ int request_job_frame_kill (uint32_t ijob, uint32_t frame, int who);
 int request_job_frame_finish (uint32_t ijob, uint32_t frame, int who);
 int request_job_frame_kill_finish (uint32_t ijob, uint32_t frame, int who);
 int request_slavexit (uint32_t icomp, int who);
-int request_job_sesupdate (uint32_t ijob, uint32_t frame_start,uint32_t frame_end,uint32_t frame_step, int who);
+int request_job_sesupdate (uint32_t ijob, uint32_t frame_start,uint32_t frame_end,
+													 uint32_t frame_step, uint32_t block_size, int who);
 int request_job_limits_nmaxcpus_set (uint32_t ijob, uint16_t nmaxcpus, int who);
 int request_job_limits_nmaxcpuscomputer_set (uint32_t ijob, uint16_t nmaxcpuscomputer, int who);
 int request_job_priority_update (uint32_t ijob, uint32_t priority, int who);

@@ -204,9 +204,10 @@ void drqm_request_slave_task_kill (char *slave,uint16_t itask)
   request_slave_killtask (slave,itask,CLIENT);
 }
 
-void drqm_request_job_sesupdate (uint32_t jobid,uint32_t frame_start,uint32_t frame_end, uint32_t frame_step)
+void drqm_request_job_sesupdate (uint32_t jobid,uint32_t frame_start,uint32_t frame_end, 
+								uint32_t frame_step, uint32_t block_size)
 {
-  request_job_sesupdate (jobid,frame_start,frame_end,frame_step,CLIENT);
+	request_job_sesupdate (jobid,frame_start,frame_end,frame_step,block_size,CLIENT);
 }
 
 void drqm_request_job_limits_nmaxcpus_set (uint32_t jobid, uint16_t nmaxcpus)
