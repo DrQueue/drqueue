@@ -63,6 +63,7 @@ var InstallationMaster
 var InstallationSlave
 var MasterName
 var TempDir
+var LogsDir
 
 Function .onInit
 #  !insertmacro MUI_LANGDLL_DISPLAY
@@ -124,11 +125,26 @@ hostname_ok:
   Call Nsis2Io
   Pop $0
   StrCpy $0 $0 2
-  StrCmp $0 "\\" 0 +3
-    MessageBox MB_ICONEXCLAMATION|MB_OK "Temporary directory must be x:\ form, unc path are not supported (\\computer\path). Please enter your temporary directory again."
-    Abort
+  ;StrCmp $0 "\\" 0 +3
+  ;MessageBox MB_ICONEXCLAMATION|MB_OK "Temporary directory must be x:\ form, unc path are not supported (\\computer\path). Please enter your temporary directory again."
+  ;Abort
   push $R0
   pop $TempDir
+
+  !insertmacro MUI_INSTALLOPTIONS_READ $R0 "installer.ini" "Field 5" "State"
+  StrCmp $R0 "" 0 +3
+    MessageBox MB_ICONEXCLAMATION|MB_OK "Please enter your logs directory."
+    Abort
+  Push $R0
+  Call Nsis2Io
+  Pop $0
+  StrCpy $0 $0 2
+  ;StrCmp $0 "\\" 0 +3
+  ;MessageBox MB_ICONEXCLAMATION|MB_OK "Logs directory must be x:\ form, unc path are not supported (\\computer\path). Please enter your logs directory again."
+  ;Abort
+  push $R0
+  pop $LogsDir
+
 FunctionEnd
 
 Section "SectionPrincipale" SEC01
@@ -194,11 +210,12 @@ Section -Post
   Push "$INSTDIR\bin"
   Call WriteEnvStr
   Push "DRQUEUE_TMP"
-#  Push "$INSTDIR\tmp"
+  ;Push "$INSTDIR\tmp"
   Push "$TempDir"
   Call WriteEnvStr
   Push "DRQUEUE_LOGS"
-  Push "$INSTDIR\logs"
+  ;Push "$INSTDIR\logs"
+  Push "$LogsDir"
   Call WriteEnvStr
   Push "DRQUEUE_DB"
   Push "$INSTDIR\db"

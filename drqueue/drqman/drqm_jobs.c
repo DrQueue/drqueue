@@ -154,10 +154,10 @@ static GtkWidget *CreateJobsList(struct drqm_jobs_info *info)
 
 static GtkWidget *CreateClist (GtkWidget *window)
 {
-  gchar *titles[] = { "ID","Name","Owner","Status","Processors","Left","Done","Failed","Total","Pri" };
+  gchar *titles[] = { "ID","Name","Owner","Status","Processors","Left","Done","Failed","Total","Pri","Pool" };
   GtkWidget *clist;
 
-  clist = gtk_clist_new_with_titles (10, titles);
+  clist = gtk_clist_new_with_titles (11, titles);
   gtk_container_add(GTK_CONTAINER(window),clist);
   gtk_clist_column_titles_show(GTK_CLIST(clist));
   gtk_clist_column_titles_passive(GTK_CLIST(clist));
@@ -170,6 +170,7 @@ static GtkWidget *CreateClist (GtkWidget *window)
   gtk_clist_set_column_width (GTK_CLIST(clist),6,45);
   gtk_clist_set_column_width (GTK_CLIST(clist),7,45);
   gtk_clist_set_column_width (GTK_CLIST(clist),8,45);
+  gtk_clist_set_column_width (GTK_CLIST(clist),9,45);
 
   gtk_clist_set_sort_column (GTK_CLIST(clist),9);
   gtk_clist_set_sort_type (GTK_CLIST(clist),GTK_SORT_ASCENDING);
@@ -202,7 +203,7 @@ void drqm_update_joblist (struct drqm_jobs_info *info)
 {
   int i;
   char **buff;
-  int ncols = 10;
+  int ncols = 11;
 
   buff = (char**) g_malloc((ncols + 1) * sizeof(char*));
   for (i=0;i<ncols;i++)
@@ -222,6 +223,7 @@ void drqm_update_joblist (struct drqm_jobs_info *info)
     snprintf (buff[7],BUFFERLEN,"%i",info->jobs[i].ffailed);
     snprintf (buff[8],BUFFERLEN,"%i",job_nframes(&info->jobs[i]));
     snprintf (buff[9],BUFFERLEN,"%i",info->jobs[i].priority);
+    snprintf (buff[10],BUFFERLEN,"%s",info->jobs[i].limits.pool);
 
     gtk_clist_append(GTK_CLIST(info->clist),buff);
 
@@ -793,11 +795,7 @@ static int dnj_submit (struct drqmj_dnji *info)
   strncpy(job.name,gtk_entry_get_text(GTK_ENTRY(info->ename)),MAXNAMELEN-1);
   if (strlen(job.name) == 0)
     return 0;
-#ifdef __CYGWIN
-  strncpy(job.cmd,conv_to_posix_path(gtk_entry_get_text(GTK_ENTRY(info->ecmd))),MAXCMDLEN-1);
-#else
   strncpy(job.cmd,gtk_entry_get_text(GTK_ENTRY(info->ecmd)),MAXCMDLEN-1);
-#endif
   if (strlen(job.cmd) == 0)
     return 0;
   if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->esf)),"%u",&job.frame_start) != 1)
@@ -1166,8 +1164,8 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
 
   if (new_koj != info->dnj.koj) {
     if (info->dnj.fkoj) {
-      gtk_widget_destroy (info->dnj.fkoj);
-      //info->dnj.fkoj = NULL;
+      //gtk_widget_destroy (info->dnj.fkoj);
+      info->dnj.fkoj = NULL;
     }
     info->dnj.koj = (uint16_t) new_koj;
     switch (info->dnj.koj) {
