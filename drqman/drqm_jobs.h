@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.21 2001/09/26 10:47:35 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.22 2001/10/05 15:52:35 jorge Exp $
  */
 
 #ifndef _DRQM_JOBS_H_
@@ -7,6 +7,12 @@
 
 #include <gtk/gtk.h>
 #include "libdrqueue.h"
+
+struct drqmj_sesframes {
+  GtkWidget *eframe_start;
+  GtkWidget *eframe_end;
+  GtkWidget *eframe_step;
+};
 
 struct drqmj_limits {
   GtkWidget *enmaxcpus;		/* Entries */
@@ -59,6 +65,7 @@ struct drqmj_jddi {		/* job details dialog */
   gint row,column;		/* selected frame */
   int selected;			/* if a frame is selected */
   struct drqmj_limits limits;	/* Limits info */
+  struct drqmj_sesframes sesframes; /* Info about start, end, step frames */
 };
 
 struct drqm_jobs_info {
