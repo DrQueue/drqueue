@@ -96,7 +96,7 @@ struct drqmj_jddi {							/* job details dialog info*/
 	// Frames
   GtkWidget *clist;							/* frame info clist */
   GtkWidget *menu;							/* Popup menu */
-	GtkWidget *swindow;						// Adjustment for the scrolled window
+	GtkWidget *swindow;						// Scrolled window so get can get the adjustments later
 
 	// Blocked hosts
 	GtkWidget *menu_bh;						// Blocked hosts menu
