@@ -1,4 +1,4 @@
-/* $Id: drqm_request.c,v 1.23 2001/10/24 14:53:17 jorge Exp $ */
+/* $Id: drqm_request.c,v 1.24 2001/10/25 13:20:16 jorge Exp $ */
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -25,23 +25,29 @@ void drqm_request_joblist (struct drqm_jobs_info *info)
 
   req.type = R_R_LISTJOBS;
 
-  if (!send_request (sfd,&req,CLIENT))
-    goto end;
+  if (!send_request (sfd,&req,CLIENT)) {
+    close (sfd);
+    return;
+  }
 
-  if (!recv_request (sfd,&req))
-    goto end;
+  if (!recv_request (sfd,&req)) {
+    close (sfd);
+    return;
+  }
 
   if (req.type == R_R_LISTJOBS) {
     info->njobs = req.data;
   } else {
     fprintf (stderr,"ERROR: Not appropiate answer to request R_R_LISTJOBS\n");
-    goto end;			/* Should I use gotos ? It seems like a reasonable option for this case */
+    close (sfd);
+    return;
   }
 
   drqm_clean_joblist (info);
   if ((info->jobs = malloc (sizeof (struct job) * info->njobs)) == NULL) {
     fprintf (stderr,"Not enough memory for job structures\n");
-    goto end;
+    close (sfd);
+    return;
   }
   tjob = info->jobs;
   for (i=0;i<info->njobs;i++) {
@@ -49,7 +55,6 @@ void drqm_request_joblist (struct drqm_jobs_info *info)
     tjob++;
   }
 
- end:
   close (sfd);
 }
 
@@ -79,24 +84,28 @@ void drqm_request_computerlist (struct drqm_computers_info *info)
 
   if (!send_request (sfd,&req,CLIENT)) {
     fprintf(stderr,"%s\n",drerrno_str());
-    goto end;
+    close (sfd);
+    return;
   }
   if (!recv_request (sfd,&req)) {
     fprintf(stderr,"%s\n",drerrno_str());
-    goto end;
+    close (sfd);
+    return;
   }
 
   if (req.type == R_R_LISTCOMP) {
     info->ncomputers = req.data;
   } else {
     fprintf (stderr,"ERROR: Not appropiate answer to request R_R_TASKFINI\n");
-    goto end;			/* Should I use gotos ? It seems like a reasonable option for this case */
+    close (sfd);
+    return;
   }
 
   drqm_clean_computerlist (info);
   if ((info->computers = malloc (sizeof (struct computer) * info->ncomputers)) == NULL) {
     fprintf (stderr,"Not enough memory for job structures\n");
-    goto end;
+    close (sfd);
+    return;
   }
   tcomputer = info->computers;
   for (i=0;i<info->ncomputers;i++) {
@@ -108,7 +117,6 @@ void drqm_request_computerlist (struct drqm_computers_info *info)
     tcomputer++;
   }
 
- end:
   close (sfd);
 }
 
