@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.53 2001/09/25 15:55:41 jorge Exp $ */
+/* $Id: request.c,v 1.54 2001/10/02 12:40:01 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -196,6 +196,8 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
     }
     return -1;
   }
+
+  computer_init(&wdb->computer[index]);
   wdb->computer[index].used = 1;
   time(&wdb->computer[index].lastconn);
 
@@ -253,7 +255,7 @@ void update_computer_status (struct computer *computer)
   if (req.type == R_A_UCSTATUS) {
     switch (req.data) {
     case RERR_NOERROR:
-      send_computer_status (sfd,&computer->status,SLAVE);
+      send_computer_status (sfd,&computer->status);
       break;
     case RERR_NOREGIS:
       log_slave_computer (L_ERROR,"Computer not registered");
@@ -338,7 +340,10 @@ void handle_r_r_ucstatus (int sfd,struct database *wdb,int icomp)
   answer.data = RERR_NOERROR;
   send_request (sfd,&answer,MASTER);
   
-  recv_computer_status (sfd, &status, MASTER);
+  computer_status_init(&status);
+  if (!recv_computer_status (sfd, &status))
+    return;			/* Do not update in case of failure */
+
   semaphore_lock(wdb->semid);
   memcpy (&wdb->computer[icomp].status, &status, sizeof(status));
   semaphore_release(wdb->semid);
@@ -442,7 +447,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
   /* The master handles this type of packages */
   struct request answer;
   uint32_t ijob = 0,i;
-  int itask;
+  uint16_t itask;
   int iframe;
   char msg[BUFFERLEN];
   struct tpol pol[MAXJOBS];
@@ -536,7 +541,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
     exit (0);
   }
   if (answer.type == R_A_AVAILJOB) {
-    itask = answer.data;
+    itask = (uint16_t) answer.data;
     snprintf(msg,BUFFERLEN,"Task index %i on computer %i",itask,icomp);
     log_master_computer(&wdb->computer[icomp],L_DEBUG,msg);
   } else {
@@ -763,21 +768,31 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
     return;
   }
 
-  if (task.ijob >= MAXJOBS) {
-    log_master (L_ERROR,"ijob out of range in handle_r_r_taskfini");
+
+  semaphore_lock(wdb->semid);
+
+  if (!job_index_correct_master(wdb,task.ijob)) {
+    semaphore_release(wdb->semid);
+    log_master (L_WARNING,"ijob not correct in handle_r_r_taskfini");
     return;
   }
 
-  semaphore_lock(wdb->semid);
-  if ((!wdb->job[task.ijob].used) 
-      || (strcmp(task.jobname,wdb->job[task.ijob].name) != 0)) {
+  if (strcmp(task.jobname,wdb->job[task.ijob].name) != 0) {
+    semaphore_release(wdb->semid);
     log_master (L_WARNING,"frame finished of non-existing job");
     return;
   }
 
   /* Once we have the task struct we need to update the information */
   /* on the job struct */
-  fi = attach_frame_shared_memory(wdb->job[task.ijob].fishmid);
+  if ((fi = attach_frame_shared_memory(wdb->job[task.ijob].fishmid)) == (struct frame_info *)-1) {
+    /* We are locked */
+    job_delete(&wdb->job[task.ijob]);
+    semaphore_release(wdb->semid);
+    log_master (L_ERROR,"Couldn't attach frame shared memory on r_r_taskfini. Deleting job.");
+    return;
+  }
+
   if (job_frame_number_correct (&wdb->job[task.ijob],task.frame)) {
     log_master (L_DEBUG,"Frame number correct");
     /* Frame is in range */
@@ -858,6 +873,8 @@ void handle_r_r_listjobs (int sfd,struct database *wdb,int icomp)
       send_job (sfd,&wdb->job[i],MASTER);
     }
   }
+
+  log_master (L_DEBUG,"Exiting handle_r_r_listjobs");
 }
 
 void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp)
@@ -867,6 +884,8 @@ void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp)
   /* This function is called by the master */
   struct request answer;
   int i;
+
+  log_master (L_DEBUG,"Entering handle_r_r_listcomp");
 
   answer.type = R_A_LISTCOMP;
   answer.data = computer_ncomputers_masterdb (wdb);
@@ -878,9 +897,12 @@ void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp)
 
   for (i=0;i<MAXCOMPUTERS;i++) {
     if (wdb->computer[i].used) {
-      send_computer (sfd,&wdb->computer[i],MASTER);
+      if (!send_computer (sfd,&wdb->computer[i],MASTER))
+	log_master (L_ERROR,"Sending computer info\n");
     }
   }
+
+  log_master (L_DEBUG,"Exiting handle_r_r_listcomp");
 }
 
 int request_job_delete (uint32_t ijob, int who)
@@ -929,13 +951,17 @@ void handle_r_r_deletjob (int sfd,struct database *wdb,int icomp,struct request 
   }
 
   fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
-  nframes = job_nframes (&wdb->job[ijob]);
-  for (i=0;i<nframes;i++) {
-    if (fi[i].status == FS_ASSIGNED) {
-      request_slave_killtask (wdb->computer[fi[i].icomp].hwinfo.name,fi[i].itask,MASTER);
+  if (fi != (struct frame_info *)-1) {
+    nframes = job_nframes (&wdb->job[ijob]);
+    for (i=0;i<nframes;i++) {
+      if (fi[i].status == FS_ASSIGNED) {
+	request_slave_killtask (wdb->computer[fi[i].icomp].hwinfo.name,fi[i].itask,MASTER);
+      }
     }
+    detach_frame_shared_memory (fi);
+  } else {
+    log_master (L_WARNING,"Could not attach frame shared memory on handle_r_r_deletjob. Deleting problematic job anyway.");
   }
-  detach_frame_shared_memory (fi);
 
   job_delete (&wdb->job[ijob]);
 
@@ -1086,15 +1112,20 @@ void handle_r_r_hstopjob (int sfd,struct database *wdb,int icomp,struct request 
   }
 
   fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
-  nframes = job_nframes (&wdb->job[ijob]);
-  for (i=0;i<nframes;i++) {
-    if (fi[i].status == FS_ASSIGNED) {
-      request_slave_killtask (wdb->computer[fi[i].icomp].hwinfo.name,fi[i].itask,MASTER);
+  if (fi != (struct frame_info *)-1) {
+    nframes = job_nframes (&wdb->job[ijob]);
+    for (i=0;i<nframes;i++) {
+      if (fi[i].status == FS_ASSIGNED) {
+	request_slave_killtask (wdb->computer[fi[i].icomp].hwinfo.name,fi[i].itask,MASTER);
+      }
     }
+    detach_frame_shared_memory (fi);
+    job_stop (&wdb->job[ijob]);
+  } else {
+    /* Couldn't attach the frame memory */
+    log_master (L_WARNING,"Could not attach frame shared memory in handle_r_r_hstopjob. Deleting problematic job.");
+    job_delete(&wdb->job[ijob]);
   }
-  detach_frame_shared_memory (fi);
-  
-  job_stop (&wdb->job[ijob]);
 
   semaphore_release (wdb->semid);
 
@@ -1289,13 +1320,25 @@ void handle_r_r_jobxferfi (int sfd,struct database *wdb,int icomp,struct request
 
   semaphore_lock(wdb->semid);
   if (!job_index_correct_master(wdb,ijob)) {
-    log_master (L_INFO,"Job asked to be transfered frame info does not exist");
     req->type = R_A_JOBXFERFI;
     req->data = RERR_NOREGIS;
     send_request(sfd,req,MASTER);
+    semaphore_release(wdb->semid);
+    log_master (L_INFO,"Job asked to be transfered frame info does not exist");
     return;
   }
-  fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
+  
+  if ((fi = attach_frame_shared_memory (wdb->job[ijob].fishmid)) == (void*)-1) {
+    job_delete(&wdb->job[ijob]);
+    /* We send a not registered message because we have deleted the problematic job */
+    req->type = R_A_JOBXFERFI;
+    req->data = RERR_NOREGIS;
+    send_request(sfd,req,MASTER);
+    semaphore_release(wdb->semid);
+    log_master (L_WARNING,"Could not attach frame shared memory in handle_r_r_jobxferfi. Deleting problematic job.");
+    return;
+  }
+  
   nframes = job_nframes (&wdb->job[ijob]);
   fi_copy = (struct frame_info *) malloc (sizeof(struct frame_info) * nframes);
   if (!fi_copy) {
@@ -1474,7 +1517,13 @@ void handle_r_r_jobfwait (int sfd,struct database *wdb,int icomp,struct request 
   nframes = job_nframes (&wdb->job[ijob]);
   iframe = job_frame_number_to_index (&wdb->job[ijob],frame);
   
-  fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
+  if ((fi = attach_frame_shared_memory (wdb->job[ijob].fishmid)) == (void *)-1) {
+    job_delete(&wdb->job[ijob]);
+    semaphore_release(wdb->semid);
+    log_master (L_WARNING,"Could not attach frame shared memory in handle_r_r_jobfwait. Deleting problematic job.");
+    return;
+  }
+
   switch (fi[iframe].status) {
   case FS_WAITING:
   case FS_ASSIGNED:
@@ -1566,7 +1615,18 @@ void handle_r_r_jobfkill (int sfd,struct database *wdb,int icomp,struct request 
   nframes = job_nframes (&wdb->job[ijob]);
   iframe = job_frame_number_to_index (&wdb->job[ijob],frame);
   
-  fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
+  if ((fi = attach_frame_shared_memory (wdb->job[ijob].fishmid)) == (void *)-1) {
+    job_delete(&wdb->job[ijob]);
+    semaphore_release(wdb->semid);
+    log_master (L_WARNING,"Could not attach frame shared memory in handle_r_r_jobfkill. Deleting problematic job.");
+    /* Read the next lines as comentary to this */
+    log_master (L_WARNING,"Atention, due to the previos problem attaching, some processors might continue "
+		"running frames of an inexistent job.");
+    /* So we need consistency checks in the slave to avoid that. We'll see how often that message appears */
+    /* to see how bad we need those consistency checks. */
+    return;
+  }
+
   switch (fi[iframe].status) {
   case FS_WAITING:
     break;
@@ -1657,7 +1717,13 @@ void handle_r_r_jobffini (int sfd,struct database *wdb,int icomp,struct request 
   nframes = job_nframes (&wdb->job[ijob]);
   iframe = job_frame_number_to_index (&wdb->job[ijob],frame);
   
-  fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
+  if ((fi = attach_frame_shared_memory (wdb->job[ijob].fishmid)) == (void *)-1) {
+    job_delete(&wdb->job[ijob]);
+    semaphore_release(wdb->semid);
+    log_master (L_WARNING,"Could not attach frame shared memory in handle_r_r_jobffini. Deleting problematic job.");
+    return;
+  }
+
   switch (fi[iframe].status) {
   case FS_WAITING:
     fi[iframe].status = FS_FINISHED;
@@ -1731,7 +1797,7 @@ void handle_r_r_jobfkfin (int sfd,struct database *wdb,int icomp,struct request 
 
   frame = req->data;
   
-  snprintf(msg,BUFFERLEN-1,"Requested job frame finish for Job %i Frame %i ",ijob,frame);
+  snprintf(msg,BUFFERLEN-1,"Requested job frame kill and finish for Job %i Frame %i ",ijob,frame);
   log_master(L_DEBUG,msg);
 
   semaphore_lock(wdb->semid);
@@ -1747,7 +1813,12 @@ void handle_r_r_jobfkfin (int sfd,struct database *wdb,int icomp,struct request 
   nframes = job_nframes (&wdb->job[ijob]);
   iframe = job_frame_number_to_index (&wdb->job[ijob],frame);
   
-  fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
+  if ((fi = attach_frame_shared_memory (wdb->job[ijob].fishmid)) == (void *)-1) {
+    job_delete(&wdb->job[ijob]);
+    semaphore_release(wdb->semid);
+    log_master (L_WARNING,"Could not attach frame shared memory in handle_r_r_jobfkfin. Deleting problematic job.");
+    return;
+  }
   switch (fi[iframe].status) {
   case FS_WAITING:
     break;
