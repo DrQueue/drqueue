@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.18 2001/08/29 15:27:41 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.19 2001/08/31 12:46:52 jorge Exp $
  */
 
 #include <string.h>
@@ -7,6 +7,11 @@
 #include <stdlib.h>
 #include <pwd.h>
 #include <sys/types.h>
+
+#include "waiting.xpm"
+#include "running.xpm"
+#include "finished.xpm"
+#include "error.xpm"
 
 #include "drqman.h"
 #include "drqm_request.h"
@@ -863,6 +868,15 @@ static int jdd_update (GtkWidget *w, struct info_drqm_jobs *info)
   int ncols = 7;
   int i;
 
+  static GdkBitmap *w_mask = NULL;
+  static GdkPixmap *w_data = NULL;
+  static GdkBitmap *r_mask = NULL;
+  static GdkPixmap *r_data = NULL;
+  static GdkBitmap *f_mask = NULL;
+  static GdkPixmap *f_data = NULL;
+  static GdkBitmap *e_mask = NULL;
+  static GdkPixmap *e_data = NULL;
+
   if (!request_job_xfer(info->ijob,&info->jobs[info->ijob],CLIENT)) {
     if (drerrno == DRE_NOTREGISTERED) {
       gtk_object_destroy (GTK_OBJECT(info->jdd.dialog));
@@ -932,6 +946,17 @@ static int jdd_update (GtkWidget *w, struct info_drqm_jobs *info)
     *buf = '\0';
   gtk_label_set_text (GTK_LABEL(info->jdd.lestf),msg);
 
+  
+  /* Pixmap stuff */
+  if (!w_mask)
+    w_data = gdk_pixmap_create_from_xpm_d (info->jdd.dialog->window,&w_mask,NULL,(gchar**)waiting_xpm);
+  if (!r_mask)
+    r_data = gdk_pixmap_create_from_xpm_d (info->jdd.dialog->window,&r_mask,NULL,(gchar**)running_xpm);
+  if (!f_mask)
+    f_data = gdk_pixmap_create_from_xpm_d (info->jdd.dialog->window,&f_mask,NULL,(gchar**)finished_xpm);
+  if (!e_mask)
+    e_data = gdk_pixmap_create_from_xpm_d (info->jdd.dialog->window,&e_mask,NULL,(gchar**)error_xpm);
+
 
   buff = (char**) g_malloc((ncols + 1) * sizeof(char*));
   for (i=0;i<ncols;i++)
@@ -954,6 +979,28 @@ static int jdd_update (GtkWidget *w, struct info_drqm_jobs *info)
     snprintf (buff[5],BUFFERLEN,"%i",info->jobs[info->ijob].frame_info[i].icomp);
     snprintf (buff[6],BUFFERLEN,"%i",info->jobs[info->ijob].frame_info[i].itask);
     gtk_clist_append(GTK_CLIST(info->jdd.clist),buff);
+    switch (info->jobs[info->ijob].frame_info[i].status) {
+    case FS_WAITING:
+      gtk_clist_set_pixtext (GTK_CLIST(info->jdd.clist),i,1,
+			     job_frame_status_string(info->jobs[info->ijob].frame_info[i].status), 2,
+			     w_data,w_mask);
+      break;
+    case FS_ASSIGNED:
+      gtk_clist_set_pixtext (GTK_CLIST(info->jdd.clist),i,1,
+			     job_frame_status_string(info->jobs[info->ijob].frame_info[i].status), 2,
+			     r_data,r_mask);
+      break;
+    case FS_FINISHED:
+      gtk_clist_set_pixtext (GTK_CLIST(info->jdd.clist),i,1,
+			     job_frame_status_string(info->jobs[info->ijob].frame_info[i].status), 2,
+			     f_data,f_mask);
+      break;
+    case FS_ERROR:
+      gtk_clist_set_pixtext (GTK_CLIST(info->jdd.clist),i,1,
+			     job_frame_status_string(info->jobs[info->ijob].frame_info[i].status), 2,
+			     e_data,e_mask);
+      break;
+    }			    
   }
 
   gtk_clist_thaw(GTK_CLIST(info->jdd.clist));
