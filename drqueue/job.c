@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.9 2001/07/17 15:06:00 jorge Exp $ */
+/* $Id: job.c,v 1.10 2001/07/20 08:27:33 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -66,6 +66,12 @@ void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job)
     wdb->job[ijob].frame_info[i].status = FS_WAITING;
   }
 
+  wdb->job[ijob].fleft = nframes;
+  wdb->job[ijob].fdone = 0;
+  wdb->job[ijob].ffailed = 0;
+
+  wdb->job[ijob].nprocs = 0;
+
   wdb->job[ijob].avg_frame_time = DFLTAVGFTIME;
   wdb->job[ijob].est_finish_time = time (NULL) + (DFLTAVGFTIME * nframes);
 
@@ -119,6 +125,9 @@ char *job_status_string (char status)
   case JOBSTATUS_DELETING:
     strncpy (sstring,"Deleting",BUFFERLEN-1);
     break;
+  case JOBSTATUS_FINISHED:
+    strncpy (sstring,"Finished",BUFFERLEN-1);
+    break;
   default:
     strncpy (sstring,"DEFAULT (?!)",BUFFERLEN-1);
     fprintf (stderr,"job_status == DEFAULT\n");
@@ -145,13 +154,13 @@ int job_available (struct database *wdb,uint32_t ijob, int *iframe)
   if (wdb->job[ijob].used == 0)
     return 0;
 
-  if (wdb->job[ijob].status != JOBSTATUS_WAITING)
-    return 0;
-
   if ((*iframe = job_first_frame_available (wdb,ijob)) == -1)
     return 0;
 
-  return 1;
+  if ((wdb->job[ijob].status == JOBSTATUS_WAITING) || (wdb->job[ijob].status == JOBSTATUS_ACTIVE))
+    return 1;
+
+  return 0;
 }
 
 int job_first_frame_available (struct database *wdb,uint32_t ijob)
@@ -259,22 +268,54 @@ void job_update_info (struct database *wdb,uint32_t ijob)
   /* This function is called by the master */
   /* It updates the number of process running */
   /* This function is called unlocked */
-  int i,c=0;
+  int i,nprocs=0;
   struct frame_info *fi;
-
+  int fleft=0,fdone=0,ffailed=0;
+  int total;
   if (ijob > MAXJOBS)
     return;
 
+  total = job_nframes(&wdb->job[ijob]);
+
   fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
-  for (i=0;i<job_nframes(&wdb->job[ijob]);i++) {
-    if ((fi[i].status == FS_ASSIGNED) || (fi[i].status == FS_LOADING)) {
-      c++;
+  for (i=0;i<total;i++) {
+    switch (fi[i].status) {
+    case FS_ASSIGNED:
+    case FS_LOADING:
+      nprocs++;
+      break;
+    case FS_WAITING:
+      fleft++;
+      break;
+    case FS_FINISHED:
+      fdone++;
+      break;
+    case FS_ERROR:
+      ffailed++;
+      break;
     }
   }
   detach_frame_shared_memory(fi);
 
   semaphore_lock(wdb->semid);
-  wdb->job[ijob].nprocs = c;
+  wdb->job[ijob].nprocs = nprocs;
+  wdb->job[ijob].fleft = fleft;
+  wdb->job[ijob].fdone = fdone;
+  wdb->job[ijob].ffailed = ffailed;
+  switch (wdb->job[ijob].status) {
+  case JOBSTATUS_WAITING:
+  case JOBSTATUS_ACTIVE:
+    if (fleft == 0) {
+      wdb->job[ijob].status = JOBSTATUS_FINISHED;
+    }
+    if (nprocs > 0) {
+      wdb->job[ijob].status = JOBSTATUS_ACTIVE;
+    }
+    break;
+  case JOBSTATUS_DELETING:
+  case JOBSTATUS_HSTOPPED:
+  case JOBSTATUS_STOPPED:
+  }
   semaphore_release(wdb->semid);
 }
 
