@@ -1,4 +1,4 @@
-/* $Id: computer.h,v 1.14 2002/03/01 14:14:14 jorge Exp $ */
+/* $Id: computer.h,v 1.15 2003/12/15 22:18:32 jorge Exp $ */
 
 #ifndef _COMPUTER_H_
 #define _COMPUTER_H_
@@ -40,6 +40,5 @@ int computer_ncomputers_masterdb (struct database *wdb);
 void computer_init_limits (struct computer *comp);
 int computer_index_correct_master (struct database *wdb, uint32_t icomp);
 void computer_autoenable_check (struct slave_database *sdb);
-
 
 #endif /* _COMPUTER_H_ */

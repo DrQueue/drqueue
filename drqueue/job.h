@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.34 2002/12/02 22:24:08 jorge Exp $ */
+/* $Id: job.h,v 1.35 2003/12/15 22:18:32 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -52,15 +52,22 @@ union koj_info {		/* Kind of job information */
     char image[BUFFERLEN];
     char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
   } maya;
+  struct koji_blender {
+    char scene[BUFFERLEN];
+    char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
+  } blender;
 };
 
 /* Koj types */
-#define KOJ_GENERAL     0	/* Not specific koj */
-#define KOJ_MAYA        1	/* Maya koj */
-#define KOJ_MAYABLOCK   2	/* Maya block koj */
+#define KOJ_GENERAL     			0	/* Not specific koj */
+#define KOJ_MAYA        			1	/* Maya koj */
+#define KOJ_MAYABLOCK   			2	/* Maya block koj */
+#define KOJ_BLENDER						3 /* Blender koj */
+#define KOJ_BLENDERBLOCK			4 /* Blender block koj */
 
 /* koj constants */
 #define KOJ_MAYA_DFLT_VIEWCMD "fcheck $RD/$IMAGE.$PADFRAME.sgi"
+#define KOJ_BLENDER_DFLT_VIEWCMD "display image.$FRAME.sgi"
 
 /* JOB SECTION */
 typedef enum {
@@ -151,7 +158,6 @@ void detach_frame_shared_memory (struct frame_info *fishp);
 int priority_job_compare (const void *a,const void *b);
 
 char *job_koj_string (struct job *job);
-
 
 #endif /* _JOB_H_ */
 
