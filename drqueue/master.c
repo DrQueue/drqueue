@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.33 2001/11/16 15:51:35 jorge Exp $ */
+/* $Id: master.c,v 1.34 2002/02/15 11:51:00 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -60,9 +60,7 @@ int main (int argc, char *argv[])
   }
 
   if (fork() == 0) {
-    fprintf (stderr,"Consistency checks at: %i\n",(int)getpid());
     /* Create the consistency checks process */
-/*      strcpy (argv[0],"DrQueue - Consistency checks"); */
     set_signal_handlers_child_cchecks ();
     master_consistency_checks (wdb);
     exit (0);
@@ -185,7 +183,7 @@ int get_semaphores (int force)
     }
   }
 
-  fprintf (stderr,"semval: %i semid: %i\n",semctl (semid,0,GETVAL),semid);
+/*    fprintf (stderr,"semval: %i semid: %i\n",semctl (semid,0,GETVAL),semid); */
 
   return semid;
 }
