@@ -1,4 +1,4 @@
-/* $Id: task.h,v 1.7 2001/07/04 10:13:59 jorge Exp $ */
+/* $Id: task.h,v 1.8 2001/07/05 15:19:39 jorge Exp $ */
 
 #ifndef _TASK_H_
 #define _TASK_H_
@@ -20,7 +20,7 @@ struct task {
   uint16_t jobindex;		/* index to the job in the global db */
   char jobcmd[MAXCMDLEN];	/* string the is being executed */
   char owner[MAXNAMELEN];	/* owner of the job */
-  uint32_t frame;		/* current frame */
+  uint32_t frame;		/* current _real_ frame number (!!not index!!) */
   int32_t pid;			/* pid */
   int32_t exitstatus;		/* exit status, the library says only "int" so I'll need to check this for Irix */
   uint8_t status;		/* status */
