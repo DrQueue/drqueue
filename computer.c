@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.19 2001/09/01 20:00:39 jorge Exp $ */
+/* $Id: computer.c,v 1.20 2001/09/07 16:42:46 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -89,11 +89,15 @@ int computer_index_free (void *pwdb)
 
 int computer_available (struct computer *computer)
 {
+  int npt;			/* number of possible tasks */
+
   /* Returns 1 or 0 if the computer is or not available for rendering */
-  if (computer->status.ntasks >= (computer->hwinfo.numproc)) {
+  if (computer->status.ntasks >= (computer->limits.nmaxcpus)) {
     /* If we already have all the processors running... */
     return 0;
   }
+
+  
 
   if (computer->status.ntasks >= MAXTASKS) {
     /* We have all task structures full */
@@ -161,3 +165,10 @@ int computer_ntasks (struct computer *comp)
 
   return ntasks;
 }
+
+void computer_init_limits (struct computer *comp)
+{
+  comp->limits.nmaxcpus = comp->hwinfo.ncpus;
+  comp->limits.maxfreeloadcpu = 80;
+}
+
