@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.49 2001/11/16 15:51:56 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.50 2001/11/19 09:46:11 jorge Exp $
  */
 
 #include <string.h>
@@ -14,6 +14,7 @@
 #include "finished.xpm"
 #include "error.xpm"
 
+#include "libdrqueue.h"
 #include "drqman.h"
 #include "drqm_request.h"
 #include "drqm_jobs.h"
@@ -66,6 +67,7 @@ static GtkWidget *jdd_flags_widgets (struct drqm_jobs_info *info);
 
 /* KOJ */
 static GtkWidget *jdd_koj_widgets (struct drqm_jobs_info *info);
+static GtkWidget *jdd_koj_maya_widgets (struct drqm_jobs_info *info);
 
 /* Koj viewers */
 static void jdd_maya_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
@@ -2306,6 +2308,7 @@ GtkWidget *jdd_koj_widgets (struct drqm_jobs_info *info)
   GtkWidget *frame;
   GtkWidget *vbox, *hbox;
   GtkWidget *label;
+  
 
   frame = gtk_frame_new ("Kind of job");
   vbox = gtk_vbox_new (FALSE,2);
@@ -2314,10 +2317,60 @@ GtkWidget *jdd_koj_widgets (struct drqm_jobs_info *info)
   hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start (GTK_BOX(vbox),hbox,TRUE,FALSE,2);
 
+  label = gtk_label_new ("Kind of job:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  label = gtk_label_new (job_koj_string(&info->jobs[info->row]));
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+
+  switch (info->jobs[info->row].koj) {
+  case KOJ_GENERAL:
+    break;
+  case KOJ_MAYA:
+    label = jdd_koj_maya_widgets (info);
+    gtk_box_pack_start (GTK_BOX(vbox),label,FALSE,FALSE,2);
+    break;
+  }
+
   return frame;
 }
 
+GtkWidget *jdd_koj_maya_widgets (struct drqm_jobs_info *info)
+{
+  GtkWidget *vbox, *hbox;
+  GtkWidget *label;
 
+  vbox = gtk_vbox_new (FALSE,2);
+
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,TRUE,FALSE,2);
+  label = gtk_label_new ("Scene:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  label = gtk_label_new (info->jobs[info->row].koji.maya.scene);
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,TRUE,FALSE,2);
+  label = gtk_label_new ("Project:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  label = gtk_label_new (info->jobs[info->row].koji.maya.project);
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,TRUE,FALSE,2);
+  label = gtk_label_new ("Output image:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  label = gtk_label_new (info->jobs[info->row].koji.maya.image);
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,TRUE,FALSE,2);
+  label = gtk_label_new ("View command:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  label = gtk_label_new (info->jobs[info->row].koji.maya.viewcmd);
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+
+  return vbox;
+}
 
 
 
