@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.11 2001/07/17 15:00:34 jorge Exp $ */
+/* $Id: communications.c,v 1.12 2001/07/19 09:03:19 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -279,7 +279,7 @@ void send_computer_status (int sfd, struct computer_status *status,int who)
   /* Prepare for sending */
   for (i=0;i<3;i++)
     bswapped.loadavg[i] = htons (bswapped.loadavg[i]);
-  bswapped.numtasks = htons (bswapped.numtasks);
+  bswapped.ntasks = htons (bswapped.ntasks);
   for (i=0;i<MAXTASKS;i++) {
     if (bswapped.task[i].used) {
       bswapped.task[i].jobindex = htons (bswapped.task[i].jobindex);
@@ -339,7 +339,7 @@ void recv_computer_status (int sfd, struct computer_status *status,int who)
   /* network byte order, so we put them in host byte order */
   for (i=0;i<3;i++)
     status->loadavg[i] = ntohs (status->loadavg[i]);
-  status->numtasks = ntohs (status->numtasks);
+  status->ntasks = ntohs (status->ntasks);
   for (i=0;i<MAXTASKS;i++) {
     if (status->task[i].used) {
       status->task[i].jobindex = ntohs (status->task[i].jobindex);
@@ -507,5 +507,15 @@ void send_task (int sfd, struct task *task,int who)
   }
 }
 
+void send_computer (int sfd, struct computer *computer,int who)
+{
+  send_computer_status (sfd,&computer->status,who);
+  send_computer_hwinfo (sfd,&computer->hwinfo,who);
+}
 
+void recv_computer (int sfd, struct computer *computer,int who)
+{
+  recv_computer_status (sfd,&computer->status,who);
+  recv_computer_hwinfo (sfd,&computer->hwinfo,who);
+}
 
