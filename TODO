@@ -7,6 +7,7 @@ TO DO:
 * Renice options
 * STEPFRAME included in all .sg files
 * sendjob accepting XML
+* command line tools to control pools
 
 BUGS:
 ----
