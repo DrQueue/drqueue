@@ -1,4 +1,4 @@
-/* $Id: communications.h,v 1.10 2001/09/07 16:39:22 jorge Exp $ */
+/* $Id: communications.h,v 1.11 2001/09/20 10:52:55 jorge Exp $ */
 
 #ifndef _COMMUNICATIONS_H_
 #define _COMMUNICATIONS_H_
@@ -6,6 +6,12 @@
 #include "request.h"
 #include "job.h"
 #include "database.h"
+
+#ifdef COMM_REPORT
+extern long int bsent;		/* Bytes sent */
+extern long int brecv;		/* Bytes received */
+#endif
+
 
 int get_socket (short port);
 int accept_socket (int sfd,struct database *wdb,int *index,struct sockaddr_in *addr);
