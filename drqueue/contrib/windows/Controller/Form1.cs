@@ -8,6 +8,7 @@ using System.ServiceProcess;
 using System.Diagnostics;
 using System.Resources;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace ServicesController
 {
@@ -27,7 +28,6 @@ namespace ServicesController
 		private System.Windows.Forms.MenuItem menuItemSeparator;
 		private System.Windows.Forms.MenuItem menuItemQuit;
 		private System.Windows.Forms.NotifyIcon Drqueue_off;
-		private System.Windows.Forms.Label statusBar1;
 
 		private System.ServiceProcess.ServiceController serviceControllerIpc;
 
@@ -72,7 +72,6 @@ namespace ServicesController
 		private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(Form1));
-			this.statusBar1 = new System.Windows.Forms.Label();
 			this.Drqueue_off = new System.Windows.Forms.NotifyIcon(this.components);
 			this.menuItemQuit = new System.Windows.Forms.MenuItem();
 			this.menuItemSeparator = new System.Windows.Forms.MenuItem();
@@ -84,14 +83,6 @@ namespace ServicesController
 			this.timer1 = new System.Timers.Timer();
 			this.menuItemConnect = new System.Windows.Forms.MenuItem();
 			((System.ComponentModel.ISupportInitialize)(this.timer1)).BeginInit();
-			this.SuspendLayout();
-			// 
-			// statusBar1
-			// 
-			this.statusBar1.Location = new System.Drawing.Point(8, 8);
-			this.statusBar1.Name = "statusBar1";
-			this.statusBar1.Size = new System.Drawing.Size(272, 16);
-			this.statusBar1.TabIndex = 8;
 			// 
 			// Drqueue_off
 			// 
@@ -160,27 +151,16 @@ namespace ServicesController
 			// 
 			// Form1
 			// 
-			this.AutoScale = false;
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.BackColor = System.Drawing.Color.Black;
-			this.ClientSize = new System.Drawing.Size(288, 29);
-			this.Controls.Add(this.statusBar1);
-			this.ForeColor = System.Drawing.Color.White;
-			this.MaximizeBox = false;
-			this.MinimizeBox = false;
 			this.Name = "Form1";
 			this.ShowInTaskbar = false;
-			this.Text = "Drqueue Service Controller";
 			this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
-			this.Closing += new System.ComponentModel.CancelEventHandler(this.Form1Closing);
 			this.Load += new System.EventHandler(this.Form1_Load);
-			this.Closed += new System.EventHandler(this.Form1Closed);
 			((System.ComponentModel.ISupportInitialize)(this.timer1)).EndInit();
-			this.ResumeLayout(false);
 		}
 		#endregion
 
 
+		
 		/// <summary>
 		/// Point d'entrée principal de l'application.
 		/// </summary>
@@ -261,12 +241,22 @@ namespace ServicesController
 				}
 			}
 		}
+		
+		[DllImport("user32.dll")]
+		public static extern int SetWindowLong( IntPtr window, int index, int value);
+		[DllImport("user32.dll")]
+		public static extern int GetWindowLong( IntPtr window, int index);
 
+		const int GWL_EXSTYLE = -20;
+		const int WS_EX_TOOLWINDOW = 0x00000080;
 		private void Form1_Load(object sender, System.EventArgs e)
 		{
 			string MasterName = Environment.GetEnvironmentVariable("DRQUEUE_MASTER");
 			string ComputerName = Environment.GetEnvironmentVariable("COMPUTERNAME");
 			string IsSlave = Environment.GetEnvironmentVariable("DRQUEUE_ISSLAVE");
+
+			int windowStyle = GetWindowLong(Handle, GWL_EXSTYLE);
+			SetWindowLong(Handle, GWL_EXSTYLE, windowStyle | WS_EX_TOOLWINDOW);
 
 			if ((IsSlave == "1") && !IsActive(SLAVE))
 			{
@@ -307,7 +297,7 @@ namespace ServicesController
 		{
 			Kill(SLAVE);
 		}
-
+/*
 		void Form1Closing(object sender, System.ComponentModel.CancelEventArgs e)
 		{
 			e.Cancel = true;
@@ -315,6 +305,7 @@ namespace ServicesController
 			this.WindowState = FormWindowState.Minimized;
 			this.ShowInTaskbar = false;			
 		}
+*/
 		void MenuItemConnectClick(object sender, System.EventArgs e)
 		{
 			try

@@ -15,11 +15,12 @@ and tcsh (used by drqueue)
 
 .run again cygwin setup with default settings to be sure verything is installed
 
-.get win32 glib-dev,gtk-dev, pkgconfig, atk-dev, pango-dev, iconv, zlib, and
-gettext packages at
-http://www.gimp.org/~tml/gimp/win32/downloads.html
-Unzip all of them in cygwin path /usr/local/gtk
-Add /usr/local/gtk/bin to PATH environment variable
+.get win32 gtk development environment at 
+http://prdownloads.sourceforge.net/gladewin32/gtk-win32-devel-2.6-rc5.exe?download
+Install it in c:\cygwin\usr\local\gtk (uncheck register environment..)
+
+.Add /usr/local/gtk/bin to PATH environment variable in cygwin with command 
+export PATH=/usr/local/gtk/bin:$PATH
 
 .install nullsoft installation system (in default c: directory) from 
 http://nsis.sourceforge.net/download
