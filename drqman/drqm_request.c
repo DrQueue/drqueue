@@ -64,7 +64,7 @@ void drqm_request_joblist (struct drqm_jobs_info *info)
   drqm_clean_joblist (info);
 	if (info->njobs) {
 		if ((info->jobs = g_malloc (sizeof (struct job) * info->njobs)) == NULL) {
-			fprintf (stderr,"Not enough memory for job struc	tures\n");
+			fprintf (stderr,"Not enough memory for job structures\n");
 			close (sfd);
 			return;
 		}
