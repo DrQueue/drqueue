@@ -1,4 +1,4 @@
-/* $Id: slave.h,v 1.13 2002/08/04 21:19:36 jorge Exp $ */
+/* $Id: slave.h,v 1.14 2002/08/04 21:30:01 jorge Exp $ */
 
 #ifndef _SLAVE_H_
 #define _SLAVE_H_
@@ -8,7 +8,7 @@
 #include "computer.h"
 #include "job.h"
 
-#define KEY "%s/bin/slave"	/* Key file for shared memory and semaphores */
+#define KEY_SLAVE "%s/bin/slave"	/* Key file for shared memory and semaphores */
 
 /* Each slave has a slave_database global variable that is local to each */
 /* process. _Except_ the pointer to the computer struct that is a shared */
