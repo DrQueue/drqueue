@@ -1,4 +1,4 @@
-/* $Id: task.c,v 1.6 2001/09/16 16:36:50 jorge Exp $ */
+/* $Id: task.c,v 1.7 2001/09/17 14:53:58 jorge Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -69,34 +69,21 @@ char *task_status_string (unsigned char status)
 
 void task_environment_set (struct task *task)
 {
-  char msg[BUFFERLEN];
+  char padframe[BUFFERLEN];
+  char frame[BUFFERLEN];
 
+  /* Padded frame number */
+  snprintf (padframe,BUFFERLEN,"PADFRAME=%04i",task->frame);
+  putenv (padframe);
+  /* Frame number */
+  snprintf (frame,BUFFERLEN,"FRAME=%i",task->frame);
+  putenv (frame);
+
+  /* OS */
 #ifdef __LINUX
-  /* Padded frame number */
-  snprintf (msg,BUFFERLEN,"%04i",task->frame);
-  if (setenv("PADFRAME",msg,1) == -1) {
-    printf ("ERROR\n");
-    kill(0,SIGINT);
-  }
-  /* Frame number */
-  snprintf (msg,BUFFERLEN,"%i",task->frame);
-  if (setenv("FRAME",msg,1) == -1) {
-    printf ("ERROR\n");
-    kill(0,SIGINT);
-  }
-  /* OS */
-  if (setenv("DRQUEUE_OS","LINUX",1) == -1) {
-    printf ("ERROR\n");
-    kill(0,SIGINT);
-  }
+  putenv ("DRQUEUE_OS=LINUX");
 #else
-  /* Padded frame number */
-  snprintf (msg,BUFFERLEN,"PADFRAME=%04i",task->frame);
-  putenv (msg);
-  /* Frame number */
-  snprintf (msg,BUFFERLEN,"FRAME=%i",task->frame);
-  putenv (msg);
-  /* OS */
   putenv ("DRQUEUE_OS=IRIX");
 #endif
+
 }
