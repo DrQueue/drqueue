@@ -236,11 +236,10 @@ int computer_ntasks (struct computer *comp)
 
 void computer_init_limits (struct computer *comp)
 {
-  /* FIXME: This function uses constants that should be #define(d) */
   comp->limits.nmaxcpus = comp->hwinfo.ncpus;
-  comp->limits.maxfreeloadcpu = 80;
-  comp->limits.autoenable.h = 21; /* At 21:00 autoenable by default */
-  comp->limits.autoenable.m = 0;
+  comp->limits.maxfreeloadcpu = MAXLOADAVG;
+  comp->limits.autoenable.h = AE_HOUR; /* At AE_HOUR:AE_MIN autoenable by default */
+  comp->limits.autoenable.m = AE_MIN;
   comp->limits.autoenable.last = 0; /* Last autoenable on Epoch */
 	comp->limits.autoenable.flags = 0; // No flags set, autoenable disabled
 }
