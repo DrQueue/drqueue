@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.19 2001/09/14 08:56:18 jorge Exp $ */
+/* $Id: job.h,v 1.20 2001/09/16 15:36:17 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -49,6 +49,9 @@ union koj_info {		/* Kind of job information */
 /* Koj types */
 #define KOJ_GENERAL 0		/* Not specific koj */
 #define KOJ_MAYA    1		/* Maya koj */
+
+/* koj constants */
+#define KOJ_MAYA_DFLT_VIEWCMD "fcheck $PROJECT/images/$IMAGE.$PADFRAME.sgi"
 
 /* JOB SECTION */
 typedef enum {
@@ -109,6 +112,8 @@ void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe
 void job_stop (struct job *job);
 void job_continue (struct job *job);
 int job_index_correct_master (struct database *wdb,uint32_t ijob);
+
+void job_environment_set (struct job *job, uint32_t iframe);
 
 int get_frame_shared_memory (int nframes); /* ipc shared memory */
 void *attach_frame_shared_memory (int shmid);
