@@ -619,14 +619,14 @@ void slave_get_options (int *argc,char ***argv, int *force, struct slave_databas
 
 void slave_set_limits (struct slave_database *sdb)
 {
-	if (sdb->limits.autoenable.flags &= AEF_ACTIVE) {
+	if (sdb->limits.autoenable.flags & AEF_ACTIVE) {
 		sdb->comp->limits.autoenable.flags = sdb->limits.autoenable.flags;
 		sdb->comp->limits.autoenable.h = sdb->limits.autoenable.h % 24;
 		sdb->comp->limits.autoenable.m = sdb->limits.autoenable.m % 60;
 		log_slave_computer (L_INFO,"Setting autoenable time to %i:%02i",
 										sdb->comp->limits.autoenable.h, sdb->comp->limits.autoenable.m);
 	}
-	if (sdb->flags &= SDBF_SETMAXCPUS) {
+	if (sdb->flags & SDBF_SETMAXCPUS) {
 		sdb->comp->limits.nmaxcpus = (sdb->limits.nmaxcpus > sdb->comp->limits.nmaxcpus) ? 
 						sdb->comp->limits.nmaxcpus : sdb->limits.nmaxcpus;
 		log_slave_computer (L_INFO,"Setting maximum number of CPUs to %i",
