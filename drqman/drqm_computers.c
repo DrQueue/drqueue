@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_computers.c,v 1.5 2001/07/23 09:52:16 jorge Exp $
+ * $Id: drqm_computers.c,v 1.6 2001/08/28 09:54:25 jorge Exp $
  */
 
 #include <string.h>
@@ -73,18 +73,19 @@ static GtkWidget *CreateComputersList(struct info_drqm_computers *info)
 
 static GtkWidget *CreateClist (GtkWidget *window)
 {
-  gchar *titles[] = { "Running","Name","OS","Procs","Load Avg" };
+  gchar *titles[] = { "Id","Running","Name","OS","CPUs","Load Avg" };
   GtkWidget *clist;
 
-  clist = gtk_clist_new_with_titles (5, titles);
+  clist = gtk_clist_new_with_titles (6, titles);
   gtk_container_add(GTK_CONTAINER(window),clist);
   gtk_clist_column_titles_show(GTK_CLIST(clist));
   gtk_clist_column_titles_passive(GTK_CLIST(clist));
   gtk_clist_set_column_width (GTK_CLIST(clist),0,75);
   gtk_clist_set_column_width (GTK_CLIST(clist),1,100);
   gtk_clist_set_column_width (GTK_CLIST(clist),2,100);
-  gtk_clist_set_column_width (GTK_CLIST(clist),3,45);
-  gtk_clist_set_column_width (GTK_CLIST(clist),4,100);
+  gtk_clist_set_column_width (GTK_CLIST(clist),3,100);
+  gtk_clist_set_column_width (GTK_CLIST(clist),4,45);
+  gtk_clist_set_column_width (GTK_CLIST(clist),5,100);
   gtk_widget_show(clist);
 
   return (clist);
@@ -112,7 +113,7 @@ void drqm_update_computerlist (struct info_drqm_computers *info)
 {
   int i;
   char **buff;
-  int ncols = 5;
+  int ncols = 6;
   
   buff = (char**) g_malloc((ncols+1) * sizeof(char*));
   for (i=0;i<ncols;i++)
@@ -122,11 +123,12 @@ void drqm_update_computerlist (struct info_drqm_computers *info)
   gtk_clist_freeze(GTK_CLIST(info->clist));
   gtk_clist_clear(GTK_CLIST(info->clist));
   for (i=0; i < info->ncomputers; i++) {
-    snprintf (buff[0],BUFFERLEN,"%i",info->computers[i].status.ntasks);
-    strncpy(buff[1],info->computers[i].hwinfo.name,BUFFERLEN);
-    snprintf (buff[2],BUFFERLEN,osstring(info->computers[i].hwinfo.os));
-    snprintf (buff[3],BUFFERLEN,"%i",info->computers[i].hwinfo.numproc);
-    snprintf (buff[4],BUFFERLEN,"%i,%i,%i",
+    snprintf (buff[0],BUFFERLEN,"%u",info->computers[i].hwinfo.id);
+    snprintf (buff[1],BUFFERLEN,"%i",info->computers[i].status.ntasks);
+    strncpy(buff[2],info->computers[i].hwinfo.name,BUFFERLEN);
+    snprintf (buff[3],BUFFERLEN,osstring(info->computers[i].hwinfo.os));
+    snprintf (buff[4],BUFFERLEN,"%i",info->computers[i].hwinfo.numproc);
+    snprintf (buff[5],BUFFERLEN,"%i,%i,%i",
 	      info->computers[i].status.loadavg[0],
 	      info->computers[i].status.loadavg[1],
 	      info->computers[i].status.loadavg[2]);
