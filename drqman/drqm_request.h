@@ -41,6 +41,7 @@ void drqm_request_job_sesupdate (uint32_t jobid,uint32_t frame_start,uint32_t fr
 void drqm_request_job_limits_nmaxcpus_set (uint32_t jobid, uint16_t nmaxcpus);
 void drqm_request_job_limits_nmaxcpuscomputer_set (uint32_t jobid, uint16_t nmaxcpuscomputer);
 void drqm_request_job_priority_update (uint32_t jobid, uint32_t priority);
+void drqm_request_job_frame_reset_requeued (uint32_t jobid,uint32_t frame);
 
 /* Computer related functions */
 void drqm_clean_computerlist (struct drqm_computers_info *info);

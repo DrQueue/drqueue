@@ -511,6 +511,8 @@ void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe
 
     log_master_job (&wdb->job[ijob],L_WARNING,"Task registered as running not running. Requeued");
     wdb->job[ijob].frame_info[iframe].status = FS_WAITING;
+    wdb->job[ijob].frame_info[iframe].start_time = 0;
+    wdb->job[ijob].frame_info[iframe].requeued++;
   }
 
 /*    log_master (L_DEBUG,"Exiting job_check_frame_status."); */
@@ -579,6 +581,8 @@ void job_frame_waiting (struct database *wdb,uint32_t ijob, int iframe)
 
   fi = attach_frame_shared_memory(wdb->job[ijob].fishmid);
   fi[iframe].status = FS_WAITING;
+	fi[iframe].start_time = 0;
+	fi[iframe].requeued++;
   detach_frame_shared_memory(fi);
 
   /* This is a temporary adjust for consistency reasons */
@@ -732,6 +736,8 @@ void job_frame_info_init (struct frame_info *fi)
   fi->start_time = fi->end_time = 0;
   fi->exitcode = 0;
   fi->icomp = fi->itask = 0;
+	fi->requeued = 0;
+	fi->flags = 0;
 }
 
 void job_logs_remove (struct job *job)
