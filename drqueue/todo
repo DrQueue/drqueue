@@ -1,8 +1,8 @@
 TO DO:
 -----
 
-* Specific email on mail notifications
 * If any directory does not exist at the beginning create them if there is an apropiate flag
+* configurable script generator
 * The slave must check that the requests come from the
   master.
 * job permissions.
@@ -27,6 +27,7 @@ NOTES:
 DRQMAN
 ------
 
+* Put a button to change the mail notification stuff
 * Put KOJ information in the job details view
 * Autorefresh configurable
 * Watching the output logs as tail -f does.
