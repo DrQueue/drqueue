@@ -665,7 +665,7 @@ int send_computer_pools (int sfd, struct computer_limits *cl)
 	if (cl->npools) {
 		if ((pool = computer_pool_attach_shared_memory(cl->poolshmid)) == (void*)-1) {
 			perror ("Attaching");
-			fprintf (stderr,"ERROR ataching memory\n");
+			fprintf (stderr,"ERROR attaching memory %d shmid\n", cl->poolshmid);
 			return 0;
 		}
 
