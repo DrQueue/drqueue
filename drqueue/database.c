@@ -1,4 +1,4 @@
-/* $Id: database.c,v 1.7 2001/11/02 10:52:58 jorge Exp $ */
+/* $Id: database.c,v 1.8 2001/11/02 16:12:19 jorge Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -78,7 +78,6 @@ int database_save (struct database *wdb)
   hdr.magic = DB_MAGIC;
   hdr.version = DB_VERSION;
   hdr.job_size = MAXJOBS;
-  hdr.computer_size = MAXCOMPUTERS;
 
   write_32b (fd,&hdr.magic);
   write_32b (fd,&hdr.version);
@@ -86,3 +85,4 @@ int database_save (struct database *wdb)
   write_16b (fd,&hdr.computer_size);
   
 }
+
