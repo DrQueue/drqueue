@@ -1053,6 +1053,8 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   GtkWidget *clist;
   GtkWidget *swin;
   GtkWidget *button;
+	GtkWidget *main_vbox;
+	GtkWidget *notebook;
   GtkTooltips *tooltips;
   struct drqm_jobs_info *newinfo;
 
@@ -1077,18 +1079,29 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   gtk_signal_connect (GTK_OBJECT(window),"destroy",GTK_SIGNAL_FUNC(jdd_destroy),info);
   gtk_signal_connect_object(GTK_OBJECT(window),"destroy",GTK_SIGNAL_FUNC(gtk_widget_destroy),
 			    (GtkObject*)window);
-  gtk_window_set_default_size(GTK_WINDOW(window),800,900);
+  // gtk_window_set_default_size(GTK_WINDOW(window),800,900);
   gtk_window_set_policy(GTK_WINDOW(window), FALSE, TRUE, FALSE);
   gtk_container_set_border_width (GTK_CONTAINER(window),5);
   info->jdd.dialog = window;
 
-  /* Frame */
-  frame = gtk_frame_new (NULL);
-  gtk_container_add (GTK_CONTAINER(window),frame);
+	// Main vbox
+	main_vbox = gtk_vbox_new (FALSE,2);
+	gtk_container_add (GTK_CONTAINER(window),main_vbox);
 
-  /* Main vbox */
+	
+	// Notebook
+	notebook = gtk_notebook_new();
+	gtk_box_pack_start(GTK_BOX(main_vbox),notebook,TRUE,TRUE,1);
+	gtk_notebook_set_tab_pos(GTK_NOTEBOOK(notebook),GTK_POS_TOP);
+
+	// First notebook page
+	label = gtk_label_new ("Main Info");
+	frame = gtk_frame_new ("Main Info");
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook),GTK_WIDGET(frame),GTK_WIDGET(label));
+
+  /* vbox for the main info */
   vbox = gtk_vbox_new (FALSE,2);
-  gtk_container_add (GTK_CONTAINER(frame),vbox);
+	gtk_container_add (GTK_CONTAINER(frame),GTK_WIDGET(vbox));
 
   /* Label */
   label = gtk_label_new ("Detailed job information");
@@ -1177,10 +1190,12 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   frame = jdd_flags_widgets (info);
   gtk_box_pack_start (GTK_BOX(vbox),frame,FALSE,FALSE,2);
 
+	// New notebook page
   /* Clist with the frame info */
   /* Frame */
-  frame = gtk_frame_new ("Frame information");
-  gtk_box_pack_start (GTK_BOX(vbox),frame,TRUE,TRUE,2);
+  frame = gtk_frame_new ("Frame Information");
+	label = gtk_label_new ("Frame Information");
+	gtk_notebook_append_page (GTK_NOTEBOOK(notebook),GTK_WIDGET(frame),GTK_WIDGET(label));
   /* Clist with the frame info */
   swin = gtk_scrolled_window_new (NULL,NULL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(swin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
@@ -1235,11 +1250,13 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   gtk_tooltips_set_tip (tooltips,button,"Delete the job from the queue killing running frames",NULL);
   gtk_widget_set_name (GTK_WIDGET(button),"danger");
 
+
+	// Out of the notebook
   /* Button Refresh */
   button = gtk_button_new_with_label ("Refresh");
   gtk_container_border_width (GTK_CONTAINER(button),5);
   gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_update),info);
-  gtk_box_pack_start (GTK_BOX(vbox),button,FALSE,FALSE,2);
+  gtk_box_pack_start (GTK_BOX(main_vbox),button,FALSE,FALSE,2);
 
   gtk_widget_show_all(window);
 
@@ -1726,7 +1743,7 @@ static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info)
   gtk_window_set_title (GTK_WINDOW(window),"Frame log");
   gtk_signal_connect_object(GTK_OBJECT(window),"destroy",GTK_SIGNAL_FUNC(gtk_widget_destroy),
 			    (GtkObject*)window);
-  gtk_window_set_default_size(GTK_WINDOW(window),600,200);
+	gtk_window_set_default_size(GTK_WINDOW(window),600,200);
   gtk_container_set_border_width (GTK_CONTAINER(window),5);
 
   /* Frame */
