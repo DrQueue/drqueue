@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.40 2001/10/31 15:58:15 jorge Exp $ */
+/* $Id: communications.c,v 1.41 2001/11/02 10:52:57 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -752,7 +752,7 @@ int write_32b (int sfd, void *data)
   int bleft;
   void *buf = &bswapped;
 
-  bswapped = htonl (*((uint32_t *)data));
+  bswapped = htonl (*(uint32_t *)data);
   bleft = sizeof (bswapped);
   while ((w = write (sfd,buf,bleft)) < bleft) {
     bleft -= w;
@@ -773,7 +773,7 @@ int write_16b (int sfd, void *data)
   int bleft;
   void *buf = &bswapped;
 
-  bswapped = htons (*((uint16_t *)data));
+  bswapped = htons (*(uint16_t *)data);
   bleft = sizeof (bswapped);
   while ((w = write (sfd,buf,bleft)) < bleft) {
     bleft -= w;
@@ -793,7 +793,7 @@ int read_32b (int sfd, void *data)
   int bleft;
   void *buf;
 
-  buf = cl;
+  buf = data;
   bleft = sizeof (uint32_t);
   while ((r = read (sfd,buf,bleft)) < bleft) {
     if ((r == -1) || ((r == 0) && (bleft > 0))) {
@@ -815,7 +815,7 @@ int read_16b (int sfd, void *data)
   int bleft;
   void *buf;
 
-  buf = cl;
+  buf = data;
   bleft = sizeof (uint16_t);
   while ((r = read (sfd,buf,bleft)) < bleft) {
     if ((r == -1) || ((r == 0) && (bleft > 0))) {

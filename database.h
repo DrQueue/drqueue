@@ -1,4 +1,4 @@
-/* $Id: database.h,v 1.6 2001/10/29 16:25:16 jorge Exp $ */
+/* $Id: database.h,v 1.7 2001/11/02 10:52:59 jorge Exp $ */
 
 #ifndef _DATABASE_H_
 #define _DATABASE_H_
@@ -8,7 +8,7 @@
 #include "computer.h"
 
 #define DB_VERSION 1		/* Database version */
-#define DB_MAGIC   0xDEADBEEF	/* magics number */
+#define DB_MAGIC   0xADDEEFBE	/* magic number */
 
 struct database {
   struct computer computer[MAXCOMPUTERS]; /* computers */
