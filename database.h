@@ -28,9 +28,16 @@
 #define DB_VERSION 6		/* Database version. This version must change when we change the job structure */
 #define DB_MAGIC   0xADDEEFBE	/* magic number */
 
+struct load_balancing {
+	struct tpol pol[MAXJOBS]; // Priority ordered list of jobs
+	uint32_t first_i;         // Variables used for load balancing
+	uint32_t counter;         // 
+};
+
 struct database {
   struct computer computer[MAXCOMPUTERS]; /* computers */
   struct job job[MAXJOBS];	/* jobs */
+	struct load_balancing lb; // Load balancing info
   int semid;			/* semaphores id */
   int shmid;			/* shared memory id */
 #ifdef COMM_REPORT
