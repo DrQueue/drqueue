@@ -1,3 +1,54 @@
+2004-10-19 11:37:54  Rev 853    jorge
+
+	* common.h:
+	  New version number on common.h: 0.51.4
+
+2004-10-19 11:31:34  Rev 852    jorge
+
+	* drqman/drqm_jobs.h:
+	  Corrected comment
+
+2004-10-19 11:08:56  Rev 851    jorge
+
+	* drqman/drqm_jobs.c drqman/drqm_jobs.h drqman/drqm_common.c:
+	  drqman saves the status of the frame's info scrolled window
+
+2004-10-19 05:58:26  Rev 850    jorge
+
+	* TODO listjobs.c computer_info.osx.c:
+	  Minor changes
+
+2004-10-18 20:52:02  Rev 849    jorge
+
+	* computer_info.osx.c:
+	  Mac OS X, nicer way to get the number of cpus
+
+2004-10-18 20:03:11  Rev 848    jorge
+
+	* computer_info.osx.c:
+	  Now it gets the real frequency of the cpu
+
+2004-10-18 18:09:16  Rev 847    jorge
+
+	* computer_info.freebsd.c computer_info.irix.c computer_info.linux.c 
+	  computer_info.c computer_info.osx.c:
+	  Code cleanup
+
+2004-10-18 16:38:20  Rev 846    jorge
+
+	* bin/blockhost:
+	  Added blockhost script to bin
+
+2004-10-18 01:32:26  Rev 845    jorge
+
+	* Revision:
+	  New Revision commited by build_package.sh
+
+2004-10-18 01:32:05  Rev 843    jorge
+
+	* ChangeLog:
+	  Changelog commited by build_package.sh
+
 2004-10-18 01:31:39  Rev 842    jorge
 
 	* common.h:
