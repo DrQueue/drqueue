@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.35 2001/10/02 12:55:50 jorge Exp $ */
+/* $Id: communications.c,v 1.36 2001/10/04 08:17:25 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -307,6 +307,12 @@ int send_computer_status (int sfd, struct computer_status *status)
   /* Prepare for sending */
   for (i=0;i<3;i++)
     bswapped.loadavg[i] = htons (bswapped.loadavg[i]);
+
+  bswapped.ntasks = 0;
+  for (i=0;i<MAXTASKS;i++) {
+    if (bswapped.task[i].used)
+      bswapped.ntasks++;
+  }
 
   bswapped.ntasks = htons (bswapped.ntasks);
 
