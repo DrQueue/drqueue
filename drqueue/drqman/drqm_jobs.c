@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.33 2001/09/17 10:46:45 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.34 2001/09/18 09:25:20 jorge Exp $
  */
 
 #include <string.h>
@@ -16,6 +16,7 @@
 #include "drqman.h"
 #include "drqm_request.h"
 #include "drqm_jobs.h"
+#include "drqm_common.h"
 
 /* Static functions declaration */
 static GtkWidget *CreateJobsList(struct drqm_jobs_info *info);
