@@ -1,4 +1,4 @@
-/* $Id: computer_status.c,v 1.11 2001/09/20 10:51:09 jorge Exp $ */
+/* $Id: computer_status.c,v 1.12 2001/09/21 14:40:04 jorge Exp $ */
 
 #include <stdio.h>
 #include <signal.h>
@@ -30,9 +30,9 @@ void get_computer_status (struct computer_status *cstatus)
   check_tasks (cstatus);
 }
 
-void init_computer_status (struct computer_status *cstatus)
+void computer_status_init (struct computer_status *cstatus)
 {
-  init_tasks (cstatus->task);
+  task_init_all (cstatus->task);
 }
 
 void check_tasks (struct computer_status *cstatus)
