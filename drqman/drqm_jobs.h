@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.29 2002/12/02 22:24:08 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.30 2003/12/15 22:18:32 jorge Exp $
  */
 
 #ifndef _DRQM_JOBS_H_
@@ -41,6 +41,14 @@ struct drqmj_koji_maya {
   GtkWidget *efile_owner;	/* Owner of the rendered files */
 };
 
+struct drqmj_koji_blender {
+  GtkWidget *escene;
+  GtkWidget *fsscene;						/* File selector for the scene */
+  GtkWidget *eviewcmd;
+  GtkWidget *escript;						/* Entry script location */
+  GtkWidget *fsscript;		/* File selectot for the script directory */
+};
+
 struct drqmj_dnji {		/* dialog new job */
   GtkWidget *dialog;
   GtkWidget *vbox;
@@ -55,6 +63,7 @@ struct drqmj_dnji {		/* dialog new job */
   GtkWidget *fkoj;		/* frame koj */
   uint16_t koj;			/* koj */
   struct drqmj_koji_maya koji_maya; /* koj info for maya */
+	struct drqmj_koji_blender koji_blender; /* koj info for blender */
   struct drqmj_limits limits;	/* limits info */
   struct drqmj_flags flags;	/* flags info */
 };
