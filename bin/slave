@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id: slave,v 1.5 2004/04/26 16:25:51 jorge Exp $
+# $Id$
 #
 # Slave starting program that restarts the slave after failure
 #

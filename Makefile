@@ -113,12 +113,13 @@ CYGWIN_NT-5.1_install:
 	install -d -m 0777 $(INSTROOT)/db
 	install -d -m 0777 $(INSTROOT)/contrib
 	cp ./bin/*.exe $(INSTROOT)/bin/ || exit 0
+	cp `which ipc-daemon2` $(INSTROOT)/bin || exit 0
 	cp ./etc/* $(INSTROOT)/etc/ || exit 0
 	cp ./contrib/* $(INSTROOT)/contrib/ || exit 0
+	cp COPYING $(INSTROOT)/
 	chmod 0755 $(INSTROOT)/bin/* || exit 0
 	chmod 0755 $(INSTROOT)/contrib/* || exit 0
-	chown $(INSTUID):$(INSTGID) $(INSTROOT)/bin/*
-	chown $(INSTUID):$(INSTGID) $(INSTROOT)/contrib/*
+	contrib/install_dlls.sh $(INSTROOT)/bin
 
 FreeBSD_install:
 	install -d -m 0777 $(INSTROOT)/tmp
@@ -225,5 +226,3 @@ libdrqueue.h: computer_info.h computer_status.h task.h logger.h communications.h
 
 %.o: %.c %.h constants.h
 	$(CC) -c $(CFLAGS) -o $@ $<
-
-
