@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.41 2001/11/02 10:52:57 jorge Exp $ */
+/* $Id: communications.c,v 1.42 2001/11/07 10:20:44 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -154,7 +154,7 @@ int connect_to_slave (char *slave)
   return sfd;
 }
 
-void recv_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo,int who)
+int recv_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo)
 {
   int r;
   int bleft;
@@ -165,16 +165,8 @@ void recv_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo,int who)
   while ((r = read (sfd,buf,bleft)) < bleft) {
     if ((r == -1) || ((r == 0) && (bleft > 0))) {
       /* if r is error or if there are no more bytes left on the socket but there _SHOULD_ be */
-      if (who == MASTER) {
-	log_master (L_ERROR,"Receiving computer_hwinfo");
-	exit (1);
-      } else if (who == SLAVE) {
-	log_slave_computer (L_ERROR,"Receiving computer_hwinfo");
-	kill(0,SIGINT);
-      } else {
-	fprintf (stderr,"ERROR: recv_computer_hwinfo: who value not valid !\n");
-	exit (1);
-      }
+      drerrno = DRE_ERRORRECEIVING;
+      return 0;
     }
     bleft -= r;
     buf += r;
@@ -192,9 +184,12 @@ void recv_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo,int who)
   hwinfo->procspeed = ntohl (hwinfo->procspeed);
   hwinfo->ncpus = ntohs (hwinfo->ncpus);
   hwinfo->speedindex = ntohl (hwinfo->speedindex);
+
+  drerrno = DRE_NOERROR;
+  return 1;
 }
 
-void send_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo,int who)
+int send_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo)
 {
   struct computer_hwinfo bswapped;
   int w;
@@ -213,16 +208,8 @@ void send_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo,int who)
   while ((w = write(sfd,buf,bleft)) < bleft) {
     if ((w == -1) || ((w == 0) && (bleft > 0))) {
       /* if w is error or if there are no more bytes are written but they _SHOULD_ be */
-      if (who == MASTER) {
-	log_master (L_ERROR,"Sending computer hardware info");
-	exit (1);
-      } else if (who == SLAVE) {
-	log_slave_computer (L_ERROR,"Sending computer hardware info");
-	kill(0,SIGINT);
-      } else {
-	fprintf (stderr,"ERROR: send_computer_hwinfo: who value not valid !\n");
-	exit (1);
-      }
+      drerrno = DRE_ERRORSENDING;
+      return 0;
     }
     bleft -= w;
     buf += w;
@@ -233,6 +220,9 @@ void send_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo,int who)
 #ifdef COMM_REPORT
   bsent += w;
 #endif
+  
+  drerrno = DRE_NOERROR;
+  return 1;
 }
 
 int recv_request (int sfd, struct request *request)
@@ -388,7 +378,7 @@ int recv_computer_status (int sfd, struct computer_status *status)
   return 1;
 }
 
-void recv_job (int sfd, struct job *job,int who)
+int recv_job (int sfd, struct job *job)
 {
   int r;
   int bleft;
@@ -399,20 +389,8 @@ void recv_job (int sfd, struct job *job,int who)
   while ((r = read (sfd,buf,bleft)) < bleft) {
     if ((r == -1) || ((r == 0) && (bleft > 0))) {
       /* if r is error or if there are no more bytes left on the socket but there _SHOULD_ be */
-      switch (who) {
-      case MASTER:
-	log_master (L_ERROR,"Receiving job");
-	exit (1);
-      case SLAVE:
-	log_slave_computer (L_ERROR,"Receiving job");
-	kill(0,SIGINT);
-      case CLIENT:
-	fprintf (stderr,"ERROR: receiving request\n");
-	exit (1);
-      default:
-	fprintf (stderr,"ERROR: recv_job: who value not valid !\n");
-	exit (1);
-      }
+      drerrno = DRE_ERRORRECEIVING;
+      return 0;
     }
     bleft -= r;
     buf += r;
@@ -449,9 +427,12 @@ void recv_job (int sfd, struct job *job,int who)
   job->ffailed = ntohl (job->ffailed);
 
   job->priority = ntohl (job->priority);
+
+  drerrno = DRE_NOERROR;
+  return 1;
 }
 
-void send_job (int sfd, struct job *job,int who)
+int send_job (int sfd, struct job *job)
 {
   /* This function _sets_ frame_info = NULL before sending */
   struct job bswapped;
@@ -491,21 +472,9 @@ void send_job (int sfd, struct job *job,int who)
     bleft -= w;
     buf += w;
     if ((w == -1) || ((w == 0) && (bleft > 0))) {
-      /* if w is error or if there are no more bytes are written but they _SHOULD_ be */
-      switch (who) {
-      case MASTER:
-	log_master (L_ERROR,"Sending job");
-	exit (1);
-      case SLAVE:
-	log_slave_computer (L_ERROR,"Sending job");
-	kill(0,SIGINT);
-      case CLIENT:
-	fprintf (stderr,"ERROR: sending job\n");
-	exit (1);
-      default:
-	fprintf (stderr,"ERROR: send_job: who value not valid !\n");
-	kill(0,SIGINT);
-      }
+      /* if w is error or if no more bytes are written but they _SHOULD_ be */
+      drerrno = DRE_ERRORSENDING;
+      return 0;
     }
 #ifdef COMM_REPORT
     bsent += w;
@@ -514,6 +483,8 @@ void send_job (int sfd, struct job *job,int who)
 #ifdef COMM_REPORT
   bsent += w;
 #endif
+  
+  return 1;
 }
 
 int recv_task (int sfd, struct task *task)
@@ -589,13 +560,16 @@ int send_task (int sfd, struct task *task)
   return 1;
 }
 
-int send_computer (int sfd, struct computer *computer,int who)
+int send_computer (int sfd, struct computer *computer)
 {
   if (!send_computer_status (sfd,&computer->status)) {
     printf ("error send_computer_status\n");
     return 0;
   }
-  send_computer_hwinfo (sfd,&computer->hwinfo,who);
+  if (!send_computer_hwinfo (sfd,&computer->hwinfo)) {
+    printf ("error send_computer_hwinfo\n");
+    return 0;
+  }
   if (!send_computer_limits (sfd,&computer->limits)) {
     printf ("error send_computer_limits\n");
     return 0;
@@ -603,13 +577,16 @@ int send_computer (int sfd, struct computer *computer,int who)
   return 1;
 }
 
-int recv_computer (int sfd, struct computer *computer,int who)
+int recv_computer (int sfd, struct computer *computer)
 {
   if (!recv_computer_status (sfd,&computer->status)) {
     printf ("error recv_computer_status\n");
     return 0;
   }
-  recv_computer_hwinfo (sfd,&computer->hwinfo,who);
+  if (!recv_computer_hwinfo (sfd,&computer->hwinfo)) {
+    printf ("error recv_computer_hwinfo\n");
+    return 0;
+  }
   if (!recv_computer_limits (sfd,&computer->limits)) {
     printf ("error recv_computer_limits\n");
     return 0;
