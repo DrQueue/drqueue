@@ -1,4 +1,4 @@
-/* $Id: drqm_request.c,v 1.11 2001/09/06 10:19:42 jorge Exp $ */
+/* $Id: drqm_request.c,v 1.12 2001/09/06 14:33:35 jorge Exp $ */
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -161,4 +161,9 @@ void drqm_request_job_frame_waiting (uint32_t jobid,uint32_t frame)
 void drqm_request_job_frame_kill (uint32_t jobid,uint32_t frame)
 {
   request_job_frame_kill (jobid,frame,CLIENT);
+}
+
+void drqm_request_job_frame_finish (uint32_t jobid,uint32_t frame)
+{
+  request_job_frame_finish (jobid,frame,CLIENT);
 }
