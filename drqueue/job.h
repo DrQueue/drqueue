@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.39 2004/01/22 17:48:24 jorge Exp $ */
+/* $Id: job.h,v 1.40 2004/03/09 18:53:22 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -75,6 +75,10 @@ union koj_info {		/* Kind of job information */
 		char custom_raysamples;
 		uint32_t raysamples;
 	} bmrt;
+  struct koji_pixie {
+    char scene[BUFFERLEN];
+    char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
+  } pixie;
 };
 
 /* Koj types */
@@ -87,8 +91,9 @@ union koj_info {		/* Kind of job information */
 
 /* koj constants */
 #define KOJ_MAYA_DFLT_VIEWCMD "fcheck $RD/$IMAGE.$PADFRAME.sgi"
-#define KOJ_BLENDER_DFLT_VIEWCMD "display image.$FRAME.sgi"
+#define KOJ_BLENDER_DFLT_VIEWCMD "display image.$FRAME.jpg"
 #define KOJ_BMRT_DFLT_VIEWCMD "display image.$FRAME.sgi"
+#define KOJ_PIXIE_DFLT_VIEWCMD "display image.$FRAME.jpg"
 
 /* JOB SECTION */
 typedef enum {
@@ -105,6 +110,7 @@ typedef enum {
 /* OS FLAGS */
 #define OSF_IRIX          (1<<0) /* If set will run on Irix */
 #define OSF_LINUX         (1<<1) /* If set will run on Linux */
+#define OSF_OSX						(1<<2) /* If set will run on OSX */
 
 /* THE JOB ITSELF */
 struct job {

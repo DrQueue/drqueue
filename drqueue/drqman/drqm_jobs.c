@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.76 2003/12/24 11:00:49 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.77 2004/03/09 18:53:22 jorge Exp $
  */
 
 #include <string.h>
@@ -24,6 +24,7 @@
 #include "drqm_jobs_maya.h"
 #include "drqm_jobs_blender.h"
 #include "drqm_jobs_bmrt.h"
+#include "drqm_jobs_pixie.h"
 
 /* Static functions declaration */
 static GtkWidget *CreateJobsList(struct drqm_jobs_info *info);
@@ -81,6 +82,7 @@ static GtkWidget *jdd_koj_widgets (struct drqm_jobs_info *info);
 static void jdd_maya_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 static void jdd_blender_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 static void jdd_bmrt_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
+static void jdd_pixie_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 
 /* NEW JOB */
 static void NewJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
@@ -506,6 +508,14 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info)
 																 info->jobs[info->row].koji.bmrt.custom_raysamples);
 		snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].koji.bmrt.raysamples);
 		gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_bmrt.eraysamples),buf);
+  case KOJ_PIXIE:
+		gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(info->dnj.ckoj)->entry),
+											 "Pixie");
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_pixie.escene),
+											 info->jobs[info->row].koji.pixie.scene);
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_pixie.eviewcmd),
+											 info->jobs[info->row].koji.pixie.viewcmd);
+    break;
   }
 }
 
@@ -860,6 +870,10 @@ static int dnj_submit (struct drqmj_dnji *info)
 				return 0;
 		}
     break;
+  case KOJ_PIXIE:
+    strncpy(job.koji.blender.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_pixie.escene)),BUFFERLEN-1);
+    strncpy(job.koji.blender.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_pixie.eviewcmd)),BUFFERLEN-1);
+    break;
   }
 
   /* Limits */
@@ -875,6 +889,9 @@ static int dnj_submit (struct drqmj_dnji *info)
   }
   if (GTK_TOGGLE_BUTTON(info->limits.cb_linux)->active) {
     job.limits.os_flags |= (OSF_LINUX);
+  }
+  if (GTK_TOGGLE_BUTTON(info->limits.cb_osx)->active) {
+    job.limits.os_flags |= (OSF_OSX);
   }
 
   /* Flags */
@@ -1350,6 +1367,8 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
 				info->jdd.job.limits.os_flags & OSF_IRIX);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->jdd.limits.cb_linux),
 				info->jdd.job.limits.os_flags & OSF_LINUX);
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->jdd.limits.cb_osx),
+				info->jdd.job.limits.os_flags & OSF_LINUX);
 
 
   /* Pixmap stuff */
@@ -1512,6 +1531,13 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info)
     menu_item = gtk_menu_item_new_with_label("Watch image");
     gtk_menu_append(GTK_MENU(menu),menu_item);
     gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_bmrt_viewcmd_exec),info);
+    break;
+  case KOJ_PIXIE:
+    menu_item = gtk_menu_item_new ();
+    gtk_menu_append(GTK_MENU(menu),menu_item);
+    menu_item = gtk_menu_item_new_with_label("Watch image");
+    gtk_menu_append(GTK_MENU(menu),menu_item);
+    gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_pixie_viewcmd_exec),info);
     break;
   }
 
@@ -1744,6 +1770,7 @@ static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info)
   items = g_list_append (items,"Maya");
 	items = g_list_append (items,"Blender");
 	items = g_list_append (items,"Bmrt");
+	items = g_list_append (items,"Pixie");
   combo = gtk_combo_new();
   gtk_tooltips_set_tip(tooltips,GTK_COMBO(combo)->entry,"Selector for the kind of job",NULL);
   gtk_combo_set_popdown_strings (GTK_COMBO(combo),items);
@@ -1771,6 +1798,8 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
     new_koj = KOJ_BLENDER;
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Bmrt") == 0) {
     new_koj = KOJ_BMRT;
+  } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Pixie") == 0) {
+    new_koj = KOJ_PIXIE;
   } else {
 /*     fprintf (stderr,"dnj_koj_combo_changed: koj not listed!\n"); */
 /* 		fprintf (stderr,"entry: %s\n",gtk_entry_get_text(GTK_ENTRY(entry))); */
@@ -1797,6 +1826,10 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
       break;
 		case KOJ_BMRT:
 			info->dnj.fkoj = dnj_koj_frame_bmrt (info);
+      gtk_box_pack_start(GTK_BOX(info->dnj.vbox),info->dnj.fkoj,TRUE,TRUE,2);
+      break;
+    case KOJ_PIXIE:
+      info->dnj.fkoj = dnj_koj_frame_pixie (info);
       gtk_box_pack_start(GTK_BOX(info->dnj.vbox),info->dnj.fkoj,TRUE,TRUE,2);
       break;
     }
@@ -1901,6 +1934,38 @@ static void jdd_bmrt_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *inf
   }
 }
 
+static void jdd_pixie_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info)
+{
+  /* Sets the waiting frames as finished */
+  GList *sel;
+  uint32_t frame,iframe;
+  const char *new_argv[4];
+  extern char **environ;
+  struct row_data *rdata;
+  
+  if (!(sel = GTK_CLIST(info->jdd.clist)->selection)) {
+    return;
+  }
+
+  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+  frame = rdata->frame;
+  
+  iframe = job_frame_number_to_index (&info->jdd.job,frame);
+
+  if (fork() == 0) {
+    new_argv[0] = SHELL_NAME;
+    new_argv[1] = "-c";
+    new_argv[2] = info->jdd.job.koji.pixie.viewcmd;
+    new_argv[3] = NULL;
+    
+    job_environment_set(&info->jdd.job,iframe);
+    
+    execve(SHELL_PATH,(char*const*)new_argv,environ);
+    perror("execve");
+    exit (1);
+  }
+}
+
 static GtkWidget *dnj_limits_widgets (struct drqm_jobs_info *info)
 {
   GtkWidget *frame;
@@ -1955,8 +2020,17 @@ static GtkWidget *dnj_limits_widgets (struct drqm_jobs_info *info)
   gtk_tooltips_set_tip (tooltips,cbutton,"If set this job will try to be executed on Linux "
 			"computers. If not set it won't.", NULL);
 
+  gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
+  cbutton = gtk_check_button_new_with_label ("OS X");
+  gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
+  info->dnj.limits.cb_osx = cbutton;
+  gtk_tooltips_set_tip (tooltips,cbutton,"If set this job will try to be executed on OS X "
+			"computers. If not set it won't.", NULL);
+
+
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.limits.cb_irix),TRUE);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.limits.cb_linux),TRUE);
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.limits.cb_osx),TRUE);
 
   return (frame);
 }
@@ -2505,6 +2579,10 @@ GtkWidget *jdd_koj_widgets (struct drqm_jobs_info *info)
     break;
   case KOJ_BMRT:
     koj_vbox = jdd_koj_bmrt_widgets (info);
+    gtk_box_pack_start (GTK_BOX(vbox),koj_vbox,FALSE,FALSE,2);
+    break;
+  case KOJ_PIXIE:
+    koj_vbox = jdd_koj_pixie_widgets (info);
     gtk_box_pack_start (GTK_BOX(vbox),koj_vbox,FALSE,FALSE,2);
     break;
   }
