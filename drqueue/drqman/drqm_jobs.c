@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.75 2003/12/24 10:33:31 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.76 2003/12/24 11:00:49 jorge Exp $
  */
 
 #include <string.h>
@@ -742,11 +742,10 @@ static void dnj_cpri_changed (GtkWidget *entry, struct drqmj_dnji *info)
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Lowest") == 0) {
     gtk_entry_set_editable (GTK_ENTRY(info->epri),FALSE);
     gtk_entry_set_text (GTK_ENTRY(info->epri),"1000");
-  } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Custom") == 0) {
+  } else {
+		/* Custom */
     gtk_entry_set_editable (GTK_ENTRY(info->epri),TRUE);
     gtk_entry_set_text (GTK_ENTRY(info->epri),"500");
-  } else {
-    fprintf (stderr,"Not listed!\n");
   }
 }
 
@@ -1753,6 +1752,7 @@ static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info)
   gtk_entry_set_editable (GTK_ENTRY(GTK_COMBO(combo)->entry),FALSE);
   info->dnj.ckoj = combo;
   info->dnj.koj = 0;
+	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(combo)->entry),"General");
   g_signal_connect (G_OBJECT(GTK_ENTRY(GTK_COMBO(combo)->entry)),
 										"changed",G_CALLBACK(dnj_koj_combo_changed),info);
 
@@ -1772,7 +1772,8 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Bmrt") == 0) {
     new_koj = KOJ_BMRT;
   } else {
-    fprintf (stderr,"dnj_koj_combo_changed: koj not listed!\n");
+/*     fprintf (stderr,"dnj_koj_combo_changed: koj not listed!\n"); */
+/* 		fprintf (stderr,"entry: %s\n",gtk_entry_get_text(GTK_ENTRY(entry))); */
     return;
   }
 
@@ -2353,7 +2354,7 @@ static void jdd_pcd_cpri_changed (GtkWidget *entry, struct drqmj_jddi *info)
     gtk_entry_set_editable (GTK_ENTRY(info->epri),TRUE);
     gtk_entry_set_text (GTK_ENTRY(info->epri),"500");
   } else {
-    fprintf (stderr,"Not listed!\n");
+    fprintf (stderr,"jdd_pcd_cpri_changed: Not listed!\n");
   }
 }
 
