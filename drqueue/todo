@@ -13,6 +13,9 @@ TO DO:
 * License control
 * User defined shell for script generators
 * Renice options
+* STEPFRAME included in all .sg files
+* Put together both sendjobs and add a -t type flag for the different
+  renderers
 
 BUGS:
 ----
