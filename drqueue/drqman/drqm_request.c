@@ -1,4 +1,4 @@
-/* $Id: drqm_request.c,v 1.3 2001/07/19 09:08:49 jorge Exp $ */
+/* $Id: drqm_request.c,v 1.4 2001/08/06 12:35:05 jorge Exp $ */
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -107,4 +107,12 @@ void clean_computerlist (struct info_drqm_computers *info)
   }
 }
 
+void drqm_request_job_delete (struct info_drqm_jobs *info)
+{
+  /* This function sends the request to delete the job selected from the queue */
+  /* FIXME: if there is nothing selected returns row 0 */
+  if (info->njobs) {
+    request_job_delete (&info->jobs[info->row],CLIENT);
+  }
+}
 
