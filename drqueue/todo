@@ -2,6 +2,7 @@ TO DO:
 -----
 
 * Frame_info memory allocation and deallocation		[DONE]
+* Priority support for jobs
 * file locking on logging functions
 * limit structures for jobs and computers
 * Negative and backwards frame numbers
