@@ -1,4 +1,5 @@
-to compil drqueue under windows you need do all this steps :
+to compil drqueue under windows you need do all this steps
+----------------------------------------------------------
 
 .download cygwin from
 http://www.cygwin.com/setup.exe
@@ -10,25 +11,28 @@ http://www.cygwin.com/setup.exe
 .run again cygwin setup and add this server 
 http://web.sfc.keio.ac.jp/~s01397ms/cygwin 
 choose gtk+-win32 in package list (show full list to find it)
-installation may crach at the end, but it is not a problem as file are copied.
 
-.install nullsoft installation system from 
+Installation may crach at the end, but it is not a problem as files are copied.
+If you have problem with gtk (crashing when there were some packages left to
+install), please select gtk+-win32 and verify that it will automaticly select 
+dependent packages (atk..), then deselect gtk+-win32 but keep previously 
+selected dependent packages, install this, and then rerun setup with just
+gtk+-win32 selected (which may crash setup again, but won't be a problem as
+dependent packages are already installed). 
+
+.install nullsoft installation system (in default c: directory) from 
 http://nsis.sourceforge.net/download
 
-.install windows dotnet SDK
+.install windows dotnet framework from
+http://www.microsoft.com/downloads/details.aspx?familyid=9B3A2CA6-3647-4070-9F41-A333C6B9181D&displaylang=en
+it will be needed to run (and to compil) windows drqueue services 
 
-.compil Services solutions in contrib/windows/Services
+.type "make DOTNETPATH=c:/windows/microsoft.net/framework/you_version install"
+replace your_version with the actual dotnet framework version (v1.1.4322
+for exemple)
 
-.compil ServiceInstaller in contrib/windows/ServiceInstaller with
-gcc -mno-cygwin service.cpp -o service.exe
-
-.copy all services and service installer exe in contrib/ directory (important)
-
-.type make install in drqueue directory
-
-.go where file are installed (/usr/local/drqueue by default)
-
-.compil contrib/installer.nsi with nullsoft installer system (right click on nsi file and choose compil)
-
-.you get installer.exe with contains everything needed, just install it as any windows application
+.you get installer.exe (in /usr/local/drqueue/contrib/windows/Installer by
+default) with contains everything needed, just install it as any windows 
+application (.nsi, .nsh files in this directory are not needed, just
+installer.exe)
  
