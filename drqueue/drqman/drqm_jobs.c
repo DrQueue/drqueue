@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.50 2001/11/19 09:46:11 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.51 2001/11/21 10:16:44 jorge Exp $
  */
 
 #include <string.h>
@@ -2251,8 +2251,8 @@ GtkWidget *dnj_flags_widgets (struct drqm_jobs_info *info)
 
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.flags.cbmailnotify),FALSE);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.flags.cbdifemail),FALSE);
-  GTK_WIDGET_UNSET_FLAGS (info->dnj.flags.cbdifemail,GTK_SENSITIVE);
-  GTK_WIDGET_UNSET_FLAGS (info->dnj.flags.edifemail,GTK_SENSITIVE);
+  gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.flags.cbdifemail),FALSE);
+  gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.flags.edifemail),FALSE);
 
   return (frame);
 }
@@ -2260,19 +2260,19 @@ GtkWidget *dnj_flags_widgets (struct drqm_jobs_info *info)
 void dnj_flags_cbdifemail_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info)
 {
   if (GTK_TOGGLE_BUTTON(info->dnj.flags.cbdifemail)->active) {
-    GTK_WIDGET_SET_FLAGS (info->dnj.flags.edifemail,GTK_SENSITIVE);
+    gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.flags.edifemail),TRUE);
   } else {
-    GTK_WIDGET_UNSET_FLAGS (info->dnj.flags.edifemail,GTK_SENSITIVE);
+    gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.flags.edifemail),FALSE);
   }
 }
 
 void dnj_flags_cbmailnotify_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info)
 {
   if (GTK_TOGGLE_BUTTON(info->dnj.flags.cbmailnotify)->active) {
-    GTK_WIDGET_SET_FLAGS (info->dnj.flags.cbdifemail,GTK_SENSITIVE);
+    gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.flags.cbdifemail),TRUE);
   } else {
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.flags.cbdifemail),FALSE);
-    GTK_WIDGET_UNSET_FLAGS (info->dnj.flags.cbdifemail,GTK_SENSITIVE);
+    gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.flags.cbdifemail),FALSE);
   }
 }
 
