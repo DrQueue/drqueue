@@ -1,14 +1,16 @@
 /* 
- * $Header: /root/cvs/drqueue/drqman/main.c,v 1.2 2001/08/28 09:00:30 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/main.c,v 1.3 2001/08/28 21:49:27 jorge Exp $
  */
 
 #include <gtk/gtk.h>
+#include "drqman.h"
 #include "notebook.h"
 
 int main (int argc, char *argv[])
 {
   GtkWidget *window;
   GtkWidget *main_vbox;
+  struct info_drqm info;
   
   gtk_init(&argc,&argv);
 
@@ -26,7 +28,7 @@ int main (int argc, char *argv[])
   gtk_widget_show(main_vbox);
   gtk_widget_realize(window);
 
-  CreateNotebook (window,main_vbox);
+  CreateNotebook (window,main_vbox,&info);
 
   gtk_widget_show(window);
 

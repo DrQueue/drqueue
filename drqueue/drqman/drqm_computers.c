@@ -1,14 +1,13 @@
 /*
- * $Id: drqm_computers.c,v 1.6 2001/08/28 09:54:25 jorge Exp $
+ * $Id: drqm_computers.c,v 1.7 2001/08/28 21:49:25 jorge Exp $
  */
 
+#include <stdlib.h>
 #include <string.h>
 
+#include "drqman.h"
 #include "drqm_request.h"
 #include "drqm_computers.h"
-
-/* Global variable */
-static struct info_drqm_computers info;
 
 /* Static functions declaration */
 static GtkWidget *CreateComputersList(struct info_drqm_computers *info);
@@ -17,11 +16,13 @@ static GtkWidget *CreateButtonRefresh (struct info_drqm_computers *info);
 static void PressedButtonRefresh (GtkWidget *b, struct info_drqm_computers *info);
 static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct info_drqm_computers *info);
 static GtkWidget *CreateMenu (struct info_drqm_computers *info);
+
 static void ComputerDetails(GtkWidget *menu_item, struct info_drqm_computers *info);
+static GtkWidget *ComputerDetailsDialog (struct info_drqm_computers *info);
+static int cdd_update (GtkWidget *w, struct info_drqm_computers *info);
 
 
-
-void CreateComputersPage (GtkWidget *notebook)
+void CreateComputersPage (GtkWidget *notebook,struct info_drqm *info)
 {
   GtkWidget *label;
   GtkWidget *container;
@@ -37,19 +38,19 @@ void CreateComputersPage (GtkWidget *notebook)
   gtk_container_add(GTK_CONTAINER(container),vbox);
 
   /* Clist */
-  clist = CreateComputersList (&info);
+  clist = CreateComputersList (&info->ct);
   gtk_box_pack_start(GTK_BOX(vbox),clist,TRUE,TRUE,2);
   
   /* Button refresh */
-  buttonRefresh = CreateButtonRefresh (&info);
+  buttonRefresh = CreateButtonRefresh (&info->ct);
   gtk_box_pack_end(GTK_BOX(vbox),buttonRefresh,FALSE,FALSE,2);
 
   /* Append the page */
   gtk_notebook_append_page (GTK_NOTEBOOK(notebook), container, label);
 
   /* Put the computers on the list */
-  drqm_request_computerlist (&info);
-  drqm_update_computerlist (&info);
+  drqm_request_computerlist (&info->ct);
+  drqm_update_computerlist (&info->ct);
 
   gtk_widget_show(clist);
   gtk_widget_show(vbox);
@@ -73,7 +74,7 @@ static GtkWidget *CreateComputersList(struct info_drqm_computers *info)
 
 static GtkWidget *CreateClist (GtkWidget *window)
 {
-  gchar *titles[] = { "Id","Running","Name","OS","CPUs","Load Avg" };
+  gchar *titles[] = { "ID","Running","Name","OS","CPUs","Load Avg" };
   GtkWidget *clist;
 
   clist = gtk_clist_new_with_titles (6, titles);
@@ -146,9 +147,9 @@ static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct info_drqm_comput
     GdkEventButton *bevent = (GdkEventButton *) event;
     if (bevent->button != 3)
       return FALSE;
-    gtk_clist_get_selection_info(GTK_CLIST(info->clist),
-				 (int)bevent->x,(int)bevent->y,
-				 &info->row,&info->column);
+    info->selected = gtk_clist_get_selection_info(GTK_CLIST(info->clist),
+						  (int)bevent->x,(int)bevent->y,
+						  &info->row,&info->column);
     gtk_menu_popup (GTK_MENU(info->menu), NULL, NULL, NULL, NULL,
 		    bevent->button, bevent->time);
     return TRUE;
@@ -176,11 +177,97 @@ static GtkWidget *CreateMenu (struct info_drqm_computers *info)
 
 static void ComputerDetails(GtkWidget *menu_item, struct info_drqm_computers *info)
 {
-/*    GtkWidget *dialog; */
-/*    dialog = AddDivisionDialog(info); */
-/*    gtk_grab_add(dialog); */
+  GtkWidget *dialog;
+
+  if (!info->selected)
+    return;
+
+  dialog = ComputerDetailsDialog(info);
+  if (dialog)
+    gtk_grab_add(dialog);
 }
 
+static GtkWidget *ComputerDetailsDialog (struct info_drqm_computers *info)
+{
+  GtkWidget *window;
+  GtkWidget *frame;
+  GtkWidget *vbox;
+  GtkWidget *hbox;
+  GtkWidget *label;
+  GtkWidget *clist;
+  GtkWidget *swin;
+  GtkWidget *button;
+  char *buf;
 
+  if (info->ncomputers) {
+    gtk_clist_get_text(GTK_CLIST(info->clist),info->row,0,&buf);
+    info->icomp = atoi (buf);
+  } else {
+    return NULL;
+  }
+
+  /* Dialog */
+  window = gtk_window_new (GTK_WINDOW_DIALOG);
+  gtk_window_set_title (GTK_WINDOW(window),"Computer Details");
+  gtk_signal_connect_object(GTK_OBJECT(window),"destroy",GTK_SIGNAL_FUNC(gtk_widget_destroy),
+			    (GtkObject*)window);
+  gtk_window_set_default_size(GTK_WINDOW(window),800,500);
+  gtk_container_set_border_width (GTK_CONTAINER(window),5);
+  info->cdd.dialog = window;
+
+  /* Frame */
+  frame = gtk_frame_new (NULL);
+  gtk_container_add (GTK_CONTAINER(window),frame);
+
+  /* Main vbox */
+  vbox = gtk_vbox_new (FALSE,2);
+  gtk_container_add (GTK_CONTAINER(frame),vbox);
+
+  /* Label */
+  label = gtk_label_new ("Detailed computer information");
+  gtk_label_set_pattern (GTK_LABEL(label),"________________________________");
+  gtk_box_pack_start (GTK_BOX(vbox),label,FALSE,FALSE,4);
+
+  /* Name of the computer */
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Name:");
+  gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  label = gtk_label_new (NULL);
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  info->cdd.lname = label;
+
+
+  /* Clist with the proc info */
+  /* Frame */
+  frame = gtk_frame_new ("Processor information");
+  gtk_box_pack_start (GTK_BOX(vbox),frame,TRUE,TRUE,2);
+  swin = gtk_scrolled_window_new (NULL,NULL);
+  gtk_container_add (GTK_CONTAINER(frame),swin);
+/*    clist = CreateFrameInfoClist (); */
+/*    gtk_container_add (GTK_CONTAINER(swin),clist); */
+/*    info->cdd.clist = clist; */
+
+  if (!cdd_update (window,info)) {
+    gtk_widget_destroy (GTK_WIDGET(window));
+    return NULL;
+  }
+
+  /* Button Refresh */
+  button = gtk_button_new_with_label ("Refresh");
+  gtk_container_border_width (GTK_CONTAINER(button),5);
+  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(cdd_update),info);
+  gtk_box_pack_start (GTK_BOX(vbox),button,FALSE,FALSE,2);
+
+  gtk_widget_show_all(window);
+
+  return window;
+}
+
+static int cdd_update (GtkWidget *w, struct info_drqm_computers *info)
+{
+  return 1;
+}
 
 
