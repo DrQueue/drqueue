@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.47 2001/09/08 20:42:43 jorge Exp $ */
+/* $Id: request.c,v 1.48 2001/09/09 21:55:37 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -137,6 +137,10 @@ void handle_request_slave (int sfd,struct slave_database *sdb)
   case RS_R_SETNMAXCPUS:
     log_slave_computer (L_DEBUG,"Request set limits maximum number of usable cpus");
     handle_rs_r_setnmaxcpus (sfd,sdb,&request);
+    break;
+  case RS_R_SETMAXFREELOADCPU:
+    log_slave_computer (L_DEBUG,"Request set limits maximum free load for cpu");
+    handle_rs_r_setmaxfreeloadcpu (sfd,sdb,&request);
     break;
   default:
     log_slave_computer (L_WARNING,"Unknown request received");
@@ -1881,3 +1885,59 @@ void handle_r_r_uclimits (int sfd,struct database *wdb,int icomp, struct request
 
   log_master (L_DEBUG,"Exiting handle_r_r_uclimits");
 }
+
+void handle_rs_r_setmaxfreeloadcpu (int sfd,struct slave_database *sdb,struct request *req)
+{
+  char msg[BUFFERLEN];
+  struct computer_limits limits;
+
+  log_slave_computer(L_DEBUG,"Entering handle_rs_r_setmaxfreeloadcpu");
+
+  snprintf(msg,BUFFERLEN-1,"Received maximum free load cpu: %i",req->data);
+  log_slave_computer(L_DEBUG,msg);
+
+  semaphore_lock(sdb->semid);
+
+  snprintf(msg,BUFFERLEN-1,"Previous maximum free load cpu: %i",sdb->comp->limits.maxfreeloadcpu);
+  log_slave_computer(L_DEBUG,msg);
+
+  sdb->comp->limits.maxfreeloadcpu = req->data;
+
+  snprintf(msg,BUFFERLEN-1,"Set maximum free load cpu: %i",sdb->comp->limits.maxfreeloadcpu);
+  log_slave_computer(L_DEBUG,msg);
+
+  memcpy (&limits,&sdb->comp->limits,sizeof(struct computer_limits));
+
+  semaphore_release(sdb->semid);
+
+  update_computer_limits (&limits);
+
+  log_slave_computer(L_DEBUG,"Exiting handle_rs_r_setmaxfreeloadcpu");
+}
+
+int request_slave_limits_maxfreeloadcpu_set (char *slave, uint32_t maxfreeloadcpu, int who)
+{
+  int sfd;
+  struct request req;
+
+  if ((sfd = connect_to_slave (slave)) == -1) {
+    drerrno = DRE_NOCONNECT;
+    return 0;
+  }
+  
+  req.type = RS_R_SETMAXFREELOADCPU;
+  req.data = maxfreeloadcpu;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORSENDING;
+    return 0;
+  }
+  
+  return 1;
+}
+
+
+
+
+
+
