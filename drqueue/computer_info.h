@@ -1,4 +1,4 @@
-/* $Id: computer_info.h,v 1.4 2001/08/28 08:59:19 jorge Exp $ */
+/* $Id: computer_info.h,v 1.5 2001/09/07 16:43:39 jorge Exp $ */
 
 #ifndef _COMPUTER_INFO_H_
 #define _COMPUTER_INFO_H_
@@ -45,7 +45,7 @@ struct computer_hwinfo {
   unsigned char os;		/* type of operating system */
   unsigned char proctype;	/* type of processors */
   uint32_t procspeed;		/* speed of the processors */
-  uint16_t numproc;		/* number of processors that the computer has */
+  uint16_t ncpus;		/* number of processors that the computer has */
   uint32_t speedindex;		/* global speed index for making comparisons between different computers */
 };
 
