@@ -16,7 +16,7 @@ TO DO:
 * check file descriptor numbers on connect to see if
   they grow.
 * Silent logging, no output at all.
-
+* Mail notifications
 
 BUGS:
 ----
@@ -32,10 +32,10 @@ NOTES:
 DRQMAN
 ------
 
-* Update button in the detailed job information dialog.
+* Watching the output logs as tail -f does.
 
 BUGS:
 ----
 
 * In the new job dialog I cannot justify the labels to the left
-
+* When I delete a job from the detailed job information dialog the windows isn't closed after.
