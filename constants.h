@@ -1,13 +1,15 @@
-/* $Id: constants.h,v 1.5 2001/05/09 10:53:08 jorge Exp $ */
+/* $Id: constants.h,v 1.6 2001/05/28 14:21:31 jorge Exp $ */
 
 #ifndef _CONSTANTS_H_
 #define _CONSTANTS_H_
 
 #define MASTER 0
 #define SLAVE 1
+#define SLAVE_CHANDLER 2
+#define CLIENT 3		/* General to clients, like sendjob or so */
 
 #define SLAVEDELAY 15		/* Delay between each loop on the slave */
-#define MAXJOBS 100		/* Maximum number of jobs */
+#define MAXJOBS 2		/* Maximum number of jobs */
 #define MAXCOMPUTERS 100	/* Maximum number of computers */
 #define MASTERPORT 1234		/* Master listening port */
 #define SLAVEPORT 2345		/* Slave listening port */
@@ -21,6 +23,8 @@
 #define MASTERCCHECKSDELAY 10	/* Delay between every consistency check */
 #define MAXTIMENOCONN 30	/* If this time is exceeded without connecting to the */
                                 /* master the computer is erased from the db */
+#define MAXFRAMES 1024		/* Maximum number of frames / 8 (so the real maximum is 8192) */
+				/* cause I use 1 bit for each frame */
 
 #endif /* _CONSTANTS_H_ */
 
