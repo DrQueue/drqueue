@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.37 2001/10/04 08:29:51 jorge Exp $ */
+/* $Id: communications.c,v 1.38 2001/10/08 15:02:18 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -332,12 +332,6 @@ int send_computer_status (int sfd, struct computer_status *status)
 #ifdef COMM_REPORT
   bsent += w;
 #endif
-
-  /* NOTE : if task.ntasks is different from the real number of used==1 tasks then... there could be problems. */
-  /* In case the ntasks < real.ntasks : the sending process will write on a closed socket. So it will fail and return 0 */
-  /* If ntasks > real.ntasks : the receiving process will keep waiting for the rest of the tasks and then receive an */
-  /*                           alarm signal. Or maybe it will notice that it's trying to read from a closed socket and so */
-  /*                           will return error, again. */
 
   /* We just send the used tasks */
   for (i=0;i<MAXTASKS;i++) {
