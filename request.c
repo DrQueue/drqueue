@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.65 2001/11/21 10:16:05 jorge Exp $ */
+/* $Id: request.c,v 1.66 2001/11/23 14:43:23 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -2137,12 +2137,12 @@ void handle_r_r_slavexit (int sfd,struct database *wdb,int icomp,struct request 
 
   semaphore_lock (wdb->semid);
 
-  if (!computer_index_correct_master (wdb,icomp2))
+  if (!computer_index_correct_master (wdb,icomp2)) {
+    semaphore_release (wdb->semid);
     return;
-
-  if (wdb->computer[icomp2].used) {
-    wdb->computer[icomp2].used = 0;
   }
+
+  wdb->computer[icomp2].used = 0;
 
   semaphore_release (wdb->semid);
 
