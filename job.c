@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.18 2001/08/27 08:15:04 jorge Exp $ */
+/* $Id: job.c,v 1.19 2001/08/27 14:13:43 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -132,13 +132,36 @@ char *job_status_string (char status)
   return sstring;
 }
 
-int job_nframes (struct job *job)
+char *job_frame_status_string (char status)
 {
-  int n;
+  static char sstring[BUFFERLEN];
 
-  n = job->frame_start - job->frame_end;
-  n = (n<0) ? -n : n;
-  n++;
+  sstring[MAXCMDLEN-1] = 0;
+  switch (status) {
+  case FS_WAITING:
+    strncpy (sstring,"Waiting",BUFFERLEN-1);
+    break;
+  case FS_ASSIGNED:
+    strncpy (sstring,"Running",BUFFERLEN-1);
+    break;
+  case FS_ERROR:
+    strncpy (sstring,"Error",BUFFERLEN-1);
+    break;
+  case FS_FINISHED:
+    strncpy (sstring,"Finished",BUFFERLEN-1);
+    break;
+  default:
+    strncpy (sstring,"DEFAULT (?!)",BUFFERLEN-1);
+  }
+
+  return sstring;
+}
+
+uint32_t job_nframes (struct job *job)
+{
+  uint32_t n;
+
+  n = (job->frame_end - job->frame_start + 1) / job->frame_step;
 
   return n;
 }
@@ -432,4 +455,26 @@ void job_frame_waiting (struct database *wdb,uint32_t ijob, int iframe)
   fi[iframe].status = FS_WAITING;
   detach_frame_shared_memory(fi);
   semaphore_release(wdb->semid);
+}
+
+uint32_t job_frame_index_to_number (struct job *job,uint32_t index)
+{
+  return (job->frame_start + (index * job->frame_step)); 
+}
+
+uint32_t job_frame_number_to_index (struct job *job,uint32_t number)
+{
+  return ((number - job->frame_start) / job->frame_step); 
+}
+
+int job_frame_number_correct (struct job *job,uint32_t number)
+{
+  if (number > job->frame_end)
+    return 0;
+  if (number < job->frame_start)
+    return 0;
+  if (((number - job->frame_start) % job->frame_step) != 0)
+    return 0;
+
+  return 1;
 }
