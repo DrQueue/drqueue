@@ -187,8 +187,10 @@ void drqm_update_computerlist (struct drqm_computers_info *info)
 	      info->computers[i].status.loadavg[2]);
     gtk_clist_append(GTK_CLIST(info->clist),buff);
 		gtk_clist_set_row_data (GTK_CLIST(info->clist),i,(gpointer)info->computers[i].hwinfo.id);
-  }
+		computer_pool_free(&info->computers[i].limits);
+	}
   gtk_clist_thaw(GTK_CLIST(info->clist));
+
 
   for(i=0;i<ncols;i++)
     g_free (buff[i]);
@@ -535,6 +537,7 @@ int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
 		}
 		gtk_label_set_text (GTK_LABEL(info->cdd.limits.lpools),msg);
 		computer_pool_detach_shared_memory(pool);
+		computer_pool_free(&info->computers[info->row].limits);
 	} else {
 		gtk_label_set_text (GTK_LABEL(info->cdd.limits.lpools),"WARNING: This computer doesn't belong to any pool");
 	}
@@ -902,7 +905,16 @@ void cdd_limits_pool_refresh_pool_list (GtkWidget *bclicked, struct drqm_compute
 	int i;
 
 	gtk_list_store_clear (GTK_LIST_STORE(store));
-	cdd_update(bclicked,info);
+	// cdd_update(bclicked,info);
+	// Because cdd_update removes the list of pools from shared memory
+  if (!request_comp_xfer(info->icomp,&info->computers[info->row],CLIENT)) {
+    if (drerrno == DRE_NOTREGISTERED) {
+      fprintf (stderr,"Not registered anymore !\n");
+    } else {
+      fprintf (stderr,"Error request computer xfer: %s\n",drerrno_str());
+    }
+    return;
+  }
 	if (info->computers[info->row].limits.npools) {
 		struct pool *pool;
 		pool = computer_pool_attach_shared_memory(info->computers[info->row].limits.poolshmid);
@@ -913,6 +925,7 @@ void cdd_limits_pool_refresh_pool_list (GtkWidget *bclicked, struct drqm_compute
 													-1);
 		}
 		computer_pool_detach_shared_memory(pool);
+		computer_pool_free(&info->computers[info->row].limits);
 	}
 }
 
