@@ -1,3 +1,213 @@
+2005-02-18 17:10:06  kraken
+
+	* Changed paths:
+	   M /trunk/drqueue/README.windows
+	   M /trunk/drqueue/contrib/windows/Controller/Form1.cs
+	   M /trunk/drqueue/contrib/windows/Controller/ServicesController.Form1.resources.src.gz
+	   M /trunk/drqueue/contrib/windows/Controller/ServicesController.prjx
+	   M /trunk/drqueue/drqman/drqm_cygwin.c
+	   M /trunk/drqueue/drqman/drqm_cygwin.h
+	   M /trunk/drqueue/drqman/drqm_jobs_jdd.c
+	   M /trunk/drqueue/drqman/drqm_jobs_maya.h
+
+	* Added viewing command for windows version
+	* Windows controller will now quit on demand, and not block windows when shutdown
+
+2005-02-11 15:53:47  kraken
+
+	* Changed paths:
+	   M /trunk/drqueue/Makefile
+	   M /trunk/drqueue/common.c
+	   M /trunk/drqueue/contrib/windows/Controller/Form1.cs
+	   M /trunk/drqueue/contrib/windows/Controller/ServicesController.Form1.resources.src.gz
+	   M /trunk/drqueue/contrib/windows/Services/Service-master/Service.cs
+	   M /trunk/drqueue/master.h
+
+	* Fixed windows version master with SP2
+
+2005-02-11 14:41:08  kraken
+
+	* Changed paths:
+	   M /trunk/drqueue/contrib/windows/Controller/Form1.cs
+	   M /trunk/drqueue/contrib/windows/Controller/ServicesController.Form1.resources.src.gz
+
+	* Windows controller is disabled by default
+
+2005-02-11 14:35:11  kraken
+
+	* Changed paths:
+	   M /trunk/drqueue/contrib/windows/Controller/ServicesController.Form1.resources.src.gz
+	   M /trunk/drqueue/slave.c
+
+	* Forgot to remove temporary code for windows version in slave
+
+2005-02-11 14:31:52  kraken
+
+	* Changed paths:
+	   M /trunk/drqueue/master.c
+	   M /trunk/drqueue/slave.c
+
+	* fix in windows version, now works with SP2
+
+2005-02-09 18:08:44  kraken
+
+	* Changed paths:
+	   M /trunk/drqueue/computer_status.c
+	   M /trunk/drqueue/contrib/windows/Controller/Form1.cs
+	   M /trunk/drqueue/contrib/windows/Controller/ServicesController.Form1.resources.src.gz
+	   M /trunk/drqueue/contrib/windows/build_services.sh
+
+	* Changed windows services controller interface
+
+2005-02-06 01:33:50  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/drqman/drqm_info.c
+
+	* Credits edited on drqman
+
+2005-02-06 01:32:04  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/drqman/Makefile
+	   M /trunk/drqueue/drqman/drqm_cygwin.c
+
+	* Cygwin bugfix
+
+2005-02-05 20:48:28  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/drqman/drqm_jobs_3delight.c
+	   M /trunk/drqueue/drqman/drqm_jobs_blender.c
+	   M /trunk/drqueue/drqman/drqm_jobs_bmrt.c
+	   M /trunk/drqueue/drqman/drqm_jobs_mentalray.c
+	   M /trunk/drqueue/drqman/drqm_jobs_pixie.c
+
+	* CYGWIN instead of __CYGWIN bug
+
+2005-02-05 20:22:42  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/drqman/Makefile
+
+	* Makefile bug
+
+2005-02-04 16:31:59  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   R /trunk/drqueue/contrib/windows/Controller/ServicesController.Form1.resources.src.gz
+
+	* Added ServicesController resources files
+
+2005-02-04 13:22:40  kraken
+
+	* Changed paths:
+	   D /trunk/drqueue/contrib/windows/Controller/ServicesController.Form1.resources
+	   A /trunk/drqueue/contrib/windows/Controller/ServicesController.Form1.resources.src.gz
+	   M /trunk/drqueue/contrib/windows/build_services.sh
+
+	* Add gz resource as it is corrupted by svn
+
+2005-02-04 12:58:32  kraken
+
+	* Changed paths:
+	   A /trunk/drqueue/contrib/windows/Controller/ServicesController.Form1.resources
+
+	* fixes in windows controller ressources
+
+2005-02-04 12:57:11  kraken
+
+	* Changed paths:
+	   M /trunk/drqueue/Makefile
+	   M /trunk/drqueue/contrib/windows/Controller/Form1.cs
+	   D /trunk/drqueue/contrib/windows/Controller/ServicesController.Form1.resources
+	   M /trunk/drqueue/contrib/windows/Controller/ServicesController.prjx
+	   A /trunk/drqueue/contrib/windows/Resources/Makefile
+	   M /trunk/drqueue/contrib/windows/Resources/drqueue.rc
+	   D /trunk/drqueue/contrib/windows/Resources/drqueue.res
+	   A /trunk/drqueue/contrib/windows/Resources/led-off.ico
+	   A /trunk/drqueue/contrib/windows/Resources/led-on.ico
+
+	* Fixes in windows resources
+
+2005-02-04 11:31:28  kraken
+
+	* Changed paths:
+	   M /trunk/drqueue/Makefile
+	   M /trunk/drqueue/contrib/windows/Controller/Form1.cs
+	   M /trunk/drqueue/contrib/windows/Controller/ServicesController.Form1.resources
+	   M /trunk/drqueue/contrib/windows/Controller/ServicesController.prjx
+	   M /trunk/drqueue/contrib/windows/Installer/installer.nsi
+	   M /trunk/drqueue/contrib/windows/Resources/drqueue.res
+	   M /trunk/drqueue/drqman/Makefile
+	   A /trunk/drqueue/drqman/drqm_cygwin.c
+	   A /trunk/drqueue/drqman/drqm_cygwin.h
+	   M /trunk/drqueue/drqman/drqm_jobs_maya.c
+
+	* Fix in windows controller resources problem
+	* Added dotnet installation url in windows installer
+	* Fixed Makefile for resource generation
+	* Added native filedialog in windows vesrion
+
+2005-02-02 17:50:41  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/drqman/drqm_jobs_maya.c
+
+	* Christian Boustany bugfix on maya koj renderdir selection
+
+2005-02-01 22:37:29  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/Makefile
+
+	* Problem with Madrake 10.0 with libwrap
+
+2005-02-01 12:08:53  kraken
+
+	* Changed paths:
+	   M /trunk/drqueue/contrib/windows/Installer/installer.nsi
+	   A /trunk/drqueue/contrib/windows/Resources
+	   A /trunk/drqueue/contrib/windows/Resources/drqueue.ico
+	   A /trunk/drqueue/contrib/windows/Resources/drqueue.rc
+	   A /trunk/drqueue/contrib/windows/Resources/drqueue.res
+	   M /trunk/drqueue/drqman/Makefile
+	   M /trunk/drqueue/drqman/drqm_info.c
+	   M /trunk/drqueue/drqman/drqm_jobs_jdd.c
+	   M /trunk/drqueue/drqman/drqm_jobs_maya.h
+	   M /trunk/drqueue/drqman/drqm_jobs_mentalray.h
+	   M /trunk/drqueue/etc/blender.sg
+	   A /trunk/drqueue/etc/drqman-windows.rc
+	   M /trunk/drqueue/etc/maya.sg
+	   M /trunk/drqueue/etc/mentalray.sg
+
+	* Added gtk message and reboot question in windows installer.
+	* Added windows icon resource file.
+	* Disabled view frame under windows (can't work, not same path).
+	* Added windows support to sg scripts (maya, blender, mentalray).
+	* Added windows gtk theme.
+
+2005-01-31 21:24:47  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/Revision
+
+	* New Revision commited by build_package.sh
+
+2005-01-31 21:24:39  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/ChangeLog
+
+	* ChangeLog commited by build_package.sh
+
+2005-01-31 21:24:31  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/common.h
+
+	* New version number on common.h: 0.59.2
+
 2005-01-31 19:49:42  kraken
 
 	* Changed paths:
