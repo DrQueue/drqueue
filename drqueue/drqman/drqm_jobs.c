@@ -78,7 +78,9 @@ static GtkWidget *dnj_flags_widgets (struct drqm_jobs_info *info);
 static void dnj_flags_cbmailnotify_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info);
 static void dnj_flags_cbdifemail_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info);
 static void dnj_flags_cbjobdepend_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info);
-static void dnj_flags_bjobdepend_clicked (GtkWidget *button, struct drqm_jobs_info *info);
+static void dnj_flags_bjobdepend_clicked (GtkWidget *bclicked, struct drqm_jobs_info *info);
+static void dnj_flags_jdepend_refresh_job_list (GtkWidget *bclicked, struct drqm_jobs_info *info);
+static void dnj_flags_jdepend_accept (GtkWidget *bclicked, struct drqm_jobs_info *info);
 
 /* JOB ACTIONS */
 static GtkWidget *DeleteJobDialog (struct drqm_jobs_info *info);
@@ -1296,21 +1298,113 @@ GtkWidget *dnj_flags_widgets (struct drqm_jobs_info *info)
   return (frame);
 }
 
-void dnj_flags_bjobdepend_clicked (GtkWidget *button, struct drqm_jobs_info *info)
+void dnj_flags_jdepend_refresh_job_list (GtkWidget *bclicked, struct drqm_jobs_info *info)
+{
+	GtkListStore *store = info->dnj.flags.store;
+	GtkTreeIter iter;
+	int i;
+
+	update_joblist(bclicked,info);
+	for (i=0; i < info->njobs; i++) {
+		gtk_list_store_append (store,&iter);
+		gtk_list_store_set (store, &iter,
+												DNJ_FLAGS_DEPEND_COL_ID, info->jobs[i].id,
+												DNJ_FLAGS_DEPEND_COL_NAME, info->jobs[i].name,
+												-1);
+	}
+}
+
+void dnj_flags_bjobdepend_clicked (GtkWidget *bclicked, struct drqm_jobs_info *info)
 {
 	GtkWidget *dialog;
 	GtkWidget *swindow;
+	GtkWidget *button;
+
+	// TreeView stuff
+	GtkCellRenderer *renderer;
+	GtkTreeModel *model;
+	GtkWidget *view;
+	// Store
+	GtkListStore *store;
 
 	dialog = gtk_dialog_new();
 	gtk_window_set_title (GTK_WINDOW(dialog),"List of jobs");
+	gtk_window_set_default_size (GTK_WINDOW(dialog),300,200);
 
 	swindow = gtk_scrolled_window_new (NULL,NULL);
+	// Scrolled window
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(swindow),GTK_POLICY_AUTOMATIC,GTK_POLICY_AUTOMATIC);
-	gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox),swindow);
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),swindow,TRUE,TRUE,2);
+	// Refresh button
+	button = gtk_button_new_with_label("Refresh");
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),button,FALSE,FALSE,2);
+	g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(dnj_flags_jdepend_refresh_job_list),info);
+
+
+	// The view
+	view = gtk_tree_view_new();
+	info->dnj.flags.view = GTK_TREE_VIEW (view);
+	gtk_container_add(GTK_CONTAINER(swindow),view);
+	
+
+
+	// Column 1
+	renderer = gtk_cell_renderer_text_new();
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW(view),
+																							 -1,
+																							 "Job Id",
+																							 renderer,
+																							 "text",DNJ_FLAGS_DEPEND_COL_ID,
+																							 NULL);
+	// Column 2
+	renderer = gtk_cell_renderer_text_new();
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW(view),
+																							 -1,
+																							 "Name",
+																							 renderer,
+																							 "text",DNJ_FLAGS_DEPEND_COL_NAME,
+																							 NULL);
+	
+	// Store & TreeView
+	store = gtk_list_store_new (DNJ_FLAGS_DEPEND_NUM_COLS,G_TYPE_UINT, G_TYPE_STRING);
+	info->dnj.flags.store = store;
+	model = GTK_TREE_MODEL (store);
+	gtk_tree_view_set_model (GTK_TREE_VIEW(view),model);
+	g_object_unref (model);
+
+	// Accept
+	button = gtk_button_new_with_label ("Accept");
+	gtk_box_pack_end(GTK_BOX(GTK_DIALOG(dialog)->action_area),button,TRUE,TRUE,2);
+	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(dnj_flags_jdepend_accept),info);
+	g_signal_connect_swapped(G_OBJECT(button),"clicked",G_CALLBACK(gtk_widget_destroy),dialog);
+	// Cancel
+	button = gtk_button_new_with_label ("Cancel");
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->action_area),button,TRUE,TRUE,2);
+	g_signal_connect_swapped(G_OBJECT(button),"clicked",G_CALLBACK(gtk_widget_destroy),dialog);
+	
+	dnj_flags_jdepend_refresh_job_list(button,info);
 
 	gtk_widget_show_all (dialog);
 
 	gtk_grab_add (dialog);
+}
+
+void dnj_flags_jdepend_accept (GtkWidget *bclicked, struct drqm_jobs_info *info)
+{
+	GtkTreeSelection *selection = NULL;
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+
+	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(info->dnj.flags.view));
+
+	if (gtk_tree_selection_get_selected (selection,&model,&iter)) {
+		uint32_t jobid;
+		char buf[BUFFERLEN];
+
+		gtk_tree_model_get (GTK_TREE_MODEL(model),&iter,DNJ_FLAGS_DEPEND_COL_ID,&jobid,-1);
+		snprintf(buf,BUFFERLEN,"%u",jobid);
+		gtk_entry_set_text (GTK_ENTRY(info->dnj.flags.ejobdepend),buf);
+	}
 }
 
 void dnj_flags_cbjobdepend_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info)
