@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.26 2001/09/05 12:49:36 jorge Exp $ */
+/* $Id: job.c,v 1.27 2001/09/05 12:56:08 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -194,7 +194,7 @@ int job_first_frame_available (struct database *wdb,uint32_t ijob)
   /* This function is called unlocked */
   int i;
   int r = -1;
-  int nframes; = job_nframes (&wdb->job[ijob]);
+  int nframes;
   struct frame_info *fi;
 
   semaphore_lock(wdb->semid);
@@ -502,7 +502,7 @@ void job_frame_waiting (struct database *wdb,uint32_t ijob, int iframe)
     return;
 
   if (!job_frame_number_correct(&wdb->job[ijob],job_frame_index_to_number(&wdb->job[ijob],iframe)))
-    return
+    return;
 
   fi = attach_frame_shared_memory(wdb->job[ijob].fishmid);
   fi[iframe].status = FS_WAITING;
