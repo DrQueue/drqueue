@@ -33,10 +33,3 @@ DRQMAN
 * Autorefresh configurable
 * Watching the output logs as tail -f does.
 * Names of computers instead of id numbers.
-
-BUGS:
-----
-
-* In the new job dialog I cannot justify the labels to the left
-* When I delete a job from the detailed job information dialog the windows isn't closed after.
-* You need to hit refresh after a hard stop.
