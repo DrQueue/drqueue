@@ -28,11 +28,11 @@ else
    MAKE = make
   else
    ifeq ($(systype),FreeBSD)
-    CFLAGS = -Wall -I.. -D__LINUX -g `pkg-config --cflags gtk+-2.0` -O2
+    CFLAGS = -Wall -I.. -D__FREEBSD -g `pkg-config --cflags gtk+-2.0` -O2
     LDFLAGS = `pkg-config --libs gtk+-2.0`
     MAKE = gmake
    else
-$(error Cannot make DrQueueManger -- systype "$(systype)" is unknown)
+$(error Cannot make DrQueueManager -- systype "$(systype)" is unknown)
    endif
   endif
  endif	
@@ -46,7 +46,7 @@ endif
 
 #abstract make targets
 
-.PHONY: clean irix linux tags
+.PHONY: clean tags
 
 all: drqman
 
