@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.22 2001/08/28 09:00:15 jorge Exp $ */
+/* $Id: communications.c,v 1.23 2001/08/29 10:14:49 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -29,7 +29,7 @@ int get_socket (short port)
   sfd = socket (PF_INET,SOCK_STREAM,0);
   if (sfd == -1) {
     perror ("socket");
-    exit (1);
+    kill (0,SIGINT);
   } else {
     if (setsockopt(sfd,SOL_SOCKET,SO_REUSEADDR,(int *)&opt,sizeof(opt)) == -1) {
       perror ("setsockopt");
