@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.47 2001/11/13 09:50:02 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.48 2001/11/13 15:52:18 jorge Exp $
  */
 
 #include <string.h>
@@ -1079,20 +1079,7 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
 	   info->jobs[info->row].ffailed);
   gtk_label_set_text (GTK_LABEL(info->jdd.lfrldf),msg);
 
-  if ((info->jobs[info->row].avg_frame_time / 3600) > 0) {
-    snprintf(msg,BUFFERLEN-1,"%li hours %li minutes %li seconds",
-	     info->jobs[info->row].avg_frame_time / 3600,
-	     (info->jobs[info->row].avg_frame_time % 3600) / 60,
-	     (info->jobs[info->row].avg_frame_time % 3600) % 60);
-  } else if ((info->jobs[info->row].avg_frame_time / 60) > 0) {
-    snprintf(msg,BUFFERLEN-1,"%li minutes %li seconds",
-	     (info->jobs[info->row].avg_frame_time) / 60,
-	     (info->jobs[info->row].avg_frame_time) % 60);
-  } else {
-    snprintf(msg,BUFFERLEN-1,"%li seconds",
-	     info->jobs[info->row].avg_frame_time);
-  }
-  gtk_label_set_text (GTK_LABEL(info->jdd.lavgt),msg);
+  gtk_label_set_text (GTK_LABEL(info->jdd.lavgt),time_str(info->jobs[info->row].avg_frame_time));
   
   snprintf(msg,BUFFERLEN-1,"%s",ctime(&info->jobs[info->row].est_finish_time));
   buf = strchr (msg,'\n');
