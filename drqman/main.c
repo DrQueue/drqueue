@@ -16,9 +16,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-/* 
- * $Header: /root/cvs/drqueue/drqman/main.c,v 1.8 2001/11/23 11:51:41 jorge Exp $
- */
+// $Id$
+//
 
 #include <stdlib.h>
 #include <gtk/gtk.h>
@@ -33,12 +32,15 @@ void drqman_config_parse (char *cfg);
 static struct info_drqm info;
 char conf[PATH_MAX];
 
+#define DRQMAN_CONF_FILE "/etc/drqueue/drqman.conf"
+
 int main (int argc, char *argv[])
 {
   GtkWidget *window;
   GtkWidget *main_vbox;
   char rc_file[MAXCMDLEN];
 
+	strncpy (conf,DRQMAN_CONF_FILE,PATH_MAX);
 	drqman_config_parse(conf);
 	set_default_env();  // Config files overrides environment CHANGE (?)
 

@@ -65,6 +65,8 @@ int main (int argc, char *argv[])
   time(&tstart);
 #endif
 
+	strncpy (conf,MASTER_CONF_FILE,PATH_MAX);
+
   master_get_options (&argc,&argv,&force);
 
 	// Read the config file after reading the arguments, as those may change

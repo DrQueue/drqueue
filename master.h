@@ -25,6 +25,8 @@
 
 #define KEY_MASTER "%s/master"	/* Key for shared memory and semaphores */
 
+#define MASTER_CONF_FILE "/etc/drqueue/master.conf"
+
 extern int phantom[2];
 
 void master_get_options (int *argc,char ***argv, int *force);
