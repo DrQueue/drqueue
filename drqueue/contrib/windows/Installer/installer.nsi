@@ -37,7 +37,7 @@ Page custom SetCustom ValidateCustom
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
 ; Finish page
-!define MUI_FINISHPAGE_RUN "$INSTDIR\contrib\ServicesController.exe"
+#define MUI_FINISHPAGE_RUN "$INSTDIR\contrib\ServicesController.exe"
 !insertmacro MUI_PAGE_FINISH
 
 ; Uninstaller pages
@@ -264,8 +264,9 @@ Section Uninstall
   Delete "$SMPROGRAMS\drqueue\Website.lnk"
   Delete "$SMPROGRAMS\drqueue\slave.conf.lnk"
   Delete "$SMPROGRAMS\drqueue\drqman.conf.lnk"
-  Delete "$DESKTOP\drqman.lnk"
   Delete "$SMPROGRAMS\drqueue\drqman.lnk"
+  Delete "$SMPROGRAMS\drqueue\drqueue-services.lnk"
+  Delete "$DESKTOP\drqueue-services.lnk"
   Delete "$SMSTARTUP\drqueue-services.lnk"
 
   RMDir "$SMPROGRAMS\drqueue"
