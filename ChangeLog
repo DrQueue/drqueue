@@ -1,3 +1,63 @@
+2004-10-18 01:31:39  Rev 842    jorge
+
+	* common.h:
+	  New version number on common.h: 0.51.3
+
+2004-10-18 01:30:03  Rev 841    jorge
+
+	* request.c:
+	  Bugfix. host deletion from blocked list did not work properly
+
+2004-10-18 01:26:23  Rev 840    jorge
+
+	* communications.c:
+	  Minor bugfix
+
+2004-10-18 00:50:49  Rev 839    jorge
+
+	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
+	  Now you can add hosts to the block list from drqman.
+
+2004-10-17 23:44:27  Rev 838    jorge
+
+	* drqman/drqm_jobs.c:
+	  Removal of blocked hosts from drqman working
+
+2004-10-17 23:28:34  Rev 837    jorge
+
+	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
+	  Added popup menu on blocked host list. Added menu item to delete the host from the list.
+
+2004-10-17 22:16:40  Rev 836    jorge
+
+	* TODO:
+	  Updated TODO
+
+2004-10-17 19:04:17  Rev 835    jorge
+
+	* README:
+	  Added README
+
+2004-10-17 15:45:59  Rev 834    jorge
+
+	* TODO:
+	  Updated TODO
+
+2004-10-17 15:05:06  Rev 833    jorge
+
+	* Makefile:
+	  Added blockhost to the installation
+
+2004-10-17 14:08:43  Rev 832    jorge
+
+	* Revision:
+	  New Revision commited by build_package.sh
+
+2004-10-17 14:08:11  Rev 830    jorge
+
+	* ChangeLog:
+	  Changelog commited by build_package.sh
+
 2004-10-17 14:07:45  Rev 829    jorge
 
 	* common.h:
