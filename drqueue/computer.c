@@ -252,7 +252,9 @@ int computer_pool_get_shared_memory (int npools)
 {
 	int shmid;
 					  
+	fprintf(stderr,"Allocating space for %i pools\n", npools);
 	if ((shmid = shmget (IPC_PRIVATE,sizeof(struct pool)*npools, IPC_EXCL|IPC_CREAT|0600)) == -1) {
+		perror ("shmget");
 		drerrno = DRE_GETSHMEM;
 		return shmid;
 	}
@@ -296,21 +298,23 @@ int computer_pool_add (struct computer_limits *cl, char *pool)
 	if (cl->npools && 
 			((opool = computer_pool_attach_shared_memory(cl->poolshmid)) == (void *) -1))
 	{
+		fprintf (stderr,"Could not attach old shared memory\n");
 		return 0;
 	}
 	
-	if ((npoolshmid = computer_pool_get_shared_memory(sizeof(struct pool)*(cl->npools+1))) == -1) {
-		drerrno = DRE_GETSHMEM;
+	if ((npoolshmid = computer_pool_get_shared_memory(cl->npools+1)) == -1) {
+		fprintf (stderr,"Could not get new shared memory (npools = %i)\n",cl->npools+1);
 		return 0;
 	}
 
 	if ((npool = computer_pool_attach_shared_memory(npoolshmid)) == (void *) -1) {
-		drerrno = DRE_ATTACHSHMEM;
+		fprintf (stderr,"Could not attach old shared memory\n");
 		return 0;
 	}
 	
 	if ((cl->npools) && (opool != (void*) -1)) {
 		memcpy (npool,opool,sizeof (struct pool) * cl->npools);
+		fprintf (stderr,"Copied %i pools\n",cl->npools);
 		computer_pool_detach_shared_memory (opool);
 		if (shmctl (cl->poolshmid,IPC_RMID,NULL) == -1) {
 			drerrno = DRE_RMSHMEM;
@@ -321,6 +325,8 @@ int computer_pool_add (struct computer_limits *cl, char *pool)
 	cl->poolshmid = npoolshmid;
 	strncpy (npool[cl->npools].name,pool,MAXNAMELEN-1);
 	cl->npools++;
+
+	fprintf(stderr,"New number of pools: %i\n",cl->npools);
 
 	return 1;
 }
@@ -346,7 +352,7 @@ void computer_pool_remove (struct computer_limits *cl, char *pool)
 		return;
 	}
 	
-	if ((npoolshmid = computer_pool_get_shared_memory(sizeof(struct pool)*(cl->npools-1))) == -1) {
+	if ((npoolshmid = computer_pool_get_shared_memory(cl->npools-1)) == -1) {
 		return;
 	}
 
