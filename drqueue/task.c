@@ -1,4 +1,4 @@
-/* $Id: task.c,v 1.13 2003/12/18 04:11:07 jorge Exp $ */
+/* $Id: task.c,v 1.14 2004/04/26 16:25:51 jorge Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -91,32 +91,36 @@ void task_environment_set (struct task *task)
 
   /* Padded frame number */
   /* TODO: make padding length user defined */
-  snprintf (padframe,BUFFERLEN,"PADFRAME=%04i",task->frame);
+  snprintf (padframe,BUFFERLEN,"DRQUEUE_PADFRAME=%04i",task->frame);
   putenv (padframe);
   /* Frame number */
-  snprintf (frame,BUFFERLEN,"FRAME=%u",task->frame);
+  snprintf (frame,BUFFERLEN,"DRQUEUE_FRAME=%u",task->frame);
   putenv (frame);
   /* Owner of the job */
-  snprintf (owner,BUFFERLEN-1,"OWNER=%s",task->owner);
+  snprintf (owner,BUFFERLEN-1,"DRQUEUE_OWNER=%s",task->owner);
   putenv (owner);
   /* Start, end and step frame numbers */
-  snprintf (frame_start,BUFFERLEN-1,"STARTFRAME=%u",task->frame_start);
+  snprintf (frame_start,BUFFERLEN-1,"DRQUEUE_STARTFRAME=%u",task->frame_start);
   putenv (frame_start);
-  snprintf (frame_end,BUFFERLEN-1,"ENDFRAME=%u",task->frame_end);
+  snprintf (frame_end,BUFFERLEN-1,"DRQUEUE_ENDFRAME=%u",task->frame_end);
   putenv (frame_end);
-  snprintf (frame_step,BUFFERLEN-1,"STEPFRAME=%u",task->frame_step);
+  snprintf (frame_step,BUFFERLEN-1,"DRQUEUE_STEPFRAME=%u",task->frame_step);
   putenv (frame_step);
 	/* Block size */
-  snprintf (block_size,BUFFERLEN-1,"BLOCKSIZE=%u",task->block_size);
+  snprintf (block_size,BUFFERLEN-1,"DRQUEUE_BLOCKSIZE=%u",task->block_size);
   putenv (block_size);
 
   /* Job Index */
-  snprintf (ijob,BUFFERLEN-1,"JOBID=%i",task->ijob);
+  snprintf (ijob,BUFFERLEN-1,"DRQUEUE_JOBID=%i",task->ijob);
   putenv (ijob);
 
   /* OS */
-#ifdef __LINUX
+#if defined(__LINUX)
   putenv ("DRQUEUE_OS=LINUX");
+#elif defined(__FREEBSD)
+  putenv ("DRQUEUE_OS=FREEBSD");
+#elif defined(__OSX)
+  putenv ("DRQUEUE_OS=OSX");
 #else
   putenv ("DRQUEUE_OS=IRIX");
 #endif

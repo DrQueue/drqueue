@@ -1,4 +1,4 @@
-/* $Id: computer_info.c,v 1.13 2004/01/23 03:28:00 jorge Exp $ */
+/* $Id: computer_info.c,v 1.14 2004/04/26 16:25:51 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -8,6 +8,9 @@
 #include <signal.h>
 #ifdef __IRIX
 #include <sys/sysmp.h>
+#endif
+#ifdef __FREEBSD
+#include <sys/sysctl.h>
 #endif
 
 #include "constants.h"
@@ -259,8 +262,55 @@ int get_numproc (void)
 
 	return nprocs;
 }
-#  else 
-#   error You need to define the OS, or OS defined not supported
+#  else
+#   ifdef __FREEBSD
+void get_hwinfo (struct computer_hwinfo *hwinfo)
+{
+  size_t bl;
+  int sysctl_data;
+  char buffer[128];
+
+  if (gethostname (hwinfo->name,MAXNAMELEN-1) == -1) {
+    perror ("get_hwinfo: gethostname");
+    kill(0,SIGINT);
+  }
+#if defined(__i386__)
+  hwinfo->arch = ARCH_INTEL;
+  bl=128;
+  sysctlbyname("hw.model", &buffer,&bl,NULL,0);
+
+  if (strstr(buffer,"Pentium 4")) {
+    hwinfo->proctype = PROCTYPE_PENTIUM4;
+  } else if (strstr(buffer,"Pentium III")) {
+    hwinfo->proctype = PROCTYPE_PENTIUMIII;
+  } else if (strstr(buffer,"Pentium II")) {
+    hwinfo->proctype = PROCTYPE_PENTIUMII;
+  } else if (strstr(buffer,"K6")) {
+    hwinfo->proctype = PROCTYPE_ATHLON;
+  } else {
+    hwinfo->proctype = PROCTYPE_PENTIUM;
+  }
+#else
+  //Since BSD Runs on Aplhas and a variety of other architectures
+  hwinfo->arch = ARCH_UNKNOWN;
+  hwinfo->proctype = PROCTYPE_UNKNOWN;
+#endif
+  hwinfo->os = OS_FREEBSD;
+
+  bl=4;
+  sysctlbyname("machdep.tsc_freq", &sysctl_data,&bl,NULL,0);
+  hwinfo->procspeed = (sysctl_data+500000)/1000000;
+
+  bl=4;
+  sysctlbyname("hw.ncpu", &sysctl_data,&bl,NULL,0);
+  hwinfo->ncpus = sysctl_data;
+  hwinfo->speedindex = get_speedindex (hwinfo);
+}
+
+
+#   else 
+#    error You need to define the OS, or OS defined not supported
+#   endif // __FREEBSD
 #  endif // __OSX
 # endif // __IRIX
 #endif // __LINUX
@@ -305,8 +355,11 @@ char *osstring (t_os os)
     msg = "Windows";
     break;
   case OS_OSX:
-		msg = "Mac OSX";
-		break;
+    msg = "Mac OSX";
+    break;
+  case OS_FREEBSD:
+    msg = "FreeBSD";
+    break;
   default:
     msg = "DEFAULT (ERROR)";
     fprintf (stderr,"os == DEFAULT\n");
@@ -329,9 +382,9 @@ char *archstring (t_arch arch)
   case ARCH_MIPS:
     msg = "Mips (Big Endian)";
     break;
-	case ARCH_PPC:
-		msg = "PowerPC";
-		break;
+  case ARCH_PPC:
+    msg = "PowerPC";
+    break;
   default:
     msg = "DEFAULT (ERROR)";
     fprintf (stderr,"arch == DEFAULT\n");
@@ -369,9 +422,9 @@ char *proctypestring (t_proctype proctype)
   case PROCTYPE_MIPSR10000:
     msg = "R10000";
     break;
-	case PROCTYPE_PPC:
-		msg = "PPC";
-		break;
+  case PROCTYPE_PPC:
+    msg = "PPC";
+    break;
   default:
     msg = "DEFAULT (ERROR)";
     fprintf (stderr,"proctype == DEFAULT\n");

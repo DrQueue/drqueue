@@ -1,4 +1,4 @@
-/* $Id: bmrtsg.c,v 1.1 2003/12/18 20:39:41 jorge Exp $ */
+/* $Id: bmrtsg.c,v 1.2 2004/04/26 16:25:51 jorge Exp $ */
 
 #include <stdio.h>
 #include <time.h>
@@ -34,7 +34,7 @@ char *bmrtsg_create (struct bmrtsgi *info)
 
   p = strrchr(info->scene,'/');
   p = ( p ) ? p+1 : info->scene;
-  snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,time(NULL));
+  snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
   if ((f = fopen (filename, "a")) == NULL) {
     if (errno == ENOENT) {
@@ -93,7 +93,7 @@ char *bmrtsg_create (struct bmrtsgi *info)
     fprintf(f,"echo So the default configuration will be used\n");
     fprintf(f,"echo -------------------------------------------------\n");
     fprintf(f,"\n\n");
-    fprintf(f,"echo rendrib -frames $FRAME $BLOCK\n\n");
+    fprintf(f,"echo rendrib -frames $DRQUEUE_FRAME $BLOCK\n\n");
   } else {
     fd_etc_bmrt_sg = fileno (etc_bmrt_sg);
     fd_f = fileno (f);

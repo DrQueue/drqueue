@@ -23,9 +23,9 @@
 #
 
 # Begin Script
-set BLOCK=`expr $FRAME + $BLOCKSIZE - 1`
-if ($BLOCK > $ENDFRAME) then
-	set BLOCK = $ENDFRAME;
+set BLOCK=`expr $DRQUEUE_FRAME + $BLOCKSIZE - 1`
+if ($BLOCK > $DRQUEUE_ENDFRAME) then
+	set BLOCK = $DRQUEUE_ENDFRAME;
 endif
 
 if ( $CUSTOM_CROP ) then
@@ -71,9 +71,9 @@ else
 endif
 
 
-echo "rendrib -frames $FRAME $BLOCK $crop_args $sample_args $stats_args $verbose_args $radiosity_args $rsamples_args $beep_args $SCENE"
+echo "rendrib -frames $DRQUEUE_FRAME $DRQUEUE_BLOCK $crop_args $sample_args $stats_args $verbose_args $radiosity_args $rsamples_args $beep_args $SCENE"
 
-rendrib -frames $FRAME $BLOCK $crop_args $sample_args $stats_args $verbose_args $radiosity_args $rsamples_args $beep_args $SCENE
+rendrib -frames $DRQUEUE_FRAME $DRQUEUE_BLOCK $crop_args $sample_args $stats_args $verbose_args $radiosity_args $rsamples_args $beep_args $SCENE
 
 # This should requeue the frame if failed
 if ( $? != 0 ) then
@@ -82,7 +82,7 @@ if ( $? != 0 ) then
 else
   # The frame was rendered properly
 	# We don't know the output image name. If we knew we could set this correctly
-  # chown_block $RF_OWNER $RD/$IMAGE $FRAME $FRAME 
+  # chown_block $RF_OWNER $RD/$IMAGE $DRQUEUE_FRAME $DRQUEUE_FRAME 
 endif
 
 #

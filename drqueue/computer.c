@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.38 2004/01/23 03:28:00 jorge Exp $ */
+/* $Id: computer.c,v 1.39 2004/04/26 16:25:51 jorge Exp $ */
 
 #include <sys/types.h>
 #include <netinet/in.h>
@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 #include <signal.h>
@@ -27,21 +28,22 @@ int computer_index_addr (void *pwdb,struct in_addr addr)
 
   if ((host = gethostbyaddr ((const void *)&addr.s_addr,sizeof (struct in_addr),AF_INET)) == NULL) {
     log_master (L_WARNING,"Could not resolve name for: %s",inet_ntoa(addr));
-    return -1;
+    name=inet_ntoa(addr);
+  } else {
+    if ((dot = strchr (host->h_name,'.')) != NULL) 
+      *dot = '\0';
+    /*      printf ("Name: %s\n",host->h_name); */
+    name = host->h_name;
+    while (host->h_aliases[i] != NULL) {
+      /*        printf ("Alias: %s\n",host->h_aliases[i]); */
+      i++;
+    }
+    while (*host->h_aliases != NULL) {
+      /*        printf ("Alias: %s\n",*host->h_aliases); */
+      host->h_aliases++;
+    }
   }
 
-  if ((dot = strchr (host->h_name,'.')) != NULL) 
-      *dot = '\0';
-  /*      printf ("Name: %s\n",host->h_name); */
-  name = host->h_name;
-  while (host->h_aliases[i] != NULL) {
-    /*        printf ("Alias: %s\n",host->h_aliases[i]); */
-    i++;
-  }
-  while (*host->h_aliases != NULL) {
-    /*        printf ("Alias: %s\n",*host->h_aliases); */
-    host->h_aliases++;
-  }
 
   semaphore_lock(((struct database *)pwdb)->semid);
   index = computer_index_name (pwdb,name);
