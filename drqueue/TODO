@@ -18,6 +18,8 @@ TO DO:
 BUGS:
 ----
 
+To check latest bugs check: http://www.drqueue.org/mantis/
+
 NOTES:
 -----
 
@@ -40,11 +42,3 @@ BUGS:
 * In the new job dialog I cannot justify the labels to the left
 * When I delete a job from the detailed job information dialog the windows isn't closed after.
 * You need to hit refresh after a hard stop.
-
-INSTALLATION NOTES:
-------------------
-
-1) Check that the master host resolves to the same point on both directions.
-2) The creation of the logs directory is not automatic
-3) Binaries on DRQUEUE_ROOT/bin
-4) DRQUEUE_ROOT/tmp directory
