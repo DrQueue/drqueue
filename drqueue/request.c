@@ -177,8 +177,12 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
 		handle_r_r_jobblkhost (sfd,wdb,icomp,&request);
 		break;
 	case R_R_JOBDELBLKHOST:
-		log_master (L_DEBUG,"Host block delete");
+		log_master (L_DEBUG,"Blocked host delete");
 		handle_r_r_jobdelblkhost (sfd,wdb,icomp,&request);
+		break;
+	case R_R_JOBLSTBLKHOST:
+		log_master (L_DEBUG,"Blocked hosts list");
+		handle_r_r_joblstblkhost (sfd,wdb,icomp,&request);
 		break;
   default:
     log_master (L_WARNING,"Unknown request");
@@ -2127,6 +2131,66 @@ void handle_r_r_jobdelblkhost (int sfd, struct database *wdb, int icomp, struct 
 	semaphore_release(wdb->semid);
 
 	log_master(L_DEBUG,"Exiting handle_r_r_jobdelblkhost");
+}
+
+int request_job_list_blocked_host (uint32_t ijob, struct blocked_host **bh, uint16_t *nblocked, int who)
+{
+	int sfd;
+	struct request req;
+	struct blocked_host *tbh;
+	int i;
+
+	if ((sfd = connect_to_master ()) == -1) {
+		drerrno = DRE_NOCONNECT;
+		return 0;
+	}
+
+	req.type = R_R_JOBBLKHOST;
+	req.data = ijob;
+	if (!send_request (sfd,&req,who)) {
+		close (sfd);
+		return 0;
+	}
+
+	if (!recv_request (sfd,&req)) {
+		close (sfd);
+		return 0;
+	}
+
+	*nblocked = req.data;
+
+	if ((*bh = malloc (sizeof (struct blocked_host)* (*nblocked))) == NULL) {
+		// FIXME error handlind
+		return 0;
+	}
+	
+	tbh = *bh;
+	for (i=0;i<*nblocked;i++) {
+		send_blocked_host(sfd,tbh);
+		tbh++;
+	}
+	
+	return 1;
+}
+
+void handle_r_r_joblstblkhost (int sfd, struct database *wdb, int icomp, struct request *req)
+{
+	uint32_t ijob;
+	int i;
+
+	log_master(L_DEBUG,"Entering handle_r_r_joblstblkhost");
+
+	ijob = req->data;
+
+	if (!job_index_correct_master (wdb,ijob)) {
+		return;
+	}
+
+	for (i=0;i<wdb->job[ijob].nblocked;i++) {
+		send_blocked_host (sfd,&wdb->job[ijob].blocked_host[i]);
+	}
+
+	log_master(L_DEBUG,"Exiting handle_r_r_joblstblkhost");
 }
 
 void handle_r_r_jobblkhost (int sfd, struct database *wdb, int icomp, struct request *req)
