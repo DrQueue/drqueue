@@ -1,7 +1,10 @@
-/* $Id: slave.c,v 1.4 2001/05/07 15:35:04 jorge Exp $ */
+/* $Id: slave.c,v 1.5 2001/05/09 10:53:08 jorge Exp $ */
 
 #include <unistd.h>
 #include <signal.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <sys/sem.h>
 
 #include "slave.h"
 #include "computer.h"
@@ -9,20 +12,39 @@
 #include "request.h"
 #include "communications.h"
 
-struct computer comp;		/* Need to be on global scope because of signal handling */
+struct computer *comp;		/* Need to be on global scope because of signal handling */
+int shmid;
+int semid;
 
 int main (int argc,char *argv[])
 {
 
+  log_slave_computer ("Starting...");
   set_signal_handlers ();
 
-  log_slave_computer ("Starting...");
-  get_hwinfo (&comp.hwinfo);
-  report_hwinfo (&comp.hwinfo);
+  shmid = get_shared_memory_slave ();
+  comp = attach_shared_memory_slave (shmid);
+  semid = get_semaphores_slave ();
 
-  register_slave (&comp);
+  init_tasks (comp->status.task);
 
-  get_computerstatus (&comp.status);
+  init_computer_status (&comp->status);
+  get_hwinfo (&comp->hwinfo);
+  report_hwinfo (&comp->hwinfo);
+
+  register_slave (comp);
+
+  while (1) {
+    get_computer_status (&comp->status);
+    update_computer_status (comp);
+    report_computer_status (&comp->status);
+
+    if (computer_available(comp)) {
+/*        launch_task (); */
+    }
+
+    sleep (SLAVEDELAY);
+  }
 
   exit (0);
 }
@@ -36,50 +58,82 @@ void set_signal_handlers (void)
   sigemptyset (&clean.sa_mask);
   clean.sa_flags = SA_SIGINFO;
   sigaction (SIGINT, &clean, NULL);
+  sigaction (SIGTERM, &clean, NULL);
 
   ignore.sa_handler = SIG_IGN;
   sigemptyset (&ignore.sa_mask);
   ignore.sa_flags = 0;
   sigaction (SIGHUP, &ignore, NULL);
+  sigaction (SIGCLD, &ignore, NULL);
 }
 
 void clean_out (int signal, siginfo_t *info, void *data)
 {
+
+  kill (0,SIGINT);
   log_slave_computer ("Cleaning...");
 
-  exit (1);
-}
-
-void register_slave (struct computer *computer)
-{
-  struct request req;
-  int sfd;
-
-  sfd = connect_to_master ();
-  
-  req.type = R_R_REGISTER;
-  req.slave = 1;
-
-  send_request (sfd,&req,SLAVE);
-  recv_request (sfd,&req,SLAVE);
-  if (req.type == R_A_REGISTER) {
-    switch (req.data_s) {
-    case RERR_NOERROR:
-      send_computer_hwinfo (sfd,&computer->hwinfo,SLAVE);
-      break;
-    case RERR_ALREADY:
-      log_slave_computer ("Already registered");
-      kill (0,SIGINT);
-      break;
-    case RERR_NOSPACE:
-      log_slave_computer ("No space on database");
-      kill (0,SIGINT);
-      break;
-    default:
-    }
+  if (semctl (semid,0,IPC_RMID,NULL) == -1) {
+    perror ("semid");
+  }
+  if (shmctl (shmid,IPC_RMID,NULL) == -1) {
+    perror ("shmid");
   }
 
-  close (sfd);
+  exit (0);
+}
+
+
+int get_shared_memory_slave (void)
+{
+  key_t key;
+  int shmid;
+
+  if ((key = ftok ("slave",'Z')) == -1) {
+    perror ("ftok");
+    exit (1);
+  }
+  
+  if ((shmid = shmget (key,sizeof (struct computer), IPC_EXCL|IPC_CREAT|0600)) == -1) {
+    perror ("shmget");
+    exit (1);
+  }
+
+  return shmid;
+}
+
+int get_semaphores_slave (void)
+{
+  key_t key;
+  int semid;
+
+  if ((key = ftok ("slave",'Z')) == -1) {
+    perror ("ftok");
+    kill (0,SIGINT);
+  }
+
+  if ((semid = semget (key,1, IPC_EXCL|IPC_CREAT|0600)) == -1) {
+    perror ("semget");
+    kill (0,SIGINT);
+  }
+  if (semctl (semid,0,SETVAL,1) == -1) {
+    perror ("semctl SETVAL -> 1");
+    kill (0,SIGINT);
+  }
+
+  return semid;
+}
+
+void *attach_shared_memory_slave (int shmid)
+{
+  void *rv;			/* return value */
+
+  if ((rv = shmat (shmid,0,0)) == (void *)-1) {
+    perror ("shmat");
+    exit (1);
+  }
+
+  return rv;
 }
 
 
