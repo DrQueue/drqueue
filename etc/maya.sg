@@ -22,9 +22,9 @@
 #
 #
 
-set BLOCK=`expr $FRAME + $BLOCKSIZE - 1`
-if ($BLOCK > $ENDFRAME) then
-  set BLOCK = $ENDFRAME;
+set BLOCK=`expr $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
+if ($BLOCK > $DRQUEUE_ENDFRAME) then
+  set BLOCK = $DRQUEUE_ENDFRAME;
 endif
 
 if ($?IMAGE) then
@@ -57,9 +57,9 @@ else
   set FFORMAT = ""
 endif
 
-echo Render -s $FRAME -e $FRAME $RESX $RESY $FFORMAT -rd $RD $CIMAGE $CAMERA $SCENE
+echo Render -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT -rd $RD $CIMAGE $CAMERA $SCENE
 
-Render -s $FRAME -e $BLOCK $RESX $RESY $FFORMAT -rd $RD $CIMAGE $CAMERA $SCENE
+Render -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT -rd $DRQUEUE_RD $CIMAGE $CAMERA $SCENE
 
 # This should requeue the frame if failed
 if ( $? != 0 ) then
@@ -67,7 +67,7 @@ if ( $? != 0 ) then
   kill -INT $$
 else
   # The frame was rendered properly
-  chown_block $RF_OWNER $RD/$IMAGE $FRAME $BLOCK 
+  chown_block $RF_OWNER $RD/$MAGE $DRQUEUE_FRAME $BLOCK 
 endif
 
 #

@@ -1,18 +1,23 @@
-/* $Id: computer_info.h,v 1.8 2004/01/23 03:28:00 jorge Exp $ */
+/* $Id: computer_info.h,v 1.9 2004/04/26 16:25:51 jorge Exp $ */
 
 #ifndef _COMPUTER_INFO_H_
 #define _COMPUTER_INFO_H_
+
 
 #ifdef __LINUX
 #include <stdint.h>
 #else
 # ifdef __IRIX
-#include <sys/types.h>
+#  include <sys/types.h>
 # else
 #  ifdef __OSX
 #   include <stdint.h>
 #  else
-#   error You need to define the OS, or OS defined not supported
+#   ifdef __FREEBSD
+#    include <stdint.h>
+#   else
+#    error You need to define the OS, or OS defined not supported
+#   endif
 #  endif
 # endif
 #endif
@@ -23,7 +28,7 @@ typedef enum {
   ARCH_UNKNOWN,
   ARCH_INTEL,
   ARCH_MIPS,
-	ARCH_PPC
+  ARCH_PPC
 } t_arch;
 
 typedef enum {
@@ -31,7 +36,8 @@ typedef enum {
   OS_IRIX,
   OS_LINUX,
   OS_WINDOWS,
-	OS_OSX
+  OS_OSX,
+  OS_FREEBSD
 } t_os;
 
 typedef enum {
@@ -43,7 +49,7 @@ typedef enum {
   PROCTYPE_ATHLON,
   PROCTYPE_MIPSR5000,
   PROCTYPE_MIPSR10000,
-	PROCTYPE_PPC
+  PROCTYPE_PPC
 } t_proctype;
 
 struct computer_hwinfo {

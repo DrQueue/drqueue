@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.41 2004/01/23 03:28:00 jorge Exp $ */
+/* $Id: master.c,v 1.42 2004/04/26 16:25:51 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -7,16 +7,19 @@
 #include <sys/shm.h>
 #include <sys/sem.h>
 #include <signal.h>
-#ifndef __OSX
-# include <wait.h>
-#else
-# include <sys/wait.h>
-#endif
+//#if defined(__OSX) || defined(__FREEBSD)
+#include <sys/wait.h>
+//#else
+//# include <wait.h>
+//#endif
 #include <time.h>
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#ifdef __FREEBSD
+# define SIGCLD SIGCHLD
+#endif
 
 #include "master.h"
 #include "libdrqueue.h"

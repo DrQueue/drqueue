@@ -1,4 +1,4 @@
-/* $Id: mayasg.c,v 1.11 2003/12/18 20:39:41 jorge Exp $ */
+/* $Id: mayasg.c,v 1.12 2004/04/26 16:25:51 jorge Exp $ */
 
 #include <stdio.h>
 #include <time.h>
@@ -35,7 +35,7 @@ char *mayasg_create (struct mayasgi *info)
 
   p = strrchr(info->scene,'/');
   p = ( p ) ? p+1 : info->scene;
-  snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,time(NULL));
+  snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
   if ((f = fopen (filename, "a")) == NULL) {
     if (errno == ENOENT) {
@@ -57,8 +57,8 @@ char *mayasg_create (struct mayasgi *info)
 
   /* So now we have the file open and so we must write to it */
   fprintf(f,"#!/bin/tcsh\n\n");
-  fprintf(f,"set RD=%s\n",info->renderdir);
-  fprintf(f,"set SCENE=%s\n",info->scene);
+  fprintf(f,"set DRQUEUE_RD=%s\n",info->renderdir);
+  fprintf(f,"set DRQUEUE_SCENE=%s\n",info->scene);
   fprintf(f,"set RF_OWNER=%s\n",info->file_owner);
   if (strlen(info->format)) {
     fprintf(f,"set FFORMAT=%s\n",info->format);
@@ -73,7 +73,7 @@ char *mayasg_create (struct mayasgi *info)
     fprintf(f,"set CAMERA=%s\n",info->camera);
   }
   if (strlen(info->image)) {
-    fprintf(f,"set IMAGE=%s\n",info->image);
+    fprintf(f,"set DRQUEUE_IMAGE=%s\n",info->image);
   }
 
   snprintf(fn_etc_maya_sg,BUFFERLEN-1,"%s/etc/maya.sg",getenv("DRQUEUE_ROOT"));
@@ -86,7 +86,7 @@ char *mayasg_create (struct mayasgi *info)
     fprintf(f,"echo So the default configuration will be used\n");
     fprintf(f,"echo -------------------------------------------------\n");
     fprintf(f,"\n\n");
-    fprintf(f,"Render -s $FRAME -e $FRAME -rd $RD %s $SCENE\n\n",image_arg);
+    fprintf(f,"Render -s $DRQUEUE_FRAME -e $DRQUEUE_FRAME -rd $DRQUEUE_RD %s $DRQUEUE_SCENE\n\n",image_arg);
   } else {
     fd_etc_maya_sg = fileno (etc_maya_sg);
     fd_f = fileno (f);

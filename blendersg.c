@@ -1,4 +1,4 @@
-/* $Id: blendersg.c,v 1.1 2003/12/15 22:18:32 jorge Exp $ */
+/* $Id: blendersg.c,v 1.2 2004/04/26 16:25:51 jorge Exp $ */
 
 #include <stdio.h>
 #include <time.h>
@@ -34,7 +34,7 @@ char *blendersg_create (struct blendersgi *info)
 
   p = strrchr(info->scene,'/');
   p = ( p ) ? p+1 : info->scene;
-  snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,time(NULL));
+  snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
   if ((f = fopen (filename, "a")) == NULL) {
     if (errno == ENOENT) {
@@ -123,7 +123,7 @@ char *blenderblocksg_create (struct blendersgi *info)
 
   p = strrchr(info->scene,'/');
   p = ( p ) ? p+1 : info->scene;
-  snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,time(NULL));
+  snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
   if ((f = fopen (filename, "a")) == NULL) {
     if (errno == ENOENT) {
@@ -157,7 +157,7 @@ char *blenderblocksg_create (struct blendersgi *info)
     fprintf(f,"echo So the default configuration will be used\n");
     fprintf(f,"echo -------------------------------------------------\n");
     fprintf(f,"\n\n");
-    fprintf(f,"blender -b $SCENE -s $FRAME -e `expr $FRAME + $STEPFRAME - 1` -a\n\n");
+    fprintf(f,"blender -b $DRQUEUE_SCENE -s $DRQUEUE_FRAME -e `expr $DRQUEUE_FRAME + $DRQUEUE_STEPFRAME - 1` -a\n\n");
   } else {
     fd_etc_blenderblock_sg = fileno (etc_blenderblock_sg);
     fd_f = fileno (f);
