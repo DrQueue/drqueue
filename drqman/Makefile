@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.3 2001/07/16 09:57:20 jorge Exp $
+# $Id: Makefile,v 1.4 2001/07/17 10:20:47 jorge Exp $
 #
 
 CC = gcc
@@ -23,7 +23,7 @@ irix:
 
 all: drqman
 
-drqman: $(OBJS)
+drqman: $(OBJS) ../libdrqueue.a
 	cc -o $@ $^ $(OOBJS) $(LDFLAGS)
 
 %.o : %.c %.h
