@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.19 2001/08/27 14:13:43 jorge Exp $ */
+/* $Id: job.c,v 1.20 2001/08/29 13:16:10 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -382,7 +382,7 @@ void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe
       if ((tstatus != TASKSTATUS_RUNNING) && (tstatus != TASKSTATUS_LOADING))
 	running = 0;
       /* check if the job is the same in index */
-      if (wdb->computer[icomp].status.task[itask].jobindex != ijob)
+      if (wdb->computer[icomp].status.task[itask].ijob != ijob)
 	running = 0;
       /* check if the job is the same in name */
       if (strcmp (wdb->computer[icomp].status.task[itask].jobname,wdb->job[ijob].name) != 0)
