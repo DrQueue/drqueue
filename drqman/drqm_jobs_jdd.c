@@ -68,6 +68,7 @@ static int jdd_framelist_cmp_icomp (GtkCList *clist, gconstpointer ptr1, gconstp
 static int jdd_framelist_cmp_start_time (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
 static int jdd_framelist_cmp_end_time (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
 static int jdd_framelist_cmp_requeued (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+static gboolean show_log (gpointer data);
 
 // Blocked hosts
 static GtkWidget *CreateBlockedHostsClist (void);
@@ -895,9 +896,9 @@ static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info)
 	GtkTextBuffer *buffer;
   GtkWidget *swin;
   int fd;
-  struct task task;
   char buf[BUFFERLEN];
-  int n;
+  struct task task;
+	struct idle_info *iinfo;
 
   /* log_dumptask_open only uses the jobname and frame fields of the task */
   /* so I fill a task with only those two valid fields and so can use that */
@@ -905,11 +906,14 @@ static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info)
   strncpy (task.jobname,info->jdd.job.name,MAXNAMELEN-1);
   task.frame = job_frame_index_to_number (&info->jdd.job,info->jdd.row);
 
+	// Allocate memory for idle info
+	iinfo = (struct idle_info *)g_malloc(sizeof (struct idle_info));
+
   /* Dialog */
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW(window),"Frame log");
-  gtk_signal_connect_object(GTK_OBJECT(window),"destroy",GTK_SIGNAL_FUNC(gtk_widget_destroy),
-			    (GtkObject*)window);
+	g_signal_connect_swapped (G_OBJECT(window),"destroy",G_CALLBACK(g_idle_remove_by_data),iinfo);
+	g_signal_connect_swapped (G_OBJECT(window),"destroy",G_CALLBACK(g_free),iinfo);
 	gtk_window_set_default_size(GTK_WINDOW(window),600,200);
   gtk_container_set_border_width (GTK_CONTAINER(window),5);
 
@@ -923,6 +927,7 @@ static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info)
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(swin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_container_add (GTK_CONTAINER(frame),swin);
   text = gtk_text_view_new ();
+	gtk_widget_set_sensitive (GTK_WIDGET(text),FALSE);
 	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW(text));
   gtk_container_add (GTK_CONTAINER(swin),text);
 
@@ -930,14 +935,39 @@ static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info)
     char msg[] = "Couldn't open log file";
     gtk_text_buffer_set_text (buffer,msg,-1);
   } else {
-    while ((n = read (fd,buf,BUFFERLEN))) {
-      gtk_text_buffer_set_text (buffer,buf,n);
-    }
+		iinfo->fd = fd;
+		iinfo->text = text;
+		g_idle_add (show_log,iinfo);
+		g_signal_connect_swapped (G_OBJECT(window),"destroy",G_CALLBACK(close),(gpointer)fd);
   }
+	g_signal_connect_swapped (G_OBJECT(window),"destroy",G_CALLBACK(gtk_widget_destroy),(GtkObject*)window);
 
   gtk_widget_show_all (window);
 
   return window;
+}
+
+static gboolean show_log (gpointer data)
+{
+	struct idle_info *iinfo = data;
+	int fd = iinfo->fd;
+  char buf[BUFFERLEN];
+	int n;
+	GtkTextMark *mark;
+  GtkWidget *text = iinfo->text;
+	GtkTextBuffer *buffer;
+
+
+	if ((n = read (fd,buf,BUFFERLEN)) != 0) {
+		buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW(text));
+		gtk_text_buffer_insert_at_cursor (buffer,buf,n);
+		mark = gtk_text_buffer_get_insert (buffer);
+		gtk_text_view_scroll_mark_onscreen (GTK_TEXT_VIEW(text),mark);
+	} else {
+		sleep (1);
+	}
+
+	return TRUE;
 }
 
 static void jdd_requeue_frames (GtkWidget *button,struct drqm_jobs_info *info_dj)
