@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.24 2001/08/29 12:46:50 jorge Exp $ */
+/* $Id: communications.c,v 1.25 2001/08/29 13:16:08 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -281,7 +281,7 @@ void send_computer_status (int sfd, struct computer_status *status,int who)
   bswapped.ntasks = htons (bswapped.ntasks);
   for (i=0;i<MAXTASKS;i++) {
     if (bswapped.task[i].used) {
-      bswapped.task[i].jobindex = htons (bswapped.task[i].jobindex);
+      bswapped.task[i].ijob = htons (bswapped.task[i].ijob);
       bswapped.task[i].frame = htonl (bswapped.task[i].frame);
       bswapped.task[i].pid = htonl (bswapped.task[i].pid);
       bswapped.task[i].exitstatus = htonl (bswapped.task[i].exitstatus);
@@ -342,7 +342,7 @@ void recv_computer_status (int sfd, struct computer_status *status,int who)
   status->ntasks = ntohs (status->ntasks);
   for (i=0;i<MAXTASKS;i++) {
     if (status->task[i].used) {
-      status->task[i].jobindex = ntohs (status->task[i].jobindex);
+      status->task[i].ijob = ntohs (status->task[i].ijob);
       status->task[i].frame = ntohl (status->task[i].frame);
       status->task[i].pid = ntohl (status->task[i].pid);
       status->task[i].exitstatus = ntohl (status->task[i].exitstatus);
@@ -469,7 +469,7 @@ int recv_task (int sfd, struct task *task)
   }
   /* Now we should have the task info with the values in */
   /* network byte order, so we put them in host byte order */
-  task->jobindex = ntohl (task->jobindex);
+  task->ijob = ntohl (task->ijob);
   task->frame = ntohl (task->frame);
   task->pid = ntohl (task->pid);
   task->exitstatus = ntohl (task->exitstatus);
@@ -487,7 +487,7 @@ int send_task (int sfd, struct task *task)
   /* We make a copy coz we need to modify the values */
   memcpy (buf,task,sizeof(bswapped));
   /* Prepare for sending */
-  bswapped.jobindex = htonl (bswapped.jobindex);
+  bswapped.ijob = htonl (bswapped.ijob);
   bswapped.frame = htonl (bswapped.frame);
   bswapped.pid = htonl (bswapped.pid);
   bswapped.exitstatus = htonl (bswapped.exitstatus);

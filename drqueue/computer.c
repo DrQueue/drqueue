@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.14 2001/08/29 08:20:35 jorge Exp $ */
+/* $Id: computer.c,v 1.15 2001/08/29 13:16:09 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -115,7 +115,7 @@ void computer_update_assigned (struct database *wdb,uint32_t ijob,int iframe,int
   task->used = 1;
   task->status = TASKSTATUS_LOADING; /* Not yet running */
   strncpy(task->jobname,job->name,MAXNAMELEN-1);
-  task->jobindex = ijob;
+  task->ijob = ijob;
   strncpy(task->jobcmd,job->cmd,MAXCMDLEN-1);
   strncpy(task->owner,job->owner,MAXNAMELEN-1);
   task->frame = job_frame_index_to_number (&wdb->job[ijob],iframe);

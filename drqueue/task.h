@@ -1,4 +1,4 @@
-/* $Id: task.h,v 1.13 2001/08/29 12:46:51 jorge Exp $ */
+/* $Id: task.h,v 1.14 2001/08/29 13:16:13 jorge Exp $ */
 
 #ifndef _TASK_H_
 #define _TASK_H_
@@ -33,7 +33,7 @@ typedef enum {
 struct task {
   uint8_t used;
   char jobname[MAXNAMELEN];	/* jobname */
-  uint32_t jobindex;		/* index to the job in the global db (usually ijob is an uint32_t) */
+  uint32_t ijob;		/* index to the job in the global db */
   char jobcmd[MAXCMDLEN];	/* string that will be executed */
   char owner[MAXNAMELEN];	/* owner of the job */
   uint32_t frame;		/* current _real_ frame number (!!not index!!) */
