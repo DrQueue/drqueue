@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.31 2001/09/12 15:05:08 jorge Exp $ */
+/* $Id: communications.c,v 1.32 2001/09/14 08:55:44 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -384,13 +384,22 @@ void recv_job (int sfd, struct job *job,int who)
   job->id = ntohl (job->id);
   job->nprocs = ntohs (job->nprocs);
   job->status = ntohs (job->status);
+
+  /* Koj Stuff */
+  job->koj = ntohs (job->koj);
+  switch (job->koj) {
+  case KOJ_GENERAL:
+  case KOJ_MAYA:
+    break;
+  }
+
+  job->frame_info = NULL;
   job->frame_start = ntohl (job->frame_start);
   job->frame_end = ntohl (job->frame_end);
   job->frame_step = ntohl (job->frame_step);
   job->frame_step = (job->frame_step == 0) ? 1 : job->frame_step; /* No 0 on step !! */
   job->avg_frame_time = ntohl (job->avg_frame_time);
   job->est_finish_time = ntohl (job->est_finish_time);
-
   job->fleft = ntohl (job->fleft);
   job->fdone = ntohl (job->fdone);
   job->ffailed = ntohl (job->ffailed);
@@ -412,14 +421,21 @@ void send_job (int sfd, struct job *job,int who)
   bswapped.id = htonl (bswapped.id);
   bswapped.nprocs = htons (bswapped.nprocs);
   bswapped.status = htons (bswapped.status);
+
+  /* Koj Stuff */
+  switch (bswapped.koj) {
+  case KOJ_GENERAL:
+  case KOJ_MAYA:
+    break;
+  }
+  bswapped.koj = htons (bswapped.koj);
+
+  bswapped.frame_info = NULL;
   bswapped.frame_start = htonl (bswapped.frame_start);
   bswapped.frame_end = htonl (bswapped.frame_end);
   bswapped.frame_step = htonl (bswapped.frame_step);
   bswapped.avg_frame_time = htonl (bswapped.avg_frame_time);
   bswapped.est_finish_time = htonl (bswapped.est_finish_time);
-
-  bswapped.frame_info = NULL;
-
   bswapped.fleft = htonl (bswapped.fleft);
   bswapped.fdone = htonl (bswapped.fdone);
   bswapped.ffailed = htonl (bswapped.ffailed);
