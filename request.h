@@ -1,4 +1,4 @@
-/* $Id: request.h,v 1.12 2001/08/06 12:40:26 jorge Exp $ */
+/* $Id: request.h,v 1.13 2001/08/07 13:03:02 jorge Exp $ */
 /* The request structure is not just used for the requests themselves */
 /* but also for the answers to the requests */
 
@@ -39,6 +39,9 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp);
 void handle_r_r_listjobs (int sfd,struct database *wdb,int icomp);
 void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp);
 void handle_r_r_deletjob (int sfd,struct database *wdb,int icomp);
+void handle_r_r_stopjob  (int sfd,struct database *wdb,int icomp,struct request *req);
+void handle_r_r_contjob  (int sfd,struct database *wdb,int icomp,struct request *req);
+void handle_r_r_hstopjob (int sfd,struct database *wdb,int icomp,struct request *req);
 
 /* TO MASTER */
 void update_computer_status (struct computer *computer); /* The slave calls this function to update the */
@@ -48,6 +51,9 @@ int register_job (struct job *job);
 int request_job_available (struct slave_database *sdb);
 void request_task_finished (struct slave_database *sdb);
 int request_job_delete (struct job *job,int who);
+int request_job_stop (uint32_t ijob, int who);
+int request_job_continue (uint32_t ijob, int who);
+
 
 /* TO SLAVE */
 int request_slave_killtask (char *slave,uint16_t itask);
