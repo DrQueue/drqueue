@@ -373,15 +373,15 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info)
   gtk_entry_set_text(GTK_ENTRY(info->dnj.estf),buf);
 
 	/* Priority */
-  if (info->jobs[info->row].priority == 100) {
+  if (info->jobs[info->row].priority == 1000) {
 		gtk_entry_set_text (GTK_ENTRY(GTK_COMBO(info->dnj.cpri)->entry),"Highest");
-  } else if (info->jobs[info->row].priority == 250) {
+  } else if (info->jobs[info->row].priority == 750) {
 		gtk_entry_set_text (GTK_ENTRY(GTK_COMBO(info->dnj.cpri)->entry),"High");
   } else if (info->jobs[info->row].priority == 500) {
 		gtk_entry_set_text (GTK_ENTRY(GTK_COMBO(info->dnj.cpri)->entry),"Normal");
-  } else if (info->jobs[info->row].priority == 750) {
+  } else if (info->jobs[info->row].priority == 250) {
 		gtk_entry_set_text (GTK_ENTRY(GTK_COMBO(info->dnj.cpri)->entry),"Low");
-  } else if (info->jobs[info->row].priority == 1000) {
+  } else if (info->jobs[info->row].priority == 100) {
 		gtk_entry_set_text (GTK_ENTRY(GTK_COMBO(info->dnj.cpri)->entry),"Lowest");
   } else {
 		gtk_entry_set_text (GTK_ENTRY(GTK_COMBO(info->dnj.cpri)->entry),"Custom");
@@ -755,19 +755,19 @@ static void dnj_cpri_changed (GtkWidget *entry, struct drqmj_dnji *info)
 {
   if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Highest") == 0) {
     gtk_entry_set_editable (GTK_ENTRY(info->epri),FALSE);
-    gtk_entry_set_text (GTK_ENTRY(info->epri),"100");
+    gtk_entry_set_text (GTK_ENTRY(info->epri),"1000");
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"High") == 0) {
     gtk_entry_set_editable (GTK_ENTRY(info->epri),FALSE);
-    gtk_entry_set_text (GTK_ENTRY(info->epri),"250");
+    gtk_entry_set_text (GTK_ENTRY(info->epri),"750");
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Normal") == 0) {
     gtk_entry_set_editable (GTK_ENTRY(info->epri),FALSE);
     gtk_entry_set_text (GTK_ENTRY(info->epri),"500");
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Low") == 0) {
     gtk_entry_set_editable (GTK_ENTRY(info->epri),FALSE);
-    gtk_entry_set_text (GTK_ENTRY(info->epri),"750");
+    gtk_entry_set_text (GTK_ENTRY(info->epri),"250");
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Lowest") == 0) {
     gtk_entry_set_editable (GTK_ENTRY(info->epri),FALSE);
-    gtk_entry_set_text (GTK_ENTRY(info->epri),"1000");
+    gtk_entry_set_text (GTK_ENTRY(info->epri),"100");
   } else {
 		/* Custom */
     gtk_entry_set_editable (GTK_ENTRY(info->epri),TRUE);
