@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.21 2001/08/31 14:06:23 jorge Exp $ */
+/* $Id: job.c,v 1.22 2001/08/31 15:07:14 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -293,6 +293,8 @@ void job_update_info (struct database *wdb,uint32_t ijob)
   int fleft=0,fdone=0,ffailed=0;
   int total;
   time_t avg_frame_time = 0;
+  static int old_fdone = 0;	/* Old frames done to update or not the estimated finish time */
+  static int old_nprocs = 0;	/* Same that old_fdone */
 
   if (ijob > MAXJOBS)
     return;
@@ -334,8 +336,16 @@ void job_update_info (struct database *wdb,uint32_t ijob)
   wdb->job[ijob].ffailed = ffailed;
   if (fdone)
     wdb->job[ijob].avg_frame_time = avg_frame_time;
-  if (nprocs)
+
+  /* If we do not check old_fdone and old_nprocs, the est_finish_time is being updated every time */
+  /* this function is called. In this way it is only updated when it must, that is when a frame is */
+  /* finished or when the number of running processors change */
+  if ((nprocs) && ((fdone != old_fdone) || (nprocs != old_nprocs))) {
     wdb->job[ijob].est_finish_time = time(NULL) + ((avg_frame_time * (fleft+nprocs)) / nprocs);
+    old_fdone = fone;
+    old_nprocs = nprocs;
+  }
+
   switch (wdb->job[ijob].status) {
   case JOBSTATUS_WAITING:
   case JOBSTATUS_ACTIVE:
