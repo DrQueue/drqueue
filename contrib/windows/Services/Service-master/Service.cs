@@ -98,6 +98,7 @@ namespace Service_master
 			Process theProcess = new Process();
 			theProcess.StartInfo.UseShellExecute = true;
 			theProcess.StartInfo.WorkingDirectory = Environment.GetEnvironmentVariable("DRQUEUE_BIN");
+			theProcess.StartInfo.CreateNoWindow = true;
 			theProcess.StartInfo.FileName = "master.exe"; //theProcess.StartInfo.WorkingDirectory + "\\master.exe";
 		    theProcess.StartInfo.Arguments = "-f";
 			theProcess.Start();

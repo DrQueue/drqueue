@@ -32,8 +32,6 @@
 
 #define MASTER_CONF_FILE "/etc/drqueue/master.conf"
 
-#define IS_MASTER 1
-
 extern int phantom[2];
 
 void master_get_options (int *argc,char ***argv, int *force);

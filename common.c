@@ -47,13 +47,12 @@ int common_environment_check (void)
     return 0;
   }
 
-#ifndef IS_MASTER
+#ifndef __CYGWIN
   snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_TMP"));
   if (stat (dir_str,&s_stat) == -1) {
     drerrno = DRE_NOTMPDIR;
     return 0;
   }
-#ifndef __CYGWIN
   else
   {
     if ((!S_ISDIR(s_stat.st_mode)) || (!(S_IWOTH & s_stat.st_mode)))
@@ -62,7 +61,6 @@ int common_environment_check (void)
       return 0;
     }
   }
-#endif
 #endif
   snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_DB"));
   if (stat (dir_str,&s_stat) == -1) {
