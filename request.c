@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.48 2001/09/09 21:55:37 jorge Exp $ */
+/* $Id: request.c,v 1.49 2001/09/10 09:17:44 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -655,6 +655,9 @@ int request_job_available (struct slave_database *sdb)
   semaphore_lock(sdb->semid);
   memcpy(&sdb->comp->status.task[sdb->itask],&ttask,sizeof(ttask));
   sdb->comp->status.ntasks = computer_ntasks (sdb->comp);
+  /* We update the computer load because, at the beginning it does not reflect the load */
+  /* of this task */
+  sdb->comp->status.loadavg[0] += sdb->comp->limits.maxfreeloadcpu;
   semaphore_release(sdb->semid);
 
   close (sfd);
