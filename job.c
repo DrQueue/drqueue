@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.29 2001/09/17 12:30:10 jorge Exp $ */
+/* $Id: job.c,v 1.30 2001/09/17 12:35:54 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -545,66 +545,15 @@ int job_index_correct_master (struct database *wdb,uint32_t ijob)
 void job_environment_set (struct job *job, uint32_t iframe)
 {
   uint32_t frame;
-
-#ifdef __LINUX
-  char msg[BUFFERLEN];
-#else
   static char padframe[BUFFERLEN];
   static char s_frame[BUFFERLEN];
   static char s_iframe[BUFFERLEN];
   static char scene[BUFFERLEN];
   static char project[BUFFERLEN];
   static char image[BUFFERLEN];
-#endif
 
   frame = job_frame_index_to_number (job,iframe);
 
-#ifdef __LINUX
-  /* Padded frame number */
-  snprintf (msg,BUFFERLEN-1,"%04i",frame);
-  if (setenv("PADFRAME",msg,1) == -1) {
-    fprintf (stderr,"ERROR: job_environment_set\n");
-    kill(0,SIGINT);
-  }
-  /* Frame number */
-  snprintf (msg,BUFFERLEN-1,"%i",frame);
-  if (setenv("FRAME",msg,1) == -1) {
-    fprintf (stderr,"ERROR: job_environment_set\n");
-    kill(0,SIGINT);
-  }
-  /* Frame index */
-  snprintf (msg,BUFFERLEN-1,"%i",iframe);
-  if (setenv("IFRAME",msg,1) == -1) {
-    fprintf (stderr,"ERROR: job_environment_set\n");
-    kill(0,SIGINT);
-  }
-  /* OS */
-  if (setenv("DRQUEUE_OS","LINUX",1) == -1) {
-    fprintf (stderr,"ERROR: job_environment_set\n");
-    kill(0,SIGINT);
-  }
-
-  /* KOJ */
-  switch (job->koj) {
-  case KOJ_GENERAL:
-    break;
-  case KOJ_MAYA:
-    if (setenv("SCENE",job->koji.maya.scene,1) == -1) {
-      fprintf (stderr,"ERROR: job_environment_set\n");
-      kill(0,SIGINT);
-    }
-    if (setenv("PROJECT",job->koji.maya.project,1) == -1) {
-      fprintf (stderr,"ERROR: job_environment_set\n");
-      kill(0,SIGINT);
-    }
-    if (setenv("IMAGE",job->koji.maya.image,1) == -1) {
-      fprintf (stderr,"ERROR: job_environment_set\n");
-      kill(0,SIGINT);
-    }
-    break;
-  }
-
-#else
   /* Padded frame number */
   snprintf (padframe,BUFFERLEN-1,"PADFRAME=%04i",frame);
   putenv (padframe);
@@ -615,7 +564,11 @@ void job_environment_set (struct job *job, uint32_t iframe)
   snprintf (s_iframe,BUFFERLEN-1,"IFRAME=%i",iframe);
   putenv (s_iframe);
   /* OS */
+#ifdef __LINUX
+  putenv ("DRQUEUE_OS=LINUX");
+#else
   putenv ("DRQUEUE_OS=IRIX");
+#endif
 
   switch (job->koj) {
   case KOJ_GENERAL:
@@ -629,7 +582,4 @@ void job_environment_set (struct job *job, uint32_t iframe)
     putenv (image);
     break;
   }
-
-#endif
-
 }
