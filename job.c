@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.12 2001/07/31 13:10:12 jorge Exp $ */
+/* $Id: job.c,v 1.13 2001/08/02 10:19:33 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -336,13 +336,13 @@ void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe
   t_taskstatus tstatus;
 
   semaphore_lock(wdb->semid);
-  
+
   fistatus = wdb->job[ijob].frame_info[iframe].status;
   icomp = wdb->job[ijob].frame_info[iframe].icomp;
   itask = wdb->job[ijob].frame_info[iframe].itask;
-
+    
   tstatus = wdb->computer[icomp].status.task[itask].status;
-
+    
   if (fistatus == FS_ASSIGNED) {
     /* check if the task status is running */
     if ((tstatus != TASKSTATUS_RUNNING) && (tstatus != TASKSTATUS_LOADING))
@@ -360,7 +360,6 @@ void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe
   }
 
   semaphore_release(wdb->semid);
-
 }
 
 int priority_job_compare (const void *a,const void *b)
