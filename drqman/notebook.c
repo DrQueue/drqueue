@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/notebook.c,v 1.2 2001/07/19 09:09:15 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/notebook.c,v 1.3 2001/08/28 21:49:28 jorge Exp $
  */
 
 #include <gtk/gtk.h>
@@ -7,7 +7,7 @@
 #include "drqm_jobs.h"
 #include "drqm_computers.h"
 
-void CreateNotebook (GtkWidget *window,GtkWidget *vbox)
+void CreateNotebook (GtkWidget *window,GtkWidget *vbox,struct info_drqm *info)
 {
   GtkWidget *notebook;
 
@@ -15,7 +15,7 @@ void CreateNotebook (GtkWidget *window,GtkWidget *vbox)
   gtk_notebook_set_tab_pos(GTK_NOTEBOOK(notebook),GTK_POS_TOP);
   
   CreateJobsPage(notebook);
-  CreateComputersPage(notebook);
+  CreateComputersPage(notebook,info);
   
   gtk_box_pack_end(GTK_BOX(vbox), notebook, TRUE,TRUE, 0);
 
