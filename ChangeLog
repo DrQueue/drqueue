@@ -1,5110 +1,4385 @@
-2004-10-26 09:19:06  Rev 919    jorge
+2004-10-26 21:32:48  Jorge Daza <jorge@drqueue.org>
 
-	* common.h:
-	  New version number on common.h: 0.52.0
 
-2004-10-25 06:57:42  Rev 918    jorge
+	* New Revision commited by build_package.sh
 
-	* slave.h:
-	  All operating systems using limits.h
+2004-10-26 21:32:27  Jorge Daza <jorge@drqueue.org>
 
-2004-10-25 06:44:34  Rev 917    jorge
 
-	* Revision:
-	  New Revision commited by build_package.sh
+	* Changelog commited by build_package.sh
 
-2004-10-25 06:41:51  Rev 915    jorge
+2004-10-26 21:32:03  Jorge Daza <jorge@drqueue.org>
 
-	* ChangeLog:
-	  Changelog commited by build_package.sh
 
-2004-10-25 06:41:20  Rev 914    jorge
+	* New version number on common.h: 0.52.1
 
-	* common.h:
-	  New version number on common.h: 0.52.0rc1
+2004-10-26 13:28:16  Jorge Daza <jorge@drqueue.org>
 
-2004-10-25 06:33:10  Rev 913    jorge
 
-	* Makefile:
-	  Irix installation problem
+	* Merged 923:925 from trunk. Marc Ume bugfix for sendjob.
 
-2004-10-25 06:25:07  Rev 912    jorge
+2004-10-26 13:25:25  Jorge Daza <jorge@drqueue.org>
 
-	* svn-scripts/svnmerge:
-	  Added svnmerge
 
-2004-10-25 06:24:30  Rev 911    jorge
+	* Fixed typo. It was branch 0.52.x, not 0.50.x.
 
-	* svn-scripts slave.h:
-	  Irix compilation bugfix
+2004-10-26 11:27:46  Jorge Daza <jorge@drqueue.org>
 
-2004-10-24 10:36:53  Rev 910    jorge
 
-	* Revision:
-	  New Revision commited by build_package.sh
+	* New stable development branch.
 
-2004-10-24 10:36:26  Rev 908    jorge
+2004-10-26 11:22:11  Jorge Daza <jorge@drqueue.org>
 
-	* ChangeLog:
-	  Changelog commited by build_package.sh
 
-2004-10-24 10:34:47  Rev 907    jorge
+	* New Revision commited by build_package.sh
 
-	* common.h:
-	  New version number on common.h: 0.51.10
+2004-10-26 11:19:33  Jorge Daza <jorge@drqueue.org>
 
-2004-10-24 09:26:19  Rev 906    jorge
 
-	* drqman/Makefile:
-	  FreeBSD bugfix
+	* Changelog commited by build_package.sh
 
-2004-10-24 09:21:38  Rev 905    jorge
+2004-10-26 11:19:06  Jorge Daza <jorge@drqueue.org>
 
-	* slave.h:
-	  FreeBSD compilation bugfix
 
-2004-10-23 19:06:45  Rev 904    jorge
+	* New version number on common.h: 0.52.0
 
-	* Revision:
-	  New Revision commited by build_package.sh
+2004-10-25 08:57:42  Jorge Daza <jorge@drqueue.org>
 
-2004-10-23 19:06:24  Rev 902    jorge
 
-	* ChangeLog:
-	  Changelog commited by build_package.sh
+	* All operating systems using limits.h
 
-2004-10-23 19:06:01  Rev 901    jorge
+2004-10-25 08:44:34  Jorge Daza <jorge@drqueue.org>
 
-	* common.h:
-	  New version number on common.h: 0.51.9
 
-2004-10-23 18:54:46  Rev 900    jorge
+	* New Revision commited by build_package.sh
 
-	* libdrqueue.h:
-	  Bugfix of sendjob
+2004-10-25 08:41:51  Jorge Daza <jorge@drqueue.org>
 
-2004-10-23 18:48:50  Rev 899    jorge
 
-	* drqman/drqm_jobs_jdd.c:
-	  Reverse blocked host selection list
+	* Changelog commited by build_package.sh
 
-2004-10-23 16:45:26  Rev 898    jorge
+2004-10-25 08:41:20  Jorge Daza <jorge@drqueue.org>
 
-	* Revision:
-	  New Revision commited by build_package.sh
 
-2004-10-23 16:45:02  Rev 896    jorge
+	* New version number on common.h: 0.52.0rc1
 
-	* ChangeLog:
-	  Changelog commited by build_package.sh
+2004-10-25 08:33:10  Jorge Daza <jorge@drqueue.org>
 
-2004-10-23 16:44:33  Rev 895    jorge
 
-	* common.h:
-	  New version number on common.h: 0.51.8
+	* Irix installation problem
 
-2004-10-23 14:08:57  Rev 894    jorge
+2004-10-25 08:25:07  Jorge Daza <jorge@drqueue.org>
 
-	* sendjob.cpp blockhost.c requeue.c jobfinfo.c cjob.c:
-	  Bugfixes and now cjob can retrieve the status of a job.
 
-2004-10-23 11:45:26  Rev 893    jorge
+	* Added svnmerge
 
-	* Revision:
-	  New Revision commited by build_package.sh
+2004-10-25 08:24:30  Jorge Daza <jorge@drqueue.org>
 
-2004-10-23 11:45:06  Rev 891    jorge
 
-	* ChangeLog:
-	  Changelog commited by build_package.sh
+	* Irix compilation bugfix
 
-2004-10-23 11:44:47  Rev 890    jorge
+2004-10-24 12:36:53  Jorge Daza <jorge@drqueue.org>
 
-	* common.h:
-	  New version number on common.h: 0.51.7
 
-2004-10-23 11:24:09  Rev 889    jorge
+	* New Revision commited by build_package.sh
 
-	* drqman/drqm_jobs_jdd.c TODO drqman/drqm_jobs_jdd.h:
-	  Logs now scroll when the log is updated
+2004-10-24 12:36:26  Jorge Daza <jorge@drqueue.org>
 
-2004-10-22 21:47:55  Rev 888    jorge
 
-	* CREDITS:
-	  Added Shawn Parr to the CREDITS file
+	* Changelog commited by build_package.sh
 
+2004-10-24 12:34:47  Jorge Daza <jorge@drqueue.org>
 
-2004-10-22 21:13:33  Rev 887    jorge
 
-	* Revision:
-	  New Revision commited by build_package.sh
+	* New version number on common.h: 0.51.10
 
-2004-10-22 21:13:11  Rev 885    jorge
+2004-10-24 11:26:19  Jorge Daza <jorge@drqueue.org>
 
-	* ChangeLog:
-	  Changelog commited by build_package.sh
 
-2004-10-22 21:12:48  Rev 884    jorge
+	* FreeBSD bugfix
 
-	* common.h:
-	  New version number on common.h: 0.51.6
+2004-10-24 11:21:38  Jorge Daza <jorge@drqueue.org>
 
-2004-10-22 21:08:26  Rev 883    jorge
 
-	* drqman/drqm_jobs_jdd.c:
-	  Added tip to button
+	* FreeBSD compilation bugfix
 
-2004-10-22 20:57:04  Rev 882    jorge
+2004-10-23 21:06:45  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_jobs_jdd.c drqman/drqm_computers.c:
-	  Code cleanup
 
-2004-10-22 20:39:44  Rev 881    jorge
+	* New Revision commited by build_package.sh
 
-	* drqman/drqm_jobs_jdd.c:
-	  Refresh button working for the list of hosts
+2004-10-23 21:06:24  Jorge Daza <jorge@drqueue.org>
 
-2004-10-22 20:25:51  Rev 880    jorge
 
-	* drqman/drqm_jobs_jdd.c drqman/drqm_computers.c 
-	  drqman/drqm_jobs_jdd.h:
-	  Support for multiple hosts blocked
+	* Changelog commited by build_package.sh
 
-2004-10-22 20:02:24  Rev 879    jorge
+2004-10-23 21:06:01  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_jobs_jdd.c drqman/drqm_jobs_jdd.h 
-	  drqman/drqm_computers.h:
-	  Dialog to add a host to the blocked list now shows the list of computers.
 
-2004-10-22 19:09:53  Rev 878    jorge
+	* New version number on common.h: 0.51.9
 
-	* drqman/drqm_jobs_jdd.c drqman/drqm_jobs.h drqman/drqm_jobs_jdd.h 
-	  drqman/drqm_computers.h drqman/drqm_jobs_common.h:
-	  More code cleanup
+2004-10-23 20:54:46  Jorge Daza <jorge@drqueue.org>
 
-2004-10-22 18:43:19  Rev 877    jorge
 
-	* drqman/drqm_jobs_jdd.c:
-	  More code cleanup
+	* Bugfix of sendjob
 
-2004-10-22 18:32:59  Rev 876    jorge
+2004-10-23 20:48:50  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_jobs.c drqman/drqm_jobs_jdd.c drqman/drqm_jobs.h 
-	  drqman/drqm_jobs_jdd.h drqman/Makefile:
-	  Code cleanup on drqman
 
-2004-10-22 17:27:11  Rev 875    jorge
+	* Reverse blocked host selection list
 
-	* TODO:
-	  Updated TODO
+2004-10-23 18:45:26  Jorge Daza <jorge@drqueue.org>
 
-2004-10-20 21:50:40  Rev 874    jorge
 
-	* slave.h:
-	  Bugfix for compilation problem on Mac OS X
+	* New Revision commited by build_package.sh
 
-2004-10-20 20:55:16  Rev 873    jorge
+2004-10-23 18:45:02  Jorge Daza <jorge@drqueue.org>
 
-	* svn-scripts/build_release.sh:
-	  Another buxfix O:)
 
-2004-10-20 20:51:35  Rev 872    jorge
+	* Changelog commited by build_package.sh
 
-	* svn-scripts/build_release.sh:
-	  Bugfix
+2004-10-23 18:44:33  Jorge Daza <jorge@drqueue.org>
 
-2004-10-20 20:50:29  Rev 871    jorge
 
-	* Revision:
-	  New Revision commited by build_package.sh
+	* New version number on common.h: 0.51.8
 
-2004-10-20 20:49:57  Rev 869    jorge
+2004-10-23 16:08:57  Jorge Daza <jorge@drqueue.org>
 
-	* ChangeLog:
-	  Changelog commited by build_package.sh
 
-2004-10-20 20:49:31  Rev 868    jorge
+	* Bugfixes and now cjob can retrieve the status of a job.
 
-	* common.h:
-	  New version number on common.h: 0.51.5
+2004-10-23 13:45:26  Jorge Daza <jorge@drqueue.org>
 
-2004-10-20 20:41:22  Rev 867    jorge
 
-	* common.c etc/master.conf:
-	  Parsing all values.
+	* New Revision commited by build_package.sh
 
-2004-10-20 20:32:50  Rev 866    jorge
+2004-10-23 13:45:06  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/main.c common.c slave.c master.c common.h slave.h master.h:
-	  Only one config_parse function for all
 
-2004-10-20 20:25:26  Rev 865    jorge
+	* Changelog commited by build_package.sh
 
-	* drqman/main.c etc/master.conf master.c etc/drqman.conf master.h:
-	  More changes regarding the config files
+2004-10-23 13:44:47  Jorge Daza <jorge@drqueue.org>
 
-2004-10-20 20:15:47  Rev 864    jorge
 
-	* database.c blendersg.c drqman/main.c libdrqueue.h pixiesg.c slave.
-	  c job.c requeue.c drerrno.c slave.h logger.c constants.h mayasg.c 
-	  etc/slave.conf common.c master.c common.h bmrtsg.c master.h:
-	  Preliminary support for config files
+	* New version number on common.h: 0.51.7
 
-2004-10-20 09:35:58  Rev 863    jorge
+2004-10-23 13:24:09  Jorge Daza <jorge@drqueue.org>
 
-	* svn-scripts/build_release.sh:
-	  Debian compliance
 
-2004-10-20 09:35:32  Rev 862    jorge
+	* Logs now scroll when the log is updated
 
-	* svn-scripts/build_release.sh:
-	  Debian compliance
+2004-10-22 23:47:55  Jorge Daza <jorge@drqueue.org>
 
-2004-10-20 09:34:35  Rev 861    jorge
 
-	* sendjob.cpp:
-	  Solved warning messages
+	* Added Shawn Parr to the CREDITS file
 
-2004-10-19 23:49:17  Rev 860    jorge
+2004-10-22 23:13:33  Jorge Daza <jorge@drqueue.org>
 
-	* Makefile cjob.c:
-	  Added cjob tool.
 
-2004-10-19 22:40:22  Rev 859    jorge
+	* New Revision commited by build_package.sh
 
-	* listjobs.c Makefile:
-	  Removed listjobs
+2004-10-22 23:13:11  Jorge Daza <jorge@drqueue.org>
 
-2004-10-19 22:39:26  Rev 858    jorge
 
-	* blockhost.c:
-	  Added option to list blocked hosts to blockhost
+	* Changelog commited by build_package.sh
 
-2004-10-19 21:57:53  Rev 857    jorge
+2004-10-22 23:12:48  Jorge Daza <jorge@drqueue.org>
 
-	* pixiesg.h:
-	  Theodore Schundler's patch for FreeBSD
 
-2004-10-19 11:38:42  Rev 856    jorge
+	* New version number on common.h: 0.51.6
 
-	* Revision:
-	  New Revision commited by build_package.sh
+2004-10-22 23:08:26  Jorge Daza <jorge@drqueue.org>
 
-2004-10-19 11:38:19  Rev 854    jorge
 
-	* ChangeLog:
-	  Changelog commited by build_package.sh
+	* Added tip to button
 
-2004-10-19 11:37:54  Rev 853    jorge
+2004-10-22 22:57:04  Jorge Daza <jorge@drqueue.org>
 
-	* common.h:
-	  New version number on common.h: 0.51.4
 
-2004-10-19 11:31:34  Rev 852    jorge
+	* Code cleanup
 
-	* drqman/drqm_jobs.h:
-	  Corrected comment
+2004-10-22 22:39:44  Jorge Daza <jorge@drqueue.org>
 
-2004-10-19 11:08:56  Rev 851    jorge
 
-	* drqman/drqm_jobs.c drqman/drqm_jobs.h drqman/drqm_common.c:
-	  drqman saves the status of the frame's info scrolled window
+	* Refresh button working for the list of hosts
 
-2004-10-19 05:58:26  Rev 850    jorge
+2004-10-22 22:25:51  Jorge Daza <jorge@drqueue.org>
 
-	* TODO listjobs.c computer_info.osx.c:
-	  Minor changes
 
-2004-10-18 20:52:02  Rev 849    jorge
+	* Support for multiple hosts blocked
 
-	* computer_info.osx.c:
-	  Mac OS X, nicer way to get the number of cpus
+2004-10-22 22:02:24  Jorge Daza <jorge@drqueue.org>
 
-2004-10-18 20:03:11  Rev 848    jorge
 
-	* computer_info.osx.c:
-	  Now it gets the real frequency of the cpu
+	* Dialog to add a host to the blocked list now shows the list of computers.
 
-2004-10-18 18:09:16  Rev 847    jorge
+2004-10-22 21:09:53  Jorge Daza <jorge@drqueue.org>
 
-	* computer_info.freebsd.c computer_info.irix.c computer_info.linux.c 
-	  computer_info.c computer_info.osx.c:
-	  Code cleanup
 
-2004-10-18 16:38:20  Rev 846    jorge
+	* More code cleanup
 
-	* bin/blockhost:
-	  Added blockhost script to bin
+2004-10-22 20:43:19  Jorge Daza <jorge@drqueue.org>
 
-2004-10-18 01:32:26  Rev 845    jorge
 
-	* Revision:
-	  New Revision commited by build_package.sh
+	* More code cleanup
 
-2004-10-18 01:32:05  Rev 843    jorge
+2004-10-22 20:32:59  Jorge Daza <jorge@drqueue.org>
 
-	* ChangeLog:
-	  Changelog commited by build_package.sh
 
-2004-10-18 01:31:39  Rev 842    jorge
+	* Code cleanup on drqman
 
-	* common.h:
-	  New version number on common.h: 0.51.3
+2004-10-22 19:27:11  Jorge Daza <jorge@drqueue.org>
 
-2004-10-18 01:30:03  Rev 841    jorge
 
-	* request.c:
-	  Bugfix. host deletion from blocked list did not work properly
+	* Updated TODO
 
-2004-10-18 01:26:23  Rev 840    jorge
+2004-10-20 23:50:40  Jorge Daza <jorge@drqueue.org>
 
-	* communications.c:
-	  Minor bugfix
 
-2004-10-18 00:50:49  Rev 839    jorge
+	* Bugfix for compilation problem on Mac OS X
 
-	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
-	  Now you can add hosts to the block list from drqman.
+2004-10-20 22:55:16  Jorge Daza <jorge@drqueue.org>
 
-2004-10-17 23:44:27  Rev 838    jorge
 
-	* drqman/drqm_jobs.c:
-	  Removal of blocked hosts from drqman working
+	* Another buxfix O:)
 
-2004-10-17 23:28:34  Rev 837    jorge
+2004-10-20 22:51:35  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
-	  Added popup menu on blocked host list. Added menu item to delete the host from the list.
 
-2004-10-17 22:16:40  Rev 836    jorge
+	* Bugfix
 
-	* TODO:
-	  Updated TODO
+2004-10-20 22:50:29  Jorge Daza <jorge@drqueue.org>
 
-2004-10-17 19:04:17  Rev 835    jorge
 
-	* README:
-	  Added README
+	* New Revision commited by build_package.sh
 
-2004-10-17 15:45:59  Rev 834    jorge
+2004-10-20 22:49:57  Jorge Daza <jorge@drqueue.org>
 
-	* TODO:
-	  Updated TODO
 
-2004-10-17 15:05:06  Rev 833    jorge
+	* Changelog commited by build_package.sh
 
-	* Makefile:
-	  Added blockhost to the installation
+2004-10-20 22:49:31  Jorge Daza <jorge@drqueue.org>
 
-2004-10-17 14:08:43  Rev 832    jorge
 
-	* Revision:
-	  New Revision commited by build_package.sh
+	* New version number on common.h: 0.51.5
 
-2004-10-17 14:08:11  Rev 830    jorge
+2004-10-20 22:41:22  Jorge Daza <jorge@drqueue.org>
 
-	* ChangeLog:
-	  Changelog commited by build_package.sh
 
-2004-10-17 14:07:45  Rev 829    jorge
+	* Parsing all values.
 
-	* common.h:
-	  New version number on common.h: 0.51.2
+2004-10-20 22:32:50  Jorge Daza <jorge@drqueue.org>
 
-2004-10-17 14:07:20  Rev 828    jorge
 
-	* blockhost.c:
-	  Minor changes
+	* Only one config_parse function for all
 
-2004-10-17 14:05:31  Rev 827    jorge
+2004-10-20 22:25:26  Jorge Daza <jorge@drqueue.org>
 
-	* blockhost.c:
-	  Minor changes.
 
-2004-10-17 13:51:41  Rev 826    jorge
+	* More changes regarding the config files
 
-	* drqman/drqm_jobs.c drqman/drqm_jobs.h communications.c job.c job.h:
-	  Blocked hosts list integrated in drqman.
+2004-10-20 22:15:47  Jorge Daza <jorge@drqueue.org>
 
-2004-10-17 12:49:53  Rev 825    jorge
 
-	* task.c task.h blockhost.c communications.c request.c listjobs.c 
-	  job.c Makefile computer.c:
-	  Host blocking can be controlled from the command line
+	* Preliminary support for config files
 
-2004-10-17 05:18:17  Rev 824    jorge
+2004-10-20 11:35:58  Jorge Daza <jorge@drqueue.org>
 
-	* database.c:
-	  indent -br -ut -ts2 database.c
 
-2004-10-17 05:00:28  Rev 823    jorge
+	* Debian compliance
 
-	* request.c listjobs.c:
-	  Host blocking seems to work. It still needs to be integrated in drqman.
+2004-10-20 11:35:32  Jorge Daza <jorge@drqueue.org>
 
-2004-10-17 04:12:43  Rev 822    jorge
 
-	* request.c Makefile job.h:
-	  Basic support for block lists.
+	* Debian compliance
 
-2004-10-17 04:11:35  Rev 821    jorge
+2004-10-20 11:34:35  Jorge Daza <jorge@drqueue.org>
 
-	* listjobs.c:
-	  Test tool for hosts block lists
 
-2004-10-17 02:39:36  Rev 820    jorge
+	* Solved warning messages
 
-	* request.c request_codes.h request.h:
-	  Added request list of blocked hosts
+2004-10-20 01:49:17  Jorge Daza <jorge@drqueue.org>
 
-2004-10-17 02:16:09  Rev 819    jorge
 
-	* request.c request_codes.h request.h:
-	  Added support for removal of blocked hosts
+	* Added cjob tool.
 
-2004-10-17 01:28:29  Rev 818    jorge
+2004-10-20 00:40:22  Jorge Daza <jorge@drqueue.org>
 
-	* TODO database.c communications.c request.c database.h job.c 
-	  request_codes.h communications.h request.h job.h:
-	  Working on block host feature
 
-2004-10-16 21:23:39  Rev 817    jorge
+	* Removed listjobs
 
-	* TODO:
-	  Updated TODO
+2004-10-20 00:39:26  Jorge Daza <jorge@drqueue.org>
 
-2004-10-16 21:16:51  Rev 816    jorge
 
-	* slave.c slave.h:
-	  Maximum number of CPUs can be set in the slave through the command line
+	* Added option to list blocked hosts to blockhost
 
-2004-10-16 20:05:51  Rev 815    jorge
+2004-10-19 23:57:53  Jorge Daza <jorge@drqueue.org>
 
-	* slave.c slave.h:
-	  Support for autoenable time on command line.
 
+	* Theodore Schundler's patch for FreeBSD
 
-2004-10-16 11:04:35  Rev 814    jorge
+2004-10-19 13:38:42  Jorge Daza <jorge@drqueue.org>
 
-	* Revision:
-	  New Revision commited by build_package.sh
 
-2004-10-16 11:04:11  Rev 812    jorge
+	* New Revision commited by build_package.sh
 
-	* ChangeLog:
-	  Changelog commited by build_package.sh
+2004-10-19 13:38:19  Jorge Daza <jorge@drqueue.org>
 
-2004-10-16 11:03:43  Rev 811    jorge
 
-	* common.h:
-	  New version number on common.h: 0.51.1
+	* Changelog commited by build_package.sh
 
-2004-10-15 23:24:38  Rev 810    jorge
+2004-10-19 13:37:54  Jorge Daza <jorge@drqueue.org>
 
-	* TODO:
-	  Updated TODO
 
-2004-10-15 21:15:58  Rev 809    jorge
+	* New version number on common.h: 0.51.4
 
-	* drqman/drqm_request.h drqman/drqm_computers.c request.c 
-	  drqman/drqm_computers.h drqman/drqm_request.c request.h:
-	  Full support for autoenable active flag.
+2004-10-19 13:31:34  Jorge Daza <jorge@drqueue.org>
 
-2004-10-15 20:10:33  Rev 808    jorge
 
-	* computer.h slave.c computer.c slave.h:
-	  Added autoenable flag.
+	* Corrected comment
 
-2004-10-15 09:49:33  Rev 805    jorge
+2004-10-19 13:08:56  Jorge Daza <jorge@drqueue.org>
 
-	* Revision:
-	  New Revision commited by build_package.sh
 
-2004-10-15 09:49:06  Rev 803    jorge
+	* drqman saves the status of the frame's info scrolled window
 
-	* ChangeLog:
-	  Changelog commited by build_package.sh
+2004-10-19 07:58:26  Jorge Daza <jorge@drqueue.org>
 
-2004-10-15 09:48:46  Rev 802    jorge
 
-	* common.h:
-	  New version number on common.h: 0.51.0
+	* Minor changes
 
-2004-10-15 09:48:09  Rev 801    jorge
+2004-10-18 22:52:02  Jorge Daza <jorge@drqueue.org>
 
-	* Makefile:
-	  Corrected to jobfinfo
 
-2004-10-15 09:40:39  Rev 800    jorge
+	* Mac OS X, nicer way to get the number of cpus
 
-	* drqman/drqm_request.h drqman/drqm_jobs.c database.c request_codes.
-	  h job.c job.h bin/jobfinfo TODO request.c communications.c 
-	  request_errors.h Makefile jobfinfo.c request.h drqman/drqm_request.
-	  c common.h:
-	  Merged branch pre0.51 on trunk
+2004-10-18 22:03:11  Jorge Daza <jorge@drqueue.org>
 
-2004-10-15 09:27:36  Rev 799    jorge
 
-	* Revision:
-	  New Revision commited by build_package.sh
+	* Now it gets the real frequency of the cpu
 
-2004-10-15 09:27:15  Rev 797    jorge
+2004-10-18 20:09:16  Jorge Daza <jorge@drqueue.org>
 
-	* ChangeLog:
-	  Changelog commited by build_package.sh
 
-2004-10-15 09:26:54  Rev 796    jorge
+	* Code cleanup
 
-	* common.h:
-	  New version number on common.h: 0.50.0
+2004-10-18 18:38:20  Jorge Daza <jorge@drqueue.org>
 
-2004-10-15 03:11:26  Rev 785    jorge
 
-	* Makefile:
-	  Clean now also cleans bin/
+	* Added blockhost script to bin
 
-2004-10-15 03:10:46  Rev 784    jorge
+2004-10-18 03:32:26  Jorge Daza <jorge@drqueue.org>
 
-	* bin/requeue bin/drqman bin/sendjob:
-	  Corrected
 
-2004-10-14 18:32:12  Rev 771    jorge
+	* New Revision commited by build_package.sh
 
-	* task.c database.c drqman/drqm_jobs_pixie.h task.h database.h 
-	  mayasg.c drqman/drqm_jobs_bmrt.c mayasg.h common.c 
-	  drqman/drqm_jobs_bmrt.h common.h bmrtsg.c computer.c 
-	  computer_status.c bmrtsg.h computer.h computer_status.h semaphores.
-	  c drerrno.c semaphores.h drerrno.h sendjob.cpp drqman/drqm_request.
-	  c drqman/drqm_info.c drqman/drqm_request.h drqman/notebook.c 
-	  drqman/drqm_info.h drqman/notebook.h pixiesg.c drqman/drqman.h 
-	  drqman/drqm_jobs_maya.c slave.c job.c requeue.c pixiesg.h 
-	  drqman/drqm_jobs_maya.h slave.h job.h drqman/drqm_computers.c 
-	  request.c communications.c sendjob.h request_errors.h 
-	  drqman/drqm_computers.h master.c drqman/drqm_jobs_blender.c 
-	  drqman/drqm_common.c communications.h request.h master.h 
-	  drqman/drqm_jobs_blender.h drqman/drqm_jobs.c drqman/drqm_common.h 
-	  blendersg.c drqman/main.c libdrqueue.h drqman/drqm_jobs.h 
-	  computer_info.c blendersg.h request_codes.h computer_info.h logger.
-	  c constants.h logger.h drqman/drqm_jobs_pixie.c:
-	  Added GPL headers
+2004-10-18 03:32:05  Jorge Daza <jorge@drqueue.org>
 
-2004-10-14 14:47:11  Rev 770    jorge
 
-	* drqman/drqm_jobs.c drqman/drqm_request.h drqman/drqm_jobs.h 
-	  request.c job.c drqman/drqm_request.c request.h:
-	  Solved SES (start,end,step) update problem (included block_size). Solved also problem with free that caused error messages on the master
+	* Changelog commited by build_package.sh
 
-2004-10-14 12:21:34  Rev 769    jorge
+2004-10-18 03:31:39  Jorge Daza <jorge@drqueue.org>
 
-	* COPYING LICENSE:
-	  GPL stuff
 
-2004-10-13 20:37:12  Rev 768    jorge
+	* New version number on common.h: 0.51.3
 
-	* Revision:
-	  New Revision commited by build_package.sh
+2004-10-18 03:30:03  Jorge Daza <jorge@drqueue.org>
 
-2004-10-13 20:36:52  Rev 766    jorge
 
-	* ChangeLog:
-	  Changelog commited by build_package.sh
+	* Bugfix. host deletion from blocked list did not work properly
 
-2004-10-13 20:36:03  Rev 765    jorge
+2004-10-18 03:26:23  Jorge Daza <jorge@drqueue.org>
 
-	* ChangeLog Revision common.h:
-	  Changes that happened while testing new build_package.sh
 
-2004-10-13 20:32:46  Rev 764    jorge
+	* Minor bugfix
 
-	* svn-scripts/build_release.sh:
-	  Now packages untar on directory drqueue.<version> instead of drqueue.
+2004-10-18 02:50:49  Jorge Daza <jorge@drqueue.org>
 
 
-2004-10-13 20:07:56  Rev 763    jorge
+	* Now you can add hosts to the block list from drqman.
 
-	* bin/drqman:
-	  Added drqman script to the repository
+2004-10-18 01:44:27  Jorge Daza <jorge@drqueue.org>
 
-2004-10-13 19:55:26  Rev 762    jorge
 
-	* job.c:
-	  Solved bug 0000003. Job's OS limits not working now works.
+	* Removal of blocked hosts from drqman working
 
-2004-10-13 19:52:58  Rev 761    jorge
+2004-10-18 01:28:34  Jorge Daza <jorge@drqueue.org>
 
-	* job.c:
-	  Trying to resolve bug 0000003. OS limits not working. Again.
 
-2004-10-13 19:49:10  Rev 760    jorge
+	* Added popup menu on blocked host list. Added menu item to delete the host from the list.
 
-	* job.c:
-	  Trying to resolve bug 0000003. OS limits not working.
+2004-10-18 00:16:40  Jorge Daza <jorge@drqueue.org>
 
-2004-10-13 19:04:22  Rev 759    jorge
 
-	* drqman/drqm_jobs.c:
-	  Bug 0000003 resolved. Problem showing OS flags on job's detail dialog.
+	* Updated TODO
 
-2004-10-13 18:42:33  Rev 758    jorge
+2004-10-17 21:04:17  Jorge Daza <jorge@drqueue.org>
 
-	* computer_info.c:
-	  Bug 0000002 resolved
 
-2004-10-13 18:12:42  Rev 757    jorge
+	* Added README
 
-	* computer_info.c:
-	  Changed Opteron detection string
+2004-10-17 17:45:59  Jorge Daza <jorge@drqueue.org>
 
-2004-10-13 12:45:57  Rev 756    jorge
 
-	* request.c:
-	  Solved small memory leak
+	* Updated TODO
 
-2004-10-13 09:59:53  Rev 755    jorge
+2004-10-17 17:05:06  Jorge Daza <jorge@drqueue.org>
 
-	* TODO:
-	  Updated
 
-2004-10-13 09:54:23  Rev 754    jorge
+	* Added blockhost to the installation
 
-	* TODO:
-	  Updated
+2004-10-17 16:08:43  Jorge Daza <jorge@drqueue.org>
 
-2004-10-13 09:53:44  Rev 753    jorge
 
-	* computer_info.h:
-	  "#ifdef...#else..." changed for "#if defined..."
+	* New Revision commited by build_package.sh
 
+2004-10-17 16:08:11  Jorge Daza <jorge@drqueue.org>
 
-2004-10-13 08:35:15  Rev 752    jorge
 
-	* Revision:
-	  New Revision commited by build_package.sh
+	* Changelog commited by build_package.sh
 
-2004-10-13 08:34:57  Rev 750    jorge
+2004-10-17 16:07:45  Jorge Daza <jorge@drqueue.org>
 
-	* ChangeLog:
-	  Changelog commited by build_package.sh
 
-2004-10-13 08:34:34  Rev 749    jorge
+	* New version number on common.h: 0.51.2
 
-	* common.h:
-	  New version number on common.h: 0.50rc8
+2004-10-17 16:07:20  Jorge Daza <jorge@drqueue.org>
 
-2004-10-13 08:32:24  Rev 748    jorge
 
-	* drqman/drqm_jobs.c:
-	  All popup windows made toplevel
+	* Minor changes
 
-2004-10-13 08:27:37  Rev 747    jorge
+2004-10-17 16:05:31  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
-	  New job dialog improved placing in another tab, all KOJ information
 
-2004-10-12 22:54:17  Rev 746    jorge
+	* Minor changes.
 
-	* Revision:
-	  New Revision commited by build_package.sh
+2004-10-17 15:51:41  Jorge Daza <jorge@drqueue.org>
 
-2004-10-12 22:53:55  Rev 744    jorge
 
-	* ChangeLog:
-	  Changelog commited by build_package.sh
+	* Blocked hosts list integrated in drqman.
 
-2004-10-12 22:53:34  Rev 743    jorge
+2004-10-17 14:49:53  Jorge Daza <jorge@drqueue.org>
 
-	* common.h:
-	  New version number on common.h: 0.50rc7
 
-2004-10-12 22:45:46  Rev 742    jorge
+	* Host blocking can be controlled from the command line
 
-	* drqman/drqm_jobs.c drqman/drqm_request.h drqman/main.c 
-	  drqman/drqm_jobs.h drqman/drqm_request.c:
-	  Major bugfixes. Bug 0000001 fixed.
+2004-10-17 07:18:17  Jorge Daza <jorge@drqueue.org>
 
-2004-10-12 14:49:40  Rev 741    jorge
 
-	* TODO:
-	  Bug section on drqman removed, as everything seems to be solved and we have a bug tracker now
+	* indent -br -ut -ts2 database.c
 
-2004-10-12 14:48:53  Rev 740    jorge
+2004-10-17 07:00:28  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_jobs.c:
-	  Nicer job details dialog (tabbed)
 
-2004-10-12 08:48:44  Rev 739    jorge
+	* Host blocking seems to work. It still needs to be integrated in drqman.
 
-	* Revision:
-	  New Revision commited by build_package.sh
+2004-10-17 06:12:43  Jorge Daza <jorge@drqueue.org>
 
-2004-10-12 08:48:26  Rev 737    jorge
 
-	* ChangeLog:
-	  Changelog commited by build_package.sh
+	* Basic support for block lists.
 
-2004-10-12 08:48:04  Rev 736    jorge
+2004-10-17 06:11:35  Jorge Daza <jorge@drqueue.org>
 
-	* common.h:
-	  New version number on common.h: 0.50rc6
 
-2004-10-12 01:11:51  Rev 735    jorge
+	* Test tool for hosts block lists
 
-	* tag_edit:
-	  tag_edit removed, as it was a tool for cvs
+2004-10-17 04:39:36  Jorge Daza <jorge@drqueue.org>
 
-2004-10-12 00:56:13  Rev 734    jorge
 
-	* svn-scripts/build_release.sh:
-	  Added $, and set the keywords
+	* Added request list of blocked hosts
 
-2004-10-11 23:28:09  Rev 733    jorge
+2004-10-17 04:16:09  Jorge Daza <jorge@drqueue.org>
 
-	* svn-scripts/build_release.sh:
-	  Minor code cleanup
 
-2004-10-11 23:06:16  Rev 732    jorge
+	* Added support for removal of blocked hosts
 
-	* TODO:
-	  Updated TODO. Consistency checks on slave, done.
+2004-10-17 03:28:29  Jorge Daza <jorge@drqueue.org>
 
-2004-10-11 23:05:20  Rev 731    jorge
 
-	* slave.c slave.h:
-	  Added consistency check on slave that creates a new process, just in case things get weird. Like in v0.49 were one slave hanged out as running when it actually wasn't.
+	* Working on block host feature
 
-2004-10-11 21:58:10  Rev 730    jorge
+2004-10-16 23:23:39  Jorge Daza <jorge@drqueue.org>
 
-	* TODO:
-	  Updated TODO
 
-2004-10-11 15:57:18  Rev 729    jorge
+	* Updated TODO
 
-	* drqman/drqm_jobs.c:
-	  Several minor bug fixes in the job\'s page
+2004-10-16 23:16:51  Jorge Daza <jorge@drqueue.org>
 
-2004-10-11 15:13:36  Rev 728    jorge
 
-	* Makefile:
-	  Added CPPFLAGS for sendjob
+	* Maximum number of CPUs can be set in the slave through the command line
 
-2004-10-11 15:09:13  Rev 727    jorge
+2004-10-16 22:05:51  Jorge Daza <jorge@drqueue.org>
 
-	* sendjob.cpp:
-	  Solved compilation bug on FreeBSD and MacOS X
 
-2004-10-11 14:11:18  Rev 726    jorge
+	* Support for autoenable time on command line.
 
-	* Revision:
-	  Previous tag stored on Revision
+2004-10-16 13:04:35  Jorge Daza <jorge@drqueue.org>
 
-2004-10-11 14:10:47  Rev 725    jorge
 
-	* svn-scripts/build_release.sh:
-	  build_package.sh now also commits the Revision just after the update
+	* New Revision commited by build_package.sh
 
-2004-10-11 14:04:08  Rev 723    jorge
+2004-10-16 13:04:11  Jorge Daza <jorge@drqueue.org>
 
-	* ChangeLog:
-	  Changelog commited by build_package.sh
 
-2004-10-11 14:03:50  Rev 722    jorge
+	* Changelog commited by build_package.sh
 
-	* common.h:
-	  New version number on common.h: 0.50rc5
+2004-10-16 13:03:43  Jorge Daza <jorge@drqueue.org>
 
-2004-10-11 14:03:29  Rev 721    jorge
 
-	* svn-scripts/build_release.sh:
-	  Commit Changelog added
+	* New version number on common.h: 0.51.1
 
-2004-10-11 13:59:54  Rev 720    jorge
+2004-10-16 01:24:38  Jorge Daza <jorge@drqueue.org>
 
-	* svn-scripts/build_release.sh:
-	  Revision update after tagging, not before
 
-2004-10-11 13:47:49  Rev 718    jorge
+	* Updated TODO
 
-	* Revision:
-	  Commited by build_release.sh
+2004-10-15 23:15:58  Jorge Daza <jorge@drqueue.org>
 
-2004-10-11 13:46:31  Rev 717    jorge
 
-	* Revision:
-	  Commited by build_release.sh
+	* Full support for autoenable active flag.
 
-2004-10-11 13:45:36  Rev 716    jorge
+2004-10-15 22:10:33  Jorge Daza <jorge@drqueue.org>
 
-	* svn-scripts/build_release.sh:
-	  Now it autocreates the tag
 
-2004-10-11 13:35:51  Rev 713    jorge
+	* Added autoenable flag.
 
-	* ChangeLog Revision:
-	  Modified by buil_release.sh
+2004-10-15 11:49:33  Jorge Daza <jorge@drqueue.org>
 
-2004-10-11 13:33:54  Rev 712    jorge
 
-	* svn-scripts/build_release.sh:
-	  Fixed problem of tar not excluding .svn files.
+	* New Revision commited by build_package.sh
 
+2004-10-15 11:49:06  Jorge Daza <jorge@drqueue.org>
 
-2004-10-11 13:26:15  Rev 711    jorge
 
-	* svn-scripts/build_release.sh:
-	  Added $VERSION to commit line.
-Also uncommented it.
+	* Changelog commited by build_package.sh
 
+2004-10-15 11:48:46  Jorge Daza <jorge@drqueue.org>
 
-2004-10-11 13:24:08  Rev 710    jorge
 
-	* ChangeLog:
-	  Updated ChangeLog
+	* New version number on common.h: 0.51.0
 
-2004-10-11 13:23:38  Rev 709    jorge
+2004-10-15 11:48:09  Jorge Daza <jorge@drqueue.org>
 
-	* svn-scripts/build_release.sh:
-	  build_release.sh seems to work now. Let's test it !
 
+	* Corrected to jobfinfo
 
-2004-10-11 13:04:55  Rev 708    jorge
+2004-10-15 11:40:39  Jorge Daza <jorge@drqueue.org>
 
-	* svn-scripts/build_release.sh ChangeLog svn-scripts Revision common.
-	  h:
-	  Working on build package script
 
-2004-10-11 10:54:44  Rev 707    jorge
+	* Merged branch pre0.51 on trunk
 
-	* Revision:
-	  Added Revision
+2004-10-15 11:27:36  Jorge Daza <jorge@drqueue.org>
 
-2004-10-11 10:53:04  Rev 706    jorge
 
-	* ChangeLog:
-	  ChangeLog added
+	* New Revision commited by build_package.sh
 
-2004-10-11 09:54:48  Rev 705    jorge
+2004-10-15 11:27:15  Jorge Daza <jorge@drqueue.org>
 
-	* common.c common.h:
-	  Declaration and include missing.
 
-2004-10-11 09:51:13  Rev 704    jorge
+	* Changelog commited by build_package.sh
 
-	* common.h:
-	  New release candidate
+2004-10-15 11:26:54  Jorge Daza <jorge@drqueue.org>
 
-2004-10-11 08:45:29  Rev 703    jorge
 
-	* common.c:
-	  Basic checks before removing directory.
+	* New version number on common.h: 0.50.0
 
-2004-10-11 08:25:18  Rev 702    jorge
+2004-10-15 05:11:26  Jorge Daza <jorge@drqueue.org>
 
-	* job.c:
-	  FreeBSD compilation bug solved
 
-2004-10-10 17:08:18  Rev 701    jorge
+	* Clean now also cleans bin/
 
-	* drqman/Makefile:
-	  Added keywords to drqman
+2004-10-15 05:10:46  Jorge Daza <jorge@drqueue.org>
 
-2004-10-10 17:07:59  Rev 700    jorge
 
-	* drqman/drqm_jobs_blender.h drqman/drqm_jobs.c drqman/drqm_common.h 
-	  drqman/drqm_request.h drqman/notebook.c drqman/drqm_jobs_pixie.h 
-	  drqman/drqm_info.h drqman/main.c drqman/drqm_jobs.h 
-	  drqman/notebook.h drqman/drqm_jobs_maya.c drqman/drqman.h 
-	  drqman/drqm_jobs_maya.h drqman/drqm_jobs_bmrt.c 
-	  drqman/drqm_computers.c drqman/drqm_jobs_bmrt.h 
-	  drqman/drqm_computers.h drqman/drqm_jobs_blender.c 
-	  drqman/drqm_common.c drqman/drqm_request.c drqman/drqm_jobs_pixie.
-	  c drqman/drqm_info.c:
-	  Added keywords to drqman
+	* Corrected
 
-2004-10-10 17:01:07  Rev 698    jorge
+2004-10-14 20:32:12  Jorge Daza <jorge@drqueue.org>
 
-	* common.h:
-	  New version
 
-2004-10-10 16:59:25  Rev 697    jorge
+	* Added GPL headers
 
-	* drqman/drqm_computers.c:
-	  Updated ConfirmDialog stuff
+2004-10-14 16:47:11  Jorge Daza <jorge@drqueue.org>
 
-2004-10-10 16:55:22  Rev 696    jorge
 
-	* drqman/drqm_common.h drqman/drqm_jobs.c drqman/drqm_common.c:
-	  Solved bug of non-refreshing main window, when then job is hard-stopped
+	* Solved SES (start,end,step) update problem (included block_size). Solved also problem with free that caused error messages on the master
 
-2004-10-10 16:15:35  Rev 695    jorge
+2004-10-14 14:21:34  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_jobs.c:
-	  Solved bug of non-closing job details window
 
-2004-10-10 16:00:53  Rev 694    jorge
+	* GPL stuff
 
-	* drqman/drqm_jobs.c:
-	  Solved problem in the job details window.
+2004-10-13 22:37:12  Jorge Daza <jorge@drqueue.org>
 
-2004-10-10 15:40:41  Rev 693    jorge
 
-	* TODO:
-	  TODO updated
+	* New Revision commited by build_package.sh
 
-2004-10-10 12:55:30  Rev 692    jorge
+2004-10-13 22:36:52  Jorge Daza <jorge@drqueue.org>
 
-	* task.c database.c drqman/drqm_jobs_pixie.h task.h database.h 
-	  drqman/Makefile mayasg.c mayasg.h drqman/drqm_jobs_bmrt.c common.c 
-	  drqman/drqm_jobs_bmrt.h common.h computer.c bmrtsg.c 
-	  computer_status.c computer.h bmrtsg.h semaphores.c computer_status.
-	  h semaphores.h drerrno.c drerrno.h Makefile drqman/drqm_request.c 
-	  drqman/drqm_info.c drqman/notebook.c drqman/drqm_request.h 
-	  drqman/drqm_info.h drqman/notebook.h pixiesg.c drqman/drqman.h 
-	  drqman/drqm_jobs_maya.c slave.c job.c requeue.c pixiesg.h 
-	  drqman/drqm_jobs_maya.h slave.h job.h drqman/drqm_computers.c 
-	  request.c communications.c sendjob.h request_errors.h master.c 
-	  drqman/drqm_computers.h request.h communications.h 
-	  drqman/drqm_common.c drqman/drqm_jobs_blender.c master.h 
-	  drqman/drqm_common.h drqman/drqm_jobs.c drqman/drqm_jobs_blender.h 
-	  blendersg.c libdrqueue.h drqman/main.c drqman/drqm_jobs.h 
-	  computer_info.c request_codes.h blendersg.h computer_info.h logger.
-	  c constants.h logger.h drqman/drqm_jobs_pixie.c:
-	  Added keywords, that were lost on cvs2svn
 
-2004-10-10 12:04:11  Rev 691    jorge
+	* Changelog commited by build_package.sh
 
-	* TODO todo:
-	  todo changed to TODO
+2004-10-13 22:36:03  Jorge Daza <jorge@drqueue.org>
 
 
-2004-10-10 03:02:15  Rev 689    jorge
+	* Changes that happened while testing new build_package.sh
 
-	* Makefile:
-	  svn test
+2004-10-13 22:32:46  Jorge Daza <jorge@drqueue.org>
 
-2004-10-09 21:21:01  Rev 688    jorge
 
-	* etc/maya.sg:
-	  Bug 0000002 solved. Thanks to Shawn Parr.
+	* Now packages untar on directory drqueue.<version> instead of drqueue.
 
+2004-10-13 22:07:56  Jorge Daza <jorge@drqueue.org>
 
-2004-10-09 19:34:29  Rev 687    jorge
 
-	* etc/maya.sg:
-	  Bug 0000001 solved.
+	* Added drqman script to the repository
 
+2004-10-13 21:55:26  Jorge Daza <jorge@drqueue.org>
 
-2004-10-09 05:50:13  Rev 685    jorge
 
-	* contrib/sendjob.blender.py Makefile:
-	  Added -t blender
+	* Solved bug 0000003. Job's OS limits not working now works.
 
+2004-10-13 21:52:58  Jorge Daza <jorge@drqueue.org>
 
-2004-10-09 05:22:02  Rev 684    jorge
 
-	* Makefile:
-	  Updated Makefile
+	* Trying to resolve bug 0000003. OS limits not working. Again.
 
+2004-10-13 21:49:10  Jorge Daza <jorge@drqueue.org>
 
-2004-10-09 05:21:43  Rev 683    jorge
 
-	* sendjob.cpp sendjob.h:
-	  New sendjob supporting Maya and Blender
+	* Trying to resolve bug 0000003. OS limits not working.
 
+2004-10-13 21:04:22  Jorge Daza <jorge@drqueue.org>
 
-2004-10-09 04:50:37  Rev 682    jorge
 
-	* contrib/sendjob.blender.py Makefile contrib:
-	  Added sendjob.blender.py
+	* Bug 0000003 resolved. Problem showing OS flags on job's detail dialog.
 
+2004-10-13 20:42:33  Jorge Daza <jorge@drqueue.org>
 
-2004-10-09 04:42:58  Rev 681    jorge
 
-	* drqman/drqm_jobs.c:
-	  Bugfix
+	* Bug 0000002 resolved
 
+2004-10-13 20:12:42  Jorge Daza <jorge@drqueue.org>
 
-2004-10-09 03:44:29  Rev 680    jorge
 
-	* Makefile:
-	  Minor bug
+	* Changed Opteron detection string
 
+2004-10-13 14:45:57  Jorge Daza <jorge@drqueue.org>
 
-2004-10-09 03:42:36  Rev 679    jorge
 
-	* Makefile:
-	  Added Darwin_install, not tested yet
+	* Solved small memory leak
 
+2004-10-13 11:59:53  Jorge Daza <jorge@drqueue.org>
 
-2004-10-09 03:39:25  Rev 678    jorge
 
-	* Makefile:
-	  Updated Linux_install
+	* Updated
 
+2004-10-13 11:54:23  Jorge Daza <jorge@drqueue.org>
 
-2004-10-09 03:31:30  Rev 677    jorge
 
-	* computer_info.c computer_info.h:
-	  Added Opteron
+	* Updated
 
+2004-10-13 11:53:44  Jorge Daza <jorge@drqueue.org>
 
-2004-10-06 16:34:12  Rev 675    jorge
 
-	* todo CREDITS:
-	  Theodore, you deser much more. Thanks a lot
+	* "#ifdef...#else..." changed for "#if defined..."
 
+2004-10-13 10:35:15  Jorge Daza <jorge@drqueue.org>
 
-2004-10-06 16:33:17  Rev 674    jorge
 
-	* Makefile:
-	  Small bug in INSTGID line
+	* New Revision commited by build_package.sh
 
+2004-10-13 10:34:57  Jorge Daza <jorge@drqueue.org>
 
-2004-10-06 16:26:53  Rev 673    jorge
 
-	* sendjob.cpp sendjob.h Makefile:
-	  sendjob compiling bugs solved
+	* Changelog commited by build_package.sh
 
+2004-10-13 10:34:34  Jorge Daza <jorge@drqueue.org>
 
-2004-10-06 16:16:57  Rev 672    jorge
 
-	* drqman/drqm_jobs.c drqman/drqm_jobs.h computer_info.c job.c job.h:
-	  More FreeBSD related changes
+	* New version number on common.h: 0.50rc8
 
+2004-10-13 10:32:24  Jorge Daza <jorge@drqueue.org>
 
-2004-10-06 13:56:02  Rev 671    jorge
 
-	* todo job.c:
-	  Total frame number bug: seems solved
+	* All popup windows made toplevel
 
+2004-10-13 10:27:37  Jorge Daza <jorge@drqueue.org>
 
-2004-04-26 16:25:51  Rev 670    jorge
 
-	* task.c bin/requeue bmrtsg.h etc/3delight.sg blendersg.c 
-	  computer_status.h etc/bmrt.sg task.h computer_info.c slave.c job.c 
-	  bin/sendjob etc/blender.sg computer_info.h drqman/Makefile job.h 
-	  mayasg.c bin/master communications.c request.c etc/maya.sg master.
-	  c Makefile request.h common.h bmrtsg.c computer.c bin/slave 
-	  computer_status.c:
-	  Changes made by Theodore Schundler
+	* New job dialog improved placing in another tab, all KOJ information
 
+2004-10-13 00:54:17  Jorge Daza <jorge@drqueue.org>
 
-2004-04-23 20:40:52  Rev 669    jorge
 
-	* etc/aqsis.sg:
-	  Preliminary aqsis.sg
+	* New Revision commited by build_package.sh
 
+2004-10-13 00:53:55  Jorge Daza <jorge@drqueue.org>
 
-2004-04-23 20:40:26  Rev 668    jorge
 
-	* etc/pixie.sg:
-	  Minor correction. Changed Maya to Pixie.
+	* Changelog commited by build_package.sh
 
+2004-10-13 00:53:34  Jorge Daza <jorge@drqueue.org>
 
-2004-04-23 18:56:16  Rev 665    jorge
 
-	* CREDITS:
-	  Goran Kocov added to credits
+	* New version number on common.h: 0.50rc7
 
+2004-10-13 00:45:46  Jorge Daza <jorge@drqueue.org>
 
-2004-04-23 16:56:28  Rev 664    jorge
 
-	* common.h:
-	  New release
+	* Major bugfixes. Bug 0000001 fixed.
 
+2004-10-12 16:49:40  Jorge Daza <jorge@drqueue.org>
 
-2004-03-15 23:45:40  Rev 663    jorge
 
-	* job.c CREDITS Makefile:
-	  Step frame bug solved
+	* Bug section on drqman removed, as everything seems to be solved and we have a bug tracker now
 
+2004-10-12 16:48:53  Jorge Daza <jorge@drqueue.org>
 
-2004-03-09 18:54:29  Rev 662    jorge
 
-	* drqman/drqm_jobs_pixie.h pixiesg.c pixiesg.h 
-	  drqman/drqm_jobs_pixie.c:
-	  Added Pixie support
+	* Nicer job details dialog (tabbed)
 
+2004-10-12 10:48:44  Jorge Daza <jorge@drqueue.org>
 
-2004-03-09 18:53:22  Rev 661    jorge
 
-	* drqman/drqm_jobs.c libdrqueue.h drqman/drqm_jobs.h job.c Makefile 
-	  drqman/Makefile job.h etc/pixie.sg:
-	  Added pixie support. Added checkbox for OSX.
+	* New Revision commited by build_package.sh
 
+2004-10-12 10:48:26  Jorge Daza <jorge@drqueue.org>
 
-2004-02-24 10:39:28  Rev 659    jorge
 
-	* slave.c:
-	  Mac OS X bug with unwaited children solved
+	* Changelog commited by build_package.sh
 
+2004-10-12 10:48:04  Jorge Daza <jorge@drqueue.org>
 
-2004-02-20 23:24:53  Rev 658    jorge
 
-	* common.h:
-	  New release
+	* New version number on common.h: 0.50rc6
 
+2004-10-12 03:11:51  Jorge Daza <jorge@drqueue.org>
 
-2004-02-20 23:24:23  Rev 657    jorge
 
-	* slave.c:
-	  Bug of Mac OS X forking problem solved
+	* tag_edit removed, as it was a tool for cvs
 
+2004-10-12 02:56:13  Jorge Daza <jorge@drqueue.org>
 
-2004-01-24 00:21:09  Rev 655    jorge
 
-	* common.h:
-	  New version release
+	* Added $, and set the keywords
 
+2004-10-12 01:28:09  Jorge Daza <jorge@drqueue.org>
 
-2004-01-24 00:19:08  Rev 654    jorge
 
-	* computer.h drqman/Makefile:
-	  Working on Mac OSX
+	* Minor code cleanup
 
+2004-10-12 01:06:16  Jorge Daza <jorge@drqueue.org>
 
-2004-01-23 03:28:00  Rev 653    jorge
 
-	* semaphores.c communications.c request.c computer_info.c master.c 
-	  computer.c computer_info.h computer_status.c:
-	  Preliminary OSX support
+	* Updated TODO. Consistency checks on slave, done.
 
+2004-10-12 01:05:20  Jorge Daza <jorge@drqueue.org>
 
-2004-01-22 17:48:24  Rev 652    jorge
 
-	* bmrtsg.h computer_status.h task.h computer_info.c slave.c Makefile 
-	  request.h common.h computer_info.h job.h:
-	  Working on OSX port.
+	* Added consistency check on slave that creates a new process, just in case things get weird. Like in v0.49 were one slave hanged out as running when it actually wasn't.
 
+2004-10-11 23:58:10  Jorge Daza <jorge@drqueue.org>
 
-2004-01-16 00:17:37  Rev 650    jorge
 
-	* Makefile common.h:
-	  New release
+	* Updated TODO
 
+2004-10-11 17:57:18  Jorge Daza <jorge@drqueue.org>
 
-2004-01-07 21:50:21  Rev 648    jorge
 
-	* libdrqueue.h request.c request_codes.h slave.c job.c master.c 
-	  request.h common.h computer.c slave.h job.h master.h:
-	  No more unnecesary delays
+	* Several minor bug fixes in the job\'s page
 
+2004-10-11 17:13:36  Jorge Daza <jorge@drqueue.org>
 
-2004-01-07 18:18:00  Rev 647    jorge
 
-	* CREDITS:
-	  Added thanks to Marco Gaib
+	* Added CPPFLAGS for sendjob
 
+2004-10-11 17:09:13  Jorge Daza <jorge@drqueue.org>
 
-2003-12-24 11:29:23  Rev 645    jorge
 
-	* common.h:
-	  New release
+	* Solved compilation bug on FreeBSD and MacOS X
 
+2004-10-11 16:11:18  Jorge Daza <jorge@drqueue.org>
 
-2003-12-24 11:00:49  Rev 644    jorge
 
-	* drqman/drqm_jobs.c:
-	  Minor change: CopyJob_CloneInfo caused some error messages
+	* Previous tag stored on Revision
 
+2004-10-11 16:10:47  Jorge Daza <jorge@drqueue.org>
 
-2003-12-24 10:33:31  Rev 643    jorge
 
-	* drqman/drqm_jobs.c:
-	  Now CopyJobs also copies the priority settings
+	* build_package.sh now also commits the Revision just after the update
 
+2004-10-11 16:04:08  Jorge Daza <jorge@drqueue.org>
 
-2003-12-24 09:36:50  Rev 641    jorge
 
-	* common.h:
-	  New release
+	* Changelog commited by build_package.sh
 
+2004-10-11 16:03:50  Jorge Daza <jorge@drqueue.org>
 
-2003-12-22 22:38:58  Rev 640    jorge
 
-	* drqman/drqm_jobs_bmrt.c:
-	  Added jdd koj Bmrt details.
+	* New version number on common.h: 0.50rc5
 
+2004-10-11 16:03:29  Jorge Daza <jorge@drqueue.org>
 
-2003-12-20 13:08:35  Rev 639    jorge
 
-	* communications.c:
-	  Added bmrt koj support on send_job and recv_job.
+	* Commit Changelog added
 
+2004-10-11 15:59:54  Jorge Daza <jorge@drqueue.org>
 
-2003-12-19 17:50:30  Rev 637    jorge
 
-	* common.h:
-	  New release
+	* Revision update after tagging, not before
 
+2004-10-11 15:47:49  Jorge Daza <jorge@drqueue.org>
 
-2003-12-19 17:42:37  Rev 636    jorge
 
-	* drqman/drqm_jobs_bmrt.c drqman/drqm_jobs_maya.c 
-	  drqman/drqm_jobs_blender.c:
-	  Bug fixes
+	* Commited by build_release.sh
 
+2004-10-11 15:46:31  Jorge Daza <jorge@drqueue.org>
 
-2003-12-19 17:26:23  Rev 635    jorge
 
-	* drqman/drqm_jobs.c drqman/drqm_computers.c Makefile drqman/Makefile:
-	  Changed drqman to gtk+-2.0
+	* Commited by build_release.sh
 
+2004-10-11 15:45:36  Jorge Daza <jorge@drqueue.org>
 
-2003-12-19 01:34:24  Rev 634    jorge
 
-	* CREDITS:
-	  Added CREDITS
+	* Now it autocreates the tag
 
+2004-10-11 15:35:51  Jorge Daza <jorge@drqueue.org>
 
-2003-12-19 00:08:34  Rev 633    jorge
 
-	* drqman/drqm_jobs.c:
-	  Segmentation fault bug fix on jdd sort functions
+	* Modified by buil_release.sh
 
+2004-10-11 15:33:54  Jorge Daza <jorge@drqueue.org>
 
-2003-12-18 23:08:58  Rev 631    jorge
 
-	* drqman/drqm_jobs.c job.c:
-	  More bug fixes
+	* Fixed problem of tar not excluding .svn files.
 
+2004-10-11 15:26:15  Jorge Daza <jorge@drqueue.org>
 
-2003-12-18 21:52:41  Rev 630    jorge
 
-	* etc/bmrt.sg:
-	  Bug fix. Added case statement
+	* Added $VERSION to commit line.
+	* Also uncommented it.
 
+2004-10-11 15:24:08  Jorge Daza <jorge@drqueue.org>
 
-2003-12-18 21:38:32  Rev 629    jorge
 
-	* drqman/drqm_jobs.c drqman/drqm_jobs_bmrt.c:
-	  Bug fixes
+	* Updated ChangeLog
 
+2004-10-11 15:23:38  Jorge Daza <jorge@drqueue.org>
 
-2003-12-18 21:11:44  Rev 628    jorge
 
-	* drqman/drqm_jobs_bmrt.c etc/bmrt.sg etc/maya.sg job.c:
-	  Bug fixes
+	* build_release.sh seems to work now. Let's test it !
 
+2004-10-11 15:04:55  Jorge Daza <jorge@drqueue.org>
 
-2003-12-18 20:40:35  Rev 627    jorge
 
-	* common.h:
-	  New release v0.43
+	* Working on build package script
 
+2004-10-11 12:54:44  Jorge Daza <jorge@drqueue.org>
 
-2003-12-18 20:39:41  Rev 626    jorge
 
-	* drqman/drqm_jobs.c bmrtsg.h drqman/drqm_jobs_bmrt.c mayasg.h 
-	  libdrqueue.h etc/bmrt.sg drqman/drqm_jobs.h blendersg.h job.c 
-	  drqman/drqm_jobs_bmrt.h Makefile bmrtsg.c drqman/Makefile job.h 
-	  mayasg.c:
-	  First commit with support for bmrt
+	* Added Revision
 
+2004-10-11 12:53:04  Jorge Daza <jorge@drqueue.org>
 
-2003-12-18 04:31:15  Rev 625    jorge
 
-	* drqman/drqm_jobs.c:
-	  Added tooltip for block size entry on the new job dialog
+	* ChangeLog added
 
+2004-10-11 11:54:48  Jorge Daza <jorge@drqueue.org>
 
-2003-12-18 04:13:22  Rev 624    jorge
 
-	* common.h:
-	  Updated version
+	* Declaration and include missing.
 
+2004-10-11 11:51:13  Jorge Daza <jorge@drqueue.org>
 
-2003-12-18 04:11:07  Rev 622    jorge
 
-	* task.c drqman/drqm_jobs_blender.h drqman/drqm_jobs.c etc/mayablock.
-	  sg drqman/drqm_jobs.h task.h drqman/drqm_jobs_maya.c slave.c job.c 
-	  etc/blender.sg drqman/Makefile drqman/drqm_jobs_maya.h job.h todo 
-	  communications.c request.c etc/blenderblock.sg etc/maya.sg 
-	  Makefile drqman/drqm_jobs_blender.c computer.c drqman/drqm_info.c:
-	  Only two kind of jobs, with block size
+	* New release candidate
 
+2004-10-11 10:45:29  Jorge Daza <jorge@drqueue.org>
 
-2003-12-18 01:27:01  Rev 621    jorge
 
-	* etc/3delight.sg etc/bmrt.sg etc/pixie.sg:
-	  Added .sg files for bmrt, 3delight and pixie
+	* Basic checks before removing directory.
 
+2004-10-11 10:25:18  Jorge Daza <jorge@drqueue.org>
 
-2003-12-15 22:19:25  Rev 620    jorge
 
-	* LICENSE:
-	  Added License file
+	* FreeBSD compilation bug solved
 
+2004-10-10 19:08:18  Jorge Daza <jorge@drqueue.org>
 
-2003-12-15 22:18:32  Rev 618    jorge
 
-	* drqman/drqm_jobs.c computer.h blendersg.c libdrqueue.h 
-	  drqman/drqm_jobs.h job.c blendersg.h etc/blender.sg job.h setenv 
-	  drqman/eeelogo.xpm sendjob.cpp common.c etc/blenderblock.sg 
-	  Makefile computer.c drqman/drqm_info.c:
-	  Added Blender support
+	* Added keywords to drqman
 
+2004-10-10 19:07:59  Jorge Daza <jorge@drqueue.org>
 
-2002-12-02 22:42:25  Rev 617    jorge
 
-	* bin/slave:
-	  Added parameters
+	* Added keywords to drqman
 
+2004-10-10 19:01:07  Jorge Daza <jorge@drqueue.org>
 
-2002-12-02 22:24:08  Rev 616    jorge
 
-	* task.c drqman/drqm_jobs.c sendjob.cpp sendjob.c drqman/drqm_jobs.h 
-	  communications.c etc/maya.sg job.c drerrno.c job.h drerrno.h:
-	  Lots of changes
+	* New version
 
+2004-10-10 18:59:25  Jorge Daza <jorge@drqueue.org>
 
-2002-09-22 19:12:03  Rev 615    jorge
 
-	* bin/slasher.pl sendjob.cpp bin/poolcheck.pl bin/sendjob:
-	  Added to repository
+	* Updated ConfirmDialog stuff
 
+2004-10-10 18:55:22  Jorge Daza <jorge@drqueue.org>
 
-2002-09-22 19:10:24  Rev 614    jorge
 
-	* drqman/drqm_jobs.c mayasg.h etc/maya.sg sendjob.h Makefile request.
-	  h mayasg.c:
-	  Updates
+	* Solved bug of non-refreshing main window, when then job is hard-stopped
 
+2004-10-10 18:15:35  Jorge Daza <jorge@drqueue.org>
 
-2002-08-04 21:30:01  Rev 612    jorge
 
-	* slave.c master.c slave.h master.h:
-	  Redeclaration problem with KEY solved
+	* Solved bug of non-closing job details window
 
+2004-10-10 18:00:53  Jorge Daza <jorge@drqueue.org>
 
-2002-08-04 21:20:23  Rev 611    jorge
 
-	* drqman/drqm_jobs.c:
-	  Solved bug that caused segmentation faults when changing the KOJ in DNJ.
+	* Solved problem in the job details window.
 
+2004-10-10 17:40:41  Jorge Daza <jorge@drqueue.org>
 
-2002-08-04 21:19:36  Rev 610    jorge
 
-	* slave.c master.c slave.h master.h:
-	  Key file defined as constant.
+	* TODO updated
 
+2004-10-10 14:55:30  Jorge Daza <jorge@drqueue.org>
 
-2002-08-02 17:42:24  Rev 609    jorge
 
-	* etc/mayablock.sg etc/maya.sg:
-	  Requeueing enabled
+	* Added keywords, that were lost on cvs2svn
 
+2004-10-10 14:04:11  Jorge Daza <jorge@drqueue.org>
 
-2002-08-02 17:41:32  Rev 608    jorge
 
-	* common.h:
-	  New version
+	* todo changed to TODO
 
+2004-10-10 05:02:15  Jorge Daza <jorge@drqueue.org>
 
-2002-08-02 17:40:21  Rev 607    jorge
 
-	* drqman/drqm_jobs.c etc/mayablock.sg mayasg.h drqman/drqm_jobs.h 
-	  etc/maya.sg mayasg.c:
-	  Minor changes
+	* svn test
 
+2004-10-09 23:21:01  Jorge Daza <jorge@drqueue.org>
 
-2002-07-23 13:03:53  Rev 606    jorge
 
-	* drqman/drqm_jobs.c:
-	  Support for file owner setting on GUI.
-Solved bug that caused frames not to be requeued.
+	* Bug 0000002 solved. Thanks to Shawn Parr.
 
+2004-10-09 21:34:29  Jorge Daza <jorge@drqueue.org>
 
-2002-07-01 12:47:53  Rev 605    jorge
 
-	* bin/slave:
-	  Restart of slaves after death.
+	* Bug 0000001 solved.
 
+2004-10-09 07:50:13  Jorge Daza <jorge@drqueue.org>
 
-2002-06-27 09:47:59  Rev 603    jorge
 
-	* bin/chown_block:
-	  Now works...
+	* Added -t blender
 
+2004-10-09 07:22:02  Jorge Daza <jorge@drqueue.org>
 
-2002-06-27 09:23:53  Rev 602    jorge
 
-	* common.h:
-	  New version.
+	* Updated Makefile
 
+2004-10-09 07:21:43  Jorge Daza <jorge@drqueue.org>
 
-2002-06-27 09:23:30  Rev 601    jorge
 
-	* communications.c:
-	  Bug in send_task, recv_task solved.
+	* New sendjob supporting Maya and Blender
 
+2004-10-09 06:50:37  Jorge Daza <jorge@drqueue.org>
 
-2002-06-27 09:22:51  Rev 600    jorge
 
-	* drqman/drqm_request.c:
-	  A small change; more verbose on failure.
+	* Added sendjob.blender.py
 
+2004-10-09 06:42:58  Jorge Daza <jorge@drqueue.org>
 
-2002-06-27 09:22:07  Rev 599    jorge
 
-	* etc/mayablock.sg etc/maya.sg:
-	  Bbug in requeueing fixed.
+	* Bugfix
 
+2004-10-09 05:44:29  Jorge Daza <jorge@drqueue.org>
 
-2002-06-26 17:22:29  Rev 598    jorge
 
-	* setenv request.c communications.c drqman/Makefile:
-	  Bug not solved. Working on it.
+	* Minor bug
 
+2004-10-09 05:42:36  Jorge Daza <jorge@drqueue.org>
 
-2002-06-26 13:34:38  Rev 596    jorge
 
-	* common.h:
-	  Updated version number
+	* Added Darwin_install, not tested yet
 
+2004-10-09 05:39:25  Jorge Daza <jorge@drqueue.org>
 
-2002-06-26 13:33:55  Rev 595    jorge
 
-	* communications.c communications.h:
-	  There were some problems with drqman (segmentation faults) when starting. I tried to solve it by making a clearer trasnmission of the header of the computer_status.
+	* Updated Linux_install
 
+2004-10-09 05:31:30  Jorge Daza <jorge@drqueue.org>
 
-2002-06-26 13:32:23  Rev 594    jorge
 
-	* etc/maya.sg:
-	  Added setting the owners of the rendered files as requested.
+	* Added Opteron
 
+2004-10-06 18:34:12  Jorge Daza <jorge@drqueue.org>
 
-2002-06-26 13:31:12  Rev 593    jorge
 
-	* setenv:
-	  Master moved to webster.
+	* Theodore, you deser much more. Thanks a lot
 
+2004-10-06 18:33:17  Jorge Daza <jorge@drqueue.org>
 
-2002-06-26 13:31:00  Rev 592    jorge
 
-	* Makefile:
-	  Added chown_block to the linux_install target.
+	* Small bug in INSTGID line
 
+2004-10-06 18:26:53  Jorge Daza <jorge@drqueue.org>
 
-2002-06-26 13:30:30  Rev 591    jorge
 
-	* common.h:
-	  New version number.
+	* sendjob compiling bugs solved
 
+2004-10-06 18:16:57  Jorge Daza <jorge@drqueue.org>
 
-2002-06-26 13:29:43  Rev 589    jorge
 
-	* etc/mayablock.sg:
-	  Added to repo
+	* More FreeBSD related changes
 
+2004-10-06 15:56:02  Jorge Daza <jorge@drqueue.org>
 
-2002-06-25 16:14:54  Rev 588    jorge
 
-	* bin/chown_block:
-	  More comments
+	* Total frame number bug: seems solved
 
+2004-04-26 18:25:51  Jorge Daza <jorge@drqueue.org>
 
-2002-06-25 16:11:29  Rev 587    jorge
 
-	* bin/chown_block:
-	  Working.
+	* Changes made by Theodore Schundler
 
+2004-04-23 22:40:52  Jorge Daza <jorge@drqueue.org>
 
-2002-06-25 16:03:01  Rev 586    jorge
 
-	* bin/chown_block:
-	  Added to repository
+	* Preliminary aqsis.sg
 
+2004-04-23 22:40:26  Jorge Daza <jorge@drqueue.org>
 
-2002-06-24 08:40:50  Rev 585    jorge
 
-	* drqman/drqm_jobs.c:
-	  Frames clist keeps the latest sort type when updated
+	* Minor correction. Changed Maya to Pixie.
 
+2004-04-23 20:56:16  Jorge Daza <jorge@drqueue.org>
 
-2002-06-21 19:02:21  Rev 584    jorge
 
-	* bin/slave.sh bin/master.sh:
-	  Removed master and slave .sh
+	* Goran Kocov added to credits
 
+2004-04-23 18:56:28  Jorge Daza <jorge@drqueue.org>
 
-2002-06-21 15:49:40  Rev 583    jorge
 
-	* drqman/drqm_jobs.c:
-	  Added ordering based on time and icomp.
+	* New release
 
+2004-03-16 00:45:40  Jorge Daza <jorge@drqueue.org>
 
-2002-06-20 22:55:34  Rev 582    jorge
 
-	* drqman/drqm_jobs.c:
-	  Several upgrades. Ordering of frames by status, exitcode or number. Nicer job details view
+	* Step frame bug solved
 
+2004-03-09 19:54:29  Jorge Daza <jorge@drqueue.org>
 
-2002-06-20 19:36:59  Rev 581    jorge
 
-	* requeue.c:
-	  Added to repository
+	* Added Pixie support
 
+2004-03-09 19:53:22  Jorge Daza <jorge@drqueue.org>
 
-2002-06-20 19:32:50  Rev 580    jorge
 
-	* drqman/drqm_jobs.c:
-	  Using a table to solve the problem with long filenames
+	* Added pixie support. Added checkbox for OSX.
 
+2004-02-24 11:39:28  Jorge Daza <jorge@drqueue.org>
 
-2002-06-20 15:28:48  Rev 579    jorge
 
-	* task.c drqman/drqm_jobs.c bin/requeue bin/master mayasg.h task.h 
-	  communications.c etc/maya.sg job.c Makefile drqman/Makefile 
-	  computer.c job.h mayasg.c:
-	  Support for Maya Block rendering but working on the GUI
+	* Mac OS X bug with unwaited children solved
 
+2004-02-21 00:24:53  Jorge Daza <jorge@drqueue.org>
 
-2002-06-18 12:27:46  Rev 578    jorge
 
-	* bin/requeue bin/master bin/slave:
-	  Didn't work... so fixed
+	* New release
 
+2004-02-21 00:24:23  Jorge Daza <jorge@drqueue.org>
 
-2002-06-18 12:16:50  Rev 577    jorge
 
-	* bin/requeue bin/master bin/slave:
-	  More generic
+	* Bug of Mac OS X forking problem solved
 
+2004-01-24 01:21:09  Jorge Daza <jorge@drqueue.org>
 
-2002-06-17 16:27:35  Rev 576    jorge
 
-	* drqman/drqm_jobs.c mayasg.h drqman/drqm_jobs.h etc/maya.sg job.c 
-	  job.h mayasg.c:
-	  Render directory in place of project directory.
+	* New version release
 
+2004-01-24 01:19:08  Jorge Daza <jorge@drqueue.org>
 
-2002-05-17 16:07:50  Rev 574    jorge
 
-	* common.h:
-	  Updated version number.
+	* Working on Mac OSX
 
+2004-01-23 04:28:00  Jorge Daza <jorge@drqueue.org>
 
-2002-05-17 16:06:44  Rev 573    jorge
 
-	* bin/path2unix.pl:
-	  Added to repository.
+	* Preliminary OSX support
 
+2004-01-22 18:48:24  Jorge Daza <jorge@drqueue.org>
 
-2002-05-17 16:06:26  Rev 572    jorge
 
-	* setenv:
-	  Pointing to render1
+	* Working on OSX port.
 
+2004-01-16 01:17:37  Jorge Daza <jorge@drqueue.org>
 
-2002-05-17 16:05:59  Rev 571    jorge
 
-	* request.c job.c slave.c master.c job.h:
-	  Several updates and bugfixes.
+	* New release
 
+2004-01-07 22:50:21  Jorge Daza <jorge@drqueue.org>
 
-2002-05-17 16:03:23  Rev 570    jorge
 
-	* drerrno.c:
-	  Information not complete error message.
+	* No more unnecesary delays
 
+2004-01-07 19:18:00  Jorge Daza <jorge@drqueue.org>
 
-2002-05-17 16:03:02  Rev 569    jorge
 
-	* constants.h:
-	  Much more relaxed time limits.
+	* Added thanks to Marco Gaib
 
+2003-12-24 12:29:23  Jorge Daza <jorge@drqueue.org>
 
-2002-05-17 16:02:39  Rev 568    jorge
 
-	* computer_info.c computer_info.h:
-	  Updated to detect Athlon cpus.
+	* New release
 
+2003-12-24 12:00:49  Jorge Daza <jorge@drqueue.org>
 
-2002-05-17 16:02:05  Rev 567    jorge
 
-	* Makefile:
-	  Several linux installation updates.
+	* Minor change: CopyJob_CloneInfo caused some error messages
 
+2003-12-24 11:33:31  Jorge Daza <jorge@drqueue.org>
 
-2002-03-01 15:27:56  Rev 565    jorge
 
-	* common.h:
-	  New version number.
+	* Now CopyJobs also copies the priority settings
 
+2003-12-24 10:36:50  Jorge Daza <jorge@drqueue.org>
 
-2002-03-01 14:14:15  Rev 564    jorge
 
-	* computer.h slave.c computer.c:
-	  Support for autoenable.
+	* New release
 
+2003-12-22 23:38:58  Jorge Daza <jorge@drqueue.org>
 
-2002-03-01 11:38:08  Rev 563    jorge
 
-	* computer_status.h slave.c computer_status.c:
-	  Solved possible race condition problem.
+	* Added jdd koj Bmrt details.
 
+2003-12-20 14:08:35  Jorge Daza <jorge@drqueue.org>
 
-2002-03-01 11:07:43  Rev 562    jorge
 
-	* logger.c:
-	  Removed test comments
+	* Added bmrt koj support on send_job and recv_job.
 
+2003-12-19 18:50:30  Jorge Daza <jorge@drqueue.org>
 
-2002-03-01 11:06:53  Rev 561    jorge
 
-	* logger.c:
-	  Test comment
+	* New release
 
+2003-12-19 18:42:37  Jorge Daza <jorge@drqueue.org>
 
-2002-03-01 11:00:04  Rev 560    jorge
 
-	* logger.c:
-	  Removed dumb lines
+	* Bug fixes
 
+2003-12-19 18:26:23  Jorge Daza <jorge@drqueue.org>
 
-2002-03-01 10:58:24  Rev 559    jorge
 
-	* logger.c:
-	  Added dumb line.
+	* Changed drqman to gtk+-2.0
 
+2003-12-19 02:34:24  Jorge Daza <jorge@drqueue.org>
 
-2002-03-01 09:36:51  Rev 558    jorge
 
-	* task.c job.c:
-	  Environment updated to have the owner of the job in it.
+	* Added CREDITS
 
+2003-12-19 01:08:34  Jorge Daza <jorge@drqueue.org>
 
-2002-02-27 16:36:35  Rev 557    jorge
 
-	* request.c job.c master.c computer.c:
-	  Using new logger functions
+	* Segmentation fault bug fix on jdd sort functions
 
+2003-12-19 00:08:58  Jorge Daza <jorge@drqueue.org>
 
-2002-02-27 10:42:50  Rev 556    jorge
 
-	* request.c:
-	  Use of the new log functions.
+	* More bug fixes
 
+2003-12-18 22:52:41  Jorge Daza <jorge@drqueue.org>
 
-2002-02-27 10:42:35  Rev 555    jorge
 
-	* logger.h logger.c:
-	  Variable number of arguments on log functions.
+	* Bug fix. Added case statement
 
+2003-12-18 22:38:32  Jorge Daza <jorge@drqueue.org>
 
-2002-02-27 10:41:45  Rev 554    jorge
 
-	* job.c:
-	  Minor changes.
+	* Bug fixes
 
+2003-12-18 22:11:44  Jorge Daza <jorge@drqueue.org>
 
-2002-02-27 10:41:17  Rev 553    jorge
 
-	* database.c:
-	  Minor updates. More info on log messages.
+	* Bug fixes
 
+2003-12-18 21:40:35  Jorge Daza <jorge@drqueue.org>
 
-2002-02-26 15:52:05  Rev 552    jorge
 
-	* drqman/drqm_jobs.c drqman/drqm_request.h slave.c request_codes.h 
-	  logger.c constants.h todo logger.h sendjob.c drqman/drqm_computers.
-	  c common.c request.c drqman/drqm_computers.h master.c 
-	  drqman/drqm_request.c request.h computer.c:
-	  Working on it
+	* New release v0.43
 
+2003-12-18 21:39:41  Jorge Daza <jorge@drqueue.org>
 
-2002-02-21 15:56:25  Rev 551    jorge
 
-	* drqman/drqm_computers.c drqman/drqm_computers.h:
-	  Basic autoenable time support.
+	* First commit with support for bmrt
 
+2003-12-18 05:31:15  Jorge Daza <jorge@drqueue.org>
 
-2002-02-21 15:50:02  Rev 550    jorge
 
-	* drqman/drqm_computers.c:
-	  Now shows the autoenable time.
+	* Added tooltip for block size entry on the new job dialog
 
+2003-12-18 05:13:22  Jorge Daza <jorge@drqueue.org>
 
-2002-02-21 15:49:23  Rev 549    jorge
 
-	* drqman/drqm_jobs.c:
-	  Solved bug that caused segmentation faults, trying for free already freed memory.
+	* Updated version
 
+2003-12-18 05:11:07  Jorge Daza <jorge@drqueue.org>
 
-2002-02-21 11:45:50  Rev 548    jorge
 
-	* bin bin/slave.sh bin/master.sh:
-	  Added to repository
+	* Only two kind of jobs, with block size
 
+2003-12-18 02:27:01  Jorge Daza <jorge@drqueue.org>
 
-2002-02-15 11:51:00  Rev 547    jorge
 
-	* computer.h todo computer_status.h communications.c common.c slave.
-	  c master.c communications.h common.h computer_status.c:
-	  Working on
+	* Added .sg files for bmrt, 3delight and pixie
 
+2003-12-15 23:19:25  Jorge Daza <jorge@drqueue.org>
 
-2001-11-26 12:19:50  Rev 546    jorge
 
-	* request.c:
-	  Minor changes.
+	* Added License file
 
+2003-12-15 23:18:32  Jorge Daza <jorge@drqueue.org>
 
-2001-11-26 12:19:05  Rev 545    jorge
 
-	* request.c:
-	  Small corruption
+	* Added Blender support
 
+2002-12-02 23:42:25  Jorge Daza <jorge@drqueue.org>
 
-2001-11-23 15:53:53  Rev 544    jorge
 
-	* etc/drqman.rc:
-	  Different font
+	* Added parameters
 
+2002-12-02 23:24:08  Jorge Daza <jorge@drqueue.org>
 
-2001-11-23 15:53:38  Rev 543    jorge
 
-	* request.c:
-	  More debugging messages on handle_r_r_slavexit
+	* Lots of changes
 
+2002-09-22 21:12:03  Jorge Daza <jorge@drqueue.org>
 
-2001-11-23 15:52:05  Rev 542    jorge
 
-	* job.c:
-	  Mail notifications only if the appropiate flag is set.
+	* Added to repository
 
+2002-09-22 21:10:24  Jorge Daza <jorge@drqueue.org>
 
-2001-11-23 15:50:47  Rev 541    jorge
 
-	* common.c:
-	  Minor bugfix on mail notifications.
+	* Updates
 
+2002-08-04 23:30:01  Jorge Daza <jorge@drqueue.org>
 
-2001-11-23 15:47:45  Rev 540    jorge
 
-	* Makefile:
-	  Installation of etc files.
+	* Redeclaration problem with KEY solved
 
+2002-08-04 23:20:23  Jorge Daza <jorge@drqueue.org>
 
-2001-11-23 15:29:07  Rev 539    jorge
 
-	* constants.h:
-	  Different timing.
+	* Solved bug that caused segmentation faults when changing the KOJ in DNJ.
 
+2002-08-04 23:19:36  Jorge Daza <jorge@drqueue.org>
 
-2001-11-23 15:28:12  Rev 538    jorge
 
-	* request.c:
-	  Bugfix :
- * register_slave : the slaves always had 0 on the id while the master had the good value.
+	* Key file defined as constant.
 
+2002-08-02 19:42:24  Jorge Daza <jorge@drqueue.org>
 
-2001-11-23 15:07:48  Rev 537    jorge
 
-	* request.c:
-	  Minor bugfix :
- * handle_r_r_slavexit : if the transmission was interrupted before receiving the icomp, the first job was deleted.
+	* Requeueing enabled
 
+2002-08-02 19:41:32  Jorge Daza <jorge@drqueue.org>
 
-2001-11-23 14:43:23  Rev 536    jorge
 
-	* request.c:
-	  Bugfix :
- * handle_r_r_slavexit : did not release the semaphore.
+	* New version
 
+2002-08-02 19:40:21  Jorge Daza <jorge@drqueue.org>
 
-2001-11-23 11:52:03  Rev 535    jorge
 
-	* etc/drqman.rc:
-	  First commit.
+	* Minor changes
 
+2002-07-23 15:03:53  Jorge Daza <jorge@drqueue.org>
 
-2001-11-23 11:51:41  Rev 534    jorge
 
-	* drqman/drqm_jobs.c drqman/main.c:
-	  Basic suport for resource file.
+	* Support for file owner setting on GUI.
+	* Solved bug that caused frames not to be requeued.
 
+2002-07-01 14:47:53  Jorge Daza <jorge@drqueue.org>
 
-2001-11-23 11:51:13  Rev 533    jorge
 
-	* common.h:
-	  Minor bugfix.
+	* Restart of slaves after death.
 
+2002-06-27 11:47:59  Jorge Daza <jorge@drqueue.org>
 
-2001-11-22 15:05:48  Rev 531    jorge
 
-	* common.h:
-	  Updated version number.
+	* Now works...
 
+2002-06-27 11:23:53  Jorge Daza <jorge@drqueue.org>
 
-2001-11-22 14:44:29  Rev 530    jorge
 
-	* drqman/drqm_jobs.c drqman/drqm_jobs.h job.c job.h:
-	  Added operating system flags and limits.
+	* New version.
 
+2002-06-27 11:23:30  Jorge Daza <jorge@drqueue.org>
 
-2001-11-22 14:43:14  Rev 529    jorge
 
-	* database.h:
-	  Updated version number.
+	* Bug in send_task, recv_task solved.
 
+2002-06-27 11:22:51  Jorge Daza <jorge@drqueue.org>
 
-2001-11-22 14:43:02  Rev 528    jorge
 
-	* communications.c:
-	  Added job limits to the job send and receive functions.
+	* A small change; more verbose on failure.
 
+2002-06-27 11:22:07  Jorge Daza <jorge@drqueue.org>
 
-2001-11-21 16:07:37  Rev 527    jorge
 
-	* database.c:
-	  Minor bugfix
+	* Bbug in requeueing fixed.
 
+2002-06-26 19:22:29  Jorge Daza <jorge@drqueue.org>
 
-2001-11-21 10:17:20  Rev 526    jorge
 
-	* etc/maya.sg etc:
-	  Added to repository.
+	* Bug not solved. Working on it.
 
+2002-06-26 15:34:38  Jorge Daza <jorge@drqueue.org>
 
-2001-11-21 10:16:44  Rev 525    jorge
 
-	* drqman/drqm_jobs.c:
-	  Specific email buttons now insensitive when appropiate.
+	* Updated version number
 
+2002-06-26 15:33:55  Jorge Daza <jorge@drqueue.org>
 
-2001-11-21 10:16:09  Rev 524    jorge
 
-	* todo:
-	  Updated.
+	* There were some problems with drqman (segmentation faults) when starting. I tried to solve it by making a clearer trasnmission of the header of the computer_status.
 
+2002-06-26 15:32:23  Jorge Daza <jorge@drqueue.org>
 
-2001-11-21 10:16:05  Rev 523    jorge
 
-	* request.c:
-	  Minor changes.
+	* Added setting the owners of the rendered files as requested.
 
+2002-06-26 15:31:12  Jorge Daza <jorge@drqueue.org>
 
-2001-11-21 10:15:49  Rev 522    jorge
 
-	* mayasg.c:
-	  Added maya script generator config file.
+	* Master moved to webster.
 
+2002-06-26 15:31:00  Jorge Daza <jorge@drqueue.org>
 
-2001-11-21 10:15:22  Rev 521    jorge
 
-	* common.c drerrno.c drerrno.h:
-	  Added stuff for "etc" directory
+	* Added chown_block to the linux_install target.
 
+2002-06-26 15:30:30  Jorge Daza <jorge@drqueue.org>
 
-2001-11-19 11:44:28  Rev 520    jorge
 
-	* job.c:
-	  The average frame time now is not rounded to a SLAVEDELAY boundary.
+	* New version number.
 
+2002-06-26 15:29:43  Jorge Daza <jorge@drqueue.org>
 
-2001-11-19 09:49:25  Rev 518    jorge
 
-	* common.h:
-	  Updated version number.
+	* Added to repo
 
+2002-06-25 18:14:54  Jorge Daza <jorge@drqueue.org>
 
-2001-11-19 09:46:11  Rev 517    jorge
 
-	* drqman/drqm_jobs.c:
-	  Added :
- * jdd_koj_widgets : to show the koj information in the details window
+	* More comments
 
+2002-06-25 18:11:29  Jorge Daza <jorge@drqueue.org>
 
-2001-11-19 09:45:29  Rev 516    jorge
 
-	* job.h:
-	  Updated.
+	* Working.
 
+2002-06-25 18:03:01  Jorge Daza <jorge@drqueue.org>
 
-2001-11-16 15:51:57  Rev 515    jorge
 
-	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
-	  Added support for specific email on mail notifications
+	* Added to repository
 
+2002-06-24 10:40:50  Jorge Daza <jorge@drqueue.org>
 
-2001-11-16 15:51:40  Rev 514    jorge
 
-	* todo:
-	  Updated
+	* Frames clist keeps the latest sort type when updated
 
+2002-06-21 21:02:21  Jorge Daza <jorge@drqueue.org>
 
-2001-11-16 15:51:35  Rev 513    jorge
 
-	* master.c:
-	  Bug fix, the master finds the index of the computer after
-forking, so it does not consume so much time on the main
-process.
+	* Removed master and slave .sh
 
+2002-06-21 17:49:40  Jorge Daza <jorge@drqueue.org>
 
-2001-11-16 15:50:12  Rev 512    jorge
 
-	* job.h:
-	  Added flags and stuff to suport the specific email on mail notifications.
+	* Added ordering based on time and icomp.
 
+2002-06-21 00:55:34  Jorge Daza <jorge@drqueue.org>
 
-2001-11-16 15:49:41  Rev 511    jorge
 
-	* job.c:
-	  Added :
- * job_koj_string
-Modified the rest of function that return strings.
+	* Several upgrades. Ordering of frames by status, exitcode or number. Nicer job details view
 
+2002-06-20 21:36:59  Jorge Daza <jorge@drqueue.org>
 
-2001-11-16 15:48:32  Rev 510    jorge
 
-	* database.h:
-	  Updated.
+	* Added to repository
 
+2002-06-20 21:32:50  Jorge Daza <jorge@drqueue.org>
 
-2001-11-16 15:48:18  Rev 509    jorge
 
-	* computer_info.c:
-	  Modified function that return strings.
+	* Using a table to solve the problem with long filenames
 
+2002-06-20 17:28:48  Jorge Daza <jorge@drqueue.org>
 
-2001-11-16 15:47:50  Rev 508    jorge
 
-	* communications.c communications.h:
-	  Modified :
- * accept_socket : it does not find the index of the conecting
-	computer anymore. Because that task required to call
-	gethostbyaddr before forking and it's expensive in time.
+	* Support for Maya Block rendering but working on the GUI
 
+2002-06-18 14:27:46  Jorge Daza <jorge@drqueue.org>
 
-2001-11-16 15:39:59  Rev 507    jorge
 
-	* common.c:
-	  Added support for specific email on mail notifications.
+	* Didn't work... so fixed
 
+2002-06-18 14:16:50  Jorge Daza <jorge@drqueue.org>
 
-2001-11-15 14:31:05  Rev 506    jorge
 
-	* todo:
-	  Updated
+	* More generic
 
+2002-06-17 18:27:35  Jorge Daza <jorge@drqueue.org>
 
-2001-11-15 14:30:57  Rev 505    jorge
 
-	* common.c drerrno.c drerrno.h:
-	  Added checks for directories on common_environment_check, and also the appropiate error codes on drerrno.
+	* Render directory in place of project directory.
 
+2002-05-17 18:07:50  Jorge Daza <jorge@drqueue.org>
 
-2001-11-14 16:12:20  Rev 504    jorge
 
-	* todo:
-	  Updated.
+	* Updated version number.
 
+2002-05-17 18:06:44  Jorge Daza <jorge@drqueue.org>
 
-2001-11-14 16:12:12  Rev 503    jorge
 
-	* drqman/notebook.c:
-	  Added drqm_info.h
+	* Added to repository.
 
+2002-05-17 18:06:26  Jorge Daza <jorge@drqueue.org>
 
-2001-11-14 14:23:37  Rev 502    jorge
 
-	* common.c:
-	  Modified :
- * mn_job_finished : now it works.
+	* Pointing to render1
 
+2002-05-17 18:05:59  Jorge Daza <jorge@drqueue.org>
 
-2001-11-13 15:52:18  Rev 501    jorge
 
-	* drqman/drqm_jobs.c:
-	  Updated :
- * to use time_str function instead of hard coded string.
+	* Several updates and bugfixes.
 
+2002-05-17 18:03:23  Jorge Daza <jorge@drqueue.org>
 
-2001-11-13 15:51:30  Rev 500    jorge
 
-	* todo:
-	  Updated.
+	* Information not complete error message.
 
+2002-05-17 18:03:02  Jorge Daza <jorge@drqueue.org>
 
-2001-11-13 15:51:17  Rev 499    jorge
 
-	* job.c:
-	  Added :
- * call to mn_job_finished when the job is switched to JOBSTATUS_FINISHED.
+	* Much more relaxed time limits.
 
+2002-05-17 18:02:39  Jorge Daza <jorge@drqueue.org>
 
-2001-11-13 15:50:25  Rev 498    jorge
 
-	* common.c common.h:
-	  Added :
- * time_str : function to convert a number of seconds into an string with hours, minutes and seconds.
+	* Updated to detect Athlon cpus.
 
+2002-05-17 18:02:05  Jorge Daza <jorge@drqueue.org>
 
-2001-11-13 09:50:23  Rev 497    jorge
 
-	* drqman/drqm_jobs.h:
-	  Added flags structure.
+	* Several linux installation updates.
 
+2002-03-01 16:27:56  Jorge Daza <jorge@drqueue.org>
 
-2001-11-13 09:50:02  Rev 496    jorge
 
-	* drqman/drqm_jobs.c:
-	  Added:
- * dnj and jdd flags widgets.
+	* New version number.
 
+2002-03-01 15:14:15  Jorge Daza <jorge@drqueue.org>
 
-2001-11-13 08:38:32  Rev 495    jorge
 
-	* job.h:
-	  Added job flags section, and mail notification flag.
+	* Support for autoenable.
 
+2002-03-01 12:38:08  Jorge Daza <jorge@drqueue.org>
 
-2001-11-09 15:01:13  Rev 494    jorge
 
-	* todo:
-	  Updated.
+	* Solved possible race condition problem.
 
+2002-03-01 12:07:43  Jorge Daza <jorge@drqueue.org>
 
-2001-11-09 15:01:05  Rev 493    jorge
 
-	* communications.c job.c job.h:
-	  Added flags to the job structure.
+	* Removed test comments
 
+2002-03-01 12:06:53  Jorge Daza <jorge@drqueue.org>
 
-2001-11-09 15:00:47  Rev 492    jorge
 
-	* database.h:
-	  Database version update because of changes to the job structure.
+	* Test comment
 
+2002-03-01 12:00:04  Jorge Daza <jorge@drqueue.org>
 
-2001-11-08 15:43:52  Rev 491    jorge
 
-	* drqman/eeelogo.xpm:
-	  Added to repository
+	* Removed dumb lines
 
+2002-03-01 11:58:24  Jorge Daza <jorge@drqueue.org>
 
-2001-11-08 12:04:21  Rev 490    jorge
 
-	* drqman/drqm_info.c:
-	  Added small info text.
+	* Added dumb line.
 
+2002-03-01 10:36:51  Jorge Daza <jorge@drqueue.org>
 
-2001-11-08 11:47:43  Rev 489    jorge
 
-	* drqman/main.c drqman/drqman.h drqman/drqm_info.c:
-	  First logo inside the info view.
+	* Environment updated to have the owner of the job in it.
 
+2002-02-27 17:36:35  Jorge Daza <jorge@drqueue.org>
 
-2001-11-08 11:47:22  Rev 488    jorge
 
-	* drqman/Makefile:
-	  Small bugfix.
+	* Using new logger functions
 
+2002-02-27 11:42:50  Jorge Daza <jorge@drqueue.org>
 
-2001-11-08 11:10:24  Rev 487    jorge
 
-	* drqman/notebook.c drqman/drqm_info.h drqman/Makefile 
-	  drqman/drqm_info.c:
-	  Added info tab.
+	* Use of the new log functions.
 
+2002-02-27 11:42:35  Jorge Daza <jorge@drqueue.org>
 
-2001-11-08 11:09:57  Rev 486    jorge
 
-	* todo:
-	  Updated
+	* Variable number of arguments on log functions.
 
+2002-02-27 11:41:45  Jorge Daza <jorge@drqueue.org>
 
-2001-11-08 09:14:03  Rev 485    jorge
 
-	* database.c communications.c request.c database.h drerrno.c master.
-	  c drerrno.h:
-	  Suppport for saving and loading master database.
+	* Minor changes.
 
+2002-02-27 11:41:17  Jorge Daza <jorge@drqueue.org>
 
-2001-11-07 10:21:46  Rev 484    jorge
 
-	* request.c drqman/drqm_request.c:
-	  Adapted to the new send and receive computer hardware info.
+	* Minor updates. More info on log messages.
 
+2002-02-26 16:52:05  Jorge Daza <jorge@drqueue.org>
 
-2001-11-07 10:20:45  Rev 483    jorge
 
-	* communications.c communications.h:
-	  Modified :
- * send and receive computer hardware info do not use anymore the who value. And now they return error code.
+	* Working on it
 
+2002-02-21 16:56:25  Jorge Daza <jorge@drqueue.org>
 
-2001-11-02 16:12:20  Rev 482    jorge
 
-	* database.c database.h:
-	  Working on database save and load.
+	* Basic autoenable time support.
 
+2002-02-21 16:50:02  Jorge Daza <jorge@drqueue.org>
 
-2001-11-02 10:53:00  Rev 481    jorge
 
-	* database.c communications.c database.h master.c:
-	  Working on database_save.
+	* Now shows the autoenable time.
 
+2002-02-21 16:49:23  Jorge Daza <jorge@drqueue.org>
 
-2001-10-31 15:59:38  Rev 480    jorge
 
-	* database.c communications.c drerrno.c drerrno.h:
-	  Minor changes.
+	* Solved bug that caused segmentation faults, trying for free already freed memory.
 
+2002-02-21 12:45:50  Jorge Daza <jorge@drqueue.org>
 
-2001-10-29 16:25:16  Rev 479    jorge
 
-	* database.c communications.c database.h communications.h:
-	  Working on database save and reload.
+	* Added to repository
 
+2002-02-15 12:51:00  Jorge Daza <jorge@drqueue.org>
 
-2001-10-29 10:13:56  Rev 477    jorge
 
-	* common.h:
-	  Updated version number.
+	* Working on
 
+2001-11-26 13:19:50  Jorge Daza <jorge@drqueue.org>
 
-2001-10-26 13:56:59  Rev 476    jorge
 
-	* slave.c:
-	  Bugfix :
- * get_shared_memory_slave : exit instead of kill to avoid segfault on signal handler.
+	* Minor changes.
 
+2001-11-26 13:19:05  Jorge Daza <jorge@drqueue.org>
 
-2001-10-25 13:20:16  Rev 475    jorge
 
-	* drqman/drqm_request.c:
-	  Modified :
- * removed goto's
+	* Small corruption
 
+2001-11-23 16:53:53  Jorge Daza <jorge@drqueue.org>
 
-2001-10-25 13:19:53  Rev 474    jorge
 
-	* job.c job.h:
-	  Added :
- * job_logs_remove
+	* Different font
 
+2001-11-23 16:53:38  Jorge Daza <jorge@drqueue.org>
 
-2001-10-25 13:17:45  Rev 473    jorge
 
-	* todo:
-	  Updated.
+	* More debugging messages on handle_r_r_slavexit
 
+2001-11-23 16:52:05  Jorge Daza <jorge@drqueue.org>
 
-2001-10-25 13:17:37  Rev 472    jorge
 
-	* common.c common.h:
-	  Added :
- * remove_dir
+	* Mail notifications only if the appropiate flag is set.
 
+2001-11-23 16:50:47  Jorge Daza <jorge@drqueue.org>
 
-2001-10-24 14:53:18  Rev 471    jorge
 
-	* drqman/drqm_jobs.c drqman/drqm_request.h drqman/drqm_request.c:
-	  Added :
- * support for priority update.
+	* Minor bugfix on mail notifications.
 
+2001-11-23 16:47:45  Jorge Daza <jorge@drqueue.org>
 
-2001-10-24 14:52:52  Rev 470    jorge
 
-	* request_codes.h:
-	  Removed :
- * R_A_* definitions.
+	* Installation of etc files.
 
+2001-11-23 16:29:07  Jorge Daza <jorge@drqueue.org>
 
-2001-10-24 14:52:29  Rev 469    jorge
 
-	* request.c request.h:
-	  Added :
- * r_r_jobpriup family of functions
+	* Different timing.
 
+2001-11-23 16:28:12  Jorge Daza <jorge@drqueue.org>
 
-2001-10-24 14:52:00  Rev 468    jorge
 
-	* job.c:
-	  Added :
- * job_logs_remove
+	* Bugfix :
+	 * register_slave : the slaves always had 0 on the id while the master had the good value.
 
+2001-11-23 16:07:48  Jorge Daza <jorge@drqueue.org>
 
-2001-10-24 12:51:59  Rev 467    jorge
 
-	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
-	  Working on job details change priority.
+	* Minor bugfix :
+	 * handle_r_r_slavexit : if the transmission was interrupted before receiving the icomp, the first job was deleted.
 
+2001-11-23 15:43:23  Jorge Daza <jorge@drqueue.org>
 
-2001-10-22 14:16:55  Rev 466    jorge
 
-	* drqman/drqm_jobs.c drqman/drqm_request.h drqman/drqm_request.c:
-	  Added support for changing the maximum number of cpus in one computer.
+	* Bugfix :
+	 * handle_r_r_slavexit : did not release the semaphore.
 
+2001-11-23 12:52:03  Jorge Daza <jorge@drqueue.org>
 
-2001-10-22 14:16:11  Rev 465    jorge
 
-	* request.c:
-	  Some semaphores were not released.
+	* First commit.
 
+2001-11-23 12:51:41  Jorge Daza <jorge@drqueue.org>
 
-2001-10-22 14:12:26  Rev 464    jorge
 
-	* job.c:
-	  Minor change.
+	* Basic suport for resource file.
 
+2001-11-23 12:51:13  Jorge Daza <jorge@drqueue.org>
 
-2001-10-16 15:38:05  Rev 463    jorge
 
-	* drqman/drqm_jobs.c drqman/drqm_request.h request.c request_codes.h 
-	  drqman/drqm_request.c request.h:
-	  Working...
+	* Minor bugfix.
 
+2001-11-22 16:05:48  Jorge Daza <jorge@drqueue.org>
 
-2001-10-11 10:32:50  Rev 462    jorge
 
-	* drqman/drqm_computers.c:
-	  Bug fixes :
- * numerous incorrect uses of info->icomp when should be info->row. Solved.
+	* Updated version number.
 
+2001-11-22 15:44:29  Jorge Daza <jorge@drqueue.org>
 
-2001-10-11 10:32:04  Rev 461    jorge
 
-	* job.c:
-	  Bug fix :
- * job_nframes : did not calculate the correct frame number with bigger steps than one. It always gave one frame less. Now it's solved.
+	* Added operating system flags and limits.
 
+2001-11-22 15:43:14  Jorge Daza <jorge@drqueue.org>
 
-2001-10-08 15:02:43  Rev 459    jorge
 
-	* common.h:
-	  Updated
+	* Updated version number.
 
+2001-11-22 15:43:02  Jorge Daza <jorge@drqueue.org>
 
-2001-10-08 15:02:18  Rev 458    jorge
 
-	* communications.c:
-	  Removed unuseful comentaries.
+	* Added job limits to the job send and receive functions.
 
+2001-11-21 17:07:37  Jorge Daza <jorge@drqueue.org>
 
-2001-10-08 14:57:43  Rev 457    jorge
 
-	* computer.c:
-	  Bug fix :
- * computer_update_assigned : initialization of task.itask
+	* Minor bugfix
 
+2001-11-21 11:17:20  Jorge Daza <jorge@drqueue.org>
 
-2001-10-08 14:19:02  Rev 456    jorge
 
-	* job.c:
-	  Conflicts solved.
+	* Added to repository.
 
+2001-11-21 11:16:44  Jorge Daza <jorge@drqueue.org>
 
-2001-10-08 14:13:47  Rev 455    jorge
 
-	* job.c:
-	  More logging messages.
+	* Specific email buttons now insensitive when appropiate.
 
+2001-11-21 11:16:09  Jorge Daza <jorge@drqueue.org>
 
-2001-10-08 12:43:07  Rev 454    jorge
 
-	* request.c:
-	  Modified :
- * handle_r_r_register : Less verbosity, do not report registered computers.
+	* Updated.
 
+2001-11-21 11:16:05  Jorge Daza <jorge@drqueue.org>
 
-2001-10-08 12:33:18  Rev 452    jorge
 
-	* common.h:
-	  Updated.
+	* Minor changes.
 
+2001-11-21 11:15:49  Jorge Daza <jorge@drqueue.org>
 
-2001-10-08 12:32:55  Rev 451    jorge
 
-	* request.c:
-	  Modified :
- * handle_r_r_jobsesup : now working
+	* Added maya script generator config file.
 
+2001-11-21 11:15:22  Jorge Daza <jorge@drqueue.org>
 
-2001-10-08 12:32:03  Rev 450    jorge
 
-	* job.c:
-	  Added :
- * job_frame_info_init
+	* Added stuff for "etc" directory
 
-Modified :
- * job_init_registered : error checking
+2001-11-19 12:44:28  Jorge Daza <jorge@drqueue.org>
 
 
-2001-10-08 12:31:06  Rev 449    jorge
+	* The average frame time now is not rounded to a SLAVEDELAY boundary.
 
-	* job.h:
-	  Added :
- * job_frame_info_init
+2001-11-19 10:49:25  Jorge Daza <jorge@drqueue.org>
 
 
-2001-10-05 15:52:37  Rev 448    jorge
+	* Updated version number.
 
-	* drqman/drqm_jobs.c drqman/drqm_request.h drqman/drqm_jobs.h 
-	  drqman/drqm_request.c:
-	  Added functions to update the SES of a job. The button in the job details dialog. Needs a confimation dialog.
+2001-11-19 10:46:11  Jorge Daza <jorge@drqueue.org>
 
 
-2001-10-05 15:51:25  Rev 447    jorge
+	* Added :
+	 * jdd_koj_widgets : to show the koj information in the details window
 
-	* todo:
-	  Updated.
+2001-11-19 10:45:29  Jorge Daza <jorge@drqueue.org>
 
 
-2001-10-05 15:51:18  Rev 446    jorge
+	* Updated.
 
-	* request_codes.h:
-	  Added :
- * R_R_JOBSESUP
+2001-11-16 16:51:57  Jorge Daza <jorge@drqueue.org>
 
 
-2001-10-05 15:50:31  Rev 445    jorge
+	* Added support for specific email on mail notifications
 
-	* request.c request.h:
-	  Working on R_R_JOBSESUP family.
+2001-11-16 16:51:40  Jorge Daza <jorge@drqueue.org>
 
 
-2001-10-05 15:50:01  Rev 444    jorge
+	* Updated
 
-	* computer.c:
-	  Bug fix :
- * computer_init : does not call to computer_init_limits because it depends on the hardware info.
+2001-11-16 16:51:35  Jorge Daza <jorge@drqueue.org>
 
 
-2001-10-04 08:31:20  Rev 442    jorge
+	* Bug fix, the master finds the index of the computer after
+	* forking, so it does not consume so much time on the main
+	* process.
 
-	* common.h:
-	  Updated version number
+2001-11-16 16:50:12  Jorge Daza <jorge@drqueue.org>
 
 
-2001-10-04 08:29:57  Rev 441    jorge
+	* Added flags and stuff to suport the specific email on mail notifications.
 
-	* communications.c slave.c:
-	  Minor updates.
+2001-11-16 16:49:41  Jorge Daza <jorge@drqueue.org>
 
 
-2001-10-04 08:20:47  Rev 440    jorge
+	* Added :
+	 * job_koj_string
+	* Modified the rest of function that return strings.
 
-	* slave.c:
-	  Modified :
- * main : more comments on update_computer_limits and the call to update_computer_status now uses sdb.
+2001-11-16 16:48:32  Jorge Daza <jorge@drqueue.org>
 
 
-2001-10-04 08:19:52  Rev 439    jorge
+	* Updated.
 
-	* request.h:
-	  Modified :
- * update_computer_status : now uses sdb as parameter.
+2001-11-16 16:48:18  Jorge Daza <jorge@drqueue.org>
 
 
-2001-10-04 08:19:25  Rev 438    jorge
+	* Modified function that return strings.
 
-	* request.c:
-	  Modified :
- * update_computer_status : now uses a sdb as parameter because now we take the semaphore for copying the status.
+2001-11-16 16:47:50  Jorge Daza <jorge@drqueue.org>
 
 
-2001-10-04 08:17:25  Rev 437    jorge
+	* Modified :
+	 * accept_socket : it does not find the index of the conecting
+	* 	computer anymore. Because that task required to call
+	* 	gethostbyaddr before forking and it's expensive in time.
 
-	* communications.c:
-	  Bug fix :
- * send_computer_status : we need to count ntasks again.
+2001-11-16 16:39:59  Jorge Daza <jorge@drqueue.org>
 
 
-2001-10-02 14:36:03  Rev 436    jorge
+	* Added support for specific email on mail notifications.
 
-	* request.c:
-	  Minor updates.
+2001-11-15 15:31:05  Jorge Daza <jorge@drqueue.org>
 
 
-2001-10-02 12:55:50  Rev 434    jorge
+	* Updated
 
-	* communications.c:
-	  Modified :
- * send_computer_status, recv_computer_status : Now they get itask from the received task so they don't need to send it before.
+2001-11-15 15:30:57  Jorge Daza <jorge@drqueue.org>
 
 
-2001-10-02 12:42:00  Rev 433    jorge
+	* Added checks for directories on common_environment_check, and also the appropiate error codes on drerrno.
 
-	* common.h:
-	  Updated version number.
+2001-11-14 17:12:20  Jorge Daza <jorge@drqueue.org>
 
 
-2001-10-02 12:41:22  Rev 432    jorge
+	* Updated.
 
-	* drqman/drqm_computers.c drqman/drqm_request.c:
-	  Changes to used task.itask.
+2001-11-14 17:12:12  Jorge Daza <jorge@drqueue.org>
 
 
-2001-10-02 12:40:47  Rev 431    jorge
+	* Added drqm_info.h
 
-	* task.c task.h:
-	  Added :
- * task.itask : index to the taks in the computer information kept by the slaves.
+2001-11-14 15:23:37  Jorge Daza <jorge@drqueue.org>
 
 
-2001-10-02 12:40:01  Rev 430    jorge
+	* Modified :
+	 * mn_job_finished : now it works.
 
-	* request.c:
-	  Working on the problems caused by shmat.
+2001-11-13 16:52:18  Jorge Daza <jorge@drqueue.org>
 
 
-2001-10-02 12:39:39  Rev 429    jorge
+	* Updated :
+	 * to use time_str function instead of hard coded string.
 
-	* job.c:
-	  Working on the problems of shmat.
+2001-11-13 16:51:30  Jorge Daza <jorge@drqueue.org>
 
 
-2001-10-02 12:38:53  Rev 428    jorge
+	* Updated.
 
-	* computer_status.c:
-	  Modified :
- * computer_status_init : now sets to zero both loadavg and ntasks.
+2001-11-13 16:51:17  Jorge Daza <jorge@drqueue.org>
 
 
-2001-10-02 12:37:59  Rev 427    jorge
+	* Added :
+	 * call to mn_job_finished when the job is switched to JOBSTATUS_FINISHED.
 
-	* computer.c:
-	  Modified :
- * computer_init : now calls computer_status_init
+2001-11-13 16:50:25  Jorge Daza <jorge@drqueue.org>
 
 
-2001-10-02 12:37:10  Rev 426    jorge
+	* Added :
+	 * time_str : function to convert a number of seconds into an string with hours, minutes and seconds.
 
-	* communications.c communications.h:
-	  Modifications sending computer status. Now it only send the tasks when they are used.
-Also now the task includes a index to itself in the structure. That index points to it's location in the computer.
+2001-11-13 10:50:23  Jorge Daza <jorge@drqueue.org>
 
 
-2001-10-02 12:31:01  Rev 425    jorge
+	* Added flags structure.
 
-	* todo:
-	  Updated
+2001-11-13 10:50:02  Jorge Daza <jorge@drqueue.org>
 
 
-2001-10-01 10:30:54  Rev 423    jorge
+	* Added:
+	 * dnj and jdd flags widgets.
 
-	* drqman/drqm_jobs.c:
-	  More tooltips.
+2001-11-13 09:38:32  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-28 14:59:30  Rev 422    jorge
+	* Added job flags section, and mail notification flag.
 
-	* drqman/drqm_jobs.c:
-	  Added :
- * more tooltips
+2001-11-09 16:01:13  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-28 10:40:02  Rev 421    jorge
+	* Updated.
 
-	* master.c:
-	  Modified :
- * get_shared_memory : instead of kill(0,SIGINT) now uses exit(1) because we don't have the shared memory in case of failure and the clean_out function needs it.
+2001-11-09 16:01:05  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-28 08:43:18  Rev 420    jorge
+	* Added flags to the job structure.
 
-	* drqman/drqm_jobs.c:
-	  Removed :
- * HStopJobDialog
- * djhs_bok_pressed
+2001-11-09 16:00:47  Jorge Daza <jorge@drqueue.org>
 
-Added :
- * job_hstop_cb
 
-Modified :
- * HStopJob : now uses ConfirmDialog
+	* Database version update because of changes to the job structure.
 
+2001-11-08 16:43:52  Jorge Daza <jorge@drqueue.org>
 
-2001-09-26 10:47:35  Rev 419    jorge
 
-	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
-	  Added basic support for limits.
+	* Added to repository
 
+2001-11-08 13:04:21  Jorge Daza <jorge@drqueue.org>
 
-2001-09-25 15:57:53  Rev 418    jorge
 
-	* common.h:
-	  Updated.
+	* Added small info text.
 
+2001-11-08 12:47:43  Jorge Daza <jorge@drqueue.org>
 
-2001-09-25 15:55:41  Rev 417    jorge
 
-	* request.c:
-	  Modified :
- * handle_r_r_availjob : call to job_available now also uses icomp
+	* First logo inside the info view.
 
+2001-11-08 12:47:22  Jorge Daza <jorge@drqueue.org>
 
-2001-09-25 15:54:53  Rev 416    jorge
 
-	* job.c job.h:
-	  Modified :
- * job_available : now considers job.limits before assigning a job
- * job_first_frame_available : increments the number of running processes when assigning a frame
- * job_frame_waiting : decrements nprocs
+	* Small bugfix.
 
-Added:
- * job_limits_passed : that checks if the job limits relative to a specific computer are passed.
+2001-11-08 12:10:24  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-25 15:50:44  Rev 415    jorge
+	* Added info tab.
 
-	* computer.h computer.c:
-	  Added :
- * computer_ntasks_job : that returns the number of tasks that are running a particular job in the computer given.
+2001-11-08 12:09:57  Jorge Daza <jorge@drqueue.org>
 
-Modified :
- * computer_update_assigned : now increments the number of running tasks
 
+	* Updated
 
-2001-09-25 09:29:49  Rev 414    jorge
+2001-11-08 10:14:03  Jorge Daza <jorge@drqueue.org>
 
-	* todo:
-	  Updated.
 
+	* Suppport for saving and loading master database.
 
-2001-09-25 09:29:39  Rev 413    jorge
+2001-11-07 11:21:46  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_jobs.c drqman/drqm_computers.c:
-	  Added :
- * policy for scrolled windows, now scroll bars are automatic.
 
+	* Adapted to the new send and receive computer hardware info.
 
-2001-09-25 08:23:50  Rev 412    jorge
+2001-11-07 11:20:45  Jorge Daza <jorge@drqueue.org>
 
-	* job.c:
-	  Added :
- * job_init_limits : added basic initialization stuff
 
+	* Modified :
+	 * send and receive computer hardware info do not use anymore the who value. And now they return error code.
 
-2001-09-24 16:10:43  Rev 411    jorge
+2001-11-02 17:12:20  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_jobs.c:
-	  Added :
- * several tooltips on buttons and entries
 
+	* Working on database save and load.
 
-2001-09-24 16:10:20  Rev 410    jorge
+2001-11-02 11:53:00  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_common.h drqman/drqm_common.c:
-	  Added :
- * TooltipsNew : that creates a new tooltips object and sets the delay as TOOLTIPS_DELAY
 
+	* Working on database_save.
 
-2001-09-24 08:23:23  Rev 409    jorge
+2001-10-31 16:59:38  Jorge Daza <jorge@drqueue.org>
 
-	* job.h:
-	  Added :
- * job_init_limits
 
+	* Minor changes.
 
-2001-09-21 14:43:40  Rev 408    jorge
+2001-10-29 17:25:16  Jorge Daza <jorge@drqueue.org>
 
-	* task.c task.h:
-	  Modified :
- * init_tasks : is now task_init_all
 
-Added :
- * task_init
+	* Working on database save and reload.
 
+2001-10-29 11:13:56  Jorge Daza <jorge@drqueue.org>
 
-2001-09-21 14:42:02  Rev 407    jorge
 
-	* slave.c:
-	  Minor changes
+	* Updated version number.
 
+2001-10-26 15:56:59  Jorge Daza <jorge@drqueue.org>
 
-2001-09-21 14:41:43  Rev 406    jorge
 
-	* request.c:
-	  Minor changes.
+	* Bugfix :
+	 * get_shared_memory_slave : exit instead of kill to avoid segfault on signal handler.
 
+2001-10-25 15:20:16  Jorge Daza <jorge@drqueue.org>
 
-2001-09-21 14:40:40  Rev 405    jorge
 
-	* job.c job.h:
-	  Added :
- * job_copy
- * job_init_limits : is empty yet
+	* Modified :
+	 * removed goto's
 
+2001-10-25 15:19:53  Jorge Daza <jorge@drqueue.org>
 
-2001-09-21 14:40:05  Rev 404    jorge
 
-	* computer_status.h computer_status.c:
-	  Modified :
- * init_computer_status : is now computer_status_init
+	* Added :
+	 * job_logs_remove
 
+2001-10-25 15:17:45  Jorge Daza <jorge@drqueue.org>
 
-2001-09-20 10:53:19  Rev 403    jorge
 
-	* todo:
-	  Updated.
+	* Updated.
 
+2001-10-25 15:17:37  Jorge Daza <jorge@drqueue.org>
 
-2001-09-20 10:52:56  Rev 402    jorge
 
-	* database.c communications.c database.h master.c communications.h:
-	  Added :
- * COMM_REPORT stuff
+	* Added :
+	 * remove_dir
 
+2001-10-24 16:53:18  Jorge Daza <jorge@drqueue.org>
 
-2001-09-20 10:52:35  Rev 401    jorge
 
-	* job.c:
-	  Minor bug fix.
+	* Added :
+	 * support for priority update.
 
+2001-10-24 16:52:52  Jorge Daza <jorge@drqueue.org>
 
-2001-09-20 10:52:19  Rev 400    jorge
 
-	* request.c:
-	  Minor bugfixes.
+	* Removed :
+	 * R_A_* definitions.
 
+2001-10-24 16:52:29  Jorge Daza <jorge@drqueue.org>
 
-2001-09-20 10:52:02  Rev 399    jorge
 
-	* mayasg.c:
-	  Bug fix :
- * added missing headers
+	* Added :
+	 * r_r_jobpriup family of functions
 
+2001-10-24 16:52:00  Jorge Daza <jorge@drqueue.org>
 
-2001-09-20 10:51:09  Rev 398    jorge
 
-	* computer_status.c:
-	  Bug fix :
- * included missing headers.
+	* Added :
+	 * job_logs_remove
 
+2001-10-24 14:51:59  Jorge Daza <jorge@drqueue.org>
 
-2001-09-20 10:50:49  Rev 397    jorge
 
-	* Makefile:
-	  Added :
- * COMM_REPORT
+	* Working on job details change priority.
 
+2001-10-22 16:16:55  Jorge Daza <jorge@drqueue.org>
 
-2001-09-19 10:36:24  Rev 395    jorge
 
-	* common.h:
-	  Updated
+	* Added support for changing the maximum number of cpus in one computer.
 
+2001-10-22 16:16:11  Jorge Daza <jorge@drqueue.org>
 
-2001-09-19 09:59:02  Rev 394    jorge
 
-	* constants.h:
-	  Modified :
- * MAXTIMENOCONN : now has a value of 120 seconds
+	* Some semaphores were not released.
 
+2001-10-22 16:12:26  Jorge Daza <jorge@drqueue.org>
 
-2001-09-19 09:35:40  Rev 393    jorge
 
-	* todo:
-	  Updated.
+	* Minor change.
 
+2001-10-16 17:38:05  Jorge Daza <jorge@drqueue.org>
 
-2001-09-19 09:35:10  Rev 392    jorge
 
-	* master.c:
-	  Added :
- * main : error detection on fork.
+	* Working...
 
+2001-10-11 12:32:50  Jorge Daza <jorge@drqueue.org>
 
-2001-09-19 09:08:45  Rev 391    jorge
 
-	* master.c:
-	  Modified :
- * check_lastconn_times : log message now has priority L_WARNING when removing a computer from the queue.
+	* Bug fixes :
+	 * numerous incorrect uses of info->icomp when should be info->row. Solved.
 
+2001-10-11 12:32:04  Jorge Daza <jorge@drqueue.org>
 
-2001-09-18 13:25:24  Rev 389    jorge
 
-	* todo:
-	  Updated.
+	* Bug fix :
+	 * job_nframes : did not calculate the correct frame number with bigger steps than one. It always gave one frame less. Now it's solved.
 
+2001-10-08 17:02:43  Jorge Daza <jorge@drqueue.org>
 
-2001-09-18 13:25:10  Rev 388    jorge
 
-	* slave.c:
-	  Added :
- * clean_out : now uses request_slavexit
+	* Updated
 
+2001-10-08 17:02:18  Jorge Daza <jorge@drqueue.org>
 
-2001-09-18 13:24:05  Rev 387    jorge
 
-	* request.c request_codes.h request.h:
-	  Added :
- * family of R_R_SLAVEXIT functions and data.
+	* Removed unuseful comentaries.
 
+2001-10-08 16:57:43  Jorge Daza <jorge@drqueue.org>
 
-2001-09-18 13:19:03  Rev 386    jorge
 
-	* computer.h:
-	  Added :
- * computer_index_correct_master
+	* Bug fix :
+	 * computer_update_assigned : initialization of task.itask
 
+2001-10-08 16:19:02  Jorge Daza <jorge@drqueue.org>
 
-2001-09-18 13:18:16  Rev 385    jorge
 
-	* computer.c:
-	  Added :
- * computer_index_correct_master : checks if a icomp points to a used in range computer.
+	* Conflicts solved.
 
+2001-10-08 16:13:47  Jorge Daza <jorge@drqueue.org>
 
-2001-09-18 12:58:46  Rev 384    jorge
 
-	* slave.c:
-	  Removed :
- * commented lines of alternative executing method.
+	* More logging messages.
 
+2001-10-08 14:43:07  Jorge Daza <jorge@drqueue.org>
 
-2001-09-18 12:55:20  Rev 383    jorge
 
-	* todo:
-	  Updated.
+	* Modified :
+	 * handle_r_r_register : Less verbosity, do not report registered computers.
 
+2001-10-08 14:33:18  Jorge Daza <jorge@drqueue.org>
 
-2001-09-18 12:54:57  Rev 382    jorge
 
-	* drqman/drqm_jobs.c:
-	  Added :
- * total frames column on the job overview.
+	* Updated.
 
+2001-10-08 14:32:55  Jorge Daza <jorge@drqueue.org>
 
-2001-09-18 12:38:40  Rev 381    jorge
 
-	* slave.c:
-	  Minor changes.
+	* Modified :
+	 * handle_r_r_jobsesup : now working
 
+2001-10-08 14:32:03  Jorge Daza <jorge@drqueue.org>
 
-2001-09-18 12:38:20  Rev 380    jorge
 
-	* job.c:
-	  Bug fix :
- * job_update_info : finished jobs didn't move to waiting when there were waiting frames.
+	* Added :
+	 * job_frame_info_init
 
+	* Modified :
+	 * job_init_registered : error checking
 
-2001-09-18 10:48:16  Rev 379    jorge
+2001-10-08 14:31:06  Jorge Daza <jorge@drqueue.org>
 
-	* todo:
-	  Updated.
 
+	* Added :
+	 * job_frame_info_init
 
-2001-09-18 10:48:10  Rev 378    jorge
+2001-10-05 17:52:37  Jorge Daza <jorge@drqueue.org>
 
-	* master.c:
-	  More comments.
 
+	* Added functions to update the SES of a job. The button in the job details dialog. Needs a confimation dialog.
 
-2001-09-18 10:47:21  Rev 377    jorge
+2001-10-05 17:51:25  Jorge Daza <jorge@drqueue.org>
 
-	* slave.c:
-	  Bug fix :
- * main : the delay after launching a task was too high and the computer was removed from the queue.
 
+	* Updated.
 
-2001-09-18 10:46:29  Rev 376    jorge
+2001-10-05 17:51:18  Jorge Daza <jorge@drqueue.org>
 
-	* constants.h:
-	  Modified :
- * MAXTIMENOCONN : now has a value of 45 seconds
 
+	* Added :
+	 * R_R_JOBSESUP
 
-2001-09-18 10:45:44  Rev 375    jorge
+2001-10-05 17:50:31  Jorge Daza <jorge@drqueue.org>
 
-	* common.h:
-	  Version update.
 
+	* Working on R_R_JOBSESUP family.
 
-2001-09-18 09:25:20  Rev 374    jorge
+2001-10-05 17:50:01  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_jobs.c:
-	  Added :
- * drqm_common.h
 
+	* Bug fix :
+	 * computer_init : does not call to computer_init_limits because it depends on the hardware info.
 
-2001-09-18 09:25:03  Rev 373    jorge
+2001-10-04 10:31:20  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_computers.c:
-	  Removed :
- * KillTaskDialog
 
-Modified :
- * KillTask : now uses ConfirmDialog
+	* Updated version number
 
+2001-10-04 10:29:57  Jorge Daza <jorge@drqueue.org>
 
-2001-09-18 09:24:11  Rev 372    jorge
 
-	* drqman/drqm_common.h drqman/drqm_common.c:
-	  First commit.
+	* Minor updates.
 
+2001-10-04 10:20:47  Jorge Daza <jorge@drqueue.org>
 
-2001-09-18 09:23:54  Rev 371    jorge
 
-	* drqman/Makefile:
-	  Added :
- * drqm_common.o
+	* Modified :
+	 * main : more comments on update_computer_limits and the call to update_computer_status now uses sdb.
 
+2001-10-04 10:19:52  Jorge Daza <jorge@drqueue.org>
 
-2001-09-17 14:53:58  Rev 370    jorge
 
-	* task.c:
-	  Modified :
- * task_environment_set : unified use of putenv both in linux and irix.
+	* Modified :
+	 * update_computer_status : now uses sdb as parameter.
 
+2001-10-04 10:19:25  Jorge Daza <jorge@drqueue.org>
 
-2001-09-17 14:53:15  Rev 369    jorge
 
-	* slave.c:
-	  Added :
- * main : launcehd variable and checking after launching tasks to have an appropiate delay if tasks have been launched.
+	* Modified :
+	 * update_computer_status : now uses a sdb as parameter because now we take the semaphore for copying the status.
 
+2001-10-04 10:17:25  Jorge Daza <jorge@drqueue.org>
 
-2001-09-17 14:51:30  Rev 368    jorge
 
-	* job.c:
-	  Modified :
- * job_environment_set : removed iframe environment variable
+	* Bug fix :
+	 * send_computer_status : we need to count ntasks again.
 
+2001-10-02 16:36:03  Jorge Daza <jorge@drqueue.org>
 
-2001-09-17 12:36:14  Rev 366    jorge
 
-	* common.h:
-	  Updated.
+	* Minor updates.
 
+2001-10-02 14:55:50  Jorge Daza <jorge@drqueue.org>
 
-2001-09-17 12:35:54  Rev 365    jorge
 
-	* job.c:
-	  Modified :
- * job_environment_set : now using putenv both on Irix and Linux.
+	* Modified :
+	 * send_computer_status, recv_computer_status : Now they get itask from the received task so they don't need to send it before.
 
+2001-10-02 14:42:00  Jorge Daza <jorge@drqueue.org>
 
-2001-09-17 12:30:52  Rev 364    jorge
 
-	* todo:
-	  Updated.
+	* Updated version number.
 
+2001-10-02 14:41:22  Jorge Daza <jorge@drqueue.org>
 
-2001-09-17 12:30:10  Rev 363    jorge
 
-	* job.c:
-	  Bug fix:
- * job_environment_set : on Irix using putenv, env strings must point to static localtions.
+	* Changes to used task.itask.
 
+2001-10-02 14:40:47  Jorge Daza <jorge@drqueue.org>
 
-2001-09-17 10:56:15  Rev 362    jorge
 
-	* computer.c:
-	  Bug fix:
- * computer_available : counting number of possible tasks.
+	* Added :
+	 * task.itask : index to the taks in the computer information kept by the slaves.
 
+2001-10-02 14:40:01  Jorge Daza <jorge@drqueue.org>
 
-2001-09-17 10:55:22  Rev 361    jorge
 
-	* Makefile:
-	  Minor bugfix.
+	* Working on the problems caused by shmat.
 
+2001-10-02 14:39:39  Jorge Daza <jorge@drqueue.org>
 
-2001-09-17 10:46:45  Rev 360    jorge
 
-	* drqman/drqm_jobs.c:
-	  Bug fix:
- * jdd_maya_viewcmd_exec : exit on failure on the fork to view images.
+	* Working on the problems of shmat.
 
+2001-10-02 14:38:53  Jorge Daza <jorge@drqueue.org>
 
-2001-09-16 16:37:09  Rev 359    jorge
 
-	* drqman/drqm_jobs.c:
-	  Minor changes.
+	* Modified :
+	 * computer_status_init : now sets to zero both loadavg and ntasks.
 
+2001-10-02 14:37:59  Jorge Daza <jorge@drqueue.org>
 
-2001-09-16 16:36:50  Rev 358    jorge
 
-	* task.c:
-	  Bug fix:
- * header missing
+	* Modified :
+	 * computer_init : now calls computer_status_init
 
+2001-10-02 14:37:10  Jorge Daza <jorge@drqueue.org>
 
-2001-09-16 15:40:07  Rev 357    jorge
 
-	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
-	  Initial KOJ support.
+	* Modifications sending computer status. Now it only send the tasks when they are used.
+	* Also now the task includes a index to itself in the structure. That index points to it's location in the computer.
 
+2001-10-02 14:31:01  Jorge Daza <jorge@drqueue.org>
 
-2001-09-16 15:39:40  Rev 356    jorge
 
-	* task.c task.h:
-	  Added :
- * task_environment_set
+	* Updated
 
+2001-10-01 12:30:54  Jorge Daza <jorge@drqueue.org>
 
-2001-09-16 15:38:52  Rev 355    jorge
 
-	* slave.h:
-	  Removed :
- * set_environment
+	* More tooltips.
 
+2001-09-28 16:59:30  Jorge Daza <jorge@drqueue.org>
 
-2001-09-16 15:38:12  Rev 354    jorge
 
-	* slave.c:
-	  Modified :
- * launch_task now calls task_environment_set instead of set_environment
+	* Added :
+	 * more tooltips
 
+2001-09-28 12:40:02  Jorge Daza <jorge@drqueue.org>
 
-2001-09-16 15:36:17  Rev 353    jorge
 
-	* job.c job.h:
-	  Added :
- * job_environment_set
+	* Modified :
+	 * get_shared_memory : instead of kill(0,SIGINT) now uses exit(1) because we don't have the shared memory in case of failure and the clean_out function needs it.
 
+2001-09-28 10:43:18  Jorge Daza <jorge@drqueue.org>
 
-2001-09-14 16:32:01  Rev 352    jorge
 
-	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
-	  Working on... not compilable.
+	* Removed :
+	 * HStopJobDialog
+	 * djhs_bok_pressed
 
+	* Added :
+	 * job_hstop_cb
 
-2001-09-14 08:56:23  Rev 351    jorge
+	* Modified :
+	 * HStopJob : now uses ConfirmDialog
 
-	* todo:
-	  Updated
+2001-09-26 12:47:35  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-14 08:56:18  Rev 350    jorge
+	* Added basic support for limits.
 
-	* job.h:
-	  Added :
- * Koj structure and constants.
+2001-09-25 17:57:53  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-14 08:55:44  Rev 349    jorge
+	* Updated.
 
-	* communications.c:
-	  Added :
- * send_job and recv_job : koj stuff
+2001-09-25 17:55:41  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-13 15:55:39  Rev 348    jorge
+	* Modified :
+	 * handle_r_r_availjob : call to job_available now also uses icomp
 
-	* job.h:
-	  Working on kind of job (KOJ).
+2001-09-25 17:54:53  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-12 15:05:09  Rev 347    jorge
+	* Modified :
+	 * job_available : now considers job.limits before assigning a job
+	 * job_first_frame_available : increments the number of running processes when assigning a frame
+	 * job_frame_waiting : decrements nprocs
 
-	* communications.c job.h:
-	  Job.icomp is now uint32_t as in computer.id
+	* Added:
+	 * job_limits_passed : that checks if the job limits relative to a specific computer are passed.
 
+2001-09-25 17:50:44  Jorge Daza <jorge@drqueue.org>
 
-2001-09-12 09:46:00  Rev 345    jorge
 
-	* common.h:
-	  Updated version number
+	* Added :
+	 * computer_ntasks_job : that returns the number of tasks that are running a particular job in the computer given.
 
+	* Modified :
+	 * computer_update_assigned : now increments the number of running tasks
 
-2001-09-11 12:52:55  Rev 344    jorge
+2001-09-25 11:29:49  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_request.h drqman/drqm_request.c:
-	  Added :
- * drqm_request_slave_task_kill
 
+	* Updated.
 
-2001-09-11 12:52:29  Rev 343    jorge
+2001-09-25 11:29:39  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_computers.c:
-	  Added :
- * CreateMenuTasks
- * PopupMenuTasks
- * KillTask
- * KillTaskDialog
- * dtk_bok_pressed
 
-That means, support for killing the selected tasks from the
-computer details dialog.
+	* Added :
+	 * policy for scrolled windows, now scroll bars are automatic.
 
+2001-09-25 10:23:50  Jorge Daza <jorge@drqueue.org>
 
-2001-09-10 15:42:56  Rev 342    jorge
 
-	* todo:
-	  Updated.
+	* Added :
+	 * job_init_limits : added basic initialization stuff
 
+2001-09-24 18:10:43  Jorge Daza <jorge@drqueue.org>
 
-2001-09-10 09:17:44  Rev 340    jorge
 
-	* request.c:
-	  Modified :
- * request_job_available when it assigns the task to the computer
-	also adds maxfreeloadcpu to the load average so it reflects what could be in the future.
+	* Added :
+	 * several tooltips on buttons and entries
 
+2001-09-24 18:10:20  Jorge Daza <jorge@drqueue.org>
 
-2001-09-10 09:15:50  Rev 339    jorge
 
-	* computer.c:
-	  Modified:
- * computer_available now tries to take care of the difference of load between running tasks
-	and the load from other processes
+	* Added :
+	 * TooltipsNew : that creates a new tooltips object and sets the delay as TOOLTIPS_DELAY
 
+2001-09-24 10:23:23  Jorge Daza <jorge@drqueue.org>
 
-2001-09-09 22:04:34  Rev 338    jorge
 
-	* drqman/drqm_request.h drqman/drqm_request.c:
-	  Added :
- * drqm_request_slave_limits_maxfreeloadcpu_set
+	* Added :
+	 * job_init_limits
 
+2001-09-21 16:43:40  Jorge Daza <jorge@drqueue.org>
 
-2001-09-09 22:03:39  Rev 337    jorge
 
-	* drqman/drqm_computers.c:
-	  Added :
- * cdd_limits_maxfreeloadcpu_bcp
- * mflc_dialog
- * mflcd_bsumbit_pressed
+	* Modified :
+	 * init_tasks : is now task_init_all
 
+	* Added :
+	 * task_init
 
-2001-09-09 22:02:30  Rev 336    jorge
+2001-09-21 16:42:02  Jorge Daza <jorge@drqueue.org>
 
-	* request_codes.h:
-	  Added :
- * RS_R_SETNMAXCPUS and RS_A_SETNMAXCPUS
 
+	* Minor changes
 
-2001-09-09 21:56:09  Rev 335    jorge
+2001-09-21 16:41:43  Jorge Daza <jorge@drqueue.org>
 
-	* request.h:
-	  Added :
- * request_slave_limits_maxfreeloadcpu_set
- * handle_rs_r_setmaxfreeloadcpu
 
+	* Minor changes.
 
-2001-09-09 21:55:37  Rev 334    jorge
+2001-09-21 16:40:40  Jorge Daza <jorge@drqueue.org>
 
-	* request.c:
-	  Added :
- * RS_R_SETMAXFREELOADCPU family of functions
 
+	* Added :
+	 * job_copy
+	 * job_init_limits : is empty yet
 
-2001-09-09 21:54:56  Rev 333    jorge
+2001-09-21 16:40:05  Jorge Daza <jorge@drqueue.org>
 
-	* common.h:
-	  Version update.
 
+	* Modified :
+	 * init_computer_status : is now computer_status_init
 
-2001-09-08 21:41:52  Rev 332    jorge
+2001-09-20 12:53:19  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_request.h drqman/drqm_request.c:
-	  Minor changes.
-Added:
- * drqm_request_slave_limits_nmaxcpus_set
 
+	* Updated.
 
-2001-09-08 21:39:48  Rev 331    jorge
+2001-09-20 12:52:56  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_computers.h:
-	  Added:
- * enmaxcpus and emaxfreeloadcpu to cdd_li struct
 
+	* Added :
+	 * COMM_REPORT stuff
 
-2001-09-08 21:37:34  Rev 330    jorge
+2001-09-20 12:52:35  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_computers.c:
-	  Added:
- * cdd_limits_nmaxcpus_bcp
- * nmc_dialog
- * nmcd_bsumbit_pressed
 
+	* Minor bug fix.
 
-2001-09-08 20:47:15  Rev 329    jorge
+2001-09-20 12:52:19  Jorge Daza <jorge@drqueue.org>
 
-	* slave.c:
-	  Bug fix:
- * update_computer_limits goes after the registration.
 
+	* Minor bugfixes.
 
-2001-09-08 20:46:38  Rev 328    jorge
+2001-09-20 12:52:02  Jorge Daza <jorge@drqueue.org>
 
-	* request_codes.h:
-	  Added:
- * R_R_UCLIMITS and R_A_UCLIMITS
- * RS_R_SETNMAXCPUS and RS_A_SETNMAXCPUS
 
+	* Bug fix :
+	 * added missing headers
 
-2001-09-08 20:45:46  Rev 327    jorge
+2001-09-20 12:51:09  Jorge Daza <jorge@drqueue.org>
 
-	* request.h:
-	  Added:
- * handle_r_r_uclimits
- * update_computer_limits
- * request_slave_limits_nmaxcpus_set
- * handle_rs_r_setnmaxcpus
 
+	* Bug fix :
+	 * included missing headers.
 
-2001-09-08 20:42:43  Rev 326    jorge
+2001-09-20 12:50:49  Jorge Daza <jorge@drqueue.org>
 
-	* request.c:
-	  Added:
- * R_R_UCLIMITS family of functions
- * RS_R_SETNMAXCPUS family of functions
- * request_slave_killtask now has a who parameter
 
+	* Added :
+	 * COMM_REPORT
 
-2001-09-08 18:41:18  Rev 325    jorge
+2001-09-19 12:36:24  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_jobs.c:
-	  Bug fix:
- * SeeFrameLogDialog had window title "New Job"
 
+	* Updated
 
-2001-09-08 17:00:10  Rev 324    jorge
+2001-09-19 11:59:02  Jorge Daza <jorge@drqueue.org>
 
-	* computer.c:
-	  Minor update.
 
+	* Modified :
+	 * MAXTIMENOCONN : now has a value of 120 seconds
 
-2001-09-08 16:59:38  Rev 323    jorge
+2001-09-19 11:35:40  Jorge Daza <jorge@drqueue.org>
 
-	* slave.c:
-	  Bug fix:
- * computer_init_limits is called now after get_hwinfo.
 
+	* Updated.
 
-2001-09-08 16:58:43  Rev 322    jorge
+2001-09-19 11:35:10  Jorge Daza <jorge@drqueue.org>
 
-	* computer.c:
-	  Modified function:
- * computer_available now takes care of the load. Based on the
-   load determines how many cpus are being used and so substracts
-   them to the previous possible tasks. Use the source Luke.
 
+	* Added :
+	 * main : error detection on fork.
 
-2001-09-08 16:21:18  Rev 321    jorge
+2001-09-19 11:08:45  Jorge Daza <jorge@drqueue.org>
 
-	* request.c:
-	  Removed call to computer_init_limits because it created an inconsistency with the slave information.
 
+	* Modified :
+	 * check_lastconn_times : log message now has priority L_WARNING when removing a computer from the queue.
 
-2001-09-08 16:20:32  Rev 320    jorge
+2001-09-18 15:25:24  Jorge Daza <jorge@drqueue.org>
 
-	* slave.c:
-	  Added call to computer_init_limits before registering.
 
+	* Updated.
 
-2001-09-08 15:55:35  Rev 319    jorge
+2001-09-18 15:25:10  Jorge Daza <jorge@drqueue.org>
 
-	* computer.c:
-	  Updated function:
- * computer_index_addr: more comments and small change.
 
+	* Added :
+	 * clean_out : now uses request_slavexit
 
-2001-09-08 15:36:27  Rev 318    jorge
+2001-09-18 15:24:05  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_jobs.h:
-	  Minor update.
 
+	* Added :
+	 * family of R_R_SLAVEXIT functions and data.
 
-2001-09-08 15:35:54  Rev 317    jorge
+2001-09-18 15:19:03  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_computers.h:
-	  Added struct:
- * struct cdd_li (limits info) inside drqmc_cddi (computer details dialog.
 
+	* Added :
+	 * computer_index_correct_master
 
-2001-09-08 15:34:25  Rev 316    jorge
+2001-09-18 15:18:16  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_computers.c:
-	  Naming change:
- * numproc is now ncpus
-Added:
- * limits basic info on computers details dialog
 
+	* Added :
+	 * computer_index_correct_master : checks if a icomp points to a used in range computer.
 
-2001-09-08 13:47:37  Rev 315    jorge
+2001-09-18 14:58:46  Jorge Daza <jorge@drqueue.org>
 
-	* communications.c:
-	  Naming change:
- * hwinfo->numproc is now hwinfo->ncpus.
-Bugs solved:
- * in [send|recv]_computer solved. Now returns 1 on success.
- * in [send|recv]_computer_limits. Wrong variable name.
 
+	* Removed :
+	 * commented lines of alternative executing method.
 
-2001-09-08 13:37:40  Rev 314    jorge
+2001-09-18 14:55:20  Jorge Daza <jorge@drqueue.org>
 
-	* computer_info.c:
-	  Naming change numproc is now ncpus.
 
+	* Updated.
 
-2001-09-07 16:44:08  Rev 313    jorge
+2001-09-18 14:54:57  Jorge Daza <jorge@drqueue.org>
 
-	* request.c:
-	  Added commentaries.
 
+	* Added :
+	 * total frames column on the job overview.
 
-2001-09-07 16:43:39  Rev 312    jorge
+2001-09-18 14:38:40  Jorge Daza <jorge@drqueue.org>
 
-	* computer_info.h:
-	  Modified naming:
- * numproc goes to ncpus
 
+	* Minor changes.
 
-2001-09-07 16:42:47  Rev 311    jorge
+2001-09-18 14:38:20  Jorge Daza <jorge@drqueue.org>
 
-	* computer.h computer.c:
-	  Added struct:
- * computer_limits
-Modified struct:
- * computer to add the limits
-Added function:
- * computer_init_limits
 
+	* Bug fix :
+	 * job_update_info : finished jobs didn't move to waiting when there were waiting frames.
 
-2001-09-07 16:39:22  Rev 310    jorge
+2001-09-18 12:48:16  Jorge Daza <jorge@drqueue.org>
 
-	* communications.c communications.h:
-	  Added:
- * recv_computer_limits
- * send_computer_limits
 
-Modified send_computer and recv_computer to send and receive the computer limits.
+	* Updated.
 
+2001-09-18 12:48:10  Jorge Daza <jorge@drqueue.org>
 
-2001-09-07 16:36:21  Rev 309    jorge
 
-	* todo:
-	  Updated
+	* More comments.
 
+2001-09-18 12:47:21  Jorge Daza <jorge@drqueue.org>
 
-2001-09-07 09:41:08  Rev 308    jorge
 
-	* request.c:
-	  Minor bug fix.
+	* Bug fix :
+	 * main : the delay after launching a task was too high and the computer was removed from the queue.
 
+2001-09-18 12:46:29  Jorge Daza <jorge@drqueue.org>
 
-2001-09-07 09:36:43  Rev 307    jorge
 
-	* request.c:
-	  Minor message update.
+	* Modified :
+	 * MAXTIMENOCONN : now has a value of 45 seconds
 
+2001-09-18 12:45:44  Jorge Daza <jorge@drqueue.org>
 
-2001-09-07 09:16:51  Rev 306    jorge
 
-	* drqman/drqm_request.h drqman/drqm_computers.c drqman/drqman.h 
-	  drqman/drqm_computers.h drqman/drqm_request.c:
-	  Naming changes
+	* Version update.
 
+2001-09-18 11:25:20  Jorge Daza <jorge@drqueue.org>
 
-2001-09-06 23:03:26  Rev 305    jorge
 
-	* drqman/drqm_request.h drqman/drqm_request.c:
-	  Added drqm_request_job_frame_kill_finish.
+	* Added :
+	 * drqm_common.h
 
+2001-09-18 11:25:03  Jorge Daza <jorge@drqueue.org>
 
-2001-09-06 23:03:04  Rev 304    jorge
 
-	* drqman/drqm_jobs.c:
-	  Added jdd_kill_finish_frames.
+	* Removed :
+	 * KillTaskDialog
 
+	* Modified :
+	 * KillTask : now uses ConfirmDialog
 
-2001-09-06 23:02:07  Rev 303    jorge
+2001-09-18 11:24:11  Jorge Daza <jorge@drqueue.org>
 
-	* request.c request_codes.h request.h:
-	  Added R_R_JOBFKFIN family of functions and data structures.
 
+	* First commit.
 
-2001-09-06 23:01:30  Rev 302    jorge
+2001-09-18 11:23:54  Jorge Daza <jorge@drqueue.org>
 
-	* master.c:
-	  Minor updates.
 
+	* Added :
+	 * drqm_common.o
 
-2001-09-06 22:37:44  Rev 301    jorge
+2001-09-17 16:53:58  Jorge Daza <jorge@drqueue.org>
 
-	* Makefile:
-	  Added documentation stuff.
 
+	* Modified :
+	 * task_environment_set : unified use of putenv both in linux and irix.
 
-2001-09-06 15:28:57  Rev 300    jorge
+2001-09-17 16:53:15  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_request.c:
-	  Minor update.
 
+	* Added :
+	 * main : launcehd variable and checking after launching tasks to have an appropiate delay if tasks have been launched.
 
-2001-09-06 14:33:36  Rev 299    jorge
+2001-09-17 16:51:30  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_request.h drqman/drqm_request.c:
-	  Added drqm_request_job_frame_finish.
 
+	* Modified :
+	 * job_environment_set : removed iframe environment variable
 
-2001-09-06 14:32:39  Rev 298    jorge
+2001-09-17 14:36:14  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_jobs.c:
-	  Added jdd_finish_frames.
 
+	* Updated.
 
-2001-09-06 14:00:26  Rev 297    jorge
+2001-09-17 14:35:54  Jorge Daza <jorge@drqueue.org>
 
-	* request.c request_codes.h request.h:
-	  Added R_R_JOBFFINI family of functions and data structures.
 
+	* Modified :
+	 * job_environment_set : now using putenv both on Irix and Linux.
 
-2001-09-06 13:59:13  Rev 296    jorge
+2001-09-17 14:30:52  Jorge Daza <jorge@drqueue.org>
 
-	* communications.c:
-	  Minor update.
 
+	* Updated.
 
-2001-09-06 13:06:59  Rev 295    jorge
+2001-09-17 14:30:10  Jorge Daza <jorge@drqueue.org>
 
-	* communications.c job.h:
-	  Changed job.id size from char to uint32_t.
 
+	* Bug fix:
+	 * job_environment_set : on Irix using putenv, env strings must point to static localtions.
 
-2001-09-06 10:43:41  Rev 294    jorge
+2001-09-17 12:56:15  Jorge Daza <jorge@drqueue.org>
 
-	* mayasg.h mayasg.c:
-	  Added mayasg_default_script_path and related data.
-Modified mayasg_create to use the previous function and data.
 
+	* Bug fix:
+	 * computer_available : counting number of possible tasks.
 
-2001-09-06 10:42:41  Rev 293    jorge
+2001-09-17 12:55:22  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
-	  Added script directory search and functionality.
 
+	* Minor bugfix.
 
-2001-09-06 10:19:43  Rev 292    jorge
+2001-09-17 12:46:45  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_jobs.c drqman/drqm_request.h drqman/drqm_request.c:
-	  Added job frame kill functions and data.
 
+	* Bug fix:
+	 * jdd_maya_viewcmd_exec : exit on failure on the fork to view images.
 
-2001-09-06 10:19:06  Rev 291    jorge
+2001-09-16 18:37:09  Jorge Daza <jorge@drqueue.org>
 
-	* todo:
-	  Updated.
 
+	* Minor changes.
 
-2001-09-06 10:18:56  Rev 290    jorge
+2001-09-16 18:36:50  Jorge Daza <jorge@drqueue.org>
 
-	* request.c request_codes.h request.h:
-	  Added R_R_JOBFKILL family of functions and data.
 
+	* Bug fix:
+	 * header missing
 
-2001-09-06 10:18:29  Rev 289    jorge
+2001-09-16 17:40:07  Jorge Daza <jorge@drqueue.org>
 
-	* slave.c master.c:
-	  Added -v info on usage function.
 
+	* Initial KOJ support.
 
-2001-09-05 15:18:40  Rev 287    jorge
+2001-09-16 17:39:40  Jorge Daza <jorge@drqueue.org>
 
-	* slave.c master.c:
-	  Added -v parameter to show the last tag.
 
+	* Added :
+	 * task_environment_set
 
-2001-09-05 15:18:05  Rev 286    jorge
+2001-09-16 17:38:52  Jorge Daza <jorge@drqueue.org>
 
-	* common.h:
-	  Added show_version.
-Added VERSION define.
 
+	* Removed :
+	 * set_environment
 
-2001-09-05 15:17:38  Rev 285    jorge
+2001-09-16 17:38:12  Jorge Daza <jorge@drqueue.org>
 
-	* common.c:
-	  Added show_version.
 
+	* Modified :
+	 * launch_task now calls task_environment_set instead of set_environment
 
-2001-09-05 15:13:48  Rev 284    jorge
+2001-09-16 17:36:17  Jorge Daza <jorge@drqueue.org>
 
-	* tag_edit:
-	  Bug Fix.
 
+	* Added :
+	 * job_environment_set
 
-2001-09-05 15:12:44  Rev 283    jorge
+2001-09-14 18:32:01  Jorge Daza <jorge@drqueue.org>
 
-	* tag_edit:
-	  Working the basics.
 
+	* Working on... not compilable.
 
-2001-09-05 14:31:11  Rev 282    jorge
+2001-09-14 10:56:23  Jorge Daza <jorge@drqueue.org>
 
-	* tag_edit:
-	  Added to repository
 
+	* Updated
 
-2001-09-05 13:36:39  Rev 281    jorge
+2001-09-14 10:56:18  Jorge Daza <jorge@drqueue.org>
 
-	* slave.c:
-	  Test commit.
 
+	* Added :
+	 * Koj structure and constants.
 
-2001-09-05 12:56:08  Rev 279    jorge
+2001-09-14 10:55:44  Jorge Daza <jorge@drqueue.org>
 
-	* job.c:
-	  Bug fixes.
 
+	* Added :
+	 * send_job and recv_job : koj stuff
 
-2001-09-05 12:52:12  Rev 278    jorge
+2001-09-13 17:55:39  Jorge Daza <jorge@drqueue.org>
 
-	* slave.c:
-	  Minor update.
 
+	* Working on kind of job (KOJ).
 
-2001-09-05 12:49:37  Rev 277    jorge
+2001-09-12 17:05:09  Jorge Daza <jorge@drqueue.org>
 
-	* request.c job.c:
-	  Bugfixes and updates.
 
+	* Job.icomp is now uint32_t as in computer.id
 
-2001-09-05 09:54:03  Rev 275    jorge
+2001-09-12 11:46:00  Jorge Daza <jorge@drqueue.org>
 
-	* mayasg.c:
-	  Solved fchmod bugfix.
 
+	* Updated version number
 
-2001-09-05 09:53:27  Rev 274    jorge
+2001-09-11 14:52:55  Jorge Daza <jorge@drqueue.org>
 
-	* job.c job.h:
-	  Added some more checks.
-Added job_index_correct_master.
-Bug fixes.
 
+	* Added :
+	 * drqm_request_slave_task_kill
 
-2001-09-05 09:48:40  Rev 273    jorge
+2001-09-11 14:52:29  Jorge Daza <jorge@drqueue.org>
 
-	* computer_status.c:
-	  Solved small bug.
 
+	* Added :
+	 * CreateMenuTasks
+	 * PopupMenuTasks
+	 * KillTask
+	 * KillTaskDialog
+	 * dtk_bok_pressed
 
-2001-09-05 09:43:53  Rev 272    jorge
+	* That means, support for killing the selected tasks from the
+	* computer details dialog.
 
-	* Makefile:
-	  Solved bug of permissions on irix_install target.
+2001-09-10 17:42:56  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-04 23:28:53  Rev 271    jorge
+	* Updated.
 
-	* drqman/drqman.h:
-	  Naming update.
+2001-09-10 11:17:44  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-04 23:28:38  Rev 270    jorge
+	* Modified :
+	 * request_job_available when it assigns the task to the computer
+	* 	also adds maxfreeloadcpu to the load average so it reflects what could be in the future.
 
-	* drqman/drqm_request.h drqman/drqm_request.c:
-	  Naming update.
-Added drqm_request_job_frame_waiting.
+2001-09-10 11:15:50  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-04 23:27:51  Rev 269    jorge
+	* Modified:
+	 * computer_available now tries to take care of the difference of load between running tasks
+	* 	and the load from other processes
 
-	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
-	  Naming update.
-Added msgd_bcreate_pressed.
+2001-09-10 00:04:34  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-04 23:26:34  Rev 268    jorge
+	* Added :
+	 * drqm_request_slave_limits_maxfreeloadcpu_set
 
-	* request_codes.h:
-	  Added R_R_JOBFWAIT, R_A_JOBFWAIT.
+2001-09-10 00:03:39  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-04 23:25:33  Rev 267    jorge
+	* Added :
+	 * cdd_limits_maxfreeloadcpu_bcp
+	 * mflc_dialog
+	 * mflcd_bsumbit_pressed
 
-	* request.c request.h:
-	  Added R_R_JOBFWAIT family of functions.
+2001-09-10 00:02:30  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-04 23:24:42  Rev 266    jorge
+	* Added :
+	 * RS_R_SETNMAXCPUS and RS_A_SETNMAXCPUS
 
-	* mayasg.c:
-	  Shell bug fix.
+2001-09-09 23:56:09  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-04 23:24:29  Rev 265    jorge
+	* Added :
+	 * request_slave_limits_maxfreeloadcpu_set
+	 * handle_rs_r_setmaxfreeloadcpu
 
-	* mayasg.h:
-	  Small update.
+2001-09-09 23:55:37  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-04 23:24:02  Rev 264    jorge
+	* Added :
+	 * RS_R_SETMAXFREELOADCPU family of functions
 
-	* slave.c master.c:
-	  Ignore SIGINT during clean_out (signal handler for exiting).
+2001-09-09 23:54:56  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-04 16:05:48  Rev 263    jorge
+	* Version update.
 
-	* constants.h:
-	  Updated.
+2001-09-08 23:41:52  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-04 16:05:40  Rev 262    jorge
+	* Minor changes.
+	* Added:
+	 * drqm_request_slave_limits_nmaxcpus_set
 
-	* drerrno.c drerrno.h:
-	  Added DRE_COULDNOTCREATE and DRE_NOTCOMPLETE.
+2001-09-08 23:39:48  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-04 16:05:03  Rev 261    jorge
+	* Added:
+	 * enmaxcpus and emaxfreeloadcpu to cdd_li struct
 
-	* libdrqueue.h:
-	  Added mayasg.h
+2001-09-08 23:37:34  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-04 16:04:52  Rev 260    jorge
+	* Added:
+	 * cdd_limits_nmaxcpus_bcp
+	 * nmc_dialog
+	 * nmcd_bsumbit_pressed
 
-	* Makefile:
-	  Added mayasg.o to libdrqueue.a
+2001-09-08 22:47:15  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-04 16:00:04  Rev 259    jorge
+	* Bug fix:
+	 * update_computer_limits goes after the registration.
 
-	* drqman/drqm_jobs.c drqman/main.c drqman/drqm_jobs.h:
-	  Working on
+2001-09-08 22:46:38  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-04 12:30:42  Rev 258    jorge
+	* Added:
+	 * R_R_UCLIMITS and R_A_UCLIMITS
+	 * RS_R_SETNMAXCPUS and RS_A_SETNMAXCPUS
 
-	* mayasg.h mayasg.c:
-	  Added to repository.
+2001-09-08 22:45:46  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-03 16:03:44  Rev 257    jorge
+	* Added:
+	 * handle_r_r_uclimits
+	 * update_computer_limits
+	 * request_slave_limits_nmaxcpus_set
+	 * handle_rs_r_setnmaxcpus
 
-	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
-	  Added dialog for the Maya script creation. Does not work yet.
+2001-09-08 22:42:43  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-03 16:03:20  Rev 256    jorge
+	* Added:
+	 * R_R_UCLIMITS family of functions
+	 * RS_R_SETNMAXCPUS family of functions
+	 * request_slave_killtask now has a who parameter
 
-	* drqman/main.c:
-	  Small update.
+2001-09-08 20:41:18  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-03 16:03:04  Rev 255    jorge
+	* Bug fix:
+	 * SeeFrameLogDialog had window title "New Job"
 
-	* todo:
-	  Updated.
+2001-09-08 19:00:10  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-03 10:33:12  Rev 254    jorge
+	* Minor update.
 
-	* computer_status.c:
-	  Added support for load average using uptime if sysget fails
+2001-09-08 18:59:38  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-03 10:06:35  Rev 253    jorge
+	* Bug fix:
+	 * computer_init_limits is called now after get_hwinfo.
 
-	* logger.c:
-	  Solved bug of empty filenames.
+2001-09-08 18:58:43  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-03 10:05:58  Rev 252    jorge
+	* Modified function:
+	 * computer_available now takes care of the load. Based on the
+	   load determines how many cpus are being used and so substracts
+	   them to the previous possible tasks. Use the source Luke.
 
-	* Makefile:
-	  Minor changes
+2001-09-08 18:21:18  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-03 09:17:15  Rev 251    jorge
+	* Removed call to computer_init_limits because it created an inconsistency with the slave information.
 
-	* drqman/drqm_computers.c:
-	  Dialog window set to top level window to have full decoration.
+2001-09-08 18:20:32  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-02 14:29:53  Rev 250    jorge
+	* Added call to computer_init_limits before registering.
 
-	* Makefile:
-	  Added common.o.
-Added mini_install target that installs on ./bin
+2001-09-08 17:55:35  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-02 14:19:46  Rev 249    jorge
+	* Updated function:
+	 * computer_index_addr: more comments and small change.
 
-	* slave.c slave.h:
-	  Added slave_get_options.
-Now ftok looks for the files based on DRQUEUE_ROOT.
+2001-09-08 17:36:27  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-02 14:19:12  Rev 248    jorge
+	* Minor update.
 
-	* master.c master.h:
-	  Added master_get_options.
-Now ftok looks for the files based on DRQUEUE_ROOT.
+2001-09-08 17:35:54  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-02 14:17:35  Rev 247    jorge
+	* Added struct:
+	 * struct cdd_li (limits info) inside drqmc_cddi (computer details dialog.
 
-	* libdrqueue.h:
-	  Added common.h.
+2001-09-08 17:34:25  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-02 14:17:20  Rev 246    jorge
+	* Naming change:
+	 * numproc is now ncpus
+	* Added:
+	 * limits basic info on computers details dialog
 
-	* drerrno.c drerrno.h:
-	  Added DRE_NOENVMASTER and DRE_NOENVROOT.
+2001-09-08 15:47:37  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-02 14:16:54  Rev 245    jorge
+	* Naming change:
+	 * hwinfo->numproc is now hwinfo->ncpus.
+	* Bugs solved:
+	 * in [send|recv]_computer solved. Now returns 1 on success.
+	 * in [send|recv]_computer_limits. Wrong variable name.
 
-	* common.c:
-	  Bug fix. Included missing header.
+2001-09-08 15:37:40  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-02 14:16:28  Rev 244    jorge
+	* Naming change numproc is now ncpus.
 
-	* logger.c:
-	  No hostname on logs from slave. Actually, the hostname is the name of the file. So it's not needed.
+2001-09-07 18:44:08  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-02 12:18:53  Rev 243    jorge
+	* Added commentaries.
 
-	* common.c common.h:
-	  Added to repository.
+2001-09-07 18:43:39  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-01 20:03:12  Rev 242    jorge
+	* Modified naming:
+	 * numproc goes to ncpus
 
-	* todo:
-	  Updated.
+2001-09-07 18:42:47  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-01 20:00:43  Rev 241    jorge
+	* Added struct:
+	 * computer_limits
+	* Modified struct:
+	 * computer to add the limits
+	* Added function:
+	 * computer_init_limits
 
-	* communications.c request.c slave.c master.c communications.h 
-	  request.h computer.c:
-	  Registration done using the resolution of the IP, not the hostname.
+2001-09-07 18:39:22  Jorge Daza <jorge@drqueue.org>
 
 
-2001-09-01 17:14:59  Rev 240    jorge
+	* Added:
+	 * recv_computer_limits
+	 * send_computer_limits
 
-	* computer.c:
-	  Avoiding race condition. Bug solved.
+	* Modified send_computer and recv_computer to send and receive the computer limits.
 
+2001-09-07 18:36:21  Jorge Daza <jorge@drqueue.org>
 
-2001-09-01 16:43:20  Rev 239    jorge
 
-	* drqman/drqm_jobs.c:
-	  Several updates.
-Dialog windows now with full decoration like main windows.
+	* Updated
 
+2001-09-07 11:41:08  Jorge Daza <jorge@drqueue.org>
 
-2001-09-01 16:41:34  Rev 238    jorge
 
-	* slave.c:
-	  Using exec code similar to libc's system again.
+	* Minor bug fix.
 
+2001-09-07 11:36:43  Jorge Daza <jorge@drqueue.org>
 
-2001-09-01 16:40:15  Rev 237    jorge
 
-	* request.c request.h:
-	  Added one more set for last connection time on register.
-Modified points for semaphores on registration.
-More debugging messages.
-Now uses computer_ntasks.
-Minor updates.
+	* Minor message update.
 
+2001-09-07 11:16:51  Jorge Daza <jorge@drqueue.org>
 
-2001-09-01 16:36:44  Rev 236    jorge
 
-	* master.c:
-	  Added more debugging info.
+	* Naming changes
 
+2001-09-07 01:03:26  Jorge Daza <jorge@drqueue.org>
 
-2001-09-01 16:35:48  Rev 235    jorge
 
-	* logger.c:
-	  Added PID on debugging messages.
+	* Added drqm_request_job_frame_kill_finish.
 
+2001-09-07 01:03:04  Jorge Daza <jorge@drqueue.org>
 
-2001-09-01 16:34:49  Rev 234    jorge
 
-	* job.c:
-	  Minor changes.
+	* Added jdd_kill_finish_frames.
 
+2001-09-07 01:02:07  Jorge Daza <jorge@drqueue.org>
 
-2001-09-01 16:32:28  Rev 233    jorge
 
-	* computer.h computer.c:
-	  Added computer_ntasks.
-Added debugging stuff.
+	* Added R_R_JOBFKFIN family of functions and data structures.
 
+2001-09-07 01:01:30  Jorge Daza <jorge@drqueue.org>
 
-2001-09-01 16:31:41  Rev 232    jorge
 
-	* Makefile:
-	  Added optimization.
+	* Minor updates.
 
+2001-09-07 00:37:44  Jorge Daza <jorge@drqueue.org>
 
-2001-08-31 19:35:01  Rev 231    jorge
 
-	* drqman/drqm_computers.c:
-	  Changed DIALOG windows for TOPLEVEL windows.
+	* Added documentation stuff.
 
+2001-09-06 17:28:57  Jorge Daza <jorge@drqueue.org>
 
-2001-08-31 19:34:45  Rev 230    jorge
 
-	* drqman/drqm_jobs.c:
-	  Added separation bar on frames popup menu.
-Changed DIALOG windows for TOPLEVEL windows.
+	* Minor update.
 
+2001-09-06 16:33:36  Jorge Daza <jorge@drqueue.org>
 
-2001-08-31 15:55:08  Rev 229    jorge
 
-	* Makefile:
-	  Adapted to Irix
+	* Added drqm_request_job_frame_finish.
 
+2001-09-06 16:32:39  Jorge Daza <jorge@drqueue.org>
 
-2001-08-31 15:28:13  Rev 228    jorge
 
-	* job.c:
-	  Small bug solved.
+	* Added jdd_finish_frames.
 
+2001-09-06 16:00:26  Jorge Daza <jorge@drqueue.org>
 
-2001-08-31 15:27:55  Rev 227    jorge
 
-	* Makefile:
-	  Added install support creating directories.
+	* Added R_R_JOBFFINI family of functions and data structures.
 
+2001-09-06 15:59:13  Jorge Daza <jorge@drqueue.org>
 
-2001-08-31 15:07:31  Rev 226    jorge
 
-	* Makefile:
-	  Added linux_install and shared variables.
+	* Minor update.
 
+2001-09-06 15:06:59  Jorge Daza <jorge@drqueue.org>
 
-2001-08-31 15:07:14  Rev 225    jorge
 
-	* job.c:
-	  Improved the way in wich in estimated the finish time.
+	* Changed job.id size from char to uint32_t.
 
+2001-09-06 12:43:41  Jorge Daza <jorge@drqueue.org>
 
-2001-08-31 14:07:58  Rev 224    jorge
 
-	* request.c:
-	  Small conflict solved
+	* Added mayasg_default_script_path and related data.
+	* Modified mayasg_create to use the previous function and data.
 
+2001-09-06 12:42:41  Jorge Daza <jorge@drqueue.org>
 
-2001-08-31 14:06:23  Rev 223    jorge
 
-	* request.c job.c logger.c:
-	  I just added some debugging stuff. I found a problem running the master on pebbles. For some reason
-that I don't know yet it gives a segmentation fault at the begging of job_check_frame_status.
-It didn't happen yesterday, even this morning and it neither happens with ludwig as master.
+	* Added script directory search and functionality.
 
+2001-09-06 12:19:43  Jorge Daza <jorge@drqueue.org>
 
-2001-08-31 12:47:57  Rev 222    jorge
 
-	* drqman/running.xpm drqman/waiting.xpm drqman/error.xpm 
-	  drqman/finished.xpm:
-	  Frame status related xpm's added.
+	* Added job frame kill functions and data.
 
+2001-09-06 12:19:06  Jorge Daza <jorge@drqueue.org>
 
-2001-08-31 12:46:52  Rev 221    jorge
 
-	* drqman/drqm_jobs.c:
-	  Added small pixmap to visualize frame status. There are some warnings with that but works.
+	* Updated.
 
+2001-09-06 12:18:56  Jorge Daza <jorge@drqueue.org>
 
-2001-08-31 10:02:24  Rev 220    jorge
 
-	* Makefile:
-	  Added install_irix option
+	* Added R_R_JOBFKILL family of functions and data.
 
+2001-09-06 12:18:29  Jorge Daza <jorge@drqueue.org>
 
-2001-08-31 09:28:10  Rev 219    jorge
 
-	* computer_info.c:
-	  Working on Onyx bug that causes error when finding proc speed.
+	* Added -v info on usage function.
 
+2001-09-05 17:18:40  Jorge Daza <jorge@drqueue.org>
 
-2001-08-31 09:19:01  Rev 218    jorge
 
-	* slave.c:
-	  Less verbosity.
+	* Added -v parameter to show the last tag.
 
+2001-09-05 17:18:05  Jorge Daza <jorge@drqueue.org>
 
-2001-08-31 08:48:49  Rev 217    jorge
 
-	* computer.c:
-	  No more ten processors tests
+	* Added show_version.
+	* Added VERSION define.
 
+2001-09-05 17:17:38  Jorge Daza <jorge@drqueue.org>
 
-2001-08-31 08:20:52  Rev 216    jorge
 
-	* request.c:
-	  Working on bug that causes children of exec'd process not to die when the parent dies.
+	* Added show_version.
 
+2001-09-05 17:13:48  Jorge Daza <jorge@drqueue.org>
 
-2001-08-30 13:17:27  Rev 213    jorge
 
-	* drqman/drqm_computers.c:
-	  First computer details dialog working.
+	* Bug Fix.
 
+2001-09-05 17:12:44  Jorge Daza <jorge@drqueue.org>
 
-2001-08-30 13:16:54  Rev 212    jorge
 
-	* request.c request_codes.h request.h:
-	  Added R_R_COMPXFER related functions.
+	* Working the basics.
 
+2001-09-05 16:31:11  Jorge Daza <jorge@drqueue.org>
 
-2001-08-29 15:28:03  Rev 211    jorge
 
-	* drqman/notebook.c drqman/main.c:
-	  Minor updates.
+	* Added to repository
 
+2001-09-05 15:36:39  Jorge Daza <jorge@drqueue.org>
 
-2001-08-29 15:27:42  Rev 210    jorge
 
-	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
-	  Now using global drqm_info info.
+	* Test commit.
 
+2001-09-05 14:56:08  Jorge Daza <jorge@drqueue.org>
 
-2001-08-29 15:26:33  Rev 209    jorge
 
-	* drqman/drqm_computers.c drqman/drqm_computers.h:
-	  Working on the detailed computer information dialog.
+	* Bug fixes.
 
+2001-09-05 14:52:12  Jorge Daza <jorge@drqueue.org>
 
-2001-08-29 15:01:27  Rev 208    jorge
 
-	* drqman/drqman.h:
-	  Small update.
+	* Minor update.
 
+2001-09-05 14:49:37  Jorge Daza <jorge@drqueue.org>
 
-2001-08-29 13:16:13  Rev 207    jorge
 
-	* task.c task.h communications.c request.c job.c computer.c:
-	  Task.jobindex changed to task.ijob.
+	* Bugfixes and updates.
 
+2001-09-05 11:54:03  Jorge Daza <jorge@drqueue.org>
 
-2001-08-29 12:46:51  Rev 206    jorge
 
-	* task.h communications.c:
-	  Task.jobindex moved from uint16 to uint32.
+	* Solved fchmod bugfix.
 
+2001-09-05 11:53:27  Jorge Daza <jorge@drqueue.org>
 
-2001-08-29 10:14:49  Rev 205    jorge
 
-	* communications.c:
-	  Minor update.
+	* Added some more checks.
+	* Added job_index_correct_master.
+	* Bug fixes.
 
+2001-09-05 11:48:40  Jorge Daza <jorge@drqueue.org>
 
-2001-08-29 09:44:19  Rev 204    jorge
 
-	* computer_info.c:
-	  Substituted exits by kills.
+	* Solved small bug.
 
+2001-09-05 11:43:53  Jorge Daza <jorge@drqueue.org>
 
-2001-08-29 09:42:50  Rev 203    jorge
 
-	* logger.c:
-	  Substituted exits (uncontroled) by kills and on-screen logging.
+	* Solved bug of permissions on irix_install target.
 
+2001-09-05 01:28:53  Jorge Daza <jorge@drqueue.org>
 
-2001-08-29 09:22:57  Rev 202    jorge
 
-	* logger.c:
-	  Bug fixes related with uncontroled exits. Needs much more.
+	* Naming update.
 
+2001-09-05 01:28:38  Jorge Daza <jorge@drqueue.org>
 
-2001-08-29 09:22:13  Rev 201    jorge
 
-	* computer_info.c:
-	  Correct detection of hardware info on Irix
+	* Naming update.
+	* Added drqm_request_job_frame_waiting.
 
+2001-09-05 01:27:51  Jorge Daza <jorge@drqueue.org>
 
-2001-08-29 08:20:57  Rev 200    jorge
 
-	* master.c computer.c:
-	  A bit less verbosity.
+	* Naming update.
+	* Added msgd_bcreate_pressed.
 
+2001-09-05 01:26:34  Jorge Daza <jorge@drqueue.org>
 
-2001-08-28 21:49:29  Rev 199    jorge
 
-	* drqman/notebook.c drqman/drqm_computers.c drqman/main.c 
-	  drqman/notebook.h drqman/drqm_computers.h:
-	  Globlal info_drqm in progress.
+	* Added R_R_JOBFWAIT, R_A_JOBFWAIT.
 
+2001-09-05 01:25:33  Jorge Daza <jorge@drqueue.org>
 
-2001-08-28 21:22:10  Rev 198    jorge
 
-	* drqman/drqman.h:
-	  Added drqman.h
+	* Added R_R_JOBFWAIT family of functions.
 
+2001-09-05 01:24:42  Jorge Daza <jorge@drqueue.org>
 
-2001-08-28 20:56:55  Rev 197    jorge
 
-	* drqman/drqm_jobs.c:
-	  Small bug solved. Not deallocating resources.
+	* Shell bug fix.
 
+2001-09-05 01:24:29  Jorge Daza <jorge@drqueue.org>
 
-2001-08-28 15:36:28  Rev 196    jorge
 
-	* drqman/drqm_request.c:
-	  Solved bug selecting appropiate job number for deletion.
+	* Small update.
 
+2001-09-05 01:24:02  Jorge Daza <jorge@drqueue.org>
 
-2001-08-28 15:35:56  Rev 195    jorge
 
-	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
-	  Added:
-* CreateMenuFrames
-* PopupMenuFrames
-* SeeFrameLog
-* SeeFrameLogDialog
+	* Ignore SIGINT during clean_out (signal handler for exiting).
 
-Solved getlogin problem.
+2001-09-04 18:05:48  Jorge Daza <jorge@drqueue.org>
 
 
-2001-08-28 15:34:19  Rev 194    jorge
+	* Updated.
 
-	* todo:
-	  Updated
+2001-09-04 18:05:40  Jorge Daza <jorge@drqueue.org>
 
 
-2001-08-28 15:34:13  Rev 193    jorge
+	* Added DRE_COULDNOTCREATE and DRE_NOTCOMPLETE.
 
-	* logger.h logger.c:
-	  Added log_dumptask_open_ro.
-Minor changes.
+2001-09-04 18:05:03  Jorge Daza <jorge@drqueue.org>
 
 
-2001-08-28 12:59:31  Rev 192    jorge
+	* Added mayasg.h
 
-	* request.c request.h:
-	  Solved bug in r_r_deletjob protocol.
+2001-09-04 18:04:52  Jorge Daza <jorge@drqueue.org>
 
 
-2001-08-28 09:56:47  Rev 190    jorge
+	* Added mayasg.o to libdrqueue.a
 
-	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
-	  Moved djd_* functions and structs to jdd_*
-Added confirmation dialog for HStopJob:
-* HStopJobDialog
-* djhs_bok_pressed
+2001-09-04 18:00:04  Jorge Daza <jorge@drqueue.org>
 
 
-2001-08-28 09:54:25  Rev 189    jorge
+	* Working on
 
-	* drqman/drqm_computers.c:
-	  Added ID column on the main computers' clist.
+2001-09-04 14:30:42  Jorge Daza <jorge@drqueue.org>
 
 
-2001-08-28 09:53:20  Rev 188    jorge
+	* Added to repository.
 
-	* todo:
-	  Updated.
+2001-09-03 18:03:44  Jorge Daza <jorge@drqueue.org>
 
 
-2001-08-28 09:03:52  Rev 187    jorge
+	* Added dialog for the Maya script creation. Does not work yet.
 
-	* request.c:
-	  Added id init.
+2001-09-03 18:03:20  Jorge Daza <jorge@drqueue.org>
 
 
-2001-08-28 09:00:30  Rev 186    jorge
+	* Small update.
 
-	* drqman/main.c:
-	  New size for the main window.
+2001-09-03 18:03:04  Jorge Daza <jorge@drqueue.org>
 
 
-2001-08-28 09:00:15  Rev 185    jorge
+	* Updated.
 
-	* communications.c:
-	  Small bug solved in setsockopt.
-Added id field to send and recv_computer_hwinfo
+2001-09-03 12:33:12  Jorge Daza <jorge@drqueue.org>
 
 
-2001-08-28 08:59:19  Rev 184    jorge
+	* Added support for load average using uptime if sysget fails
 
-	* computer_info.h:
-	  Added id field to computer.hwinfo.
+2001-09-03 12:06:35  Jorge Daza <jorge@drqueue.org>
 
 
-2001-08-28 08:22:50  Rev 183    jorge
+	* Solved bug of empty filenames.
 
-	* request.c:
-	  Solved small bug.
+2001-09-03 12:05:58  Jorge Daza <jorge@drqueue.org>
 
 
-2001-08-27 22:10:04  Rev 182    jorge
+	* Minor changes
 
-	* drqman/drqm_jobs.c:
-	  Added status label on detailed job information dialog.
-Added stop, hstop, continue and delete on djd.
+2001-09-03 11:17:15  Jorge Daza <jorge@drqueue.org>
 
 
-2001-08-27 22:09:04  Rev 181    jorge
+	* Dialog window set to top level window to have full decoration.
 
-	* drqman/drqm_jobs.h:
-	  Added djd.lstatus
+2001-09-02 16:29:53  Jorge Daza <jorge@drqueue.org>
 
 
-2001-08-27 21:16:30  Rev 180    jorge
+	* Added common.o.
+	* Added mini_install target that installs on ./bin
 
-	* todo:
-	  Updated.
+2001-09-02 16:19:46  Jorge Daza <jorge@drqueue.org>
 
 
-2001-08-27 21:16:18  Rev 179    jorge
+	* Added slave_get_options.
+	* Now ftok looks for the files based on DRQUEUE_ROOT.
 
-	* computer_info.c computer_info.h:
-	  Added PROCTYPE_PENTIUM4
+2001-09-02 16:19:12  Jorge Daza <jorge@drqueue.org>
 
 
-2001-08-27 21:15:32  Rev 178    jorge
+	* Added master_get_options.
+	* Now ftok looks for the files based on DRQUEUE_ROOT.
 
-	* communications.c:
-	  Added SO_REUSEADDR option on listening sockets.
+2001-09-02 16:17:35  Jorge Daza <jorge@drqueue.org>
 
 
-2001-08-27 15:29:16  Rev 177    jorge
+	* Added common.h.
 
-	* request.c:
-	  Small bug solved. Always printed the warning "Unknown request received".
+2001-09-02 16:17:20  Jorge Daza <jorge@drqueue.org>
 
 
-2001-08-27 15:23:24  Rev 176    jorge
+	* Added DRE_NOENVMASTER and DRE_NOENVROOT.
 
-	* computer.c:
-	  Updated
+2001-09-02 16:16:54  Jorge Daza <jorge@drqueue.org>
 
 
-2001-08-27 15:22:58  Rev 175    jorge
+	* Bug fix. Included missing header.
 
-	* communications.c:
-	  Added frame_step to send_job and recv_job
+2001-09-02 16:16:28  Jorge Daza <jorge@drqueue.org>
 
 
-2001-08-27 15:17:30  Rev 174    jorge
+	* No hostname on logs from slave. Actually, the hostname is the name of the file. So it's not needed.
 
-	* drqman/drqm_request.c:
-	  Updated request (short) data_s to request (uint32_t) data .
+2001-09-02 14:18:53  Jorge Daza <jorge@drqueue.org>
 
 
-2001-08-27 15:16:54  Rev 173    jorge
+	* Added to repository.
 
-	* drqman/drqm_jobs.h:
-	  Added:
-* struct info_djd
+2001-09-01 22:03:12  Jorge Daza <jorge@drqueue.org>
 
 
-2001-08-27 15:16:24  Rev 172    jorge
+	* Updated.
 
-	* drqman/drqm_jobs.c:
-	  Added frame info on the detailed job information dialog.
-Added step frame on the new job dialog.
+2001-09-01 22:00:43  Jorge Daza <jorge@drqueue.org>
 
 
-Added:
-* CreateFrameInfoClist
-* djd_update
+	* Registration done using the resolution of the IP, not the hostname.
 
+2001-09-01 19:14:59  Jorge Daza <jorge@drqueue.org>
 
-2001-08-27 14:15:22  Rev 171    jorge
 
-	* todo:
-	  Updated.
+	* Avoiding race condition. Bug solved.
 
+2001-09-01 18:43:20  Jorge Daza <jorge@drqueue.org>
 
-2001-08-27 14:15:14  Rev 170    jorge
 
-	* request.c:
-	  Updated to use:
-* job_frame_number_correct
-* job_frame_number_to_index
-* job_frame_index_to_number
+	* Several updates.
+	* Dialog windows now with full decoration like main windows.
 
+2001-09-01 18:41:34  Jorge Daza <jorge@drqueue.org>
 
-2001-08-27 14:13:44  Rev 169    jorge
 
-	* job.c job.h:
-	  Changed (int) job_nframes to (uint32_t) job_nframes.
-Added job_frame_status_string.
-Added job_frame_index_to_number.
-Added job_frame_number_to_index.
-Added job_frame_number_correct.
+	* Using exec code similar to libc's system again.
 
+2001-09-01 18:40:15  Jorge Daza <jorge@drqueue.org>
 
-2001-08-27 08:21:22  Rev 168    jorge
 
-	* todo:
-	  Updated.
+	* Added one more set for last connection time on register.
+	* Modified points for semaphores on registration.
+	* More debugging messages.
+	* Now uses computer_ntasks.
+	* Minor updates.
 
+2001-09-01 18:36:44  Jorge Daza <jorge@drqueue.org>
 
-2001-08-27 08:21:11  Rev 167    jorge
 
-	* request.h:
-	  Request data_s (short) moved to data (int [uint32_t]).
-Added handle_r_r_jobxfer.
-Added handle_r_r_jobxferfi.
-Added request_job_xfer.
-Added request_job_xferfi.
+	* Added more debugging info.
 
+2001-09-01 18:35:48  Jorge Daza <jorge@drqueue.org>
 
-2001-08-27 08:19:42  Rev 166    jorge
 
-	* request_codes.h:
-	  Minor changes.
+	* Added PID on debugging messages.
 
+2001-09-01 18:34:49  Jorge Daza <jorge@drqueue.org>
 
-2001-08-27 08:19:10  Rev 165    jorge
 
-	* request.c:
-	  Added R_R_JOBXFER and R_R_JOBXFERFI.
-All request.data_s moved to request.data.
-Several bugfixes related with closing file descriptors.
-Added request_job_xfer.
-Added handle_r_r_jobxfer.
-Added request_job_xferfi.
-Added handle_r_r_jobxferfi.
+	* Minor changes.
 
+2001-09-01 18:32:28  Jorge Daza <jorge@drqueue.org>
 
-2001-08-27 08:15:20  Rev 164    jorge
 
-	* master.c:
-	  Minor update.
+	* Added computer_ntasks.
+	* Added debugging stuff.
 
+2001-09-01 18:31:41  Jorge Daza <jorge@drqueue.org>
 
-2001-08-27 08:15:04  Rev 163    jorge
 
-	* job.c:
-	  Bug fixes in the avg_frame_time calcs.
+	* Added optimization.
 
+2001-08-31 21:35:01  Jorge Daza <jorge@drqueue.org>
 
-2001-08-27 08:14:13  Rev 162    jorge
 
-	* drerrno.c drerrno.h:
-	  Added DRE_NOTREGISTERED.
+	* Changed DIALOG windows for TOPLEVEL windows.
 
+2001-08-31 21:34:45  Jorge Daza <jorge@drqueue.org>
 
-2001-08-27 08:13:48  Rev 161    jorge
 
-	* communications.c communications.h:
-	  Changed data_s (short) to data (int).
-Added recv_frame_info, send_frame_info.
+	* Added separation bar on frames popup menu.
+	* Changed DIALOG windows for TOPLEVEL windows.
 
+2001-08-31 17:55:08  Jorge Daza <jorge@drqueue.org>
 
-2001-08-23 13:25:13  Rev 159    jorge
 
-	* drqman/drqm_request.c:
-	  Solved bug of selecting the wrong element on the list when it was ordered.
+	* Adapted to Irix
 
+2001-08-31 17:28:13  Jorge Daza <jorge@drqueue.org>
 
-2001-08-23 13:24:28  Rev 158    jorge
 
-	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
-	  Added basic job details window and so.
+	* Small bug solved.
 
+2001-08-31 17:27:55  Jorge Daza <jorge@drqueue.org>
 
-2001-08-23 13:23:57  Rev 157    jorge
 
-	* request.c:
-	  More debuging messages.
+	* Added install support creating directories.
 
+2001-08-31 17:07:31  Jorge Daza <jorge@drqueue.org>
 
-2001-08-23 13:23:11  Rev 156    jorge
 
-	* job.c:
-	  Added average frame time and estimated finish time stuff.
+	* Added linux_install and shared variables.
 
+2001-08-31 17:07:14  Jorge Daza <jorge@drqueue.org>
 
-2001-08-23 13:22:30  Rev 155    jorge
 
-	* communications.c:
-	  Minor bug solved.
+	* Improved the way in wich in estimated the finish time.
 
+2001-08-31 16:07:58  Jorge Daza <jorge@drqueue.org>
 
-2001-08-22 10:15:36  Rev 154    jorge
 
-	* todo:
-	  Updated
+	* Small conflict solved
 
+2001-08-31 16:06:23  Jorge Daza <jorge@drqueue.org>
 
-2001-08-22 10:15:27  Rev 153    jorge
 
-	* logger.h slave.c master.c logger.c:
-	  Logging on screen.
+	* I just added some debugging stuff. I found a problem running the master on pebbles. For some reason
+	* that I don't know yet it gives a segmentation fault at the begging of job_check_frame_status.
+	* It didn't happen yesterday, even this morning and it neither happens with ludwig as master.
 
+2001-08-31 14:47:57  Jorge Daza <jorge@drqueue.org>
 
-2001-08-22 09:05:29  Rev 152    jorge
 
-	* request.c drqman/drqm_request.c:
-	  More error handling.
+	* Frame status related xpm's added.
 
+2001-08-31 14:46:52  Jorge Daza <jorge@drqueue.org>
 
-2001-08-22 09:05:20  Rev 151    jorge
 
-	* slave.c:
-	  Minor changes.
+	* Added small pixmap to visualize frame status. There are some warnings with that but works.
 
+2001-08-31 12:02:24  Jorge Daza <jorge@drqueue.org>
 
-2001-08-22 09:04:33  Rev 150    jorge
 
-	* job.c job.h:
-	  If something fails in the middle of a frame assignation then it sets back the frame as FS_WAITING.
+	* Added install_irix option
 
+2001-08-31 11:28:10  Jorge Daza <jorge@drqueue.org>
 
-2001-08-22 09:02:49  Rev 149    jorge
 
-	* drerrno.c drerrno.h:
-	  Added DRE_ERRORRECEIVING.
+	* Working on Onyx bug that causes error when finding proc speed.
 
+2001-08-31 11:19:01  Jorge Daza <jorge@drqueue.org>
 
-2001-08-22 09:02:26  Rev 148    jorge
 
-	* communications.c communications.h:
-	  More control on error handling.
+	* Less verbosity.
 
+2001-08-31 10:48:49  Jorge Daza <jorge@drqueue.org>
 
-2001-08-08 12:59:46  Rev 147    jorge
 
-	* request.h:
-	  Missing declaration for request_job_hstop
+	* No more ten processors tests
 
+2001-08-31 10:20:52  Jorge Daza <jorge@drqueue.org>
 
-2001-08-08 12:57:39  Rev 146    jorge
 
-	* computer.c:
-	  Solved bug of missing headers
+	* Working on bug that causes children of exec'd process not to die when the parent dies.
 
+2001-08-30 15:17:27  Jorge Daza <jorge@drqueue.org>
 
-2001-08-08 12:54:48  Rev 145    jorge
 
-	* setenv drqman/Makefile:
-	  Minor changes
+	* First computer details dialog working.
 
+2001-08-30 15:16:54  Jorge Daza <jorge@drqueue.org>
 
-2001-08-08 10:54:34  Rev 144    jorge
 
-	* logger.h logger.c:
-	  Solved bug of multiple definitions of loglevel.
+	* Added R_R_COMPXFER related functions.
 
+2001-08-29 17:28:03  Jorge Daza <jorge@drqueue.org>
 
-2001-08-08 10:53:51  Rev 143    jorge
 
-	* slave.c master.c:
-	  Added -l <loglevel> flag.
+	* Minor updates.
 
+2001-08-29 17:27:42  Jorge Daza <jorge@drqueue.org>
 
-2001-08-08 10:53:11  Rev 142    jorge
 
-	* todo:
-	  Updated.
+	* Now using global drqm_info info.
 
+2001-08-29 17:26:33  Jorge Daza <jorge@drqueue.org>
 
-2001-08-08 10:52:59  Rev 141    jorge
 
-	* drerrno.c drerrno.h:
-	  Solved bug with multiple definitions of drerrno.
-Added DRE_NOERROR.
+	* Working on the detailed computer information dialog.
 
+2001-08-29 17:01:27  Jorge Daza <jorge@drqueue.org>
 
-2001-08-08 10:52:11  Rev 140    jorge
 
-	* computer.c:
-	  When the task structures are filled the computer is not available.
+	* Small update.
 
+2001-08-29 15:16:13  Jorge Daza <jorge@drqueue.org>
 
-2001-08-07 13:06:21  Rev 138    jorge
 
-	* drqman/drqm_request.h drqman/drqm_request.c:
-	  Added:
-- drqm_request_job_stop
-- drqm_request_job_hstop
-- drqm_request_job_delete
+	* Task.jobindex changed to task.ijob.
 
+2001-08-29 14:46:51  Jorge Daza <jorge@drqueue.org>
 
-2001-08-07 13:05:40  Rev 137    jorge
 
-	* drqman/drqm_jobs.c:
-	  Added StopJob, HStopJob and ContinueJob.
+	* Task.jobindex moved from uint16 to uint32.
 
+2001-08-29 12:14:49  Jorge Daza <jorge@drqueue.org>
 
-2001-08-07 13:04:37  Rev 136    jorge
 
-	* todo:
-	  Updated.
+	* Minor update.
 
+2001-08-29 11:44:19  Jorge Daza <jorge@drqueue.org>
 
-2001-08-07 13:03:57  Rev 135    jorge
 
-	* slave.c:
-	  Minor changes.
+	* Substituted exits by kills.
 
+2001-08-29 11:42:50  Jorge Daza <jorge@drqueue.org>
 
-2001-08-07 13:03:36  Rev 134    jorge
 
-	* request_codes.h:
-	  Added STOPJOB, CONTJOB and HSTOPJOB.
+	* Substituted exits (uncontroled) by kills and on-screen logging.
 
+2001-08-29 11:22:57  Jorge Daza <jorge@drqueue.org>
 
-2001-08-07 13:03:02  Rev 133    jorge
 
-	* request.c request.h:
-	  Added stopjob, hstopjob and contjob related functions.
-Jobindex range checking.
+	* Bug fixes related with uncontroled exits. Needs much more.
 
+2001-08-29 11:22:13  Jorge Daza <jorge@drqueue.org>
 
-2001-08-07 13:00:33  Rev 132    jorge
 
-	* logger.h logger.c:
-	  Added global loglevel.
+	* Correct detection of hardware info on Irix
 
+2001-08-29 10:20:57  Jorge Daza <jorge@drqueue.org>
 
-2001-08-07 12:59:24  Rev 131    jorge
 
-	* job.c job.h:
-	  Removed JOBSTATUS_HSTOPPED and JOBSTATUS_DELETING.
-Added job_stop and job_continue.
-Solved bug on job_available.
+	* A bit less verbosity.
 
+2001-08-28 23:49:29  Jorge Daza <jorge@drqueue.org>
 
-2001-08-06 12:40:26  Rev 130    jorge
 
-	* request.h:
-	  Small bug solved.
+	* Globlal info_drqm in progress.
 
+2001-08-28 23:22:10  Jorge Daza <jorge@drqueue.org>
 
-2001-08-06 12:40:08  Rev 129    jorge
 
-	* request.c:
-	  Shared memory deallocation on job deletion.
+	* Added drqman.h
 
+2001-08-28 22:56:55  Jorge Daza <jorge@drqueue.org>
 
-2001-08-06 12:39:23  Rev 128    jorge
 
-	* job.c:
-	  Minor updates.
+	* Small bug solved. Not deallocating resources.
 
+2001-08-28 17:36:28  Jorge Daza <jorge@drqueue.org>
 
-2001-08-06 12:35:06  Rev 127    jorge
 
-	* drqman/drqm_jobs.c drqman/drqm_request.h drqman/drqm_jobs.h 
-	  drqman/drqm_request.c:
-	  Added support for job deletion.
+	* Solved bug selecting appropiate job number for deletion.
 
+2001-08-28 17:35:56  Jorge Daza <jorge@drqueue.org>
 
-2001-08-06 12:33:51  Rev 126    jorge
 
-	* drerrno.c drerrno.h:
-	  Added: DRE_ANSWERNOTLISTED, DRE_ANSWERNOTRIGHT, DRE_ERRORSENDING.
+	* Added:
+	* * CreateMenuFrames
+	* * PopupMenuFrames
+	* * SeeFrameLog
+	* * SeeFrameLogDialog
 
+	* Solved getlogin problem.
 
-2001-08-06 12:32:53  Rev 125    jorge
+2001-08-28 17:34:19  Jorge Daza <jorge@drqueue.org>
 
-	* todo:
-	  Updated.
 
+	* Updated
 
-2001-08-06 12:32:28  Rev 124    jorge
+2001-08-28 17:34:13  Jorge Daza <jorge@drqueue.org>
 
-	* request_codes.h:
-	  Added R_R_DELETJOB and RS_R_KILLTASK.
 
+	* Added log_dumptask_open_ro.
+	* Minor changes.
 
-2001-08-06 12:31:38  Rev 123    jorge
+2001-08-28 14:59:31  Jorge Daza <jorge@drqueue.org>
 
-	* request.c request.h:
-	  Minor changes on logging (moved to L_DEBUG).
-Check if the job is being used and is the same in handle_r_r_taskfini.
-Added request_job_delete.
-Added handle_r_r_deletjob.
-Added request_slave_killtask.
-Added handle_rs_r_killtask.
 
+	* Solved bug in r_r_deletjob protocol.
 
-2001-08-06 10:29:26  Rev 122    jorge
+2001-08-28 11:56:47  Jorge Daza <jorge@drqueue.org>
 
-	* communications.c communications.h:
-	  Added connec_to_slave.
-send_request now returns 0 on failure.
 
+	* Moved djd_* functions and structs to jdd_*
+	* Added confirmation dialog for HStopJob:
+	* * HStopJobDialog
+	* * djhs_bok_pressed
 
-2001-08-02 10:20:24  Rev 121    jorge
+2001-08-28 11:54:25  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
-	  Added dialog for submiting new jobs to the queue.
 
+	* Added ID column on the main computers' clist.
 
-2001-08-02 10:19:49  Rev 120    jorge
+2001-08-28 11:53:20  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/Makefile:
-	  No optimization.
 
+	* Updated.
 
-2001-08-02 10:19:33  Rev 119    jorge
+2001-08-28 11:03:52  Jorge Daza <jorge@drqueue.org>
 
-	* job.c:
-	  Minor changes.
 
+	* Added id init.
 
-2001-08-02 10:19:04  Rev 118    jorge
+2001-08-28 11:00:30  Jorge Daza <jorge@drqueue.org>
 
-	* request.c request.h:
-	  register_job now returns 0 on failure, 1 on success
 
+	* New size for the main window.
 
-2001-08-02 10:18:21  Rev 117    jorge
+2001-08-28 11:00:15  Jorge Daza <jorge@drqueue.org>
 
-	* todo:
-	  Updated
 
+	* Small bug solved in setsockopt.
+	* Added id field to send and recv_computer_hwinfo
 
-2001-07-31 13:10:42  Rev 116    jorge
+2001-08-28 10:59:19  Jorge Daza <jorge@drqueue.org>
 
-	* sendjob.c request.c:
-	  Added priority stuff.
 
+	* Added id field to computer.hwinfo.
 
-2001-07-31 13:10:12  Rev 115    jorge
+2001-08-28 10:22:50  Jorge Daza <jorge@drqueue.org>
 
-	* job.c:
-	  Added priority stuff.
-Added check frame status, for consistency in the master db.
 
+	* Solved small bug.
 
-2001-07-31 13:08:02  Rev 114    jorge
+2001-08-28 00:10:04  Jorge Daza <jorge@drqueue.org>
 
-	* job.h:
-	  Added priority to job structure.
-Removed FS_LOADING.
 
+	* Added status label on detailed job information dialog.
+	* Added stop, hstop, continue and delete on djd.
 
-2001-07-31 13:06:58  Rev 113    jorge
+2001-08-28 00:09:04  Jorge Daza <jorge@drqueue.org>
 
-	* todo:
-	  Updated
 
+	* Added djd.lstatus
 
-2001-07-31 13:06:38  Rev 112    jorge
+2001-08-27 23:16:30  Jorge Daza <jorge@drqueue.org>
 
-	* drqman/drqm_jobs.c:
-	  Added priority on main job list.
 
+	* Updated.
 
-2001-07-31 13:06:01  Rev 111    jorge
+2001-08-27 23:16:18  Jorge Daza <jorge@drqueue.org>
 
-	* setenv:
-	  Minor changes.
 
+	* Added PROCTYPE_PENTIUM4
 
-2001-07-31 13:04:15  Rev 110    jorge
+2001-08-27 23:15:32  Jorge Daza <jorge@drqueue.org>
 
-	* communications.c:
-	  Added priority to job send and recv.
 
+	* Added SO_REUSEADDR option on listening sockets.
 
-2001-07-30 12:49:30  Rev 109    jorge
+2001-08-27 17:29:16  Jorge Daza <jorge@drqueue.org>
 
-	* todo:
-	  Added stuff to do.
 
+	* Small bug solved. Always printed the warning "Unknown request received".
 
-2001-07-30 12:49:12  Rev 108    jorge
+2001-08-27 17:23:24  Jorge Daza <jorge@drqueue.org>
 
-	* slave.c master.c slave.h master.h:
-	  Added getopt stuff.
-Force flag.
 
+	* Updated
 
-2001-07-24 15:42:42  Rev 106    jorge
+2001-08-27 17:22:58  Jorge Daza <jorge@drqueue.org>
 
-	* slave.c:
-	  Signals working on Irix
 
+	* Added frame_step to send_job and recv_job
 
-2001-07-24 15:14:39  Rev 105    jorge
+2001-08-27 17:17:30  Jorge Daza <jorge@drqueue.org>
 
-	* task.h request.c slave.c:
-	  Minor changes
 
+	* Updated request (short) data_s to request (uint32_t) data .
 
-2001-07-24 14:50:55  Rev 104    jorge
+2001-08-27 17:16:54  Jorge Daza <jorge@drqueue.org>
 
-	* communications.c:
-	  Solved bug in task send and recv
 
+	* Added:
+	* * struct info_djd
 
-2001-07-24 14:49:36  Rev 103    jorge
+2001-08-27 17:16:24  Jorge Daza <jorge@drqueue.org>
 
-	* slave.c slave.h:
-	  Solved bug in cmd parsing functions
 
+	* Added frame info on the detailed job information dialog.
+	* Added step frame on the new job dialog.
 
-2001-07-24 14:15:30  Rev 102    jorge
+	* Added:
+	* * CreateFrameInfoClist
+	* * djd_update
 
-	* job.c slave.c slave.h:
-	  New parsing and execing functions
+2001-08-27 16:15:22  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-24 13:56:09  Rev 101    jorge
+	* Updated.
 
-	* slave.c:
-	  Testing
+2001-08-27 16:15:14  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-24 10:42:34  Rev 100    jorge
+	* Updated to use:
+	* * job_frame_number_correct
+	* * job_frame_number_to_index
+	* * job_frame_index_to_number
 
-	* slave.c:
-	  Testing
+2001-08-27 16:13:44  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-24 10:31:02  Rev 99     jorge
+	* Changed (int) job_nframes to (uint32_t) job_nframes.
+	* Added job_frame_status_string.
+	* Added job_frame_index_to_number.
+	* Added job_frame_number_to_index.
+	* Added job_frame_number_correct.
 
-	* task.h request.c slave.c:
-	  DR exit status and exit codes treatment.
+2001-08-27 10:21:22  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-24 10:30:20  Rev 98     jorge
+	* Updated.
 
-	* logger.c:
-	  Minor change
+2001-08-27 10:21:11  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-23 10:29:23  Rev 97     jorge
+	* Request data_s (short) moved to data (int [uint32_t]).
+	* Added handle_r_r_jobxfer.
+	* Added handle_r_r_jobxferfi.
+	* Added request_job_xfer.
+	* Added request_job_xferfi.
 
-	* computer_status.c:
-	  Bug of Irix load average solved
+2001-08-27 10:19:42  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-23 09:52:16  Rev 96     jorge
+	* Minor changes.
 
-	* drqman/drqm_computers.c:
-	  Different basic info on computers
+2001-08-27 10:19:10  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-23 09:51:46  Rev 95     jorge
+	* Added R_R_JOBXFER and R_R_JOBXFERFI.
+	* All request.data_s moved to request.data.
+	* Several bugfixes related with closing file descriptors.
+	* Added request_job_xfer.
+	* Added handle_r_r_jobxfer.
+	* Added request_job_xferfi.
+	* Added handle_r_r_jobxferfi.
 
-	* todo:
-	  Minor changes
+2001-08-27 10:15:20  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-23 08:56:53  Rev 94     jorge
+	* Minor update.
 
-	* logger.c:
-	  Task logging under task specific directory.
+2001-08-27 10:15:04  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-20 15:30:19  Rev 92     jorge
+	* Bug fixes in the avg_frame_time calcs.
 
-	* drqman/drqm_jobs.c drqman/drqm_computers.c:
-	  Freeing unfreed memory.
+2001-08-27 10:14:13  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-20 15:29:19  Rev 91     jorge
+	* Added DRE_NOTREGISTERED.
 
-	* todo:
-	  Updated.
+2001-08-27 10:13:48  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-20 15:28:36  Rev 90     jorge
+	* Changed data_s (short) to data (int).
+	* Added recv_frame_info, send_frame_info.
 
-	* slave.c:
-	  Now logs process output.
+2001-08-23 15:25:13  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-20 15:27:34  Rev 89     jorge
+	* Solved bug of selecting the wrong element on the list when it was ordered.
 
-	* logger.h logger.c:
-	  Added log_dumptask_open.
-Changed default width from 10 to 8 for log fields.
+2001-08-23 15:24:28  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-20 15:26:39  Rev 88     jorge
+	* Added basic job details window and so.
 
-	* job.h:
-	  Minor changes
+2001-08-23 15:23:57  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-20 08:36:45  Rev 86     jorge
+	* More debuging messages.
 
-	* Makefile drqman/Makefile:
-	  Solved bug of recursive make on Irix
+2001-08-23 15:23:11  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-20 08:29:14  Rev 85     jorge
+	* Added average frame time and estimated finish time stuff.
 
-	* drqman/drqm_jobs.c:
-	  Added frames left, done and failed.
+2001-08-23 15:22:30  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-20 08:28:50  Rev 84     jorge
+	* Minor bug solved.
 
-	* drqman/drqm_computers.c:
-	  Added load average
+2001-08-22 12:15:36  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-20 08:28:24  Rev 83     jorge
+	* Updated
 
-	* semaphores.c:
-	  No debug messages.
+2001-08-22 12:15:27  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-20 08:27:59  Rev 82     jorge
+	* Logging on screen.
 
-	* request.c:
-	  Minor changes
+2001-08-22 11:05:29  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-20 08:27:34  Rev 81     jorge
+	* More error handling.
 
-	* communications.c job.c job.h:
-	  Added frames left, done and failed.
-Added nprocs.
-New status handling.
+2001-08-22 11:05:20  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-19 10:23:44  Rev 80     jorge
+	* Minor changes.
 
-	* drqman/drqm_computers.c:
-	  Minor changes
+2001-08-22 11:04:33  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-19 10:22:51  Rev 79     jorge
+	* If something fails in the middle of a frame assignation then it sets back the frame as FS_WAITING.
 
-	* slave_sighandlers.dia:
-	  Added SIGCLD to SIG_DFL on Launcher
+2001-08-22 11:02:49  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-19 10:22:18  Rev 78     jorge
+	* Added DRE_ERRORRECEIVING.
 
-	* slave.c:
-	  Solved SIGCLD bug on Irix
+2001-08-22 11:02:26  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-19 10:21:53  Rev 77     jorge
+	* More control on error handling.
 
-	* Makefile:
-	  Recursive make for drqman
+2001-08-08 14:59:46  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-19 09:22:25  Rev 76     jorge
+	* Missing declaration for request_job_hstop
 
-	* drqman/drqm_computers.c drqman/drqm_computers.h:
-	  Added drqm_computers.[ch]
+2001-08-08 14:57:39  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-19 09:09:15  Rev 75     jorge
+	* Solved bug of missing headers
 
-	* drqman/notebook.c:
-	  Added call to CreateComputersPage
+2001-08-08 14:54:48  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-19 09:08:50  Rev 74     jorge
+	* Minor changes
 
-	* drqman/drqm_request.h drqman/drqm_request.c:
-	  Added drqm_request_computerlist
+2001-08-08 12:54:34  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-19 09:07:10  Rev 73     jorge
+	* Solved bug of multiple definitions of loglevel.
 
-	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
-	  Popup menu and minor changes
+2001-08-08 12:53:51  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-19 09:06:26  Rev 72     jorge
+	* Added -l <loglevel> flag.
 
-	* drqman/Makefile:
-	  Added drqm_computer
+2001-08-08 12:53:11  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-19 09:05:53  Rev 71     jorge
+	* Updated.
 
-	* request_codes.h:
-	  Added R_R_LISTCOMP and R_A_LISTCOMP
+2001-08-08 12:52:59  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-19 09:05:32  Rev 70     jorge
+	* Solved bug with multiple definitions of drerrno.
+	* Added DRE_NOERROR.
 
-	* request.c request.h:
-	  Added handling for R_R_LISTCOMP
+2001-08-08 12:52:11  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-19 09:04:58  Rev 69     jorge
+	* When the task structures are filled the computer is not available.
 
-	* computer_status.h computer_status.c:
-	  computer_status.numtasks -> computer_status.ntasks
+2001-08-07 15:06:21  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-19 09:03:51  Rev 68     jorge
+	* Added:
+	   - drqm_request_job_stop
+	   - drqm_request_job_hstop
+	   - drqm_request_job_delete
 
-	* computer.h computer.c:
-	  Added computer_ncomputers_masterdb
+2001-08-07 15:05:40  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-19 09:03:20  Rev 67     jorge
+	* Added StopJob, HStopJob and ContinueJob.
 
-	* communications.c communications.h:
-	  Added send_computer and recv_computer
+2001-08-07 15:04:37  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-17 15:10:12  Rev 66     jorge
+	* Updated.
 
-	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
-	  Basic job listing working.
+2001-08-07 15:03:57  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-17 15:09:41  Rev 65     jorge
+	* Minor changes.
 
-	* task.h:
-	  Minor changes.
+2001-08-07 15:03:36  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-17 15:09:13  Rev 64     jorge
+	* Added STOPJOB, CONTJOB and HSTOPJOB.
 
-	* request.c:
-	  Added job_update_info call on handle_r_r_availjob and handle_r_r_taskfini.
-Minor changes.
+2001-08-07 15:03:02  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-17 15:07:29  Rev 63     jorge
+	* Added stopjob, hstopjob and contjob related functions.
+	* Jobindex range checking.
 
-	* master.c:
-	  Added job_update_info in the consistency checks
+2001-08-07 15:00:33  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-17 15:06:01  Rev 62     jorge
+	* Added global loglevel.
 
-	* job.c job.h:
-	  Added id and nprocs to job structure.
-Changed all int ijob references to uint32_t ijob.
-Added job_update_info function.
-Added initialisation of job.id on job_init_registered.
+2001-08-07 14:59:24  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-17 15:01:53  Rev 61     jorge
+	* Removed JOBSTATUS_HSTOPPED and JOBSTATUS_DELETING.
+	* Added job_stop and job_continue.
+	* Solved bug on job_available.
 
-	* computer.h computer.c:
-	  int ijob passes to uint32_t in computer_update_assigned
+2001-08-06 14:40:26  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-17 15:00:34  Rev 60     jorge
+	* Small bug solved.
 
-	* communications.c:
-	  Added nprocs to swapping in send_job and recv_job
+2001-08-06 14:40:08  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-17 10:42:20  Rev 59     jorge
+	* Shared memory deallocation on job deletion.
 
-	* request.c request.h:
-	  Added case for R_R_LISTJOBS
+2001-08-06 14:39:23  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-17 10:29:55  Rev 58     jorge
+	* Minor updates.
 
-	* job.c:
-	  Bug solved
+2001-08-06 14:35:06  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-17 10:24:32  Rev 57     jorge
+	* Added support for job deletion.
 
-	* computer_info.c:
-	  Finds the correct number of procs on Irix
+2001-08-06 14:33:51  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-17 10:23:12  Rev 56     jorge
+	* Added: DRE_ANSWERNOTLISTED, DRE_ANSWERNOTRIGHT, DRE_ERRORSENDING.
 
-	* drqman/drqm_request.h drqman/drqm_request.c:
-	  Added drqm_request_joblist and clean_joblist
+2001-08-06 14:32:53  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-17 10:21:52  Rev 55     jorge
+	* Updated.
 
-	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
-	  Added njobs and jobs to the info structure
+2001-08-06 14:32:28  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-17 10:20:47  Rev 54     jorge
+	* Added R_R_DELETJOB and RS_R_KILLTASK.
 
-	* drqman/Makefile:
-	  Added libdrqueue.a to drqman dependencies
+2001-08-06 14:31:38  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-17 10:19:57  Rev 53     jorge
+	* Minor changes on logging (moved to L_DEBUG).
+	* Check if the job is being used and is the same in handle_r_r_taskfini.
+	* Added request_job_delete.
+	* Added handle_r_r_deletjob.
+	* Added request_slave_killtask.
+	* Added handle_rs_r_killtask.
 
-	* request.c request_codes.h:
-	  Added handle_r_r_listjobs
+2001-08-06 12:29:26  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-17 10:19:02  Rev 52     jorge
+	* Added connec_to_slave.
+	* send_request now returns 0 on failure.
 
-	* job.c job.h:
-	  Added job_njobs_masterdb
+2001-08-02 12:20:24  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-17 10:05:54  Rev 51     jorge
+	* Added dialog for submiting new jobs to the queue.
 
-	* constants.h:
-	  Minor change
+2001-08-02 12:19:49  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-17 10:03:42  Rev 50     jorge
+	* No optimization.
 
-	* Makefile:
-	  Tags now look also drqman sources
+2001-08-02 12:19:33  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-17 10:03:05  Rev 49     jorge
+	* Minor changes.
 
-	* communications.c:
-	  Added client case for recv_job
+2001-08-02 12:19:04  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-16 09:57:20  Rev 48     jorge
+	* register_job now returns 0 on failure, 1 on success
 
-	* drqman/Makefile:
-	  Irix compatible
+2001-08-02 12:18:21  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-16 09:53:07  Rev 47     jorge
+	* Updated
 
-	* drqman/drqm_jobs.c drqman/drqm_jobs.h drqman/Makefile:
-	  Made compilable
+2001-07-31 15:10:42  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-16 09:52:50  Rev 46     jorge
+	* Added priority stuff.
 
-	* drqman/drqm_request.h drqman/drqm_request.c:
-	  Added to repository
+2001-07-31 15:10:12  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-13 15:45:57  Rev 45     jorge
+	* Added priority stuff.
+	* Added check frame status, for consistency in the master db.
 
-	* libdrqueue.h:
-	  Added libdrqueue.h
+2001-07-31 15:08:02  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-13 15:44:00  Rev 44     jorge
+	* Added priority to job structure.
+	* Removed FS_LOADING.
 
-	* sendjob.c slave.c master.c:
-	  Updated to libdrqueue.h
+2001-07-31 15:06:58  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-13 15:23:33  Rev 43     jorge
+	* Updated
 
-	* drqman/drqm_jobs.c drqman/notebook.c drqman/main.c drqman/notebook.
-	  h drqman/drqm_jobs.h drqman/Makefile drqman:
-	  Added drqman first files
+2001-07-31 15:06:38  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-13 14:04:21  Rev 42     jorge
+	* Added priority on main job list.
 
-	* todo request.c:
-	  Solved warning in comparison between uint16_t and 0
+2001-07-31 15:06:01  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-12 13:10:53  Rev 41     jorge
+	* Minor changes.
 
-	* Makefile:
-	  Cleaning a bit Makefile
+2001-07-31 15:04:15  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-11 15:02:57  Rev 40     jorge
+	* Added priority to job send and recv.
 
-	* Makefile:
-	  Irix ar compatibility
+2001-07-30 14:49:30  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-11 14:50:28  Rev 39     jorge
+	* Added stuff to do.
 
-	* Makefile:
-	  Now we have libdrqueue.a
+2001-07-30 14:49:12  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-11 13:11:25  Rev 38     jorge
+	* Added getopt stuff.
+	* Force flag.
 
-	* computer_status.c:
-	  Added load average reading on Irix
+2001-07-24 17:42:42  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-06 15:07:09  Rev 37     jorge
+	* Signals working on Irix
 
-	* communications.c master.c computer.c:
-	  Solved bug of not having source addresses on Irix
+2001-07-24 17:14:39  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-06 14:47:14  Rev 36     jorge
+	* Minor changes
 
-	* semaphores.c master.c:
-	  Solved semaphores bug
+2001-07-24 16:50:55  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-06 14:38:01  Rev 35     jorge
+	* Solved bug in task send and recv
 
-	* Makefile computer.c:
-	  Working...
+2001-07-24 16:49:36  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-06 14:20:28  Rev 34     jorge
+	* Solved bug in cmd parsing functions
 
-	* setenv master.c:
-	  getpid() casted to int to avoid warnings on Irix
+2001-07-24 16:15:30  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-06 14:17:55  Rev 33     jorge
+	* New parsing and execing functions
 
-	* slave.c:
-	  Small bug that made it non-compilable under linux
+2001-07-24 15:56:09  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-06 14:15:21  Rev 32     jorge
+	* Testing
 
-	* master.c:
-	  Working on Irix semaphores stuff
+2001-07-24 12:42:34  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-06 14:10:47  Rev 31     jorge
+	* Testing
 
-	* semaphores.c slave.c:
-	  Updated semaphores stuff for Irix
+2001-07-24 12:31:02  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-06 13:13:21  Rev 30     jorge
+	* DR exit status and exit codes treatment.
 
-	* setenv sendjob.c computer_status.h task.h communications.c request.
-	  c computer_info.c slave.c Makefile request.h computer_info.h 
-	  computer.c job.h logger.c computer_status.c:
-	  Working on Irix
+2001-07-24 12:30:20  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-06 09:15:23  Rev 28     jorge
+	* Minor change
 
-	* slave_sighandlers.dia:
-	  Added slave_sighandlers
+2001-07-23 12:29:23  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-06 09:14:11  Rev 27     jorge
+	* Bug of Irix load average solved
 
-	* todo slave.c master.c slave.h:
-	  Works. Alpha stage
+2001-07-23 11:52:16  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-05 15:19:39  Rev 25     jorge
+	* Different basic info on computers
 
-	* todo task.h request.c slave.c job.c computer.c:
-	  Works on linux
+2001-07-23 11:51:46  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-05 10:53:24  Rev 24     jorge
+	* Minor changes
 
-	* setenv logger.h todo request.c communications.c request_errors.h 
-	  job.c slave.c master.c request.h logger.c constants.h:
-	  Working on...
+2001-07-23 10:56:53  Jorge Daza <jorge@drqueue.org>
 
 
-2001-07-04 10:13:59  Rev 23     jorge
+	* Task logging under task specific directory.
 
-	* todo sendjob.c task.h request.c communications.c sendjob.h 
-	  request_codes.h slave.c Makefile request.h computer.c slave.h job.
-	  h constants.h:
-	  Working on it
+2001-07-20 17:30:19  Jorge Daza <jorge@drqueue.org>
 
 
-2001-06-05 12:45:36  Rev 22     jorge
+	* Freeing unfreed memory.
 
-	* task.c task.h job.c slave.c computer_status.c:
-	  Minor changes.
+2001-07-20 17:29:19  Jorge Daza <jorge@drqueue.org>
 
 
-2001-06-05 12:19:45  Rev 21     jorge
+	* Updated.
 
-	* computer.h database.c r_r_availjob.dia computer_status.h 
-	  semaphores.c database.h job.c slave.c job.h constants.h sendjob.c 
-	  communications.c request.c master.c Makefile computer.c master.h 
-	  computer_status.c:
-	  Working r_r_availjob. Added shared memory stuff for frame_info.
+2001-07-20 17:28:36  Jorge Daza <jorge@drqueue.org>
 
 
-2001-05-30 15:14:08  Rev 20     jorge
+	* Now logs process output.
 
-	* arch:
-	  Removed arch directory
+2001-07-20 17:27:34  Jorge Daza <jorge@drqueue.org>
 
 
-2001-05-30 15:11:47  Rev 19     jorge
+	* Added log_dumptask_open.
+	* Changed default width from 10 to 8 for log fields.
 
-	* task.c computer.h database.c computer_status.h task.h 
-	  computer_info.c database.h job.c slave.h job.h logger.c logger.h 
-	  communications.c request.c Makefile communications.h request.h 
-	  computer_status.c:
-	  Working on it.
+2001-07-20 17:26:39  Jorge Daza <jorge@drqueue.org>
 
 
-2001-05-28 14:21:31  Rev 18     jorge
+	* Minor changes
 
-	* r_r_availjob.dia computer_status.h task.h computer_info.c 
-	  request_codes.h job.c slave.c drerrno.c computer_info.h job.h 
-	  slave.h drerrno.h constants.h sendjob.c todo drqueue.dia request.c 
-	  communications.c sendjob.h request_errors.h master.c Makefile 
-	  request.h communications.h computer_status.c:
-	  Several updates. Working on R_R_AVAILJOB
+2001-07-20 10:36:45  Jorge Daza <jorge@drqueue.org>
 
 
-2001-05-09 10:53:08  Rev 17     jorge
+	* Solved bug of recursive make on Irix
 
-	* computer.h semaphores.c task.h request_codes.h slave.c semaphores.
-	  h arch/computer_status.c slave.h constants.h arch/computer_status.
-	  h communications.c request.c request_errors.h master.c Makefile 
-	  communications.h request.h computer.c master.h:
-	  Several upgrades. Consistency check process added
+2001-07-20 10:29:14  Jorge Daza <jorge@drqueue.org>
 
 
-2001-05-07 15:35:04  Rev 16     jorge
+	* Added frames left, done and failed.
 
-	* computer.h master.dia semaphores.c database.h request_codes.h 
-	  slave.c semaphores.h slave.h constants.h logger.h communications.c 
-	  request.c request_errors.h master.c arch/computer_info.h Makefile 
-	  communications.h request.h computer.c master.h:
-	  Registration of the slave on the master works
+2001-07-20 10:28:50  Jorge Daza <jorge@drqueue.org>
 
 
-2001-05-02 16:12:33  Rev 15     jorge
+	* Added load average
 
-	* computer.h database.c logger.h master.dia database.h slave.c 
-	  master.c Makefile job.h slave.h logger.c master.h constants.h:
-	  Base for shared memory and semaphores
+2001-07-20 10:28:24  Jorge Daza <jorge@drqueue.org>
 
 
-2001-04-26 16:07:10  Rev 14     jorge
+	* No debug messages.
 
-	* computer.h:
-	  Added file computer.h
+2001-07-20 10:27:59  Jorge Daza <jorge@drqueue.org>
 
 
-2001-04-26 16:06:22  Rev 13     jorge
+	* Minor changes
 
-	* logger.h arch/computer_info.c slave.c Makefile 
-	  arch/computer_status.c logger.c:
-	  Working on...
+2001-07-20 10:27:34  Jorge Daza <jorge@drqueue.org>
 
 
-2001-04-26 14:22:38  Rev 12     jorge
+	* Added frames left, done and failed.
+	* Added nprocs.
+	* New status handling.
 
-	* task.c:
-	  Added task.c
+2001-07-19 12:23:44  Jorge Daza <jorge@drqueue.org>
 
 
-2001-04-26 14:20:55  Rev 11     jorge
+	* Minor changes
 
-	* arch/computer_status.h logger.h arch/computer_info.c task.h slave.
-	  c arch/computer_info.h Makefile arch/computer_status.c logger.c 
-	  eslave.c:
-	  Working on...
+2001-07-19 12:22:51  Jorge Daza <jorge@drqueue.org>
 
 
-2001-04-25 15:55:24  Rev 10     jorge
+	* Added SIGCLD to SIG_DFL on Launcher
 
-	* drqueue.dia arch/computer_info.c arch/computer_info.h states.dia 
-	  eslave.c constants.h:
-	  Working on it
+2001-07-19 12:22:18  Jorge Daza <jorge@drqueue.org>
 
 
-2001-04-25 10:45:39  Rev 6      jorge
+	* Solved SIGCLD bug on Irix
 
-	* arch/computer_status.h drqueue.dia arch/computer_info.c task.h 
-	  arch/computer_info.h arch states.dia constants.h:
-	  Initial revision
+2001-07-19 12:21:53  Jorge Daza <jorge@drqueue.org>
 
+
+	* Recursive make for drqman
+
+2001-07-19 11:22:25  Jorge Daza <jorge@drqueue.org>
+
+
+	* Added drqm_computers.[ch]
+
+2001-07-19 11:09:15  Jorge Daza <jorge@drqueue.org>
+
+
+	* Added call to CreateComputersPage
+
+2001-07-19 11:08:50  Jorge Daza <jorge@drqueue.org>
+
+
+	* Added drqm_request_computerlist
+
+2001-07-19 11:07:10  Jorge Daza <jorge@drqueue.org>
+
+
+	* Popup menu and minor changes
+
+2001-07-19 11:06:26  Jorge Daza <jorge@drqueue.org>
+
+
+	* Added drqm_computer
+
+2001-07-19 11:05:53  Jorge Daza <jorge@drqueue.org>
+
+
+	* Added R_R_LISTCOMP and R_A_LISTCOMP
+
+2001-07-19 11:05:32  Jorge Daza <jorge@drqueue.org>
+
+
+	* Added handling for R_R_LISTCOMP
+
+2001-07-19 11:04:58  Jorge Daza <jorge@drqueue.org>
+
+
+	* computer_status.numtasks -> computer_status.ntasks
+
+2001-07-19 11:03:51  Jorge Daza <jorge@drqueue.org>
+
+
+	* Added computer_ncomputers_masterdb
+
+2001-07-19 11:03:20  Jorge Daza <jorge@drqueue.org>
+
+
+	* Added send_computer and recv_computer
+
+2001-07-17 17:10:12  Jorge Daza <jorge@drqueue.org>
+
+
+	* Basic job listing working.
+
+2001-07-17 17:09:41  Jorge Daza <jorge@drqueue.org>
+
+
+	* Minor changes.
+
+2001-07-17 17:09:13  Jorge Daza <jorge@drqueue.org>
+
+
+	* Added job_update_info call on handle_r_r_availjob and handle_r_r_taskfini.
+	* Minor changes.
+
+2001-07-17 17:07:29  Jorge Daza <jorge@drqueue.org>
+
+
+	* Added job_update_info in the consistency checks
+
+2001-07-17 17:06:01  Jorge Daza <jorge@drqueue.org>
+
+
+	* Added id and nprocs to job structure.
+	* Changed all int ijob references to uint32_t ijob.
+	* Added job_update_info function.
+	* Added initialisation of job.id on job_init_registered.
+
+2001-07-17 17:01:53  Jorge Daza <jorge@drqueue.org>
+
+
+	* int ijob passes to uint32_t in computer_update_assigned
+
+2001-07-17 17:00:34  Jorge Daza <jorge@drqueue.org>
+
+
+	* Added nprocs to swapping in send_job and recv_job
+
+2001-07-17 12:42:20  Jorge Daza <jorge@drqueue.org>
+
+
+	* Added case for R_R_LISTJOBS
+
+2001-07-17 12:29:55  Jorge Daza <jorge@drqueue.org>
+
+
+	* Bug solved
+
+2001-07-17 12:24:32  Jorge Daza <jorge@drqueue.org>
+
+
+	* Finds the correct number of procs on Irix
+
+2001-07-17 12:23:12  Jorge Daza <jorge@drqueue.org>
+
+
+	* Added drqm_request_joblist and clean_joblist
+
+2001-07-17 12:21:52  Jorge Daza <jorge@drqueue.org>
+
+
+	* Added njobs and jobs to the info structure
+
+2001-07-17 12:20:47  Jorge Daza <jorge@drqueue.org>
+
+
+	* Added libdrqueue.a to drqman dependencies
+
+2001-07-17 12:19:57  Jorge Daza <jorge@drqueue.org>
+
+
+	* Added handle_r_r_listjobs
+
+2001-07-17 12:19:02  Jorge Daza <jorge@drqueue.org>
+
+
+	* Added job_njobs_masterdb
+
+2001-07-17 12:05:54  Jorge Daza <jorge@drqueue.org>
+
+
+	* Minor change
+
+2001-07-17 12:03:42  Jorge Daza <jorge@drqueue.org>
+
+
+	* Tags now look also drqman sources
+
+2001-07-17 12:03:05  Jorge Daza <jorge@drqueue.org>
+
+
+	* Added client case for recv_job
+
+2001-07-16 11:57:20  Jorge Daza <jorge@drqueue.org>
+
+
+	* Irix compatible
+
+2001-07-16 11:53:07  Jorge Daza <jorge@drqueue.org>
+
+
+	* Made compilable
+
+2001-07-16 11:52:50  Jorge Daza <jorge@drqueue.org>
+
+
+	* Added to repository
+
+2001-07-13 17:45:57  Jorge Daza <jorge@drqueue.org>
+
+
+	* Added libdrqueue.h
+
+2001-07-13 17:44:00  Jorge Daza <jorge@drqueue.org>
+
+
+	* Updated to libdrqueue.h
+
+2001-07-13 17:23:33  Jorge Daza <jorge@drqueue.org>
+
+
+	* Added drqman first files
+
+2001-07-13 16:04:21  Jorge Daza <jorge@drqueue.org>
+
+
+	* Solved warning in comparison between uint16_t and 0
+
+2001-07-12 15:10:53  Jorge Daza <jorge@drqueue.org>
+
+
+	* Cleaning a bit Makefile
+
+2001-07-11 17:02:57  Jorge Daza <jorge@drqueue.org>
+
+
+	* Irix ar compatibility
+
+2001-07-11 16:50:28  Jorge Daza <jorge@drqueue.org>
+
+
+	* Now we have libdrqueue.a
+
+2001-07-11 15:11:25  Jorge Daza <jorge@drqueue.org>
+
+
+	* Added load average reading on Irix
+
+2001-07-06 17:07:09  Jorge Daza <jorge@drqueue.org>
+
+
+	* Solved bug of not having source addresses on Irix
+
+2001-07-06 16:47:14  Jorge Daza <jorge@drqueue.org>
+
+
+	* Solved semaphores bug
+
+2001-07-06 16:38:01  Jorge Daza <jorge@drqueue.org>
+
+
+	* Working...
+
+2001-07-06 16:20:28  Jorge Daza <jorge@drqueue.org>
+
+
+	* getpid() casted to int to avoid warnings on Irix
+
+2001-07-06 16:17:55  Jorge Daza <jorge@drqueue.org>
+
+
+	* Small bug that made it non-compilable under linux
+
+2001-07-06 16:15:21  Jorge Daza <jorge@drqueue.org>
+
+
+	* Working on Irix semaphores stuff
+
+2001-07-06 16:10:47  Jorge Daza <jorge@drqueue.org>
+
+
+	* Updated semaphores stuff for Irix
+
+2001-07-06 15:13:21  Jorge Daza <jorge@drqueue.org>
+
+
+	* Working on Irix
+
+2001-07-06 11:15:23  Jorge Daza <jorge@drqueue.org>
+
+
+	* Added slave_sighandlers
+
+2001-07-06 11:14:11  Jorge Daza <jorge@drqueue.org>
+
+
+	* Works. Alpha stage
+
+2001-07-05 17:19:39  Jorge Daza <jorge@drqueue.org>
+
+
+	* Works on linux
+
+2001-07-05 12:53:24  Jorge Daza <jorge@drqueue.org>
+
+
+	* Working on...
+
+2001-07-04 12:13:59  Jorge Daza <jorge@drqueue.org>
+
+
+	* Working on it
+
+2001-06-05 14:45:36  Jorge Daza <jorge@drqueue.org>
+
+
+	* Minor changes.
+
+2001-06-05 14:19:45  Jorge Daza <jorge@drqueue.org>
+
+
+	* Working r_r_availjob. Added shared memory stuff for frame_info.
+
+2001-05-30 17:14:08  Jorge Daza <jorge@drqueue.org>
+
+
+	* Removed arch directory
+
+2001-05-30 17:11:47  Jorge Daza <jorge@drqueue.org>
+
+
+	* Working on it.
+
+2001-05-28 16:21:31  Jorge Daza <jorge@drqueue.org>
+
+
+	* Several updates. Working on R_R_AVAILJOB
+
+2001-05-09 12:53:08  Jorge Daza <jorge@drqueue.org>
+
+
+	* Several upgrades. Consistency check process added
+
+2001-05-07 17:35:04  Jorge Daza <jorge@drqueue.org>
+
+
+	* Registration of the slave on the master works
+
+2001-05-02 18:12:33  Jorge Daza <jorge@drqueue.org>
+
+
+	* Base for shared memory and semaphores
+
+2001-04-26 18:07:10  Jorge Daza <jorge@drqueue.org>
+
+
+	* Added file computer.h
+
+2001-04-26 18:06:22  Jorge Daza <jorge@drqueue.org>
+
+
+	* Working on...
+
+2001-04-26 16:22:38  Jorge Daza <jorge@drqueue.org>
+
+
+	* Added task.c
+
+2001-04-26 16:20:55  Jorge Daza <jorge@drqueue.org>
+
+
+	* Working on...
+
+2001-04-25 17:55:24  Jorge Daza <jorge@drqueue.org>
+
+
+	* Working on it
+
+2001-04-25 12:45:39  Jorge Daza <jorge@drqueue.org>
+
+
+	* Initial revision
 
