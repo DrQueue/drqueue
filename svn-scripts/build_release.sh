@@ -1,4 +1,7 @@
 #!/bin/sh
+#
+# $Id$
+#
 
 usage () {
 	cat <<END
