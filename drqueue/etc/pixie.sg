@@ -25,11 +25,11 @@
 
 echo "rndr -f $FRAME $RIBFILE"
 
-set RIBFILE_TMP = $RIBFILE'-'$FRAME
+set RIBFILE_TMP = "$RIBFILE"'-'$FRAME
 
-awk '{if ($1 == "FrameBegin" && $2 == frame) x=1}; {if (x==1) print}; {if ($1 == "FrameEnd") x=0}' frame=$FRAME $RIBFILE > $RIBFILE_TMP
+awk '{if ($1 == "FrameBegin" && $2 == frame) x=1}; {if (x==1) print}; {if ($1 == "FrameEnd") x=0}' frame=$FRAME "$RIBFILE" > "$RIBFILE_TMP"
 
-rndr $RIBFILE_TMP
+rndr "$RIBFILE_TMP"
 
 rm $RIBFILE_TMP
 

@@ -44,7 +44,7 @@ echo "aqsis $progress_args $stats_args $RIBFILE"
 
 
 #aqsis -frames $FRAME $FRAME $crop_args $progress_args $stats_args $beep_args $RIBFILE
-aqsis $progress_args $stats_args $RIBFILE
+aqsis $progress_args $stats_args "$RIBFILE"
 # This should requeue the frame if failed
 if ( $? != 0 ) then
   echo "Requeueing frame..."
