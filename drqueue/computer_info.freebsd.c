@@ -22,7 +22,7 @@
 void get_hwinfo (struct computer_hwinfo *hwinfo)
 {
   size_t bl;
-  int sysctl_data;
+  unsigned long long int sysctl_data;
   char buffer[128];
 
   if (gethostname (hwinfo->name,MAXNAMELEN-1) == -1) {
@@ -52,11 +52,11 @@ void get_hwinfo (struct computer_hwinfo *hwinfo)
 #endif
   hwinfo->os = OS_FREEBSD;
 
-  bl=4;
+  bl=8;
   sysctlbyname("machdep.tsc_freq", &sysctl_data,&bl,NULL,0);
   hwinfo->procspeed = (sysctl_data+500000)/1000000;
 
-  bl=4;
+  bl=8;
   sysctlbyname("hw.ncpu", &sysctl_data,&bl,NULL,0);
   hwinfo->ncpus = sysctl_data;
   hwinfo->speedindex = get_speedindex (hwinfo);
