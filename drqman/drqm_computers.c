@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_computers.c,v 1.4 2001/07/20 15:30:18 jorge Exp $
+ * $Id: drqm_computers.c,v 1.5 2001/07/23 09:52:16 jorge Exp $
  */
 
 #include <string.h>
@@ -73,7 +73,7 @@ static GtkWidget *CreateComputersList(struct info_drqm_computers *info)
 
 static GtkWidget *CreateClist (GtkWidget *window)
 {
-  gchar *titles[] = { "Running","Name","Status","Procs","Load Avg" };
+  gchar *titles[] = { "Running","Name","OS","Procs","Load Avg" };
   GtkWidget *clist;
 
   clist = gtk_clist_new_with_titles (5, titles);
@@ -124,9 +124,12 @@ void drqm_update_computerlist (struct info_drqm_computers *info)
   for (i=0; i < info->ncomputers; i++) {
     snprintf (buff[0],BUFFERLEN,"%i",info->computers[i].status.ntasks);
     strncpy(buff[1],info->computers[i].hwinfo.name,BUFFERLEN);
-    snprintf (buff[2],BUFFERLEN,"REGISTERED");
+    snprintf (buff[2],BUFFERLEN,osstring(info->computers[i].hwinfo.os));
     snprintf (buff[3],BUFFERLEN,"%i",info->computers[i].hwinfo.numproc);
-    snprintf (buff[4],BUFFERLEN,"%i",info->computers[i].status.loadavg[0]);
+    snprintf (buff[4],BUFFERLEN,"%i,%i,%i",
+	      info->computers[i].status.loadavg[0],
+	      info->computers[i].status.loadavg[1],
+	      info->computers[i].status.loadavg[2]);
     gtk_clist_append(GTK_CLIST(info->clist),buff);
   }
   gtk_clist_thaw(GTK_CLIST(info->clist));
