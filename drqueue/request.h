@@ -1,11 +1,19 @@
-/* $Id: request.h,v 1.6 2001/07/05 10:53:24 jorge Exp $ */
+/* $Id: request.h,v 1.7 2001/07/06 13:13:21 jorge Exp $ */
 /* The request structure is not just used for the requests themselves */
 /* but also for the answers to the requests */
 
 #ifndef _REQUEST_H_
 #define _REQUEST_H_
 
+#ifdef __LINUX
 #include <stdint.h>
+#else
+# ifdef __IRIX
+#include <sys/types.h>
+# else
+#  error You need to define the OS, or OS defined not supported
+# endif
+#endif
 
 #include "job.h"
 #include "database.h"

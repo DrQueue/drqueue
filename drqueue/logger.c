@@ -1,4 +1,4 @@
-/* $Id: logger.c,v 1.5 2001/07/05 10:53:24 jorge Exp $ */
+/* $Id: logger.c,v 1.6 2001/07/06 13:13:21 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -153,11 +153,17 @@ FILE *log_master_open (void)
   }
 
   snprintf(filename,BUFFERLEN-1,"%s/logs/master.log",basedir);
-  
+#ifdef __LINUX
   if ((f = fopen (filename,"a")) == NULL) {
     perror ("log_master_open: Couldn't open file for writing");
     exit (1);
   }
+#else
+  if ((f = fopen (filename,"ab")) == NULL) {
+    perror ("log_master_open: Couldn't open file for writing");
+    exit (1);
+  }
+#endif 
 
   return f;
 }
