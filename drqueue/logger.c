@@ -1,4 +1,4 @@
-/* $Id: logger.c,v 1.8 2001/07/23 08:56:53 jorge Exp $ */
+/* $Id: logger.c,v 1.9 2001/07/24 10:30:20 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -59,7 +59,7 @@ FILE *log_slave_open_task (struct task *task)
 	perror ("log_slave_open_task: Couldn't create directory for task logging");
 	exit (1);
       }
-     if ((f = fopen (filename, "a")) == NULL) {
+      if ((f = fopen (filename, "a")) == NULL) {
 	perror ("log_slave_open_task: Couldn't open file for writing");
 	exit (1);
       }
