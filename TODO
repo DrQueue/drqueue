@@ -1,7 +1,6 @@
 TO DO:
 -----
 
-* If any directory does not exist at the beginning create them if there is an apropiate flag
 * Authentication on the slave requests.
 * job permissions.
 * functions that return void in communications should
@@ -12,7 +11,8 @@ TO DO:
 * Renice options
 * STEPFRAME included in all .sg files
 * Counter on how many times a frame has been requeued. For version 0.51
-* Autoenable flag.
+* Autoenable flag. For 0.52
+* Computer limits renderer. 0.53
 
 BUGS:
 ----
