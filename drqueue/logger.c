@@ -1,4 +1,4 @@
-/* $Id: logger.c,v 1.13 2001/08/28 15:34:12 jorge Exp $ */
+/* $Id: logger.c,v 1.14 2001/08/29 09:22:57 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <signal.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <time.h>
@@ -57,7 +58,7 @@ FILE *log_slave_open_task (struct task *task)
 
   if ((basedir = getenv("DRQUEUE_ROOT")) == NULL) {
     fprintf (stderr,"Environment variable DRQUEUE_ROOT not set. Aborting...\n");
-    exit (1);
+    kill(0,SIGINT);
   }
 
   snprintf(dir,BUFFERLEN-1,"%s/logs/%s",basedir,task->jobname);
@@ -116,7 +117,7 @@ FILE *log_slave_open_computer (char *name)
 
   if ((basedir = getenv("DRQUEUE_ROOT")) == NULL) {
     fprintf (stderr,"Environment variable DRQUEUE_ROOT not set. Aborting...\n");
-    exit (1);
+    kill(0,SIGINT);
   }
 
   snprintf(filename,BUFFERLEN-1,"%s/logs/%s.log",basedir,name);
@@ -203,7 +204,7 @@ FILE *log_master_open (void)
 
   if ((basedir = getenv("DRQUEUE_ROOT")) == NULL) {
     fprintf (stderr,"Environment variable DRQUEUE_ROOT not set. Aborting...\n");
-    exit (1);
+    kill(0,SIGINT);
   }
 
   snprintf(filename,BUFFERLEN-1,"%s/logs/master.log",basedir);
@@ -257,7 +258,7 @@ int log_dumptask_open (struct task *t)
 
   if ((basedir = getenv("DRQUEUE_ROOT")) == NULL) {
     fprintf (stderr,"Environment variable DRQUEUE_ROOT not set. Aborting...\n");
-    exit (1);
+    kill(0,SIGINT);
   }
 
   snprintf(dir,BUFFERLEN-1,"%s/logs/%s",basedir,t->jobname);
@@ -293,7 +294,7 @@ int log_dumptask_open_ro (struct task *t)
 
   if ((basedir = getenv("DRQUEUE_ROOT")) == NULL) {
     fprintf (stderr,"Environment variable DRQUEUE_ROOT not set. Aborting...\n");
-    exit (1);
+    kill(0,SIGINT);
   }
 
   snprintf(dir,BUFFERLEN-1,"%s/logs/%s",basedir,t->jobname);
