@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.38 2004/01/07 21:50:21 jorge Exp $ */
+/* $Id: job.h,v 1.39 2004/01/22 17:48:24 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -9,7 +9,11 @@
 # ifdef __IRIX
 #include <sys/types.h>
 # else
-#  error You need to define the OS, or OS defined not supported
+#  ifdef __OSX
+#   include <stdint.h>
+#  else
+#   error You need to define the OS, or OS defined not supported
+#  endif
 # endif
 #endif
 
