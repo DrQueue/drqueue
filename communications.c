@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.42 2001/11/07 10:20:44 jorge Exp $ */
+/* $Id: communications.c,v 1.43 2001/11/08 09:13:57 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -165,7 +165,7 @@ int recv_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo)
   while ((r = read (sfd,buf,bleft)) < bleft) {
     if ((r == -1) || ((r == 0) && (bleft > 0))) {
       /* if r is error or if there are no more bytes left on the socket but there _SHOULD_ be */
-      drerrno = DRE_ERRORRECEIVING;
+      drerrno = DRE_ERRORREADING;
       return 0;
     }
     bleft -= r;
@@ -208,7 +208,7 @@ int send_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo)
   while ((w = write(sfd,buf,bleft)) < bleft) {
     if ((w == -1) || ((w == 0) && (bleft > 0))) {
       /* if w is error or if there are no more bytes are written but they _SHOULD_ be */
-      drerrno = DRE_ERRORSENDING;
+      drerrno = DRE_ERRORWRITING;
       return 0;
     }
     bleft -= w;
@@ -236,7 +236,7 @@ int recv_request (int sfd, struct request *request)
   while ((r = read(sfd,buf,bleft)) < bleft) {
     if ((r == -1) || ((r == 0) && (bleft > 0))) {
       /* if r is error or if there are no more bytes left on the socket but there _SHOULD_ be */
-      drerrno = DRE_ERRORRECEIVING;
+      drerrno = DRE_ERRORREADING;
       return 0;
     }
     bleft -= r;
@@ -270,7 +270,7 @@ int send_request (int sfd, struct request *request,int who)
     buf += w;
     if ((w == -1) || ((w == 0) && (bleft > 0))) {
       /* if w is error or if there are no more bytes are written but they _SHOULD_ be */
-      drerrno = DRE_ERRORSENDING;
+      drerrno = DRE_ERRORWRITING;
       return 0;
     }
 #ifdef COMM_REPORT
@@ -313,7 +313,7 @@ int send_computer_status (int sfd, struct computer_status *status)
     buf += w;
     if ((w == -1) || ((w == 0) && (bleft > 0))) {
       /* if w is error or if there are no more bytes are written but they _SHOULD_ be */
-      drerrno = DRE_ERRORSENDING;
+      drerrno = DRE_ERRORWRITING;
       return 0;
     }
 #ifdef COMM_REPORT
@@ -350,7 +350,7 @@ int recv_computer_status (int sfd, struct computer_status *status)
   while ((r = read (sfd,buf,bleft)) < bleft) {
     if ((r == -1) || ((r == 0) && (bleft > 0))) {
       /* if r is error or if there are no more bytes left on the socket but there _SHOULD_ be */
-      drerrno = DRE_ERRORRECEIVING;
+      drerrno = DRE_ERRORREADING;
       return 0;
     }
     bleft -= r;
@@ -389,7 +389,7 @@ int recv_job (int sfd, struct job *job)
   while ((r = read (sfd,buf,bleft)) < bleft) {
     if ((r == -1) || ((r == 0) && (bleft > 0))) {
       /* if r is error or if there are no more bytes left on the socket but there _SHOULD_ be */
-      drerrno = DRE_ERRORRECEIVING;
+      drerrno = DRE_ERRORREADING;
       return 0;
     }
     bleft -= r;
@@ -473,7 +473,7 @@ int send_job (int sfd, struct job *job)
     buf += w;
     if ((w == -1) || ((w == 0) && (bleft > 0))) {
       /* if w is error or if no more bytes are written but they _SHOULD_ be */
-      drerrno = DRE_ERRORSENDING;
+      drerrno = DRE_ERRORWRITING;
       return 0;
     }
 #ifdef COMM_REPORT
@@ -501,7 +501,7 @@ int recv_task (int sfd, struct task *task)
 
     if ((r == -1) || ((r == 0) && (bleft > 0))) {
       /* if w is error or if no more bytes are read but they _SHOULD_ be */
-      drerrno = DRE_ERRORRECEIVING;
+      drerrno = DRE_ERRORREADING;
       return 0;
     }
     bleft -= r;
@@ -546,7 +546,7 @@ int send_task (int sfd, struct task *task)
     buf += w;
     if ((w == -1) || ((w == 0) && (bleft > 0))) {
       /* if w is error or if no more bytes are written but they _SHOULD_ be */
-      drerrno = DRE_ERRORSENDING;
+      drerrno = DRE_ERRORWRITING;
       return 0;
     }
 #ifdef COMM_REPORT
@@ -605,7 +605,7 @@ int recv_frame_info (int sfd, struct frame_info *fi)
   while ((r = read (sfd,buf,bleft)) < bleft) {
     if ((r == -1) || ((r == 0) && (bleft > 0))) {
       /* if w is error or if no more bytes are read but they _SHOULD_ be */
-      drerrno = DRE_ERRORRECEIVING;
+      drerrno = DRE_ERRORREADING;
       return 0;
     }
     bleft -= r;
@@ -646,7 +646,7 @@ int send_frame_info (int sfd, struct frame_info *fi)
     buf += w;
     if ((w == -1) || ((w == 0) && (bleft > 0))) {
       /* if w is error or if no more bytes are written but they _SHOULD_ be */
-      drerrno = DRE_ERRORSENDING;
+      drerrno = DRE_ERRORWRITING;
       return 0;
     }
 #ifdef COMM_REPORT
@@ -671,7 +671,7 @@ int recv_computer_limits (int sfd, struct computer_limits *cl)
   while ((r = read (sfd,buf,bleft)) < bleft) {
     if ((r == -1) || ((r == 0) && (bleft > 0))) {
       /* if w is error or if no more bytes are read but they _SHOULD_ be */
-      drerrno = DRE_ERRORRECEIVING;
+      drerrno = DRE_ERRORREADING;
       return 0;
     }
     bleft -= r;
@@ -708,7 +708,7 @@ int send_computer_limits (int sfd, struct computer_limits *cl)
     buf += w;
     if ((w == -1) || ((w == 0) && (bleft > 0))) {
       /* if w is error or if no more bytes are written but they _SHOULD_ be */
-      drerrno = DRE_ERRORSENDING;
+      drerrno = DRE_ERRORWRITING;
       return 0;
     }
 #ifdef COMM_REPORT
@@ -735,7 +735,7 @@ int write_32b (int sfd, void *data)
     bleft -= w;
     buf += w;
     if ((w == -1) || ((w == 0) && (bleft > 0))) {
-      drerrno = DRE_ERRORSENDING;
+      drerrno = DRE_ERRORWRITING;
       return 0;
     }
   }
@@ -756,7 +756,7 @@ int write_16b (int sfd, void *data)
     bleft -= w;
     buf += w;
     if ((w == -1) || ((w == 0) && (bleft > 0))) {
-      drerrno = DRE_ERRORSENDING;
+      drerrno = DRE_ERRORWRITING;
       return 0;
     }
   }
@@ -774,7 +774,7 @@ int read_32b (int sfd, void *data)
   bleft = sizeof (uint32_t);
   while ((r = read (sfd,buf,bleft)) < bleft) {
     if ((r == -1) || ((r == 0) && (bleft > 0))) {
-      drerrno = DRE_ERRORRECEIVING;
+      drerrno = DRE_ERRORREADING;
       return 0;
     }
     bleft -= r;
@@ -796,14 +796,14 @@ int read_16b (int sfd, void *data)
   bleft = sizeof (uint16_t);
   while ((r = read (sfd,buf,bleft)) < bleft) {
     if ((r == -1) || ((r == 0) && (bleft > 0))) {
-      drerrno = DRE_ERRORRECEIVING;
+      drerrno = DRE_ERRORREADING;
       return 0;
     }
     bleft -= r;
     buf += r;
   }
 
-  *(uint16_t *)data = ntohl (*((uint16_t *)data));
+  *(uint16_t *)data = ntohs (*((uint16_t *)data));
 
   return 1;
 }
