@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.37 2001/09/25 09:29:39 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.38 2001/09/26 10:47:34 jorge Exp $
  */
 
 #include <string.h>
@@ -42,6 +42,8 @@ static void jdd_kill_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
 static void jdd_finish_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
 static void jdd_kill_finish_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
 static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info);
+/* Limits */
+static GtkWidget *jdd_limits_widgets (struct drqm_jobs_info *info);
 /* Koj viewers */
 static void jdd_maya_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 
@@ -67,6 +69,9 @@ static void dnj_koj_frame_maya_script_set (GtkWidget *button, struct drqmj_koji_
 static void dnj_koj_frame_maya_scene_search (GtkWidget *button, struct drqmj_koji_maya *info);
 static void dnj_koj_frame_maya_scene_set (GtkWidget *button, struct drqmj_koji_maya *info);
 static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info);
+
+/* Limits */
+static GtkWidget *dnj_limits_widgets (struct drqm_jobs_info *info);
 
 
 static void DeleteJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
@@ -440,6 +445,10 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
 		      "changed",dnj_cpri_changed,&info->dnj);
   gtk_entry_set_text (GTK_ENTRY(GTK_COMBO(combo)->entry),"Normal");
 
+  /* Limits STUFF */
+  frame = dnj_limits_widgets (info);
+  gtk_box_pack_start(GTK_BOX(vbox),frame,TRUE,TRUE,5);
+
   /* KOJ STUFF */
   frame = dnj_koj_widgets (info);
   gtk_box_pack_start(GTK_BOX(vbox),frame,TRUE,TRUE,5);
@@ -568,6 +577,11 @@ static int dnj_submit (struct drqmj_dnji *info)
     strncpy (job.owner,pw->pw_name,MAXNAMELEN-1);
   }
 
+  job.owner[MAXNAMELEN-1] = 0;
+  job.status = JOBSTATUS_WAITING;
+  job.frame_info = NULL;
+
+  /* KOJ */
   job.koj = info->koj;
   switch (info->koj) {
   case KOJ_GENERAL:
@@ -580,9 +594,11 @@ static int dnj_submit (struct drqmj_dnji *info)
     break;
   }
 
-  job.owner[MAXNAMELEN-1] = 0;
-  job.status = JOBSTATUS_WAITING;
-  job.frame_info = NULL;
+  /* Limits */
+  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->limits.enmaxcpus)),"%hu",&job.limits.nmaxcpus) != 1)
+    return 0;
+  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->limits.enmaxcpuscomputer)),"%hu",&job.limits.nmaxcpuscomputer) != 1)
+    return 0;
 
   if (!register_job (&job))
     return 0;
@@ -823,6 +839,10 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
   info->jdd.lestf = label;
 
+  /* Limits */
+  frame = jdd_limits_widgets (info);
+  gtk_box_pack_start (GTK_BOX(vbox),frame,FALSE,FALSE,2);
+
   /* Clist with the frame info */
   /* Frame */
   frame = gtk_frame_new ("Frame information");
@@ -998,6 +1018,18 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
   if (buf != NULL)
     *buf = '\0';
   gtk_label_set_text (GTK_LABEL(info->jdd.lestf),msg);
+
+  /* Limits */
+  if (info->jobs[info->ijob].limits.nmaxcpus == 65535)
+    snprintf(msg,BUFFERLEN-1,"Maximum");
+  else
+    snprintf(msg,BUFFERLEN-1,"%u",info->jobs[info->ijob].limits.nmaxcpus);
+  gtk_label_set_text(GTK_LABEL(info->jdd.limits.lnmaxcpus),msg);
+  if (info->jobs[info->ijob].limits.nmaxcpuscomputer == 65535)
+    snprintf(msg,BUFFERLEN-1,"Maximum");
+  else
+    snprintf(msg,BUFFERLEN-1,"%u",info->jobs[info->ijob].limits.nmaxcpuscomputer);
+  gtk_label_set_text(GTK_LABEL(info->jdd.limits.lnmaxcpuscomputer),msg);
 
   /* Pixmap stuff */
   if (!w_mask) {
@@ -1620,4 +1652,74 @@ static void jdd_maya_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *inf
     perror("execve");
     exit (1);
   }
+}
+
+static GtkWidget *dnj_limits_widgets (struct drqm_jobs_info *info)
+{
+  GtkWidget *frame;
+  GtkWidget *vbox, *hbox;
+  GtkWidget *label, *entry;
+  GtkTooltips *tooltips;
+
+  tooltips = TooltipsNew ();
+
+  frame = gtk_frame_new ("Limits");
+  vbox = gtk_vbox_new (FALSE,2);
+  gtk_container_add (GTK_CONTAINER(frame),vbox);
+
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Maximum number of cpus:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  entry = gtk_entry_new ();
+  gtk_entry_set_text (GTK_ENTRY(entry),"-1");
+  gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
+  gtk_tooltips_set_tip (tooltips,entry,"Maximum number of cpus that can be running this job "
+			"at the same time. Globally. "
+			"For the maximum type -1",NULL);
+  info->dnj.limits.enmaxcpus = entry;
+
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Maximum number of cpus in one computer:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  entry = gtk_entry_new ();
+  gtk_entry_set_text (GTK_ENTRY(entry),"-1");
+  gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
+  gtk_tooltips_set_tip (tooltips,entry,"Maximum number of cpus that can be running this job "
+			"in the same computer at the same time. "
+			"For the maximum type -1",NULL);
+  info->dnj.limits.enmaxcpuscomputer = entry;
+
+  return (frame);
+}
+
+static GtkWidget *jdd_limits_widgets (struct drqm_jobs_info *info)
+{
+  GtkWidget *frame;
+  GtkWidget *vbox, *hbox;
+  GtkWidget *label;
+
+
+  frame = gtk_frame_new ("Limits");
+  vbox = gtk_vbox_new (FALSE,2);
+  gtk_container_add (GTK_CONTAINER(frame),vbox);
+
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Maximum number of cpus:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  label = gtk_label_new ("-1");
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  info->jdd.limits.lnmaxcpus = label;
+
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Maximum number of cpus in one computer:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  label = gtk_label_new ("-1");
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  info->jdd.limits.lnmaxcpuscomputer = label;
+
+  return (frame);
 }
