@@ -1,4 +1,4 @@
-/* $Id: computer_status.c,v 1.6 2001/07/11 13:11:25 jorge Exp $ */
+/* $Id: computer_status.c,v 1.7 2001/07/19 09:04:57 jorge Exp $ */
 
 #include <stdio.h>
 #include <signal.h>
@@ -36,19 +36,19 @@ void check_tasks (struct computer_status *cstatus)
 {
   int i;
 
-  cstatus->numtasks = 0;
+  cstatus->ntasks = 0;
   for (i=0;i<MAXTASKS;i++) {
     if (cstatus->task[i].used) {
       if (cstatus->task[i].status != TASKSTATUS_LOADING) {
 	/* If the task is LOADING then there is no process running yet */
 	if (kill(cstatus->task[i].pid,0) == 0) { /* check if task is running */
-	  cstatus->numtasks++;
+	  cstatus->ntasks++;
 	} else {
 	  /* task is registered but not running */
 	  cstatus->task[i].used = 0;
 	}
       } else {
-	cstatus->numtasks++;
+	cstatus->ntasks++;
       }
     }
   }
@@ -92,7 +92,7 @@ void report_computer_status (struct computer_status *status)
   int i;
 
   printf ("Load Average: %i %i %i\n",status->loadavg[0],status->loadavg[1],status->loadavg[2]);
-  printf ("Number of tasks running: %i\n",status->numtasks);
+  printf ("Number of tasks running: %i\n",status->ntasks);
   for (i=0;i<MAXTASKS;i++) {
     if (status->task[i].used) {
       printf ("\nTask record:\t%i\n",i);
