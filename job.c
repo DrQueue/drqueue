@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.49 2001/11/22 14:43:58 jorge Exp $ */
+/* $Id: job.c,v 1.50 2001/11/23 15:52:05 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -403,7 +403,8 @@ void job_update_info (struct database *wdb,uint32_t ijob)
       if (fleft == 0) {
 	wdb->job[ijob].status = JOBSTATUS_FINISHED;
 	wdb->job[ijob].est_finish_time = time(NULL);
-	mn_job_finished (&wdb->job[ijob]); /* Mail notification */
+	if (wdb->job[ijob].flags & JF_MAILNOTIFY)
+	  mn_job_finished (&wdb->job[ijob]); /* Mail notification */
       } else {
 	wdb->job[ijob].status = JOBSTATUS_WAITING;
       }
