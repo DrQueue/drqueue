@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.28 2001/09/06 23:03:04 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.29 2001/09/08 18:41:18 jorge Exp $
  */
 
 #include <string.h>
@@ -1229,7 +1229,7 @@ static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info)
 
   /* Dialog */
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW(window),"New Job");
+  gtk_window_set_title (GTK_WINDOW(window),"Frame log");
   gtk_signal_connect_object(GTK_OBJECT(window),"destroy",GTK_SIGNAL_FUNC(gtk_widget_destroy),
 			    (GtkObject*)window);
   gtk_window_set_default_size(GTK_WINDOW(window),600,200);
