@@ -1,5 +1,5 @@
 /* 
- * $Header: /root/cvs/drqueue/drqman/main.c,v 1.1 2001/07/13 15:23:33 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/main.c,v 1.2 2001/08/28 09:00:30 jorge Exp $
  */
 
 #include <gtk/gtk.h>
@@ -14,7 +14,7 @@ int main (int argc, char *argv[])
 
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(window),"DrQueue Manager");
-  gtk_window_set_default_size(GTK_WINDOW(window),600,300);
+  gtk_window_set_default_size(GTK_WINDOW(window),700,400);
   gtk_container_border_width(GTK_CONTAINER(window), 0);
   gtk_signal_connect(GTK_OBJECT(window),"delete_event",
 		     GTK_SIGNAL_FUNC(gtk_main_quit), NULL);
