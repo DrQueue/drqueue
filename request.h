@@ -1,4 +1,4 @@
-/* $Id: request.h,v 1.21 2001/09/06 10:18:56 jorge Exp $ */
+/* $Id: request.h,v 1.22 2001/09/06 14:00:26 jorge Exp $ */
 /* The request structure is not just used for the requests themselves */
 /* but also for the answers to the requests */
 
@@ -47,6 +47,7 @@ void handle_r_r_jobxferfi (int sfd,struct database *wdb,int icomp,struct request
 void handle_r_r_compxfer (int sfd,struct database *wdb,int icomp,struct request *req);
 void handle_r_r_jobfwait (int sfd,struct database *wdb,int icomp,struct request *req);
 void handle_r_r_jobfkill (int sfd,struct database *wdb,int icomp,struct request *req);
+void handle_r_r_jobffini (int sfd,struct database *wdb,int icomp,struct request *req);
 
 /* sent TO MASTER */
 void update_computer_status (struct computer *computer); /* The slave calls this function to update the */
@@ -64,6 +65,7 @@ int request_job_xferfi (uint32_t ijob, struct frame_info *fi, int nframes, int w
 int request_comp_xfer (uint32_t icomp, struct computer *comp, int who);
 int request_job_frame_waiting (uint32_t ijob, uint32_t frame, int who);
 int request_job_frame_kill (uint32_t ijob, uint32_t frame, int who);
+int request_job_frame_finish (uint32_t ijob, uint32_t frame, int who);
 
 /* sent TO SLAVE */
 int request_slave_killtask (char *slave,uint16_t itask);

@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.40 2001/09/06 10:18:54 jorge Exp $ */
+/* $Id: request.c,v 1.41 2001/09/06 14:00:24 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -95,6 +95,10 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
   case R_R_JOBFKILL:
     log_master (L_DEBUG,"Request job frame kill");
     handle_r_r_jobfkill (sfd,wdb,icomp,&request);
+    break;
+  case R_R_JOBFFINI:
+    log_master (L_DEBUG,"Request job frame finished");
+    handle_r_r_jobffini (sfd,wdb,icomp,&request);
     break;
   default:
     log_master (L_WARNING,"Unknown request");
@@ -769,6 +773,7 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
 	  snprintf(msg,BUFFERLEN-1,"Retrying frame %i", job_frame_index_to_number (&wdb->job[task.ijob],task.frame));
 	  log_master_job (&wdb->job[task.ijob],L_INFO,msg);
 	  fi[task.frame].status = FS_WAITING;
+	  fi[task.frame].start_time = 0;
 	} else {
 	  snprintf(msg,BUFFERLEN-1,"Frame %i died signal not catched", 
 		   job_frame_index_to_number (&wdb->job[task.ijob],task.frame));
@@ -1441,6 +1446,7 @@ void handle_r_r_jobfwait (int sfd,struct database *wdb,int icomp,struct request 
   case FS_ERROR:
   case FS_FINISHED:
     fi[iframe].status = FS_WAITING;
+    fi[iframe].start_time = 0;
   }
   detach_frame_shared_memory (fi);
 
@@ -1452,6 +1458,10 @@ void handle_r_r_jobfwait (int sfd,struct database *wdb,int icomp,struct request 
 int request_job_frame_kill (uint32_t ijob, uint32_t frame, int who)
 {
   /* On error returns 0, error otherwise drerrno is set to the error */
+  /* This function requests a running frames (FS_ASSIGNED) and only running */
+  /* to be killed. It is set to waiting again as part of the process of signaling */
+  /* a frame. The master knows that the process has died because of a signal and */
+  /* so it sets the frame again as waiting (requeued) */
   int sfd;
   struct request req;
 
@@ -1529,15 +1539,102 @@ void handle_r_r_jobfkill (int sfd,struct database *wdb,int icomp,struct request 
     break;
   case FS_ERROR:
   case FS_FINISHED:
-    fi[iframe].status = FS_WAITING;
   }
   detach_frame_shared_memory (fi);
 
   semaphore_release (wdb->semid);
 
-  log_master(L_DEBUG,"Exiting handle_r_r_jobfwait");
+  log_master(L_DEBUG,"Exiting handle_r_r_jobfkill");
 }
 
+int request_job_frame_finish (uint32_t ijob, uint32_t frame, int who)
+{
+  /* On error returns 0, error otherwise drerrno is set to the error */
+  /* This function asks for a frame to be set as finished, it only works */
+  /* on FS_WAITING frames. */
+  int sfd;
+  struct request req;
+
+  if ((sfd = connect_to_master ()) == -1) {
+    drerrno = DRE_NOCONNECT;
+    return 0;
+  }
+
+  req.type = R_R_JOBFFINI;
+  req.data = ijob;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORSENDING;
+    close (sfd);
+    return 0;
+  }
+
+  req.type = R_R_JOBFFINI;
+  req.data = frame;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORSENDING;
+    close (sfd);
+    return 0;
+  }
+
+  close (sfd);
+  return 1;
+}
+
+void handle_r_r_jobffini (int sfd,struct database *wdb,int icomp,struct request *req)
+{
+  /* The master handles this type of packages */
+  /* This function is called unlocked */
+  /* This function is called by the master */
+  uint32_t ijob;
+  uint32_t frame;
+  uint32_t iframe;
+  uint32_t nframes;
+  struct frame_info *fi;
+  char msg[BUFFERLEN];
+
+  log_master(L_DEBUG,"Entering handle_r_r_jobffini");
+
+  ijob = req->data;
+
+  if (!recv_request (sfd,req)) {
+    return;
+  }
+
+  frame = req->data;
+  
+  snprintf(msg,BUFFERLEN-1,"Requested job frame finish for Job %i Frame %i ",ijob,frame);
+  log_master(L_DEBUG,msg);
+
+  semaphore_lock(wdb->semid);
+
+  if (!job_index_correct_master(wdb,ijob))
+    return;
+
+  nframes = job_nframes (&wdb->job[ijob]);
+
+  if (!job_frame_number_correct(&wdb->job[ijob],frame))
+    return;
+  
+  nframes = job_nframes (&wdb->job[ijob]);
+  iframe = job_frame_number_to_index (&wdb->job[ijob],frame);
+  
+  fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
+  switch (fi[iframe].status) {
+  case FS_WAITING:
+    fi[iframe].status = FS_FINISHED;
+    break;
+  case FS_ASSIGNED:
+  case FS_ERROR:
+  case FS_FINISHED:
+  }
+  detach_frame_shared_memory (fi);
+
+  semaphore_release (wdb->semid);
+
+  log_master(L_DEBUG,"Exiting handle_r_r_jobffini");
+}
 
 
 
