@@ -1,16 +1,18 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.1 2001/07/13 15:23:33 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.2 2001/07/16 09:53:07 jorge Exp $
  */
 
 #ifndef _DRQM_JOBS_H
 #define _DRQM_JOBS_H
 
 #include <gtk/gtk.h>
+#include "libdrqueue.h"
 
 struct info_drqm_jobs {
   GtkWidget *clist;		/* main clist */
   gint row, column;
   GtkWidget *menu;		/* Popup menu */
+  
 };
 
 void CreateJobsPage (GtkWidget *);
