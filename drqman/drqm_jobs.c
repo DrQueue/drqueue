@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.71 2003/12/18 21:38:32 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.72 2003/12/18 23:08:58 jorge Exp $
  */
 
 #include <string.h>
@@ -2518,27 +2518,29 @@ void jdd_framelist_column_clicked (GtkCList *clist, gint column, struct drqm_job
     gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
     gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_frame);
     gtk_clist_sort (GTK_CLIST(clist));
-  } else if (column == 1) {
-    gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
-    gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_status);
-    gtk_clist_sort (GTK_CLIST(clist));
-  } else if (column == 2) {
-    gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
-    gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_start_time);
-    gtk_clist_sort (GTK_CLIST(clist));
-  } else if (column == 3) {
-    gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
-    gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_end_time);
-    gtk_clist_sort (GTK_CLIST(clist));
-  } else if (column == 4) {
-    gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
-    gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_exitcode);
-    gtk_clist_sort (GTK_CLIST(clist));
-  } else if (column == 5) {
-    gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
-    gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_icomp);
-    gtk_clist_sort (GTK_CLIST(clist));
-  }
+  } 
+	/* We've got to attach the frame_info structure to make this work */
+/* 	else if (column == 1) { */
+/*     gtk_clist_set_sort_type (GTK_CLIST(clist),dir); */
+/*     gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_status); */
+/*     gtk_clist_sort (GTK_CLIST(clist)); */
+/*   } else if (column == 2) { */
+/*     gtk_clist_set_sort_type (GTK_CLIST(clist),dir); */
+/*     gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_start_time); */
+/*     gtk_clist_sort (GTK_CLIST(clist)); */
+/*   } else if (column == 3) { */
+/*     gtk_clist_set_sort_type (GTK_CLIST(clist),dir); */
+/*     gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_end_time); */
+/*     gtk_clist_sort (GTK_CLIST(clist)); */
+/*   } else if (column == 4) { */
+/*     gtk_clist_set_sort_type (GTK_CLIST(clist),dir); */
+/*     gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_exitcode); */
+/*     gtk_clist_sort (GTK_CLIST(clist)); */
+/*   } else if (column == 5) { */
+/*     gtk_clist_set_sort_type (GTK_CLIST(clist),dir); */
+/*     gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_icomp); */
+/*     gtk_clist_sort (GTK_CLIST(clist)); */
+/*   } */
 }
 
 int jdd_framelist_cmp_frame (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
