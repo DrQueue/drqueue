@@ -32,6 +32,7 @@
 ; License page
 !insertmacro MUI_PAGE_LICENSE "..\..\..\COPYING"
 Page custom SetCustom ValidateCustom
+Page custom SetCustom2 ValidateCustom2
 ; Directory page
 !insertmacro MUI_PAGE_DIRECTORY
 ; Instfiles page
@@ -59,17 +60,23 @@ var InstallationMaster
 var InstallationSlave
 var MasterName
 var TempDir
+var Domain
+var Username
+var Password
 
 Function .onInit
 #  !insertmacro MUI_LANGDLL_DISPLAY
   !insertmacro MUI_INSTALLOPTIONS_EXTRACT "installer.ini"
+  !insertmacro MUI_INSTALLOPTIONS_EXTRACT "installer2.ini"
 FunctionEnd
 
 Function .onGUIEnd
   Delete "$TEMP\installer.ini"
+  Delete "$TEMP\installer2.ini"
 FunctionEnd
 
 ReserveFile "installer.ini"
+ReserveFile "installer2.ini"
 ReserveFile "${NSISDIR}\Plugins\InstallOptions.dll"
 
 LangString TEXT_IO_TITLE ${LANG_ENGLISH} "Install Settings"
@@ -78,6 +85,13 @@ LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Options"
 Function SetCustom
   !insertmacro MUI_HEADER_TEXT "$(TEXT_IO_TITLE)" "$(TEXT_IO_SUBTITLE)"
   !insertmacro MUI_INSTALLOPTIONS_DISPLAY "installer.ini"
+FunctionEnd
+
+Function SetCustom2
+  !insertmacro MUI_HEADER_TEXT "$(TEXT_IO_TITLE)" "$(TEXT_IO_SUBTITLE)"
+  !insertmacro MUI_INSTALLOPTIONS_DISPLAY "installer2.ini"
+  ReadEnvStr $0 COMPUTERNAME
+  !insertmacro MUI_INSTALLOPTIONS_WRITE "installer.ini" "Field 1" "State" $0
 FunctionEnd
 
 Function ValidateCustom
@@ -125,6 +139,20 @@ hostname_ok:
     Abort
   push $R0
   pop $TempDir
+FunctionEnd
+
+Function ValidateCustom2
+
+  !insertmacro MUI_INSTALLOPTIONS_READ $R0 "installer2.ini" "Field 1" "State"
+  push $R0
+  pop $Domain
+  !insertmacro MUI_INSTALLOPTIONS_READ $R0 "installer2.ini" "Field 2" "State"
+  push $R0
+  pop $Username
+  !insertmacro MUI_INSTALLOPTIONS_READ $R0 "installer2.ini" "Field 3" "State"
+  push $R0
+  pop $Password
+
 FunctionEnd
 
 Section "SectionPrincipale" SEC01
@@ -210,28 +238,30 @@ Section -Post
 
   #MessageBox MB_YESNO "Only one master must exist on the network. Is this a slave computer ? press no to install as master." /SD IDYES IDNO false_slave
 
-  nsExec::Exec '$INSTDIR\contrib\service.exe i drqueue_ipc "$INSTDIR\contrib\service-ipc.exe" "Drqueue IPC Service" a'
+  nsExec::Exec '$INSTDIR\contrib\service.exe i drqueue_ipc "$INSTDIR\contrib\service-ipc.exe" "Drqueue IPC Service" a $Domain\$Username $Password'
   #WriteRegStr HKLM "SYSTEM\CurrentControlSet\Services\drqueue_ipc\Parameters" "Application" "$INSTDIR\bin\ipc-daemon2.exe"
   #WriteRegStr HKLM "SYSTEM\CurrentControlSet\Services\drqueue_ipc\Parameters" "AppDirectory" "$INSTDIR\bin"
   !insertmacro SERVICE "start" "drqueue_ipc" ""
 
   IntCmp $InstallationSlave 1 0 skip_slave
   DetailPrint "Installing slave"
-   nsExec::Exec '$INSTDIR\contrib\service.exe i drqueue_slave "$INSTDIR\contrib\service-slave.exe" "Drqueue Slave Service" a drqueue_ipc'
+   nsExec::Exec '$INSTDIR\contrib\service.exe i drqueue_slave "$INSTDIR\contrib\service-slave.exe" "Drqueue Slave Service" a $Domain\$Username $Password drqueue_ipc'
   !insertmacro SERVICE "start" "drqueue_slave" ""
   GoTo end_slave
 skip_slave:
-  nsExec::Exec '$INSTDIR\contrib\service.exe i drqueue_slave "$INSTDIR\contrib\service-slave.exe" "Drqueue Slave Service" m drqueue_ipc'
+  nsExec::Exec '$INSTDIR\contrib\service.exe i drqueue_slave "$INSTDIR\contrib\service-slave.exe" "Drqueue Slave Service" m $Domain\$Username $Password drqueue_ipc'
 end_slave:
 
   IntCmp $InstallationMaster 1 0 skip_master
   DetailPrint "Installing master"
-   nsExec::Exec '$INSTDIR\contrib\service.exe i drqueue_master "$INSTDIR\contrib\service-master.exe" "Drqueue Master Service" a drqueue_ipc'
+   nsExec::Exec '$INSTDIR\contrib\service.exe i drqueue_master "$INSTDIR\contrib\service-master.exe" "Drqueue Master Service" a $Domain\$Username $Password drqueue_ipc'
    !insertmacro SERVICE "start" "drqueue_master" ""
   GoTo end_master
 skip_master:
-  nsExec::Exec '$INSTDIR\contrib\service.exe i drqueue_master "$INSTDIR\contrib\service-master.exe" "Drqueue Master Service" m drqueue_ipc'
+  nsExec::Exec '$INSTDIR\contrib\service.exe i drqueue_master "$INSTDIR\contrib\service-master.exe" "Drqueue Master Service" m $Domain\$Username $Password drqueue_ipc'
 end_master:
+
+  #MessageBox MB_OK '$INSTDIR\contrib\service.exe i drqueue_ipc "$INSTDIR\contrib\service-ipc.exe" "Drqueue IPC Service" a $Domain\$Username $Password'
 
   Delete "$INSTDIR\contrib\service.exe"
 
