@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.51 2004/10/09 05:50:13 jorge Exp $
+# $Id$
 
 CC = gcc
 CPP = g++
