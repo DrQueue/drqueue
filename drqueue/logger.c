@@ -1,4 +1,4 @@
-/* $Id: logger.c,v 1.15 2001/08/29 09:42:50 jorge Exp $ */
+/* $Id: logger.c,v 1.16 2001/08/31 14:06:23 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -187,7 +187,11 @@ void log_master_computer (struct computer *computer, int level, char *msg)
     f_log = stdout;
   }
 
-  fprintf (f_log,"%8s : Computer: %8s || %s: %s\n",buf,computer->hwinfo.name,log_level_str(level),msg);
+  if (loglevel != L_DEBUG)
+    fprintf (f_log,"%8s : Computer: %8s || %s: %s\n",buf,computer->hwinfo.name,log_level_str(level),msg);
+  else
+    fprintf (f_log,"%8s : Computer: %8s || (%i) %s: %s\n",buf,computer->hwinfo.name,(int) getpid(),log_level_str(level),msg);
+
   if (!logonscreen)
     fclose (f_log);
 }
@@ -212,8 +216,12 @@ void log_master (int level,char *msg)
   } else {
     f_log = stdout;
   }
+  
+  if (loglevel != L_DEBUG)
+    fprintf (f_log,"%8s : %s: %s\n",buf,log_level_str(level),msg);
+  else
+    fprintf (f_log,"%8s : (%i) %s: %s\n",buf,(int)getpid(),log_level_str(level),msg);
 
-  fprintf (f_log,"%8s : %s: %s\n",buf,log_level_str(level),msg);
   if (!logonscreen)
     fclose (f_log);
 }
