@@ -31,6 +31,12 @@ void get_hwinfo (struct computer_hwinfo *hwinfo)
   hwinfo->procspeed = get_procspeed();
   hwinfo->ncpus = get_numproc();
   hwinfo->speedindex = get_speedindex (hwinfo);
+	hwinfo->memory = get_memory ();
+}
+
+uint32_t get_memory (void)
+{
+	return 0;
 }
 
 t_proctype get_proctype (void)

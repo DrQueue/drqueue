@@ -60,4 +60,10 @@ void get_hwinfo (struct computer_hwinfo *hwinfo)
   sysctlbyname("hw.ncpu", &sysctl_data,&bl,NULL,0);
   hwinfo->ncpus = sysctl_data;
   hwinfo->speedindex = get_speedindex (hwinfo);
+	hwinfo->memory = get_memory ();
+}
+
+uint32_t get_memory (void)
+{
+	return 0;
 }
