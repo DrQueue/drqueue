@@ -1,4 +1,4 @@
-/* $Id: drerrno.c,v 1.11 2001/11/21 10:15:21 jorge Exp $ */
+/* $Id: drerrno.c,v 1.12 2002/05/17 16:03:23 jorge Exp $ */
 
 #include "drerrno.h"
 #include "constants.h"
@@ -48,6 +48,9 @@ char *drerrno_str (void)
     break;
   case DRE_COULDNOTCREATE:
     msg = "Could not create file or directory. Check permissions.";
+    break;
+  case DRE_NOTCOMPLETE:
+    msg = "Information not complete.";
     break;
   case DRE_DIFFILEFORMAT:
     msg = "Different file format than expected";
