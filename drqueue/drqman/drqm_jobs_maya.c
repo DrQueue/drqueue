@@ -47,6 +47,7 @@ GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
   GtkWidget *entry; 
   GtkWidget *button;
   GtkWidget *bbox;
+	GtkWidget *cbutton;
   GtkTooltips *tooltips;
   struct passwd *pw;
 
@@ -58,6 +59,14 @@ GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
   /* Main vbox */
   vbox = gtk_vbox_new (FALSE,2);
   gtk_container_add (GTK_CONTAINER(frame),vbox);
+
+	// Mental Ray ?
+	hbox = gtk_hbox_new (TRUE,2);
+	gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+	cbutton = gtk_check_button_new_with_label("Mental Ray");
+	gtk_box_pack_start (GTK_BOX(hbox),cbutton,FALSE,FALSE,2);
+	gtk_tooltips_set_tip(tooltips,cbutton,"Should we render with mental ray ?",NULL);
+	info->dnj.koji_maya.cbmentalray = cbutton;
 
   /* Scene file */
   hbox = gtk_hbox_new (TRUE,2);
@@ -291,6 +300,7 @@ static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_
   struct mayasgi mayasgi;	/* Maya script generator info */
   char *file;
 
+	mayasgi.mentalray = GTK_TOGGLE_BUTTON(info->koji_maya.cbmentalray)->active;
   strncpy (mayasgi.renderdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.erenderdir)),BUFFERLEN-1);
   strncpy (mayasgi.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escene)),BUFFERLEN-1);
   strncpy (mayasgi.image,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eimage)),BUFFERLEN-1);

@@ -43,6 +43,9 @@
 #include "drqm_jobs_bmrt.h"
 #include "drqm_jobs_pixie.h"
 
+// Icon includes
+#include "job_icon.h"
+
 /* Static functions declaration */
 static GtkWidget *CreateJobsList(struct drqm_jobs_info *info);
 static GtkWidget *CreateClist (GtkWidget *window);
@@ -95,6 +98,9 @@ void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info)
   GtkWidget *clist;
   GtkWidget *buttonRefresh;	/* Button to refresh the jobs list */
   GtkWidget *vbox;
+	GtkWidget *hbox;
+	GtkWidget *icon;
+	GdkPixbuf *job_icon_pb;
 
   container = gtk_frame_new ("Jobs status");
   gtk_container_border_width (GTK_CONTAINER(container),2);
@@ -109,9 +115,19 @@ void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info)
   buttonRefresh = CreateButtonRefresh (&info->idj);
   gtk_box_pack_end(GTK_BOX(vbox),buttonRefresh,FALSE,FALSE,2);
 
-  /* Append the page */
+
+	// Label
   label = gtk_label_new ("Jobs");
-  gtk_notebook_append_page (GTK_NOTEBOOK(notebook), container, label);
+	gtk_widget_show(label);
+	// Image
+	job_icon_pb = gdk_pixbuf_new_from_inline (735,job_icon,0,NULL);
+	icon = gtk_image_new_from_pixbuf (job_icon_pb);
+	gtk_widget_show(icon);
+	hbox = gtk_hbox_new (FALSE,0);
+	gtk_box_pack_start(GTK_BOX(hbox),icon,TRUE,TRUE,2);
+	gtk_box_pack_start(GTK_BOX(hbox),label,TRUE,TRUE,2);
+  /* Append the page */
+  gtk_notebook_append_page (GTK_NOTEBOOK(notebook), container, hbox);
 
   /* Put the jobs on the list */
 	update_joblist(GTK_WIDGET(notebook),&info->idj);
@@ -850,6 +866,9 @@ static int dnj_submit (struct drqmj_dnji *info)
     return 0;
   if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->limits.ememory)),"%u",&job.limits.memory) != 1)
     return 0;
+	// Pool
+	strncpy(job.limits.pool,gtk_entry_get_text(GTK_ENTRY(info->limits.epool)),MAXNAMELEN-1);
+
 
   /* Limits OS Flags */
   job.limits.os_flags = 0;
@@ -1182,6 +1201,17 @@ static GtkWidget *dnj_limits_widgets (struct drqm_jobs_info *info)
   gtk_tooltips_set_tip (tooltips,entry,"Minimum ammount of memory that this jobs requires."
 												"To cancel this limit use 0.",NULL);
   info->dnj.limits.ememory = entry;
+
+	// Pools
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Render in pool:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  entry = gtk_entry_new ();
+  gtk_entry_set_text (GTK_ENTRY(entry),DEFAULT_POOL);
+  gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
+  gtk_tooltips_set_tip (tooltips,entry,"Computer pool in which the job will be rendered.",NULL);
+  info->dnj.limits.epool = entry;
 
 	// OS Stuff
   frame2 = gtk_frame_new ("Operating Systems");

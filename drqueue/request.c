@@ -182,6 +182,10 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
 		log_master (L_DEBUG,"Request job limit memory set");
 		handle_r_r_joblms (sfd,wdb,icomp,&request);
 		break;
+	case R_R_JOBLPS:
+		log_master (L_DEBUG,"Request job limit pool set");
+		handle_r_r_joblps (sfd,wdb,icomp,&request);
+		break;
   default:
     log_master (L_WARNING,"Unknown request");
   }
@@ -223,6 +227,14 @@ void handle_request_slave (int sfd,struct slave_database *sdb)
 	case RS_R_JOBAVAILABLE:
 		log_slave_computer (L_DEBUG,"Request master has an available job");
 		write(phantom[1],"D",1);
+		break;
+	case RS_R_LIMITSPOOLADD:
+		log_slave_computer (L_DEBUG,"Request add pool");
+		handle_rs_r_limitspooladd (sfd,sdb,&request);
+		break;
+	case RS_R_LIMITSPOOLREMOVE:
+		log_slave_computer (L_DEBUG,"Request remove pool");
+		handle_rs_r_limitspoolremove (sfd,sdb,&request);
 		break;
   default:
     log_slave_computer (L_WARNING,"Unknown request received");
@@ -3000,6 +3012,35 @@ int request_job_limits_memory_set (uint32_t ijob, uint32_t memory, int who)
   return 1;
 }
 
+int request_job_limits_pool_set (uint32_t ijob, char *pool, int who)
+{
+  /* On error returns 0, error otherwise drerrno is set to the error */
+  /* This function request the master to set a new limit for job's nmaxcpus */
+  int sfd;
+  struct request req;
+
+  if ((sfd = connect_to_master ()) == -1) {
+    drerrno = DRE_NOCONNECT;
+    return 0;
+  }
+
+  req.type = R_R_JOBLPS;
+  req.data = ijob;
+
+  if (!send_request (sfd,&req,who)) {
+    close (sfd);
+    return 0;
+  }
+
+  if (!send_string (sfd,pool)) {
+    close (sfd);
+    return 0;
+  }
+
+  close (sfd);
+  return 1;
+}
+
 void handle_r_r_joblms (int sfd,struct database *wdb,int icomp,struct request *req)
 {
   /* The master handles this type of packages */
@@ -3031,6 +3072,38 @@ void handle_r_r_joblms (int sfd,struct database *wdb,int icomp,struct request *r
   semaphore_release (wdb->semid);
 
   log_master(L_DEBUG,"Exiting handle_r_r_joblms");
+}
+
+void handle_r_r_joblps (int sfd,struct database *wdb,int icomp,struct request *req)
+{
+  /* The master handles this type of packages */
+  /* This function is called unlocked */
+  /* This function is called by the master */
+  uint32_t ijob;
+	char *pool;
+
+  log_master(L_DEBUG,"Entering handle_r_r_joblps");
+
+  ijob = req->data;
+
+	if (!recv_string(sfd,&pool)) {
+		return;
+	}
+
+  log_master(L_DEBUG,"Requested job (ijob:%u) limits pool set to: %s",ijob,pool);
+
+  semaphore_lock(wdb->semid);
+
+  if (!job_index_correct_master(wdb,ijob))
+    return;
+
+	strncpy (wdb->job[ijob].limits.pool,pool,MAXNAMELEN-1);
+
+  semaphore_release (wdb->semid);
+
+	free (pool);
+
+  log_master(L_DEBUG,"Exiting handle_r_r_joblps");
 }
 
 int request_job_limits_nmaxcpus_set (uint32_t ijob, uint16_t nmaxcpus, int who)
@@ -3284,7 +3357,6 @@ int request_slave_job_available (char *slave, int who)
   struct request request;
 
   if ((sfd = connect_to_slave (slave)) == -1) {
-    drerrno = DRE_NOCONNECT;
     return 0;
   }
   
@@ -3292,9 +3364,96 @@ int request_slave_job_available (char *slave, int who)
   request.data = 0;
 
   if (!send_request (sfd,&request,who)) {
-    drerrno = DRE_ERRORWRITING;
     return 0;
   }
   
   return 1;
+}
+
+int request_slave_limits_pool_add (char *slave, char *pool, int who)
+{
+	int sfd;
+	struct request request;
+	
+	if ((sfd = connect_to_slave (slave)) == -1) {
+		return 0;
+	}
+
+	request.type = RS_R_LIMITSPOOLADD;
+
+	if (!send_request (sfd,&request,who)) {
+		return 0;
+	}
+
+	if (!send_string(sfd,pool)) {
+		return 0;
+	}
+
+	return 1;
+}
+
+int request_slave_limits_pool_remove (char *slave, char *pool, int who)
+{
+	int sfd;
+	struct request request;
+
+	if ((sfd = connect_to_slave (slave)) == -1) {
+		return 0;
+	}
+
+	request.type = RS_R_LIMITSPOOLREMOVE;
+
+	if (!send_request (sfd,&request,who)) {
+		return 0;
+	}
+
+	if (!send_string(sfd,pool)) {
+		return 0;
+	}
+
+	return 1;
+}
+
+void handle_rs_r_limitspooladd (int sfd,struct slave_database *sdb,struct request *req)
+{
+	char *pool;
+
+  log_slave_computer(L_DEBUG,"Entering handle_rs_r_limitspooladd");
+
+	if (!recv_string(sfd,&pool)) {
+		return;
+	}
+
+  semaphore_lock(sdb->semid);
+	
+	log_slave_computer(L_INFO,"New pool to list: %s",pool);
+	computer_pool_add(&sdb->comp->limits,pool);
+
+  semaphore_release(sdb->semid);
+
+  update_computer_limits (&sdb->comp->limits);
+
+  log_slave_computer(L_DEBUG,"Exiting handle_rs_r_limitspooladd");
+}
+
+void handle_rs_r_limitspoolremove (int sfd,struct slave_database *sdb,struct request *req)
+{
+	char *pool;
+
+  log_slave_computer(L_DEBUG,"Entering handle_rs_r_limitspoolremove");
+
+	if (!recv_string(sfd,&pool)) {
+		return;
+	}
+
+  semaphore_lock(sdb->semid);
+	
+	log_slave_computer(L_INFO,"Pool to be removed from list: %s",pool);
+	computer_pool_remove(&sdb->comp->limits,pool);
+
+  semaphore_release(sdb->semid);
+
+  update_computer_limits (&sdb->comp->limits);
+
+  log_slave_computer(L_DEBUG,"Exiting handle_rs_r_limitspooladd");
 }

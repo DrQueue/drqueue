@@ -79,6 +79,7 @@ static void jdd_add_blocked_host_bp (GtkWidget *button, struct drqm_jobs_info *i
 static GtkWidget *jdd_add_blocked_host_dialog (struct drqm_jobs_info *info);
 static GtkWidget *jdd_add_blocked_host_dialog_clist (struct drqm_jobs_info *info);
 
+
 /* Limits */
 static GtkWidget *jdd_limits_widgets (struct drqm_jobs_info *info);
 static void jdd_limits_nmaxcpus_bcp (GtkWidget *button, struct drqm_jobs_info *info);
@@ -89,6 +90,9 @@ static GtkWidget *jdd_nmcc_dialog (struct drqm_jobs_info *info);
 static void jdd_nmccd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *info);
 static void jdd_limits_lmemory_bcp (GtkWidget *bclicked, struct drqm_jobs_info *info);
 static void jdd_limits_lmemory_bcp_bokp (GtkWidget *bclicked, struct drqm_jobs_info *info);
+// Pool
+static void jdd_limits_lpool_bcp (GtkWidget *bclicked, struct drqm_jobs_info *info);
+static void jdd_limits_lpool_bcp_bokp (GtkWidget *bclicked, struct drqm_jobs_info *info);
 /* Flags */
 static GtkWidget *jdd_flags_widgets (struct drqm_jobs_info *info);
 /* KOJ */
@@ -399,6 +403,10 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
 	else
 		snprintf(msg,BUFFERLEN,"%u",info->jdd.job.limits.memory);
 	gtk_label_set_text(GTK_LABEL(info->jdd.limits.lmemory),msg);
+	
+	// Pool
+	snprintf (msg,BUFFERLEN,"%s",info->jdd.job.limits.pool);
+	gtk_label_set_text(GTK_LABEL(info->jdd.limits.lpool),msg);
 
   /* Limits OS Flags */
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->jdd.limits.cb_irix),
@@ -455,11 +463,20 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
     } else {
       strncpy(buff[3],"Not started",BUFFERLEN); 
       strncpy(buff[4],"Not started",BUFFERLEN);
-    }      
+    }
+		// Depending on the exitcode we set the background
     snprintf (buff[5],BUFFERLEN,"%i",info->jdd.job.frame_info[i].exitcode);
     snprintf (buff[6],BUFFERLEN,"%i",info->jdd.job.frame_info[i].icomp);
     snprintf (buff[7],BUFFERLEN,"%i",info->jdd.job.frame_info[i].itask);
     gtk_clist_append(GTK_CLIST(info->jdd.clist),buff);
+		if (info->jdd.job.frame_info[i].exitcode != 0) {
+			GdkColor color;
+			color.pixel = 0;
+			color.red = 0xffff;
+			color.green = 0x8000;
+			color.blue = 0x8000;
+			gtk_clist_set_background (GTK_CLIST(info->jdd.clist),i,&color);
+		}
     switch (info->jdd.job.frame_info[i].status) {
     case FS_WAITING:
       gtk_clist_set_pixtext (GTK_CLIST(info->jdd.clist),i,1,
@@ -1334,6 +1351,20 @@ static GtkWidget *jdd_limits_widgets (struct drqm_jobs_info *info)
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
 	g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(jdd_limits_lmemory_bcp),info);
 
+	// Pool
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Pool:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  hbox2 = gtk_hbox_new (FALSE,2);
+  gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,2);
+  label = gtk_label_new (DEFAULT_POOL);
+  gtk_box_pack_start (GTK_BOX(hbox2),label,TRUE,TRUE,2);
+  info->jdd.limits.lpool = label;
+  button = gtk_button_new_with_label ("Change");
+  gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
+	g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(jdd_limits_lpool_bcp),info);
+
 	// OS stuff
   frame2 = gtk_frame_new ("Operating Systems");
   gtk_box_pack_start (GTK_BOX(vbox),frame2,FALSE,FALSE,2);
@@ -1401,6 +1432,51 @@ static void jdd_limits_lmemory_bcp (GtkWidget *bclicked, struct drqm_jobs_info *
 	gtk_widget_show_all (dialog);
 
 	gtk_grab_add (dialog);
+}
+
+static void jdd_limits_lpool_bcp (GtkWidget *bclicked, struct drqm_jobs_info *info)
+{
+	GtkWidget *dialog;
+	GtkWidget *hbox;
+	GtkWidget *label;
+	GtkWidget *entry;
+	GtkWidget *button;
+	char buf[BUFFERLEN];
+
+	dialog = gtk_dialog_new ();
+	gtk_window_set_title (GTK_WINDOW(dialog),"Change job pool");
+
+	// The stuff
+	hbox = gtk_hbox_new (TRUE,2);
+	gtk_container_add (GTK_CONTAINER(GTK_DIALOG(dialog)->vbox),hbox);
+	label = gtk_label_new ("New pool : ");
+	gtk_box_pack_start (GTK_BOX(hbox),label, TRUE, TRUE, 2);
+	entry = gtk_entry_new_with_max_length (MAXNAMELEN);
+	gtk_box_pack_start (GTK_BOX(hbox),entry, TRUE, TRUE, 2);
+	info->jdd.limits.epool = entry;
+	snprintf (buf,BUFFERLEN,"%s",info->jdd.job.limits.pool);
+	gtk_entry_set_text(GTK_ENTRY(entry),buf);
+	
+	// The buttons
+	button = gtk_button_new_with_label ("Ok");
+	gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->action_area), button, TRUE, TRUE, 2);
+	GTK_WIDGET_SET_FLAGS(button,GTK_CAN_DEFAULT);
+	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(jdd_limits_lpool_bcp_bokp),info);
+	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(jdd_update),info);
+	g_signal_connect_swapped (G_OBJECT(button),"clicked",G_CALLBACK(gtk_widget_destroy),dialog);
+
+	button = gtk_button_new_with_label ("Cancel");
+	gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->action_area), button, TRUE, TRUE, 2);
+	g_signal_connect_swapped (G_OBJECT(button),"clicked",G_CALLBACK(gtk_widget_destroy),dialog);
+
+	gtk_widget_show_all (dialog);
+
+	gtk_grab_add (dialog);
+}
+
+static void jdd_limits_lpool_bcp_bokp (GtkWidget *bclicked, struct drqm_jobs_info *info)
+{
+	request_job_limits_pool_set(info->jdd.job.id,(char*)gtk_entry_get_text(GTK_ENTRY(info->jdd.limits.epool)),CLIENT);
 }
 
 static void jdd_limits_lmemory_bcp_bokp (GtkWidget *bclicked, struct drqm_jobs_info *info)

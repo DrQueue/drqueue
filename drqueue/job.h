@@ -16,7 +16,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-/* $Id$ */
+// $Id$
+//
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -72,6 +73,7 @@ struct job_limits {
   uint16_t nmaxcpuscomputer;	/* Maximum number of cpus running the job on one single computer */
   uint16_t os_flags;		/* In which OS will it run */
 	uint32_t memory;
+	char pool[MAXNAMELEN];
 };
 
 /* KOJ SECTION */
@@ -115,12 +117,6 @@ union koj_info {		/* Kind of job information */
 #define KOJ_BMRT							3	/* BMRT koj */
 #define KOJ_3DELIGHT					4	/* 3delight koj */
 #define KOJ_PIXIE							5	/* Pixie koj */
-
-/* koj constants */
-#define KOJ_MAYA_DFLT_VIEWCMD "fcheck $RD/$IMAGE.$PADFRAME.sgi"
-#define KOJ_BLENDER_DFLT_VIEWCMD "display image.$FRAME.jpg"
-#define KOJ_BMRT_DFLT_VIEWCMD "display image.$FRAME.sgi"
-#define KOJ_PIXIE_DFLT_VIEWCMD "display image.$FRAME.jpg"
 
 /* JOB SECTION */
 typedef enum {

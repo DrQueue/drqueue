@@ -32,6 +32,10 @@
 // Autoenable flags
 #define AEF_ACTIVE (1<<0)
 
+struct pool {
+	char name[MAXNAMELEN];
+};
+
 struct computer_limits {
   uint16_t nmaxcpus;		/* Maximum number of cpus running */
   uint16_t maxfreeloadcpu;	/* Maximum load that a cpu can have to be considered free */
@@ -40,6 +44,9 @@ struct computer_limits {
     unsigned char h,m;		/* Hour and minute of wished autoenable */
 		unsigned char flags;	// Autoenable flag
   } autoenable;
+	struct pool *pool;
+	uint16_t npools;
+	int poolshmid; // Pool's shared memory id
 };
 
 struct computer {
@@ -60,9 +67,22 @@ int computer_ntasks (struct computer *comp);
 int computer_ntasks_job (struct computer *comp,uint32_t ijob);
 void computer_update_assigned (struct database *wdb,uint32_t ijob,int iframe,int icomp,int itask);
 void computer_init (struct computer *computer);
+int computer_free (struct computer *computer);
 int computer_ncomputers_masterdb (struct database *wdb);
 void computer_init_limits (struct computer *comp);
 int computer_index_correct_master (struct database *wdb, uint32_t icomp);
 void computer_autoenable_check (struct slave_database *sdb);
+
+// Pools
+int computer_pool_get_shared_memory (int npools);
+void *computer_pool_attach_shared_memory (int shmid);
+void computer_pool_detach_shared_memory (struct pool *cpshp);
+void computer_pool_init (struct computer_limits *cl);
+int computer_pool_add (struct computer_limits *cl, char *pool);
+void computer_pool_remove (struct computer_limits *cl, char *pool);
+void computer_pool_list (struct computer_limits *cl);
+int computer_pool_exists (struct computer_limits *cl,char *pool);
+int computer_pool_free (struct computer_limits *cl);
+void computer_pool_set_from_environment (struct computer_limits *cl);
 
 #endif /* _COMPUTER_H_ */

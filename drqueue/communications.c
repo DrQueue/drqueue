@@ -83,8 +83,6 @@ int get_socket (short port)
 
 int accept_socket (int sfd,struct database *wdb,struct sockaddr_in *addr)
 {
-  /* This function not just accepts the socket but also updates */
-  /* the lastconn time of the client if this exists */
   int fd;
   int len = sizeof (struct sockaddr_in);
 
@@ -302,15 +300,16 @@ int send_computer_status (int sfd, struct computer_status *status)
   bswapped.loadavg[2] = htons(bswapped.loadavg[2]);
 
   /* Count the tasks. (Shouldn't be necessary) */
+	// FIXME: Remove this ?
   bswapped.ntasks = 0;
-  for (i=0;i<MAXTASKS;i++) {
-    if (bswapped.task[i].used)
+	for (i=0;i<MAXTASKS;i++) {
+		if (bswapped.task[i].used)
       bswapped.ntasks++;
   }
 
   bswapped.ntasks = htons (bswapped.ntasks);
 
-  if (!dr_write(sfd,buf,sizeof(uint16_t) * 4)) {
+  if (!dr_write(sfd,buf,sizeof(uint16_t) * 4)) { // Send the first 4 uint16_t that are loadavg and ntasks
     return 0;
   }
   
@@ -318,7 +317,7 @@ int send_computer_status (int sfd, struct computer_status *status)
   for (i=0;i<MAXTASKS;i++) {
     if (bswapped.task[i].used) {
       if (!send_task(sfd,&bswapped.task[i]))
-	return 0;
+				return 0;
     }
   }
 
@@ -618,6 +617,95 @@ int send_frame_info (int sfd, struct frame_info *fi)
   return 1;
 }
 
+int send_string (int sfd, char *str)
+{
+	uint16_t len,lensw;
+
+	len = strlen (str)+1;
+	lensw = htons (len);
+	if (!dr_write (sfd,&lensw,sizeof (len)))
+		return 0;
+
+	if (!dr_write (sfd,str,len))
+		return 0;
+
+	return 1;
+}
+
+int recv_string (int sfd, char **str)
+{
+	uint16_t len;
+
+	if (!dr_read (sfd,&len,sizeof(len)))
+		return 0;
+
+	len = ntohs (len);
+
+	*str = (char *) malloc (len);
+	if (!dr_read (sfd,*str,len))
+		return 0;
+
+	return 1;
+}
+
+int send_computer_pools (int sfd, struct computer_limits *cl)
+{
+	int i;
+	uint16_t npools;
+	struct pool *pool;
+
+	// fprintf (stderr,"Send npools: %u\n",cl->npools);
+	npools = htons (cl->npools);
+	if (!dr_write (sfd,&npools,sizeof(npools))) {
+		return 0;
+	}
+	
+	if (cl->npools) {
+		if ((pool = computer_pool_attach_shared_memory(cl->poolshmid)) == (void*)-1) {
+			//perror ("Attaching");
+			//fprintf (stderr,"ERROR ataching memory\n");
+			return 0;
+		}
+
+		for (i=0;i<cl->npools;i++) {
+			if (!dr_write(sfd,&pool[i],sizeof(struct pool))) {
+				return 0;
+			}
+		}
+
+		computer_pool_detach_shared_memory (pool);
+	}
+
+	//	computer_pool_list (cl);
+
+	return 1;
+}
+
+int recv_computer_pools (int sfd, struct computer_limits *cl)
+{
+	int i;
+	uint16_t npools;
+	struct pool pool;
+
+	if (!dr_read (sfd,&npools,sizeof(npools))) {
+		return 0;
+	}
+	npools = ntohs (npools);
+	// fprintf (stderr,"Recv npools: %u\n",npools);
+
+	computer_pool_free (cl);
+	for (i=0;i<npools;i++) {
+		if (!dr_read(sfd,&pool,sizeof(pool))) {
+			return 0;
+		}
+		computer_pool_add (cl,pool.name);
+	}
+
+	// computer_pool_list (cl);
+
+	return 1;
+}
+
 int recv_computer_limits (int sfd, struct computer_limits *cl)
 {
   void *buf;
@@ -633,6 +721,14 @@ int recv_computer_limits (int sfd, struct computer_limits *cl)
 
   /* Autoenable stuff */
   cl->autoenable.last = ntohl (cl->autoenable.last);
+
+	// Pools
+	cl->npools = 0;
+	cl->poolshmid = -1;
+
+	if (!recv_computer_pools (sfd,cl)) {
+		return 0;
+	}
 
   return 1;
 }
@@ -650,9 +746,17 @@ int send_computer_limits (int sfd, struct computer_limits *cl)
   /* Autoenable stuff */
   bswapped.autoenable.last = htonl (bswapped.autoenable.last);
 
+	// Pools
+	bswapped.npools = htons (bswapped.npools);
+
   if (!dr_write(sfd,buf,sizeof(struct computer_limits))) {
     return 0;
   }
+
+	// Pools
+	if (!send_computer_pools(sfd,cl)) {
+		return 0;
+	}
 
   return 1;
 }
