@@ -49,6 +49,8 @@ database_init (struct database *wdb)
 #ifdef COMM_REPORT
 	wdb->bsent = wdb->brecv = 0;
 #endif
+	wdb->lb.last_priority = 0;
+	wdb->lb.next_i = 0;
 }
 
 int
