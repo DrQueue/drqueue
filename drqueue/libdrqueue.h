@@ -22,6 +22,10 @@
 #ifndef _LIBDRQUEUE_H_
 #define _LIBDRQUEUE_H_
 
+#ifdef __CPLUSPLUS
+extern "C" {
+#endif 
+
 #include "computer.h"
 #include "job.h"
 #include "task.h"
@@ -40,5 +44,9 @@
 #include "pixiesg.h"
 
 int phantom[2];									/* FIXME: This should be local to the slave */
+
+#ifdef __CPLUSPLUS
+}
+#endif 
 
 #endif /* _libdrqueue_h_ */
