@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.60 2001/10/16 15:38:03 jorge Exp $ */
+/* $Id: request.c,v 1.61 2001/10/22 14:16:11 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -1361,8 +1361,9 @@ void handle_r_r_jobxferfi (int sfd,struct database *wdb,int icomp,struct request
   nframes = job_nframes (&wdb->job[ijob]);
   fi_copy = (struct frame_info *) malloc (sizeof(struct frame_info) * nframes);
   if (!fi_copy) {
+    semaphore_release(wdb->semid);
     log_master (L_ERROR,"Allocating memory on handle_r_r_jobxferfi");
-    return;			/* The lock is released automatically and the end of the process */
+    return;			/* The lock should be released automatically and the end of the process */
   }
   memcpy(fi_copy,fi,sizeof(struct frame_info) * nframes);
   detach_frame_shared_memory(fi);
@@ -1525,14 +1526,18 @@ void handle_r_r_jobfwait (int sfd,struct database *wdb,int icomp,struct request 
 
   semaphore_lock(wdb->semid);
 
-  if (!job_index_correct_master(wdb,ijob))
+  if (!job_index_correct_master(wdb,ijob)) {
+    semaphore_release(wdb->semid);
     return;
+  }
 
   nframes = job_nframes (&wdb->job[ijob]);
 
-  if (!job_frame_number_correct(&wdb->job[ijob],frame))
+  if (!job_frame_number_correct(&wdb->job[ijob],frame)) {
+    semaphore_release(wdb->semid);
     return;
-  
+  }
+
   nframes = job_nframes (&wdb->job[ijob]);
   iframe = job_frame_number_to_index (&wdb->job[ijob],frame);
   
