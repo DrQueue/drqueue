@@ -1,4 +1,4 @@
-/* $Id: slave.h,v 1.11 2001/09/02 14:19:46 jorge Exp $ */
+/* $Id: slave.h,v 1.12 2001/09/16 15:38:52 jorge Exp $ */
 
 #ifndef _SLAVE_H_
 #define _SLAVE_H_
@@ -34,7 +34,6 @@ void sigpipe_handler (int signal, siginfo_t *info, void *data);
 
 void slave_listening_process (struct slave_database *sdb);
 void launch_task (struct slave_database *sdb);
-void set_environment (struct slave_database *sdb);
 
 int get_shared_memory_slave (int force);
 int get_semaphores_slave (void);
