@@ -19,8 +19,14 @@
 // $Id$ */
 //
 
+#include <sys/types.h>
+#include <sys/sysctl.h>
+
 void get_hwinfo (struct computer_hwinfo *hwinfo)
 {
+	size_t len;
+	uint64_t freq;
+
   if (gethostname (hwinfo->name,MAXNAMELEN-1) == -1) {
     perror ("get_hwinfo: gethostname");
     kill(0,SIGINT);
@@ -28,9 +34,11 @@ void get_hwinfo (struct computer_hwinfo *hwinfo)
   hwinfo->arch = ARCH_PPC;
   hwinfo->os = OS_OSX;
   hwinfo->proctype = PROCTYPE_PPC;
-  hwinfo->procspeed = 1000;
   hwinfo->ncpus = get_numproc();
   hwinfo->speedindex = get_speedindex (hwinfo);
+	len = 8;
+	sysctlbyname ("hw.cpufrequency",&freq,&len,NULL,0);
+  hwinfo->procspeed = freq / 10e5;
 }
 
 int get_numproc (void)
