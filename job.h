@@ -123,15 +123,16 @@ union koj_info {		/* Kind of job information */
 
 /* JOB SECTION */
 typedef enum {
-  JOBSTATUS_WAITING,		/* Waiting to be dispatched */
-  JOBSTATUS_ACTIVE,		/* Already dispatched */
-  JOBSTATUS_STOPPED,		/* Stopped, waiting for current frames to finish */
+  JOBSTATUS_WAITING,						/* Waiting to be dispatched */
+  JOBSTATUS_ACTIVE,							/* Already dispatched */
+  JOBSTATUS_STOPPED, /* Stopped, waiting for current frames to finish */
   JOBSTATUS_FINISHED
 } t_jobstatus;
 
 /* JOB FLAGS */
 #define JF_MAILNOTIFY     (1<<0) /* Mail notifications on events */
-#define JF_MNDIFEMAIL	  (1<<1) /* Email address for notifications specified on "email" field */
+#define JF_MNDIFEMAIL	    (1<<1) /* Email address for notifications specified on "email" field */
+#define JF_DEPEND					(1<<2) // This job depends on another to start
 
 /* OS FLAGS */
 #define OSF_IRIX          (1<<0) /* If set will run on Irix */
@@ -163,14 +164,16 @@ struct job {
   time_t avg_frame_time;	/* Average frame time */
   time_t est_finish_time;	/* Estimated finish time */
   struct frame_info *frame_info; /* Status of every frame */
-  int fishmid;			/* Shared memory id for the frame_info structure */
+  int fishmid;		 /* Shared memory id for the frame_info structure */
 
 	// Blocked hosts
 	struct blocked_host *blocked_host;
-	int	bhshmid;  // Shared memory id for the blocked_host structure
-	uint16_t nblocked; // Number of blocked hosts
+	int	bhshmid;			// Shared memory id for the blocked_host structure
+	uint16_t nblocked;						// Number of blocked hosts
 
-  uint32_t flags;		/* Job flags */
+  uint32_t flags;								/* Job flags */
+
+	uint32_t dependid;						/* Jobid on which this one depends */
 
   struct job_limits limits;
 };

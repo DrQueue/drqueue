@@ -849,6 +849,8 @@ static int dnj_submit (struct drqmj_dnji *info)
 
   /* Flags */
   job.flags = 0;
+	//	job.flags |= JF_DEPEND;
+	//	job.dependid = 0;
   if (GTK_TOGGLE_BUTTON(info->flags.cbmailnotify)->active) {
     job.flags = job.flags | (JF_MAILNOTIFY);
   }

@@ -25,11 +25,7 @@
 #include <sys/shm.h>
 #include <sys/sem.h>
 #include <signal.h>
-//#if defined(__OSX) || defined(__FREEBSD)
 #include <sys/wait.h>
-//#else
-//# include <wait.h>
-//#endif
 #include <time.h>
 #include <stdlib.h>
 #include <sys/socket.h>
