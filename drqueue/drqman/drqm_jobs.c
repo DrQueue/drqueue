@@ -1,6 +1,8 @@
 /*
- * $Id: drqm_jobs.c,v 1.3 2001/07/17 10:21:51 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.4 2001/07/17 15:10:11 jorge Exp $
  */
+
+#include <string.h>
 
 #include "drqm_request.h"
 #include "drqm_jobs.h"
@@ -54,14 +56,14 @@ GtkWidget *CreateJobsList(struct info_drqm_jobs *info)
 
 GtkWidget *CreateClist (GtkWidget *window)
 {
-  gchar *titles[] = { "Name","Owner","Status" };
+  gchar *titles[] = { "ID","Name","Owner","Status","Processors" };
   GtkWidget *clist;
 
-  clist = gtk_clist_new_with_titles (3, titles);
+  clist = gtk_clist_new_with_titles (5, titles);
   gtk_container_add(GTK_CONTAINER(window),clist);
   gtk_clist_column_titles_show(GTK_CLIST(clist));
   gtk_clist_column_titles_passive(GTK_CLIST(clist));
-  gtk_clist_set_column_width (GTK_CLIST(clist),0,325);
+  gtk_clist_set_column_width (GTK_CLIST(clist),0,25);
   gtk_widget_show(clist);
 
   return (clist);
@@ -83,5 +85,31 @@ GtkWidget *CreateButtonRefresh (struct info_drqm_jobs *info)
 void PressedButtonRefresh (GtkWidget *b, struct info_drqm_jobs *info)
 {
   drqm_request_joblist (info);
+  drqm_update_joblist (info);
 }
 
+void drqm_update_joblist (struct info_drqm_jobs *info)
+{
+  int i;
+  char **buff;
+  
+  buff = (char**) g_malloc(6 * sizeof(char*));
+  buff[0] = (char*) g_malloc (BUFFERLEN);
+  buff[1] = (char*) g_malloc (BUFFERLEN);
+  buff[2] = (char*) g_malloc (BUFFERLEN);
+  buff[3] = (char*) g_malloc (BUFFERLEN);
+  buff[4] = (char*) g_malloc (BUFFERLEN);
+  buff[5] = NULL;
+  
+  gtk_clist_freeze(GTK_CLIST(info->clist));
+  gtk_clist_clear(GTK_CLIST(info->clist));
+  for (i=0; i < info->njobs; i++) {
+    snprintf (buff[0],BUFFERLEN,"%i",info->jobs[i].id);
+    strncpy(buff[1],info->jobs[i].name,BUFFERLEN);
+    strncpy(buff[2],info->jobs[i].owner,BUFFERLEN); 
+    snprintf (buff[3],BUFFERLEN,"%s",job_status_string(info->jobs[i].status));
+    snprintf (buff[4],BUFFERLEN,"%i",info->jobs[i].nprocs);
+    gtk_clist_append(GTK_CLIST(info->clist),buff);
+  }
+  gtk_clist_thaw(GTK_CLIST(info->clist));
+}
