@@ -46,7 +46,7 @@ int common_environment_check (void)
     return 0;
   }
 
-  snprintf (dir_str,BUFFERLEN-1,"%s/tmp",buf);
+  snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_TMP"));
   if (stat (dir_str,&s_stat) == -1) {
     drerrno = DRE_NOTMPDIR;
     return 0;
@@ -55,7 +55,7 @@ int common_environment_check (void)
     return 0;
   }
 
-  snprintf (dir_str,BUFFERLEN-1,"%s/db",buf);
+  snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_DB"));
   if (stat (dir_str,&s_stat) == -1) {
     drerrno = DRE_NODBDIR;
     return 0;
@@ -64,7 +64,7 @@ int common_environment_check (void)
     return 0;
   }
 
-  snprintf (dir_str,BUFFERLEN-1,"%s/logs",buf);
+  snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_LOGS"));
   if (stat (dir_str,&s_stat) == -1) {
     drerrno = DRE_NOLOGDIR;
     return 0;
@@ -73,13 +73,13 @@ int common_environment_check (void)
     return 0;
   }
 
-  snprintf (dir_str,BUFFERLEN-1,"%s/bin",buf);
+  snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_BIN"));
   if (stat (dir_str,&s_stat) == -1) {
     drerrno = DRE_NOBINDIR;
     return 0;
   }
 
-  snprintf (dir_str,BUFFERLEN-1,"%s/etc",buf);
+  snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_ETC"));
   if (stat (dir_str,&s_stat) == -1) {
     drerrno = DRE_NOETCDIR;
     return 0;
@@ -184,4 +184,44 @@ int common_date_check (void)
     return 0;
   
   return 1;
+}
+
+void set_default_env(void)
+{
+	char *penv,renv[BUFFERLEN];
+
+	if (!getenv("DRQUEUE_TMP")) {
+		snprintf(renv,BUFFERLEN,"DRQUEUE_TMP=%s/tmp",getenv("DRQUEUE_ROOT"));
+		penv = (char*) malloc (strlen(renv)+1);
+		strncpy(penv,renv,strlen(renv)+1);
+		putenv(penv);
+	}
+
+	if (!getenv("DRQUEUE_ETC")) {
+		snprintf(renv,BUFFERLEN,"DRQUEUE_ETC=%s/etc",getenv("DRQUEUE_ROOT"));
+		penv = (char*) malloc (strlen(renv)+1);
+		strncpy(penv,renv,strlen(renv)+1);
+		putenv(penv);
+	}
+
+	if (!getenv("DRQUEUE_BIN")) {
+		snprintf(renv,BUFFERLEN,"DRQUEUE_BIN=%s/bin",getenv("DRQUEUE_ROOT"));
+		penv = (char*) malloc (strlen(renv)+1);
+		strncpy(penv,renv,strlen(renv)+1);
+		putenv(penv);
+	}
+
+	if (!getenv("DRQUEUE_LOGS")) {
+		snprintf(renv,BUFFERLEN,"DRQUEUE_LOGS=%s/logs",getenv("DRQUEUE_ROOT"));
+		penv = (char*) malloc (strlen(renv)+1);
+		strncpy(penv,renv,strlen(renv)+1);
+		putenv(penv);
+	}
+
+	if (!getenv("DRQUEUE_DB")) {
+		snprintf(renv,BUFFERLEN,"DRQUEUE_DB=%s/db",getenv("DRQUEUE_ROOT"));
+		penv = (char*) malloc (strlen(renv)+1);
+		strncpy(penv,renv,strlen(renv)+1);
+		putenv(penv);
+	}
 }

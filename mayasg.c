@@ -39,7 +39,7 @@ char *mayasg_create (struct mayasgi *info)
   FILE *etc_maya_sg; 		/* The maya script generator configuration file */
   int fd_etc_maya_sg,fd_f;
   static char filename[BUFFERLEN];
-  char fn_etc_maya_sg[BUFFERLEN]; /* File name pointing to DRQUEUE_ROOT/etc/maya.sg */
+  char fn_etc_maya_sg[BUFFERLEN]; /* File name pointing to DRQUEUE_ETC/maya.sg */
   char buf[BUFFERLEN];
   char image_arg[BUFFERLEN];
   int size;
@@ -94,7 +94,7 @@ char *mayasg_create (struct mayasgi *info)
     fprintf(f,"set DRQUEUE_IMAGE=%s\n",info->image);
   }
 
-  snprintf(fn_etc_maya_sg,BUFFERLEN-1,"%s/etc/maya.sg",getenv("DRQUEUE_ROOT"));
+  snprintf(fn_etc_maya_sg,BUFFERLEN-1,"%s/maya.sg",getenv("DRQUEUE_ETC"));
 
   fflush (f);
 
@@ -125,14 +125,14 @@ char *mayasg_default_script_path (void)
   static char buf[BUFFERLEN];
   char *p;
 
-  if (!(p = getenv("DRQUEUE_ROOT"))) {
-    return ("/drqueue_root/not/set/");
+  if (!(p = getenv("DRQUEUE_tmp"))) {
+    return ("/drqueue_tmp/not/set/");
   }
   
   if (p[strlen(p)-1] == '/')
-    p[strlen(p)-1] = 0;		/* ATENTION this modifies the environment */
-
-  snprintf (buf,BUFFERLEN-1,"%s/tmp/",p);
+		snprintf (buf,BUFFERLEN-1,"%s",p);
+	else
+		snprintf (buf,BUFFERLEN-1,"%s/",p);
 
   return buf;
 }

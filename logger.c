@@ -92,27 +92,27 @@ FILE *log_slave_open_task (struct task *task)
   char dir[BUFFERLEN];
   char *basedir;
 
-  if ((basedir = getenv("DRQUEUE_ROOT")) == NULL) {
-    fprintf (stderr,"Environment variable DRQUEUE_ROOT not set. Aborting...\n");
+  if ((basedir = getenv("DRQUEUE_LOGS")) == NULL) {
+    fprintf (stderr,"Environment variable DRQUEUE_LOGS not set. Aborting...\n");
     kill(0,SIGINT);
   }
 
-  snprintf(dir,BUFFERLEN-1,"%s/logs/%s",basedir,task->jobname);
+  snprintf(dir,BUFFERLEN-1,"%s/%s",basedir,task->jobname);
   snprintf(filename,BUFFERLEN-1,"%s/%s.log",dir,task->jobname);
   if ((f = fopen (filename, "a")) == NULL) {
     if (errno == ENOENT) {
       /* If its because the directory does not exist we try creating it first */
       if (mkdir (dir,0775) == -1) {
-	perror ("log_slave_open_task: Couldn't create directory for task logging");
-	fprintf (stderr,"So... logging on screen.\n");
-	logonscreen = 1;
-	return f;
+				perror ("log_slave_open_task: Couldn't create directory for task logging");
+				fprintf (stderr,"So... logging on screen.\n");
+				logonscreen = 1;
+				return f;
       }
       if ((f = fopen (filename, "a")) == NULL) {
-	perror ("log_slave_open_task: Couldn't open file for writing.");
-	fprintf (stderr,"So... logging on screen.\n");
-	logonscreen = 1;
-	return f;
+				perror ("log_sl	ave_open_task: Couldn't open file for writing.");
+				fprintf (stderr,"So...	 logging on screen.\n");
+				logonscreen = 1;
+				return f;
       }
     }
     perror ("log_slave_open_task");
@@ -174,12 +174,12 @@ FILE *log_slave_open_computer (char *name)
   char filename[BUFFERLEN];
   char *basedir;
 
-  if ((basedir = getenv("DRQUEUE_ROOT")) == NULL) {
-    fprintf (stderr,"Environment variable DRQUEUE_ROOT not set. Aborting...\n");
+  if ((basedir = getenv("DRQUEUE_LOGS")) == NULL) {
+    fprintf (stderr,"Environment variable DRQUEUE_LOGS not set. Aborting...\n");
     kill(0,SIGINT);
   }
 
-  snprintf(filename,BUFFERLEN-1,"%s/logs/%s.log",basedir,name);
+  snprintf(filename,BUFFERLEN-1,"%s/%s.log",basedir,name);
   
   if ((f = fopen (filename,"a")) == NULL) {
     perror ("log_slave_open_computer: Couldn't open file for writing");
@@ -304,12 +304,12 @@ FILE *log_master_open (void)
   char filename[BUFFERLEN];
   char *basedir;
 
-  if ((basedir = getenv("DRQUEUE_ROOT")) == NULL) {
-    fprintf (stderr,"Environment variable DRQUEUE_ROOT not set. Aborting...\n");
+  if ((basedir = getenv("DRQUEUE_LOGS")) == NULL) {
+    fprintf (stderr,"Environment variable DRQUEUE_LOGS not set. Aborting...\n");
     kill(0,SIGINT);
   }
 
-  snprintf(filename,BUFFERLEN-1,"%s/logs/master.log",basedir);
+  snprintf(filename,BUFFERLEN-1,"%s/master.log",basedir);
 #ifdef __LINUX
   if ((f = fopen (filename,"a")) == NULL) {
     perror ("log_master_open: Couldn't open file for writing");
@@ -360,12 +360,12 @@ int log_dumptask_open (struct task *t)
   char name[MAXNAMELEN];
   time_t tm;
 
-  if ((basedir = getenv("DRQUEUE_ROOT")) == NULL) {
-    fprintf (stderr,"Environment variable DRQUEUE_ROOT not set. Aborting...\n");
+  if ((basedir = getenv("DRQUEUE_LOGS")) == NULL) {
+    fprintf (stderr,"Environment variable DRQUEUE_LOGS not set. Aborting...\n");
     kill(0,SIGINT);
   }
 
-  snprintf(dir,BUFFERLEN-1,"%s/logs/%s",basedir,t->jobname);
+  snprintf(dir,BUFFERLEN-1,"%s/%s",basedir,t->jobname);
   snprintf(filename,BUFFERLEN-1,"%s/%s.%04i",dir,t->jobname,t->frame);
   if ((lfd = open (filename, O_CREAT|O_APPEND|O_RDWR, 0664)) == -1) {
     if (errno == ENOENT) {
@@ -396,12 +396,12 @@ int log_dumptask_open_ro (struct task *t)
   char dir[BUFFERLEN];
   char *basedir;
 
-  if ((basedir = getenv("DRQUEUE_ROOT")) == NULL) {
-    fprintf (stderr,"Environment variable DRQUEUE_ROOT not set. Aborting...\n");
+  if ((basedir = getenv("DRQUEUE_LOGS")) == NULL) {
+    fprintf (stderr,"Environment variable DRQUEUE_LOGS not set. Aborting...\n");
     kill(0,SIGINT);
   }
 
-  snprintf(dir,BUFFERLEN-1,"%s/logs/%s",basedir,t->jobname);
+  snprintf(dir,BUFFERLEN-1,"%s/%s",basedir,t->jobname);
   snprintf(filename,BUFFERLEN-1,"%s/%s.%04i",dir,t->jobname,t->frame);
   if ((lfd = open (filename,O_RDONLY)) == -1) {
     return -1;
