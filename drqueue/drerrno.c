@@ -1,4 +1,4 @@
-/* $Id: drerrno.c,v 1.6 2001/09/02 14:17:19 jorge Exp $ */
+/* $Id: drerrno.c,v 1.7 2001/09/04 16:05:39 jorge Exp $ */
 
 #include "drerrno.h"
 #include "constants.h"
@@ -45,6 +45,9 @@ char *drerrno_str (void)
     break;
   case DRE_NOENVROOT:
     msg = "Environment variable DRQUEUE_ROOT not set";
+    break;
+  case DRE_COULDNOTCREATE:
+    msg = "Could not create file or directory. Check permissions.";
     break;
   default:
     msg = "drerrno NOT listed !!";
