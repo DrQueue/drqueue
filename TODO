@@ -10,6 +10,7 @@ TO DO:
 * Slave pools. 0.60
 * job dependencies
 * send job in stopped mode
+* detect computer memory
 
 BUGS:
 ----

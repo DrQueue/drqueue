@@ -61,6 +61,8 @@ struct drqmj_dnji {							/* dialog new job info */
   struct drqmj_koji_pixie koji_pixie; /* koj info for pixie */
   struct drqmj_limits limits;		/* limits info */
   struct drqmj_flags flags;			/* flags info */
+
+	int submitstopped;						/* Set if the job has to be stopped just after submission */
 };
 
 struct drqm_jobs_info {

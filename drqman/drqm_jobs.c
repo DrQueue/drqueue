@@ -62,6 +62,7 @@ static void dnj_psearch (GtkWidget *button, struct drqmj_dnji *info);
 static void dnj_set_cmd (GtkWidget *button, struct drqmj_dnji *info);
 static void dnj_cpri_changed (GtkWidget *entry, struct drqmj_dnji *info);
 static void dnj_bsubmit_pressed (GtkWidget *button, struct drqmj_dnji *info);
+static void dnj_bsubmitstopped_pressed (GtkWidget *button, struct drqmj_dnji *info);
 static int dnj_submit (struct drqmj_dnji *info);
 static void dnj_destroyed (GtkWidget *dialog, struct drqm_jobs_info *info);
 static void dnj_cleanup (GtkWidget *button, struct drqmj_dnji *info);
@@ -631,20 +632,36 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
   gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,TRUE,2);
   g_signal_connect (G_OBJECT(button),"clicked",
 										G_CALLBACK(dnj_bsubmit_pressed),&info->dnj);
+	
+	// Submit stopped
+	info->dnj.submitstopped = 0;
+  button = gtk_button_new_with_label ("Submit stopped");
+  gtk_tooltips_set_tip(tooltips,button,"Submit job but set as stopped",NULL);
+  gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,TRUE,2);
+	g_signal_connect (G_OBJECT(button),"clicked",
+										G_CALLBACK(dnj_bsubmitstopped_pressed), &info->dnj);
+  g_signal_connect (G_OBJECT(button),"clicked",
+										G_CALLBACK(dnj_bsubmit_pressed),&info->dnj);
+
 
   /* cancel */
   button = gtk_button_new_with_label ("Cancel");
   gtk_tooltips_set_tip(tooltips,button,"Close without sending any information",NULL);
   gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,TRUE,2);
-  gtk_signal_connect (GTK_OBJECT(button),"clicked",
-		      GTK_SIGNAL_FUNC(dnj_cleanup),&info->dnj);
-  gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
-			     GTK_SIGNAL_FUNC(gtk_widget_destroy),
-			     (gpointer) window);
+  g_signal_connect (G_OBJECT(button),"clicked",
+										G_CALLBACK(dnj_cleanup),&info->dnj);
+  g_signal_connect_swapped (G_OBJECT(button),"clicked",
+														G_CALLBACK(gtk_widget_destroy),
+														(gpointer) window);
 
   gtk_widget_show_all(window);
 
   return window;
+}
+
+static void dnj_bsubmitstopped_pressed (GtkWidget *button, struct drqmj_dnji *info)
+{
+	info->submitstopped = 1;
 }
 
 static void dnj_cleanup (GtkWidget *button, struct drqmj_dnji *info)
@@ -852,6 +869,11 @@ static int dnj_submit (struct drqmj_dnji *info)
 
   if (!register_job (&job))
     return 0;
+
+	// job.id is set on the call to register_job
+	if (info->submitstopped) {
+		request_job_hstop (job.id,CLIENT);
+	}
 
   return 1;
 }
