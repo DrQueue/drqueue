@@ -75,7 +75,7 @@ char *blendersg_create (struct blendersgi *info)
 
   /* So now we have the file open and so we must write to it */
   fprintf(f,"#!/bin/tcsh\n\n");
-  fprintf(f,"set SCENE=%s\n",info->scene);
+  fprintf(f,"set SCENE=\"%s\"\n",info->scene);
 
   snprintf(fn_etc_blender_sg,BUFFERLEN-1,"%s/blender.sg",getenv("DRQUEUE_ETC"));
 
