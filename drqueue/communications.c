@@ -229,6 +229,7 @@ int recv_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo)
   hwinfo->procspeed = ntohl (hwinfo->procspeed);
   hwinfo->ncpus = ntohs (hwinfo->ncpus);
   hwinfo->speedindex = ntohl (hwinfo->speedindex);
+	hwinfo->memory = ntohl (hwinfo->memory);
 
   drerrno = DRE_NOERROR;
   return 1;
@@ -246,6 +247,7 @@ int send_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo)
   bswapped.procspeed = htonl (bswapped.procspeed);
   bswapped.ncpus = htons (bswapped.ncpus);
   bswapped.speedindex = htonl (bswapped.speedindex);
+	bswapped.memory = htonl (bswapped.memory);
 
   if (!dr_write (sfd, buf, sizeof (struct computer_hwinfo))) {
     return 0;
