@@ -12,8 +12,7 @@ TO DO:
 * User defined shell for script generators
 * Renice options
 * STEPFRAME included in all .sg files
-* Put together both sendjobs and add a -t type flag for the different
-  renderers
+* Counter on how many times a frame has been requeued. For version 0.51
 
 BUGS:
 ----
