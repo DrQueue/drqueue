@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.28 2001/11/16 15:50:12 jorge Exp $ */
+/* $Id: job.h,v 1.29 2001/11/19 09:45:29 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -143,6 +143,9 @@ void *attach_frame_shared_memory (int shmid);
 void detach_frame_shared_memory (struct frame_info *fishp);
 
 int priority_job_compare (const void *a,const void *b);
+
+char *job_koj_string (struct job *job);
+
 
 #endif /* _JOB_H_ */
 
