@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.50 2001/09/18 13:24:02 jorge Exp $ */
+/* $Id: request.c,v 1.51 2001/09/20 10:52:19 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -441,7 +441,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
 {
   /* The master handles this type of packages */
   struct request answer;
-  uint32_t ijob,i;
+  uint32_t ijob = 0,i;
   int itask;
   int iframe;
   char msg[BUFFERLEN];
@@ -804,6 +804,7 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
 	    break;
 	  case FS_ERROR:
 	  case FS_FINISHED:
+	    break;
 	  }
 	  fi[task.frame].start_time = 0;
 	  fi[task.frame].end_time = 0;
@@ -1572,6 +1573,7 @@ void handle_r_r_jobfkill (int sfd,struct database *wdb,int icomp,struct request 
     break;
   case FS_ERROR:
   case FS_FINISHED:
+    break;
   }
   detach_frame_shared_memory (fi);
 
@@ -1661,6 +1663,7 @@ void handle_r_r_jobffini (int sfd,struct database *wdb,int icomp,struct request 
   case FS_ASSIGNED:
   case FS_ERROR:
   case FS_FINISHED:
+    break;
   }
   detach_frame_shared_memory (fi);
 
@@ -1752,6 +1755,7 @@ void handle_r_r_jobfkfin (int sfd,struct database *wdb,int icomp,struct request 
     break;
   case FS_ERROR:
   case FS_FINISHED:
+    break;
   }
   detach_frame_shared_memory (fi);
 
