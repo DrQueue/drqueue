@@ -1,4 +1,4 @@
-/* $Id: slave.h,v 1.10 2001/07/30 12:49:12 jorge Exp $ */
+/* $Id: slave.h,v 1.11 2001/09/02 14:19:46 jorge Exp $ */
 
 #ifndef _SLAVE_H_
 #define _SLAVE_H_
@@ -19,6 +19,7 @@ struct slave_database {
   int itask;			/* Index to current process task */
 };				/* slave database */
 
+void slave_get_options (int *argc,char ***argv, int *force);
 void usage (void);
 
 void set_signal_handlers (void);
