@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.45 2001/11/16 15:47:49 jorge Exp $ */
+/* $Id: communications.c,v 1.46 2001/11/22 14:43:02 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -428,6 +428,11 @@ int recv_job (int sfd, struct job *job)
 
   job->flags = ntohl (job->flags);
 
+  /* Limits */
+  job->limits.nmaxcpus = ntohs (job->limits.nmaxcpus);
+  job->limits.nmaxcpuscomputer = ntohs (job->limits.nmaxcpuscomputer);
+  job->limits.os_flags = ntohs (job->limits.os_flags);
+
   drerrno = DRE_NOERROR;
   return 1;
 }
@@ -468,6 +473,11 @@ int send_job (int sfd, struct job *job)
   bswapped.priority = htonl (bswapped.priority);
 
   bswapped.flags = htonl (bswapped.flags);
+
+  /* Limits */
+  bswapped.limits.nmaxcpus = htons (bswapped.limits.nmaxcpus);
+  bswapped.limits.nmaxcpuscomputer = htons (bswapped.limits.nmaxcpuscomputer);
+  bswapped.limits.os_flags = htons (bswapped.limits.os_flags);
 
   bleft = sizeof (bswapped);
   while ((w = write(sfd,buf,bleft)) < bleft) {
