@@ -1,4 +1,4 @@
-/* $Id: drqm_request.c,v 1.27 2002/06/27 09:22:51 jorge Exp $ */
+/* $Id$ */
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -44,19 +44,24 @@ void drqm_request_joblist (struct drqm_jobs_info *info)
   }
 
   drqm_clean_joblist (info);
-  if ((info->jobs = malloc (sizeof (struct job) * info->njobs)) == NULL) {
-    fprintf (stderr,"Not enough memory for job structures\n");
-    close (sfd);
-    return;
-  }
-  tjob = info->jobs;
-  for (i=0;i<info->njobs;i++) {
-    if (!recv_job (sfd,tjob)) {
-      fprintf (stderr,"ERROR: Receiving job (drqm_request_joblist)\n");
-      break;
-    }
-    tjob++;
-  }
+	if (info->njobs) {
+		if ((info->jobs = g_malloc (sizeof (struct job) * info->njobs)) == NULL) {
+			fprintf (stderr,"Not enough memory for job struc	tures\n");
+			close (sfd);
+			return;
+		}
+
+		tjob = info->jobs;
+		for (i=0;i<info->njobs;i++) {
+			if (!recv_job (sfd,tjob)) {
+				fprintf (stderr,"ERROR: Receiving job (drqm_request_joblist)\n");
+				break;
+			}
+			tjob++;
+		}
+	} else {
+		info->jobs = NULL;
+	}
 
   close (sfd);
 }
@@ -64,7 +69,7 @@ void drqm_request_joblist (struct drqm_jobs_info *info)
 void drqm_clean_joblist (struct drqm_jobs_info *info)
 {
   if (info->jobs) {
-    free (info->jobs);
+    g_free (info->jobs);
     info->jobs = NULL;
   }
 }
@@ -105,20 +110,24 @@ void drqm_request_computerlist (struct drqm_computers_info *info)
   }
 
   drqm_clean_computerlist (info);
-  if ((info->computers = malloc (sizeof (struct computer) * info->ncomputers)) == NULL) {
-    fprintf (stderr,"Not enough memory for job structures\n");
-    close (sfd);
-    return;
-  }
-  tcomputer = info->computers;
-  for (i=0;i<info->ncomputers;i++) {
-    computer_init(tcomputer);
-    if (!recv_computer (sfd,tcomputer)) {
-      fprintf (stderr,"ERROR: Receiving computer structure (drqm_request_computerlist) [%i]\n",i);
-      exit (1);
-    }
-    tcomputer++;
-  }
+	
+	if (info->ncomputers) {
+		if ((info->computers = g_malloc (sizeof (struct computer) * info->ncomputers)) == NULL) {
+			fprintf (stderr,"Not enough memory for computer structures\n");
+			close (sfd);
+			return;
+		}
+
+		tcomputer = info->computers;
+		for (i=0;i<info->ncomputers;i++) {
+			computer_init(tcomputer);
+			if (!recv_computer (sfd,tcomputer)) {
+				fprintf (stderr,"ERROR: Receiving computer structure (drqm_request_computerlist) [%i]\n",i);
+				exit (1);
+			}
+			tcomputer++;
+		}
+	}
 
   close (sfd);
 }
@@ -131,36 +140,28 @@ void drqm_clean_computerlist (struct drqm_computers_info *info)
   }
 }
 
-void drqm_request_job_delete (struct drqm_jobs_info *info)
+void drqm_request_job_delete (uint32_t jobid)
 {
   /* This function sends the request to delete the job selected from the queue */
-  if (info->njobs) {
-    request_job_delete ((uint32_t)info->jobs[info->row].id,CLIENT);
-  }
+	request_job_delete (jobid,CLIENT);
 }
 
-void drqm_request_job_stop (struct drqm_jobs_info *info)
+void drqm_request_job_stop (uint32_t jobid)
 {
   /* This function sends the request to stop the job selected from the queue */
-  if (info->njobs) {
-    request_job_stop ((uint32_t)info->jobs[info->row].id,CLIENT);
-  }
+	request_job_stop (jobid,CLIENT);
 }
 
-void drqm_request_job_hstop (struct drqm_jobs_info *info)
+void drqm_request_job_hstop (uint32_t jobid)
 {
   /* This function sends the request to hard stop the job selected from the queue */
-  if (info->njobs) {
-    request_job_hstop ((uint32_t)info->jobs[info->row].id,CLIENT);
-  }
+	request_job_hstop (jobid,CLIENT);
 }
 
-void drqm_request_job_continue (struct drqm_jobs_info *info)
+void drqm_request_job_continue (uint32_t jobid)
 {
   /* This function sends the request to continue the (stopped) job selected from the queue */
-  if (info->njobs) {
-    request_job_continue ((uint32_t)info->jobs[info->row].id,CLIENT);
-  }
+	request_job_continue (jobid,CLIENT);
 }
 
 void drqm_request_job_frame_waiting (uint32_t jobid,uint32_t frame)

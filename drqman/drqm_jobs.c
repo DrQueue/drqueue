@@ -34,6 +34,7 @@ static void PressedButtonRefresh (GtkWidget *b, struct drqm_jobs_info *info);
 static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *info);
 static GtkWidget *CreateMenu (struct drqm_jobs_info *info);
 static int pri_cmp_clist (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+static void update_joblist (GtkWidget *widget, struct drqm_jobs_info *info);
 
 /* JOB DETAILS */
 static void JobDetails(GtkWidget *menu_item, struct drqm_jobs_info *info);
@@ -124,14 +125,10 @@ static void job_hstop_cb (GtkWidget *button, struct drqm_jobs_info *info);
 /* CONTINUE JOB */
 static void ContinueJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
 
-
-
-
 struct row_data {
   uint32_t frame;
   struct drqm_jobs_info *info;
 };
-
 
 void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info)
 {
@@ -142,8 +139,6 @@ void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info)
   GtkWidget *buttonRefresh;	/* Button to refresh the jobs list */
   GtkWidget *vbox;
 
-  /* Label */
-  label = gtk_label_new ("Jobs");
   container = gtk_frame_new ("Jobs status");
   gtk_container_border_width (GTK_CONTAINER(container),2);
   vbox = gtk_vbox_new(FALSE,2);
@@ -158,16 +153,13 @@ void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info)
   gtk_box_pack_end(GTK_BOX(vbox),buttonRefresh,FALSE,FALSE,2);
 
   /* Append the page */
+  label = gtk_label_new ("Jobs");
   gtk_notebook_append_page (GTK_NOTEBOOK(notebook), container, label);
 
   /* Put the jobs on the list */
-  drqm_request_joblist (&info->idj);
-  drqm_update_joblist (&info->idj);
+	update_joblist(GTK_WIDGET(notebook),&info->idj);
 
-  gtk_widget_show(clist);
-  gtk_widget_show(vbox);
-  gtk_widget_show(label);
-  gtk_widget_show(container);
+  gtk_widget_show_all(container);
 }
 
 static GtkWidget *CreateJobsList(struct drqm_jobs_info *info)
@@ -228,8 +220,7 @@ static GtkWidget *CreateButtonRefresh (struct drqm_jobs_info *info)
 
 static void PressedButtonRefresh (GtkWidget *b, struct drqm_jobs_info *info)
 {
-  drqm_request_joblist (info);
-  drqm_update_joblist (info);
+	update_joblist (b,info);
 }
 
 void drqm_update_joblist (struct drqm_jobs_info *info)
@@ -289,7 +280,7 @@ static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *
       info->row = -1;
       for (i=0;i<info->njobs;i++) {
 				if (info->jobs[i].id == info->ijob) {
-					info->row = i;
+					info->row = i; // Points from this point on, to index of the job in info.
 				}
       }
 
@@ -306,6 +297,7 @@ static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *
 
 static GtkWidget *CreateMenu (struct drqm_jobs_info *info)
 {
+	// This function creates the popup menu on the job's page
   GtkWidget *menu;
   GtkWidget *menu_item;
   GtkTooltips *tooltips;
@@ -354,11 +346,11 @@ static GtkWidget *CreateMenu (struct drqm_jobs_info *info)
 
   menu_item = gtk_menu_item_new_with_label("Delete");
   gtk_menu_append(GTK_MENU(menu),menu_item);
-  gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(DeleteJob),info);
+  g_signal_connect(G_OBJECT(menu_item),"activate",G_CALLBACK(DeleteJob),info);
   gtk_tooltips_set_tip (tooltips,menu_item,"Delete the job from the queue killing running frames",NULL);
   gtk_widget_set_name (menu_item,"danger");
 
-  gtk_signal_connect(GTK_OBJECT((info->clist)),"event",GTK_SIGNAL_FUNC(PopupMenu),info);
+  g_signal_connect(G_OBJECT((info->clist)),"event",G_CALLBACK(PopupMenu),info);
 
   gtk_widget_show_all(menu);
 
@@ -379,11 +371,9 @@ static void NewJob (GtkWidget *menu_item, struct drqm_jobs_info *info)
 {
   GtkWidget *dialog;
   dialog = NewJobDialog(info);
-  if (dialog) {
-    g_signal_connect (G_OBJECT(dialog),"destroy",
-											G_CALLBACK(dnj_destroyed),info);
-    gtk_grab_add(dialog);
-  }
+	g_signal_connect (G_OBJECT(dialog),"destroy",
+										G_CALLBACK(dnj_destroyed),info);
+	gtk_grab_add(dialog);
 }
 
 static void CopyJob (GtkWidget *menu_item, struct drqm_jobs_info *info)
@@ -394,12 +384,10 @@ static void CopyJob (GtkWidget *menu_item, struct drqm_jobs_info *info)
     return;
 
   dialog = NewJobDialog(info);
-  if (dialog) {
-    CopyJob_CloneInfo (info);
-    g_signal_connect (G_OBJECT(dialog),"destroy",
-											G_CALLBACK(dnj_destroyed),info);
-    gtk_grab_add(dialog);
-  }
+	CopyJob_CloneInfo (info);
+	g_signal_connect (G_OBJECT(dialog),"destroy",
+										G_CALLBACK(dnj_destroyed),info);
+	gtk_grab_add(dialog);
 }
 
 static void CopyJob_CloneInfo (struct drqm_jobs_info *info)
@@ -538,8 +526,8 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
   /* Dialog */
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW(window),"New Job");
-  gtk_signal_connect_object(GTK_OBJECT(window),"destroy",GTK_SIGNAL_FUNC(gtk_widget_destroy),
-			    (GtkObject*)window);
+  g_signal_connect_swapped(G_OBJECT(window),"destroy",G_CALLBACK(gtk_widget_destroy),
+													 (GtkObject*)window);
   gtk_window_set_default_size(GTK_WINDOW(window),600,200);
   gtk_container_set_border_width (GTK_CONTAINER(window),5);
   info->dnj.dialog = window;
@@ -708,7 +696,7 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
 
 static void dnj_cleanup (GtkWidget *button, struct drqmj_dnji *info)
 {
-  info->fkoj = NULL;
+	gtk_widget_destroy (info->fkoj);
 }
 
 static void dnj_psearch (GtkWidget *button, struct drqmj_dnji *info)
@@ -915,11 +903,15 @@ static int dnj_submit (struct drqmj_dnji *info)
   return 1;
 }
 
+static void update_joblist (GtkWidget *widget, struct drqm_jobs_info *info)
+{
+	drqm_request_joblist (info);
+	drqm_update_joblist (info);
+}
+
 static void dnj_destroyed (GtkWidget *dialog, struct drqm_jobs_info *info)
 {
-  info->dnj.fkoj = NULL;
-  drqm_request_joblist (info);
-  drqm_update_joblist (info);
+	update_joblist (dialog,info);
 }
 
 static int pri_cmp_clist (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
@@ -961,9 +953,6 @@ static GtkWidget *DeleteJobDialog (struct drqm_jobs_info *info)
   /* Dialog */
   dialog = gtk_dialog_new ();
   gtk_window_set_title (GTK_WINDOW(dialog),"You Sure?");
-  gtk_signal_connect_object(GTK_OBJECT(dialog),"destroy",
-			    GTK_SIGNAL_FUNC(gtk_widget_destroy),
-			    (gpointer)dialog);
 
   /* Label */
   label = gtk_label_new ("Do you really want to delete the job?");
@@ -973,16 +962,12 @@ static GtkWidget *DeleteJobDialog (struct drqm_jobs_info *info)
   /* Buttons */
   button = gtk_button_new_with_label ("Yes");
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->action_area),button, TRUE, TRUE, 5);
-  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(djd_bok_pressed),info);
-  gtk_signal_connect_object(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(gtk_widget_destroy),
-			    (GtkObject*)dialog);
-	gtk_signal_connect_object(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(gtk_widget_destroy),
-					(GtkObject*)info->jdd.dialog);
+  g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(djd_bok_pressed),info);
+  g_signal_connect_swapped(G_OBJECT(button),"clicked",G_CALLBACK(gtk_widget_destroy),dialog);
 
   button = gtk_button_new_with_label ("No");
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->action_area),button, TRUE, TRUE, 5);
-  gtk_signal_connect_object(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(gtk_widget_destroy),
-			    (GtkObject*)dialog);
+  g_signal_connect_swapped(G_OBJECT(button),"clicked",G_CALLBACK(gtk_widget_destroy),dialog);
   GTK_WIDGET_SET_FLAGS(button,GTK_CAN_DEFAULT);
   gtk_widget_grab_default(button);
 
@@ -993,8 +978,15 @@ static GtkWidget *DeleteJobDialog (struct drqm_jobs_info *info)
 
 static void djd_bok_pressed (GtkWidget *button, struct drqm_jobs_info *info)
 {
-  drqm_request_job_delete (info);
-	dnj_destroyed (button,info);
+	if (info->jdd.dialog) {
+		drqm_request_job_delete (info->jdd.job.id);
+		gtk_widget_destroy (info->jdd.dialog);
+		info->jdd.dialog = NULL;
+		update_joblist(button,info->jdd.oldinfo);
+	} else {
+		drqm_request_job_delete (info->jobs[info->row].id);
+		update_joblist(button,info);
+	}
 }
 
 static void StopJob (GtkWidget *menu_item, struct drqm_jobs_info *info)
@@ -1002,8 +994,12 @@ static void StopJob (GtkWidget *menu_item, struct drqm_jobs_info *info)
   if (!info->selected)
     return;
 
-  drqm_request_job_stop (info);
-  dnj_destroyed(menu_item,info); /* updates the list */
+	if (info->jdd.dialog) {
+		drqm_request_job_stop (info->jdd.job.id);
+	} else {
+		drqm_request_job_stop (info->jobs[info->row].id);
+	}
+  update_joblist(menu_item,info); /* updates the list */
 }
 
 static void ContinueJob (GtkWidget *menu_item, struct drqm_jobs_info *info)
@@ -1011,8 +1007,12 @@ static void ContinueJob (GtkWidget *menu_item, struct drqm_jobs_info *info)
   if (!info->selected)
     return;
 
-  drqm_request_job_continue (info);
-  dnj_destroyed(menu_item,info); /* Updates the list */
+	if (info->jdd.dialog) {
+		drqm_request_job_continue (info->jdd.job.id);
+	} else {
+		drqm_request_job_continue (info->jobs[info->row].id);
+	}
+  update_joblist(menu_item,info); /* Updates the list */
 }
 
 static void HStopJob (GtkWidget *menu_item, struct drqm_jobs_info *info)
@@ -1025,7 +1025,7 @@ static void HStopJob (GtkWidget *menu_item, struct drqm_jobs_info *info)
   
   cbs = g_list_append (cbs,job_hstop_cb);
 	cbs = g_list_append (cbs,info);
-  cbs = g_list_append (cbs,dnj_destroyed);
+  cbs = g_list_append (cbs,update_joblist);
 	cbs = g_list_append (cbs,info);
 
   dialog = ConfirmDialog ("Do you really want to hard stop the job?\n(This will kill all current running processes)",
@@ -1039,7 +1039,11 @@ static void HStopJob (GtkWidget *menu_item, struct drqm_jobs_info *info)
 static void job_hstop_cb (GtkWidget *button, struct drqm_jobs_info *info)
 {
   /* job hstop in the for of a gtk signal func callback */
-  drqm_request_job_hstop (info);
+  if (info->jdd.dialog) {
+		drqm_request_job_hstop (info->jdd.job.id);
+	} else {
+		drqm_request_job_hstop (info->jobs[info->row].id);
+	}
 }
 
 static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
@@ -1062,27 +1066,25 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
     return NULL;
   }
 
-  newinfo = malloc (sizeof (struct drqm_jobs_info));
+	// We create a new info structure for this window.
+  newinfo = g_malloc (sizeof (struct drqm_jobs_info));
   if (!newinfo) {
     return NULL;
   }
   memcpy (newinfo,info,sizeof(struct drqm_jobs_info));
-  info = newinfo;
-
-  memcpy (&info->jdd.job,&info->jobs[info->row],sizeof (struct job));
+  memcpy (&newinfo->jdd.job,&info->jobs[info->row],sizeof (struct job));
+	newinfo->jdd.oldinfo = info;
 
   tooltips = TooltipsNew ();
 
   /* Dialog */
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW(window),"Job Details");
-  gtk_signal_connect (GTK_OBJECT(window),"destroy",GTK_SIGNAL_FUNC(jdd_destroy),info);
-  gtk_signal_connect_object(GTK_OBJECT(window),"destroy",GTK_SIGNAL_FUNC(gtk_widget_destroy),
-			    (GtkObject*)window);
+	g_signal_connect (G_OBJECT(window),"destroy",G_CALLBACK(jdd_destroy),newinfo);
   // gtk_window_set_default_size(GTK_WINDOW(window),800,900);
   gtk_window_set_policy(GTK_WINDOW(window), FALSE, TRUE, FALSE);
   gtk_container_set_border_width (GTK_CONTAINER(window),5);
-  info->jdd.dialog = window;
+  newinfo->jdd.dialog = window;
 
 	// Main vbox
 	main_vbox = gtk_vbox_new (FALSE,2);
@@ -1115,79 +1117,79 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   /* Name of the job */
   label = gtk_label_new ("Name:");
   label2 = gtk_label_new (NULL);
-  info->jdd.lname = label2;
+  newinfo->jdd.lname = label2;
   jdd_table_pack (table, label, label2, NULL, 0);
 
   /* Owner */
   label = gtk_label_new ("Owner:");
   label2 = gtk_label_new (NULL);
-  info->jdd.lowner = label2;
+  newinfo->jdd.lowner = label2;
   jdd_table_pack (table, label, label2, NULL, 1);
 
   /* Status */
   label = gtk_label_new ("Status:");
   label2 = gtk_label_new (NULL);
-  info->jdd.lstatus = label2;
+  newinfo->jdd.lstatus = label2;
   jdd_table_pack (table, label, label2, NULL, 2);
 
 
   /* Cmd of the job */
   label = gtk_label_new ("Command:");
   label2 = gtk_label_new (NULL);
-  info->jdd.lcmd = label2;
+  newinfo->jdd.lcmd = label2;
   jdd_table_pack (table, label, label2, NULL, 3);
 
   /* Start and End frames */
   label = gtk_label_new ("Start, end and step frames:");
   label2 = gtk_label_new (NULL);
-  info->jdd.lstartend = label2;
+  newinfo->jdd.lstartend = label2;
   button = gtk_button_new_with_label ("Change");
-  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_sesframes_bcp),info);
+  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_sesframes_bcp),newinfo);
   jdd_table_pack (table, label, label2, button, 4);
   
 
   /* Priority */
   label = gtk_label_new ("Priority:");
   label2 = gtk_label_new (NULL);
-  info->jdd.lpri = label2;
+  newinfo->jdd.lpri = label2;
   button = gtk_button_new_with_label ("Change");
-  gtk_signal_connect (GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_priority_bcp),info);
+  gtk_signal_connect (GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_priority_bcp),newinfo);
   jdd_table_pack (table, label, label2, button, 5);
 
   /* Frames left, done and failed */
   label = gtk_label_new ("Frames running, left, done and failed:");
   label2 = gtk_label_new (NULL);
-  info->jdd.lfrldf = label2;
+  newinfo->jdd.lfrldf = label2;
   jdd_table_pack (table, label, label2, NULL, 6);
 
 	/* Block size */
 	label = gtk_label_new ("Block size:");
 	label2 = gtk_label_new (NULL);
-	info->jdd.lbs = label2;
+	newinfo->jdd.lbs = label2;
 	jdd_table_pack (table, label, label2, NULL, 7);
 
   /* Average time per frame */
   label = gtk_label_new ("Average frame time:");
   label2 = gtk_label_new (NULL);
-  info->jdd.lavgt = label2;
+  newinfo->jdd.lavgt = label2;
   jdd_table_pack (table, label, label2, NULL, 8);
 
   /* Estimated finish time */
   label = gtk_label_new ("Estimated finish time:");
   label2 = gtk_label_new (NULL);
-  info->jdd.lestf = label2;
+  newinfo->jdd.lestf = label2;
   jdd_table_pack (table, label, label2, NULL, 9);
 
   /* KOJ */
-  frame = jdd_koj_widgets (info);
+  frame = jdd_koj_widgets (newinfo);
   gtk_box_pack_start (GTK_BOX(vbox),frame,FALSE,FALSE,2);
 
   /* Limits */
-  frame = jdd_limits_widgets (info);
+  frame = jdd_limits_widgets (newinfo);
   gtk_box_pack_start (GTK_BOX(vbox),frame,FALSE,FALSE,2);
 
   /* Flags */
-  frame = jdd_flags_widgets (info);
+  frame = jdd_flags_widgets (newinfo);
   gtk_box_pack_start (GTK_BOX(vbox),frame,FALSE,FALSE,2);
 
 	// New notebook page
@@ -1202,14 +1204,14 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   gtk_container_add (GTK_CONTAINER(frame),swin);
   clist = CreateFrameInfoClist ();
   gtk_signal_connect(GTK_OBJECT(clist),"click-column",
-		     GTK_SIGNAL_FUNC(jdd_framelist_column_clicked),info);
+		     GTK_SIGNAL_FUNC(jdd_framelist_column_clicked),newinfo);
   gtk_clist_set_selection_mode(GTK_CLIST(clist),GTK_SELECTION_EXTENDED);
   gtk_container_add (GTK_CONTAINER(swin),clist);
-  info->jdd.clist = clist;
+  newinfo->jdd.clist = clist;
 
-  info->jdd.menu = CreateMenuFrames(info);
+  newinfo->jdd.menu = CreateMenuFrames(newinfo);
 
-  if (!jdd_update (window,info)) {
+  if (!jdd_update (window,newinfo)) {
     gtk_widget_destroy (GTK_WIDGET(window));
     return NULL;
   }
@@ -1221,16 +1223,16 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   button = gtk_button_new_with_label ("Stop");
   gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
   g_signal_connect (G_OBJECT(button),"clicked",
-										G_CALLBACK(StopJob),info);
-  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_update),info);
+										G_CALLBACK(StopJob),newinfo);
+  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_update),newinfo);
   gtk_tooltips_set_tip (tooltips,button,"Set the job as 'Stopped' but let the running frames finish",NULL);
 
   /* Hard Stop */
   button = gtk_button_new_with_label ("Hard Stop");
   gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
   g_signal_connect (G_OBJECT(button),"clicked",
-										G_CALLBACK(HStopJob),info);
-  g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(jdd_update),info);
+										G_CALLBACK(HStopJob),newinfo);
+  g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(jdd_update),newinfo);
   gtk_tooltips_set_tip (tooltips,button,"Set the job as 'Stopped' killing all running frames",NULL);
   gtk_widget_set_name (GTK_WIDGET(button),"warning");
 
@@ -1238,15 +1240,14 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   button = gtk_button_new_with_label ("Continue");
   gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
   g_signal_connect (G_OBJECT(button),"clicked",
-										G_CALLBACK(ContinueJob),info);
-  g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(jdd_update),info);
+										G_CALLBACK(ContinueJob),newinfo);
+  g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(jdd_update),newinfo);
   gtk_tooltips_set_tip (tooltips,button,"Set a 'Stopped' job as 'Waiting' again",NULL);
 
   /* Delete */
   button = gtk_button_new_with_label ("Delete");
   gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
-  g_signal_connect (G_OBJECT(button),"clicked",
-										G_CALLBACK(DeleteJob),info);
+  g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(DeleteJob),newinfo);
   gtk_tooltips_set_tip (tooltips,button,"Delete the job from the queue killing running frames",NULL);
   gtk_widget_set_name (GTK_WIDGET(button),"danger");
 
@@ -1255,7 +1256,7 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   /* Button Refresh */
   button = gtk_button_new_with_label ("Refresh");
   gtk_container_border_width (GTK_CONTAINER(button),5);
-  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_update),info);
+  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_update),newinfo);
   gtk_box_pack_start (GTK_BOX(main_vbox),button,FALSE,FALSE,2);
 
   gtk_widget_show_all(window);
@@ -1265,12 +1266,12 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
 
 static void jdd_destroy (GtkWidget *w, struct drqm_jobs_info *info)
 {
-  if (info->jobs[info->row].frame_info) {
-    free (info->jobs[info->row].frame_info);
-    info->jobs[info->row].frame_info = NULL;
+  if (info->jdd.job.frame_info) {
+    g_free (info->jdd.job.frame_info);
+    info->jdd.job.frame_info = NULL;
   }
-  /* This window's information is freed */
-  free (info);
+	
+	g_free (info);
 }
 
 static GtkWidget *CreateFrameInfoClist (void)
@@ -1330,14 +1331,14 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
   nframes = job_nframes (&info->jdd.job);
 
   if (!info->jdd.job.frame_info) {
-    if (!(fi = malloc(sizeof (struct frame_info) * nframes))) {
+    if (!(fi = g_malloc(sizeof (struct frame_info) * nframes))) {
       fprintf (stderr,"Error allocating memory for frame information\n");
       return 0;
     }
 
     if (!request_job_xferfi (info->jdd.job.id,fi,nframes,CLIENT)) {
       fprintf (stderr,"Error request job frame info xfer: %s\n",drerrno_str());
-      free (fi);
+      g_free (fi);
       return 0;
     }
 
@@ -1467,11 +1468,11 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
     /* Set the information for the row */
     rdata = gtk_clist_get_row_data (GTK_CLIST(info->jdd.clist),i);
     if (!rdata) {
-      rdata = malloc (sizeof (*rdata));
+      rdata = g_malloc (sizeof (*rdata));
     }
     rdata->frame = job_frame_index_to_number (&info->jdd.job,i);
     rdata->info = info;
-    gtk_clist_set_row_data_full (GTK_CLIST(info->jdd.clist),i,(gpointer)rdata, free);
+    gtk_clist_set_row_data_full (GTK_CLIST(info->jdd.clist),i,(gpointer)rdata, g_free);
   }
 
   gtk_clist_sort (GTK_CLIST(info->jdd.clist));
@@ -1838,7 +1839,6 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
 
   if (new_koj != info->dnj.koj) {
     if (info->dnj.fkoj) {
-/*        gtk_object_destroy (GTK_OBJECT(info->dnj.fkoj)); */
       gtk_widget_destroy (info->dnj.fkoj);
       info->dnj.fkoj = NULL;
     }
