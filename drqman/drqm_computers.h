@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_computers.h,v 1.3 2001/08/29 15:26:33 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_computers.h,v 1.4 2001/09/07 09:16:51 jorge Exp $
  */
 
 #ifndef _DRQM_COMPUTERS_H
@@ -8,7 +8,7 @@
 #include <gtk/gtk.h>
 #include "libdrqueue.h"
 
-struct info_cdd {		/* computer details dialog */
+struct drqmc_cddi {		/* computer details dialog information */
   GtkWidget *dialog;
   GtkWidget *lname;		/* label name */
   GtkWidget *los;		/* OS */
@@ -22,7 +22,7 @@ struct info_cdd {		/* computer details dialog */
   int selected;			/* if a task. is selected */
 };
 
-struct info_drqm_computers {
+struct drqm_computers_info {
   GtkWidget *clist;		/* main clist */
   gint row, column;
   GtkWidget *menu;		/* Popup menu */
@@ -30,13 +30,13 @@ struct info_drqm_computers {
   uint32_t ncomputers;		/* Number of computers in the list */
   uint32_t icomp;		/* id of the selected computer */
   struct computer *computers;	/* The computer list */
-  struct info_cdd cdd;
+  struct drqmc_cddi cdd;
 };
 
 struct info_drqm;
 
 void CreateComputersPage (GtkWidget *notebook,struct info_drqm *info);
-void drqm_update_computerlist (struct info_drqm_computers *info);
+void drqm_update_computerlist (struct drqm_computers_info *info);
 
 #endif /* _DRQM_COMPUTERS_H */
 
