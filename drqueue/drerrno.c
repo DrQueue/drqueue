@@ -1,4 +1,4 @@
-/* $Id: drerrno.c,v 1.5 2001/08/27 08:14:12 jorge Exp $ */
+/* $Id: drerrno.c,v 1.6 2001/09/02 14:17:19 jorge Exp $ */
 
 #include "drerrno.h"
 #include "constants.h"
@@ -39,6 +39,12 @@ char *drerrno_str (void)
     break;
   case DRE_NOTREGISTERED:
     msg = "Structure (job,computer,task...) not registered";
+    break;
+  case DRE_NOENVMASTER:
+    msg = "Environment variable DRQUEUE_MASTER not set";
+    break;
+  case DRE_NOENVROOT:
+    msg = "Environment variable DRQUEUE_ROOT not set";
     break;
   default:
     msg = "drerrno NOT listed !!";
