@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.21 2001/08/27 21:15:32 jorge Exp $ */
+/* $Id: communications.c,v 1.22 2001/08/28 09:00:15 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -24,14 +24,16 @@ int get_socket (short port)
 {
   int sfd;
   struct sockaddr_in addr;
-  char opt = 1;
+  int opt = 1;
 
   sfd = socket (PF_INET,SOCK_STREAM,0);
   if (sfd == -1) {
     perror ("socket");
     exit (1);
   } else {
-    setsockopt(sfd,SOL_SOCKET,SO_REUSEADDR,(char *)&opt,sizeof(opt));
+    if (setsockopt(sfd,SOL_SOCKET,SO_REUSEADDR,(int *)&opt,sizeof(opt)) == -1) {
+      perror ("setsockopt");
+    }
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
     addr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -174,6 +176,7 @@ void recv_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo,int who)
   }
   /* Now we should have the computer hardware info with the values in */
   /* network byte order, so we put them in host byte order */
+  hwinfo->id = ntohl (hwinfo->id);
   hwinfo->procspeed = ntohl (hwinfo->procspeed);
   hwinfo->numproc = ntohs (hwinfo->numproc);
   hwinfo->speedindex = ntohl (hwinfo->speedindex);
@@ -189,6 +192,7 @@ void send_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo,int who)
   /* We make a copy coz we need to modify the values */
   memcpy (buf,hwinfo,sizeof(bswapped));
   /* Prepare for sending */
+  bswapped.id = htonl (bswapped.id);
   bswapped.procspeed = htonl (bswapped.procspeed);
   bswapped.numproc = htons (bswapped.numproc);
   bswapped.speedindex = htonl (bswapped.speedindex);
