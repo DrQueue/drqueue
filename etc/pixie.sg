@@ -1,0 +1,61 @@
+#
+# THIS IS A TCSH SCRIPT FILE
+# 
+# Default configuration for maya script generator
+# You can set the environment variables here (csh style)
+# setupenv -ver 4.0 maya
+
+#
+# For platform dependend environment setting a form like this
+# can be used :
+#
+#
+# if ($DRQUEUE_OS == "LINUX") then
+#    # Environment for Linux
+# else if ($DRQUEUE_OS == "IRIX") then
+#    # Environment for Irix
+# else
+#    # Some error messages
+# endif
+#
+# The same structure can be used with the Render command
+#
+#
+
+# Begin Script
+
+
+
+if [ $DISP_PROGRESS ]; then
+	progress_args="-progress"
+fi
+
+if [ $DISP_SILENT ]; then
+	silent_args="-silent"
+fi
+
+# if [ $CUSTOM_START_DAEMON ]; then
+#	daemon_args="-d $USERPORT"
+# fi
+#
+# if [ $CUSTOM_USE_DAEMON ]; then
+#	daemon_args="-s $SERVERPORTLIST"
+# fi
+
+echo "rndr -f $FRAME $FRAME $silent_args $progress_args $daemon_args $RIBFILE"
+
+
+rndr -f $FRAME $FRAME $silent_args $progress_args $daemon_args $RIBFILE
+# This should requeue the frame if failed
+if ( $? != 0 ) then
+  echo "Requeueing frame..."
+  kill -INT $$
+else
+  # The frame was rendered properly
+	# We don't know the output image name. If we knew we could set this correctly
+  # chown_block $RF_OWNER $RD/$IMAGE $FRAME $FRAME 
+endif
+
+#
+# Notice that the exit code of the last command is received by DrQueue
+#
