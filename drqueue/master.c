@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.36 2002/02/27 16:36:35 jorge Exp $ */
+/* $Id: master.c,v 1.37 2002/05/17 16:05:57 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -360,7 +360,7 @@ void master_consistency_checks (struct database *wdb)
 
     for (i=0;i<MAXJOBS;i++) {
       if (wdb->job[i].used) {
-	/* In this function we requeue non running frames registered as running */
+	/* In this function will requeue non running frames registered as running */
 	job_update_info (wdb,i);
       }
     }
