@@ -143,7 +143,7 @@ tags:
 	etags *.[ch] drqman/*.[ch]
 
 clean:
-	rm -fR *.o *~ libdrqueue.a slave master sendjob requeue TAGS tmp/* logs/* db/* 
+	rm -fR *.o *~ libdrqueue.a slave master sendjob requeue TAGS tmp/* logs/* db/* bin/*.$(systype)
 	$(MAKE) -C drqman clean
 
 
