@@ -9,11 +9,15 @@ TO DO:
 * limit structures for jobs and computers
 * Negative and backwards frame numbers
 * Master database saved and reloaded from disk
-* Update the r_r_taskfini protocol
+* Update the r_r_taskfini protocol			[DONE]
 * -f to force if shared memory or semaphores exist	[DONE]
 * The slave must check that the requests come from the
   master
-
+* functions that return void in communications should
+  return int. And error checking should be coded 
+  extensively.
+* job permissions.
+* flag on master and slave to set kind of logging.
 
 BUGS:
 ----
@@ -26,7 +30,7 @@ NOTES:
 -----
 
 * The frame number in the task struct is _different_ from iframe in the job handling stuff
-* I should use a dynamically allocated structure for the computers' tasks
+* I should use a dynamically allocated structure for the computers' tasks (or not?)
 
 
 DRQMAN
