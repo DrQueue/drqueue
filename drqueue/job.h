@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.11 2001/07/31 13:08:02 jorge Exp $ */
+/* $Id: job.h,v 1.12 2001/08/07 12:59:24 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -21,8 +21,6 @@ typedef enum {
   JOBSTATUS_WAITING,		/* Waiting to be dispatched */
   JOBSTATUS_ACTIVE,		/* Already dispatched */
   JOBSTATUS_STOPPED,		/* Stopped, waiting for current frames to finish */
-  JOBSTATUS_HSTOPPED,		/* Hard stopped, killing current frames */
-  JOBSTATUS_DELETING,		/* Deleting implies a hard stop and then removing */
   JOBSTATUS_FINISHED
 } t_jobstatus;
 
@@ -78,7 +76,8 @@ void job_delete (struct job *job);
 int job_njobs_masterdb (struct database *wdb);
 void job_update_info (struct database *wdb,uint32_t ijob);
 void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe);
-
+void job_stop (struct job *job);
+void job_continue (struct job *job);
 
 int get_frame_shared_memory (int nframes); /* ipc shared memory */
 void *attach_frame_shared_memory (int shmid);
