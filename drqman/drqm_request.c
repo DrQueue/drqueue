@@ -1,4 +1,4 @@
-/* $Id: drqm_request.c,v 1.12 2001/09/06 14:33:35 jorge Exp $ */
+/* $Id: drqm_request.c,v 1.13 2001/09/06 15:28:57 jorge Exp $ */
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -119,12 +119,7 @@ void clean_computerlist (struct info_drqm_computers *info)
 void drqm_request_job_delete (struct drqm_jobs_info *info)
 {
   /* This function sends the request to delete the job selected from the queue */
-/*    int n; */
-/*    char *buf; */
-
   if (info->njobs) {
-/*      gtk_clist_get_text(GTK_CLIST(info->clist),info->row,0,&buf); */
-/*      n = atoi (buf); */
     request_job_delete ((uint32_t)info->jobs[info->row].id,CLIENT);
   }
 }
@@ -167,3 +162,7 @@ void drqm_request_job_frame_finish (uint32_t jobid,uint32_t frame)
 {
   request_job_frame_finish (jobid,frame,CLIENT);
 }
+
+
+
+
