@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_common.c,v 1.1 2001/09/18 09:24:10 jorge Exp $
+ * $Id: drqm_common.c,v 1.2 2001/09/24 16:10:19 jorge Exp $
  */
 
 #include <gtk/gtk.h>
@@ -45,3 +45,12 @@ GtkWidget *ConfirmDialog (char *text, GList *callbacks, gpointer data)
   return dialog;
 }
 
+GtkTooltips *TooltipsNew (void)
+{
+  GtkTooltips *tooltips;
+
+  tooltips = gtk_tooltips_new ();
+  gtk_tooltips_set_delay (tooltips,TOOLTIPS_DELAY);
+
+  return tooltips;
+}
