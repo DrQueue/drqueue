@@ -1,1317 +1,1640 @@
-------------------------------------------------------------------------
-r705 | jorge | 2004-10-11 11:54:48 +0200 (Mon, 11 Oct 2004) | 1 line
+2004-10-11 10:54:44  Rev 707    jorge
 
-Declaration and include missing.
-------------------------------------------------------------------------
-r704 | jorge | 2004-10-11 11:51:13 +0200 (Mon, 11 Oct 2004) | 1 line
+	* Revision:
+	  Added Revision
 
-New release candidate
-------------------------------------------------------------------------
-r703 | jorge | 2004-10-11 10:45:29 +0200 (Mon, 11 Oct 2004) | 1 line
+2004-10-11 10:53:04  Rev 706    jorge
 
-Basic checks before removing directory.
-------------------------------------------------------------------------
-r702 | jorge | 2004-10-11 10:25:18 +0200 (Mon, 11 Oct 2004) | 1 line
+	* ChangeLog:
+	  ChangeLog added
 
-FreeBSD compilation bug solved
-------------------------------------------------------------------------
-r701 | jorge | 2004-10-10 19:08:18 +0200 (Sun, 10 Oct 2004) | 1 line
+2004-10-11 09:54:48  Rev 705    jorge
 
-Added keywords to drqman
-------------------------------------------------------------------------
-r700 | jorge | 2004-10-10 19:07:59 +0200 (Sun, 10 Oct 2004) | 1 line
+	* common.c common.h:
+	  Declaration and include missing.
 
-Added keywords to drqman
-------------------------------------------------------------------------
-r698 | jorge | 2004-10-10 19:01:07 +0200 (Sun, 10 Oct 2004) | 1 line
+2004-10-11 09:51:13  Rev 704    jorge
 
-New version
-------------------------------------------------------------------------
-r697 | jorge | 2004-10-10 18:59:25 +0200 (Sun, 10 Oct 2004) | 1 line
+	* common.h:
+	  New release candidate
 
-Updated ConfirmDialog stuff
-------------------------------------------------------------------------
-r696 | jorge | 2004-10-10 18:55:22 +0200 (Sun, 10 Oct 2004) | 1 line
+2004-10-11 08:45:29  Rev 703    jorge
 
-Solved bug of non-refreshing main window, when then job is hard-stopped
-------------------------------------------------------------------------
-r695 | jorge | 2004-10-10 18:15:35 +0200 (Sun, 10 Oct 2004) | 1 line
+	* common.c:
+	  Basic checks before removing directory.
 
-Solved bug of non-closing job details window
-------------------------------------------------------------------------
-r694 | jorge | 2004-10-10 18:00:53 +0200 (Sun, 10 Oct 2004) | 1 line
+2004-10-11 08:25:18  Rev 702    jorge
 
-Solved problem in the job details window.
-------------------------------------------------------------------------
-r693 | jorge | 2004-10-10 17:40:41 +0200 (Sun, 10 Oct 2004) | 1 line
+	* job.c:
+	  FreeBSD compilation bug solved
 
-TODO updated
-------------------------------------------------------------------------
-r692 | jorge | 2004-10-10 14:55:30 +0200 (Sun, 10 Oct 2004) | 1 line
+2004-10-10 17:08:18  Rev 701    jorge
 
-Added keywords, that were lost on cvs2svn
-------------------------------------------------------------------------
-r691 | jorge | 2004-10-10 14:04:11 +0200 (Sun, 10 Oct 2004) | 2 lines
+	* drqman/Makefile:
+	  Added keywords to drqman
 
-todo changed to TODO
+2004-10-10 17:07:59  Rev 700    jorge
 
-------------------------------------------------------------------------
-r689 | jorge | 2004-10-10 05:02:15 +0200 (Sun, 10 Oct 2004) | 1 line
+	* drqman/drqm_jobs_blender.h drqman/drqm_jobs.c drqman/drqm_common.h 
+	  drqman/drqm_request.h drqman/notebook.c drqman/drqm_jobs_pixie.h 
+	  drqman/drqm_info.h drqman/main.c drqman/drqm_jobs.h 
+	  drqman/notebook.h drqman/drqm_jobs_maya.c drqman/drqman.h 
+	  drqman/drqm_jobs_maya.h drqman/drqm_jobs_bmrt.c 
+	  drqman/drqm_computers.c drqman/drqm_jobs_bmrt.h 
+	  drqman/drqm_computers.h drqman/drqm_jobs_blender.c 
+	  drqman/drqm_common.c drqman/drqm_request.c drqman/drqm_jobs_pixie.
+	  c drqman/drqm_info.c:
+	  Added keywords to drqman
 
-svn test
-------------------------------------------------------------------------
-r688 | jorge | 2004-10-09 23:21:01 +0200 (Sat, 09 Oct 2004) | 2 lines
+2004-10-10 17:01:07  Rev 698    jorge
 
-Bug 0000002 solved. Thanks to Shawn Parr.
+	* common.h:
+	  New version
 
-------------------------------------------------------------------------
-r687 | jorge | 2004-10-09 21:34:29 +0200 (Sat, 09 Oct 2004) | 2 lines
+2004-10-10 16:59:25  Rev 697    jorge
 
-Bug 0000001 solved.
+	* drqman/drqm_computers.c:
+	  Updated ConfirmDialog stuff
 
-------------------------------------------------------------------------
-r685 | jorge | 2004-10-09 07:50:13 +0200 (Sat, 09 Oct 2004) | 2 lines
+2004-10-10 16:55:22  Rev 696    jorge
 
-Added -t blender
+	* drqman/drqm_common.h drqman/drqm_jobs.c drqman/drqm_common.c:
+	  Solved bug of non-refreshing main window, when then job is hard-stopped
 
-------------------------------------------------------------------------
-r684 | jorge | 2004-10-09 07:22:02 +0200 (Sat, 09 Oct 2004) | 2 lines
+2004-10-10 16:15:35  Rev 695    jorge
 
-Updated Makefile
+	* drqman/drqm_jobs.c:
+	  Solved bug of non-closing job details window
 
-------------------------------------------------------------------------
-r683 | jorge | 2004-10-09 07:21:43 +0200 (Sat, 09 Oct 2004) | 2 lines
+2004-10-10 16:00:53  Rev 694    jorge
 
-New sendjob supporting Maya and Blender
+	* drqman/drqm_jobs.c:
+	  Solved problem in the job details window.
 
-------------------------------------------------------------------------
-r682 | jorge | 2004-10-09 06:50:37 +0200 (Sat, 09 Oct 2004) | 2 lines
+2004-10-10 15:40:41  Rev 693    jorge
 
-Added sendjob.blender.py
+	* TODO:
+	  TODO updated
 
-------------------------------------------------------------------------
-r681 | jorge | 2004-10-09 06:42:58 +0200 (Sat, 09 Oct 2004) | 2 lines
+2004-10-10 12:55:30  Rev 692    jorge
 
-Bugfix
+	* task.c database.c drqman/drqm_jobs_pixie.h task.h database.h 
+	  drqman/Makefile mayasg.c mayasg.h drqman/drqm_jobs_bmrt.c common.c 
+	  drqman/drqm_jobs_bmrt.h common.h computer.c bmrtsg.c 
+	  computer_status.c computer.h bmrtsg.h semaphores.c computer_status.
+	  h semaphores.h drerrno.c drerrno.h Makefile drqman/drqm_request.c 
+	  drqman/drqm_info.c drqman/notebook.c drqman/drqm_request.h 
+	  drqman/drqm_info.h drqman/notebook.h pixiesg.c drqman/drqman.h 
+	  drqman/drqm_jobs_maya.c slave.c job.c requeue.c pixiesg.h 
+	  drqman/drqm_jobs_maya.h slave.h job.h drqman/drqm_computers.c 
+	  request.c communications.c sendjob.h request_errors.h master.c 
+	  drqman/drqm_computers.h request.h communications.h 
+	  drqman/drqm_common.c drqman/drqm_jobs_blender.c master.h 
+	  drqman/drqm_common.h drqman/drqm_jobs.c drqman/drqm_jobs_blender.h 
+	  blendersg.c libdrqueue.h drqman/main.c drqman/drqm_jobs.h 
+	  computer_info.c request_codes.h blendersg.h computer_info.h logger.
+	  c constants.h logger.h drqman/drqm_jobs_pixie.c:
+	  Added keywords, that were lost on cvs2svn
 
-------------------------------------------------------------------------
-r680 | jorge | 2004-10-09 05:44:29 +0200 (Sat, 09 Oct 2004) | 2 lines
+2004-10-10 12:04:11  Rev 691    jorge
 
-Minor bug
+	* TODO todo:
+	  todo changed to TODO
 
-------------------------------------------------------------------------
-r679 | jorge | 2004-10-09 05:42:36 +0200 (Sat, 09 Oct 2004) | 2 lines
 
-Added Darwin_install, not tested yet
+2004-10-10 03:02:15  Rev 689    jorge
 
-------------------------------------------------------------------------
-r678 | jorge | 2004-10-09 05:39:25 +0200 (Sat, 09 Oct 2004) | 2 lines
+	* Makefile:
+	  svn test
 
-Updated Linux_install
+2004-10-09 21:21:01  Rev 688    jorge
 
-------------------------------------------------------------------------
-r677 | jorge | 2004-10-09 05:31:30 +0200 (Sat, 09 Oct 2004) | 2 lines
+	* etc/maya.sg:
+	  Bug 0000002 solved. Thanks to Shawn Parr.
 
-Added Opteron
 
-------------------------------------------------------------------------
-r675 | jorge | 2004-10-06 18:34:12 +0200 (Wed, 06 Oct 2004) | 2 lines
+2004-10-09 19:34:29  Rev 687    jorge
 
-Theodore, you deser much more. Thanks a lot
+	* etc/maya.sg:
+	  Bug 0000001 solved.
 
-------------------------------------------------------------------------
-r674 | jorge | 2004-10-06 18:33:17 +0200 (Wed, 06 Oct 2004) | 2 lines
 
-Small bug in INSTGID line
+2004-10-09 05:50:13  Rev 685    jorge
 
-------------------------------------------------------------------------
-r673 | jorge | 2004-10-06 18:26:53 +0200 (Wed, 06 Oct 2004) | 2 lines
+	* contrib/sendjob.blender.py Makefile:
+	  Added -t blender
 
-sendjob compiling bugs solved
 
-------------------------------------------------------------------------
-r672 | jorge | 2004-10-06 18:16:57 +0200 (Wed, 06 Oct 2004) | 2 lines
+2004-10-09 05:22:02  Rev 684    jorge
 
-More FreeBSD related changes
+	* Makefile:
+	  Updated Makefile
 
-------------------------------------------------------------------------
-r671 | jorge | 2004-10-06 15:56:02 +0200 (Wed, 06 Oct 2004) | 2 lines
 
-Total frame number bug: seems solved
+2004-10-09 05:21:43  Rev 683    jorge
 
-------------------------------------------------------------------------
-r670 | jorge | 2004-04-26 18:25:51 +0200 (Mon, 26 Apr 2004) | 2 lines
+	* sendjob.cpp sendjob.h:
+	  New sendjob supporting Maya and Blender
 
-Changes made by Theodore Schundler
 
-------------------------------------------------------------------------
-r669 | jorge | 2004-04-23 22:40:52 +0200 (Fri, 23 Apr 2004) | 2 lines
+2004-10-09 04:50:37  Rev 682    jorge
 
-Preliminary aqsis.sg
+	* contrib/sendjob.blender.py Makefile contrib:
+	  Added sendjob.blender.py
 
-------------------------------------------------------------------------
-r668 | jorge | 2004-04-23 22:40:26 +0200 (Fri, 23 Apr 2004) | 2 lines
 
-Minor correction. Changed Maya to Pixie.
+2004-10-09 04:42:58  Rev 681    jorge
 
-------------------------------------------------------------------------
-r665 | jorge | 2004-04-23 20:56:16 +0200 (Fri, 23 Apr 2004) | 2 lines
+	* drqman/drqm_jobs.c:
+	  Bugfix
 
-Goran Kocov added to credits
 
-------------------------------------------------------------------------
-r664 | jorge | 2004-04-23 18:56:28 +0200 (Fri, 23 Apr 2004) | 2 lines
+2004-10-09 03:44:29  Rev 680    jorge
 
-New release
+	* Makefile:
+	  Minor bug
 
-------------------------------------------------------------------------
-r663 | jorge | 2004-03-16 00:45:40 +0100 (Tue, 16 Mar 2004) | 2 lines
 
-Step frame bug solved
+2004-10-09 03:42:36  Rev 679    jorge
 
-------------------------------------------------------------------------
-r662 | jorge | 2004-03-09 19:54:29 +0100 (Tue, 09 Mar 2004) | 2 lines
+	* Makefile:
+	  Added Darwin_install, not tested yet
 
-Added Pixie support
 
-------------------------------------------------------------------------
-r661 | jorge | 2004-03-09 19:53:22 +0100 (Tue, 09 Mar 2004) | 2 lines
+2004-10-09 03:39:25  Rev 678    jorge
 
-Added pixie support. Added checkbox for OSX.
+	* Makefile:
+	  Updated Linux_install
 
-------------------------------------------------------------------------
-r659 | jorge | 2004-02-24 11:39:28 +0100 (Tue, 24 Feb 2004) | 2 lines
 
-Mac OS X bug with unwaited children solved
+2004-10-09 03:31:30  Rev 677    jorge
 
-------------------------------------------------------------------------
-r658 | jorge | 2004-02-21 00:24:53 +0100 (Sat, 21 Feb 2004) | 2 lines
+	* computer_info.c computer_info.h:
+	  Added Opteron
 
-New release
 
-------------------------------------------------------------------------
-r657 | jorge | 2004-02-21 00:24:23 +0100 (Sat, 21 Feb 2004) | 2 lines
+2004-10-06 16:34:12  Rev 675    jorge
 
-Bug of Mac OS X forking problem solved
+	* todo CREDITS:
+	  Theodore, you deser much more. Thanks a lot
 
-------------------------------------------------------------------------
-r655 | jorge | 2004-01-24 01:21:09 +0100 (Sat, 24 Jan 2004) | 2 lines
 
-New version release
+2004-10-06 16:33:17  Rev 674    jorge
 
-------------------------------------------------------------------------
-r654 | jorge | 2004-01-24 01:19:08 +0100 (Sat, 24 Jan 2004) | 2 lines
+	* Makefile:
+	  Small bug in INSTGID line
 
-Working on Mac OSX
 
-------------------------------------------------------------------------
-r653 | jorge | 2004-01-23 04:28:00 +0100 (Fri, 23 Jan 2004) | 2 lines
+2004-10-06 16:26:53  Rev 673    jorge
 
-Preliminary OSX support
+	* sendjob.cpp sendjob.h Makefile:
+	  sendjob compiling bugs solved
 
-------------------------------------------------------------------------
-r652 | jorge | 2004-01-22 18:48:24 +0100 (Thu, 22 Jan 2004) | 2 lines
 
-Working on OSX port.
+2004-10-06 16:16:57  Rev 672    jorge
 
-------------------------------------------------------------------------
-r650 | jorge | 2004-01-16 01:17:37 +0100 (Fri, 16 Jan 2004) | 2 lines
+	* drqman/drqm_jobs.c drqman/drqm_jobs.h computer_info.c job.c job.h:
+	  More FreeBSD related changes
 
-New release
 
-------------------------------------------------------------------------
-r648 | jorge | 2004-01-07 22:50:21 +0100 (Wed, 07 Jan 2004) | 2 lines
+2004-10-06 13:56:02  Rev 671    jorge
 
-No more unnecesary delays
+	* todo job.c:
+	  Total frame number bug: seems solved
 
-------------------------------------------------------------------------
-r647 | jorge | 2004-01-07 19:18:00 +0100 (Wed, 07 Jan 2004) | 2 lines
 
-Added thanks to Marco Gaib
+2004-04-26 16:25:51  Rev 670    jorge
 
-------------------------------------------------------------------------
-r645 | jorge | 2003-12-24 12:29:23 +0100 (Wed, 24 Dec 2003) | 2 lines
+	* task.c bin/requeue bmrtsg.h etc/3delight.sg blendersg.c 
+	  computer_status.h etc/bmrt.sg task.h computer_info.c slave.c job.c 
+	  bin/sendjob etc/blender.sg computer_info.h drqman/Makefile job.h 
+	  mayasg.c bin/master communications.c request.c etc/maya.sg master.
+	  c Makefile request.h common.h bmrtsg.c computer.c bin/slave 
+	  computer_status.c:
+	  Changes made by Theodore Schundler
 
-New release
 
-------------------------------------------------------------------------
-r644 | jorge | 2003-12-24 12:00:49 +0100 (Wed, 24 Dec 2003) | 2 lines
+2004-04-23 20:40:52  Rev 669    jorge
 
-Minor change: CopyJob_CloneInfo caused some error messages
+	* etc/aqsis.sg:
+	  Preliminary aqsis.sg
 
-------------------------------------------------------------------------
-r643 | jorge | 2003-12-24 11:33:31 +0100 (Wed, 24 Dec 2003) | 2 lines
 
-Now CopyJobs also copies the priority settings
+2004-04-23 20:40:26  Rev 668    jorge
 
-------------------------------------------------------------------------
-r641 | jorge | 2003-12-24 10:36:50 +0100 (Wed, 24 Dec 2003) | 2 lines
+	* etc/pixie.sg:
+	  Minor correction. Changed Maya to Pixie.
 
-New release
 
-------------------------------------------------------------------------
-r640 | jorge | 2003-12-22 23:38:58 +0100 (Mon, 22 Dec 2003) | 2 lines
+2004-04-23 18:56:16  Rev 665    jorge
 
-Added jdd koj Bmrt details.
+	* CREDITS:
+	  Goran Kocov added to credits
 
-------------------------------------------------------------------------
-r639 | jorge | 2003-12-20 14:08:35 +0100 (Sat, 20 Dec 2003) | 2 lines
 
-Added bmrt koj support on send_job and recv_job.
+2004-04-23 16:56:28  Rev 664    jorge
 
-------------------------------------------------------------------------
-r637 | jorge | 2003-12-19 18:50:30 +0100 (Fri, 19 Dec 2003) | 2 lines
+	* common.h:
+	  New release
 
-New release
 
-------------------------------------------------------------------------
-r636 | jorge | 2003-12-19 18:42:37 +0100 (Fri, 19 Dec 2003) | 2 lines
+2004-03-15 23:45:40  Rev 663    jorge
 
-Bug fixes
+	* job.c CREDITS Makefile:
+	  Step frame bug solved
 
-------------------------------------------------------------------------
-r635 | jorge | 2003-12-19 18:26:23 +0100 (Fri, 19 Dec 2003) | 2 lines
 
-Changed drqman to gtk+-2.0
+2004-03-09 18:54:29  Rev 662    jorge
 
-------------------------------------------------------------------------
-r634 | jorge | 2003-12-19 02:34:24 +0100 (Fri, 19 Dec 2003) | 2 lines
+	* drqman/drqm_jobs_pixie.h pixiesg.c pixiesg.h 
+	  drqman/drqm_jobs_pixie.c:
+	  Added Pixie support
 
-Added CREDITS
 
-------------------------------------------------------------------------
-r633 | jorge | 2003-12-19 01:08:34 +0100 (Fri, 19 Dec 2003) | 2 lines
+2004-03-09 18:53:22  Rev 661    jorge
 
-Segmentation fault bug fix on jdd sort functions
+	* drqman/drqm_jobs.c libdrqueue.h drqman/drqm_jobs.h job.c Makefile 
+	  drqman/Makefile job.h etc/pixie.sg:
+	  Added pixie support. Added checkbox for OSX.
 
-------------------------------------------------------------------------
-r631 | jorge | 2003-12-19 00:08:58 +0100 (Fri, 19 Dec 2003) | 2 lines
 
-More bug fixes
+2004-02-24 10:39:28  Rev 659    jorge
 
-------------------------------------------------------------------------
-r630 | jorge | 2003-12-18 22:52:41 +0100 (Thu, 18 Dec 2003) | 2 lines
+	* slave.c:
+	  Mac OS X bug with unwaited children solved
 
-Bug fix. Added case statement
 
-------------------------------------------------------------------------
-r629 | jorge | 2003-12-18 22:38:32 +0100 (Thu, 18 Dec 2003) | 2 lines
+2004-02-20 23:24:53  Rev 658    jorge
 
-Bug fixes
+	* common.h:
+	  New release
 
-------------------------------------------------------------------------
-r628 | jorge | 2003-12-18 22:11:44 +0100 (Thu, 18 Dec 2003) | 2 lines
 
-Bug fixes
+2004-02-20 23:24:23  Rev 657    jorge
 
-------------------------------------------------------------------------
-r627 | jorge | 2003-12-18 21:40:35 +0100 (Thu, 18 Dec 2003) | 2 lines
+	* slave.c:
+	  Bug of Mac OS X forking problem solved
 
-New release v0.43
 
-------------------------------------------------------------------------
-r626 | jorge | 2003-12-18 21:39:41 +0100 (Thu, 18 Dec 2003) | 2 lines
+2004-01-24 00:21:09  Rev 655    jorge
 
-First commit with support for bmrt
+	* common.h:
+	  New version release
 
-------------------------------------------------------------------------
-r625 | jorge | 2003-12-18 05:31:15 +0100 (Thu, 18 Dec 2003) | 2 lines
 
-Added tooltip for block size entry on the new job dialog
+2004-01-24 00:19:08  Rev 654    jorge
 
-------------------------------------------------------------------------
-r624 | jorge | 2003-12-18 05:13:22 +0100 (Thu, 18 Dec 2003) | 2 lines
+	* computer.h drqman/Makefile:
+	  Working on Mac OSX
 
-Updated version
 
-------------------------------------------------------------------------
-r622 | jorge | 2003-12-18 05:11:07 +0100 (Thu, 18 Dec 2003) | 2 lines
+2004-01-23 03:28:00  Rev 653    jorge
 
-Only two kind of jobs, with block size
+	* semaphores.c communications.c request.c computer_info.c master.c 
+	  computer.c computer_info.h computer_status.c:
+	  Preliminary OSX support
 
-------------------------------------------------------------------------
-r621 | jorge | 2003-12-18 02:27:01 +0100 (Thu, 18 Dec 2003) | 2 lines
 
-Added .sg files for bmrt, 3delight and pixie
+2004-01-22 17:48:24  Rev 652    jorge
 
-------------------------------------------------------------------------
-r620 | jorge | 2003-12-15 23:19:25 +0100 (Mon, 15 Dec 2003) | 2 lines
+	* bmrtsg.h computer_status.h task.h computer_info.c slave.c Makefile 
+	  request.h common.h computer_info.h job.h:
+	  Working on OSX port.
 
-Added License file
 
-------------------------------------------------------------------------
-r618 | jorge | 2003-12-15 23:18:32 +0100 (Mon, 15 Dec 2003) | 2 lines
+2004-01-16 00:17:37  Rev 650    jorge
 
-Added Blender support
+	* Makefile common.h:
+	  New release
 
-------------------------------------------------------------------------
-r617 | jorge | 2002-12-02 23:42:25 +0100 (Mon, 02 Dec 2002) | 2 lines
 
-Added parameters
+2004-01-07 21:50:21  Rev 648    jorge
 
-------------------------------------------------------------------------
-r616 | jorge | 2002-12-02 23:24:08 +0100 (Mon, 02 Dec 2002) | 2 lines
+	* libdrqueue.h request.c request_codes.h slave.c job.c master.c 
+	  request.h common.h computer.c slave.h job.h master.h:
+	  No more unnecesary delays
 
-Lots of changes
 
-------------------------------------------------------------------------
-r615 | jorge | 2002-09-22 21:12:03 +0200 (Sun, 22 Sep 2002) | 2 lines
+2004-01-07 18:18:00  Rev 647    jorge
 
-Added to repository
+	* CREDITS:
+	  Added thanks to Marco Gaib
 
-------------------------------------------------------------------------
-r614 | jorge | 2002-09-22 21:10:24 +0200 (Sun, 22 Sep 2002) | 2 lines
 
-Updates
+2003-12-24 11:29:23  Rev 645    jorge
 
-------------------------------------------------------------------------
-r612 | jorge | 2002-08-04 23:30:01 +0200 (Sun, 04 Aug 2002) | 2 lines
+	* common.h:
+	  New release
 
-Redeclaration problem with KEY solved
 
-------------------------------------------------------------------------
-r611 | jorge | 2002-08-04 23:20:23 +0200 (Sun, 04 Aug 2002) | 2 lines
+2003-12-24 11:00:49  Rev 644    jorge
 
-Solved bug that caused segmentation faults when changing the KOJ in DNJ.
+	* drqman/drqm_jobs.c:
+	  Minor change: CopyJob_CloneInfo caused some error messages
 
-------------------------------------------------------------------------
-r610 | jorge | 2002-08-04 23:19:36 +0200 (Sun, 04 Aug 2002) | 2 lines
 
-Key file defined as constant.
+2003-12-24 10:33:31  Rev 643    jorge
 
-------------------------------------------------------------------------
-r609 | jorge | 2002-08-02 19:42:24 +0200 (Fri, 02 Aug 2002) | 2 lines
+	* drqman/drqm_jobs.c:
+	  Now CopyJobs also copies the priority settings
 
-Requeueing enabled
 
-------------------------------------------------------------------------
-r608 | jorge | 2002-08-02 19:41:32 +0200 (Fri, 02 Aug 2002) | 2 lines
+2003-12-24 09:36:50  Rev 641    jorge
 
-New version
+	* common.h:
+	  New release
 
-------------------------------------------------------------------------
-r607 | jorge | 2002-08-02 19:40:21 +0200 (Fri, 02 Aug 2002) | 2 lines
 
-Minor changes
+2003-12-22 22:38:58  Rev 640    jorge
 
-------------------------------------------------------------------------
-r606 | jorge | 2002-07-23 15:03:53 +0200 (Tue, 23 Jul 2002) | 3 lines
+	* drqman/drqm_jobs_bmrt.c:
+	  Added jdd koj Bmrt details.
 
-Support for file owner setting on GUI.
+
+2003-12-20 13:08:35  Rev 639    jorge
+
+	* communications.c:
+	  Added bmrt koj support on send_job and recv_job.
+
+
+2003-12-19 17:50:30  Rev 637    jorge
+
+	* common.h:
+	  New release
+
+
+2003-12-19 17:42:37  Rev 636    jorge
+
+	* drqman/drqm_jobs_bmrt.c drqman/drqm_jobs_maya.c 
+	  drqman/drqm_jobs_blender.c:
+	  Bug fixes
+
+
+2003-12-19 17:26:23  Rev 635    jorge
+
+	* drqman/drqm_jobs.c drqman/drqm_computers.c Makefile drqman/Makefile:
+	  Changed drqman to gtk+-2.0
+
+
+2003-12-19 01:34:24  Rev 634    jorge
+
+	* CREDITS:
+	  Added CREDITS
+
+
+2003-12-19 00:08:34  Rev 633    jorge
+
+	* drqman/drqm_jobs.c:
+	  Segmentation fault bug fix on jdd sort functions
+
+
+2003-12-18 23:08:58  Rev 631    jorge
+
+	* drqman/drqm_jobs.c job.c:
+	  More bug fixes
+
+
+2003-12-18 21:52:41  Rev 630    jorge
+
+	* etc/bmrt.sg:
+	  Bug fix. Added case statement
+
+
+2003-12-18 21:38:32  Rev 629    jorge
+
+	* drqman/drqm_jobs.c drqman/drqm_jobs_bmrt.c:
+	  Bug fixes
+
+
+2003-12-18 21:11:44  Rev 628    jorge
+
+	* drqman/drqm_jobs_bmrt.c etc/bmrt.sg etc/maya.sg job.c:
+	  Bug fixes
+
+
+2003-12-18 20:40:35  Rev 627    jorge
+
+	* common.h:
+	  New release v0.43
+
+
+2003-12-18 20:39:41  Rev 626    jorge
+
+	* drqman/drqm_jobs.c bmrtsg.h drqman/drqm_jobs_bmrt.c mayasg.h 
+	  libdrqueue.h etc/bmrt.sg drqman/drqm_jobs.h blendersg.h job.c 
+	  drqman/drqm_jobs_bmrt.h Makefile bmrtsg.c drqman/Makefile job.h 
+	  mayasg.c:
+	  First commit with support for bmrt
+
+
+2003-12-18 04:31:15  Rev 625    jorge
+
+	* drqman/drqm_jobs.c:
+	  Added tooltip for block size entry on the new job dialog
+
+
+2003-12-18 04:13:22  Rev 624    jorge
+
+	* common.h:
+	  Updated version
+
+
+2003-12-18 04:11:07  Rev 622    jorge
+
+	* task.c drqman/drqm_jobs_blender.h drqman/drqm_jobs.c etc/mayablock.
+	  sg drqman/drqm_jobs.h task.h drqman/drqm_jobs_maya.c slave.c job.c 
+	  etc/blender.sg drqman/Makefile drqman/drqm_jobs_maya.h job.h todo 
+	  communications.c request.c etc/blenderblock.sg etc/maya.sg 
+	  Makefile drqman/drqm_jobs_blender.c computer.c drqman/drqm_info.c:
+	  Only two kind of jobs, with block size
+
+
+2003-12-18 01:27:01  Rev 621    jorge
+
+	* etc/3delight.sg etc/bmrt.sg etc/pixie.sg:
+	  Added .sg files for bmrt, 3delight and pixie
+
+
+2003-12-15 22:19:25  Rev 620    jorge
+
+	* LICENSE:
+	  Added License file
+
+
+2003-12-15 22:18:32  Rev 618    jorge
+
+	* drqman/drqm_jobs.c computer.h blendersg.c libdrqueue.h 
+	  drqman/drqm_jobs.h job.c blendersg.h etc/blender.sg job.h setenv 
+	  drqman/eeelogo.xpm sendjob.cpp common.c etc/blenderblock.sg 
+	  Makefile computer.c drqman/drqm_info.c:
+	  Added Blender support
+
+
+2002-12-02 22:42:25  Rev 617    jorge
+
+	* bin/slave:
+	  Added parameters
+
+
+2002-12-02 22:24:08  Rev 616    jorge
+
+	* task.c drqman/drqm_jobs.c sendjob.cpp sendjob.c drqman/drqm_jobs.h 
+	  communications.c etc/maya.sg job.c drerrno.c job.h drerrno.h:
+	  Lots of changes
+
+
+2002-09-22 19:12:03  Rev 615    jorge
+
+	* bin/slasher.pl sendjob.cpp bin/poolcheck.pl bin/sendjob:
+	  Added to repository
+
+
+2002-09-22 19:10:24  Rev 614    jorge
+
+	* drqman/drqm_jobs.c mayasg.h etc/maya.sg sendjob.h Makefile request.
+	  h mayasg.c:
+	  Updates
+
+
+2002-08-04 21:30:01  Rev 612    jorge
+
+	* slave.c master.c slave.h master.h:
+	  Redeclaration problem with KEY solved
+
+
+2002-08-04 21:20:23  Rev 611    jorge
+
+	* drqman/drqm_jobs.c:
+	  Solved bug that caused segmentation faults when changing the KOJ in DNJ.
+
+
+2002-08-04 21:19:36  Rev 610    jorge
+
+	* slave.c master.c slave.h master.h:
+	  Key file defined as constant.
+
+
+2002-08-02 17:42:24  Rev 609    jorge
+
+	* etc/mayablock.sg etc/maya.sg:
+	  Requeueing enabled
+
+
+2002-08-02 17:41:32  Rev 608    jorge
+
+	* common.h:
+	  New version
+
+
+2002-08-02 17:40:21  Rev 607    jorge
+
+	* drqman/drqm_jobs.c etc/mayablock.sg mayasg.h drqman/drqm_jobs.h 
+	  etc/maya.sg mayasg.c:
+	  Minor changes
+
+
+2002-07-23 13:03:53  Rev 606    jorge
+
+	* drqman/drqm_jobs.c:
+	  Support for file owner setting on GUI.
 Solved bug that caused frames not to be requeued.
 
-------------------------------------------------------------------------
-r605 | jorge | 2002-07-01 14:47:53 +0200 (Mon, 01 Jul 2002) | 2 lines
 
-Restart of slaves after death.
+2002-07-01 12:47:53  Rev 605    jorge
 
-------------------------------------------------------------------------
-r603 | jorge | 2002-06-27 11:47:59 +0200 (Thu, 27 Jun 2002) | 2 lines
+	* bin/slave:
+	  Restart of slaves after death.
 
-Now works...
 
-------------------------------------------------------------------------
-r602 | jorge | 2002-06-27 11:23:53 +0200 (Thu, 27 Jun 2002) | 2 lines
+2002-06-27 09:47:59  Rev 603    jorge
 
-New version.
+	* bin/chown_block:
+	  Now works...
 
-------------------------------------------------------------------------
-r601 | jorge | 2002-06-27 11:23:30 +0200 (Thu, 27 Jun 2002) | 2 lines
 
-Bug in send_task, recv_task solved.
+2002-06-27 09:23:53  Rev 602    jorge
 
-------------------------------------------------------------------------
-r600 | jorge | 2002-06-27 11:22:51 +0200 (Thu, 27 Jun 2002) | 2 lines
+	* common.h:
+	  New version.
 
-A small change; more verbose on failure.
 
-------------------------------------------------------------------------
-r599 | jorge | 2002-06-27 11:22:07 +0200 (Thu, 27 Jun 2002) | 2 lines
+2002-06-27 09:23:30  Rev 601    jorge
 
-Bbug in requeueing fixed.
+	* communications.c:
+	  Bug in send_task, recv_task solved.
 
-------------------------------------------------------------------------
-r598 | jorge | 2002-06-26 19:22:29 +0200 (Wed, 26 Jun 2002) | 2 lines
 
-Bug not solved. Working on it.
+2002-06-27 09:22:51  Rev 600    jorge
 
-------------------------------------------------------------------------
-r596 | jorge | 2002-06-26 15:34:38 +0200 (Wed, 26 Jun 2002) | 2 lines
+	* drqman/drqm_request.c:
+	  A small change; more verbose on failure.
 
-Updated version number
 
-------------------------------------------------------------------------
-r595 | jorge | 2002-06-26 15:33:55 +0200 (Wed, 26 Jun 2002) | 2 lines
+2002-06-27 09:22:07  Rev 599    jorge
 
-There were some problems with drqman (segmentation faults) when starting. I tried to solve it by making a clearer trasnmission of the header of the computer_status.
+	* etc/mayablock.sg etc/maya.sg:
+	  Bbug in requeueing fixed.
 
-------------------------------------------------------------------------
-r594 | jorge | 2002-06-26 15:32:23 +0200 (Wed, 26 Jun 2002) | 2 lines
 
-Added setting the owners of the rendered files as requested.
+2002-06-26 17:22:29  Rev 598    jorge
 
-------------------------------------------------------------------------
-r593 | jorge | 2002-06-26 15:31:12 +0200 (Wed, 26 Jun 2002) | 2 lines
+	* setenv request.c communications.c drqman/Makefile:
+	  Bug not solved. Working on it.
 
-Master moved to webster.
 
-------------------------------------------------------------------------
-r592 | jorge | 2002-06-26 15:31:00 +0200 (Wed, 26 Jun 2002) | 2 lines
+2002-06-26 13:34:38  Rev 596    jorge
 
-Added chown_block to the linux_install target.
+	* common.h:
+	  Updated version number
 
-------------------------------------------------------------------------
-r591 | jorge | 2002-06-26 15:30:30 +0200 (Wed, 26 Jun 2002) | 2 lines
 
-New version number.
+2002-06-26 13:33:55  Rev 595    jorge
 
-------------------------------------------------------------------------
-r589 | jorge | 2002-06-26 15:29:43 +0200 (Wed, 26 Jun 2002) | 2 lines
+	* communications.c communications.h:
+	  There were some problems with drqman (segmentation faults) when starting. I tried to solve it by making a clearer trasnmission of the header of the computer_status.
 
-Added to repo
 
-------------------------------------------------------------------------
-r588 | jorge | 2002-06-25 18:14:54 +0200 (Tue, 25 Jun 2002) | 2 lines
+2002-06-26 13:32:23  Rev 594    jorge
 
-More comments
+	* etc/maya.sg:
+	  Added setting the owners of the rendered files as requested.
 
-------------------------------------------------------------------------
-r587 | jorge | 2002-06-25 18:11:29 +0200 (Tue, 25 Jun 2002) | 2 lines
 
-Working.
+2002-06-26 13:31:12  Rev 593    jorge
 
-------------------------------------------------------------------------
-r586 | jorge | 2002-06-25 18:03:01 +0200 (Tue, 25 Jun 2002) | 2 lines
+	* setenv:
+	  Master moved to webster.
 
-Added to repository
 
-------------------------------------------------------------------------
-r585 | jorge | 2002-06-24 10:40:50 +0200 (Mon, 24 Jun 2002) | 2 lines
+2002-06-26 13:31:00  Rev 592    jorge
 
-Frames clist keeps the latest sort type when updated
+	* Makefile:
+	  Added chown_block to the linux_install target.
 
-------------------------------------------------------------------------
-r584 | jorge | 2002-06-21 21:02:21 +0200 (Fri, 21 Jun 2002) | 2 lines
 
-Removed master and slave .sh
+2002-06-26 13:30:30  Rev 591    jorge
 
-------------------------------------------------------------------------
-r583 | jorge | 2002-06-21 17:49:40 +0200 (Fri, 21 Jun 2002) | 2 lines
+	* common.h:
+	  New version number.
 
-Added ordering based on time and icomp.
 
-------------------------------------------------------------------------
-r582 | jorge | 2002-06-21 00:55:34 +0200 (Fri, 21 Jun 2002) | 2 lines
+2002-06-26 13:29:43  Rev 589    jorge
 
-Several upgrades. Ordering of frames by status, exitcode or number. Nicer job details view
+	* etc/mayablock.sg:
+	  Added to repo
 
-------------------------------------------------------------------------
-r581 | jorge | 2002-06-20 21:36:59 +0200 (Thu, 20 Jun 2002) | 2 lines
 
-Added to repository
+2002-06-25 16:14:54  Rev 588    jorge
 
-------------------------------------------------------------------------
-r580 | jorge | 2002-06-20 21:32:50 +0200 (Thu, 20 Jun 2002) | 2 lines
+	* bin/chown_block:
+	  More comments
 
-Using a table to solve the problem with long filenames
 
-------------------------------------------------------------------------
-r579 | jorge | 2002-06-20 17:28:48 +0200 (Thu, 20 Jun 2002) | 2 lines
+2002-06-25 16:11:29  Rev 587    jorge
 
-Support for Maya Block rendering but working on the GUI
+	* bin/chown_block:
+	  Working.
 
-------------------------------------------------------------------------
-r578 | jorge | 2002-06-18 14:27:46 +0200 (Tue, 18 Jun 2002) | 2 lines
 
-Didn't work... so fixed
+2002-06-25 16:03:01  Rev 586    jorge
 
-------------------------------------------------------------------------
-r577 | jorge | 2002-06-18 14:16:50 +0200 (Tue, 18 Jun 2002) | 2 lines
+	* bin/chown_block:
+	  Added to repository
 
-More generic
 
-------------------------------------------------------------------------
-r576 | jorge | 2002-06-17 18:27:35 +0200 (Mon, 17 Jun 2002) | 2 lines
+2002-06-24 08:40:50  Rev 585    jorge
 
-Render directory in place of project directory.
+	* drqman/drqm_jobs.c:
+	  Frames clist keeps the latest sort type when updated
 
-------------------------------------------------------------------------
-r574 | jorge | 2002-05-17 18:07:50 +0200 (Fri, 17 May 2002) | 2 lines
 
-Updated version number.
+2002-06-21 19:02:21  Rev 584    jorge
 
-------------------------------------------------------------------------
-r573 | jorge | 2002-05-17 18:06:44 +0200 (Fri, 17 May 2002) | 2 lines
+	* bin/slave.sh bin/master.sh:
+	  Removed master and slave .sh
 
-Added to repository.
 
-------------------------------------------------------------------------
-r572 | jorge | 2002-05-17 18:06:26 +0200 (Fri, 17 May 2002) | 2 lines
+2002-06-21 15:49:40  Rev 583    jorge
 
-Pointing to render1
+	* drqman/drqm_jobs.c:
+	  Added ordering based on time and icomp.
 
-------------------------------------------------------------------------
-r571 | jorge | 2002-05-17 18:05:59 +0200 (Fri, 17 May 2002) | 2 lines
 
-Several updates and bugfixes.
+2002-06-20 22:55:34  Rev 582    jorge
 
-------------------------------------------------------------------------
-r570 | jorge | 2002-05-17 18:03:23 +0200 (Fri, 17 May 2002) | 2 lines
+	* drqman/drqm_jobs.c:
+	  Several upgrades. Ordering of frames by status, exitcode or number. Nicer job details view
 
-Information not complete error message.
 
-------------------------------------------------------------------------
-r569 | jorge | 2002-05-17 18:03:02 +0200 (Fri, 17 May 2002) | 2 lines
+2002-06-20 19:36:59  Rev 581    jorge
 
-Much more relaxed time limits.
+	* requeue.c:
+	  Added to repository
 
-------------------------------------------------------------------------
-r568 | jorge | 2002-05-17 18:02:39 +0200 (Fri, 17 May 2002) | 2 lines
 
-Updated to detect Athlon cpus.
+2002-06-20 19:32:50  Rev 580    jorge
 
-------------------------------------------------------------------------
-r567 | jorge | 2002-05-17 18:02:05 +0200 (Fri, 17 May 2002) | 2 lines
+	* drqman/drqm_jobs.c:
+	  Using a table to solve the problem with long filenames
 
-Several linux installation updates.
 
-------------------------------------------------------------------------
-r565 | jorge | 2002-03-01 16:27:56 +0100 (Fri, 01 Mar 2002) | 2 lines
+2002-06-20 15:28:48  Rev 579    jorge
 
-New version number.
+	* task.c drqman/drqm_jobs.c bin/requeue bin/master mayasg.h task.h 
+	  communications.c etc/maya.sg job.c Makefile drqman/Makefile 
+	  computer.c job.h mayasg.c:
+	  Support for Maya Block rendering but working on the GUI
 
-------------------------------------------------------------------------
-r564 | jorge | 2002-03-01 15:14:15 +0100 (Fri, 01 Mar 2002) | 2 lines
 
-Support for autoenable.
+2002-06-18 12:27:46  Rev 578    jorge
 
-------------------------------------------------------------------------
-r563 | jorge | 2002-03-01 12:38:08 +0100 (Fri, 01 Mar 2002) | 2 lines
+	* bin/requeue bin/master bin/slave:
+	  Didn't work... so fixed
 
-Solved possible race condition problem.
 
-------------------------------------------------------------------------
-r562 | jorge | 2002-03-01 12:07:43 +0100 (Fri, 01 Mar 2002) | 2 lines
+2002-06-18 12:16:50  Rev 577    jorge
 
-Removed test comments
+	* bin/requeue bin/master bin/slave:
+	  More generic
 
-------------------------------------------------------------------------
-r561 | jorge | 2002-03-01 12:06:53 +0100 (Fri, 01 Mar 2002) | 2 lines
 
-Test comment
+2002-06-17 16:27:35  Rev 576    jorge
 
-------------------------------------------------------------------------
-r560 | jorge | 2002-03-01 12:00:04 +0100 (Fri, 01 Mar 2002) | 2 lines
+	* drqman/drqm_jobs.c mayasg.h drqman/drqm_jobs.h etc/maya.sg job.c 
+	  job.h mayasg.c:
+	  Render directory in place of project directory.
 
-Removed dumb lines
 
-------------------------------------------------------------------------
-r559 | jorge | 2002-03-01 11:58:24 +0100 (Fri, 01 Mar 2002) | 2 lines
+2002-05-17 16:07:50  Rev 574    jorge
 
-Added dumb line.
+	* common.h:
+	  Updated version number.
 
-------------------------------------------------------------------------
-r558 | jorge | 2002-03-01 10:36:51 +0100 (Fri, 01 Mar 2002) | 2 lines
 
-Environment updated to have the owner of the job in it.
+2002-05-17 16:06:44  Rev 573    jorge
 
-------------------------------------------------------------------------
-r557 | jorge | 2002-02-27 17:36:35 +0100 (Wed, 27 Feb 2002) | 2 lines
+	* bin/path2unix.pl:
+	  Added to repository.
 
-Using new logger functions
 
-------------------------------------------------------------------------
-r556 | jorge | 2002-02-27 11:42:50 +0100 (Wed, 27 Feb 2002) | 2 lines
+2002-05-17 16:06:26  Rev 572    jorge
 
-Use of the new log functions.
+	* setenv:
+	  Pointing to render1
 
-------------------------------------------------------------------------
-r555 | jorge | 2002-02-27 11:42:35 +0100 (Wed, 27 Feb 2002) | 2 lines
 
-Variable number of arguments on log functions.
+2002-05-17 16:05:59  Rev 571    jorge
 
-------------------------------------------------------------------------
-r554 | jorge | 2002-02-27 11:41:45 +0100 (Wed, 27 Feb 2002) | 2 lines
+	* request.c job.c slave.c master.c job.h:
+	  Several updates and bugfixes.
 
-Minor changes.
 
-------------------------------------------------------------------------
-r553 | jorge | 2002-02-27 11:41:17 +0100 (Wed, 27 Feb 2002) | 2 lines
+2002-05-17 16:03:23  Rev 570    jorge
 
-Minor updates. More info on log messages.
+	* drerrno.c:
+	  Information not complete error message.
 
-------------------------------------------------------------------------
-r552 | jorge | 2002-02-26 16:52:05 +0100 (Tue, 26 Feb 2002) | 2 lines
 
-Working on it
+2002-05-17 16:03:02  Rev 569    jorge
 
-------------------------------------------------------------------------
-r551 | jorge | 2002-02-21 16:56:25 +0100 (Thu, 21 Feb 2002) | 2 lines
+	* constants.h:
+	  Much more relaxed time limits.
 
-Basic autoenable time support.
 
-------------------------------------------------------------------------
-r550 | jorge | 2002-02-21 16:50:02 +0100 (Thu, 21 Feb 2002) | 2 lines
+2002-05-17 16:02:39  Rev 568    jorge
 
-Now shows the autoenable time.
+	* computer_info.c computer_info.h:
+	  Updated to detect Athlon cpus.
 
-------------------------------------------------------------------------
-r549 | jorge | 2002-02-21 16:49:23 +0100 (Thu, 21 Feb 2002) | 2 lines
 
-Solved bug that caused segmentation faults, trying for free already freed memory.
+2002-05-17 16:02:05  Rev 567    jorge
 
-------------------------------------------------------------------------
-r548 | jorge | 2002-02-21 12:45:50 +0100 (Thu, 21 Feb 2002) | 2 lines
+	* Makefile:
+	  Several linux installation updates.
 
-Added to repository
 
-------------------------------------------------------------------------
-r547 | jorge | 2002-02-15 12:51:00 +0100 (Fri, 15 Feb 2002) | 2 lines
+2002-03-01 15:27:56  Rev 565    jorge
 
-Working on
+	* common.h:
+	  New version number.
 
-------------------------------------------------------------------------
-r546 | jorge | 2001-11-26 13:19:50 +0100 (Mon, 26 Nov 2001) | 2 lines
 
-Minor changes.
+2002-03-01 14:14:15  Rev 564    jorge
 
-------------------------------------------------------------------------
-r545 | jorge | 2001-11-26 13:19:05 +0100 (Mon, 26 Nov 2001) | 2 lines
+	* computer.h slave.c computer.c:
+	  Support for autoenable.
 
-Small corruption
 
-------------------------------------------------------------------------
-r544 | jorge | 2001-11-23 16:53:53 +0100 (Fri, 23 Nov 2001) | 2 lines
+2002-03-01 11:38:08  Rev 563    jorge
 
-Different font
+	* computer_status.h slave.c computer_status.c:
+	  Solved possible race condition problem.
 
-------------------------------------------------------------------------
-r543 | jorge | 2001-11-23 16:53:38 +0100 (Fri, 23 Nov 2001) | 2 lines
 
-More debugging messages on handle_r_r_slavexit
+2002-03-01 11:07:43  Rev 562    jorge
 
-------------------------------------------------------------------------
-r542 | jorge | 2001-11-23 16:52:05 +0100 (Fri, 23 Nov 2001) | 2 lines
+	* logger.c:
+	  Removed test comments
 
-Mail notifications only if the appropiate flag is set.
 
-------------------------------------------------------------------------
-r541 | jorge | 2001-11-23 16:50:47 +0100 (Fri, 23 Nov 2001) | 2 lines
+2002-03-01 11:06:53  Rev 561    jorge
 
-Minor bugfix on mail notifications.
+	* logger.c:
+	  Test comment
 
-------------------------------------------------------------------------
-r540 | jorge | 2001-11-23 16:47:45 +0100 (Fri, 23 Nov 2001) | 2 lines
 
-Installation of etc files.
+2002-03-01 11:00:04  Rev 560    jorge
 
-------------------------------------------------------------------------
-r539 | jorge | 2001-11-23 16:29:07 +0100 (Fri, 23 Nov 2001) | 2 lines
+	* logger.c:
+	  Removed dumb lines
 
-Different timing.
 
-------------------------------------------------------------------------
-r538 | jorge | 2001-11-23 16:28:12 +0100 (Fri, 23 Nov 2001) | 3 lines
+2002-03-01 10:58:24  Rev 559    jorge
 
-Bugfix :
+	* logger.c:
+	  Added dumb line.
+
+
+2002-03-01 09:36:51  Rev 558    jorge
+
+	* task.c job.c:
+	  Environment updated to have the owner of the job in it.
+
+
+2002-02-27 16:36:35  Rev 557    jorge
+
+	* request.c job.c master.c computer.c:
+	  Using new logger functions
+
+
+2002-02-27 10:42:50  Rev 556    jorge
+
+	* request.c:
+	  Use of the new log functions.
+
+
+2002-02-27 10:42:35  Rev 555    jorge
+
+	* logger.h logger.c:
+	  Variable number of arguments on log functions.
+
+
+2002-02-27 10:41:45  Rev 554    jorge
+
+	* job.c:
+	  Minor changes.
+
+
+2002-02-27 10:41:17  Rev 553    jorge
+
+	* database.c:
+	  Minor updates. More info on log messages.
+
+
+2002-02-26 15:52:05  Rev 552    jorge
+
+	* drqman/drqm_jobs.c drqman/drqm_request.h slave.c request_codes.h 
+	  logger.c constants.h todo logger.h sendjob.c drqman/drqm_computers.
+	  c common.c request.c drqman/drqm_computers.h master.c 
+	  drqman/drqm_request.c request.h computer.c:
+	  Working on it
+
+
+2002-02-21 15:56:25  Rev 551    jorge
+
+	* drqman/drqm_computers.c drqman/drqm_computers.h:
+	  Basic autoenable time support.
+
+
+2002-02-21 15:50:02  Rev 550    jorge
+
+	* drqman/drqm_computers.c:
+	  Now shows the autoenable time.
+
+
+2002-02-21 15:49:23  Rev 549    jorge
+
+	* drqman/drqm_jobs.c:
+	  Solved bug that caused segmentation faults, trying for free already freed memory.
+
+
+2002-02-21 11:45:50  Rev 548    jorge
+
+	* bin bin/slave.sh bin/master.sh:
+	  Added to repository
+
+
+2002-02-15 11:51:00  Rev 547    jorge
+
+	* computer.h todo computer_status.h communications.c common.c slave.
+	  c master.c communications.h common.h computer_status.c:
+	  Working on
+
+
+2001-11-26 12:19:50  Rev 546    jorge
+
+	* request.c:
+	  Minor changes.
+
+
+2001-11-26 12:19:05  Rev 545    jorge
+
+	* request.c:
+	  Small corruption
+
+
+2001-11-23 15:53:53  Rev 544    jorge
+
+	* etc/drqman.rc:
+	  Different font
+
+
+2001-11-23 15:53:38  Rev 543    jorge
+
+	* request.c:
+	  More debugging messages on handle_r_r_slavexit
+
+
+2001-11-23 15:52:05  Rev 542    jorge
+
+	* job.c:
+	  Mail notifications only if the appropiate flag is set.
+
+
+2001-11-23 15:50:47  Rev 541    jorge
+
+	* common.c:
+	  Minor bugfix on mail notifications.
+
+
+2001-11-23 15:47:45  Rev 540    jorge
+
+	* Makefile:
+	  Installation of etc files.
+
+
+2001-11-23 15:29:07  Rev 539    jorge
+
+	* constants.h:
+	  Different timing.
+
+
+2001-11-23 15:28:12  Rev 538    jorge
+
+	* request.c:
+	  Bugfix :
  * register_slave : the slaves always had 0 on the id while the master had the good value.
 
-------------------------------------------------------------------------
-r537 | jorge | 2001-11-23 16:07:48 +0100 (Fri, 23 Nov 2001) | 3 lines
 
-Minor bugfix :
+2001-11-23 15:07:48  Rev 537    jorge
+
+	* request.c:
+	  Minor bugfix :
  * handle_r_r_slavexit : if the transmission was interrupted before receiving the icomp, the first job was deleted.
 
-------------------------------------------------------------------------
-r536 | jorge | 2001-11-23 15:43:23 +0100 (Fri, 23 Nov 2001) | 3 lines
 
-Bugfix :
+2001-11-23 14:43:23  Rev 536    jorge
+
+	* request.c:
+	  Bugfix :
  * handle_r_r_slavexit : did not release the semaphore.
 
-------------------------------------------------------------------------
-r535 | jorge | 2001-11-23 12:52:03 +0100 (Fri, 23 Nov 2001) | 2 lines
 
-First commit.
+2001-11-23 11:52:03  Rev 535    jorge
 
-------------------------------------------------------------------------
-r534 | jorge | 2001-11-23 12:51:41 +0100 (Fri, 23 Nov 2001) | 2 lines
+	* etc/drqman.rc:
+	  First commit.
 
-Basic suport for resource file.
 
-------------------------------------------------------------------------
-r533 | jorge | 2001-11-23 12:51:13 +0100 (Fri, 23 Nov 2001) | 2 lines
+2001-11-23 11:51:41  Rev 534    jorge
 
-Minor bugfix.
+	* drqman/drqm_jobs.c drqman/main.c:
+	  Basic suport for resource file.
 
-------------------------------------------------------------------------
-r531 | jorge | 2001-11-22 16:05:48 +0100 (Thu, 22 Nov 2001) | 2 lines
 
-Updated version number.
+2001-11-23 11:51:13  Rev 533    jorge
 
-------------------------------------------------------------------------
-r530 | jorge | 2001-11-22 15:44:29 +0100 (Thu, 22 Nov 2001) | 2 lines
+	* common.h:
+	  Minor bugfix.
 
-Added operating system flags and limits.
 
-------------------------------------------------------------------------
-r529 | jorge | 2001-11-22 15:43:14 +0100 (Thu, 22 Nov 2001) | 2 lines
+2001-11-22 15:05:48  Rev 531    jorge
 
-Updated version number.
+	* common.h:
+	  Updated version number.
 
-------------------------------------------------------------------------
-r528 | jorge | 2001-11-22 15:43:02 +0100 (Thu, 22 Nov 2001) | 2 lines
 
-Added job limits to the job send and receive functions.
+2001-11-22 14:44:29  Rev 530    jorge
 
-------------------------------------------------------------------------
-r527 | jorge | 2001-11-21 17:07:37 +0100 (Wed, 21 Nov 2001) | 2 lines
+	* drqman/drqm_jobs.c drqman/drqm_jobs.h job.c job.h:
+	  Added operating system flags and limits.
 
-Minor bugfix
 
-------------------------------------------------------------------------
-r526 | jorge | 2001-11-21 11:17:20 +0100 (Wed, 21 Nov 2001) | 2 lines
+2001-11-22 14:43:14  Rev 529    jorge
 
-Added to repository.
+	* database.h:
+	  Updated version number.
 
-------------------------------------------------------------------------
-r525 | jorge | 2001-11-21 11:16:44 +0100 (Wed, 21 Nov 2001) | 2 lines
 
-Specific email buttons now insensitive when appropiate.
+2001-11-22 14:43:02  Rev 528    jorge
 
-------------------------------------------------------------------------
-r524 | jorge | 2001-11-21 11:16:09 +0100 (Wed, 21 Nov 2001) | 2 lines
+	* communications.c:
+	  Added job limits to the job send and receive functions.
 
-Updated.
 
-------------------------------------------------------------------------
-r523 | jorge | 2001-11-21 11:16:05 +0100 (Wed, 21 Nov 2001) | 2 lines
+2001-11-21 16:07:37  Rev 527    jorge
 
-Minor changes.
+	* database.c:
+	  Minor bugfix
 
-------------------------------------------------------------------------
-r522 | jorge | 2001-11-21 11:15:49 +0100 (Wed, 21 Nov 2001) | 2 lines
 
-Added maya script generator config file.
+2001-11-21 10:17:20  Rev 526    jorge
 
-------------------------------------------------------------------------
-r521 | jorge | 2001-11-21 11:15:22 +0100 (Wed, 21 Nov 2001) | 2 lines
+	* etc/maya.sg etc:
+	  Added to repository.
 
-Added stuff for "etc" directory
 
-------------------------------------------------------------------------
-r520 | jorge | 2001-11-19 12:44:28 +0100 (Mon, 19 Nov 2001) | 2 lines
+2001-11-21 10:16:44  Rev 525    jorge
 
-The average frame time now is not rounded to a SLAVEDELAY boundary.
+	* drqman/drqm_jobs.c:
+	  Specific email buttons now insensitive when appropiate.
 
-------------------------------------------------------------------------
-r518 | jorge | 2001-11-19 10:49:25 +0100 (Mon, 19 Nov 2001) | 2 lines
 
-Updated version number.
+2001-11-21 10:16:09  Rev 524    jorge
 
-------------------------------------------------------------------------
-r517 | jorge | 2001-11-19 10:46:11 +0100 (Mon, 19 Nov 2001) | 3 lines
+	* todo:
+	  Updated.
 
-Added :
+
+2001-11-21 10:16:05  Rev 523    jorge
+
+	* request.c:
+	  Minor changes.
+
+
+2001-11-21 10:15:49  Rev 522    jorge
+
+	* mayasg.c:
+	  Added maya script generator config file.
+
+
+2001-11-21 10:15:22  Rev 521    jorge
+
+	* common.c drerrno.c drerrno.h:
+	  Added stuff for "etc" directory
+
+
+2001-11-19 11:44:28  Rev 520    jorge
+
+	* job.c:
+	  The average frame time now is not rounded to a SLAVEDELAY boundary.
+
+
+2001-11-19 09:49:25  Rev 518    jorge
+
+	* common.h:
+	  Updated version number.
+
+
+2001-11-19 09:46:11  Rev 517    jorge
+
+	* drqman/drqm_jobs.c:
+	  Added :
  * jdd_koj_widgets : to show the koj information in the details window
 
-------------------------------------------------------------------------
-r516 | jorge | 2001-11-19 10:45:29 +0100 (Mon, 19 Nov 2001) | 2 lines
 
-Updated.
+2001-11-19 09:45:29  Rev 516    jorge
 
-------------------------------------------------------------------------
-r515 | jorge | 2001-11-16 16:51:57 +0100 (Fri, 16 Nov 2001) | 2 lines
+	* job.h:
+	  Updated.
 
-Added support for specific email on mail notifications
 
-------------------------------------------------------------------------
-r514 | jorge | 2001-11-16 16:51:40 +0100 (Fri, 16 Nov 2001) | 2 lines
+2001-11-16 15:51:57  Rev 515    jorge
 
-Updated
+	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
+	  Added support for specific email on mail notifications
 
-------------------------------------------------------------------------
-r513 | jorge | 2001-11-16 16:51:35 +0100 (Fri, 16 Nov 2001) | 4 lines
 
-Bug fix, the master finds the index of the computer after
+2001-11-16 15:51:40  Rev 514    jorge
+
+	* todo:
+	  Updated
+
+
+2001-11-16 15:51:35  Rev 513    jorge
+
+	* master.c:
+	  Bug fix, the master finds the index of the computer after
 forking, so it does not consume so much time on the main
 process.
 
-------------------------------------------------------------------------
-r512 | jorge | 2001-11-16 16:50:12 +0100 (Fri, 16 Nov 2001) | 2 lines
 
-Added flags and stuff to suport the specific email on mail notifications.
+2001-11-16 15:50:12  Rev 512    jorge
 
-------------------------------------------------------------------------
-r511 | jorge | 2001-11-16 16:49:41 +0100 (Fri, 16 Nov 2001) | 4 lines
+	* job.h:
+	  Added flags and stuff to suport the specific email on mail notifications.
 
-Added :
+
+2001-11-16 15:49:41  Rev 511    jorge
+
+	* job.c:
+	  Added :
  * job_koj_string
 Modified the rest of function that return strings.
 
-------------------------------------------------------------------------
-r510 | jorge | 2001-11-16 16:48:32 +0100 (Fri, 16 Nov 2001) | 2 lines
 
-Updated.
+2001-11-16 15:48:32  Rev 510    jorge
 
-------------------------------------------------------------------------
-r509 | jorge | 2001-11-16 16:48:18 +0100 (Fri, 16 Nov 2001) | 2 lines
+	* database.h:
+	  Updated.
 
-Modified function that return strings.
 
-------------------------------------------------------------------------
-r508 | jorge | 2001-11-16 16:47:50 +0100 (Fri, 16 Nov 2001) | 5 lines
+2001-11-16 15:48:18  Rev 509    jorge
 
-Modified :
+	* computer_info.c:
+	  Modified function that return strings.
+
+
+2001-11-16 15:47:50  Rev 508    jorge
+
+	* communications.c communications.h:
+	  Modified :
  * accept_socket : it does not find the index of the conecting
 	computer anymore. Because that task required to call
 	gethostbyaddr before forking and it's expensive in time.
 
-------------------------------------------------------------------------
-r507 | jorge | 2001-11-16 16:39:59 +0100 (Fri, 16 Nov 2001) | 2 lines
 
-Added support for specific email on mail notifications.
+2001-11-16 15:39:59  Rev 507    jorge
 
-------------------------------------------------------------------------
-r506 | jorge | 2001-11-15 15:31:05 +0100 (Thu, 15 Nov 2001) | 2 lines
+	* common.c:
+	  Added support for specific email on mail notifications.
 
-Updated
 
-------------------------------------------------------------------------
-r505 | jorge | 2001-11-15 15:30:57 +0100 (Thu, 15 Nov 2001) | 2 lines
+2001-11-15 14:31:05  Rev 506    jorge
 
-Added checks for directories on common_environment_check, and also the appropiate error codes on drerrno.
+	* todo:
+	  Updated
 
-------------------------------------------------------------------------
-r504 | jorge | 2001-11-14 17:12:20 +0100 (Wed, 14 Nov 2001) | 2 lines
 
-Updated.
+2001-11-15 14:30:57  Rev 505    jorge
 
-------------------------------------------------------------------------
-r503 | jorge | 2001-11-14 17:12:12 +0100 (Wed, 14 Nov 2001) | 2 lines
+	* common.c drerrno.c drerrno.h:
+	  Added checks for directories on common_environment_check, and also the appropiate error codes on drerrno.
 
-Added drqm_info.h
 
-------------------------------------------------------------------------
-r502 | jorge | 2001-11-14 15:23:37 +0100 (Wed, 14 Nov 2001) | 3 lines
+2001-11-14 16:12:20  Rev 504    jorge
 
-Modified :
+	* todo:
+	  Updated.
+
+
+2001-11-14 16:12:12  Rev 503    jorge
+
+	* drqman/notebook.c:
+	  Added drqm_info.h
+
+
+2001-11-14 14:23:37  Rev 502    jorge
+
+	* common.c:
+	  Modified :
  * mn_job_finished : now it works.
 
-------------------------------------------------------------------------
-r501 | jorge | 2001-11-13 16:52:18 +0100 (Tue, 13 Nov 2001) | 3 lines
 
-Updated :
+2001-11-13 15:52:18  Rev 501    jorge
+
+	* drqman/drqm_jobs.c:
+	  Updated :
  * to use time_str function instead of hard coded string.
 
-------------------------------------------------------------------------
-r500 | jorge | 2001-11-13 16:51:30 +0100 (Tue, 13 Nov 2001) | 2 lines
 
-Updated.
+2001-11-13 15:51:30  Rev 500    jorge
 
-------------------------------------------------------------------------
-r499 | jorge | 2001-11-13 16:51:17 +0100 (Tue, 13 Nov 2001) | 3 lines
+	* todo:
+	  Updated.
 
-Added :
+
+2001-11-13 15:51:17  Rev 499    jorge
+
+	* job.c:
+	  Added :
  * call to mn_job_finished when the job is switched to JOBSTATUS_FINISHED.
 
-------------------------------------------------------------------------
-r498 | jorge | 2001-11-13 16:50:25 +0100 (Tue, 13 Nov 2001) | 3 lines
 
-Added :
+2001-11-13 15:50:25  Rev 498    jorge
+
+	* common.c common.h:
+	  Added :
  * time_str : function to convert a number of seconds into an string with hours, minutes and seconds.
 
-------------------------------------------------------------------------
-r497 | jorge | 2001-11-13 10:50:23 +0100 (Tue, 13 Nov 2001) | 2 lines
 
-Added flags structure.
+2001-11-13 09:50:23  Rev 497    jorge
 
-------------------------------------------------------------------------
-r496 | jorge | 2001-11-13 10:50:02 +0100 (Tue, 13 Nov 2001) | 3 lines
+	* drqman/drqm_jobs.h:
+	  Added flags structure.
 
-Added:
+
+2001-11-13 09:50:02  Rev 496    jorge
+
+	* drqman/drqm_jobs.c:
+	  Added:
  * dnj and jdd flags widgets.
 
-------------------------------------------------------------------------
-r495 | jorge | 2001-11-13 09:38:32 +0100 (Tue, 13 Nov 2001) | 2 lines
 
-Added job flags section, and mail notification flag.
+2001-11-13 08:38:32  Rev 495    jorge
 
-------------------------------------------------------------------------
-r494 | jorge | 2001-11-09 16:01:13 +0100 (Fri, 09 Nov 2001) | 2 lines
+	* job.h:
+	  Added job flags section, and mail notification flag.
 
-Updated.
 
-------------------------------------------------------------------------
-r493 | jorge | 2001-11-09 16:01:05 +0100 (Fri, 09 Nov 2001) | 2 lines
+2001-11-09 15:01:13  Rev 494    jorge
 
-Added flags to the job structure.
+	* todo:
+	  Updated.
 
-------------------------------------------------------------------------
-r492 | jorge | 2001-11-09 16:00:47 +0100 (Fri, 09 Nov 2001) | 2 lines
 
-Database version update because of changes to the job structure.
+2001-11-09 15:01:05  Rev 493    jorge
 
-------------------------------------------------------------------------
-r491 | jorge | 2001-11-08 16:43:52 +0100 (Thu, 08 Nov 2001) | 2 lines
+	* communications.c job.c job.h:
+	  Added flags to the job structure.
 
-Added to repository
 
-------------------------------------------------------------------------
-r490 | jorge | 2001-11-08 13:04:21 +0100 (Thu, 08 Nov 2001) | 2 lines
+2001-11-09 15:00:47  Rev 492    jorge
 
-Added small info text.
+	* database.h:
+	  Database version update because of changes to the job structure.
 
-------------------------------------------------------------------------
-r489 | jorge | 2001-11-08 12:47:43 +0100 (Thu, 08 Nov 2001) | 2 lines
 
-First logo inside the info view.
+2001-11-08 15:43:52  Rev 491    jorge
 
-------------------------------------------------------------------------
-r488 | jorge | 2001-11-08 12:47:22 +0100 (Thu, 08 Nov 2001) | 2 lines
+	* drqman/eeelogo.xpm:
+	  Added to repository
 
-Small bugfix.
 
-------------------------------------------------------------------------
-r487 | jorge | 2001-11-08 12:10:24 +0100 (Thu, 08 Nov 2001) | 2 lines
+2001-11-08 12:04:21  Rev 490    jorge
 
-Added info tab.
+	* drqman/drqm_info.c:
+	  Added small info text.
 
-------------------------------------------------------------------------
-r486 | jorge | 2001-11-08 12:09:57 +0100 (Thu, 08 Nov 2001) | 2 lines
 
-Updated
+2001-11-08 11:47:43  Rev 489    jorge
 
-------------------------------------------------------------------------
-r485 | jorge | 2001-11-08 10:14:03 +0100 (Thu, 08 Nov 2001) | 2 lines
+	* drqman/main.c drqman/drqman.h drqman/drqm_info.c:
+	  First logo inside the info view.
 
-Suppport for saving and loading master database.
 
-------------------------------------------------------------------------
-r484 | jorge | 2001-11-07 11:21:46 +0100 (Wed, 07 Nov 2001) | 2 lines
+2001-11-08 11:47:22  Rev 488    jorge
 
-Adapted to the new send and receive computer hardware info.
+	* drqman/Makefile:
+	  Small bugfix.
 
-------------------------------------------------------------------------
-r483 | jorge | 2001-11-07 11:20:45 +0100 (Wed, 07 Nov 2001) | 3 lines
 
-Modified :
+2001-11-08 11:10:24  Rev 487    jorge
+
+	* drqman/notebook.c drqman/drqm_info.h drqman/Makefile 
+	  drqman/drqm_info.c:
+	  Added info tab.
+
+
+2001-11-08 11:09:57  Rev 486    jorge
+
+	* todo:
+	  Updated
+
+
+2001-11-08 09:14:03  Rev 485    jorge
+
+	* database.c communications.c request.c database.h drerrno.c master.
+	  c drerrno.h:
+	  Suppport for saving and loading master database.
+
+
+2001-11-07 10:21:46  Rev 484    jorge
+
+	* request.c drqman/drqm_request.c:
+	  Adapted to the new send and receive computer hardware info.
+
+
+2001-11-07 10:20:45  Rev 483    jorge
+
+	* communications.c communications.h:
+	  Modified :
  * send and receive computer hardware info do not use anymore the who value. And now they return error code.
 
-------------------------------------------------------------------------
-r482 | jorge | 2001-11-02 17:12:20 +0100 (Fri, 02 Nov 2001) | 2 lines
 
-Working on database save and load.
+2001-11-02 16:12:20  Rev 482    jorge
 
-------------------------------------------------------------------------
-r481 | jorge | 2001-11-02 11:53:00 +0100 (Fri, 02 Nov 2001) | 2 lines
+	* database.c database.h:
+	  Working on database save and load.
 
-Working on database_save.
 
-------------------------------------------------------------------------
-r480 | jorge | 2001-10-31 16:59:38 +0100 (Wed, 31 Oct 2001) | 2 lines
+2001-11-02 10:53:00  Rev 481    jorge
 
-Minor changes.
+	* database.c communications.c database.h master.c:
+	  Working on database_save.
 
-------------------------------------------------------------------------
-r479 | jorge | 2001-10-29 17:25:16 +0100 (Mon, 29 Oct 2001) | 2 lines
 
-Working on database save and reload.
+2001-10-31 15:59:38  Rev 480    jorge
 
-------------------------------------------------------------------------
-r477 | jorge | 2001-10-29 11:13:56 +0100 (Mon, 29 Oct 2001) | 2 lines
+	* database.c communications.c drerrno.c drerrno.h:
+	  Minor changes.
 
-Updated version number.
 
-------------------------------------------------------------------------
-r476 | jorge | 2001-10-26 15:56:59 +0200 (Fri, 26 Oct 2001) | 3 lines
+2001-10-29 16:25:16  Rev 479    jorge
 
-Bugfix :
+	* database.c communications.c database.h communications.h:
+	  Working on database save and reload.
+
+
+2001-10-29 10:13:56  Rev 477    jorge
+
+	* common.h:
+	  Updated version number.
+
+
+2001-10-26 13:56:59  Rev 476    jorge
+
+	* slave.c:
+	  Bugfix :
  * get_shared_memory_slave : exit instead of kill to avoid segfault on signal handler.
 
-------------------------------------------------------------------------
-r475 | jorge | 2001-10-25 15:20:16 +0200 (Thu, 25 Oct 2001) | 3 lines
 
-Modified :
+2001-10-25 13:20:16  Rev 475    jorge
+
+	* drqman/drqm_request.c:
+	  Modified :
  * removed goto's
 
-------------------------------------------------------------------------
-r474 | jorge | 2001-10-25 15:19:53 +0200 (Thu, 25 Oct 2001) | 3 lines
 
-Added :
+2001-10-25 13:19:53  Rev 474    jorge
+
+	* job.c job.h:
+	  Added :
  * job_logs_remove
 
-------------------------------------------------------------------------
-r473 | jorge | 2001-10-25 15:17:45 +0200 (Thu, 25 Oct 2001) | 2 lines
 
-Updated.
+2001-10-25 13:17:45  Rev 473    jorge
 
-------------------------------------------------------------------------
-r472 | jorge | 2001-10-25 15:17:37 +0200 (Thu, 25 Oct 2001) | 3 lines
+	* todo:
+	  Updated.
 
-Added :
+
+2001-10-25 13:17:37  Rev 472    jorge
+
+	* common.c common.h:
+	  Added :
  * remove_dir
 
-------------------------------------------------------------------------
-r471 | jorge | 2001-10-24 16:53:18 +0200 (Wed, 24 Oct 2001) | 3 lines
 
-Added :
+2001-10-24 14:53:18  Rev 471    jorge
+
+	* drqman/drqm_jobs.c drqman/drqm_request.h drqman/drqm_request.c:
+	  Added :
  * support for priority update.
 
-------------------------------------------------------------------------
-r470 | jorge | 2001-10-24 16:52:52 +0200 (Wed, 24 Oct 2001) | 3 lines
 
-Removed :
+2001-10-24 14:52:52  Rev 470    jorge
+
+	* request_codes.h:
+	  Removed :
  * R_A_* definitions.
 
-------------------------------------------------------------------------
-r469 | jorge | 2001-10-24 16:52:29 +0200 (Wed, 24 Oct 2001) | 3 lines
 
-Added :
+2001-10-24 14:52:29  Rev 469    jorge
+
+	* request.c request.h:
+	  Added :
  * r_r_jobpriup family of functions
 
-------------------------------------------------------------------------
-r468 | jorge | 2001-10-24 16:52:00 +0200 (Wed, 24 Oct 2001) | 3 lines
 
-Added :
+2001-10-24 14:52:00  Rev 468    jorge
+
+	* job.c:
+	  Added :
  * job_logs_remove
 
-------------------------------------------------------------------------
-r467 | jorge | 2001-10-24 14:51:59 +0200 (Wed, 24 Oct 2001) | 2 lines
 
-Working on job details change priority.
+2001-10-24 12:51:59  Rev 467    jorge
 
-------------------------------------------------------------------------
-r466 | jorge | 2001-10-22 16:16:55 +0200 (Mon, 22 Oct 2001) | 2 lines
+	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
+	  Working on job details change priority.
 
-Added support for changing the maximum number of cpus in one computer.
 
-------------------------------------------------------------------------
-r465 | jorge | 2001-10-22 16:16:11 +0200 (Mon, 22 Oct 2001) | 2 lines
+2001-10-22 14:16:55  Rev 466    jorge
 
-Some semaphores were not released.
+	* drqman/drqm_jobs.c drqman/drqm_request.h drqman/drqm_request.c:
+	  Added support for changing the maximum number of cpus in one computer.
 
-------------------------------------------------------------------------
-r464 | jorge | 2001-10-22 16:12:26 +0200 (Mon, 22 Oct 2001) | 2 lines
 
-Minor change.
+2001-10-22 14:16:11  Rev 465    jorge
 
-------------------------------------------------------------------------
-r463 | jorge | 2001-10-16 17:38:05 +0200 (Tue, 16 Oct 2001) | 2 lines
+	* request.c:
+	  Some semaphores were not released.
 
-Working...
 
-------------------------------------------------------------------------
-r462 | jorge | 2001-10-11 12:32:50 +0200 (Thu, 11 Oct 2001) | 3 lines
+2001-10-22 14:12:26  Rev 464    jorge
 
-Bug fixes :
+	* job.c:
+	  Minor change.
+
+
+2001-10-16 15:38:05  Rev 463    jorge
+
+	* drqman/drqm_jobs.c drqman/drqm_request.h request.c request_codes.h 
+	  drqman/drqm_request.c request.h:
+	  Working...
+
+
+2001-10-11 10:32:50  Rev 462    jorge
+
+	* drqman/drqm_computers.c:
+	  Bug fixes :
  * numerous incorrect uses of info->icomp when should be info->row. Solved.
 
-------------------------------------------------------------------------
-r461 | jorge | 2001-10-11 12:32:04 +0200 (Thu, 11 Oct 2001) | 3 lines
 
-Bug fix :
+2001-10-11 10:32:04  Rev 461    jorge
+
+	* job.c:
+	  Bug fix :
  * job_nframes : did not calculate the correct frame number with bigger steps than one. It always gave one frame less. Now it's solved.
 
-------------------------------------------------------------------------
-r459 | jorge | 2001-10-08 17:02:43 +0200 (Mon, 08 Oct 2001) | 2 lines
 
-Updated
+2001-10-08 15:02:43  Rev 459    jorge
 
-------------------------------------------------------------------------
-r458 | jorge | 2001-10-08 17:02:18 +0200 (Mon, 08 Oct 2001) | 2 lines
+	* common.h:
+	  Updated
 
-Removed unuseful comentaries.
 
-------------------------------------------------------------------------
-r457 | jorge | 2001-10-08 16:57:43 +0200 (Mon, 08 Oct 2001) | 3 lines
+2001-10-08 15:02:18  Rev 458    jorge
 
-Bug fix :
+	* communications.c:
+	  Removed unuseful comentaries.
+
+
+2001-10-08 14:57:43  Rev 457    jorge
+
+	* computer.c:
+	  Bug fix :
  * computer_update_assigned : initialization of task.itask
 
-------------------------------------------------------------------------
-r456 | jorge | 2001-10-08 16:19:02 +0200 (Mon, 08 Oct 2001) | 2 lines
 
-Conflicts solved.
+2001-10-08 14:19:02  Rev 456    jorge
 
-------------------------------------------------------------------------
-r455 | jorge | 2001-10-08 16:13:47 +0200 (Mon, 08 Oct 2001) | 2 lines
+	* job.c:
+	  Conflicts solved.
 
-More logging messages.
 
-------------------------------------------------------------------------
-r454 | jorge | 2001-10-08 14:43:07 +0200 (Mon, 08 Oct 2001) | 3 lines
+2001-10-08 14:13:47  Rev 455    jorge
 
-Modified :
+	* job.c:
+	  More logging messages.
+
+
+2001-10-08 12:43:07  Rev 454    jorge
+
+	* request.c:
+	  Modified :
  * handle_r_r_register : Less verbosity, do not report registered computers.
 
-------------------------------------------------------------------------
-r452 | jorge | 2001-10-08 14:33:18 +0200 (Mon, 08 Oct 2001) | 2 lines
 
-Updated.
+2001-10-08 12:33:18  Rev 452    jorge
 
-------------------------------------------------------------------------
-r451 | jorge | 2001-10-08 14:32:55 +0200 (Mon, 08 Oct 2001) | 3 lines
+	* common.h:
+	  Updated.
 
-Modified :
+
+2001-10-08 12:32:55  Rev 451    jorge
+
+	* request.c:
+	  Modified :
  * handle_r_r_jobsesup : now working
 
-------------------------------------------------------------------------
-r450 | jorge | 2001-10-08 14:32:03 +0200 (Mon, 08 Oct 2001) | 6 lines
 
-Added :
+2001-10-08 12:32:03  Rev 450    jorge
+
+	* job.c:
+	  Added :
  * job_frame_info_init
 
 Modified :
  * job_init_registered : error checking
 
-------------------------------------------------------------------------
-r449 | jorge | 2001-10-08 14:31:06 +0200 (Mon, 08 Oct 2001) | 3 lines
 
-Added :
+2001-10-08 12:31:06  Rev 449    jorge
+
+	* job.h:
+	  Added :
  * job_frame_info_init
 
-------------------------------------------------------------------------
-r448 | jorge | 2001-10-05 17:52:37 +0200 (Fri, 05 Oct 2001) | 2 lines
 
-Added functions to update the SES of a job. The button in the job details dialog. Needs a confimation dialog.
+2001-10-05 15:52:37  Rev 448    jorge
 
-------------------------------------------------------------------------
-r447 | jorge | 2001-10-05 17:51:25 +0200 (Fri, 05 Oct 2001) | 2 lines
+	* drqman/drqm_jobs.c drqman/drqm_request.h drqman/drqm_jobs.h 
+	  drqman/drqm_request.c:
+	  Added functions to update the SES of a job. The button in the job details dialog. Needs a confimation dialog.
 
-Updated.
 
-------------------------------------------------------------------------
-r446 | jorge | 2001-10-05 17:51:18 +0200 (Fri, 05 Oct 2001) | 3 lines
+2001-10-05 15:51:25  Rev 447    jorge
 
-Added :
+	* todo:
+	  Updated.
+
+
+2001-10-05 15:51:18  Rev 446    jorge
+
+	* request_codes.h:
+	  Added :
  * R_R_JOBSESUP
 
-------------------------------------------------------------------------
-r445 | jorge | 2001-10-05 17:50:31 +0200 (Fri, 05 Oct 2001) | 2 lines
 
-Working on R_R_JOBSESUP family.
+2001-10-05 15:50:31  Rev 445    jorge
 
-------------------------------------------------------------------------
-r444 | jorge | 2001-10-05 17:50:01 +0200 (Fri, 05 Oct 2001) | 3 lines
+	* request.c request.h:
+	  Working on R_R_JOBSESUP family.
 
-Bug fix :
+
+2001-10-05 15:50:01  Rev 444    jorge
+
+	* computer.c:
+	  Bug fix :
  * computer_init : does not call to computer_init_limits because it depends on the hardware info.
 
-------------------------------------------------------------------------
-r442 | jorge | 2001-10-04 10:31:20 +0200 (Thu, 04 Oct 2001) | 2 lines
 
-Updated version number
+2001-10-04 08:31:20  Rev 442    jorge
 
-------------------------------------------------------------------------
-r441 | jorge | 2001-10-04 10:29:57 +0200 (Thu, 04 Oct 2001) | 2 lines
+	* common.h:
+	  Updated version number
 
-Minor updates.
 
-------------------------------------------------------------------------
-r440 | jorge | 2001-10-04 10:20:47 +0200 (Thu, 04 Oct 2001) | 3 lines
+2001-10-04 08:29:57  Rev 441    jorge
 
-Modified :
+	* communications.c slave.c:
+	  Minor updates.
+
+
+2001-10-04 08:20:47  Rev 440    jorge
+
+	* slave.c:
+	  Modified :
  * main : more comments on update_computer_limits and the call to update_computer_status now uses sdb.
 
-------------------------------------------------------------------------
-r439 | jorge | 2001-10-04 10:19:52 +0200 (Thu, 04 Oct 2001) | 3 lines
 
-Modified :
+2001-10-04 08:19:52  Rev 439    jorge
+
+	* request.h:
+	  Modified :
  * update_computer_status : now uses sdb as parameter.
 
-------------------------------------------------------------------------
-r438 | jorge | 2001-10-04 10:19:25 +0200 (Thu, 04 Oct 2001) | 3 lines
 
-Modified :
+2001-10-04 08:19:25  Rev 438    jorge
+
+	* request.c:
+	  Modified :
  * update_computer_status : now uses a sdb as parameter because now we take the semaphore for copying the status.
 
-------------------------------------------------------------------------
-r437 | jorge | 2001-10-04 10:17:25 +0200 (Thu, 04 Oct 2001) | 3 lines
 
-Bug fix :
+2001-10-04 08:17:25  Rev 437    jorge
+
+	* communications.c:
+	  Bug fix :
  * send_computer_status : we need to count ntasks again.
 
-------------------------------------------------------------------------
-r436 | jorge | 2001-10-02 16:36:03 +0200 (Tue, 02 Oct 2001) | 2 lines
 
-Minor updates.
+2001-10-02 14:36:03  Rev 436    jorge
 
-------------------------------------------------------------------------
-r434 | jorge | 2001-10-02 14:55:50 +0200 (Tue, 02 Oct 2001) | 3 lines
+	* request.c:
+	  Minor updates.
 
-Modified :
+
+2001-10-02 12:55:50  Rev 434    jorge
+
+	* communications.c:
+	  Modified :
  * send_computer_status, recv_computer_status : Now they get itask from the received task so they don't need to send it before.
 
-------------------------------------------------------------------------
-r433 | jorge | 2001-10-02 14:42:00 +0200 (Tue, 02 Oct 2001) | 2 lines
 
-Updated version number.
+2001-10-02 12:42:00  Rev 433    jorge
 
-------------------------------------------------------------------------
-r432 | jorge | 2001-10-02 14:41:22 +0200 (Tue, 02 Oct 2001) | 2 lines
+	* common.h:
+	  Updated version number.
 
-Changes to used task.itask.
 
-------------------------------------------------------------------------
-r431 | jorge | 2001-10-02 14:40:47 +0200 (Tue, 02 Oct 2001) | 3 lines
+2001-10-02 12:41:22  Rev 432    jorge
 
-Added :
+	* drqman/drqm_computers.c drqman/drqm_request.c:
+	  Changes to used task.itask.
+
+
+2001-10-02 12:40:47  Rev 431    jorge
+
+	* task.c task.h:
+	  Added :
  * task.itask : index to the taks in the computer information kept by the slaves.
 
-------------------------------------------------------------------------
-r430 | jorge | 2001-10-02 14:40:01 +0200 (Tue, 02 Oct 2001) | 2 lines
 
-Working on the problems caused by shmat.
+2001-10-02 12:40:01  Rev 430    jorge
 
-------------------------------------------------------------------------
-r429 | jorge | 2001-10-02 14:39:39 +0200 (Tue, 02 Oct 2001) | 2 lines
+	* request.c:
+	  Working on the problems caused by shmat.
 
-Working on the problems of shmat.
 
-------------------------------------------------------------------------
-r428 | jorge | 2001-10-02 14:38:53 +0200 (Tue, 02 Oct 2001) | 3 lines
+2001-10-02 12:39:39  Rev 429    jorge
 
-Modified :
+	* job.c:
+	  Working on the problems of shmat.
+
+
+2001-10-02 12:38:53  Rev 428    jorge
+
+	* computer_status.c:
+	  Modified :
  * computer_status_init : now sets to zero both loadavg and ntasks.
 
-------------------------------------------------------------------------
-r427 | jorge | 2001-10-02 14:37:59 +0200 (Tue, 02 Oct 2001) | 3 lines
 
-Modified :
+2001-10-02 12:37:59  Rev 427    jorge
+
+	* computer.c:
+	  Modified :
  * computer_init : now calls computer_status_init
 
-------------------------------------------------------------------------
-r426 | jorge | 2001-10-02 14:37:10 +0200 (Tue, 02 Oct 2001) | 3 lines
 
-Modifications sending computer status. Now it only send the tasks when they are used.
+2001-10-02 12:37:10  Rev 426    jorge
+
+	* communications.c communications.h:
+	  Modifications sending computer status. Now it only send the tasks when they are used.
 Also now the task includes a index to itself in the structure. That index points to it's location in the computer.
 
-------------------------------------------------------------------------
-r425 | jorge | 2001-10-02 14:31:01 +0200 (Tue, 02 Oct 2001) | 2 lines
 
-Updated
+2001-10-02 12:31:01  Rev 425    jorge
 
-------------------------------------------------------------------------
-r423 | jorge | 2001-10-01 12:30:54 +0200 (Mon, 01 Oct 2001) | 2 lines
+	* todo:
+	  Updated
 
-More tooltips.
 
-------------------------------------------------------------------------
-r422 | jorge | 2001-09-28 16:59:30 +0200 (Fri, 28 Sep 2001) | 3 lines
+2001-10-01 10:30:54  Rev 423    jorge
 
-Added :
+	* drqman/drqm_jobs.c:
+	  More tooltips.
+
+
+2001-09-28 14:59:30  Rev 422    jorge
+
+	* drqman/drqm_jobs.c:
+	  Added :
  * more tooltips
 
-------------------------------------------------------------------------
-r421 | jorge | 2001-09-28 12:40:02 +0200 (Fri, 28 Sep 2001) | 3 lines
 
-Modified :
+2001-09-28 10:40:02  Rev 421    jorge
+
+	* master.c:
+	  Modified :
  * get_shared_memory : instead of kill(0,SIGINT) now uses exit(1) because we don't have the shared memory in case of failure and the clean_out function needs it.
 
-------------------------------------------------------------------------
-r420 | jorge | 2001-09-28 10:43:18 +0200 (Fri, 28 Sep 2001) | 10 lines
 
-Removed :
+2001-09-28 08:43:18  Rev 420    jorge
+
+	* drqman/drqm_jobs.c:
+	  Removed :
  * HStopJobDialog
  * djhs_bok_pressed
 
@@ -1321,26 +1644,30 @@ Added :
 Modified :
  * HStopJob : now uses ConfirmDialog
 
-------------------------------------------------------------------------
-r419 | jorge | 2001-09-26 12:47:35 +0200 (Wed, 26 Sep 2001) | 2 lines
 
-Added basic support for limits.
+2001-09-26 10:47:35  Rev 419    jorge
 
-------------------------------------------------------------------------
-r418 | jorge | 2001-09-25 17:57:53 +0200 (Tue, 25 Sep 2001) | 2 lines
+	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
+	  Added basic support for limits.
 
-Updated.
 
-------------------------------------------------------------------------
-r417 | jorge | 2001-09-25 17:55:41 +0200 (Tue, 25 Sep 2001) | 3 lines
+2001-09-25 15:57:53  Rev 418    jorge
 
-Modified :
+	* common.h:
+	  Updated.
+
+
+2001-09-25 15:55:41  Rev 417    jorge
+
+	* request.c:
+	  Modified :
  * handle_r_r_availjob : call to job_available now also uses icomp
 
-------------------------------------------------------------------------
-r416 | jorge | 2001-09-25 17:54:53 +0200 (Tue, 25 Sep 2001) | 8 lines
 
-Modified :
+2001-09-25 15:54:53  Rev 416    jorge
+
+	* job.c job.h:
+	  Modified :
  * job_available : now considers job.limits before assigning a job
  * job_first_frame_available : increments the number of running processes when assigning a frame
  * job_frame_waiting : decrements nprocs
@@ -1348,403 +1675,472 @@ Modified :
 Added:
  * job_limits_passed : that checks if the job limits relative to a specific computer are passed.
 
-------------------------------------------------------------------------
-r415 | jorge | 2001-09-25 17:50:44 +0200 (Tue, 25 Sep 2001) | 6 lines
 
-Added :
+2001-09-25 15:50:44  Rev 415    jorge
+
+	* computer.h computer.c:
+	  Added :
  * computer_ntasks_job : that returns the number of tasks that are running a particular job in the computer given.
 
 Modified :
  * computer_update_assigned : now increments the number of running tasks
 
-------------------------------------------------------------------------
-r414 | jorge | 2001-09-25 11:29:49 +0200 (Tue, 25 Sep 2001) | 2 lines
 
-Updated.
+2001-09-25 09:29:49  Rev 414    jorge
 
-------------------------------------------------------------------------
-r413 | jorge | 2001-09-25 11:29:39 +0200 (Tue, 25 Sep 2001) | 3 lines
+	* todo:
+	  Updated.
 
-Added :
+
+2001-09-25 09:29:39  Rev 413    jorge
+
+	* drqman/drqm_jobs.c drqman/drqm_computers.c:
+	  Added :
  * policy for scrolled windows, now scroll bars are automatic.
 
-------------------------------------------------------------------------
-r412 | jorge | 2001-09-25 10:23:50 +0200 (Tue, 25 Sep 2001) | 3 lines
 
-Added :
+2001-09-25 08:23:50  Rev 412    jorge
+
+	* job.c:
+	  Added :
  * job_init_limits : added basic initialization stuff
 
-------------------------------------------------------------------------
-r411 | jorge | 2001-09-24 18:10:43 +0200 (Mon, 24 Sep 2001) | 3 lines
 
-Added :
+2001-09-24 16:10:43  Rev 411    jorge
+
+	* drqman/drqm_jobs.c:
+	  Added :
  * several tooltips on buttons and entries
 
-------------------------------------------------------------------------
-r410 | jorge | 2001-09-24 18:10:20 +0200 (Mon, 24 Sep 2001) | 3 lines
 
-Added :
+2001-09-24 16:10:20  Rev 410    jorge
+
+	* drqman/drqm_common.h drqman/drqm_common.c:
+	  Added :
  * TooltipsNew : that creates a new tooltips object and sets the delay as TOOLTIPS_DELAY
 
-------------------------------------------------------------------------
-r409 | jorge | 2001-09-24 10:23:23 +0200 (Mon, 24 Sep 2001) | 3 lines
 
-Added :
+2001-09-24 08:23:23  Rev 409    jorge
+
+	* job.h:
+	  Added :
  * job_init_limits
 
-------------------------------------------------------------------------
-r408 | jorge | 2001-09-21 16:43:40 +0200 (Fri, 21 Sep 2001) | 6 lines
 
-Modified :
+2001-09-21 14:43:40  Rev 408    jorge
+
+	* task.c task.h:
+	  Modified :
  * init_tasks : is now task_init_all
 
 Added :
  * task_init
 
-------------------------------------------------------------------------
-r407 | jorge | 2001-09-21 16:42:02 +0200 (Fri, 21 Sep 2001) | 2 lines
 
-Minor changes
+2001-09-21 14:42:02  Rev 407    jorge
 
-------------------------------------------------------------------------
-r406 | jorge | 2001-09-21 16:41:43 +0200 (Fri, 21 Sep 2001) | 2 lines
+	* slave.c:
+	  Minor changes
 
-Minor changes.
 
-------------------------------------------------------------------------
-r405 | jorge | 2001-09-21 16:40:40 +0200 (Fri, 21 Sep 2001) | 4 lines
+2001-09-21 14:41:43  Rev 406    jorge
 
-Added :
+	* request.c:
+	  Minor changes.
+
+
+2001-09-21 14:40:40  Rev 405    jorge
+
+	* job.c job.h:
+	  Added :
  * job_copy
  * job_init_limits : is empty yet
 
-------------------------------------------------------------------------
-r404 | jorge | 2001-09-21 16:40:05 +0200 (Fri, 21 Sep 2001) | 3 lines
 
-Modified :
+2001-09-21 14:40:05  Rev 404    jorge
+
+	* computer_status.h computer_status.c:
+	  Modified :
  * init_computer_status : is now computer_status_init
 
-------------------------------------------------------------------------
-r403 | jorge | 2001-09-20 12:53:19 +0200 (Thu, 20 Sep 2001) | 2 lines
 
-Updated.
+2001-09-20 10:53:19  Rev 403    jorge
 
-------------------------------------------------------------------------
-r402 | jorge | 2001-09-20 12:52:56 +0200 (Thu, 20 Sep 2001) | 3 lines
+	* todo:
+	  Updated.
 
-Added :
+
+2001-09-20 10:52:56  Rev 402    jorge
+
+	* database.c communications.c database.h master.c communications.h:
+	  Added :
  * COMM_REPORT stuff
 
-------------------------------------------------------------------------
-r401 | jorge | 2001-09-20 12:52:35 +0200 (Thu, 20 Sep 2001) | 2 lines
 
-Minor bug fix.
+2001-09-20 10:52:35  Rev 401    jorge
 
-------------------------------------------------------------------------
-r400 | jorge | 2001-09-20 12:52:19 +0200 (Thu, 20 Sep 2001) | 2 lines
+	* job.c:
+	  Minor bug fix.
 
-Minor bugfixes.
 
-------------------------------------------------------------------------
-r399 | jorge | 2001-09-20 12:52:02 +0200 (Thu, 20 Sep 2001) | 3 lines
+2001-09-20 10:52:19  Rev 400    jorge
 
-Bug fix :
+	* request.c:
+	  Minor bugfixes.
+
+
+2001-09-20 10:52:02  Rev 399    jorge
+
+	* mayasg.c:
+	  Bug fix :
  * added missing headers
 
-------------------------------------------------------------------------
-r398 | jorge | 2001-09-20 12:51:09 +0200 (Thu, 20 Sep 2001) | 3 lines
 
-Bug fix :
+2001-09-20 10:51:09  Rev 398    jorge
+
+	* computer_status.c:
+	  Bug fix :
  * included missing headers.
 
-------------------------------------------------------------------------
-r397 | jorge | 2001-09-20 12:50:49 +0200 (Thu, 20 Sep 2001) | 3 lines
 
-Added :
+2001-09-20 10:50:49  Rev 397    jorge
+
+	* Makefile:
+	  Added :
  * COMM_REPORT
 
-------------------------------------------------------------------------
-r395 | jorge | 2001-09-19 12:36:24 +0200 (Wed, 19 Sep 2001) | 2 lines
 
-Updated
+2001-09-19 10:36:24  Rev 395    jorge
 
-------------------------------------------------------------------------
-r394 | jorge | 2001-09-19 11:59:02 +0200 (Wed, 19 Sep 2001) | 3 lines
+	* common.h:
+	  Updated
 
-Modified :
+
+2001-09-19 09:59:02  Rev 394    jorge
+
+	* constants.h:
+	  Modified :
  * MAXTIMENOCONN : now has a value of 120 seconds
 
-------------------------------------------------------------------------
-r393 | jorge | 2001-09-19 11:35:40 +0200 (Wed, 19 Sep 2001) | 2 lines
 
-Updated.
+2001-09-19 09:35:40  Rev 393    jorge
 
-------------------------------------------------------------------------
-r392 | jorge | 2001-09-19 11:35:10 +0200 (Wed, 19 Sep 2001) | 3 lines
+	* todo:
+	  Updated.
 
-Added :
+
+2001-09-19 09:35:10  Rev 392    jorge
+
+	* master.c:
+	  Added :
  * main : error detection on fork.
 
-------------------------------------------------------------------------
-r391 | jorge | 2001-09-19 11:08:45 +0200 (Wed, 19 Sep 2001) | 3 lines
 
-Modified :
+2001-09-19 09:08:45  Rev 391    jorge
+
+	* master.c:
+	  Modified :
  * check_lastconn_times : log message now has priority L_WARNING when removing a computer from the queue.
 
-------------------------------------------------------------------------
-r389 | jorge | 2001-09-18 15:25:24 +0200 (Tue, 18 Sep 2001) | 2 lines
 
-Updated.
+2001-09-18 13:25:24  Rev 389    jorge
 
-------------------------------------------------------------------------
-r388 | jorge | 2001-09-18 15:25:10 +0200 (Tue, 18 Sep 2001) | 3 lines
+	* todo:
+	  Updated.
 
-Added :
+
+2001-09-18 13:25:10  Rev 388    jorge
+
+	* slave.c:
+	  Added :
  * clean_out : now uses request_slavexit
 
-------------------------------------------------------------------------
-r387 | jorge | 2001-09-18 15:24:05 +0200 (Tue, 18 Sep 2001) | 3 lines
 
-Added :
+2001-09-18 13:24:05  Rev 387    jorge
+
+	* request.c request_codes.h request.h:
+	  Added :
  * family of R_R_SLAVEXIT functions and data.
 
-------------------------------------------------------------------------
-r386 | jorge | 2001-09-18 15:19:03 +0200 (Tue, 18 Sep 2001) | 3 lines
 
-Added :
+2001-09-18 13:19:03  Rev 386    jorge
+
+	* computer.h:
+	  Added :
  * computer_index_correct_master
 
-------------------------------------------------------------------------
-r385 | jorge | 2001-09-18 15:18:16 +0200 (Tue, 18 Sep 2001) | 3 lines
 
-Added :
+2001-09-18 13:18:16  Rev 385    jorge
+
+	* computer.c:
+	  Added :
  * computer_index_correct_master : checks if a icomp points to a used in range computer.
 
-------------------------------------------------------------------------
-r384 | jorge | 2001-09-18 14:58:46 +0200 (Tue, 18 Sep 2001) | 3 lines
 
-Removed :
+2001-09-18 12:58:46  Rev 384    jorge
+
+	* slave.c:
+	  Removed :
  * commented lines of alternative executing method.
 
-------------------------------------------------------------------------
-r383 | jorge | 2001-09-18 14:55:20 +0200 (Tue, 18 Sep 2001) | 2 lines
 
-Updated.
+2001-09-18 12:55:20  Rev 383    jorge
 
-------------------------------------------------------------------------
-r382 | jorge | 2001-09-18 14:54:57 +0200 (Tue, 18 Sep 2001) | 3 lines
+	* todo:
+	  Updated.
 
-Added :
+
+2001-09-18 12:54:57  Rev 382    jorge
+
+	* drqman/drqm_jobs.c:
+	  Added :
  * total frames column on the job overview.
 
-------------------------------------------------------------------------
-r381 | jorge | 2001-09-18 14:38:40 +0200 (Tue, 18 Sep 2001) | 2 lines
 
-Minor changes.
+2001-09-18 12:38:40  Rev 381    jorge
 
-------------------------------------------------------------------------
-r380 | jorge | 2001-09-18 14:38:20 +0200 (Tue, 18 Sep 2001) | 3 lines
+	* slave.c:
+	  Minor changes.
 
-Bug fix :
+
+2001-09-18 12:38:20  Rev 380    jorge
+
+	* job.c:
+	  Bug fix :
  * job_update_info : finished jobs didn't move to waiting when there were waiting frames.
 
-------------------------------------------------------------------------
-r379 | jorge | 2001-09-18 12:48:16 +0200 (Tue, 18 Sep 2001) | 2 lines
 
-Updated.
+2001-09-18 10:48:16  Rev 379    jorge
 
-------------------------------------------------------------------------
-r378 | jorge | 2001-09-18 12:48:10 +0200 (Tue, 18 Sep 2001) | 2 lines
+	* todo:
+	  Updated.
 
-More comments.
 
-------------------------------------------------------------------------
-r377 | jorge | 2001-09-18 12:47:21 +0200 (Tue, 18 Sep 2001) | 3 lines
+2001-09-18 10:48:10  Rev 378    jorge
 
-Bug fix :
+	* master.c:
+	  More comments.
+
+
+2001-09-18 10:47:21  Rev 377    jorge
+
+	* slave.c:
+	  Bug fix :
  * main : the delay after launching a task was too high and the computer was removed from the queue.
 
-------------------------------------------------------------------------
-r376 | jorge | 2001-09-18 12:46:29 +0200 (Tue, 18 Sep 2001) | 3 lines
 
-Modified :
+2001-09-18 10:46:29  Rev 376    jorge
+
+	* constants.h:
+	  Modified :
  * MAXTIMENOCONN : now has a value of 45 seconds
 
-------------------------------------------------------------------------
-r375 | jorge | 2001-09-18 12:45:44 +0200 (Tue, 18 Sep 2001) | 2 lines
 
-Version update.
+2001-09-18 10:45:44  Rev 375    jorge
 
-------------------------------------------------------------------------
-r374 | jorge | 2001-09-18 11:25:20 +0200 (Tue, 18 Sep 2001) | 3 lines
+	* common.h:
+	  Version update.
 
-Added :
+
+2001-09-18 09:25:20  Rev 374    jorge
+
+	* drqman/drqm_jobs.c:
+	  Added :
  * drqm_common.h
 
-------------------------------------------------------------------------
-r373 | jorge | 2001-09-18 11:25:03 +0200 (Tue, 18 Sep 2001) | 6 lines
 
-Removed :
+2001-09-18 09:25:03  Rev 373    jorge
+
+	* drqman/drqm_computers.c:
+	  Removed :
  * KillTaskDialog
 
 Modified :
  * KillTask : now uses ConfirmDialog
 
-------------------------------------------------------------------------
-r372 | jorge | 2001-09-18 11:24:11 +0200 (Tue, 18 Sep 2001) | 2 lines
 
-First commit.
+2001-09-18 09:24:11  Rev 372    jorge
 
-------------------------------------------------------------------------
-r371 | jorge | 2001-09-18 11:23:54 +0200 (Tue, 18 Sep 2001) | 3 lines
+	* drqman/drqm_common.h drqman/drqm_common.c:
+	  First commit.
 
-Added :
+
+2001-09-18 09:23:54  Rev 371    jorge
+
+	* drqman/Makefile:
+	  Added :
  * drqm_common.o
 
-------------------------------------------------------------------------
-r370 | jorge | 2001-09-17 16:53:58 +0200 (Mon, 17 Sep 2001) | 3 lines
 
-Modified :
+2001-09-17 14:53:58  Rev 370    jorge
+
+	* task.c:
+	  Modified :
  * task_environment_set : unified use of putenv both in linux and irix.
 
-------------------------------------------------------------------------
-r369 | jorge | 2001-09-17 16:53:15 +0200 (Mon, 17 Sep 2001) | 3 lines
 
-Added :
+2001-09-17 14:53:15  Rev 369    jorge
+
+	* slave.c:
+	  Added :
  * main : launcehd variable and checking after launching tasks to have an appropiate delay if tasks have been launched.
 
-------------------------------------------------------------------------
-r368 | jorge | 2001-09-17 16:51:30 +0200 (Mon, 17 Sep 2001) | 3 lines
 
-Modified :
+2001-09-17 14:51:30  Rev 368    jorge
+
+	* job.c:
+	  Modified :
  * job_environment_set : removed iframe environment variable
 
-------------------------------------------------------------------------
-r366 | jorge | 2001-09-17 14:36:14 +0200 (Mon, 17 Sep 2001) | 2 lines
 
-Updated.
+2001-09-17 12:36:14  Rev 366    jorge
 
-------------------------------------------------------------------------
-r365 | jorge | 2001-09-17 14:35:54 +0200 (Mon, 17 Sep 2001) | 3 lines
+	* common.h:
+	  Updated.
 
-Modified :
+
+2001-09-17 12:35:54  Rev 365    jorge
+
+	* job.c:
+	  Modified :
  * job_environment_set : now using putenv both on Irix and Linux.
 
-------------------------------------------------------------------------
-r364 | jorge | 2001-09-17 14:30:52 +0200 (Mon, 17 Sep 2001) | 2 lines
 
-Updated.
+2001-09-17 12:30:52  Rev 364    jorge
 
-------------------------------------------------------------------------
-r363 | jorge | 2001-09-17 14:30:10 +0200 (Mon, 17 Sep 2001) | 3 lines
+	* todo:
+	  Updated.
 
-Bug fix:
+
+2001-09-17 12:30:10  Rev 363    jorge
+
+	* job.c:
+	  Bug fix:
  * job_environment_set : on Irix using putenv, env strings must point to static localtions.
 
-------------------------------------------------------------------------
-r362 | jorge | 2001-09-17 12:56:15 +0200 (Mon, 17 Sep 2001) | 3 lines
 
-Bug fix:
+2001-09-17 10:56:15  Rev 362    jorge
+
+	* computer.c:
+	  Bug fix:
  * computer_available : counting number of possible tasks.
 
-------------------------------------------------------------------------
-r361 | jorge | 2001-09-17 12:55:22 +0200 (Mon, 17 Sep 2001) | 2 lines
 
-Minor bugfix.
+2001-09-17 10:55:22  Rev 361    jorge
 
-------------------------------------------------------------------------
-r360 | jorge | 2001-09-17 12:46:45 +0200 (Mon, 17 Sep 2001) | 3 lines
+	* Makefile:
+	  Minor bugfix.
 
-Bug fix:
+
+2001-09-17 10:46:45  Rev 360    jorge
+
+	* drqman/drqm_jobs.c:
+	  Bug fix:
  * jdd_maya_viewcmd_exec : exit on failure on the fork to view images.
 
-------------------------------------------------------------------------
-r359 | jorge | 2001-09-16 18:37:09 +0200 (Sun, 16 Sep 2001) | 2 lines
 
-Minor changes.
+2001-09-16 16:37:09  Rev 359    jorge
 
-------------------------------------------------------------------------
-r358 | jorge | 2001-09-16 18:36:50 +0200 (Sun, 16 Sep 2001) | 3 lines
+	* drqman/drqm_jobs.c:
+	  Minor changes.
 
-Bug fix:
+
+2001-09-16 16:36:50  Rev 358    jorge
+
+	* task.c:
+	  Bug fix:
  * header missing
 
-------------------------------------------------------------------------
-r357 | jorge | 2001-09-16 17:40:07 +0200 (Sun, 16 Sep 2001) | 2 lines
 
-Initial KOJ support.
+2001-09-16 15:40:07  Rev 357    jorge
 
-------------------------------------------------------------------------
-r356 | jorge | 2001-09-16 17:39:40 +0200 (Sun, 16 Sep 2001) | 3 lines
+	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
+	  Initial KOJ support.
 
-Added :
+
+2001-09-16 15:39:40  Rev 356    jorge
+
+	* task.c task.h:
+	  Added :
  * task_environment_set
 
-------------------------------------------------------------------------
-r355 | jorge | 2001-09-16 17:38:52 +0200 (Sun, 16 Sep 2001) | 3 lines
 
-Removed :
+2001-09-16 15:38:52  Rev 355    jorge
+
+	* slave.h:
+	  Removed :
  * set_environment
 
-------------------------------------------------------------------------
-r354 | jorge | 2001-09-16 17:38:12 +0200 (Sun, 16 Sep 2001) | 3 lines
 
-Modified :
+2001-09-16 15:38:12  Rev 354    jorge
+
+	* slave.c:
+	  Modified :
  * launch_task now calls task_environment_set instead of set_environment
 
-------------------------------------------------------------------------
-r353 | jorge | 2001-09-16 17:36:17 +0200 (Sun, 16 Sep 2001) | 3 lines
 
-Added :
+2001-09-16 15:36:17  Rev 353    jorge
+
+	* job.c job.h:
+	  Added :
  * job_environment_set
 
-------------------------------------------------------------------------
-r352 | jorge | 2001-09-14 18:32:01 +0200 (Fri, 14 Sep 2001) | 2 lines
 
-Working on... not compilable.
+2001-09-14 16:32:01  Rev 352    jorge
 
-------------------------------------------------------------------------
-r351 | jorge | 2001-09-14 10:56:23 +0200 (Fri, 14 Sep 2001) | 2 lines
+	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
+	  Working on... not compilable.
 
-Updated
 
-------------------------------------------------------------------------
-r350 | jorge | 2001-09-14 10:56:18 +0200 (Fri, 14 Sep 2001) | 3 lines
+2001-09-14 08:56:23  Rev 351    jorge
 
-Added :
+	* todo:
+	  Updated
+
+
+2001-09-14 08:56:18  Rev 350    jorge
+
+	* job.h:
+	  Added :
  * Koj structure and constants.
 
-------------------------------------------------------------------------
-r349 | jorge | 2001-09-14 10:55:44 +0200 (Fri, 14 Sep 2001) | 3 lines
 
-Added :
+2001-09-14 08:55:44  Rev 349    jorge
+
+	* communications.c:
+	  Added :
  * send_job and recv_job : koj stuff
 
-------------------------------------------------------------------------
-r348 | jorge | 2001-09-13 17:55:39 +0200 (Thu, 13 Sep 2001) | 2 lines
 
-Working on kind of job (KOJ).
+2001-09-13 15:55:39  Rev 348    jorge
 
-------------------------------------------------------------------------
-r347 | jorge | 2001-09-12 17:05:09 +0200 (Wed, 12 Sep 2001) | 2 lines
+	* job.h:
+	  Working on kind of job (KOJ).
 
-Job.icomp is now uint32_t as in computer.id
 
-------------------------------------------------------------------------
-r345 | jorge | 2001-09-12 11:46:00 +0200 (Wed, 12 Sep 2001) | 2 lines
+2001-09-12 15:05:09  Rev 347    jorge
 
-Updated version number
+	* communications.c job.h:
+	  Job.icomp is now uint32_t as in computer.id
 
-------------------------------------------------------------------------
-r344 | jorge | 2001-09-11 14:52:55 +0200 (Tue, 11 Sep 2001) | 3 lines
 
-Added :
+2001-09-12 09:46:00  Rev 345    jorge
+
+	* common.h:
+	  Updated version number
+
+
+2001-09-11 12:52:55  Rev 344    jorge
+
+	* drqman/drqm_request.h drqman/drqm_request.c:
+	  Added :
  * drqm_request_slave_task_kill
 
-------------------------------------------------------------------------
-r343 | jorge | 2001-09-11 14:52:29 +0200 (Tue, 11 Sep 2001) | 10 lines
 
-Added :
+2001-09-11 12:52:29  Rev 343    jorge
+
+	* drqman/drqm_computers.c:
+	  Added :
  * CreateMenuTasks
  * PopupMenuTasks
  * KillTask
@@ -1754,785 +2150,931 @@ Added :
 That means, support for killing the selected tasks from the
 computer details dialog.
 
-------------------------------------------------------------------------
-r342 | jorge | 2001-09-10 17:42:56 +0200 (Mon, 10 Sep 2001) | 2 lines
 
-Updated.
+2001-09-10 15:42:56  Rev 342    jorge
 
-------------------------------------------------------------------------
-r340 | jorge | 2001-09-10 11:17:44 +0200 (Mon, 10 Sep 2001) | 4 lines
+	* todo:
+	  Updated.
 
-Modified :
+
+2001-09-10 09:17:44  Rev 340    jorge
+
+	* request.c:
+	  Modified :
  * request_job_available when it assigns the task to the computer
 	also adds maxfreeloadcpu to the load average so it reflects what could be in the future.
 
-------------------------------------------------------------------------
-r339 | jorge | 2001-09-10 11:15:50 +0200 (Mon, 10 Sep 2001) | 4 lines
 
-Modified:
+2001-09-10 09:15:50  Rev 339    jorge
+
+	* computer.c:
+	  Modified:
  * computer_available now tries to take care of the difference of load between running tasks
 	and the load from other processes
 
-------------------------------------------------------------------------
-r338 | jorge | 2001-09-10 00:04:34 +0200 (Mon, 10 Sep 2001) | 3 lines
 
-Added :
+2001-09-09 22:04:34  Rev 338    jorge
+
+	* drqman/drqm_request.h drqman/drqm_request.c:
+	  Added :
  * drqm_request_slave_limits_maxfreeloadcpu_set
 
-------------------------------------------------------------------------
-r337 | jorge | 2001-09-10 00:03:39 +0200 (Mon, 10 Sep 2001) | 5 lines
 
-Added :
+2001-09-09 22:03:39  Rev 337    jorge
+
+	* drqman/drqm_computers.c:
+	  Added :
  * cdd_limits_maxfreeloadcpu_bcp
  * mflc_dialog
  * mflcd_bsumbit_pressed
 
-------------------------------------------------------------------------
-r336 | jorge | 2001-09-10 00:02:30 +0200 (Mon, 10 Sep 2001) | 3 lines
 
-Added :
+2001-09-09 22:02:30  Rev 336    jorge
+
+	* request_codes.h:
+	  Added :
  * RS_R_SETNMAXCPUS and RS_A_SETNMAXCPUS
 
-------------------------------------------------------------------------
-r335 | jorge | 2001-09-09 23:56:09 +0200 (Sun, 09 Sep 2001) | 4 lines
 
-Added :
+2001-09-09 21:56:09  Rev 335    jorge
+
+	* request.h:
+	  Added :
  * request_slave_limits_maxfreeloadcpu_set
  * handle_rs_r_setmaxfreeloadcpu
 
-------------------------------------------------------------------------
-r334 | jorge | 2001-09-09 23:55:37 +0200 (Sun, 09 Sep 2001) | 3 lines
 
-Added :
+2001-09-09 21:55:37  Rev 334    jorge
+
+	* request.c:
+	  Added :
  * RS_R_SETMAXFREELOADCPU family of functions
 
-------------------------------------------------------------------------
-r333 | jorge | 2001-09-09 23:54:56 +0200 (Sun, 09 Sep 2001) | 2 lines
 
-Version update.
+2001-09-09 21:54:56  Rev 333    jorge
 
-------------------------------------------------------------------------
-r332 | jorge | 2001-09-08 23:41:52 +0200 (Sat, 08 Sep 2001) | 4 lines
+	* common.h:
+	  Version update.
 
-Minor changes.
+
+2001-09-08 21:41:52  Rev 332    jorge
+
+	* drqman/drqm_request.h drqman/drqm_request.c:
+	  Minor changes.
 Added:
  * drqm_request_slave_limits_nmaxcpus_set
 
-------------------------------------------------------------------------
-r331 | jorge | 2001-09-08 23:39:48 +0200 (Sat, 08 Sep 2001) | 3 lines
 
-Added:
+2001-09-08 21:39:48  Rev 331    jorge
+
+	* drqman/drqm_computers.h:
+	  Added:
  * enmaxcpus and emaxfreeloadcpu to cdd_li struct
 
-------------------------------------------------------------------------
-r330 | jorge | 2001-09-08 23:37:34 +0200 (Sat, 08 Sep 2001) | 5 lines
 
-Added:
+2001-09-08 21:37:34  Rev 330    jorge
+
+	* drqman/drqm_computers.c:
+	  Added:
  * cdd_limits_nmaxcpus_bcp
  * nmc_dialog
  * nmcd_bsumbit_pressed
 
-------------------------------------------------------------------------
-r329 | jorge | 2001-09-08 22:47:15 +0200 (Sat, 08 Sep 2001) | 3 lines
 
-Bug fix:
+2001-09-08 20:47:15  Rev 329    jorge
+
+	* slave.c:
+	  Bug fix:
  * update_computer_limits goes after the registration.
 
-------------------------------------------------------------------------
-r328 | jorge | 2001-09-08 22:46:38 +0200 (Sat, 08 Sep 2001) | 4 lines
 
-Added:
+2001-09-08 20:46:38  Rev 328    jorge
+
+	* request_codes.h:
+	  Added:
  * R_R_UCLIMITS and R_A_UCLIMITS
  * RS_R_SETNMAXCPUS and RS_A_SETNMAXCPUS
 
-------------------------------------------------------------------------
-r327 | jorge | 2001-09-08 22:45:46 +0200 (Sat, 08 Sep 2001) | 6 lines
 
-Added:
+2001-09-08 20:45:46  Rev 327    jorge
+
+	* request.h:
+	  Added:
  * handle_r_r_uclimits
  * update_computer_limits
  * request_slave_limits_nmaxcpus_set
  * handle_rs_r_setnmaxcpus
 
-------------------------------------------------------------------------
-r326 | jorge | 2001-09-08 22:42:43 +0200 (Sat, 08 Sep 2001) | 5 lines
 
-Added:
+2001-09-08 20:42:43  Rev 326    jorge
+
+	* request.c:
+	  Added:
  * R_R_UCLIMITS family of functions
  * RS_R_SETNMAXCPUS family of functions
  * request_slave_killtask now has a who parameter
 
-------------------------------------------------------------------------
-r325 | jorge | 2001-09-08 20:41:18 +0200 (Sat, 08 Sep 2001) | 3 lines
 
-Bug fix:
+2001-09-08 18:41:18  Rev 325    jorge
+
+	* drqman/drqm_jobs.c:
+	  Bug fix:
  * SeeFrameLogDialog had window title "New Job"
 
-------------------------------------------------------------------------
-r324 | jorge | 2001-09-08 19:00:10 +0200 (Sat, 08 Sep 2001) | 2 lines
 
-Minor update.
+2001-09-08 17:00:10  Rev 324    jorge
 
-------------------------------------------------------------------------
-r323 | jorge | 2001-09-08 18:59:38 +0200 (Sat, 08 Sep 2001) | 3 lines
+	* computer.c:
+	  Minor update.
 
-Bug fix:
+
+2001-09-08 16:59:38  Rev 323    jorge
+
+	* slave.c:
+	  Bug fix:
  * computer_init_limits is called now after get_hwinfo.
 
-------------------------------------------------------------------------
-r322 | jorge | 2001-09-08 18:58:43 +0200 (Sat, 08 Sep 2001) | 5 lines
 
-Modified function:
+2001-09-08 16:58:43  Rev 322    jorge
+
+	* computer.c:
+	  Modified function:
  * computer_available now takes care of the load. Based on the
    load determines how many cpus are being used and so substracts
    them to the previous possible tasks. Use the source Luke.
 
-------------------------------------------------------------------------
-r321 | jorge | 2001-09-08 18:21:18 +0200 (Sat, 08 Sep 2001) | 2 lines
 
-Removed call to computer_init_limits because it created an inconsistency with the slave information.
+2001-09-08 16:21:18  Rev 321    jorge
 
-------------------------------------------------------------------------
-r320 | jorge | 2001-09-08 18:20:32 +0200 (Sat, 08 Sep 2001) | 2 lines
+	* request.c:
+	  Removed call to computer_init_limits because it created an inconsistency with the slave information.
 
-Added call to computer_init_limits before registering.
 
-------------------------------------------------------------------------
-r319 | jorge | 2001-09-08 17:55:35 +0200 (Sat, 08 Sep 2001) | 3 lines
+2001-09-08 16:20:32  Rev 320    jorge
 
-Updated function:
+	* slave.c:
+	  Added call to computer_init_limits before registering.
+
+
+2001-09-08 15:55:35  Rev 319    jorge
+
+	* computer.c:
+	  Updated function:
  * computer_index_addr: more comments and small change.
 
-------------------------------------------------------------------------
-r318 | jorge | 2001-09-08 17:36:27 +0200 (Sat, 08 Sep 2001) | 2 lines
 
-Minor update.
+2001-09-08 15:36:27  Rev 318    jorge
 
-------------------------------------------------------------------------
-r317 | jorge | 2001-09-08 17:35:54 +0200 (Sat, 08 Sep 2001) | 3 lines
+	* drqman/drqm_jobs.h:
+	  Minor update.
 
-Added struct:
+
+2001-09-08 15:35:54  Rev 317    jorge
+
+	* drqman/drqm_computers.h:
+	  Added struct:
  * struct cdd_li (limits info) inside drqmc_cddi (computer details dialog.
 
-------------------------------------------------------------------------
-r316 | jorge | 2001-09-08 17:34:25 +0200 (Sat, 08 Sep 2001) | 5 lines
 
-Naming change:
+2001-09-08 15:34:25  Rev 316    jorge
+
+	* drqman/drqm_computers.c:
+	  Naming change:
  * numproc is now ncpus
 Added:
  * limits basic info on computers details dialog
 
-------------------------------------------------------------------------
-r315 | jorge | 2001-09-08 15:47:37 +0200 (Sat, 08 Sep 2001) | 6 lines
 
-Naming change:
+2001-09-08 13:47:37  Rev 315    jorge
+
+	* communications.c:
+	  Naming change:
  * hwinfo->numproc is now hwinfo->ncpus.
 Bugs solved:
  * in [send|recv]_computer solved. Now returns 1 on success.
  * in [send|recv]_computer_limits. Wrong variable name.
 
-------------------------------------------------------------------------
-r314 | jorge | 2001-09-08 15:37:40 +0200 (Sat, 08 Sep 2001) | 2 lines
 
-Naming change numproc is now ncpus.
+2001-09-08 13:37:40  Rev 314    jorge
 
-------------------------------------------------------------------------
-r313 | jorge | 2001-09-07 18:44:08 +0200 (Fri, 07 Sep 2001) | 2 lines
+	* computer_info.c:
+	  Naming change numproc is now ncpus.
 
-Added commentaries.
 
-------------------------------------------------------------------------
-r312 | jorge | 2001-09-07 18:43:39 +0200 (Fri, 07 Sep 2001) | 3 lines
+2001-09-07 16:44:08  Rev 313    jorge
 
-Modified naming:
+	* request.c:
+	  Added commentaries.
+
+
+2001-09-07 16:43:39  Rev 312    jorge
+
+	* computer_info.h:
+	  Modified naming:
  * numproc goes to ncpus
 
-------------------------------------------------------------------------
-r311 | jorge | 2001-09-07 18:42:47 +0200 (Fri, 07 Sep 2001) | 7 lines
 
-Added struct:
+2001-09-07 16:42:47  Rev 311    jorge
+
+	* computer.h computer.c:
+	  Added struct:
  * computer_limits
 Modified struct:
  * computer to add the limits
 Added function:
  * computer_init_limits
 
-------------------------------------------------------------------------
-r310 | jorge | 2001-09-07 18:39:22 +0200 (Fri, 07 Sep 2001) | 6 lines
 
-Added:
+2001-09-07 16:39:22  Rev 310    jorge
+
+	* communications.c communications.h:
+	  Added:
  * recv_computer_limits
  * send_computer_limits
 
 Modified send_computer and recv_computer to send and receive the computer limits.
 
-------------------------------------------------------------------------
-r309 | jorge | 2001-09-07 18:36:21 +0200 (Fri, 07 Sep 2001) | 2 lines
 
-Updated
+2001-09-07 16:36:21  Rev 309    jorge
 
-------------------------------------------------------------------------
-r308 | jorge | 2001-09-07 11:41:08 +0200 (Fri, 07 Sep 2001) | 2 lines
+	* todo:
+	  Updated
 
-Minor bug fix.
 
-------------------------------------------------------------------------
-r307 | jorge | 2001-09-07 11:36:43 +0200 (Fri, 07 Sep 2001) | 2 lines
+2001-09-07 09:41:08  Rev 308    jorge
 
-Minor message update.
+	* request.c:
+	  Minor bug fix.
 
-------------------------------------------------------------------------
-r306 | jorge | 2001-09-07 11:16:51 +0200 (Fri, 07 Sep 2001) | 2 lines
 
-Naming changes
+2001-09-07 09:36:43  Rev 307    jorge
 
-------------------------------------------------------------------------
-r305 | jorge | 2001-09-07 01:03:26 +0200 (Fri, 07 Sep 2001) | 2 lines
+	* request.c:
+	  Minor message update.
 
-Added drqm_request_job_frame_kill_finish.
 
-------------------------------------------------------------------------
-r304 | jorge | 2001-09-07 01:03:04 +0200 (Fri, 07 Sep 2001) | 2 lines
+2001-09-07 09:16:51  Rev 306    jorge
 
-Added jdd_kill_finish_frames.
+	* drqman/drqm_request.h drqman/drqm_computers.c drqman/drqman.h 
+	  drqman/drqm_computers.h drqman/drqm_request.c:
+	  Naming changes
 
-------------------------------------------------------------------------
-r303 | jorge | 2001-09-07 01:02:07 +0200 (Fri, 07 Sep 2001) | 2 lines
 
-Added R_R_JOBFKFIN family of functions and data structures.
+2001-09-06 23:03:26  Rev 305    jorge
 
-------------------------------------------------------------------------
-r302 | jorge | 2001-09-07 01:01:30 +0200 (Fri, 07 Sep 2001) | 2 lines
+	* drqman/drqm_request.h drqman/drqm_request.c:
+	  Added drqm_request_job_frame_kill_finish.
 
-Minor updates.
 
-------------------------------------------------------------------------
-r301 | jorge | 2001-09-07 00:37:44 +0200 (Fri, 07 Sep 2001) | 2 lines
+2001-09-06 23:03:04  Rev 304    jorge
 
-Added documentation stuff.
+	* drqman/drqm_jobs.c:
+	  Added jdd_kill_finish_frames.
 
-------------------------------------------------------------------------
-r300 | jorge | 2001-09-06 17:28:57 +0200 (Thu, 06 Sep 2001) | 2 lines
 
-Minor update.
+2001-09-06 23:02:07  Rev 303    jorge
 
-------------------------------------------------------------------------
-r299 | jorge | 2001-09-06 16:33:36 +0200 (Thu, 06 Sep 2001) | 2 lines
+	* request.c request_codes.h request.h:
+	  Added R_R_JOBFKFIN family of functions and data structures.
 
-Added drqm_request_job_frame_finish.
 
-------------------------------------------------------------------------
-r298 | jorge | 2001-09-06 16:32:39 +0200 (Thu, 06 Sep 2001) | 2 lines
+2001-09-06 23:01:30  Rev 302    jorge
 
-Added jdd_finish_frames.
+	* master.c:
+	  Minor updates.
 
-------------------------------------------------------------------------
-r297 | jorge | 2001-09-06 16:00:26 +0200 (Thu, 06 Sep 2001) | 2 lines
 
-Added R_R_JOBFFINI family of functions and data structures.
+2001-09-06 22:37:44  Rev 301    jorge
 
-------------------------------------------------------------------------
-r296 | jorge | 2001-09-06 15:59:13 +0200 (Thu, 06 Sep 2001) | 2 lines
+	* Makefile:
+	  Added documentation stuff.
 
-Minor update.
 
-------------------------------------------------------------------------
-r295 | jorge | 2001-09-06 15:06:59 +0200 (Thu, 06 Sep 2001) | 2 lines
+2001-09-06 15:28:57  Rev 300    jorge
 
-Changed job.id size from char to uint32_t.
+	* drqman/drqm_request.c:
+	  Minor update.
 
-------------------------------------------------------------------------
-r294 | jorge | 2001-09-06 12:43:41 +0200 (Thu, 06 Sep 2001) | 3 lines
 
-Added mayasg_default_script_path and related data.
+2001-09-06 14:33:36  Rev 299    jorge
+
+	* drqman/drqm_request.h drqman/drqm_request.c:
+	  Added drqm_request_job_frame_finish.
+
+
+2001-09-06 14:32:39  Rev 298    jorge
+
+	* drqman/drqm_jobs.c:
+	  Added jdd_finish_frames.
+
+
+2001-09-06 14:00:26  Rev 297    jorge
+
+	* request.c request_codes.h request.h:
+	  Added R_R_JOBFFINI family of functions and data structures.
+
+
+2001-09-06 13:59:13  Rev 296    jorge
+
+	* communications.c:
+	  Minor update.
+
+
+2001-09-06 13:06:59  Rev 295    jorge
+
+	* communications.c job.h:
+	  Changed job.id size from char to uint32_t.
+
+
+2001-09-06 10:43:41  Rev 294    jorge
+
+	* mayasg.h mayasg.c:
+	  Added mayasg_default_script_path and related data.
 Modified mayasg_create to use the previous function and data.
 
-------------------------------------------------------------------------
-r293 | jorge | 2001-09-06 12:42:41 +0200 (Thu, 06 Sep 2001) | 2 lines
 
-Added script directory search and functionality.
+2001-09-06 10:42:41  Rev 293    jorge
 
-------------------------------------------------------------------------
-r292 | jorge | 2001-09-06 12:19:43 +0200 (Thu, 06 Sep 2001) | 2 lines
+	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
+	  Added script directory search and functionality.
 
-Added job frame kill functions and data.
 
-------------------------------------------------------------------------
-r291 | jorge | 2001-09-06 12:19:06 +0200 (Thu, 06 Sep 2001) | 2 lines
+2001-09-06 10:19:43  Rev 292    jorge
 
-Updated.
+	* drqman/drqm_jobs.c drqman/drqm_request.h drqman/drqm_request.c:
+	  Added job frame kill functions and data.
 
-------------------------------------------------------------------------
-r290 | jorge | 2001-09-06 12:18:56 +0200 (Thu, 06 Sep 2001) | 2 lines
 
-Added R_R_JOBFKILL family of functions and data.
+2001-09-06 10:19:06  Rev 291    jorge
 
-------------------------------------------------------------------------
-r289 | jorge | 2001-09-06 12:18:29 +0200 (Thu, 06 Sep 2001) | 2 lines
+	* todo:
+	  Updated.
 
-Added -v info on usage function.
 
-------------------------------------------------------------------------
-r287 | jorge | 2001-09-05 17:18:40 +0200 (Wed, 05 Sep 2001) | 2 lines
+2001-09-06 10:18:56  Rev 290    jorge
 
-Added -v parameter to show the last tag.
+	* request.c request_codes.h request.h:
+	  Added R_R_JOBFKILL family of functions and data.
 
-------------------------------------------------------------------------
-r286 | jorge | 2001-09-05 17:18:05 +0200 (Wed, 05 Sep 2001) | 3 lines
 
-Added show_version.
+2001-09-06 10:18:29  Rev 289    jorge
+
+	* slave.c master.c:
+	  Added -v info on usage function.
+
+
+2001-09-05 15:18:40  Rev 287    jorge
+
+	* slave.c master.c:
+	  Added -v parameter to show the last tag.
+
+
+2001-09-05 15:18:05  Rev 286    jorge
+
+	* common.h:
+	  Added show_version.
 Added VERSION define.
 
-------------------------------------------------------------------------
-r285 | jorge | 2001-09-05 17:17:38 +0200 (Wed, 05 Sep 2001) | 2 lines
 
-Added show_version.
+2001-09-05 15:17:38  Rev 285    jorge
 
-------------------------------------------------------------------------
-r284 | jorge | 2001-09-05 17:13:48 +0200 (Wed, 05 Sep 2001) | 2 lines
+	* common.c:
+	  Added show_version.
 
-Bug Fix.
 
-------------------------------------------------------------------------
-r283 | jorge | 2001-09-05 17:12:44 +0200 (Wed, 05 Sep 2001) | 2 lines
+2001-09-05 15:13:48  Rev 284    jorge
 
-Working the basics.
+	* tag_edit:
+	  Bug Fix.
 
-------------------------------------------------------------------------
-r282 | jorge | 2001-09-05 16:31:11 +0200 (Wed, 05 Sep 2001) | 2 lines
 
-Added to repository
+2001-09-05 15:12:44  Rev 283    jorge
 
-------------------------------------------------------------------------
-r281 | jorge | 2001-09-05 15:36:39 +0200 (Wed, 05 Sep 2001) | 2 lines
+	* tag_edit:
+	  Working the basics.
 
-Test commit.
 
-------------------------------------------------------------------------
-r279 | jorge | 2001-09-05 14:56:08 +0200 (Wed, 05 Sep 2001) | 2 lines
+2001-09-05 14:31:11  Rev 282    jorge
 
-Bug fixes.
+	* tag_edit:
+	  Added to repository
 
-------------------------------------------------------------------------
-r278 | jorge | 2001-09-05 14:52:12 +0200 (Wed, 05 Sep 2001) | 2 lines
 
-Minor update.
+2001-09-05 13:36:39  Rev 281    jorge
 
-------------------------------------------------------------------------
-r277 | jorge | 2001-09-05 14:49:37 +0200 (Wed, 05 Sep 2001) | 2 lines
+	* slave.c:
+	  Test commit.
 
-Bugfixes and updates.
 
-------------------------------------------------------------------------
-r275 | jorge | 2001-09-05 11:54:03 +0200 (Wed, 05 Sep 2001) | 2 lines
+2001-09-05 12:56:08  Rev 279    jorge
 
-Solved fchmod bugfix.
+	* job.c:
+	  Bug fixes.
 
-------------------------------------------------------------------------
-r274 | jorge | 2001-09-05 11:53:27 +0200 (Wed, 05 Sep 2001) | 4 lines
 
-Added some more checks.
+2001-09-05 12:52:12  Rev 278    jorge
+
+	* slave.c:
+	  Minor update.
+
+
+2001-09-05 12:49:37  Rev 277    jorge
+
+	* request.c job.c:
+	  Bugfixes and updates.
+
+
+2001-09-05 09:54:03  Rev 275    jorge
+
+	* mayasg.c:
+	  Solved fchmod bugfix.
+
+
+2001-09-05 09:53:27  Rev 274    jorge
+
+	* job.c job.h:
+	  Added some more checks.
 Added job_index_correct_master.
 Bug fixes.
 
-------------------------------------------------------------------------
-r273 | jorge | 2001-09-05 11:48:40 +0200 (Wed, 05 Sep 2001) | 2 lines
 
-Solved small bug.
+2001-09-05 09:48:40  Rev 273    jorge
 
-------------------------------------------------------------------------
-r272 | jorge | 2001-09-05 11:43:53 +0200 (Wed, 05 Sep 2001) | 2 lines
+	* computer_status.c:
+	  Solved small bug.
 
-Solved bug of permissions on irix_install target.
 
-------------------------------------------------------------------------
-r271 | jorge | 2001-09-05 01:28:53 +0200 (Wed, 05 Sep 2001) | 2 lines
+2001-09-05 09:43:53  Rev 272    jorge
 
-Naming update.
+	* Makefile:
+	  Solved bug of permissions on irix_install target.
 
-------------------------------------------------------------------------
-r270 | jorge | 2001-09-05 01:28:38 +0200 (Wed, 05 Sep 2001) | 3 lines
 
-Naming update.
+2001-09-04 23:28:53  Rev 271    jorge
+
+	* drqman/drqman.h:
+	  Naming update.
+
+
+2001-09-04 23:28:38  Rev 270    jorge
+
+	* drqman/drqm_request.h drqman/drqm_request.c:
+	  Naming update.
 Added drqm_request_job_frame_waiting.
 
-------------------------------------------------------------------------
-r269 | jorge | 2001-09-05 01:27:51 +0200 (Wed, 05 Sep 2001) | 3 lines
 
-Naming update.
+2001-09-04 23:27:51  Rev 269    jorge
+
+	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
+	  Naming update.
 Added msgd_bcreate_pressed.
 
-------------------------------------------------------------------------
-r268 | jorge | 2001-09-05 01:26:34 +0200 (Wed, 05 Sep 2001) | 2 lines
 
-Added R_R_JOBFWAIT, R_A_JOBFWAIT.
+2001-09-04 23:26:34  Rev 268    jorge
 
-------------------------------------------------------------------------
-r267 | jorge | 2001-09-05 01:25:33 +0200 (Wed, 05 Sep 2001) | 2 lines
+	* request_codes.h:
+	  Added R_R_JOBFWAIT, R_A_JOBFWAIT.
 
-Added R_R_JOBFWAIT family of functions.
 
-------------------------------------------------------------------------
-r266 | jorge | 2001-09-05 01:24:42 +0200 (Wed, 05 Sep 2001) | 2 lines
+2001-09-04 23:25:33  Rev 267    jorge
 
-Shell bug fix.
+	* request.c request.h:
+	  Added R_R_JOBFWAIT family of functions.
 
-------------------------------------------------------------------------
-r265 | jorge | 2001-09-05 01:24:29 +0200 (Wed, 05 Sep 2001) | 2 lines
 
-Small update.
+2001-09-04 23:24:42  Rev 266    jorge
 
-------------------------------------------------------------------------
-r264 | jorge | 2001-09-05 01:24:02 +0200 (Wed, 05 Sep 2001) | 2 lines
+	* mayasg.c:
+	  Shell bug fix.
 
-Ignore SIGINT during clean_out (signal handler for exiting).
 
-------------------------------------------------------------------------
-r263 | jorge | 2001-09-04 18:05:48 +0200 (Tue, 04 Sep 2001) | 2 lines
+2001-09-04 23:24:29  Rev 265    jorge
 
-Updated.
+	* mayasg.h:
+	  Small update.
 
-------------------------------------------------------------------------
-r262 | jorge | 2001-09-04 18:05:40 +0200 (Tue, 04 Sep 2001) | 2 lines
 
-Added DRE_COULDNOTCREATE and DRE_NOTCOMPLETE.
+2001-09-04 23:24:02  Rev 264    jorge
 
-------------------------------------------------------------------------
-r261 | jorge | 2001-09-04 18:05:03 +0200 (Tue, 04 Sep 2001) | 2 lines
+	* slave.c master.c:
+	  Ignore SIGINT during clean_out (signal handler for exiting).
 
-Added mayasg.h
 
-------------------------------------------------------------------------
-r260 | jorge | 2001-09-04 18:04:52 +0200 (Tue, 04 Sep 2001) | 2 lines
+2001-09-04 16:05:48  Rev 263    jorge
 
-Added mayasg.o to libdrqueue.a
+	* constants.h:
+	  Updated.
 
-------------------------------------------------------------------------
-r259 | jorge | 2001-09-04 18:00:04 +0200 (Tue, 04 Sep 2001) | 2 lines
 
-Working on
+2001-09-04 16:05:40  Rev 262    jorge
 
-------------------------------------------------------------------------
-r258 | jorge | 2001-09-04 14:30:42 +0200 (Tue, 04 Sep 2001) | 2 lines
+	* drerrno.c drerrno.h:
+	  Added DRE_COULDNOTCREATE and DRE_NOTCOMPLETE.
 
-Added to repository.
 
-------------------------------------------------------------------------
-r257 | jorge | 2001-09-03 18:03:44 +0200 (Mon, 03 Sep 2001) | 2 lines
+2001-09-04 16:05:03  Rev 261    jorge
 
-Added dialog for the Maya script creation. Does not work yet.
+	* libdrqueue.h:
+	  Added mayasg.h
 
-------------------------------------------------------------------------
-r256 | jorge | 2001-09-03 18:03:20 +0200 (Mon, 03 Sep 2001) | 2 lines
 
-Small update.
+2001-09-04 16:04:52  Rev 260    jorge
 
-------------------------------------------------------------------------
-r255 | jorge | 2001-09-03 18:03:04 +0200 (Mon, 03 Sep 2001) | 2 lines
+	* Makefile:
+	  Added mayasg.o to libdrqueue.a
 
-Updated.
 
-------------------------------------------------------------------------
-r254 | jorge | 2001-09-03 12:33:12 +0200 (Mon, 03 Sep 2001) | 2 lines
+2001-09-04 16:00:04  Rev 259    jorge
 
-Added support for load average using uptime if sysget fails
+	* drqman/drqm_jobs.c drqman/main.c drqman/drqm_jobs.h:
+	  Working on
 
-------------------------------------------------------------------------
-r253 | jorge | 2001-09-03 12:06:35 +0200 (Mon, 03 Sep 2001) | 2 lines
 
-Solved bug of empty filenames.
+2001-09-04 12:30:42  Rev 258    jorge
 
-------------------------------------------------------------------------
-r252 | jorge | 2001-09-03 12:05:58 +0200 (Mon, 03 Sep 2001) | 2 lines
+	* mayasg.h mayasg.c:
+	  Added to repository.
 
-Minor changes
 
-------------------------------------------------------------------------
-r251 | jorge | 2001-09-03 11:17:15 +0200 (Mon, 03 Sep 2001) | 2 lines
+2001-09-03 16:03:44  Rev 257    jorge
 
-Dialog window set to top level window to have full decoration.
+	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
+	  Added dialog for the Maya script creation. Does not work yet.
 
-------------------------------------------------------------------------
-r250 | jorge | 2001-09-02 16:29:53 +0200 (Sun, 02 Sep 2001) | 3 lines
 
-Added common.o.
+2001-09-03 16:03:20  Rev 256    jorge
+
+	* drqman/main.c:
+	  Small update.
+
+
+2001-09-03 16:03:04  Rev 255    jorge
+
+	* todo:
+	  Updated.
+
+
+2001-09-03 10:33:12  Rev 254    jorge
+
+	* computer_status.c:
+	  Added support for load average using uptime if sysget fails
+
+
+2001-09-03 10:06:35  Rev 253    jorge
+
+	* logger.c:
+	  Solved bug of empty filenames.
+
+
+2001-09-03 10:05:58  Rev 252    jorge
+
+	* Makefile:
+	  Minor changes
+
+
+2001-09-03 09:17:15  Rev 251    jorge
+
+	* drqman/drqm_computers.c:
+	  Dialog window set to top level window to have full decoration.
+
+
+2001-09-02 14:29:53  Rev 250    jorge
+
+	* Makefile:
+	  Added common.o.
 Added mini_install target that installs on ./bin
 
-------------------------------------------------------------------------
-r249 | jorge | 2001-09-02 16:19:46 +0200 (Sun, 02 Sep 2001) | 3 lines
 
-Added slave_get_options.
+2001-09-02 14:19:46  Rev 249    jorge
+
+	* slave.c slave.h:
+	  Added slave_get_options.
 Now ftok looks for the files based on DRQUEUE_ROOT.
 
-------------------------------------------------------------------------
-r248 | jorge | 2001-09-02 16:19:12 +0200 (Sun, 02 Sep 2001) | 3 lines
 
-Added master_get_options.
+2001-09-02 14:19:12  Rev 248    jorge
+
+	* master.c master.h:
+	  Added master_get_options.
 Now ftok looks for the files based on DRQUEUE_ROOT.
 
-------------------------------------------------------------------------
-r247 | jorge | 2001-09-02 16:17:35 +0200 (Sun, 02 Sep 2001) | 2 lines
 
-Added common.h.
+2001-09-02 14:17:35  Rev 247    jorge
 
-------------------------------------------------------------------------
-r246 | jorge | 2001-09-02 16:17:20 +0200 (Sun, 02 Sep 2001) | 2 lines
+	* libdrqueue.h:
+	  Added common.h.
 
-Added DRE_NOENVMASTER and DRE_NOENVROOT.
 
-------------------------------------------------------------------------
-r245 | jorge | 2001-09-02 16:16:54 +0200 (Sun, 02 Sep 2001) | 2 lines
+2001-09-02 14:17:20  Rev 246    jorge
 
-Bug fix. Included missing header.
+	* drerrno.c drerrno.h:
+	  Added DRE_NOENVMASTER and DRE_NOENVROOT.
 
-------------------------------------------------------------------------
-r244 | jorge | 2001-09-02 16:16:28 +0200 (Sun, 02 Sep 2001) | 2 lines
 
-No hostname on logs from slave. Actually, the hostname is the name of the file. So it's not needed.
+2001-09-02 14:16:54  Rev 245    jorge
 
-------------------------------------------------------------------------
-r243 | jorge | 2001-09-02 14:18:53 +0200 (Sun, 02 Sep 2001) | 2 lines
+	* common.c:
+	  Bug fix. Included missing header.
 
-Added to repository.
 
-------------------------------------------------------------------------
-r242 | jorge | 2001-09-01 22:03:12 +0200 (Sat, 01 Sep 2001) | 2 lines
+2001-09-02 14:16:28  Rev 244    jorge
 
-Updated.
+	* logger.c:
+	  No hostname on logs from slave. Actually, the hostname is the name of the file. So it's not needed.
 
-------------------------------------------------------------------------
-r241 | jorge | 2001-09-01 22:00:43 +0200 (Sat, 01 Sep 2001) | 2 lines
 
-Registration done using the resolution of the IP, not the hostname.
+2001-09-02 12:18:53  Rev 243    jorge
 
-------------------------------------------------------------------------
-r240 | jorge | 2001-09-01 19:14:59 +0200 (Sat, 01 Sep 2001) | 2 lines
+	* common.c common.h:
+	  Added to repository.
 
-Avoiding race condition. Bug solved.
 
-------------------------------------------------------------------------
-r239 | jorge | 2001-09-01 18:43:20 +0200 (Sat, 01 Sep 2001) | 3 lines
+2001-09-01 20:03:12  Rev 242    jorge
 
-Several updates.
+	* todo:
+	  Updated.
+
+
+2001-09-01 20:00:43  Rev 241    jorge
+
+	* communications.c request.c slave.c master.c communications.h 
+	  request.h computer.c:
+	  Registration done using the resolution of the IP, not the hostname.
+
+
+2001-09-01 17:14:59  Rev 240    jorge
+
+	* computer.c:
+	  Avoiding race condition. Bug solved.
+
+
+2001-09-01 16:43:20  Rev 239    jorge
+
+	* drqman/drqm_jobs.c:
+	  Several updates.
 Dialog windows now with full decoration like main windows.
 
-------------------------------------------------------------------------
-r238 | jorge | 2001-09-01 18:41:34 +0200 (Sat, 01 Sep 2001) | 2 lines
 
-Using exec code similar to libc's system again.
+2001-09-01 16:41:34  Rev 238    jorge
 
-------------------------------------------------------------------------
-r237 | jorge | 2001-09-01 18:40:15 +0200 (Sat, 01 Sep 2001) | 6 lines
+	* slave.c:
+	  Using exec code similar to libc's system again.
 
-Added one more set for last connection time on register.
+
+2001-09-01 16:40:15  Rev 237    jorge
+
+	* request.c request.h:
+	  Added one more set for last connection time on register.
 Modified points for semaphores on registration.
 More debugging messages.
 Now uses computer_ntasks.
 Minor updates.
 
-------------------------------------------------------------------------
-r236 | jorge | 2001-09-01 18:36:44 +0200 (Sat, 01 Sep 2001) | 2 lines
 
-Added more debugging info.
+2001-09-01 16:36:44  Rev 236    jorge
 
-------------------------------------------------------------------------
-r235 | jorge | 2001-09-01 18:35:48 +0200 (Sat, 01 Sep 2001) | 2 lines
+	* master.c:
+	  Added more debugging info.
 
-Added PID on debugging messages.
 
-------------------------------------------------------------------------
-r234 | jorge | 2001-09-01 18:34:49 +0200 (Sat, 01 Sep 2001) | 2 lines
+2001-09-01 16:35:48  Rev 235    jorge
 
-Minor changes.
+	* logger.c:
+	  Added PID on debugging messages.
 
-------------------------------------------------------------------------
-r233 | jorge | 2001-09-01 18:32:28 +0200 (Sat, 01 Sep 2001) | 3 lines
 
-Added computer_ntasks.
+2001-09-01 16:34:49  Rev 234    jorge
+
+	* job.c:
+	  Minor changes.
+
+
+2001-09-01 16:32:28  Rev 233    jorge
+
+	* computer.h computer.c:
+	  Added computer_ntasks.
 Added debugging stuff.
 
-------------------------------------------------------------------------
-r232 | jorge | 2001-09-01 18:31:41 +0200 (Sat, 01 Sep 2001) | 2 lines
 
-Added optimization.
+2001-09-01 16:31:41  Rev 232    jorge
 
-------------------------------------------------------------------------
-r231 | jorge | 2001-08-31 21:35:01 +0200 (Fri, 31 Aug 2001) | 2 lines
+	* Makefile:
+	  Added optimization.
 
+
+2001-08-31 19:35:01  Rev 231    jorge
+
+	* drqman/drqm_computers.c:
+	  Changed DIALOG windows for TOPLEVEL windows.
+
+
+2001-08-31 19:34:45  Rev 230    jorge
+
+	* drqman/drqm_jobs.c:
+	  Added separation bar on frames popup menu.
 Changed DIALOG windows for TOPLEVEL windows.
 
-------------------------------------------------------------------------
-r230 | jorge | 2001-08-31 21:34:45 +0200 (Fri, 31 Aug 2001) | 3 lines
 
-Added separation bar on frames popup menu.
-Changed DIALOG windows for TOPLEVEL windows.
+2001-08-31 15:55:08  Rev 229    jorge
 
-------------------------------------------------------------------------
-r229 | jorge | 2001-08-31 17:55:08 +0200 (Fri, 31 Aug 2001) | 2 lines
+	* Makefile:
+	  Adapted to Irix
 
-Adapted to Irix
 
-------------------------------------------------------------------------
-r228 | jorge | 2001-08-31 17:28:13 +0200 (Fri, 31 Aug 2001) | 2 lines
+2001-08-31 15:28:13  Rev 228    jorge
 
-Small bug solved.
+	* job.c:
+	  Small bug solved.
 
-------------------------------------------------------------------------
-r227 | jorge | 2001-08-31 17:27:55 +0200 (Fri, 31 Aug 2001) | 2 lines
 
-Added install support creating directories.
+2001-08-31 15:27:55  Rev 227    jorge
 
-------------------------------------------------------------------------
-r226 | jorge | 2001-08-31 17:07:31 +0200 (Fri, 31 Aug 2001) | 2 lines
+	* Makefile:
+	  Added install support creating directories.
 
-Added linux_install and shared variables.
 
-------------------------------------------------------------------------
-r225 | jorge | 2001-08-31 17:07:14 +0200 (Fri, 31 Aug 2001) | 2 lines
+2001-08-31 15:07:31  Rev 226    jorge
 
-Improved the way in wich in estimated the finish time.
+	* Makefile:
+	  Added linux_install and shared variables.
 
-------------------------------------------------------------------------
-r224 | jorge | 2001-08-31 16:07:58 +0200 (Fri, 31 Aug 2001) | 2 lines
 
-Small conflict solved
+2001-08-31 15:07:14  Rev 225    jorge
 
-------------------------------------------------------------------------
-r223 | jorge | 2001-08-31 16:06:23 +0200 (Fri, 31 Aug 2001) | 4 lines
+	* job.c:
+	  Improved the way in wich in estimated the finish time.
 
-I just added some debugging stuff. I found a problem running the master on pebbles. For some reason
+
+2001-08-31 14:07:58  Rev 224    jorge
+
+	* request.c:
+	  Small conflict solved
+
+
+2001-08-31 14:06:23  Rev 223    jorge
+
+	* request.c job.c logger.c:
+	  I just added some debugging stuff. I found a problem running the master on pebbles. For some reason
 that I don't know yet it gives a segmentation fault at the begging of job_check_frame_status.
 It didn't happen yesterday, even this morning and it neither happens with ludwig as master.
 
-------------------------------------------------------------------------
-r222 | jorge | 2001-08-31 14:47:57 +0200 (Fri, 31 Aug 2001) | 2 lines
 
-Frame status related xpm's added.
+2001-08-31 12:47:57  Rev 222    jorge
 
-------------------------------------------------------------------------
-r221 | jorge | 2001-08-31 14:46:52 +0200 (Fri, 31 Aug 2001) | 2 lines
+	* drqman/running.xpm drqman/waiting.xpm drqman/error.xpm 
+	  drqman/finished.xpm:
+	  Frame status related xpm's added.
 
-Added small pixmap to visualize frame status. There are some warnings with that but works.
 
-------------------------------------------------------------------------
-r220 | jorge | 2001-08-31 12:02:24 +0200 (Fri, 31 Aug 2001) | 2 lines
+2001-08-31 12:46:52  Rev 221    jorge
 
-Added install_irix option
+	* drqman/drqm_jobs.c:
+	  Added small pixmap to visualize frame status. There are some warnings with that but works.
 
-------------------------------------------------------------------------
-r219 | jorge | 2001-08-31 11:28:10 +0200 (Fri, 31 Aug 2001) | 2 lines
 
-Working on Onyx bug that causes error when finding proc speed.
+2001-08-31 10:02:24  Rev 220    jorge
 
-------------------------------------------------------------------------
-r218 | jorge | 2001-08-31 11:19:01 +0200 (Fri, 31 Aug 2001) | 2 lines
+	* Makefile:
+	  Added install_irix option
 
-Less verbosity.
 
-------------------------------------------------------------------------
-r217 | jorge | 2001-08-31 10:48:49 +0200 (Fri, 31 Aug 2001) | 2 lines
+2001-08-31 09:28:10  Rev 219    jorge
 
-No more ten processors tests
+	* computer_info.c:
+	  Working on Onyx bug that causes error when finding proc speed.
 
-------------------------------------------------------------------------
-r216 | jorge | 2001-08-31 10:20:52 +0200 (Fri, 31 Aug 2001) | 2 lines
 
-Working on bug that causes children of exec'd process not to die when the parent dies.
+2001-08-31 09:19:01  Rev 218    jorge
 
-------------------------------------------------------------------------
-r213 | jorge | 2001-08-30 15:17:27 +0200 (Thu, 30 Aug 2001) | 2 lines
+	* slave.c:
+	  Less verbosity.
 
-First computer details dialog working.
 
-------------------------------------------------------------------------
-r212 | jorge | 2001-08-30 15:16:54 +0200 (Thu, 30 Aug 2001) | 2 lines
+2001-08-31 08:48:49  Rev 217    jorge
 
-Added R_R_COMPXFER related functions.
+	* computer.c:
+	  No more ten processors tests
 
-------------------------------------------------------------------------
-r211 | jorge | 2001-08-29 17:28:03 +0200 (Wed, 29 Aug 2001) | 2 lines
 
-Minor updates.
+2001-08-31 08:20:52  Rev 216    jorge
 
-------------------------------------------------------------------------
-r210 | jorge | 2001-08-29 17:27:42 +0200 (Wed, 29 Aug 2001) | 2 lines
+	* request.c:
+	  Working on bug that causes children of exec'd process not to die when the parent dies.
 
-Now using global drqm_info info.
 
-------------------------------------------------------------------------
-r209 | jorge | 2001-08-29 17:26:33 +0200 (Wed, 29 Aug 2001) | 2 lines
+2001-08-30 13:17:27  Rev 213    jorge
 
-Working on the detailed computer information dialog.
+	* drqman/drqm_computers.c:
+	  First computer details dialog working.
 
-------------------------------------------------------------------------
-r208 | jorge | 2001-08-29 17:01:27 +0200 (Wed, 29 Aug 2001) | 2 lines
 
-Small update.
+2001-08-30 13:16:54  Rev 212    jorge
 
-------------------------------------------------------------------------
-r207 | jorge | 2001-08-29 15:16:13 +0200 (Wed, 29 Aug 2001) | 2 lines
+	* request.c request_codes.h request.h:
+	  Added R_R_COMPXFER related functions.
 
-Task.jobindex changed to task.ijob.
 
-------------------------------------------------------------------------
-r206 | jorge | 2001-08-29 14:46:51 +0200 (Wed, 29 Aug 2001) | 2 lines
+2001-08-29 15:28:03  Rev 211    jorge
 
-Task.jobindex moved from uint16 to uint32.
+	* drqman/notebook.c drqman/main.c:
+	  Minor updates.
 
-------------------------------------------------------------------------
-r205 | jorge | 2001-08-29 12:14:49 +0200 (Wed, 29 Aug 2001) | 2 lines
 
-Minor update.
+2001-08-29 15:27:42  Rev 210    jorge
 
-------------------------------------------------------------------------
-r204 | jorge | 2001-08-29 11:44:19 +0200 (Wed, 29 Aug 2001) | 2 lines
+	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
+	  Now using global drqm_info info.
 
-Substituted exits by kills.
 
-------------------------------------------------------------------------
-r203 | jorge | 2001-08-29 11:42:50 +0200 (Wed, 29 Aug 2001) | 2 lines
+2001-08-29 15:26:33  Rev 209    jorge
 
-Substituted exits (uncontroled) by kills and on-screen logging.
+	* drqman/drqm_computers.c drqman/drqm_computers.h:
+	  Working on the detailed computer information dialog.
 
-------------------------------------------------------------------------
-r202 | jorge | 2001-08-29 11:22:57 +0200 (Wed, 29 Aug 2001) | 2 lines
 
-Bug fixes related with uncontroled exits. Needs much more.
+2001-08-29 15:01:27  Rev 208    jorge
 
-------------------------------------------------------------------------
-r201 | jorge | 2001-08-29 11:22:13 +0200 (Wed, 29 Aug 2001) | 2 lines
+	* drqman/drqman.h:
+	  Small update.
 
-Correct detection of hardware info on Irix
 
-------------------------------------------------------------------------
-r200 | jorge | 2001-08-29 10:20:57 +0200 (Wed, 29 Aug 2001) | 2 lines
+2001-08-29 13:16:13  Rev 207    jorge
 
-A bit less verbosity.
+	* task.c task.h communications.c request.c job.c computer.c:
+	  Task.jobindex changed to task.ijob.
 
-------------------------------------------------------------------------
-r199 | jorge | 2001-08-28 23:49:29 +0200 (Tue, 28 Aug 2001) | 2 lines
 
-Globlal info_drqm in progress.
+2001-08-29 12:46:51  Rev 206    jorge
 
-------------------------------------------------------------------------
-r198 | jorge | 2001-08-28 23:22:10 +0200 (Tue, 28 Aug 2001) | 2 lines
+	* task.h communications.c:
+	  Task.jobindex moved from uint16 to uint32.
 
-Added drqman.h
 
-------------------------------------------------------------------------
-r197 | jorge | 2001-08-28 22:56:55 +0200 (Tue, 28 Aug 2001) | 2 lines
+2001-08-29 10:14:49  Rev 205    jorge
 
-Small bug solved. Not deallocating resources.
+	* communications.c:
+	  Minor update.
 
-------------------------------------------------------------------------
-r196 | jorge | 2001-08-28 17:36:28 +0200 (Tue, 28 Aug 2001) | 2 lines
 
-Solved bug selecting appropiate job number for deletion.
+2001-08-29 09:44:19  Rev 204    jorge
 
-------------------------------------------------------------------------
-r195 | jorge | 2001-08-28 17:35:56 +0200 (Tue, 28 Aug 2001) | 8 lines
+	* computer_info.c:
+	  Substituted exits by kills.
 
-Added:
+
+2001-08-29 09:42:50  Rev 203    jorge
+
+	* logger.c:
+	  Substituted exits (uncontroled) by kills and on-screen logging.
+
+
+2001-08-29 09:22:57  Rev 202    jorge
+
+	* logger.c:
+	  Bug fixes related with uncontroled exits. Needs much more.
+
+
+2001-08-29 09:22:13  Rev 201    jorge
+
+	* computer_info.c:
+	  Correct detection of hardware info on Irix
+
+
+2001-08-29 08:20:57  Rev 200    jorge
+
+	* master.c computer.c:
+	  A bit less verbosity.
+
+
+2001-08-28 21:49:29  Rev 199    jorge
+
+	* drqman/notebook.c drqman/drqm_computers.c drqman/main.c 
+	  drqman/notebook.h drqman/drqm_computers.h:
+	  Globlal info_drqm in progress.
+
+
+2001-08-28 21:22:10  Rev 198    jorge
+
+	* drqman/drqman.h:
+	  Added drqman.h
+
+
+2001-08-28 20:56:55  Rev 197    jorge
+
+	* drqman/drqm_jobs.c:
+	  Small bug solved. Not deallocating resources.
+
+
+2001-08-28 15:36:28  Rev 196    jorge
+
+	* drqman/drqm_request.c:
+	  Solved bug selecting appropiate job number for deletion.
+
+
+2001-08-28 15:35:56  Rev 195    jorge
+
+	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
+	  Added:
 * CreateMenuFrames
 * PopupMenuFrames
 * SeeFrameLog
@@ -2540,122 +3082,144 @@ Added:
 
 Solved getlogin problem.
 
-------------------------------------------------------------------------
-r194 | jorge | 2001-08-28 17:34:19 +0200 (Tue, 28 Aug 2001) | 2 lines
 
-Updated
+2001-08-28 15:34:19  Rev 194    jorge
 
-------------------------------------------------------------------------
-r193 | jorge | 2001-08-28 17:34:13 +0200 (Tue, 28 Aug 2001) | 3 lines
+	* todo:
+	  Updated
 
-Added log_dumptask_open_ro.
+
+2001-08-28 15:34:13  Rev 193    jorge
+
+	* logger.h logger.c:
+	  Added log_dumptask_open_ro.
 Minor changes.
 
-------------------------------------------------------------------------
-r192 | jorge | 2001-08-28 14:59:31 +0200 (Tue, 28 Aug 2001) | 2 lines
 
-Solved bug in r_r_deletjob protocol.
+2001-08-28 12:59:31  Rev 192    jorge
 
-------------------------------------------------------------------------
-r190 | jorge | 2001-08-28 11:56:47 +0200 (Tue, 28 Aug 2001) | 5 lines
+	* request.c request.h:
+	  Solved bug in r_r_deletjob protocol.
 
-Moved djd_* functions and structs to jdd_*
+
+2001-08-28 09:56:47  Rev 190    jorge
+
+	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
+	  Moved djd_* functions and structs to jdd_*
 Added confirmation dialog for HStopJob:
 * HStopJobDialog
 * djhs_bok_pressed
 
-------------------------------------------------------------------------
-r189 | jorge | 2001-08-28 11:54:25 +0200 (Tue, 28 Aug 2001) | 2 lines
 
-Added ID column on the main computers' clist.
+2001-08-28 09:54:25  Rev 189    jorge
 
-------------------------------------------------------------------------
-r188 | jorge | 2001-08-28 11:53:20 +0200 (Tue, 28 Aug 2001) | 2 lines
+	* drqman/drqm_computers.c:
+	  Added ID column on the main computers' clist.
 
-Updated.
 
-------------------------------------------------------------------------
-r187 | jorge | 2001-08-28 11:03:52 +0200 (Tue, 28 Aug 2001) | 2 lines
+2001-08-28 09:53:20  Rev 188    jorge
 
-Added id init.
+	* todo:
+	  Updated.
 
-------------------------------------------------------------------------
-r186 | jorge | 2001-08-28 11:00:30 +0200 (Tue, 28 Aug 2001) | 2 lines
 
-New size for the main window.
+2001-08-28 09:03:52  Rev 187    jorge
 
-------------------------------------------------------------------------
-r185 | jorge | 2001-08-28 11:00:15 +0200 (Tue, 28 Aug 2001) | 3 lines
+	* request.c:
+	  Added id init.
 
-Small bug solved in setsockopt.
+
+2001-08-28 09:00:30  Rev 186    jorge
+
+	* drqman/main.c:
+	  New size for the main window.
+
+
+2001-08-28 09:00:15  Rev 185    jorge
+
+	* communications.c:
+	  Small bug solved in setsockopt.
 Added id field to send and recv_computer_hwinfo
 
-------------------------------------------------------------------------
-r184 | jorge | 2001-08-28 10:59:19 +0200 (Tue, 28 Aug 2001) | 2 lines
 
-Added id field to computer.hwinfo.
+2001-08-28 08:59:19  Rev 184    jorge
 
-------------------------------------------------------------------------
-r183 | jorge | 2001-08-28 10:22:50 +0200 (Tue, 28 Aug 2001) | 2 lines
+	* computer_info.h:
+	  Added id field to computer.hwinfo.
 
-Solved small bug.
 
-------------------------------------------------------------------------
-r182 | jorge | 2001-08-28 00:10:04 +0200 (Tue, 28 Aug 2001) | 3 lines
+2001-08-28 08:22:50  Rev 183    jorge
 
-Added status label on detailed job information dialog.
+	* request.c:
+	  Solved small bug.
+
+
+2001-08-27 22:10:04  Rev 182    jorge
+
+	* drqman/drqm_jobs.c:
+	  Added status label on detailed job information dialog.
 Added stop, hstop, continue and delete on djd.
 
-------------------------------------------------------------------------
-r181 | jorge | 2001-08-28 00:09:04 +0200 (Tue, 28 Aug 2001) | 2 lines
 
-Added djd.lstatus
+2001-08-27 22:09:04  Rev 181    jorge
 
-------------------------------------------------------------------------
-r180 | jorge | 2001-08-27 23:16:30 +0200 (Mon, 27 Aug 2001) | 2 lines
+	* drqman/drqm_jobs.h:
+	  Added djd.lstatus
 
-Updated.
 
-------------------------------------------------------------------------
-r179 | jorge | 2001-08-27 23:16:18 +0200 (Mon, 27 Aug 2001) | 2 lines
+2001-08-27 21:16:30  Rev 180    jorge
 
-Added PROCTYPE_PENTIUM4
+	* todo:
+	  Updated.
 
-------------------------------------------------------------------------
-r178 | jorge | 2001-08-27 23:15:32 +0200 (Mon, 27 Aug 2001) | 2 lines
 
-Added SO_REUSEADDR option on listening sockets.
+2001-08-27 21:16:18  Rev 179    jorge
 
-------------------------------------------------------------------------
-r177 | jorge | 2001-08-27 17:29:16 +0200 (Mon, 27 Aug 2001) | 2 lines
+	* computer_info.c computer_info.h:
+	  Added PROCTYPE_PENTIUM4
 
-Small bug solved. Always printed the warning "Unknown request received".
 
-------------------------------------------------------------------------
-r176 | jorge | 2001-08-27 17:23:24 +0200 (Mon, 27 Aug 2001) | 2 lines
+2001-08-27 21:15:32  Rev 178    jorge
 
-Updated
+	* communications.c:
+	  Added SO_REUSEADDR option on listening sockets.
 
-------------------------------------------------------------------------
-r175 | jorge | 2001-08-27 17:22:58 +0200 (Mon, 27 Aug 2001) | 2 lines
 
-Added frame_step to send_job and recv_job
+2001-08-27 15:29:16  Rev 177    jorge
 
-------------------------------------------------------------------------
-r174 | jorge | 2001-08-27 17:17:30 +0200 (Mon, 27 Aug 2001) | 2 lines
+	* request.c:
+	  Small bug solved. Always printed the warning "Unknown request received".
 
-Updated request (short) data_s to request (uint32_t) data .
 
-------------------------------------------------------------------------
-r173 | jorge | 2001-08-27 17:16:54 +0200 (Mon, 27 Aug 2001) | 3 lines
+2001-08-27 15:23:24  Rev 176    jorge
 
-Added:
+	* computer.c:
+	  Updated
+
+
+2001-08-27 15:22:58  Rev 175    jorge
+
+	* communications.c:
+	  Added frame_step to send_job and recv_job
+
+
+2001-08-27 15:17:30  Rev 174    jorge
+
+	* drqman/drqm_request.c:
+	  Updated request (short) data_s to request (uint32_t) data .
+
+
+2001-08-27 15:16:54  Rev 173    jorge
+
+	* drqman/drqm_jobs.h:
+	  Added:
 * struct info_djd
 
-------------------------------------------------------------------------
-r172 | jorge | 2001-08-27 17:16:24 +0200 (Mon, 27 Aug 2001) | 8 lines
 
-Added frame info on the detailed job information dialog.
+2001-08-27 15:16:24  Rev 172    jorge
+
+	* drqman/drqm_jobs.c:
+	  Added frame info on the detailed job information dialog.
 Added step frame on the new job dialog.
 
 
@@ -2663,51 +3227,58 @@ Added:
 * CreateFrameInfoClist
 * djd_update
 
-------------------------------------------------------------------------
-r171 | jorge | 2001-08-27 16:15:22 +0200 (Mon, 27 Aug 2001) | 2 lines
 
-Updated.
+2001-08-27 14:15:22  Rev 171    jorge
 
-------------------------------------------------------------------------
-r170 | jorge | 2001-08-27 16:15:14 +0200 (Mon, 27 Aug 2001) | 5 lines
+	* todo:
+	  Updated.
 
-Updated to use:
+
+2001-08-27 14:15:14  Rev 170    jorge
+
+	* request.c:
+	  Updated to use:
 * job_frame_number_correct
 * job_frame_number_to_index
 * job_frame_index_to_number
 
-------------------------------------------------------------------------
-r169 | jorge | 2001-08-27 16:13:44 +0200 (Mon, 27 Aug 2001) | 6 lines
 
-Changed (int) job_nframes to (uint32_t) job_nframes.
+2001-08-27 14:13:44  Rev 169    jorge
+
+	* job.c job.h:
+	  Changed (int) job_nframes to (uint32_t) job_nframes.
 Added job_frame_status_string.
 Added job_frame_index_to_number.
 Added job_frame_number_to_index.
 Added job_frame_number_correct.
 
-------------------------------------------------------------------------
-r168 | jorge | 2001-08-27 10:21:22 +0200 (Mon, 27 Aug 2001) | 2 lines
 
-Updated.
+2001-08-27 08:21:22  Rev 168    jorge
 
-------------------------------------------------------------------------
-r167 | jorge | 2001-08-27 10:21:11 +0200 (Mon, 27 Aug 2001) | 6 lines
+	* todo:
+	  Updated.
 
-Request data_s (short) moved to data (int [uint32_t]).
+
+2001-08-27 08:21:11  Rev 167    jorge
+
+	* request.h:
+	  Request data_s (short) moved to data (int [uint32_t]).
 Added handle_r_r_jobxfer.
 Added handle_r_r_jobxferfi.
 Added request_job_xfer.
 Added request_job_xferfi.
 
-------------------------------------------------------------------------
-r166 | jorge | 2001-08-27 10:19:42 +0200 (Mon, 27 Aug 2001) | 2 lines
 
-Minor changes.
+2001-08-27 08:19:42  Rev 166    jorge
 
-------------------------------------------------------------------------
-r165 | jorge | 2001-08-27 10:19:10 +0200 (Mon, 27 Aug 2001) | 8 lines
+	* request_codes.h:
+	  Minor changes.
 
-Added R_R_JOBXFER and R_R_JOBXFERFI.
+
+2001-08-27 08:19:10  Rev 165    jorge
+
+	* request.c:
+	  Added R_R_JOBXFER and R_R_JOBXFERFI.
 All request.data_s moved to request.data.
 Several bugfixes related with closing file descriptors.
 Added request_job_xfer.
@@ -2715,773 +3286,951 @@ Added handle_r_r_jobxfer.
 Added request_job_xferfi.
 Added handle_r_r_jobxferfi.
 
-------------------------------------------------------------------------
-r164 | jorge | 2001-08-27 10:15:20 +0200 (Mon, 27 Aug 2001) | 2 lines
 
-Minor update.
+2001-08-27 08:15:20  Rev 164    jorge
 
-------------------------------------------------------------------------
-r163 | jorge | 2001-08-27 10:15:04 +0200 (Mon, 27 Aug 2001) | 2 lines
+	* master.c:
+	  Minor update.
 
-Bug fixes in the avg_frame_time calcs.
 
-------------------------------------------------------------------------
-r162 | jorge | 2001-08-27 10:14:13 +0200 (Mon, 27 Aug 2001) | 2 lines
+2001-08-27 08:15:04  Rev 163    jorge
 
-Added DRE_NOTREGISTERED.
+	* job.c:
+	  Bug fixes in the avg_frame_time calcs.
 
-------------------------------------------------------------------------
-r161 | jorge | 2001-08-27 10:13:48 +0200 (Mon, 27 Aug 2001) | 3 lines
 
-Changed data_s (short) to data (int).
+2001-08-27 08:14:13  Rev 162    jorge
+
+	* drerrno.c drerrno.h:
+	  Added DRE_NOTREGISTERED.
+
+
+2001-08-27 08:13:48  Rev 161    jorge
+
+	* communications.c communications.h:
+	  Changed data_s (short) to data (int).
 Added recv_frame_info, send_frame_info.
 
-------------------------------------------------------------------------
-r159 | jorge | 2001-08-23 15:25:13 +0200 (Thu, 23 Aug 2001) | 2 lines
 
-Solved bug of selecting the wrong element on the list when it was ordered.
+2001-08-23 13:25:13  Rev 159    jorge
 
-------------------------------------------------------------------------
-r158 | jorge | 2001-08-23 15:24:28 +0200 (Thu, 23 Aug 2001) | 2 lines
+	* drqman/drqm_request.c:
+	  Solved bug of selecting the wrong element on the list when it was ordered.
 
-Added basic job details window and so.
 
-------------------------------------------------------------------------
-r157 | jorge | 2001-08-23 15:23:57 +0200 (Thu, 23 Aug 2001) | 2 lines
+2001-08-23 13:24:28  Rev 158    jorge
 
-More debuging messages.
+	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
+	  Added basic job details window and so.
 
-------------------------------------------------------------------------
-r156 | jorge | 2001-08-23 15:23:11 +0200 (Thu, 23 Aug 2001) | 2 lines
 
-Added average frame time and estimated finish time stuff.
+2001-08-23 13:23:57  Rev 157    jorge
 
-------------------------------------------------------------------------
-r155 | jorge | 2001-08-23 15:22:30 +0200 (Thu, 23 Aug 2001) | 2 lines
+	* request.c:
+	  More debuging messages.
 
-Minor bug solved.
 
-------------------------------------------------------------------------
-r154 | jorge | 2001-08-22 12:15:36 +0200 (Wed, 22 Aug 2001) | 2 lines
+2001-08-23 13:23:11  Rev 156    jorge
 
-Updated
+	* job.c:
+	  Added average frame time and estimated finish time stuff.
 
-------------------------------------------------------------------------
-r153 | jorge | 2001-08-22 12:15:27 +0200 (Wed, 22 Aug 2001) | 2 lines
 
-Logging on screen.
+2001-08-23 13:22:30  Rev 155    jorge
 
-------------------------------------------------------------------------
-r152 | jorge | 2001-08-22 11:05:29 +0200 (Wed, 22 Aug 2001) | 2 lines
+	* communications.c:
+	  Minor bug solved.
 
-More error handling.
 
-------------------------------------------------------------------------
-r151 | jorge | 2001-08-22 11:05:20 +0200 (Wed, 22 Aug 2001) | 2 lines
+2001-08-22 10:15:36  Rev 154    jorge
 
-Minor changes.
+	* todo:
+	  Updated
 
-------------------------------------------------------------------------
-r150 | jorge | 2001-08-22 11:04:33 +0200 (Wed, 22 Aug 2001) | 2 lines
 
-If something fails in the middle of a frame assignation then it sets back the frame as FS_WAITING.
+2001-08-22 10:15:27  Rev 153    jorge
 
-------------------------------------------------------------------------
-r149 | jorge | 2001-08-22 11:02:49 +0200 (Wed, 22 Aug 2001) | 2 lines
+	* logger.h slave.c master.c logger.c:
+	  Logging on screen.
 
-Added DRE_ERRORRECEIVING.
 
-------------------------------------------------------------------------
-r148 | jorge | 2001-08-22 11:02:26 +0200 (Wed, 22 Aug 2001) | 2 lines
+2001-08-22 09:05:29  Rev 152    jorge
 
-More control on error handling.
+	* request.c drqman/drqm_request.c:
+	  More error handling.
 
-------------------------------------------------------------------------
-r147 | jorge | 2001-08-08 14:59:46 +0200 (Wed, 08 Aug 2001) | 2 lines
 
-Missing declaration for request_job_hstop
+2001-08-22 09:05:20  Rev 151    jorge
 
-------------------------------------------------------------------------
-r146 | jorge | 2001-08-08 14:57:39 +0200 (Wed, 08 Aug 2001) | 2 lines
+	* slave.c:
+	  Minor changes.
 
-Solved bug of missing headers
 
-------------------------------------------------------------------------
-r145 | jorge | 2001-08-08 14:54:48 +0200 (Wed, 08 Aug 2001) | 2 lines
+2001-08-22 09:04:33  Rev 150    jorge
 
-Minor changes
+	* job.c job.h:
+	  If something fails in the middle of a frame assignation then it sets back the frame as FS_WAITING.
 
-------------------------------------------------------------------------
-r144 | jorge | 2001-08-08 12:54:34 +0200 (Wed, 08 Aug 2001) | 2 lines
 
-Solved bug of multiple definitions of loglevel.
+2001-08-22 09:02:49  Rev 149    jorge
 
-------------------------------------------------------------------------
-r143 | jorge | 2001-08-08 12:53:51 +0200 (Wed, 08 Aug 2001) | 2 lines
+	* drerrno.c drerrno.h:
+	  Added DRE_ERRORRECEIVING.
 
-Added -l <loglevel> flag.
 
-------------------------------------------------------------------------
-r142 | jorge | 2001-08-08 12:53:11 +0200 (Wed, 08 Aug 2001) | 2 lines
+2001-08-22 09:02:26  Rev 148    jorge
 
-Updated.
+	* communications.c communications.h:
+	  More control on error handling.
 
-------------------------------------------------------------------------
-r141 | jorge | 2001-08-08 12:52:59 +0200 (Wed, 08 Aug 2001) | 3 lines
 
-Solved bug with multiple definitions of drerrno.
+2001-08-08 12:59:46  Rev 147    jorge
+
+	* request.h:
+	  Missing declaration for request_job_hstop
+
+
+2001-08-08 12:57:39  Rev 146    jorge
+
+	* computer.c:
+	  Solved bug of missing headers
+
+
+2001-08-08 12:54:48  Rev 145    jorge
+
+	* setenv drqman/Makefile:
+	  Minor changes
+
+
+2001-08-08 10:54:34  Rev 144    jorge
+
+	* logger.h logger.c:
+	  Solved bug of multiple definitions of loglevel.
+
+
+2001-08-08 10:53:51  Rev 143    jorge
+
+	* slave.c master.c:
+	  Added -l <loglevel> flag.
+
+
+2001-08-08 10:53:11  Rev 142    jorge
+
+	* todo:
+	  Updated.
+
+
+2001-08-08 10:52:59  Rev 141    jorge
+
+	* drerrno.c drerrno.h:
+	  Solved bug with multiple definitions of drerrno.
 Added DRE_NOERROR.
 
-------------------------------------------------------------------------
-r140 | jorge | 2001-08-08 12:52:11 +0200 (Wed, 08 Aug 2001) | 2 lines
 
-When the task structures are filled the computer is not available.
+2001-08-08 10:52:11  Rev 140    jorge
 
-------------------------------------------------------------------------
-r138 | jorge | 2001-08-07 15:06:21 +0200 (Tue, 07 Aug 2001) | 5 lines
+	* computer.c:
+	  When the task structures are filled the computer is not available.
 
-Added:
+
+2001-08-07 13:06:21  Rev 138    jorge
+
+	* drqman/drqm_request.h drqman/drqm_request.c:
+	  Added:
 - drqm_request_job_stop
 - drqm_request_job_hstop
 - drqm_request_job_delete
 
-------------------------------------------------------------------------
-r137 | jorge | 2001-08-07 15:05:40 +0200 (Tue, 07 Aug 2001) | 2 lines
 
-Added StopJob, HStopJob and ContinueJob.
+2001-08-07 13:05:40  Rev 137    jorge
 
-------------------------------------------------------------------------
-r136 | jorge | 2001-08-07 15:04:37 +0200 (Tue, 07 Aug 2001) | 2 lines
+	* drqman/drqm_jobs.c:
+	  Added StopJob, HStopJob and ContinueJob.
 
-Updated.
 
-------------------------------------------------------------------------
-r135 | jorge | 2001-08-07 15:03:57 +0200 (Tue, 07 Aug 2001) | 2 lines
+2001-08-07 13:04:37  Rev 136    jorge
 
-Minor changes.
+	* todo:
+	  Updated.
 
-------------------------------------------------------------------------
-r134 | jorge | 2001-08-07 15:03:36 +0200 (Tue, 07 Aug 2001) | 2 lines
 
-Added STOPJOB, CONTJOB and HSTOPJOB.
+2001-08-07 13:03:57  Rev 135    jorge
 
-------------------------------------------------------------------------
-r133 | jorge | 2001-08-07 15:03:02 +0200 (Tue, 07 Aug 2001) | 3 lines
+	* slave.c:
+	  Minor changes.
 
-Added stopjob, hstopjob and contjob related functions.
+
+2001-08-07 13:03:36  Rev 134    jorge
+
+	* request_codes.h:
+	  Added STOPJOB, CONTJOB and HSTOPJOB.
+
+
+2001-08-07 13:03:02  Rev 133    jorge
+
+	* request.c request.h:
+	  Added stopjob, hstopjob and contjob related functions.
 Jobindex range checking.
 
-------------------------------------------------------------------------
-r132 | jorge | 2001-08-07 15:00:33 +0200 (Tue, 07 Aug 2001) | 2 lines
 
-Added global loglevel.
+2001-08-07 13:00:33  Rev 132    jorge
 
-------------------------------------------------------------------------
-r131 | jorge | 2001-08-07 14:59:24 +0200 (Tue, 07 Aug 2001) | 4 lines
+	* logger.h logger.c:
+	  Added global loglevel.
 
-Removed JOBSTATUS_HSTOPPED and JOBSTATUS_DELETING.
+
+2001-08-07 12:59:24  Rev 131    jorge
+
+	* job.c job.h:
+	  Removed JOBSTATUS_HSTOPPED and JOBSTATUS_DELETING.
 Added job_stop and job_continue.
 Solved bug on job_available.
 
-------------------------------------------------------------------------
-r130 | jorge | 2001-08-06 14:40:26 +0200 (Mon, 06 Aug 2001) | 2 lines
 
-Small bug solved.
+2001-08-06 12:40:26  Rev 130    jorge
 
-------------------------------------------------------------------------
-r129 | jorge | 2001-08-06 14:40:08 +0200 (Mon, 06 Aug 2001) | 2 lines
+	* request.h:
+	  Small bug solved.
 
-Shared memory deallocation on job deletion.
 
-------------------------------------------------------------------------
-r128 | jorge | 2001-08-06 14:39:23 +0200 (Mon, 06 Aug 2001) | 2 lines
+2001-08-06 12:40:08  Rev 129    jorge
 
-Minor updates.
+	* request.c:
+	  Shared memory deallocation on job deletion.
 
-------------------------------------------------------------------------
-r127 | jorge | 2001-08-06 14:35:06 +0200 (Mon, 06 Aug 2001) | 2 lines
 
-Added support for job deletion.
+2001-08-06 12:39:23  Rev 128    jorge
 
-------------------------------------------------------------------------
-r126 | jorge | 2001-08-06 14:33:51 +0200 (Mon, 06 Aug 2001) | 2 lines
+	* job.c:
+	  Minor updates.
 
-Added: DRE_ANSWERNOTLISTED, DRE_ANSWERNOTRIGHT, DRE_ERRORSENDING.
 
-------------------------------------------------------------------------
-r125 | jorge | 2001-08-06 14:32:53 +0200 (Mon, 06 Aug 2001) | 2 lines
+2001-08-06 12:35:06  Rev 127    jorge
 
-Updated.
+	* drqman/drqm_jobs.c drqman/drqm_request.h drqman/drqm_jobs.h 
+	  drqman/drqm_request.c:
+	  Added support for job deletion.
 
-------------------------------------------------------------------------
-r124 | jorge | 2001-08-06 14:32:28 +0200 (Mon, 06 Aug 2001) | 2 lines
 
-Added R_R_DELETJOB and RS_R_KILLTASK.
+2001-08-06 12:33:51  Rev 126    jorge
 
-------------------------------------------------------------------------
-r123 | jorge | 2001-08-06 14:31:38 +0200 (Mon, 06 Aug 2001) | 7 lines
+	* drerrno.c drerrno.h:
+	  Added: DRE_ANSWERNOTLISTED, DRE_ANSWERNOTRIGHT, DRE_ERRORSENDING.
 
-Minor changes on logging (moved to L_DEBUG).
+
+2001-08-06 12:32:53  Rev 125    jorge
+
+	* todo:
+	  Updated.
+
+
+2001-08-06 12:32:28  Rev 124    jorge
+
+	* request_codes.h:
+	  Added R_R_DELETJOB and RS_R_KILLTASK.
+
+
+2001-08-06 12:31:38  Rev 123    jorge
+
+	* request.c request.h:
+	  Minor changes on logging (moved to L_DEBUG).
 Check if the job is being used and is the same in handle_r_r_taskfini.
 Added request_job_delete.
 Added handle_r_r_deletjob.
 Added request_slave_killtask.
 Added handle_rs_r_killtask.
 
-------------------------------------------------------------------------
-r122 | jorge | 2001-08-06 12:29:26 +0200 (Mon, 06 Aug 2001) | 3 lines
 
-Added connec_to_slave.
+2001-08-06 10:29:26  Rev 122    jorge
+
+	* communications.c communications.h:
+	  Added connec_to_slave.
 send_request now returns 0 on failure.
 
-------------------------------------------------------------------------
-r121 | jorge | 2001-08-02 12:20:24 +0200 (Thu, 02 Aug 2001) | 2 lines
 
-Added dialog for submiting new jobs to the queue.
+2001-08-02 10:20:24  Rev 121    jorge
 
-------------------------------------------------------------------------
-r120 | jorge | 2001-08-02 12:19:49 +0200 (Thu, 02 Aug 2001) | 2 lines
+	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
+	  Added dialog for submiting new jobs to the queue.
 
-No optimization.
 
-------------------------------------------------------------------------
-r119 | jorge | 2001-08-02 12:19:33 +0200 (Thu, 02 Aug 2001) | 2 lines
+2001-08-02 10:19:49  Rev 120    jorge
 
-Minor changes.
+	* drqman/Makefile:
+	  No optimization.
 
-------------------------------------------------------------------------
-r118 | jorge | 2001-08-02 12:19:04 +0200 (Thu, 02 Aug 2001) | 2 lines
 
-register_job now returns 0 on failure, 1 on success
+2001-08-02 10:19:33  Rev 119    jorge
 
-------------------------------------------------------------------------
-r117 | jorge | 2001-08-02 12:18:21 +0200 (Thu, 02 Aug 2001) | 2 lines
+	* job.c:
+	  Minor changes.
 
-Updated
 
-------------------------------------------------------------------------
-r116 | jorge | 2001-07-31 15:10:42 +0200 (Tue, 31 Jul 2001) | 2 lines
+2001-08-02 10:19:04  Rev 118    jorge
 
-Added priority stuff.
+	* request.c request.h:
+	  register_job now returns 0 on failure, 1 on success
 
-------------------------------------------------------------------------
-r115 | jorge | 2001-07-31 15:10:12 +0200 (Tue, 31 Jul 2001) | 3 lines
 
-Added priority stuff.
+2001-08-02 10:18:21  Rev 117    jorge
+
+	* todo:
+	  Updated
+
+
+2001-07-31 13:10:42  Rev 116    jorge
+
+	* sendjob.c request.c:
+	  Added priority stuff.
+
+
+2001-07-31 13:10:12  Rev 115    jorge
+
+	* job.c:
+	  Added priority stuff.
 Added check frame status, for consistency in the master db.
 
-------------------------------------------------------------------------
-r114 | jorge | 2001-07-31 15:08:02 +0200 (Tue, 31 Jul 2001) | 3 lines
 
-Added priority to job structure.
+2001-07-31 13:08:02  Rev 114    jorge
+
+	* job.h:
+	  Added priority to job structure.
 Removed FS_LOADING.
 
-------------------------------------------------------------------------
-r113 | jorge | 2001-07-31 15:06:58 +0200 (Tue, 31 Jul 2001) | 2 lines
 
-Updated
+2001-07-31 13:06:58  Rev 113    jorge
 
-------------------------------------------------------------------------
-r112 | jorge | 2001-07-31 15:06:38 +0200 (Tue, 31 Jul 2001) | 2 lines
+	* todo:
+	  Updated
 
-Added priority on main job list.
 
-------------------------------------------------------------------------
-r111 | jorge | 2001-07-31 15:06:01 +0200 (Tue, 31 Jul 2001) | 2 lines
+2001-07-31 13:06:38  Rev 112    jorge
 
-Minor changes.
+	* drqman/drqm_jobs.c:
+	  Added priority on main job list.
 
-------------------------------------------------------------------------
-r110 | jorge | 2001-07-31 15:04:15 +0200 (Tue, 31 Jul 2001) | 2 lines
 
-Added priority to job send and recv.
+2001-07-31 13:06:01  Rev 111    jorge
 
-------------------------------------------------------------------------
-r109 | jorge | 2001-07-30 14:49:30 +0200 (Mon, 30 Jul 2001) | 2 lines
+	* setenv:
+	  Minor changes.
 
-Added stuff to do.
 
-------------------------------------------------------------------------
-r108 | jorge | 2001-07-30 14:49:12 +0200 (Mon, 30 Jul 2001) | 3 lines
+2001-07-31 13:04:15  Rev 110    jorge
 
-Added getopt stuff.
+	* communications.c:
+	  Added priority to job send and recv.
+
+
+2001-07-30 12:49:30  Rev 109    jorge
+
+	* todo:
+	  Added stuff to do.
+
+
+2001-07-30 12:49:12  Rev 108    jorge
+
+	* slave.c master.c slave.h master.h:
+	  Added getopt stuff.
 Force flag.
 
-------------------------------------------------------------------------
-r106 | jorge | 2001-07-24 17:42:42 +0200 (Tue, 24 Jul 2001) | 2 lines
 
-Signals working on Irix
+2001-07-24 15:42:42  Rev 106    jorge
 
-------------------------------------------------------------------------
-r105 | jorge | 2001-07-24 17:14:39 +0200 (Tue, 24 Jul 2001) | 2 lines
+	* slave.c:
+	  Signals working on Irix
 
-Minor changes
 
-------------------------------------------------------------------------
-r104 | jorge | 2001-07-24 16:50:55 +0200 (Tue, 24 Jul 2001) | 2 lines
+2001-07-24 15:14:39  Rev 105    jorge
 
-Solved bug in task send and recv
+	* task.h request.c slave.c:
+	  Minor changes
 
-------------------------------------------------------------------------
-r103 | jorge | 2001-07-24 16:49:36 +0200 (Tue, 24 Jul 2001) | 2 lines
 
-Solved bug in cmd parsing functions
+2001-07-24 14:50:55  Rev 104    jorge
 
-------------------------------------------------------------------------
-r102 | jorge | 2001-07-24 16:15:30 +0200 (Tue, 24 Jul 2001) | 2 lines
+	* communications.c:
+	  Solved bug in task send and recv
 
-New parsing and execing functions
 
-------------------------------------------------------------------------
-r101 | jorge | 2001-07-24 15:56:09 +0200 (Tue, 24 Jul 2001) | 2 lines
+2001-07-24 14:49:36  Rev 103    jorge
 
-Testing
+	* slave.c slave.h:
+	  Solved bug in cmd parsing functions
 
-------------------------------------------------------------------------
-r100 | jorge | 2001-07-24 12:42:34 +0200 (Tue, 24 Jul 2001) | 2 lines
 
-Testing
+2001-07-24 14:15:30  Rev 102    jorge
 
-------------------------------------------------------------------------
-r99 | jorge | 2001-07-24 12:31:02 +0200 (Tue, 24 Jul 2001) | 2 lines
+	* job.c slave.c slave.h:
+	  New parsing and execing functions
 
-DR exit status and exit codes treatment.
 
-------------------------------------------------------------------------
-r98 | jorge | 2001-07-24 12:30:20 +0200 (Tue, 24 Jul 2001) | 2 lines
+2001-07-24 13:56:09  Rev 101    jorge
 
-Minor change
+	* slave.c:
+	  Testing
 
-------------------------------------------------------------------------
-r97 | jorge | 2001-07-23 12:29:23 +0200 (Mon, 23 Jul 2001) | 2 lines
 
-Bug of Irix load average solved
+2001-07-24 10:42:34  Rev 100    jorge
 
-------------------------------------------------------------------------
-r96 | jorge | 2001-07-23 11:52:16 +0200 (Mon, 23 Jul 2001) | 2 lines
+	* slave.c:
+	  Testing
 
-Different basic info on computers
 
-------------------------------------------------------------------------
-r95 | jorge | 2001-07-23 11:51:46 +0200 (Mon, 23 Jul 2001) | 2 lines
+2001-07-24 10:31:02  Rev 99     jorge
 
-Minor changes
+	* task.h request.c slave.c:
+	  DR exit status and exit codes treatment.
 
-------------------------------------------------------------------------
-r94 | jorge | 2001-07-23 10:56:53 +0200 (Mon, 23 Jul 2001) | 2 lines
 
-Task logging under task specific directory.
+2001-07-24 10:30:20  Rev 98     jorge
 
-------------------------------------------------------------------------
-r92 | jorge | 2001-07-20 17:30:19 +0200 (Fri, 20 Jul 2001) | 2 lines
+	* logger.c:
+	  Minor change
 
-Freeing unfreed memory.
 
-------------------------------------------------------------------------
-r91 | jorge | 2001-07-20 17:29:19 +0200 (Fri, 20 Jul 2001) | 2 lines
+2001-07-23 10:29:23  Rev 97     jorge
 
-Updated.
+	* computer_status.c:
+	  Bug of Irix load average solved
 
-------------------------------------------------------------------------
-r90 | jorge | 2001-07-20 17:28:36 +0200 (Fri, 20 Jul 2001) | 2 lines
 
-Now logs process output.
+2001-07-23 09:52:16  Rev 96     jorge
 
-------------------------------------------------------------------------
-r89 | jorge | 2001-07-20 17:27:34 +0200 (Fri, 20 Jul 2001) | 3 lines
+	* drqman/drqm_computers.c:
+	  Different basic info on computers
 
-Added log_dumptask_open.
+
+2001-07-23 09:51:46  Rev 95     jorge
+
+	* todo:
+	  Minor changes
+
+
+2001-07-23 08:56:53  Rev 94     jorge
+
+	* logger.c:
+	  Task logging under task specific directory.
+
+
+2001-07-20 15:30:19  Rev 92     jorge
+
+	* drqman/drqm_jobs.c drqman/drqm_computers.c:
+	  Freeing unfreed memory.
+
+
+2001-07-20 15:29:19  Rev 91     jorge
+
+	* todo:
+	  Updated.
+
+
+2001-07-20 15:28:36  Rev 90     jorge
+
+	* slave.c:
+	  Now logs process output.
+
+
+2001-07-20 15:27:34  Rev 89     jorge
+
+	* logger.h logger.c:
+	  Added log_dumptask_open.
 Changed default width from 10 to 8 for log fields.
 
-------------------------------------------------------------------------
-r88 | jorge | 2001-07-20 17:26:39 +0200 (Fri, 20 Jul 2001) | 2 lines
 
-Minor changes
+2001-07-20 15:26:39  Rev 88     jorge
 
-------------------------------------------------------------------------
-r86 | jorge | 2001-07-20 10:36:45 +0200 (Fri, 20 Jul 2001) | 2 lines
+	* job.h:
+	  Minor changes
 
-Solved bug of recursive make on Irix
 
-------------------------------------------------------------------------
-r85 | jorge | 2001-07-20 10:29:14 +0200 (Fri, 20 Jul 2001) | 2 lines
+2001-07-20 08:36:45  Rev 86     jorge
 
-Added frames left, done and failed.
+	* Makefile drqman/Makefile:
+	  Solved bug of recursive make on Irix
 
-------------------------------------------------------------------------
-r84 | jorge | 2001-07-20 10:28:50 +0200 (Fri, 20 Jul 2001) | 2 lines
 
-Added load average
+2001-07-20 08:29:14  Rev 85     jorge
 
-------------------------------------------------------------------------
-r83 | jorge | 2001-07-20 10:28:24 +0200 (Fri, 20 Jul 2001) | 2 lines
+	* drqman/drqm_jobs.c:
+	  Added frames left, done and failed.
 
-No debug messages.
 
-------------------------------------------------------------------------
-r82 | jorge | 2001-07-20 10:27:59 +0200 (Fri, 20 Jul 2001) | 2 lines
+2001-07-20 08:28:50  Rev 84     jorge
 
-Minor changes
+	* drqman/drqm_computers.c:
+	  Added load average
 
-------------------------------------------------------------------------
-r81 | jorge | 2001-07-20 10:27:34 +0200 (Fri, 20 Jul 2001) | 4 lines
 
-Added frames left, done and failed.
+2001-07-20 08:28:24  Rev 83     jorge
+
+	* semaphores.c:
+	  No debug messages.
+
+
+2001-07-20 08:27:59  Rev 82     jorge
+
+	* request.c:
+	  Minor changes
+
+
+2001-07-20 08:27:34  Rev 81     jorge
+
+	* communications.c job.c job.h:
+	  Added frames left, done and failed.
 Added nprocs.
 New status handling.
 
-------------------------------------------------------------------------
-r80 | jorge | 2001-07-19 12:23:44 +0200 (Thu, 19 Jul 2001) | 2 lines
 
-Minor changes
+2001-07-19 10:23:44  Rev 80     jorge
 
-------------------------------------------------------------------------
-r79 | jorge | 2001-07-19 12:22:51 +0200 (Thu, 19 Jul 2001) | 2 lines
+	* drqman/drqm_computers.c:
+	  Minor changes
 
-Added SIGCLD to SIG_DFL on Launcher
 
-------------------------------------------------------------------------
-r78 | jorge | 2001-07-19 12:22:18 +0200 (Thu, 19 Jul 2001) | 2 lines
+2001-07-19 10:22:51  Rev 79     jorge
 
-Solved SIGCLD bug on Irix
+	* slave_sighandlers.dia:
+	  Added SIGCLD to SIG_DFL on Launcher
 
-------------------------------------------------------------------------
-r77 | jorge | 2001-07-19 12:21:53 +0200 (Thu, 19 Jul 2001) | 2 lines
 
-Recursive make for drqman
+2001-07-19 10:22:18  Rev 78     jorge
 
-------------------------------------------------------------------------
-r76 | jorge | 2001-07-19 11:22:25 +0200 (Thu, 19 Jul 2001) | 2 lines
+	* slave.c:
+	  Solved SIGCLD bug on Irix
 
-Added drqm_computers.[ch]
 
-------------------------------------------------------------------------
-r75 | jorge | 2001-07-19 11:09:15 +0200 (Thu, 19 Jul 2001) | 2 lines
+2001-07-19 10:21:53  Rev 77     jorge
 
-Added call to CreateComputersPage
+	* Makefile:
+	  Recursive make for drqman
 
-------------------------------------------------------------------------
-r74 | jorge | 2001-07-19 11:08:50 +0200 (Thu, 19 Jul 2001) | 2 lines
 
-Added drqm_request_computerlist
+2001-07-19 09:22:25  Rev 76     jorge
 
-------------------------------------------------------------------------
-r73 | jorge | 2001-07-19 11:07:10 +0200 (Thu, 19 Jul 2001) | 2 lines
+	* drqman/drqm_computers.c drqman/drqm_computers.h:
+	  Added drqm_computers.[ch]
 
-Popup menu and minor changes
 
-------------------------------------------------------------------------
-r72 | jorge | 2001-07-19 11:06:26 +0200 (Thu, 19 Jul 2001) | 2 lines
+2001-07-19 09:09:15  Rev 75     jorge
 
-Added drqm_computer
+	* drqman/notebook.c:
+	  Added call to CreateComputersPage
 
-------------------------------------------------------------------------
-r71 | jorge | 2001-07-19 11:05:53 +0200 (Thu, 19 Jul 2001) | 2 lines
 
-Added R_R_LISTCOMP and R_A_LISTCOMP
+2001-07-19 09:08:50  Rev 74     jorge
 
-------------------------------------------------------------------------
-r70 | jorge | 2001-07-19 11:05:32 +0200 (Thu, 19 Jul 2001) | 2 lines
+	* drqman/drqm_request.h drqman/drqm_request.c:
+	  Added drqm_request_computerlist
 
-Added handling for R_R_LISTCOMP
 
-------------------------------------------------------------------------
-r69 | jorge | 2001-07-19 11:04:58 +0200 (Thu, 19 Jul 2001) | 2 lines
+2001-07-19 09:07:10  Rev 73     jorge
 
-computer_status.numtasks -> computer_status.ntasks
+	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
+	  Popup menu and minor changes
 
-------------------------------------------------------------------------
-r68 | jorge | 2001-07-19 11:03:51 +0200 (Thu, 19 Jul 2001) | 2 lines
 
-Added computer_ncomputers_masterdb
+2001-07-19 09:06:26  Rev 72     jorge
 
-------------------------------------------------------------------------
-r67 | jorge | 2001-07-19 11:03:20 +0200 (Thu, 19 Jul 2001) | 2 lines
+	* drqman/Makefile:
+	  Added drqm_computer
 
-Added send_computer and recv_computer
 
-------------------------------------------------------------------------
-r66 | jorge | 2001-07-17 17:10:12 +0200 (Tue, 17 Jul 2001) | 2 lines
+2001-07-19 09:05:53  Rev 71     jorge
 
-Basic job listing working.
+	* request_codes.h:
+	  Added R_R_LISTCOMP and R_A_LISTCOMP
 
-------------------------------------------------------------------------
-r65 | jorge | 2001-07-17 17:09:41 +0200 (Tue, 17 Jul 2001) | 2 lines
 
+2001-07-19 09:05:32  Rev 70     jorge
+
+	* request.c request.h:
+	  Added handling for R_R_LISTCOMP
+
+
+2001-07-19 09:04:58  Rev 69     jorge
+
+	* computer_status.h computer_status.c:
+	  computer_status.numtasks -> computer_status.ntasks
+
+
+2001-07-19 09:03:51  Rev 68     jorge
+
+	* computer.h computer.c:
+	  Added computer_ncomputers_masterdb
+
+
+2001-07-19 09:03:20  Rev 67     jorge
+
+	* communications.c communications.h:
+	  Added send_computer and recv_computer
+
+
+2001-07-17 15:10:12  Rev 66     jorge
+
+	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
+	  Basic job listing working.
+
+
+2001-07-17 15:09:41  Rev 65     jorge
+
+	* task.h:
+	  Minor changes.
+
+
+2001-07-17 15:09:13  Rev 64     jorge
+
+	* request.c:
+	  Added job_update_info call on handle_r_r_availjob and handle_r_r_taskfini.
 Minor changes.
 
-------------------------------------------------------------------------
-r64 | jorge | 2001-07-17 17:09:13 +0200 (Tue, 17 Jul 2001) | 3 lines
 
-Added job_update_info call on handle_r_r_availjob and handle_r_r_taskfini.
-Minor changes.
+2001-07-17 15:07:29  Rev 63     jorge
 
-------------------------------------------------------------------------
-r63 | jorge | 2001-07-17 17:07:29 +0200 (Tue, 17 Jul 2001) | 2 lines
+	* master.c:
+	  Added job_update_info in the consistency checks
 
-Added job_update_info in the consistency checks
 
-------------------------------------------------------------------------
-r62 | jorge | 2001-07-17 17:06:01 +0200 (Tue, 17 Jul 2001) | 5 lines
+2001-07-17 15:06:01  Rev 62     jorge
 
-Added id and nprocs to job structure.
+	* job.c job.h:
+	  Added id and nprocs to job structure.
 Changed all int ijob references to uint32_t ijob.
 Added job_update_info function.
 Added initialisation of job.id on job_init_registered.
 
-------------------------------------------------------------------------
-r61 | jorge | 2001-07-17 17:01:53 +0200 (Tue, 17 Jul 2001) | 2 lines
 
-int ijob passes to uint32_t in computer_update_assigned
+2001-07-17 15:01:53  Rev 61     jorge
 
-------------------------------------------------------------------------
-r60 | jorge | 2001-07-17 17:00:34 +0200 (Tue, 17 Jul 2001) | 2 lines
+	* computer.h computer.c:
+	  int ijob passes to uint32_t in computer_update_assigned
 
-Added nprocs to swapping in send_job and recv_job
 
-------------------------------------------------------------------------
-r59 | jorge | 2001-07-17 12:42:20 +0200 (Tue, 17 Jul 2001) | 2 lines
+2001-07-17 15:00:34  Rev 60     jorge
 
-Added case for R_R_LISTJOBS
+	* communications.c:
+	  Added nprocs to swapping in send_job and recv_job
 
-------------------------------------------------------------------------
-r58 | jorge | 2001-07-17 12:29:55 +0200 (Tue, 17 Jul 2001) | 2 lines
 
-Bug solved
+2001-07-17 10:42:20  Rev 59     jorge
 
-------------------------------------------------------------------------
-r57 | jorge | 2001-07-17 12:24:32 +0200 (Tue, 17 Jul 2001) | 2 lines
+	* request.c request.h:
+	  Added case for R_R_LISTJOBS
 
-Finds the correct number of procs on Irix
 
-------------------------------------------------------------------------
-r56 | jorge | 2001-07-17 12:23:12 +0200 (Tue, 17 Jul 2001) | 2 lines
+2001-07-17 10:29:55  Rev 58     jorge
 
-Added drqm_request_joblist and clean_joblist
+	* job.c:
+	  Bug solved
 
-------------------------------------------------------------------------
-r55 | jorge | 2001-07-17 12:21:52 +0200 (Tue, 17 Jul 2001) | 2 lines
 
-Added njobs and jobs to the info structure
+2001-07-17 10:24:32  Rev 57     jorge
 
-------------------------------------------------------------------------
-r54 | jorge | 2001-07-17 12:20:47 +0200 (Tue, 17 Jul 2001) | 2 lines
+	* computer_info.c:
+	  Finds the correct number of procs on Irix
 
-Added libdrqueue.a to drqman dependencies
 
-------------------------------------------------------------------------
-r53 | jorge | 2001-07-17 12:19:57 +0200 (Tue, 17 Jul 2001) | 2 lines
+2001-07-17 10:23:12  Rev 56     jorge
 
-Added handle_r_r_listjobs
+	* drqman/drqm_request.h drqman/drqm_request.c:
+	  Added drqm_request_joblist and clean_joblist
 
-------------------------------------------------------------------------
-r52 | jorge | 2001-07-17 12:19:02 +0200 (Tue, 17 Jul 2001) | 2 lines
 
-Added job_njobs_masterdb
+2001-07-17 10:21:52  Rev 55     jorge
 
-------------------------------------------------------------------------
-r51 | jorge | 2001-07-17 12:05:54 +0200 (Tue, 17 Jul 2001) | 2 lines
+	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
+	  Added njobs and jobs to the info structure
 
-Minor change
 
-------------------------------------------------------------------------
-r50 | jorge | 2001-07-17 12:03:42 +0200 (Tue, 17 Jul 2001) | 2 lines
+2001-07-17 10:20:47  Rev 54     jorge
 
-Tags now look also drqman sources
+	* drqman/Makefile:
+	  Added libdrqueue.a to drqman dependencies
 
-------------------------------------------------------------------------
-r49 | jorge | 2001-07-17 12:03:05 +0200 (Tue, 17 Jul 2001) | 2 lines
 
-Added client case for recv_job
+2001-07-17 10:19:57  Rev 53     jorge
 
-------------------------------------------------------------------------
-r48 | jorge | 2001-07-16 11:57:20 +0200 (Mon, 16 Jul 2001) | 2 lines
+	* request.c request_codes.h:
+	  Added handle_r_r_listjobs
 
-Irix compatible
 
-------------------------------------------------------------------------
-r47 | jorge | 2001-07-16 11:53:07 +0200 (Mon, 16 Jul 2001) | 2 lines
+2001-07-17 10:19:02  Rev 52     jorge
 
-Made compilable
+	* job.c job.h:
+	  Added job_njobs_masterdb
 
-------------------------------------------------------------------------
-r46 | jorge | 2001-07-16 11:52:50 +0200 (Mon, 16 Jul 2001) | 2 lines
 
-Added to repository
+2001-07-17 10:05:54  Rev 51     jorge
 
-------------------------------------------------------------------------
-r45 | jorge | 2001-07-13 17:45:57 +0200 (Fri, 13 Jul 2001) | 2 lines
+	* constants.h:
+	  Minor change
 
-Added libdrqueue.h
 
-------------------------------------------------------------------------
-r44 | jorge | 2001-07-13 17:44:00 +0200 (Fri, 13 Jul 2001) | 2 lines
+2001-07-17 10:03:42  Rev 50     jorge
 
-Updated to libdrqueue.h
+	* Makefile:
+	  Tags now look also drqman sources
 
-------------------------------------------------------------------------
-r43 | jorge | 2001-07-13 17:23:33 +0200 (Fri, 13 Jul 2001) | 2 lines
 
-Added drqman first files
+2001-07-17 10:03:05  Rev 49     jorge
 
-------------------------------------------------------------------------
-r42 | jorge | 2001-07-13 16:04:21 +0200 (Fri, 13 Jul 2001) | 2 lines
+	* communications.c:
+	  Added client case for recv_job
 
-Solved warning in comparison between uint16_t and 0
 
-------------------------------------------------------------------------
-r41 | jorge | 2001-07-12 15:10:53 +0200 (Thu, 12 Jul 2001) | 2 lines
+2001-07-16 09:57:20  Rev 48     jorge
 
-Cleaning a bit Makefile
+	* drqman/Makefile:
+	  Irix compatible
 
-------------------------------------------------------------------------
-r40 | jorge | 2001-07-11 17:02:57 +0200 (Wed, 11 Jul 2001) | 2 lines
 
-Irix ar compatibility
+2001-07-16 09:53:07  Rev 47     jorge
 
-------------------------------------------------------------------------
-r39 | jorge | 2001-07-11 16:50:28 +0200 (Wed, 11 Jul 2001) | 2 lines
+	* drqman/drqm_jobs.c drqman/drqm_jobs.h drqman/Makefile:
+	  Made compilable
 
-Now we have libdrqueue.a
 
-------------------------------------------------------------------------
-r38 | jorge | 2001-07-11 15:11:25 +0200 (Wed, 11 Jul 2001) | 2 lines
+2001-07-16 09:52:50  Rev 46     jorge
 
-Added load average reading on Irix
+	* drqman/drqm_request.h drqman/drqm_request.c:
+	  Added to repository
 
-------------------------------------------------------------------------
-r37 | jorge | 2001-07-06 17:07:09 +0200 (Fri, 06 Jul 2001) | 2 lines
 
-Solved bug of not having source addresses on Irix
+2001-07-13 15:45:57  Rev 45     jorge
 
-------------------------------------------------------------------------
-r36 | jorge | 2001-07-06 16:47:14 +0200 (Fri, 06 Jul 2001) | 2 lines
+	* libdrqueue.h:
+	  Added libdrqueue.h
 
-Solved semaphores bug
 
-------------------------------------------------------------------------
-r35 | jorge | 2001-07-06 16:38:01 +0200 (Fri, 06 Jul 2001) | 2 lines
+2001-07-13 15:44:00  Rev 44     jorge
 
-Working...
+	* sendjob.c slave.c master.c:
+	  Updated to libdrqueue.h
 
-------------------------------------------------------------------------
-r34 | jorge | 2001-07-06 16:20:28 +0200 (Fri, 06 Jul 2001) | 2 lines
 
-getpid() casted to int to avoid warnings on Irix
+2001-07-13 15:23:33  Rev 43     jorge
 
-------------------------------------------------------------------------
-r33 | jorge | 2001-07-06 16:17:55 +0200 (Fri, 06 Jul 2001) | 2 lines
+	* drqman/drqm_jobs.c drqman/notebook.c drqman/main.c drqman/notebook.
+	  h drqman/drqm_jobs.h drqman/Makefile drqman:
+	  Added drqman first files
 
-Small bug that made it non-compilable under linux
 
-------------------------------------------------------------------------
-r32 | jorge | 2001-07-06 16:15:21 +0200 (Fri, 06 Jul 2001) | 2 lines
+2001-07-13 14:04:21  Rev 42     jorge
 
-Working on Irix semaphores stuff
+	* todo request.c:
+	  Solved warning in comparison between uint16_t and 0
 
-------------------------------------------------------------------------
-r31 | jorge | 2001-07-06 16:10:47 +0200 (Fri, 06 Jul 2001) | 2 lines
 
-Updated semaphores stuff for Irix
+2001-07-12 13:10:53  Rev 41     jorge
 
-------------------------------------------------------------------------
-r30 | jorge | 2001-07-06 15:13:21 +0200 (Fri, 06 Jul 2001) | 2 lines
+	* Makefile:
+	  Cleaning a bit Makefile
 
-Working on Irix
 
-------------------------------------------------------------------------
-r28 | jorge | 2001-07-06 11:15:23 +0200 (Fri, 06 Jul 2001) | 2 lines
+2001-07-11 15:02:57  Rev 40     jorge
 
-Added slave_sighandlers
+	* Makefile:
+	  Irix ar compatibility
 
-------------------------------------------------------------------------
-r27 | jorge | 2001-07-06 11:14:11 +0200 (Fri, 06 Jul 2001) | 2 lines
 
-Works. Alpha stage
+2001-07-11 14:50:28  Rev 39     jorge
 
-------------------------------------------------------------------------
-r25 | jorge | 2001-07-05 17:19:39 +0200 (Thu, 05 Jul 2001) | 2 lines
+	* Makefile:
+	  Now we have libdrqueue.a
 
-Works on linux
 
-------------------------------------------------------------------------
-r24 | jorge | 2001-07-05 12:53:24 +0200 (Thu, 05 Jul 2001) | 2 lines
+2001-07-11 13:11:25  Rev 38     jorge
 
-Working on...
+	* computer_status.c:
+	  Added load average reading on Irix
 
-------------------------------------------------------------------------
-r23 | jorge | 2001-07-04 12:13:59 +0200 (Wed, 04 Jul 2001) | 2 lines
 
-Working on it
+2001-07-06 15:07:09  Rev 37     jorge
 
-------------------------------------------------------------------------
-r22 | jorge | 2001-06-05 14:45:36 +0200 (Tue, 05 Jun 2001) | 2 lines
+	* communications.c master.c computer.c:
+	  Solved bug of not having source addresses on Irix
 
-Minor changes.
 
-------------------------------------------------------------------------
-r21 | jorge | 2001-06-05 14:19:45 +0200 (Tue, 05 Jun 2001) | 2 lines
+2001-07-06 14:47:14  Rev 36     jorge
 
-Working r_r_availjob. Added shared memory stuff for frame_info.
+	* semaphores.c master.c:
+	  Solved semaphores bug
 
-------------------------------------------------------------------------
-r20 | jorge | 2001-05-30 17:14:08 +0200 (Wed, 30 May 2001) | 2 lines
 
-Removed arch directory
+2001-07-06 14:38:01  Rev 35     jorge
 
-------------------------------------------------------------------------
-r19 | jorge | 2001-05-30 17:11:47 +0200 (Wed, 30 May 2001) | 2 lines
+	* Makefile computer.c:
+	  Working...
 
-Working on it.
 
-------------------------------------------------------------------------
-r18 | jorge | 2001-05-28 16:21:31 +0200 (Mon, 28 May 2001) | 2 lines
+2001-07-06 14:20:28  Rev 34     jorge
 
-Several updates. Working on R_R_AVAILJOB
+	* setenv master.c:
+	  getpid() casted to int to avoid warnings on Irix
 
-------------------------------------------------------------------------
-r17 | jorge | 2001-05-09 12:53:08 +0200 (Wed, 09 May 2001) | 2 lines
 
-Several upgrades. Consistency check process added
+2001-07-06 14:17:55  Rev 33     jorge
 
-------------------------------------------------------------------------
-r16 | jorge | 2001-05-07 17:35:04 +0200 (Mon, 07 May 2001) | 2 lines
+	* slave.c:
+	  Small bug that made it non-compilable under linux
 
-Registration of the slave on the master works
 
-------------------------------------------------------------------------
-r15 | jorge | 2001-05-02 18:12:33 +0200 (Wed, 02 May 2001) | 2 lines
+2001-07-06 14:15:21  Rev 32     jorge
 
-Base for shared memory and semaphores
+	* master.c:
+	  Working on Irix semaphores stuff
 
-------------------------------------------------------------------------
-r14 | jorge | 2001-04-26 18:07:10 +0200 (Thu, 26 Apr 2001) | 2 lines
 
-Added file computer.h
+2001-07-06 14:10:47  Rev 31     jorge
 
-------------------------------------------------------------------------
-r13 | jorge | 2001-04-26 18:06:22 +0200 (Thu, 26 Apr 2001) | 2 lines
+	* semaphores.c slave.c:
+	  Updated semaphores stuff for Irix
 
-Working on...
 
-------------------------------------------------------------------------
-r12 | jorge | 2001-04-26 16:22:38 +0200 (Thu, 26 Apr 2001) | 2 lines
+2001-07-06 13:13:21  Rev 30     jorge
 
-Added task.c
+	* setenv sendjob.c computer_status.h task.h communications.c request.
+	  c computer_info.c slave.c Makefile request.h computer_info.h 
+	  computer.c job.h logger.c computer_status.c:
+	  Working on Irix
 
-------------------------------------------------------------------------
-r11 | jorge | 2001-04-26 16:20:55 +0200 (Thu, 26 Apr 2001) | 2 lines
 
-Working on...
+2001-07-06 09:15:23  Rev 28     jorge
 
-------------------------------------------------------------------------
-r10 | jorge | 2001-04-25 17:55:24 +0200 (Wed, 25 Apr 2001) | 2 lines
+	* slave_sighandlers.dia:
+	  Added slave_sighandlers
 
-Working on it
 
-------------------------------------------------------------------------
-r6 | jorge | 2001-04-25 12:45:39 +0200 (Wed, 25 Apr 2001) | 2 lines
+2001-07-06 09:14:11  Rev 27     jorge
 
-Initial revision
+	* todo slave.c master.c slave.h:
+	  Works. Alpha stage
 
-------------------------------------------------------------------------
+
+2001-07-05 15:19:39  Rev 25     jorge
+
+	* todo task.h request.c slave.c job.c computer.c:
+	  Works on linux
+
+
+2001-07-05 10:53:24  Rev 24     jorge
+
+	* setenv logger.h todo request.c communications.c request_errors.h 
+	  job.c slave.c master.c request.h logger.c constants.h:
+	  Working on...
+
+
+2001-07-04 10:13:59  Rev 23     jorge
+
+	* todo sendjob.c task.h request.c communications.c sendjob.h 
+	  request_codes.h slave.c Makefile request.h computer.c slave.h job.
+	  h constants.h:
+	  Working on it
+
+
+2001-06-05 12:45:36  Rev 22     jorge
+
+	* task.c task.h job.c slave.c computer_status.c:
+	  Minor changes.
+
+
+2001-06-05 12:19:45  Rev 21     jorge
+
+	* computer.h database.c r_r_availjob.dia computer_status.h 
+	  semaphores.c database.h job.c slave.c job.h constants.h sendjob.c 
+	  communications.c request.c master.c Makefile computer.c master.h 
+	  computer_status.c:
+	  Working r_r_availjob. Added shared memory stuff for frame_info.
+
+
+2001-05-30 15:14:08  Rev 20     jorge
+
+	* arch:
+	  Removed arch directory
+
+
+2001-05-30 15:11:47  Rev 19     jorge
+
+	* task.c computer.h database.c computer_status.h task.h 
+	  computer_info.c database.h job.c slave.h job.h logger.c logger.h 
+	  communications.c request.c Makefile communications.h request.h 
+	  computer_status.c:
+	  Working on it.
+
+
+2001-05-28 14:21:31  Rev 18     jorge
+
+	* r_r_availjob.dia computer_status.h task.h computer_info.c 
+	  request_codes.h job.c slave.c drerrno.c computer_info.h job.h 
+	  slave.h drerrno.h constants.h sendjob.c todo drqueue.dia request.c 
+	  communications.c sendjob.h request_errors.h master.c Makefile 
+	  request.h communications.h computer_status.c:
+	  Several updates. Working on R_R_AVAILJOB
+
+
+2001-05-09 10:53:08  Rev 17     jorge
+
+	* computer.h semaphores.c task.h request_codes.h slave.c semaphores.
+	  h arch/computer_status.c slave.h constants.h arch/computer_status.
+	  h communications.c request.c request_errors.h master.c Makefile 
+	  communications.h request.h computer.c master.h:
+	  Several upgrades. Consistency check process added
+
+
+2001-05-07 15:35:04  Rev 16     jorge
+
+	* computer.h master.dia semaphores.c database.h request_codes.h 
+	  slave.c semaphores.h slave.h constants.h logger.h communications.c 
+	  request.c request_errors.h master.c arch/computer_info.h Makefile 
+	  communications.h request.h computer.c master.h:
+	  Registration of the slave on the master works
+
+
+2001-05-02 16:12:33  Rev 15     jorge
+
+	* computer.h database.c logger.h master.dia database.h slave.c 
+	  master.c Makefile job.h slave.h logger.c master.h constants.h:
+	  Base for shared memory and semaphores
+
+
+2001-04-26 16:07:10  Rev 14     jorge
+
+	* computer.h:
+	  Added file computer.h
+
+
+2001-04-26 16:06:22  Rev 13     jorge
+
+	* logger.h arch/computer_info.c slave.c Makefile 
+	  arch/computer_status.c logger.c:
+	  Working on...
+
+
+2001-04-26 14:22:38  Rev 12     jorge
+
+	* task.c:
+	  Added task.c
+
+
+2001-04-26 14:20:55  Rev 11     jorge
+
+	* arch/computer_status.h logger.h arch/computer_info.c task.h slave.
+	  c arch/computer_info.h Makefile arch/computer_status.c logger.c 
+	  eslave.c:
+	  Working on...
+
+
+2001-04-25 15:55:24  Rev 10     jorge
+
+	* drqueue.dia arch/computer_info.c arch/computer_info.h states.dia 
+	  eslave.c constants.h:
+	  Working on it
+
+
+2001-04-25 10:45:39  Rev 6      jorge
+
+	* arch/computer_status.h drqueue.dia arch/computer_info.c task.h 
+	  arch/computer_info.h arch states.dia constants.h:
+	  Initial revision
+
+
