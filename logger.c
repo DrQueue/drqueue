@@ -1,4 +1,4 @@
-/* $Id: logger.c,v 1.11 2001/08/08 10:54:33 jorge Exp $ */
+/* $Id: logger.c,v 1.12 2001/08/22 10:15:24 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -17,6 +17,7 @@
 #include "computer.h"
 
 int loglevel = L_WARNING;
+int logonscreen = 0;
 
 void log_slave_task (struct task *task,int level,char *msg)
 {
@@ -36,11 +37,15 @@ void log_slave_task (struct task *task,int level,char *msg)
   strncpy (buf,ctime(&now),BUFFERLEN-1);
   buf[strlen(buf)-1] = '\0';
 
-  f_log = log_slave_open_task (task);
+  if (!logonscreen)
+    f_log = log_slave_open_task (task);
+  else
+    f_log = stdout;
   fprintf (f_log,"%8s : %8s -> Job: %8s || Owner: %8s || Frame: %4i || %s: %s\n",buf,name,
 	   task->jobname,task->owner,task->frame,log_level_str(level),msg);
 
-  fclose (f_log);
+  if (!logonscreen)
+    fclose (f_log);
 }
 
 FILE *log_slave_open_task (struct task *task)
@@ -92,10 +97,15 @@ void log_slave_computer (int level, char *msg)
   strncpy (buf,ctime(&now),BUFFERLEN-1);
   buf[strlen(buf)-1] = '\0';
 
-  f_log = log_slave_open_computer (name);
+  if (!logonscreen)
+    f_log = log_slave_open_computer (name);
+  else
+    f_log = stdout;
+
   fprintf (f_log,"%8s : %8s -> %s: %s\n",buf,name,log_level_str(level),msg);
 
-  fclose (f_log);
+  if (!logonscreen)
+    fclose (f_log);
 }
 
 FILE *log_slave_open_computer (char *name)
@@ -132,9 +142,13 @@ void log_master_job (struct job *job, int level, char *msg)
   strncpy (buf,ctime(&now),BUFFERLEN-1);
   buf[strlen(buf)-1] = '\0';
 
-  f_log = log_master_open ();
+  if (!logonscreen)
+    f_log = log_master_open ();
+  else
+    f_log = stdout;
   fprintf (f_log,"%8s : Job: %8s || Owner: %8s || %s: %s\n",buf,job->name,job->owner,log_level_str(level),msg);
-  fclose (f_log);
+  if (!logonscreen)
+    fclose (f_log);
 }
 
 void log_master_computer (struct computer *computer, int level, char *msg)
@@ -150,9 +164,13 @@ void log_master_computer (struct computer *computer, int level, char *msg)
   strncpy (buf,ctime(&now),BUFFERLEN-1);
   buf[strlen(buf)-1] = '\0';
 
-  f_log = log_master_open ();
+  if (!logonscreen)
+    f_log = log_master_open ();
+  else
+    f_log = stdout;
   fprintf (f_log,"%8s : Computer: %8s || %s: %s\n",buf,computer->hwinfo.name,log_level_str(level),msg);
-  fclose (f_log);
+  if (!logonscreen)
+    fclose (f_log);
 }
 
 void log_master (int level,char *msg)
@@ -168,9 +186,13 @@ void log_master (int level,char *msg)
   strncpy (buf,ctime(&now),BUFFERLEN-1);
   buf[strlen(buf)-1] = '\0';
 
-  f_log = log_master_open ();
+  if (!logonscreen)
+    f_log = log_master_open ();
+  else
+    f_log = stdout;
   fprintf (f_log,"%8s : %s: %s\n",buf,log_level_str(level),msg);
-  fclose (f_log);
+  if (!logonscreen)
+    fclose (f_log);
 }
 
 FILE *log_master_open (void)
