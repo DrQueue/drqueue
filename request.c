@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.5 2001/06/05 12:19:45 jorge Exp $ */
+/* $Id: request.c,v 1.6 2001/07/04 10:13:59 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -210,7 +210,7 @@ void handle_r_r_ucstatus (int sfd,struct database *wdb,int icomp)
   memcpy (&wdb->computer[icomp].status, &status, sizeof(status));
   semaphore_release(wdb->semid);
 
-  report_computer_status (&wdb->computer[icomp].status);
+/*    report_computer_status (&wdb->computer[icomp].status); */
 }
 
 void register_job (struct job *job)
@@ -376,6 +376,9 @@ int request_job_available (struct slave_database *sdb)
   /* Here we (slave) ask the master for an available job and in case */
   /* of finding it we store the info into *job, and fill the task record */
   /* except what cannot be filled until the proper execution of the task */
+
+  /* This funtion SETS sdb->itask local to this process */
+
   struct request req;
   int sfd;
   char emsg[BUFFERLEN];
@@ -394,7 +397,7 @@ int request_job_available (struct slave_database *sdb)
 
   if (req.type == R_A_AVAILJOB) {
     switch (req.data_s) {
-    case RERR_NOERROR:
+    case RERR_NOERROR: 
       /* We continue processing the matter */
       log_slave_computer("DEBUG: Available job");
       break;
@@ -449,6 +452,9 @@ int request_job_available (struct slave_database *sdb)
   return 1;
 }
 
+void request_task_finished (struct slave_database *sdb)
+{
 
+}
 
 

@@ -1,4 +1,4 @@
-/* $Id: sendjob.h,v 1.1 2001/05/28 14:21:31 jorge Exp $ */
+/* $Id: sendjob.h,v 1.2 2001/07/04 10:13:59 jorge Exp $ */
 
 #ifndef _SENDJOB_H_
 #define _SENDJOB_H_
@@ -7,7 +7,8 @@
 
 void presentation (void);
 void jobinfo_get (struct job *job);
-void input_get_string (char *res,int len,char *question);
+void input_get_word (char *res,int len,char *question);
+void input_get_line (char *res,int len,char *question);
 void input_get_uint32 (uint32_t *res,char *question);
 
 void cleanup (int signum);
