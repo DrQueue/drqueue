@@ -1,3 +1,115 @@
+2004-10-29 22:22:30  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/computer_info.osx.c
+
+	* Memory detection for Mac OS X
+
+2004-10-29 22:16:43  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/computer_info.c
+	   M /trunk/drqueue/computer_info.freebsd.c
+	   M /trunk/drqueue/computer_info.h
+	   M /trunk/drqueue/computer_info.irix.c
+	   M /trunk/drqueue/computer_info.linux.c
+	   M /trunk/drqueue/computer_info.osx.c
+
+	* Memory detection working on linux
+
+2004-10-29 20:28:02  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/logger.c
+	   M /trunk/drqueue/logger.h
+	   M /trunk/drqueue/master.c
+	   M /trunk/drqueue/master.h
+	   M /trunk/drqueue/mayasg.c
+	   M /trunk/drqueue/mayasg.h
+	   M /trunk/drqueue/pixiesg.c
+	   M /trunk/drqueue/pixiesg.h
+	   M /trunk/drqueue/request.h
+	   M /trunk/drqueue/request_codes.h
+	   M /trunk/drqueue/semaphores.c
+	   M /trunk/drqueue/semaphores.h
+	   M /trunk/drqueue/task.c
+	   M /trunk/drqueue/task.h
+
+	* Code update
+
+2004-10-29 10:03:07  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/job.c
+
+	* Job flags not working on FreeBSD bug resolved.
+
+2004-10-29 09:43:20  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/blendersg.c
+	   M /trunk/drqueue/blendersg.h
+	   M /trunk/drqueue/blockhost.c
+	   M /trunk/drqueue/bmrtsg.c
+	   M /trunk/drqueue/bmrtsg.h
+	   M /trunk/drqueue/cjob.c
+	   M /trunk/drqueue/communications.c
+	   M /trunk/drqueue/communications.h
+	   M /trunk/drqueue/computer.c
+	   M /trunk/drqueue/computer.h
+	   M /trunk/drqueue/computer_info.freebsd.c
+	   M /trunk/drqueue/computer_info.irix.c
+	   M /trunk/drqueue/computer_info.linux.c
+	   M /trunk/drqueue/computer_info.osx.c
+	   M /trunk/drqueue/job.c
+	   M /trunk/drqueue/slave.c
+
+	* Code cleanup.
+
+2004-10-28 12:13:29  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/Revision
+
+	* New Revision commited by build_package.sh
+
+2004-10-28 12:12:05  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/ChangeLog
+
+	* Changelog commited by build_package.sh
+
+2004-10-28 12:11:36  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/common.h
+
+	* New version number on common.h: 0.53.1
+
+2004-10-28 03:03:01  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/job.c
+
+	* job_available_no_icomp function was not taking into account the new job dependencies. Solved.
+
+2004-10-27 19:39:23  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/computer_status.c
+	   M /trunk/drqueue/database.c
+
+	* Code cleanup, fixmes, check this and to do thingy's
+
+2004-10-27 19:25:04  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/computer.c
+	   M /trunk/drqueue/constants.h
+
+	* Added AE_HOUR and AE_MIN to constants.h. Also we make good use of them.
+
 2004-10-27 19:17:18  Jorge Daza <jorge@drqueue.org>
 
 	* Changed paths:
