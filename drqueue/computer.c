@@ -477,7 +477,7 @@ void computer_init_limits (struct computer *comp)
   comp->limits.autoenable.m = AE_MIN;
   comp->limits.autoenable.last = 0; /* Last autoenable on Epoch */
 	comp->limits.autoenable.flags = 0; // No flags set, autoenable disabled
-	computer_pool_free (&comp->limits);
+	computer_pool_init (&comp->limits);
 }
 
 int computer_index_correct_master (struct database *wdb, uint32_t icomp)
