@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.16 2003/12/19 17:26:23 jorge Exp $
+# $Id: Makefile,v 1.17 2004/01/24 00:19:08 jorge Exp $
 #
 
 CC = gcc
@@ -15,6 +15,12 @@ else
 	CFLAGS = -Wall -I.. -D__IRIX -g `gtk-config --cflags`
 	LDFLAGS = `gtk-config --libs`
 	MAKE = /usr/freeware/bin/make
+ else
+ 	ifeq ($(systype),osx)
+	 CFLAGS = -Wall -I.. -D__OSX -g `pkg-config --cflags gtk+-2.0` -O2
+	 LDFLAGS = `pkg-config --libs gtk+-2.0`
+	 MAKE = make
+  endif
  endif
 endif
 
@@ -23,6 +29,8 @@ linux:
 	$(MAKE) systype=linux all
 irix:
 	$(MAKE) systype=irix all
+osx:
+	$(MAKE) systype=osx all
 
 all: drqman
 
