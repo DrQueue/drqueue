@@ -1,3 +1,39 @@
+2004-11-14 13:25:46  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/drqman/drqm_jobs.c
+	   M /trunk/drqueue/sendjob.cpp
+
+	* Bugs reported by Goran Kocov resolved.
+
+2004-11-04 06:02:40  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/README
+
+	* Fixed typo
+
+2004-11-03 22:33:03  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/Revision
+
+	* New Revision commited by build_package.sh
+
+2004-11-03 22:32:42  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/ChangeLog
+
+	* ChangeLog commited by build_package.sh
+
+2004-11-03 22:32:22  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/common.h
+
+	* New version number on common.h: 0.54.0
+
 2004-11-03 00:09:28  Jorge Daza <jorge@drqueue.org>
 
 	* Changed paths:
