@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_computers.c,v 1.13 2001/09/08 15:34:25 jorge Exp $
+ * $Id: drqm_computers.c,v 1.14 2001/09/08 21:37:34 jorge Exp $
  */
 
 #include <stdlib.h>
@@ -21,7 +21,9 @@ static void ComputerDetails(GtkWidget *menu_item, struct drqm_computers_info *in
 static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info);
 static int cdd_update (GtkWidget *w, struct drqm_computers_info *info);
 static GtkWidget *CreateTasksClist (void);
-
+static void cdd_limits_nmaxcpus_bcp (GtkWidget *button, struct drqm_computers_info *info);
+static GtkWidget *nmc_dialog (struct drqm_computers_info *info);
+static void nmcd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info);
 
 void CreateComputersPage (GtkWidget *notebook,struct info_drqm *info)
 {
@@ -297,7 +299,7 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
   gtk_box_pack_start (GTK_BOX(hbox2),label,TRUE,TRUE,2);
   button = gtk_button_new_with_label ("Change");
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
-/*    gtk_signal_connect (GTK_OBJECT(button),"clicked",dnj_psearch,&info->dnj); */
+  gtk_signal_connect (GTK_OBJECT(button),"clicked",cdd_limits_nmaxcpus_bcp,info);
   hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start(GTK_BOX(vbox2),hbox,FALSE,FALSE,2);
   label = gtk_label_new ("Maximum load a cpu can have to be considered free:");
@@ -441,3 +443,76 @@ static int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
   return 1;
 }
 
+void cdd_limits_nmaxcpus_bcp (GtkWidget *button, struct drqm_computers_info *info)
+{
+  /* Computer Details Dialog Limits nmaxcpus Button Change Pressed */
+  GtkWidget *dialog;
+
+  dialog = nmc_dialog (info);
+  if (dialog)
+    gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
+}
+
+GtkWidget *nmc_dialog (struct drqm_computers_info *info)
+{
+  GtkWidget *window;
+  GtkWidget *vbox;
+  GtkWidget *hbox;
+  GtkWidget *label;
+  GtkWidget *entry;
+  GtkWidget *button;
+  char msg[BUFFERLEN];
+
+  window = gtk_window_new (GTK_WINDOW_DIALOG);
+  gtk_window_set_title (GTK_WINDOW(window),"New maximum number of cpus");
+  gtk_window_set_policy(GTK_WINDOW(window),FALSE,FALSE,TRUE);
+  vbox = gtk_vbox_new (FALSE,2);
+  gtk_container_add(GTK_CONTAINER(window),vbox);
+
+  hbox = gtk_hbox_new (FALSE,2);
+  gtk_box_pack_start(GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("New maximum number of cpus:");
+  gtk_box_pack_start(GTK_BOX(hbox),label,FALSE,FALSE,2);
+  entry = gtk_entry_new_with_max_length(BUFFERLEN);
+  info->cdd.limits.enmaxcpus = entry;
+  snprintf(msg,BUFFERLEN-1,"%i",info->computers[info->icomp].limits.nmaxcpus);
+  gtk_entry_set_text(GTK_ENTRY(entry),msg);
+  gtk_box_pack_start(GTK_BOX(hbox),entry,FALSE,FALSE,2);
+
+  hbox = gtk_hbutton_box_new ();
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  button = gtk_button_new_with_label ("Submit");
+  gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
+  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(nmcd_bsumbit_pressed),info);
+  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(cdd_update),info);
+  gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
+			     GTK_SIGNAL_FUNC(gtk_widget_destroy),
+			     (gpointer) window);
+
+  button = gtk_button_new_with_label ("Cancel");
+  gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
+  gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
+			     GTK_SIGNAL_FUNC(gtk_widget_destroy),
+			     (gpointer) window);
+
+  gtk_widget_show_all(window);
+
+  return window;
+}
+
+void nmcd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info)
+{
+  uint32_t nmaxcpus;
+  char msg[BUFFERLEN];
+
+  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->cdd.limits.enmaxcpus)),"%u",&nmaxcpus) != 1)
+    return;			/* Error in the entry */
+
+  drqm_request_slave_limits_nmaxcpus_set(info->computers[info->icomp].hwinfo.name,nmaxcpus);
+
+  info->computers[info->icomp].limits.nmaxcpus = nmaxcpus;
+
+  snprintf(msg,BUFFERLEN-1,"%i",
+	   info->computers[info->icomp].limits.nmaxcpus);
+  gtk_label_set_text (GTK_LABEL(info->cdd.limits.lnmaxcpus),msg);
+}
