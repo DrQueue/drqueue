@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.30 2001/09/08 13:47:37 jorge Exp $ */
+/* $Id: communications.c,v 1.31 2001/09/12 15:05:08 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -547,7 +547,8 @@ int recv_frame_info (int sfd, struct frame_info *fi)
   }
   fi->start_time = ntohl (fi->start_time);
   fi->end_time = ntohl (fi->end_time);
-  fi->icomp = ntohs (fi->icomp);
+  fi->icomp = ntohl
+ (fi->icomp);
   fi->itask = ntohs (fi->itask);
 
   return 1;
@@ -565,7 +566,7 @@ int send_frame_info (int sfd, struct frame_info *fi)
   /* Prepare for sending */
   bswapped.start_time = htonl (bswapped.start_time);
   bswapped.end_time = htonl (bswapped.end_time);
-  bswapped.icomp = htons (bswapped.icomp);
+  bswapped.icomp = htonl (bswapped.icomp);
   bswapped.itask = htons (bswapped.itask);
 
   bleft = sizeof (bswapped);
