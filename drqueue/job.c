@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.48 2001/11/19 11:44:28 jorge Exp $ */
+/* $Id: job.c,v 1.49 2001/11/22 14:43:58 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -635,6 +635,7 @@ void job_init_limits (struct job *job)
 {
   job->limits.nmaxcpus = -1;	/* No limit or 65535 */
   job->limits.nmaxcpuscomputer = -1; /* the same */
+  job->limits.os_flags = -1;	/* All operating systems */
 }
 
 int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp)
@@ -646,6 +647,14 @@ int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp)
 
   if (computer_ntasks_job(&wdb->computer[icomp],ijob) >= wdb->job[ijob].limits.nmaxcpuscomputer)
     return 0;
+
+#ifdef __LINUX
+  if (!(wdb->job[ijob].limits.os_flags & OSF_LINUX))
+    return 0;
+#else
+  if (!(wdb->job[ijob].limits.os_flags & OSF_IRIX))
+    return 0;
+#endif
 
   return 1;
 }
