@@ -37,7 +37,7 @@ Page custom SetCustom ValidateCustom
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
 ; Finish page
-!define MUI_FINISHPAGE_RUN "$INSTDIR\contrib\windows\ServicesController.exe"
+!define MUI_FINISHPAGE_RUN "$INSTDIR\contrib\ServicesController.exe"
 !insertmacro MUI_PAGE_FINISH
 
 ; Uninstaller pages
@@ -140,6 +140,7 @@ Section "SectionPrincipale" SEC01
   File "..\..\..\contrib\windows\service.exe"
   File "..\..\..\contrib\windows\servicesController.exe"
   CreateShortCut "$SMSTARTUP\drqueue-services.lnk" "$INSTDIR\contrib\servicesController.exe"
+  CreateShortCut "$SMPROGRAMS\drqueue\drqueue-services.lnk" "$INSTDIR\contrib\servicesController.exe"
   File "..\..\..\contrib\windows\service-ipc.exe"
   File "..\..\..\contrib\windows\service-master.exe"
   File "..\..\..\contrib\windows\service-slave.exe"
