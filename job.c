@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.4 2001/06/05 12:45:36 jorge Exp $ */
+/* $Id: job.c,v 1.5 2001/07/05 10:53:24 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -73,7 +73,7 @@ void job_init_registered (struct database *wdb,int ijob,struct job *job)
   semaphore_release(wdb->semid);
 
   snprintf(msg,BUFFERLEN,"Registered on position %i",ijob);
-  log_master_job (&wdb->job[ijob],msg);
+  log_master_job (&wdb->job[ijob],L_INFO,msg);
 }
 
 void job_init (struct job *job)
@@ -89,7 +89,7 @@ void job_delete (struct job *job)
 
   if (job->fishmid != -1) {
     if (shmctl (job->fishmid,IPC_RMID,NULL) == -1) {
-      log_master_job(job,"ERROR: shmctl (job->fishmid,IPC_RMID,NULL)");
+      log_master_job(job,L_ERROR,"shmctl (job->fishmid,IPC_RMID,NULL)");
     }
     job->fishmid = -1;
   }
@@ -212,7 +212,7 @@ int get_frame_shared_memory (int nframes)
   int shmid;
 
   if ((shmid = shmget (IPC_PRIVATE,sizeof(struct frame_info)*nframes, IPC_EXCL|IPC_CREAT|0600)) == -1) {
-    log_master ("ERROR: get_frame_shared_memory: shmget");
+    log_master (L_ERROR,"get_frame_shared_memory: shmget");
     exit (1);
   }
 
@@ -224,7 +224,7 @@ void *attach_frame_shared_memory (int shmid)
   void *rv;			/* return value */
 
   if ((rv = shmat (shmid,0,0)) == (void *)-1) {
-    log_master ("ERROR: attach_frame_shared_memory: shmat");
+    log_master (L_ERROR,"attach_frame_shared_memory: shmat");
     exit (1);
   }
 
@@ -234,7 +234,7 @@ void *attach_frame_shared_memory (int shmid)
 void detach_frame_shared_memory (struct frame_info *fishp)
 {
   if (shmdt((char*)fishp) == -1) {
-    log_master ("Warning: Call to shmdt failed");
+    log_master (L_WARNING,"Call to shmdt failed");
   }
 }
 

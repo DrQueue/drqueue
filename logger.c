@@ -1,4 +1,4 @@
-/* $Id: logger.c,v 1.4 2001/05/30 15:11:47 jorge Exp $ */
+/* $Id: logger.c,v 1.5 2001/07/05 10:53:24 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -11,7 +11,7 @@
 #include "job.h"
 #include "computer.h"
 
-void log_slave_task (struct task *task,char *msg)
+void log_slave_task (struct task *task,int level,char *msg)
 {
   FILE *f_log;
   char name[MAXNAMELEN];
@@ -27,8 +27,8 @@ void log_slave_task (struct task *task,char *msg)
   buf[strlen(buf)-1] = '\0';
 
   f_log = log_slave_open_task (task);
-  fprintf (f_log,"%10s : %10s -> Job: %10s || Owner: %10s || Frame: %4i || Msg: %s\n",buf,name,
-	   task->jobname,task->owner,task->frame,msg);
+  fprintf (f_log,"%10s : %10s -> Job: %10s || Owner: %10s || Frame: %4i || %s: %s\n",buf,name,
+	   task->jobname,task->owner,task->frame,log_level_str(level),msg);
 
   fclose (f_log);
 }
@@ -54,7 +54,7 @@ FILE *log_slave_open_task (struct task *task)
   return f;
 }
 
-void log_slave_computer (char *msg)
+void log_slave_computer (int level, char *msg)
 {
   FILE *f_log;
   char name[MAXNAMELEN];
@@ -70,7 +70,7 @@ void log_slave_computer (char *msg)
   buf[strlen(buf)-1] = '\0';
 
   f_log = log_slave_open_computer (name);
-  fprintf (f_log,"%10s : %10s -> Msg: %s\n",buf,name,msg);
+  fprintf (f_log,"%10s : %10s -> %s: %s\n",buf,name,log_level_str(level),msg);
 
   fclose (f_log);
 }
@@ -96,7 +96,7 @@ FILE *log_slave_open_computer (char *name)
   return f;
 }
 
-void log_master_job (struct job *job,char *msg)
+void log_master_job (struct job *job, int level, char *msg)
 {
   FILE *f_log;
   char buf[BUFFERLEN];
@@ -107,11 +107,11 @@ void log_master_job (struct job *job,char *msg)
   buf[strlen(buf)-1] = '\0';
 
   f_log = log_master_open ();
-  fprintf (f_log,"%10s : Job: %10s || Owner: %10s || Msg: %s\n",buf,job->name,job->owner,msg);
+  fprintf (f_log,"%10s : Job: %10s || Owner: %10s || %s: %s\n",buf,job->name,job->owner,log_level_str(level),msg);
   fclose (f_log);
 }
 
-void log_master_computer (struct computer *computer,char *msg)
+void log_master_computer (struct computer *computer, int level, char *msg)
 {
   FILE *f_log;
   char buf[BUFFERLEN];
@@ -122,11 +122,11 @@ void log_master_computer (struct computer *computer,char *msg)
   buf[strlen(buf)-1] = '\0';
 
   f_log = log_master_open ();
-  fprintf (f_log,"%10s : Computer: %10s || Msg: %s\n",buf,computer->hwinfo.name,msg);
+  fprintf (f_log,"%10s : Computer: %10s || %s: %s\n",buf,computer->hwinfo.name,log_level_str(level),msg);
   fclose (f_log);
 }
 
-void log_master (char *msg)
+void log_master (int level,char *msg)
 {
   FILE *f_log;
   char buf[BUFFERLEN];
@@ -137,7 +137,7 @@ void log_master (char *msg)
   buf[strlen(buf)-1] = '\0';
 
   f_log = log_master_open ();
-  fprintf (f_log,"%10s : Msg: %s\n",buf,msg);
+  fprintf (f_log,"%10s : %s: %s\n",buf,log_level_str(level),msg);
   fclose (f_log);
 }
 
@@ -162,7 +162,29 @@ FILE *log_master_open (void)
   return f;
 }
 
+char *log_level_str (int level)
+{
+  char *msg;
 
+  switch (level) {
+  case L_ERROR:
+    msg = "ERROR";
+    break;
+  case L_WARNING:
+    msg = "Warning";
+    break;
+  case L_INFO:
+    msg = "Info";
+    break;
+  case L_DEBUG:
+    msg = "Debug";
+    break;
+  default:
+    msg = "UNKNOWN";
+  }
+
+  return msg;
+}
 
 
 
