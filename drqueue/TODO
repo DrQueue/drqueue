@@ -8,6 +8,7 @@ TO DO:
 * Renice options
 * STEPFRAME included in all .sg files
 * Slave pools. 0.60
+* job dependencies
 
 BUGS:
 ----
