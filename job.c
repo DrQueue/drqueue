@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.40 2001/10/08 14:19:02 jorge Exp $ */
+/* $Id: job.c,v 1.41 2001/10/11 10:32:04 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -174,7 +174,7 @@ uint32_t job_nframes (struct job *job)
 {
   uint32_t n;
 
-  n = (job->frame_end - job->frame_start + 1) / job->frame_step;
+  n = (job->frame_end - job->frame_start + job->frame_step) / job->frame_step;
 
   return n;
 }
