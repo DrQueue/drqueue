@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.15 2001/09/04 16:00:04 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.16 2001/09/04 23:27:51 jorge Exp $
  */
 
 #ifndef _DRQM_JOBS_H_
@@ -8,7 +8,7 @@
 #include <gtk/gtk.h>
 #include "libdrqueue.h"
 
-struct info_dnj {		/* dialog new job */
+struct drqmj_dnji {		/* dialog new job */
   GtkWidget *dialog;
   GtkWidget *ename;
   GtkWidget *ecmd;
@@ -17,7 +17,7 @@ struct info_dnj {		/* dialog new job */
   GtkWidget *fs;		/* File selector */
 };
 
-struct info_jdd {		/* job details dialog */
+struct drqmj_jddi {		/* job details dialog */
   GtkWidget *dialog;		/* Main dialog */
   GtkWidget *lname;		/* label name */
   GtkWidget *lstatus;		/* label status */
@@ -34,7 +34,7 @@ struct info_jdd {		/* job details dialog */
   int selected;			/* if a frame is selected */
 };
 
-struct info_msgd {		/* Maya script generator dialog */
+struct drqmj_msgdi {		/* Maya script generator dialog */
   GtkWidget *dialog;
   GtkWidget *escene;		/* Entry scene */
   GtkWidget *fsscene;		/* File selector for the scene */
@@ -44,7 +44,7 @@ struct info_msgd {		/* Maya script generator dialog */
   GtkWidget *escript;		/* Entry script location */
 };
 
-struct info_drqm_jobs {
+struct drqm_jobs_info {
   GtkWidget *clist;		/* main clist */
   gint row, column;		/* selected job */
   GtkWidget *menu;		/* Popup menu */
@@ -52,15 +52,15 @@ struct info_drqm_jobs {
   int ijob;			/* index to the selected job */
   uint32_t njobs;		/* Number of jobs in the list */
   struct job *jobs;		/* The job list */
-  struct info_dnj dnj;		/* dialog new job */
-  struct info_jdd jdd;		/* job details dialog */
-  struct info_msgd msgd;	/* Maya script generator dialog */
+  struct drqmj_dnji dnj;	/* dialog new job */
+  struct drqmj_jddi jdd;	/* job details dialog */
+  struct drqmj_msgdi msgd;	/* Maya script generator dialog */
 };
 
 struct info_drqm;
 
 void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info);
-void drqm_update_joblist (struct info_drqm_jobs *info);
+void drqm_update_joblist (struct drqm_jobs_info *info);
 
 #endif /* _DRQM_JOBS_H */
 
