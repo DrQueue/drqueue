@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.23 2001/10/24 12:51:59 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.24 2001/11/13 09:50:23 jorge Exp $
  */
 
 #ifndef _DRQM_JOBS_H_
@@ -19,6 +19,10 @@ struct drqmj_limits {
   GtkWidget *enmaxcpuscomputer;
   GtkWidget *lnmaxcpus;		/* Labels*/
   GtkWidget *lnmaxcpuscomputer;
+};
+
+struct drqmj_flags {
+  GtkWidget *cbmailnotify;	/* Check button */
 };
 
 struct drqmj_koji_maya {
@@ -47,6 +51,7 @@ struct drqmj_dnji {		/* dialog new job */
   uint16_t koj;			/* koj */
   struct drqmj_koji_maya koji_maya; /* koj info for maya */
   struct drqmj_limits limits;	/* limits info */
+  struct drqmj_flags flags;	/* flags info */
 };
 
 struct drqmj_jddi {		/* job details dialog */
