@@ -2,7 +2,7 @@
 START=$PWD
 cd $1/Controller
 cp ServicesController.Form1.resources.src.gz ServicesController.Form1.resources.gz
-gunzip ServicesController.Form1.resources.gz
+gunzip -f ServicesController.Form1.resources.gz
 $2/csc.exe /t:winexe /win32icon:../Resources/drqueue.ico /out:ServicesController.exe /resource:ServicesController.Form1.resources *.cs 
 mv ServicesController.exe $1
 cd $1/ServiceInstaller
