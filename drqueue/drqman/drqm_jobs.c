@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.30 2001/09/14 16:32:00 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.31 2001/09/16 15:40:06 jorge Exp $
  */
 
 #include <string.h>
@@ -40,6 +40,8 @@ static void jdd_finish_frames (GtkWidget *button,struct drqm_jobs_info *info_dj)
 static void jdd_kill_finish_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
 static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info);
 
+
+
 static void NewJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
 static GtkWidget *NewJobDialog (struct drqm_jobs_info *info);
 static void dnj_psearch (GtkWidget *button, struct drqmj_dnji *info);
@@ -48,9 +50,21 @@ static void dnj_cpri_changed (GtkWidget *entry, struct drqmj_dnji *info);
 static void dnj_bsubmit_pressed (GtkWidget *button, struct drqmj_dnji *info);
 static int dnj_submit (struct drqmj_dnji *info);
 static void dnj_destroyed (GtkWidget *dialog, struct drqm_jobs_info *info);
+/* Basic koj handling */
 static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info);
 static void dnj_koj_combo_changed (GtkWidget *combo, struct drqm_jobs_info *info);
-static GtkWidget *dnj_kojid_maya (struct drqm_jobs_info *info);
+/* Koj viewers */
+static void jdd_maya_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
+/* KOJ FRAMES */
+/* Maya */
+static GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info);
+static void dnj_koj_frame_maya_project_search (GtkWidget *button, struct drqmj_koji_maya *info);
+static void dnj_koj_frame_maya_project_set (GtkWidget *button, struct drqmj_koji_maya *info);
+static void dnj_koj_frame_maya_script_search (GtkWidget *button, struct drqmj_koji_maya *info);
+static void dnj_koj_frame_maya_script_set (GtkWidget *button, struct drqmj_koji_maya *info);
+static void dnj_koj_frame_maya_scene_search (GtkWidget *button, struct drqmj_koji_maya *info);
+static void dnj_koj_frame_maya_scene_set (GtkWidget *button, struct drqmj_koji_maya *info);
+static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info);
 
 static void DeleteJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
 static GtkWidget *DeleteJobDialog (struct drqm_jobs_info *info);
@@ -63,17 +77,6 @@ static GtkWidget *HStopJobDialog (struct drqm_jobs_info *info);
 static void djhs_bok_pressed (GtkWidget *button, struct drqm_jobs_info *info);
 
 static void ContinueJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
-
-/* Maya Script Generator */
-static void MayaScriptGenerator (GtkWidget *button,struct drqm_jobs_info *info_dj);
-static GtkWidget *MayaScriptGeneratorDialog (struct drqm_jobs_info *info_dj);
-static void msgd_scene_search (GtkWidget *button, struct drqmj_msgdi *info);
-static void msgd_set_scene (GtkWidget *button, struct drqmj_msgdi *info);
-static void msgd_project_search (GtkWidget *button, struct drqmj_msgdi *info);
-static void msgd_set_project (GtkWidget *button, struct drqmj_msgdi *info);
-static void msgd_bcreate_pressed (GtkWidget *button, struct drqm_jobs_info *info);
-static void msgd_script_search (GtkWidget *button, struct drqmj_msgdi *info);
-static void msgd_set_script (GtkWidget *button, struct drqmj_msgdi *info);
 
 void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info)
 {
@@ -315,6 +318,7 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
 
   /* Main vbox */
   vbox = gtk_vbox_new (FALSE,2);
+  info->dnj.vbox = vbox;
   gtk_container_add (GTK_CONTAINER(frame),vbox);
 
   /* Label */
@@ -542,6 +546,18 @@ static int dnj_submit (struct drqmj_dnji *info)
     strncpy (job.owner,"ERROR",MAXNAMELEN-1);
   } else {
     strncpy (job.owner,pw->pw_name,MAXNAMELEN-1);
+  }
+
+  job.koj = info->koj;
+  switch (info->koj) {
+  case KOJ_GENERAL:
+    break;
+  case KOJ_MAYA:
+    strncpy(job.koji.maya.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escene)),BUFFERLEN-1);
+    strncpy(job.koji.maya.project,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eproject)),BUFFERLEN-1);
+    strncpy(job.koji.maya.image,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eimage)),BUFFERLEN-1);
+    strncpy(job.koji.maya.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eviewcmd)),BUFFERLEN-1);
+    break;
   }
 
   job.owner[MAXNAMELEN-1] = 0;
@@ -897,9 +913,7 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
 
   if (!request_job_xfer(info->ijob,&info->jobs[info->ijob],CLIENT)) {
     if (drerrno == DRE_NOTREGISTERED) {
-/*        gtk_object_destroy (GTK_OBJECT(info->jdd.dialog)); */
-/*        gtk_widget_destroy (info->jdd.dialog); */
-/*        gtk_signal_emit_by_name (GTK_OBJECT(info->jdd.dialog),"destroy"); */
+      gtk_object_destroy (GTK_OBJECT(info->jdd.dialog));
     } else {
       fprintf (stderr,"Error request job xfer: %s\n",drerrno_str());
     }
@@ -1107,6 +1121,17 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info)
   gtk_menu_append(GTK_MENU(menu),menu_item);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(SeeFrameLog),info);
 
+  switch (info->jobs[info->ijob].koj) {
+  case KOJ_GENERAL:
+    break;
+  case KOJ_MAYA:
+    menu_item = gtk_menu_item_new ();
+    gtk_menu_append(GTK_MENU(menu),menu_item);
+    menu_item = gtk_menu_item_new_with_label("Watch image");
+    gtk_menu_append(GTK_MENU(menu),menu_item);
+    gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_maya_viewcmd_exec),info);
+    break;
+  }
 
   gtk_signal_connect(GTK_OBJECT((info->jdd.clist)),"event",GTK_SIGNAL_FUNC(PopupMenuFrames),info);
 
@@ -1257,124 +1282,8 @@ static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info)
   return window;
 }
 
-static void MayaScriptGenerator (GtkWidget *button,struct drqm_jobs_info *info_dj)
-{
-  GtkWidget *dialog;
 
-  dialog = MayaScriptGeneratorDialog(info_dj);
-
-  if (dialog)
-    gtk_window_set_modal(GTK_WINDOW(dialog),TRUE);
-}
-
-static GtkWidget *MayaScriptGeneratorDialog (struct drqm_jobs_info *info_dj)
-{
-  GtkWidget *window;
-  GtkWidget *frame;
-  GtkWidget *vbox;
-  GtkWidget *hbox,*hbox2;
-  GtkWidget *label;
-  GtkWidget *entry; 
-  GtkWidget *button;
-  GtkWidget *bbox;
-  
-
-  /* Dialog */
-  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW(window),"New script for Maya");
-  gtk_signal_connect_object(GTK_OBJECT(window),"destroy",GTK_SIGNAL_FUNC(gtk_widget_destroy),
-			    (GtkObject*)window);
-  gtk_window_set_default_size(GTK_WINDOW(window),600,100);
-  gtk_container_set_border_width (GTK_CONTAINER(window),5);
-  info_dj->msgd.dialog = window;
-
-  /* Frame */
-  frame = gtk_frame_new ("Maya scene information");
-  gtk_container_add (GTK_CONTAINER(window),frame);
-
-  /* Main vbox */
-  vbox = gtk_vbox_new (FALSE,2);
-  gtk_container_add (GTK_CONTAINER(frame),vbox);
-
-  /* Scene file */
-  hbox = gtk_hbox_new (TRUE,2);
-  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
-  label = gtk_label_new ("Scene file:");
-  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
-  hbox2 = gtk_hbox_new (FALSE,0);
-  gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
-  entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
-  info_dj->msgd.escene = entry;
-  gtk_box_pack_start (GTK_BOX(hbox2),entry,TRUE,TRUE,2);
-  button = gtk_button_new_with_label ("Search");
-  gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
-  gtk_signal_connect (GTK_OBJECT(button),"clicked",msgd_scene_search,&info_dj->msgd);
-
-
-  /* Project directory */
-  hbox = gtk_hbox_new (TRUE,2);
-  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
-  label = gtk_label_new ("Project directory:");
-  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
-  hbox2 = gtk_hbox_new (FALSE,0);
-  gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
-  entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
-  info_dj->msgd.eproject = entry;
-  gtk_box_pack_start (GTK_BOX(hbox2),entry,TRUE,TRUE,2);
-  button = gtk_button_new_with_label ("Search");
-  gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
-  gtk_signal_connect (GTK_OBJECT(button),"clicked",msgd_project_search,&info_dj->msgd);
-
-  /* Output Image file name */
-  hbox = gtk_hbox_new (TRUE,2);
-  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
-  label = gtk_label_new ("Output image filename:");
-  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
-  entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
-  info_dj->msgd.eimage = entry;
-  gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
-
-  /* Script directory */
-  hbox = gtk_hbox_new (TRUE,2);
-  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
-  label = gtk_label_new ("Script directory:");
-  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
-  hbox2 = gtk_hbox_new (FALSE,0);
-  gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
-  entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
-  info_dj->msgd.escript = entry;
-  gtk_entry_set_text (GTK_ENTRY(entry),mayasg_default_script_path());
-  gtk_box_pack_start (GTK_BOX(hbox2),entry,TRUE,TRUE,2);
-  button = gtk_button_new_with_label ("Search");
-  gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
-  gtk_signal_connect (GTK_OBJECT(button),"clicked",msgd_script_search,&info_dj->msgd);
-
-
-  /* Buttons */
-  /* Create */
-  bbox = gtk_hbutton_box_new ();
-  gtk_box_pack_start (GTK_BOX(vbox),bbox,TRUE,TRUE,5);
-  gtk_widget_show (bbox);
-  button = gtk_button_new_with_label ("Create");
-  gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,TRUE,2);
-  gtk_signal_connect (GTK_OBJECT(button),"clicked",
-		      msgd_bcreate_pressed,info_dj);
-  gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
-			     GTK_SIGNAL_FUNC(gtk_widget_destroy),(gpointer)window);
-
-  /* cancel */
-  button = gtk_button_new_with_label ("Cancel");
-  gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,TRUE,2);
-  gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
-			     GTK_SIGNAL_FUNC(gtk_widget_destroy),
-			     (gpointer) window);
-
-  gtk_widget_show_all(window);
-
-  return window;
-}
-
-static void msgd_project_search (GtkWidget *button, struct drqmj_msgdi *info)
+static void dnj_koj_frame_maya_project_search (GtkWidget *button, struct drqmj_koji_maya *info)
 {
   GtkWidget *dialog;
 
@@ -1382,7 +1291,7 @@ static void msgd_project_search (GtkWidget *button, struct drqmj_msgdi *info)
   info->fsproject = dialog;
 
   gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
-		      "clicked", GTK_SIGNAL_FUNC (msgd_set_project), info);
+		      "clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_maya_project_set), info);
   gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
 			     "clicked", GTK_SIGNAL_FUNC (gtk_widget_destroy),
 			     (gpointer) dialog);
@@ -1393,7 +1302,7 @@ static void msgd_project_search (GtkWidget *button, struct drqmj_msgdi *info)
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void msgd_set_project (GtkWidget *button, struct drqmj_msgdi *info)
+static void dnj_koj_frame_maya_project_set (GtkWidget *button, struct drqmj_koji_maya *info)
 {
   char buf[BUFFERLEN];
   char *p;
@@ -1405,7 +1314,7 @@ static void msgd_set_project (GtkWidget *button, struct drqmj_msgdi *info)
   gtk_entry_set_text (GTK_ENTRY(info->eproject),buf);
 }
 
-static void msgd_scene_search (GtkWidget *button, struct drqmj_msgdi *info)
+static void dnj_koj_frame_maya_scene_search (GtkWidget *button, struct drqmj_koji_maya *info)
 {
   GtkWidget *dialog;
 
@@ -1413,7 +1322,7 @@ static void msgd_scene_search (GtkWidget *button, struct drqmj_msgdi *info)
   info->fsscene = dialog;
 
   gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
-		      "clicked", GTK_SIGNAL_FUNC (msgd_set_scene), info);
+		      "clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_maya_scene_set), info);
   gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
 			     "clicked", GTK_SIGNAL_FUNC (gtk_widget_destroy),
 			     (gpointer) dialog);
@@ -1424,7 +1333,7 @@ static void msgd_scene_search (GtkWidget *button, struct drqmj_msgdi *info)
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void msgd_set_scene (GtkWidget *button, struct drqmj_msgdi *info)
+static void dnj_koj_frame_maya_scene_set (GtkWidget *button, struct drqmj_koji_maya *info)
 {
   char buf[BUFFERLEN];
   char *p;
@@ -1435,25 +1344,25 @@ static void msgd_set_scene (GtkWidget *button, struct drqmj_msgdi *info)
   gtk_entry_set_text (GTK_ENTRY(info->escene),p);
 }
 
-static void msgd_bcreate_pressed (GtkWidget *button, struct drqm_jobs_info *info)
+static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info)
 {
   struct mayasgi mayasgi;	/* Maya script generator info */
   char *file;
 
-  strncpy (mayasgi.project,gtk_entry_get_text(GTK_ENTRY(info->msgd.eproject)),BUFFERLEN-1);
-  strncpy (mayasgi.scene,gtk_entry_get_text(GTK_ENTRY(info->msgd.escene)),BUFFERLEN-1);
-  strncpy (mayasgi.image,gtk_entry_get_text(GTK_ENTRY(info->msgd.eimage)),BUFFERLEN-1);
-  strncpy (mayasgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->msgd.escript)),BUFFERLEN-1);
+  strncpy (mayasgi.project,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eproject)),BUFFERLEN-1);
+  strncpy (mayasgi.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escene)),BUFFERLEN-1);
+  strncpy (mayasgi.image,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eimage)),BUFFERLEN-1);
+  strncpy (mayasgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escript)),BUFFERLEN-1);
 
   if ((file = mayasg_create (&mayasgi)) == NULL) {
     fprintf (stderr,"ERROR: %s\n",drerrno_str());
     return;
   } else {
-    gtk_entry_set_text(GTK_ENTRY(info->dnj.ecmd),file);
+    gtk_entry_set_text(GTK_ENTRY(info->ecmd),file);
   } 
 }
 
-static void msgd_script_search (GtkWidget *button, struct drqmj_msgdi *info)
+static void dnj_koj_frame_maya_script_search (GtkWidget *button, struct drqmj_koji_maya *info)
 {
   GtkWidget *dialog;
 
@@ -1461,7 +1370,7 @@ static void msgd_script_search (GtkWidget *button, struct drqmj_msgdi *info)
   info->fsscript = dialog;
 
   gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
-		      "clicked", GTK_SIGNAL_FUNC (msgd_set_script), info);
+		      "clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_maya_script_set), info);
   gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
 			     "clicked", GTK_SIGNAL_FUNC (gtk_widget_destroy),
 			     (gpointer) dialog);
@@ -1472,7 +1381,7 @@ static void msgd_script_search (GtkWidget *button, struct drqmj_msgdi *info)
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void msgd_set_script (GtkWidget *button, struct drqmj_msgdi *info)
+static void dnj_koj_frame_maya_script_set (GtkWidget *button, struct drqmj_koji_maya *info)
 {
   char buf[BUFFERLEN];
   char *p;
@@ -1486,11 +1395,9 @@ static void msgd_set_script (GtkWidget *button, struct drqmj_msgdi *info)
 
 static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info)
 {
-  GtkWidget *frame, *frame2;
-  GtkWidget *bbox;
+  GtkWidget *frame;
   GtkWidget *vbox, *hbox, *hbox2;
   GtkWidget *label, *combo;
-  GtkWidget *button;
   GList *items = NULL;
 
   frame = gtk_frame_new ("Kind of job");
@@ -1511,26 +1418,15 @@ static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info)
   gtk_box_pack_start (GTK_BOX(hbox2),combo,TRUE,TRUE,2);
   gtk_entry_set_editable (GTK_ENTRY(GTK_COMBO(combo)->entry),FALSE);
   info->dnj.ckoj = combo;
+  info->dnj.koj = 0;
   gtk_signal_connect (GTK_OBJECT(GTK_ENTRY(GTK_COMBO(combo)->entry)),
 		      "changed",dnj_koj_combo_changed,info);
-
-  /* Script Generators */
-  frame2 = gtk_frame_new ("Script generators");
-  gtk_box_pack_end (GTK_BOX(vbox),frame2,TRUE,TRUE,2);
-  bbox = gtk_hbutton_box_new ();
-  gtk_container_add (GTK_CONTAINER(frame2),bbox);
-  gtk_widget_show (bbox);
-  button = gtk_button_new_with_label ("Maya");
-  gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,FALSE,2);
-  gtk_signal_connect (GTK_OBJECT(button),"clicked",
-		      GTK_SIGNAL_FUNC(MayaScriptGenerator),info);
 
   return (frame);
 }
 
 static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info)
 {
-  GtkWidget *dialog;
   int new_koj = -1;
 
   if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"General") == 0) {
@@ -1543,23 +1439,24 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
   }
 
   if (new_koj != info->dnj.koj) {
+    if (info->dnj.fkoj) {
+      gtk_object_destroy (GTK_OBJECT(info->dnj.fkoj));
+      info->dnj.fkoj = NULL;
+    }
     info->dnj.koj = (uint16_t) new_koj;
     switch (info->dnj.koj) {
     case KOJ_GENERAL:
       break;
     case KOJ_MAYA:
-      dialog = dnj_kojid_maya (info);
-      if (dialog) {
-	gtk_window_set_modal(GTK_WINDOW(dialog),TRUE);
-      }
+      info->dnj.fkoj = dnj_koj_frame_maya (info);
+      gtk_box_pack_start(GTK_BOX(info->dnj.vbox),info->dnj.fkoj,TRUE,TRUE,2);
       break;
     }
   }
 }
 
-static GtkWidget *dnj_kojid_maya (struct drqm_jobs_info *info)
+static GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
 {
-  GtkWidget *window;
   GtkWidget *frame;
   GtkWidget *vbox;
   GtkWidget *hbox,*hbox2;
@@ -1568,18 +1465,8 @@ static GtkWidget *dnj_kojid_maya (struct drqm_jobs_info *info)
   GtkWidget *button;
   GtkWidget *bbox;
 
-  /* Dialog */
-  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW(window),"Job information for Maya jobs");
-  gtk_signal_connect_object(GTK_OBJECT(window),"destroy",GTK_SIGNAL_FUNC(gtk_widget_destroy),
-			    (GtkObject*)window);
-  gtk_window_set_default_size(GTK_WINDOW(window),600,100);
-  gtk_container_set_border_width (GTK_CONTAINER(window),5);
-  info->msgd.dialog = window;
-
   /* Frame */
-  frame = gtk_frame_new ("Maya scene information");
-  gtk_container_add (GTK_CONTAINER(window),frame);
+  frame = gtk_frame_new ("Maya job information");
 
   /* Main vbox */
   vbox = gtk_vbox_new (FALSE,2);
@@ -1593,12 +1480,11 @@ static GtkWidget *dnj_kojid_maya (struct drqm_jobs_info *info)
   hbox2 = gtk_hbox_new (FALSE,0);
   gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
   entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
-  info_dj->msgd.escene = entry;
+  info->dnj.koji_maya.escene = entry;
   gtk_box_pack_start (GTK_BOX(hbox2),entry,TRUE,TRUE,2);
   button = gtk_button_new_with_label ("Search");
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
-  gtk_signal_connect (GTK_OBJECT(button),"clicked",msgd_scene_search,&info_dj->msgd);
-
+  gtk_signal_connect (GTK_OBJECT(button),"clicked",dnj_koj_frame_maya_scene_search,&info->dnj.koji_maya);
 
   /* Project directory */
   hbox = gtk_hbox_new (TRUE,2);
@@ -1608,11 +1494,11 @@ static GtkWidget *dnj_kojid_maya (struct drqm_jobs_info *info)
   hbox2 = gtk_hbox_new (FALSE,0);
   gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
   entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
-  info_dj->msgd.eproject = entry;
+  info->dnj.koji_maya.eproject = entry;
   gtk_box_pack_start (GTK_BOX(hbox2),entry,TRUE,TRUE,2);
   button = gtk_button_new_with_label ("Search");
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
-  gtk_signal_connect (GTK_OBJECT(button),"clicked",msgd_project_search,&info_dj->msgd);
+  gtk_signal_connect (GTK_OBJECT(button),"clicked",dnj_koj_frame_maya_project_search,&info->dnj.koji_maya);
 
   /* Output Image file name */
   hbox = gtk_hbox_new (TRUE,2);
@@ -1620,7 +1506,17 @@ static GtkWidget *dnj_kojid_maya (struct drqm_jobs_info *info)
   label = gtk_label_new ("Output image filename:");
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
   entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
-  info_dj->msgd.eimage = entry;
+  info->dnj.koji_maya.eimage = entry;
+  gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
+
+  /* View command */
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("View command:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
+  info->dnj.koji_maya.eviewcmd = entry;
+  gtk_entry_set_text(GTK_ENTRY(entry),KOJ_MAYA_DFLT_VIEWCMD);
   gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
 
   /* Script directory */
@@ -1631,35 +1527,54 @@ static GtkWidget *dnj_kojid_maya (struct drqm_jobs_info *info)
   hbox2 = gtk_hbox_new (FALSE,0);
   gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
   entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
-  info_dj->msgd.escript = entry;
+  info->dnj.koji_maya.escript = entry;
   gtk_entry_set_text (GTK_ENTRY(entry),mayasg_default_script_path());
   gtk_box_pack_start (GTK_BOX(hbox2),entry,TRUE,TRUE,2);
   button = gtk_button_new_with_label ("Search");
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
-  gtk_signal_connect (GTK_OBJECT(button),"clicked",msgd_script_search,&info_dj->msgd);
+  gtk_signal_connect (GTK_OBJECT(button),"clicked",dnj_koj_frame_maya_script_search,&info->dnj.koji_maya);
 
 
   /* Buttons */
-  /* Create */
+  /* Create script */
   bbox = gtk_hbutton_box_new ();
   gtk_box_pack_start (GTK_BOX(vbox),bbox,TRUE,TRUE,5);
   gtk_widget_show (bbox);
-  button = gtk_button_new_with_label ("Create");
+  button = gtk_button_new_with_label ("Create Script");
   gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,TRUE,2);
   gtk_signal_connect (GTK_OBJECT(button),"clicked",
-		      msgd_bcreate_pressed,info_dj);
-  gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
-			     GTK_SIGNAL_FUNC(gtk_widget_destroy),(gpointer)window);
+		      dnj_koj_frame_maya_bcreate_pressed,&info->dnj);
 
-  /* cancel */
-  button = gtk_button_new_with_label ("Cancel");
-  gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,TRUE,2);
-  gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
-			     GTK_SIGNAL_FUNC(gtk_widget_destroy),
-			     (gpointer) window);
+  gtk_widget_show_all(frame);
 
-  gtk_widget_show_all(window);
-
-  return window;
+  return frame;
 }
 
+static void jdd_maya_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info)
+{
+  /* Sets the waiting frames as finished */
+  GList *sel;
+  uint32_t frame,iframe;
+  const char *new_argv[4];
+  extern char **environ;
+
+  if (!(sel = GTK_CLIST(info->jdd.clist)->selection)) {
+    return;
+  }
+
+  frame = (uint32_t) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+  
+  iframe = job_frame_number_to_index (&info->jobs[info->ijob],frame);
+
+  if (fork() == 0) {
+    new_argv[0] = SHELL_NAME;
+    new_argv[1] = "-c";
+    new_argv[2] = info->jobs[info->ijob].koji.maya.viewcmd;
+    new_argv[3] = NULL;
+    
+    job_environment_set(&info->jobs[info->ijob],iframe);
+    
+    execve(SHELL_PATH,(char*const*)new_argv,environ);
+    perror("execve");
+  }
+}
