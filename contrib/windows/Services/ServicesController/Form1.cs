@@ -6,6 +6,8 @@ using System.Windows.Forms;
 using System.Data;
 using System.ServiceProcess;
 using System.Diagnostics;
+using System.Resources;
+using System.Reflection;
 
 namespace ServicesController
 {
@@ -62,7 +64,7 @@ namespace ServicesController
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(Form1));
+			System.Resources.ResourceManager resources = new System.Resources.ResourceManager("Form1", Assembly.GetExecutingAssembly(), null);
 			this.timer1 = new System.Timers.Timer();
 			this.button_ipc = new System.Windows.Forms.Button();
 			this.button_master = new System.Windows.Forms.Button();

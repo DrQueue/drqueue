@@ -30,14 +30,14 @@
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
 ; License page
-!insertmacro MUI_PAGE_LICENSE "..\COPYING"
+!insertmacro MUI_PAGE_LICENSE "..\..\..\COPYING"
 Page custom SetCustom ValidateCustom
 ; Directory page
 !insertmacro MUI_PAGE_DIRECTORY
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
 ; Finish page
-!define MUI_FINISHPAGE_RUN "$INSTDIR\contrib\ServicesController.exe"
+!define MUI_FINISHPAGE_RUN "$INSTDIR\contrib\windows\ServicesController.exe"
 !insertmacro MUI_PAGE_FINISH
 
 ; Uninstaller pages
@@ -130,32 +130,32 @@ FunctionEnd
 Section "SectionPrincipale" SEC01
   SetOutPath "$INSTDIR\bin"
   SetOverwrite try
-  File "..\bin\*.exe"
-  File "..\bin\*.dll"
+  File "..\..\..\bin\*.exe"
+  File "..\..\..\bin\*.dll"
   CreateDirectory "$SMPROGRAMS\drqueue"
   CreateShortCut "$SMPROGRAMS\drqueue\drqman.lnk" "$INSTDIR\bin\drqman.exe"
   CreateShortCut "$DESKTOP\drqman.lnk" "$INSTDIR\bin\drqman.exe"
   SetOutPath "$INSTDIR\contrib"
-  File "..\contrib\sendjob.blender.py"
-  File "..\contrib\service.exe"
-  File "..\contrib\servicesController.exe"
+  File "..\..\..\contrib\sendjob.blender.py"
+  File "..\..\..\contrib\windows\service.exe"
+  File "..\..\..\contrib\windows\servicesController.exe"
   CreateShortCut "$SMSTARTUP\drqueue-services.lnk" "$INSTDIR\contrib\servicesController.exe"
-  File "..\contrib\service-ipc.exe"
-  File "..\contrib\service-master.exe"
-  File "..\contrib\service-slave.exe"
+  File "..\..\..\contrib\windows\service-ipc.exe"
+  File "..\..\..\contrib\windows\service-master.exe"
+  File "..\..\..\contrib\windows\service-slave.exe"
   SetOutPath "$INSTDIR\etc"
-  File "..\etc\3delight.sg"
-  File "..\etc\aqsis.sg"
-  File "..\etc\blender.sg"
-  File "..\etc\bmrt.sg"
-  File "..\etc\drqman.conf"
+  File "..\..\..\etc\3delight.sg"
+  File "..\..\..\etc\aqsis.sg"
+  File "..\..\..\etc\blender.sg"
+  File "..\..\..\etc\bmrt.sg"
+  File "..\..\..\etc\drqman.conf"
   CreateShortCut "$SMPROGRAMS\drqueue\drqman.conf.lnk" "$INSTDIR\etc\drqman.conf"
-  File "..\etc\drqman.rc"
-  File "..\etc\master.conf"
-  File "..\etc\maya.sg"
-  File "..\etc\mentalray.sg"
-  File "..\etc\pixie.sg"
-  File "..\etc\slave.conf"
+  File "..\..\..\etc\drqman.rc"
+  File "..\..\..\etc\master.conf"
+  File "..\..\..\etc\maya.sg"
+  File "..\..\..\etc\mentalray.sg"
+  File "..\..\..\etc\pixie.sg"
+  File "..\..\..\etc\slave.conf"
   CreateShortCut "$SMPROGRAMS\drqueue\slave.conf.lnk" "$INSTDIR\etc\slave.conf"
   CreateDirectory "$INSTDIR\db"
   CreateDirectory "$INSTDIR\tmp"
