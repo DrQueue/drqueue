@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_computers.h,v 1.2 2001/08/28 21:49:26 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_computers.h,v 1.3 2001/08/29 15:26:33 jorge Exp $
  */
 
 #ifndef _DRQM_COMPUTERS_H
@@ -11,10 +11,15 @@
 struct info_cdd {		/* computer details dialog */
   GtkWidget *dialog;
   GtkWidget *lname;		/* label name */
+  GtkWidget *los;		/* OS */
+  GtkWidget *lcpuinfo;		/* cpu info */
+  GtkWidget *lloadavg;		/* load average */
+  GtkWidget *lntasks;		/* Number of tasks running */
 
+  GtkWidget *clist;		/* List of tasks */
   GtkWidget *menu;		/* Popup menu */
-  gint row,column;		/* selected processor */
-  int selected;			/* if a processor is selected */
+  gint row,column;		/* selected task */
+  int selected;			/* if a task. is selected */
 };
 
 struct info_drqm_computers {
