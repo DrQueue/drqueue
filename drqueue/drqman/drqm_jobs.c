@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.19 2001/08/31 12:46:52 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.20 2001/08/31 19:34:45 jorge Exp $
  */
 
 #include <string.h>
@@ -281,7 +281,7 @@ static GtkWidget *NewJobDialog (struct info_drqm_jobs *info)
   GList *items = NULL;
 
   /* Dialog */
-  window = gtk_window_new (GTK_WINDOW_DIALOG);
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW(window),"New Job");
   gtk_signal_connect_object(GTK_OBJECT(window),"destroy",GTK_SIGNAL_FUNC(gtk_widget_destroy),
 			    (GtkObject*)window);
@@ -666,7 +666,7 @@ static GtkWidget *JobDetailsDialog (struct info_drqm_jobs *info)
   }
 
   /* Dialog */
-  window = gtk_window_new (GTK_WINDOW_DIALOG);
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW(window),"Job Details");
   gtk_signal_connect (GTK_OBJECT(window),"destroy",GTK_SIGNAL_FUNC(jdd_destroy),info);
   gtk_signal_connect_object(GTK_OBJECT(window),"destroy",GTK_SIGNAL_FUNC(gtk_widget_destroy),
@@ -1070,6 +1070,10 @@ static GtkWidget *CreateMenuFrames (struct info_drqm_jobs *info)
   gtk_menu_append(GTK_MENU(menu),menu_item);
 /*    gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(StopJob),info); */
 
+  /* Separation bar */
+  menu_item = gtk_menu_item_new_with_label(NULL);
+  gtk_menu_append(GTK_MENU(menu),menu_item);
+
   menu_item = gtk_menu_item_new_with_label("Watch frame Log");
   gtk_menu_append(GTK_MENU(menu),menu_item);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(SeeFrameLog),info);
@@ -1129,7 +1133,7 @@ static GtkWidget *SeeFrameLogDialog (struct info_drqm_jobs *info)
   task.frame = job_frame_index_to_number (&info->jobs[info->row],info->jdd.row);
 
   /* Dialog */
-  window = gtk_window_new (GTK_WINDOW_DIALOG);
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW(window),"New Job");
   gtk_signal_connect_object(GTK_OBJECT(window),"destroy",GTK_SIGNAL_FUNC(gtk_widget_destroy),
 			    (GtkObject*)window);
