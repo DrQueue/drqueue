@@ -18,7 +18,8 @@ void drqm_request_job_frame_waiting (uint32_t jobid,uint32_t frame);
 void drqm_request_job_frame_kill (uint32_t jobid,uint32_t frame);
 void drqm_request_job_frame_finish (uint32_t jobid,uint32_t frame);
 void drqm_request_job_frame_kill_finish (uint32_t jobid,uint32_t frame);
-void drqm_request_job_sesupdate (uint32_t jobid,uint32_t frame_start,uint32_t frame_end, uint32_t frame_step);
+void drqm_request_job_sesupdate (uint32_t jobid,uint32_t frame_start,uint32_t frame_end,
+								                uint32_t frame_step, uint32_t block_size);
 void drqm_request_job_limits_nmaxcpus_set (uint32_t jobid, uint16_t nmaxcpus);
 void drqm_request_job_limits_nmaxcpuscomputer_set (uint32_t jobid, uint16_t nmaxcpuscomputer);
 void drqm_request_job_priority_update (uint32_t jobid, uint32_t priority);

@@ -1317,7 +1317,7 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
 {
   /* This function depends on info->row properly set (like most) */
   int nframes;
-  struct frame_info *fi;
+  struct frame_info *fi = NULL;
   char msg[BUFFERLEN];
   char *buf;
   char **buff;			/* for hte clist stuff */
@@ -2208,7 +2208,17 @@ static GtkWidget *jdd_sesframes_change_dialog (struct drqm_jobs_info *info)
   gtk_box_pack_start(GTK_BOX(hbox),entry,FALSE,FALSE,2);
   info->jdd.sesframes.eframe_step = entry;
 
-  hbox = gtk_hbutton_box_new ();
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start(GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Block Size:");
+  gtk_box_pack_start(GTK_BOX(hbox),label,FALSE,FALSE,2);
+  entry = gtk_entry_new_with_max_length(BUFFERLEN);
+  snprintf(msg,BUFFERLEN-1,"%i",info->jdd.job.block_size);
+  gtk_entry_set_text(GTK_ENTRY(entry),msg);
+  gtk_box_pack_start(GTK_BOX(hbox),entry,FALSE,FALSE,2);
+  info->jdd.sesframes.eblock_size = entry;
+  
+	hbox = gtk_hbutton_box_new ();
   gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
   button = gtk_button_new_with_label ("Submit");
   gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
@@ -2231,7 +2241,7 @@ static GtkWidget *jdd_sesframes_change_dialog (struct drqm_jobs_info *info)
 
 static void jdd_sesframes_cd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *info)
 {
-  uint32_t frame_start,frame_end,frame_step;
+  uint32_t frame_start,frame_end,frame_step,block_size;
 
   if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->jdd.sesframes.eframe_start)),"%u",&frame_start) != 1)
     return;
@@ -2239,8 +2249,10 @@ static void jdd_sesframes_cd_bsumbit_pressed (GtkWidget *button, struct drqm_job
     return;
   if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->jdd.sesframes.eframe_step)),"%u",&frame_step) != 1)
     return;
+  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->jdd.sesframes.eblock_size)),"%u",&block_size) != 1)
+    return;
 
-  drqm_request_job_sesupdate (info->jdd.job.id,frame_start,frame_end,frame_step);
+  drqm_request_job_sesupdate (info->jdd.job.id,frame_start,frame_end,frame_step,block_size);
 
   return;
 }
