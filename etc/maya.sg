@@ -28,7 +28,7 @@ if ($BLOCK > $DRQUEUE_ENDFRAME) then
 endif
 
 if ($?IMAGE) then
-  set CIMAGE = "-p $IMAGE"
+  set CIMAGE = "-im $IMAGE"
 else
   set CIMAGE = ""
 endif
