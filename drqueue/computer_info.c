@@ -418,6 +418,9 @@ char *proctypestring (t_proctype proctype)
   case PROCTYPE_ATHLON:
     msg = "Athlon";
     break;
+	case PROCTYPE_OPTERON:
+		msg = "Opteron";
+		break;
   case PROCTYPE_MIPSR5000:
     msg = "R5000";
     break;
