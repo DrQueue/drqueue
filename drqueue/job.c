@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.60 2003/12/18 20:39:41 jorge Exp $ */
+/* $Id: job.c,v 1.61 2003/12/18 21:11:43 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -735,6 +735,8 @@ char *job_koj_string (struct job *job)
   case KOJ_BLENDER:
     msg = "Blender";
     break;
+	case KOJ_BMRT:
+		msg = "Bmrt";
   default:
     msg = "DEFAULT (ERROR)";
   }
