@@ -1,5 +1,5 @@
 style "default" {
-  font = "-b&h-lucida-bold-r-normal-*-12-*-*-*-p-*-iso8859-1"
+  font = "-b&h-lucidatypewriter-bold-r-normal-sans-12-120-75-75-m-70-iso8859-1"
 }
 
 style "danger" {
