@@ -39,6 +39,10 @@
 # define SIGCLD SIGCHLD
 #endif
 
+#ifdef __CYGWIN
+  void cygwin_conv_to_posix_path(const char *path, char *posix_path);
+#endif
+
 #include "slave.h"
 #include "libdrqueue.h"
 
@@ -447,11 +451,19 @@ void launch_task (struct slave_database *sdb)
       const char *new_argv[4];
       int lfd;			/* logger fd */
 
+#ifdef __CYGWIN
+      new_argv[0] = SHELL_NAME;
+      if ((new_argv[1] = malloc(MAXCMDLEN)) == NULL) return;
+      cygwin_conv_to_posix_path(sdb->comp->status.task[sdb->itask].jobcmd,
+				(char *) new_argv[1]);
+      new_argv[2] = NULL;
+      //printf("run %s\n", new_argv[1]);
+#else
       new_argv[0] = SHELL_NAME;
       new_argv[1] = "-c";
       new_argv[2] = sdb->comp->status.task[sdb->itask].jobcmd;
       new_argv[3] = NULL;
-
+#endif
       setpgid(0,0);		/* So this process doesn't receive signals from the others */
       set_signal_handlers_task_exec ();
 			
@@ -466,7 +478,6 @@ void launch_task (struct slave_database *sdb)
 #ifdef __CYGWIN
 			exec_path = malloc(MAXCMDLEN);
 			snprintf (exec_path,BUFFERLEN-1,"%s/tcsh.exe",getenv("DRQUEUE_BIN"));
-			//printf("run %s\n", exec_path);
 #else
       exec_path = SHELL_PATH;
 #endif
