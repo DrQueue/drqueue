@@ -1,4 +1,4 @@
-/* $Id: bmrtsg.h,v 1.1 2003/12/18 20:39:41 jorge Exp $ */
+/* $Id: bmrtsg.h,v 1.2 2004/01/22 17:48:24 jorge Exp $ */
 
 #ifndef _BMRTSG_H_
 #define _BMRTSG_H_
@@ -9,7 +9,11 @@
 # ifdef __IRIX
 #include <sys/types.h>
 # else
-#  error You need to define the OS, or OS defined not supported
+#  ifdef __OSX
+#   include <stdint.h>
+#  else
+#   error You need to define the OS, or OS defined not supported
+#  endif
 # endif
 #endif
 

@@ -1,15 +1,19 @@
-/* $Id: common.h,v 1.32 2004/01/16 00:17:37 jorge Exp $ */
+/* $Id: common.h,v 1.33 2004/01/22 17:48:24 jorge Exp $ */
 
 #ifndef _COMMON_H_
 #define _COMMON_H_
 
 #ifdef __LINUX
-#include <stdint.h>
+# include <stdint.h>
 #else
 # ifdef __IRIX
-#include <sys/types.h>
+#  include <sys/types.h>
 # else
-#  error You need to define the OS, or OS defined not supported
+#  ifdef __OSX
+#   include <stdint.h>
+#  else
+#   error You need to define the OS, or OS defined not supported
+#  endif
 # endif
 #endif
 

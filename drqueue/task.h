@@ -1,4 +1,4 @@
-/* $Id: task.h,v 1.19 2003/12/18 04:11:07 jorge Exp $ */
+/* $Id: task.h,v 1.20 2004/01/22 17:48:24 jorge Exp $ */
 
 #ifndef _TASK_H_
 #define _TASK_H_
@@ -7,9 +7,13 @@
 #include <stdint.h>
 #else
 # ifdef __IRIX
-#include <sys/types.h>
+#  include <sys/types.h>
 # else
-#  error You need to define the OS, or OS defined not supported
+#  ifdef __OSX
+#   include <stdint.h>
+#  else
+#   error You need to define the OS, or OS defined not supported
+#  endif
 # endif
 #endif
 

@@ -1,4 +1,4 @@
-/* $Id: computer_info.c,v 1.11 2002/05/17 16:02:38 jorge Exp $ */
+/* $Id: computer_info.c,v 1.12 2004/01/22 17:48:24 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -158,11 +158,11 @@ t_proctype get_proctype (void)
   while (fgets (buf,BUFFERLEN,hinv) != NULL) {
     if (strstr(buf,"CPU:") != NULL) {
       if (strstr(buf,"R5000") != NULL) {
-	proctype = PROCTYPE_MIPSR5000;
-	found = 1;
+				proctype = PROCTYPE_MIPSR5000;
+				found = 1;
       } else if (strstr(buf,"R10000") != NULL) {
-	proctype = PROCTYPE_MIPSR10000;
-	found = 1;
+				proctype = PROCTYPE_MIPSR10000;
+				found = 1;
       }
     }
   }
