@@ -13,12 +13,12 @@ if [ ! $DRQUEUE_MASTER ]; then
   exit 2
 fi
 
-DQM_CMD=$DRQUEUE_ROOT/bin/drqman.`uname -s`
+JI_CMD=$DRQUEUE_ROOT/bin/jobinfo.`uname -s`
 
-if [ ! -x $DQM_CMD ]; then
-  echo ERROR: drqman for your platform \(drqman.`uname -s`\) does not exist in $DRQUEUE_ROOT/bin.
+if [ ! -x $JI_CMD ]; then
+  echo ERROR: jobinfo for your platform \(jobinfo.`uname -s`\) does not exist in $DRQUEUE_ROOT/bin.
   echo Perhaps you did not install it \(make miniinstall or make install\).
   exit 3
 fi
 
-$DQM_CMD $*
+$JI_CMD $*
