@@ -212,7 +212,7 @@ int computer_free (struct computer *computer)
 	computer->used = 0;
 	computer_status_init(&computer->status);
 	if (!computer_pool_free (&computer->limits)) {
-		// What ?
+		fprintf (stderr,"ERROR: computer_pool_free\n");
 	}
 	computer_pool_init (&computer->limits);
 
@@ -244,6 +244,7 @@ void computer_pool_set_from_environment (struct computer_limits *cl)
 
 void computer_pool_init (struct computer_limits *cl)
 {
+	fprintf (stderr,"PID (%i) poolshmid (%i) : COMPUTER_POOL_INIT\n",getpid(),cl->poolshmid);
 	cl->poolshmid = -1;
 	cl->npools = 0;
 }
@@ -252,12 +253,13 @@ int computer_pool_get_shared_memory (int npools)
 {
 	int shmid;
 					  
-	fprintf(stderr,"Allocating space for %i pools\n", npools);
 	if ((shmid = shmget (IPC_PRIVATE,sizeof(struct pool)*npools, IPC_EXCL|IPC_CREAT|0600)) == -1) {
 		perror ("shmget");
 		drerrno = DRE_GETSHMEM;
 		return shmid;
 	}
+
+	fprintf(stderr,"PID (%i) shmid (%i): Allocated space for %i pools\n", getpid(),shmid,npools);
 
 	drerrno = DRE_NOERROR;
 	return shmid;
@@ -280,6 +282,7 @@ void computer_pool_detach_shared_memory (struct pool *cpshp)
 {
   if (shmdt((char*)cpshp) == -1) {
 		// FIXME what to do then ?
+		fprintf (stderr,"ERROR: computer_pool_detach_shared_memory\n");
   }
 }
 
@@ -288,6 +291,8 @@ int computer_pool_add (struct computer_limits *cl, char *pool)
 	struct pool *opool = (void*)-1;
 	struct pool *npool;
 	int npoolshmid;
+
+	fprintf (stderr,"computer_pool_add (cl=%x,cl->poolshmid=%i)\n",cl,cl->poolshmid);
 
 	if (computer_pool_exists (cl,pool)) {
 		// It is already on the list
@@ -420,8 +425,10 @@ int computer_pool_exists (struct computer_limits *cl,char *pool)
 
 int computer_pool_free (struct computer_limits *cl)
 {
+	fprintf (stderr,"PID (%i): computer_pool_free (cl=%x,cl->poolshmid=%i,cl->npools=%i)\n",getpid(),cl,cl->poolshmid,cl->npools);
 	if (cl->poolshmid != -1) {
     if (shmctl (cl->poolshmid,IPC_RMID,NULL) == -1) {
+			fprintf (stderr,"ERROR: deleting poolshmid (%i)\n",cl->poolshmid);
 			drerrno = DRE_RMSHMEM;
 			return 0;
     }
@@ -470,7 +477,7 @@ void computer_init_limits (struct computer *comp)
   comp->limits.autoenable.m = AE_MIN;
   comp->limits.autoenable.last = 0; /* Last autoenable on Epoch */
 	comp->limits.autoenable.flags = 0; // No flags set, autoenable disabled
-	computer_pool_init (&comp->limits);
+	computer_pool_free (&comp->limits);
 }
 
 int computer_index_correct_master (struct database *wdb, uint32_t icomp)
