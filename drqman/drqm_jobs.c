@@ -1,7 +1,8 @@
 /*
- * $Id: drqm_jobs.c,v 1.2 2001/07/16 09:53:07 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.3 2001/07/17 10:21:51 jorge Exp $
  */
 
+#include "drqm_request.h"
 #include "drqm_jobs.h"
 
 static struct info_drqm_jobs info;
