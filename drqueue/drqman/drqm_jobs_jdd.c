@@ -1986,7 +1986,7 @@ static void jdd_pcd_cpri_changed (GtkWidget *entry, struct drqmj_jddi *info)
     gtk_entry_set_editable (GTK_ENTRY(info->epri),TRUE);
     gtk_entry_set_text (GTK_ENTRY(info->epri),"500");
   } else {
-    fprintf (stderr,"jdd_pcd_cpri_changed: Not listed!\n");
+    fprintf (stderr,"jdd_pcd_cpri_changed: Not listed! : %s\n",gtk_entry_get_text(GTK_ENTRY(info->epri)));
   }
 }
 
