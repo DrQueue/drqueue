@@ -48,6 +48,7 @@ struct drqmj_dnji {							/* dialog new job info */
   /* koj */
   GtkWidget *ckoj;							/* combo koj */
   GtkWidget *fkoj;							/* frame koj */
+	GtkWidget *vbkoj;        			/* vbox inside the koj's tab */
   uint16_t koj;									/* koj */
   struct drqmj_koji_maya koji_maya; /* koj info for maya */
   struct drqmj_koji_blender koji_blender; /* koj info for blender */
