@@ -30,7 +30,7 @@ Render -s $FRAME -e $BLOCK -rd $RD -p $IMAGE $SCENE
 # This should requeue the block if failed
 if ( $? != 0 ) then
   echo "Requeueing block..."
-#  kill -INT $$
+  kill -INT $$
 else
   # The frame was rendered properly
   chown_block $RF_OWNER $RD/$IMAGE $FRAME $BLOCK 
