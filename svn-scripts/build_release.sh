@@ -46,26 +46,34 @@ fi
 read -p "Do you want to create recreate the ChangeLog ? (y/n) " CHLG
 if [ "$CHLG" != "n" ]; then
 	echo "Creating ChangeLog"
-	svn2cl ChangeLog 0
+	svn2cl ChangeLog 0 # 0 means from HEAD to revision 0, that is all ChangeLog
 	echo "Created !"
 	echo "Commiting ChangeLog"
 	svn ci -m "Changelog commited by build_package.sh" ChangeLog
 fi
 
 # Creating tag
-echo "Creating tag $VERSION"
-(cd ..; svn cp -m "Tag $VERSION created by build_release.sh" drqueue http://www.drqueue.org/svn/tags/$VERSION)
-
-# Update Revision
-echo "Updating Revision"
-svn update > Revision
-echo "Commiting new Revision"
-svn ci -m "New Revision commited by build_package.sh" Revision
+read -p "Do you want to create a tag for this package ? (y/n) " CRTTAG
+if [ "$CRTTAG" = "y" ]; then
+	echo "Creating tag $VERSION"
+	(cd ..; svn cp -m "Tag $VERSION created by build_release.sh" drqueue http://www.drqueue.org/svn/tags/$VERSION)
+	echo "Created !"
+  # Update Revision
+  echo "Updating Revision"
+  svn update > Revision
+  echo "Commiting new Revision"
+  svn ci -m "New Revision commited by build_package.sh" Revision
+fi
 
 # Build package
 echo "Building package"
 make clean > /dev/null
-(cd ..; tar zcvf drqueue.$VERSION.tgz --exclude="*/.svn/*" drqueue) > /dev/null
+(
+cd ..
+mv drqueue drqueue.$VERSION
+tar zcvf drqueue.$VERSION.tgz --exclude="*/.svn/*" drqueue.$VERSION
+mv drqueue.$VERSION drqueue
+) > /dev/null
 
 # Package ChangeLog
 read -p "Do you want to create a package ChangeLog compared to previous tag ? (y/n) " CHLG
