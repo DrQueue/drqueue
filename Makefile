@@ -1,9 +1,9 @@
-# $Id: Makefile,v 1.12 2001/07/11 14:50:28 jorge Exp $
+# $Id: Makefile,v 1.13 2001/07/11 15:02:57 jorge Exp $
 
 CC = gcc
 OBJS_LIBDRQUEUE = computer_info.o computer_status.o task.o logger.o communications.o \
 			computer.o request.o semaphores.o job.o drerrno.o database.o
-LDFLAGS = -ldrqueue -L.
+LDFLAGS =
 LDFLAGS_CURSES = -lcurses
 
 ifeq ($(systype),linux)
@@ -23,8 +23,7 @@ irix:
 all: slave master sendjob
 
 libdrqueue.a : $(OBJS_LIBDRQUEUE)
-	ar q $@ $^
-	ranlib $@
+	ar sq $@ $^
 slave: slave.o libdrqueue.a
 master: master.o libdrqueue.a
 sendjob: sendjob.o libdrqueue.a
@@ -46,7 +45,7 @@ job.o : job.h database.h constants.h slave.h logger.h semaphores.h
 drerrno.o: drerrno.h
 
 clean:
-	rm -f *.o *~ slave master sendjob TAGS
+	rm -f *.o *~ libdrqueue.a slave master sendjob TAGS
 
 tags:
 	etags *.[ch]
