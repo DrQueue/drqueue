@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.43 2001/10/16 15:37:45 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.44 2001/10/22 14:16:53 jorge Exp $
  */
 
 #include <string.h>
@@ -51,6 +51,8 @@ static void jdd_limits_nmaxcpus_bcp (GtkWidget *button, struct drqm_jobs_info *i
 static GtkWidget *nmc_dialog (struct drqm_jobs_info *info);
 static void nmcd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *info);
 static void jdd_limits_nmaxcpuscomputer_bcp (GtkWidget *button, struct drqm_jobs_info *info);
+static GtkWidget *nmcc_dialog (struct drqm_jobs_info *info);
+static void nmccd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *info);
 
 /* Koj viewers */
 static void jdd_maya_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
@@ -1691,7 +1693,7 @@ static GtkWidget *dnj_limits_widgets (struct drqm_jobs_info *info)
 
   hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
-  label = gtk_label_new ("Maximum number of cpus in one computer:");
+  label = gtk_label_new ("Maximum number of cpus on one computer:");
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
   entry = gtk_entry_new ();
   gtk_entry_set_text (GTK_ENTRY(entry),"-1");
@@ -1730,7 +1732,7 @@ static GtkWidget *jdd_limits_widgets (struct drqm_jobs_info *info)
 
   hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
-  label = gtk_label_new ("Maximum number of cpus in one computer:");
+  label = gtk_label_new ("Maximum number of cpus on one computer:");
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
   hbox2 = gtk_hbox_new (FALSE,2);
   gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,2);
@@ -1739,6 +1741,7 @@ static GtkWidget *jdd_limits_widgets (struct drqm_jobs_info *info)
   info->jdd.limits.lnmaxcpuscomputer = label;
   button = gtk_button_new_with_label ("Change");
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
+  gtk_signal_connect(GTK_OBJECT(button),"clicked",jdd_limits_nmaxcpuscomputer_bcp,info);
 
   return (frame);
 }
@@ -1764,7 +1767,7 @@ static GtkWidget *sesframes_change_dialog (struct drqm_jobs_info *info)
   char msg[BUFFERLEN];
 
   window = gtk_window_new (GTK_WINDOW_DIALOG);
-  gtk_window_set_title (GTK_WINDOW(window),"Changing start, end, step frames");
+  gtk_window_set_title (GTK_WINDOW(window),"Change start, end, step frames");
   gtk_window_set_policy(GTK_WINDOW(window),FALSE,FALSE,TRUE);
   vbox = gtk_vbox_new (FALSE,2);
   gtk_container_add(GTK_CONTAINER(window),vbox);
@@ -1868,7 +1871,7 @@ GtkWidget *nmc_dialog (struct drqm_jobs_info *info)
   gtk_box_pack_start(GTK_BOX(hbox),label,FALSE,FALSE,2);
   entry = gtk_entry_new_with_max_length(BUFFERLEN);
   info->jdd.limits.enmaxcpus = entry;
-  snprintf(msg,BUFFERLEN-1,"%i",info->jobs[info->row].limits.nmaxcpus);
+  snprintf(msg,BUFFERLEN-1,"%hi",info->jobs[info->row].limits.nmaxcpus);
   gtk_entry_set_text(GTK_ENTRY(entry),msg);
   gtk_box_pack_start(GTK_BOX(hbox),entry,FALSE,FALSE,2);
 
@@ -1920,7 +1923,69 @@ void jdd_limits_nmaxcpuscomputer_bcp (GtkWidget *button, struct drqm_jobs_info *
     gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
+GtkWidget *nmcc_dialog (struct drqm_jobs_info *info)
+{
+  GtkWidget *window;
+  GtkWidget *vbox;
+  GtkWidget *hbox;
+  GtkWidget *label;
+  GtkWidget *entry;
+  GtkWidget *button;
+  char msg[BUFFERLEN];
 
+  window = gtk_window_new (GTK_WINDOW_DIALOG);
+  gtk_window_set_title (GTK_WINDOW(window),"New maximum number of cpus in a single computer");
+  gtk_window_set_policy(GTK_WINDOW(window),FALSE,FALSE,TRUE);
+  vbox = gtk_vbox_new (FALSE,2);
+  gtk_container_add(GTK_CONTAINER(window),vbox);
+
+  hbox = gtk_hbox_new (FALSE,2);
+  gtk_box_pack_start(GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("New maximum number of cpus on one computer:");
+  gtk_box_pack_start(GTK_BOX(hbox),label,FALSE,FALSE,2);
+  entry = gtk_entry_new_with_max_length(BUFFERLEN);
+  info->jdd.limits.enmaxcpuscomputer = entry;
+  snprintf(msg,BUFFERLEN-1,"%hi",info->jobs[info->row].limits.nmaxcpuscomputer);
+  gtk_entry_set_text(GTK_ENTRY(entry),msg);
+  gtk_box_pack_start(GTK_BOX(hbox),entry,FALSE,FALSE,2);
+
+  hbox = gtk_hbutton_box_new ();
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  button = gtk_button_new_with_label ("Submit");
+  gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
+  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(nmccd_bsumbit_pressed),info);
+/*    gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(cdd_update),info); */
+  gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
+			     GTK_SIGNAL_FUNC(gtk_widget_destroy),
+			     (gpointer) window);
+
+  button = gtk_button_new_with_label ("Cancel");
+  gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
+  gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
+			     GTK_SIGNAL_FUNC(gtk_widget_destroy),
+			     (gpointer) window);
+
+  gtk_widget_show_all(window);
+
+  return window;
+}
+
+void nmccd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *info)
+{
+  uint32_t nmaxcpuscomputer;
+  char msg[BUFFERLEN];
+
+  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->jdd.limits.enmaxcpuscomputer)),"%u",&nmaxcpuscomputer) != 1)
+    return;			/* Error in the entry */
+
+  drqm_request_job_limits_nmaxcpuscomputer_set(info->jobs[info->row].id,nmaxcpuscomputer);
+
+  info->jobs[info->row].limits.nmaxcpuscomputer = (uint16_t) nmaxcpuscomputer;
+
+  snprintf(msg,BUFFERLEN-1,"%u",
+	   info->jobs[info->row].limits.nmaxcpuscomputer);
+  gtk_label_set_text (GTK_LABEL(info->jdd.limits.lnmaxcpuscomputer),msg);
+}
 
 
 
