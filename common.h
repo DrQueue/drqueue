@@ -1,11 +1,11 @@
-/* $Id: common.h,v 1.4 2001/09/12 09:46:00 jorge Exp $ */
+/* $Id: common.h,v 1.5 2001/09/17 12:36:14 jorge Exp $ */
 
 #ifndef _COMMON_H_
 #define _COMMON_H_
 
 #include <stdio.h>
 
-#define VERSION "v_0-21"
+#define VERSION "v_0-22"
 
 int common_environment_check (void);
 void show_version (char **argv);
