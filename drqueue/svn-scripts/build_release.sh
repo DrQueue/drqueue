@@ -30,7 +30,7 @@ read -p "You are about to commit changes to common.h . Are you sure ? (y/n) " SU
 
 if [ "$SURE" = "y" ]; then
 	echo "Commiting changes..."
-# svn ci -m "New version number on common.h" common.h
+  svn ci -m "New version number on common.h: $VERSION" common.h
 else
 	echo "Not commiting."
 	read -p "Still want to build the package ? (y/n) " BUILD
