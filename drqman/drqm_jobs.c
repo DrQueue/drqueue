@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.21 2001/09/01 16:43:20 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.22 2001/09/03 16:03:43 jorge Exp $
  */
 
 #include <string.h>
@@ -56,6 +56,14 @@ static GtkWidget *HStopJobDialog (struct info_drqm_jobs *info);
 static void djhs_bok_pressed (GtkWidget *button, struct info_drqm_jobs *info);
 
 static void ContinueJob (GtkWidget *menu_item, struct info_drqm_jobs *info);
+
+/* Maya Script Generator */
+static void MayaScriptGenerator (GtkWidget *button,struct info_drqm_jobs *info_dj);
+static GtkWidget *MayaScriptGeneratorDialog (struct info_drqm_jobs *info_dj);
+static void msgd_scene_search (GtkWidget *button, struct info_msgd *info);
+static void msgd_set_scene (GtkWidget *button, struct info_msgd *info);
+static void msgd_project_search (GtkWidget *button, struct info_msgd *info);
+static void msgd_set_project (GtkWidget *button, struct info_msgd *info);
 
 void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info)
 {
@@ -399,22 +407,28 @@ static GtkWidget *NewJobDialog (struct info_drqm_jobs *info)
 		      "changed",dnj_cpri_changed,&info->dnj);
   gtk_entry_set_text (GTK_ENTRY(GTK_COMBO(combo)->entry),"Normal");
 
+  /* Script Generators */
+  bbox = gtk_hbutton_box_new ();
+  gtk_box_pack_start (GTK_BOX(vbox),bbox,TRUE,TRUE,5);
+  gtk_widget_show (bbox);
+  button = gtk_button_new_with_label ("Maya");
+  gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,FALSE,2);
+  gtk_signal_connect (GTK_OBJECT(button),"clicked",
+		      GTK_SIGNAL_FUNC(MayaScriptGenerator),info);
+
   /* Buttons */
   /* submit */
   bbox = gtk_hbutton_box_new ();
-  gtk_hbutton_box_set_layout_default (GTK_BUTTONBOX_SPREAD);
   gtk_box_pack_start (GTK_BOX(vbox),bbox,TRUE,TRUE,5);
   gtk_widget_show (bbox);
   button = gtk_button_new_with_label ("Submit");
   gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,TRUE,2);
-  gtk_widget_show (button);
   gtk_signal_connect (GTK_OBJECT(button),"clicked",
 		      dnj_bsubmit_pressed,&info->dnj);
 
   /* cancel */
   button = gtk_button_new_with_label ("Cancel");
   gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,TRUE,2);
-  gtk_widget_show (button);
   gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
 			     GTK_SIGNAL_FUNC(gtk_widget_destroy),
 			     (gpointer) window);
@@ -571,7 +585,7 @@ static void DeleteJob (GtkWidget *menu_item, struct info_drqm_jobs *info)
   dialog = DeleteJobDialog(info);
   gtk_signal_connect (GTK_OBJECT(dialog),"destroy",
 		      dnj_destroyed,info); /* Updates the list */
-  gtk_grab_add(dialog);
+  gtk_window_set_modal(GTK_WINDOW(dialog),TRUE);
 }
 
 static GtkWidget *DeleteJobDialog (struct info_drqm_jobs *info)
@@ -583,12 +597,14 @@ static GtkWidget *DeleteJobDialog (struct info_drqm_jobs *info)
   /* Dialog */
   dialog = gtk_dialog_new ();
   gtk_window_set_title (GTK_WINDOW(dialog),"You Sure?");
+  gtk_signal_connect_object(GTK_OBJECT(dialog),"destroy",
+			    GTK_SIGNAL_FUNC(gtk_widget_destroy),
+			    (gpointer)dialog);
 
   /* Label */
   label = gtk_label_new ("Do you really want to delete the job?");
   gtk_misc_set_padding (GTK_MISC(label), 10, 10);
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox),label,TRUE,TRUE,5);
-  gtk_widget_show(GTK_WIDGET(label));
  
   /* Buttons */
   button = gtk_button_new_with_label ("Yes");
@@ -596,16 +612,14 @@ static GtkWidget *DeleteJobDialog (struct info_drqm_jobs *info)
   gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(djd_bok_pressed),info);
   gtk_signal_connect_object(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(gtk_widget_destroy),
 			    (GtkObject*)dialog);
-  gtk_widget_show (button);
   button = gtk_button_new_with_label ("No");
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->action_area),button, TRUE, TRUE, 5);
   gtk_signal_connect_object(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(gtk_widget_destroy),
 			    (GtkObject*)dialog);
   GTK_WIDGET_SET_FLAGS(button,GTK_CAN_DEFAULT);
   gtk_widget_grab_default(button);
-  gtk_widget_show (button);
 
-  gtk_widget_show (dialog);
+  gtk_widget_show_all (dialog);
 
   return dialog;
 }
@@ -814,7 +828,6 @@ static GtkWidget *JobDetailsDialog (struct info_drqm_jobs *info)
   gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
   gtk_signal_connect (GTK_OBJECT(button),"clicked",
 		      GTK_SIGNAL_FUNC(DeleteJob),info);
-/*    gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_update),info); */
 
   /* Button Refresh */
   button = gtk_button_new_with_label ("Refresh");
@@ -1166,3 +1179,154 @@ static GtkWidget *SeeFrameLogDialog (struct info_drqm_jobs *info)
 
   return window;
 }
+
+static void MayaScriptGenerator (GtkWidget *button,struct info_drqm_jobs *info_dj)
+{
+  GtkWidget *dialog;
+
+  dialog = MayaScriptGeneratorDialog(info_dj);
+
+  if (dialog)
+    gtk_window_set_modal(GTK_WINDOW(dialog),TRUE);
+}
+
+static GtkWidget *MayaScriptGeneratorDialog (struct info_drqm_jobs *info_dj)
+{
+  GtkWidget *window;
+  GtkWidget *frame;
+  GtkWidget *vbox;
+  GtkWidget *hbox,*hbox2;
+  GtkWidget *label;
+  GtkWidget *entry; 
+  GtkWidget *button;
+  GtkWidget *bbox;
+
+  /* Dialog */
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title (GTK_WINDOW(window),"New script for Maya");
+  gtk_signal_connect_object(GTK_OBJECT(window),"destroy",GTK_SIGNAL_FUNC(gtk_widget_destroy),
+			    (GtkObject*)window);
+  gtk_window_set_default_size(GTK_WINDOW(window),600,100);
+  gtk_container_set_border_width (GTK_CONTAINER(window),5);
+  info_dj->msgd.dialog = window;
+
+  /* Frame */
+  frame = gtk_frame_new ("Maya scene information");
+  gtk_container_add (GTK_CONTAINER(window),frame);
+
+  /* Main vbox */
+  vbox = gtk_vbox_new (FALSE,2);
+  gtk_container_add (GTK_CONTAINER(frame),vbox);
+
+  /* Scene file */
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Scene file:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  hbox2 = gtk_hbox_new (FALSE,0);
+  gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
+  entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
+  info_dj->msgd.escene = entry;
+  gtk_box_pack_start (GTK_BOX(hbox2),entry,TRUE,TRUE,2);
+  button = gtk_button_new_with_label ("Search");
+  gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
+  gtk_signal_connect (GTK_OBJECT(button),"clicked",msgd_scene_search,&info_dj->msgd);
+
+  /* Project directory */
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Project directory:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  hbox2 = gtk_hbox_new (FALSE,0);
+  gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
+  entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
+  info_dj->msgd.eproject = entry;
+  gtk_box_pack_start (GTK_BOX(hbox2),entry,TRUE,TRUE,2);
+  button = gtk_button_new_with_label ("Search");
+  gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
+  gtk_signal_connect (GTK_OBJECT(button),"clicked",msgd_project_search,&info_dj->msgd);
+
+  /* Output Image file name */
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Output image filename:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
+  info_dj->msgd.eimage = entry;
+  gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
+
+
+  /* Buttons */
+  /* Create */
+  bbox = gtk_hbutton_box_new ();
+  gtk_box_pack_start (GTK_BOX(vbox),bbox,TRUE,TRUE,5);
+  gtk_widget_show (bbox);
+  button = gtk_button_new_with_label ("Create");
+  gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,TRUE,2);
+/*    gtk_signal_connect (GTK_OBJECT(button),"clicked", */
+/*  		      dnj_bsubmit_pressed,&info_dj->dnj); */
+
+  /* cancel */
+  button = gtk_button_new_with_label ("Cancel");
+  gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,TRUE,2);
+  gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
+			     GTK_SIGNAL_FUNC(gtk_widget_destroy),
+			     (gpointer) window);
+
+  gtk_widget_show_all(window);
+
+  return window;
+}
+
+static void msgd_project_search (GtkWidget *button, struct info_msgd *info)
+{
+  GtkWidget *dialog;
+
+  dialog = gtk_file_selection_new ("Please select a project directory");
+  info->fsproject = dialog;
+
+  gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
+		      "clicked", GTK_SIGNAL_FUNC (msgd_set_project), info);
+  gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
+			     "clicked", GTK_SIGNAL_FUNC (gtk_widget_destroy),
+			     (gpointer) dialog);
+  gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->cancel_button),
+			     "clicked", GTK_SIGNAL_FUNC (gtk_widget_destroy),
+			     (gpointer) dialog);
+  gtk_widget_show (dialog);
+  gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
+}
+
+static void msgd_set_project (GtkWidget *button, struct info_msgd *info)
+{
+  gtk_entry_set_text (GTK_ENTRY(info->eproject),
+		      gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsproject)));
+}
+
+static void msgd_scene_search (GtkWidget *button, struct info_msgd *info)
+{
+  GtkWidget *dialog;
+
+  dialog = gtk_file_selection_new ("Please select a scene file");
+  info->fsscene = dialog;
+
+  gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
+		      "clicked", GTK_SIGNAL_FUNC (msgd_set_scene), info);
+  gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
+			     "clicked", GTK_SIGNAL_FUNC (gtk_widget_destroy),
+			     (gpointer) dialog);
+  gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->cancel_button),
+			     "clicked", GTK_SIGNAL_FUNC (gtk_widget_destroy),
+			     (gpointer) dialog);
+  gtk_widget_show (dialog);
+  gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
+}
+
+static void msgd_set_scene (GtkWidget *button, struct info_msgd *info)
+{
+  gtk_entry_set_text (GTK_ENTRY(info->escene),
+		      gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscene)));
+}
+
+
+
