@@ -56,7 +56,7 @@ else
 	   CFLAGS = -DCOMM_REPORT -Wall -I. -D__CYGWIN -g -O2 -I/usr/include/cygipc 
      CPPFLAGS = -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__CYGWIN -g -O2 -I/usr/include/cygipc
 	   MAKE = make
-	   LDFLAGS += -e _mainCRTStartup -mwindows -lcygipc
+	   LDFLAGS += -e _mainCRTStartup -mwindows -lcygipc contrib/windows/Resources/drqueue.res 
  	  else
  $(error Cannot make DrQueue -- systype "$(systype)" is unknown)
 	  endif
@@ -235,7 +235,7 @@ cjob.o: cjob.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 sendjob: sendjob.o libdrqueue.a
-	$(CPP) $(CPPDFLAGS) -o $@ sendjob.o libdrqueue.a
+	$(CPP) $(CPPDFLAGS) $(LDFLAGS) -o $@ sendjob.o libdrqueue.a
 
 libdrqueue.h: computer_info.h computer_status.h task.h logger.h communications.h \
 			computer.h request.h semaphores.h job.h drerrno.h database.h common.h
