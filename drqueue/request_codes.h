@@ -1,4 +1,4 @@
-/* $Id: request_codes.h,v 1.18 2001/10/05 15:51:18 jorge Exp $ */
+/* $Id: request_codes.h,v 1.19 2001/10/16 15:38:05 jorge Exp $ */
 
 #ifndef _REQUEST_CODES_H_
 #define _REQUEST_CODES_H_
@@ -45,6 +45,10 @@
 #define R_A_SLAVEXIT   40
 #define R_R_JOBSESUP   41	/* SES (Start,End,Step frames) update */
 #define R_A_JOBSESUP   42
+#define R_R_JOBLNMCS   43	/* Job limit nmaxcpus set */
+#define R_A_JOBLNMCS   44
+#define R_R_JOBLNMCCS  45	/* Job limit nmaxcpuscomputer set */
+#define R_A_JOBLNMCCS  46
 
 /* Requests to the slave */
 #define RS_R_KILLTASK           1 /* Request to slave to kill a task */

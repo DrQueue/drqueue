@@ -1,4 +1,4 @@
-/* $Id: drqm_request.c,v 1.20 2001/10/05 15:52:36 jorge Exp $ */
+/* $Id: drqm_request.c,v 1.21 2001/10/16 15:37:46 jorge Exp $ */
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -192,3 +192,7 @@ void drqm_request_job_sesupdate (uint32_t jobid,uint32_t frame_start,uint32_t fr
   request_job_sesupdate (jobid,frame_start,frame_end,frame_step,CLIENT);
 }
 
+void drqm_request_job_limits_nmaxcpus_set (uint32_t jobid, uint16_t nmaxcpus)
+{
+  request_job_limits_nmaxcpus_set (jobid,nmaxcpus,CLIENT);
+}
