@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.24 2001/07/24 15:14:39 jorge Exp $ */
+/* $Id: slave.c,v 1.25 2001/07/24 15:42:42 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -88,7 +88,12 @@ void clean_out (int signal, siginfo_t *info, void *data)
 {
   int rc;
   pid_t child_pid;
+  int i;
 
+  for (i=0;i<MAXTASKS;i++) {
+    if (sdb.comp->status.task[i].used)
+      kill(sdb.comp->status.task[i].pid,SIGTERM);
+  }
   kill (0,SIGINT);
   log_slave_computer (L_INFO,"Cleaning...");
   while ((child_pid = wait (&rc)) != -1) {
@@ -173,9 +178,8 @@ void set_signal_handlers_child_listening (void)
 {
   struct sigaction action_dfl;
 
-  action_dfl.sa_sigaction = (void *)SIG_DFL;
+  action_dfl.sa_handler = (void *)SIG_DFL;
   sigemptyset (&action_dfl.sa_mask);
-  action_dfl.sa_flags = SA_SIGINFO;
   sigaction (SIGINT, &action_dfl, NULL);
   sigaction (SIGTERM, &action_dfl, NULL);
 }
@@ -205,9 +209,8 @@ void set_signal_handlers_child_launcher (void)
   sigaction (SIGINT, &action_ignore, NULL);
   sigaction (SIGTERM, &action_ignore, NULL);
 
-  action_dfl.sa_sigaction = (void *)SIG_DFL;
+  action_dfl.sa_handler = (void *)SIG_DFL;
   sigemptyset (&action_dfl.sa_mask);
-  action_dfl.sa_flags = SA_SIGINFO;
   sigaction (SIGCLD, &action_dfl, NULL);
 }
 
@@ -215,9 +218,8 @@ void set_signal_handlers_task_exec (void)
 {
   struct sigaction action_dfl;
 
-  action_dfl.sa_sigaction = (void *)SIG_DFL;
+  action_dfl.sa_handler = (void *)SIG_DFL;
   sigemptyset (&action_dfl.sa_mask);
-  action_dfl.sa_flags = SA_SIGINFO;
   sigaction (SIGINT, &action_dfl, NULL);
   sigaction (SIGTERM, &action_dfl, NULL);
   sigaction (SIGCLD, &action_dfl, NULL);
@@ -285,7 +287,8 @@ void launch_task (struct slave_database *sdb)
       int i,len;
       const char *targ;
       char cmd[MAXCMDLEN];
-      
+
+      setpgid(0,0);		/* So this process doesn't receive signals from the others */
       set_signal_handlers_task_exec ();
       strncpy(cmd,sdb->comp->status.task[sdb->itask].jobcmd,MAXCMDLEN);
       len = strlen (cmd);
@@ -312,6 +315,7 @@ void launch_task (struct slave_database *sdb)
 
       exit(errno);		/* If we arrive here, something happened exec'ing */
     }
+
     /* Then we set the process as running */
     semaphore_lock(sdb->semid);
     sdb->comp->status.task[sdb->itask].status = TASKSTATUS_RUNNING;
