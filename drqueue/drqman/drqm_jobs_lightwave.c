@@ -52,14 +52,13 @@ GtkWidget *dnj_koj_frame_lightwave (struct drqm_jobs_info *info)
   GtkWidget *entry; 
   GtkWidget *button;
   GtkWidget *bbox;
-	GtkWidget *cbutton;
   GtkTooltips *tooltips;
   struct passwd *pw;
 
   tooltips = TooltipsNew ();
 
   /* Frame */
-  frame = gtk_frame_new ("Maya job information");
+  frame = gtk_frame_new ("Lightwave job information");
 
   /* Main vbox */
   vbox = gtk_vbox_new (FALSE,2);
