@@ -27,6 +27,7 @@
 
 int common_environment_check (void);
 void show_version (char **argv);
+int rmdir_check_str (char *path);
 int remove_dir (char *dir);
 char *time_str (uint32_t nseconds);
 
