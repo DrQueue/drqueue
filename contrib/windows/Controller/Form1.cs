@@ -17,20 +17,19 @@ namespace ServicesController
 	public class Form1 : System.Windows.Forms.Form
 	{
 		private System.ComponentModel.IContainer components;
-		private System.Windows.Forms.Button button_master;
-		private System.Windows.Forms.Button button2;
-		private System.Windows.Forms.Button button1;
+		private System.Windows.Forms.MenuItem menuItemConnect;
+		private System.Timers.Timer timer1;
+		private System.Windows.Forms.MenuItem menuItemManager;
 		private System.Windows.Forms.NotifyIcon Drqueue_on;
 		private System.Windows.Forms.NotifyIcon DrQueue;
-		private System.Windows.Forms.Button button_ipc;
-		private System.Windows.Forms.Button button3;
-		private System.Timers.Timer timer1;
-		private System.Windows.Forms.Button button_slave;
+		private System.Windows.Forms.ContextMenu contextMenuNotify;
+		private System.Windows.Forms.MenuItem menuItemDriver;
+		private System.Windows.Forms.MenuItem menuItemSeparator;
+		private System.Windows.Forms.MenuItem menuItemQuit;
 		private System.Windows.Forms.NotifyIcon Drqueue_off;
 		private System.Windows.Forms.Label statusBar1;
 
 		private System.ServiceProcess.ServiceController serviceControllerIpc;
-		private System.ServiceProcess.ServiceController serviceControllerMaster;
 
 		private const string IPC = "cygserver";
 		private const string MASTER = "master";
@@ -44,15 +43,10 @@ namespace ServicesController
 			InitializeComponent();
 
 			this.serviceControllerIpc = new System.ServiceProcess.ServiceController();
-			this.serviceControllerMaster = new System.ServiceProcess.ServiceController();
 			// 
 			// serviceControllerIpc
 			// 
 			this.serviceControllerIpc.ServiceName = "drqueue_ipc";
-			// 
-			// serviceControllerMaster
-			// 
-			this.serviceControllerMaster.ServiceName = "drqueue_master";
 		}
 
 		/// <summary>
@@ -80,21 +74,21 @@ namespace ServicesController
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(Form1));
 			this.statusBar1 = new System.Windows.Forms.Label();
 			this.Drqueue_off = new System.Windows.Forms.NotifyIcon(this.components);
-			this.button_slave = new System.Windows.Forms.Button();
-			this.timer1 = new System.Timers.Timer();
-			this.button3 = new System.Windows.Forms.Button();
-			this.button_ipc = new System.Windows.Forms.Button();
+			this.menuItemQuit = new System.Windows.Forms.MenuItem();
+			this.menuItemSeparator = new System.Windows.Forms.MenuItem();
+			this.menuItemDriver = new System.Windows.Forms.MenuItem();
+			this.contextMenuNotify = new System.Windows.Forms.ContextMenu();
 			this.DrQueue = new System.Windows.Forms.NotifyIcon(this.components);
 			this.Drqueue_on = new System.Windows.Forms.NotifyIcon(this.components);
-			this.button1 = new System.Windows.Forms.Button();
-			this.button2 = new System.Windows.Forms.Button();
-			this.button_master = new System.Windows.Forms.Button();
+			this.menuItemManager = new System.Windows.Forms.MenuItem();
+			this.timer1 = new System.Timers.Timer();
+			this.menuItemConnect = new System.Windows.Forms.MenuItem();
 			((System.ComponentModel.ISupportInitialize)(this.timer1)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// statusBar1
 			// 
-			this.statusBar1.Location = new System.Drawing.Point(8, 128);
+			this.statusBar1.Location = new System.Drawing.Point(8, 8);
 			this.statusBar1.Name = "statusBar1";
 			this.statusBar1.Size = new System.Drawing.Size(272, 16);
 			this.statusBar1.TabIndex = 8;
@@ -104,45 +98,38 @@ namespace ServicesController
 			this.Drqueue_off.Icon = ((System.Drawing.Icon)(resources.GetObject("Drqueue_off.Icon")));
 			this.Drqueue_off.Text = "";
 			// 
-			// button_slave
+			// menuItemQuit
 			// 
-			this.button_slave.BackColor = System.Drawing.Color.DimGray;
-			this.button_slave.Location = new System.Drawing.Point(160, 24);
-			this.button_slave.Name = "button_slave";
-			this.button_slave.Size = new System.Drawing.Size(112, 24);
-			this.button_slave.TabIndex = 4;
-			this.button_slave.Text = "CONNECTED";
-			this.button_slave.Click += new System.EventHandler(this.button_slave_Click);
+			this.menuItemQuit.Index = 4;
+			this.menuItemQuit.Text = "Quit";
+			this.menuItemQuit.Click += new System.EventHandler(this.MenuItemQuitClick);
 			// 
-			// timer1
+			// menuItemSeparator
 			// 
-			this.timer1.Enabled = true;
-			this.timer1.Interval = 500;
-			this.timer1.SynchronizingObject = this;
-			this.timer1.Elapsed += new System.Timers.ElapsedEventHandler(this.timer1_Elapsed);
+			this.menuItemSeparator.Enabled = false;
+			this.menuItemSeparator.Index = 2;
+			this.menuItemSeparator.Text = "-------------";
 			// 
-			// button3
+			// menuItemDriver
 			// 
-			this.button3.BackColor = System.Drawing.Color.Gray;
-			this.button3.Location = new System.Drawing.Point(16, 96);
-			this.button3.Name = "button3";
-			this.button3.Size = new System.Drawing.Size(72, 24);
-			this.button3.TabIndex = 9;
-			this.button3.Text = "Quit";
-			this.button3.Click += new System.EventHandler(this.button3_Click);
+			this.menuItemDriver.Checked = true;
+			this.menuItemDriver.Index = 3;
+			this.menuItemDriver.Text = "Driver";
+			this.menuItemDriver.Click += new System.EventHandler(this.MenuItemDriverClick);
 			// 
-			// button_ipc
+			// contextMenuNotify
 			// 
-			this.button_ipc.BackColor = System.Drawing.Color.DimGray;
-			this.button_ipc.Location = new System.Drawing.Point(16, 24);
-			this.button_ipc.Name = "button_ipc";
-			this.button_ipc.Size = new System.Drawing.Size(72, 24);
-			this.button_ipc.TabIndex = 2;
-			this.button_ipc.Text = "DRIVERS";
-			this.button_ipc.Click += new System.EventHandler(this.button_ipc_Click);
+			this.contextMenuNotify.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+						this.menuItemConnect,
+						this.menuItemManager,
+						this.menuItemSeparator,
+						this.menuItemDriver,
+						this.menuItemQuit});
 			// 
 			// DrQueue
 			// 
+			this.DrQueue.ContextMenu = this.contextMenuNotify;
+			this.DrQueue.Icon = ((System.Drawing.Icon)(resources.GetObject("DrQueue.Icon")));
 			this.DrQueue.Text = "DrQueue";
 			this.DrQueue.Visible = true;
 			this.DrQueue.MouseDown += new System.Windows.Forms.MouseEventHandler(this.NotifyIcon1MouseDown);
@@ -152,56 +139,41 @@ namespace ServicesController
 			this.Drqueue_on.Icon = ((System.Drawing.Icon)(resources.GetObject("Drqueue_on.Icon")));
 			this.Drqueue_on.Text = "";
 			// 
-			// button1
+			// menuItemManager
 			// 
-			this.button1.BackColor = System.Drawing.Color.Gray;
-			this.button1.Location = new System.Drawing.Point(88, 96);
-			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(184, 24);
-			this.button1.TabIndex = 6;
-			this.button1.Text = "Close window";
-			this.button1.Click += new System.EventHandler(this.button1_Click);
+			this.menuItemManager.Index = 1;
+			this.menuItemManager.Text = "Manager";
+			this.menuItemManager.Click += new System.EventHandler(this.MenuItemManagerClick);
 			// 
-			// button2
+			// timer1
 			// 
-			this.button2.BackColor = System.Drawing.Color.Gray;
-			this.button2.Location = new System.Drawing.Point(16, 56);
-			this.button2.Name = "button2";
-			this.button2.Size = new System.Drawing.Size(256, 32);
-			this.button2.TabIndex = 7;
-			this.button2.Text = "Manage jobs";
-			this.button2.Click += new System.EventHandler(this.Button2Click);
+			this.timer1.Enabled = true;
+			this.timer1.Interval = 500;
+			this.timer1.SynchronizingObject = this;
+			this.timer1.Elapsed += new System.Timers.ElapsedEventHandler(this.timer1_Elapsed);
 			// 
-			// button_master
+			// menuItemConnect
 			// 
-			this.button_master.BackColor = System.Drawing.Color.DimGray;
-			this.button_master.Location = new System.Drawing.Point(88, 24);
-			this.button_master.Name = "button_master";
-			this.button_master.Size = new System.Drawing.Size(72, 24);
-			this.button_master.TabIndex = 3;
-			this.button_master.Text = "MASTER";
-			this.button_master.Click += new System.EventHandler(this.button_master_Click);
+			this.menuItemConnect.Index = 0;
+			this.menuItemConnect.Text = "Connected";
+			this.menuItemConnect.Click += new System.EventHandler(this.MenuItemConnectClick);
 			// 
 			// Form1
 			// 
 			this.AutoScale = false;
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.AutoScaleBaseSize = new System.Drawing.Size(5, 14);
 			this.BackColor = System.Drawing.Color.Black;
-			this.ClientSize = new System.Drawing.Size(288, 149);
-			this.Controls.Add(this.button3);
+			this.ClientSize = new System.Drawing.Size(288, 29);
 			this.Controls.Add(this.statusBar1);
-			this.Controls.Add(this.button2);
-			this.Controls.Add(this.button1);
-			this.Controls.Add(this.button_slave);
-			this.Controls.Add(this.button_master);
-			this.Controls.Add(this.button_ipc);
 			this.ForeColor = System.Drawing.Color.White;
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "Form1";
 			this.ShowInTaskbar = false;
 			this.Text = "Drqueue Service Controller";
 			this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.Form1Closing);
 			this.Load += new System.EventHandler(this.Form1_Load);
 			this.Closed += new System.EventHandler(this.Form1Closed);
 			((System.ComponentModel.ISupportInitialize)(this.timer1)).EndInit();
@@ -256,94 +228,28 @@ namespace ServicesController
 		private void timer1_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
 		{
 			serviceControllerIpc.Refresh();
-			serviceControllerMaster.Refresh();
 			
 			if (serviceControllerIpc.Status == System.ServiceProcess.ServiceControllerStatus.Stopped)
-				button_ipc.BackColor = System.Drawing.Color.DimGray;
+					this.menuItemDriver.Checked = false;
 			else
-				button_ipc.BackColor = System.Drawing.Color.Red;
-
-			if (serviceControllerMaster.Status == System.ServiceProcess.ServiceControllerStatus.Stopped)
-				button_master.BackColor = System.Drawing.Color.DimGray;
-			else
-				button_master.BackColor = System.Drawing.Color.Red;
+					this.menuItemDriver.Checked = true;
 
 			if (!IsActive(SLAVE))
 			{
-				if (button_slave.BackColor != System.Drawing.Color.DimGray)
+				if (this.menuItemConnect.Checked)
 				{
 					this.DrQueue.Icon = Drqueue_off.Icon;
-					button_slave.BackColor = System.Drawing.Color.DimGray;
+					this.menuItemConnect.Checked = false;
 				}
 			}
 				
 			else
 			{
-				if (button_slave.BackColor != System.Drawing.Color.Red)
+				if (!this.menuItemConnect.Checked)
 				{
 					this.DrQueue.Icon = Drqueue_on.Icon;
-					button_slave.BackColor = System.Drawing.Color.Red;
+					this.menuItemConnect.Checked = true;
 				}
-			}
-		}
-
-		private void button_ipc_Click(object sender, System.EventArgs e)
-		{
-			try
-			{
-				if (serviceControllerIpc.Status == System.ServiceProcess.ServiceControllerStatus.Stopped)
-					serviceControllerIpc.Start();
-				else
-				{
-					if (IsActive(SLAVE))
-						Kill(SLAVE);										
-					if (serviceControllerIpc.Status == System.ServiceProcess.ServiceControllerStatus.Running)
-						serviceControllerIpc.Stop();
-				}
-			}
-			catch(System.Exception ex)
-			{
-				statusBar1.Text = ex.Message.ToString();
-			}
-		}
-
-		private void button_master_Click(object sender, System.EventArgs e)
-		{
-			try
-			{
-				if (serviceControllerMaster.Status == System.ServiceProcess.ServiceControllerStatus.Stopped)
-					serviceControllerMaster.Start();
-				else
-				{
-					if (serviceControllerMaster.Status == System.ServiceProcess.ServiceControllerStatus.Running)
-						serviceControllerMaster.Stop();		
-				}
-			}
-			catch(System.Exception ex)
-			{
-				statusBar1.Text = ex.Message.ToString();
-			}
-		}
-
-		private void button_slave_Click(object sender, System.EventArgs e)
-		{
-			try
-			{
-				if (!IsActive(SLAVE))
-				{
-					if (serviceControllerIpc.Status == System.ServiceProcess.ServiceControllerStatus.Stopped)
-					{
-						serviceControllerIpc.Start();
-						System.Threading.Thread.Sleep(1000);
-					}
-					Activate(SLAVE, "-f");
-				}
-				else
-					Kill(SLAVE);
-			}
-			catch(System.Exception ex)
-			{
-				statusBar1.Text = ex.Message.ToString();
 			}
 		}
 
@@ -365,22 +271,18 @@ namespace ServicesController
 				}
 				catch(System.Exception ex)
 				{
-					statusBar1.Text = ex.Message;
+					//statusBar1.Text = ex.Message;
 				}
-				Activate(SLAVE, "-f");
+				//Activate(SLAVE, "-f");
 			}
 			timer1.Start();
 		}
 
-		private void button1_Click(object sender, System.EventArgs e)
-		{
-			this.ShowInTaskbar = true;
-			this.WindowState = FormWindowState.Minimized;
-			this.ShowInTaskbar = false;
-		}
-
 		void NotifyIcon1MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
 		{
+			if (e.Button == System.Windows.Forms.MouseButtons.Left)
+				Activate("drqman");
+			/*
 			if (this.WindowState == FormWindowState.Normal)
 			{
 				this.ShowInTaskbar = true;
@@ -389,22 +291,74 @@ namespace ServicesController
 			}
 			else
 				this.WindowState = FormWindowState.Normal;
-		}
-		
-		void button3_Click(object sender, System.EventArgs e)
-		{
-			
-			this.Close();
-		}
-		
-		void Button2Click(object sender, System.EventArgs e)
-		{
-			Activate("drqman");
+			*/
 		}
 		
 		void Form1Closed(object sender, System.EventArgs e)
 		{
 			Kill(SLAVE);
+		}
+
+		void Form1Closing(object sender, System.ComponentModel.CancelEventArgs e)
+		{
+			/*
+			e.Cancel = true;
+			this.ShowInTaskbar = true;
+			this.WindowState = FormWindowState.Minimized;
+			this.ShowInTaskbar = false;			
+			*/
+		}
+		void MenuItemConnectClick(object sender, System.EventArgs e)
+		{
+			try
+			{
+				if (!IsActive(SLAVE))
+				{
+					if (serviceControllerIpc.Status == System.ServiceProcess.ServiceControllerStatus.Stopped)
+					{
+						serviceControllerIpc.Start();
+						System.Threading.Thread.Sleep(1000);
+					}
+					Activate(SLAVE, "-f");
+				}
+				else
+					Kill(SLAVE);
+			}
+			catch(System.Exception ex)
+			{
+				//statusBar1.Text = ex.Message.ToString();
+			}
+		}
+		
+		void MenuItemDriverClick(object sender, System.EventArgs e)
+		{
+			try
+			{
+				if (serviceControllerIpc.Status == System.ServiceProcess.ServiceControllerStatus.Stopped)
+					serviceControllerIpc.Start();
+				else
+				{
+					if (IsActive(SLAVE))
+						Kill(SLAVE);										
+					if (serviceControllerIpc.Status == System.ServiceProcess.ServiceControllerStatus.Running)
+						serviceControllerIpc.Stop();
+				}
+			}
+			catch(System.Exception ex)
+			{
+				//statusBar1.Text = ex.Message.ToString();
+			}
+		}
+		
+		void MenuItemQuitClick(object sender, System.EventArgs e)
+		{
+			Kill(SLAVE);			
+			Application.Exit();
+		}
+		
+		void MenuItemManagerClick(object sender, System.EventArgs e)
+		{
+			Activate("drqman");
 		}
 		
 	}

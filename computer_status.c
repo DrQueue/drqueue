@@ -49,7 +49,14 @@ void get_computer_status (struct computer_status *cstatus, int semid)
   /* Get status not only gets the load average but also */
   /* checks that every task is running and in case they're not */
   /* it sets the task record to unused (used = 0) */
+#ifdef __CYGWIN
+  if (cstatus->ntasks > 0)
+	cstatus->loadavg[0] = 100;
+  else
+	cstatus->loadavg[0] = 0;
+#else
   get_loadavg (cstatus->loadavg);
+#endif
   check_tasks (cstatus,semid);
 }
 
