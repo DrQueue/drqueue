@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.19 2001/09/01 16:36:44 jorge Exp $ */
+/* $Id: master.c,v 1.20 2001/09/01 20:00:40 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -10,6 +10,9 @@
 #include <wait.h>
 #include <time.h>
 #include <stdlib.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 #include "master.h"
 #include "libdrqueue.h"
@@ -25,6 +28,7 @@ int main (int argc, char *argv[])
   int shmid;			/* shared memory id */
   int force = 0;		/* force even if shmem already exists */
   int opt;
+  struct sockaddr_in addr;	/* Address of the remote host */
 
   log_master (L_INFO,"Starting...");
   set_signal_handlers ();
@@ -71,14 +75,14 @@ int main (int argc, char *argv[])
 
   printf ("Waiting for connections...\n");
   while (1) {
-    if ((csfd = accept_socket (sfd,wdb,&icomp)) != -1) {
+    if ((csfd = accept_socket (sfd,wdb,&icomp,&addr)) != -1) {
       if (fork() == 0) {
 	/* Create a connection handler */
 	fflush(stderr);
 	set_signal_handlers_child_conn_handler ();
 	close (sfd);
 	set_alarm ();
-	handle_request_master (csfd,wdb,icomp);
+	handle_request_master (csfd,wdb,icomp,&addr);
 	close (csfd);
 	exit (0);
       } else {

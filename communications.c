@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.25 2001/08/29 13:16:08 jorge Exp $ */
+/* $Id: communications.c,v 1.26 2001/09/01 20:00:37 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -48,16 +48,15 @@ int get_socket (short port)
   return sfd;
 }
 
-int accept_socket (int sfd,struct database *wdb,int *index)
+int accept_socket (int sfd,struct database *wdb,int *index,struct sockaddr_in *addr)
 {
   /* This function not just accepts the socket but also updates */
   /* the lastconn time of the client if this exists */
   int fd;
-  struct sockaddr_in addr;
   int len = sizeof (struct sockaddr_in);
 
-  if ((fd = accept (sfd,(struct sockaddr *)&addr,&len)) != -1) {
-    *index = computer_index_addr (wdb,addr.sin_addr);
+  if ((fd = accept (sfd,(struct sockaddr *)addr,&len)) != -1) {
+    *index = computer_index_addr (wdb,addr->sin_addr);
   } else {
     log_master (L_ERROR,"Accepting connection.");
     exit (1);

@@ -1,4 +1,4 @@
-/* $Id: communications.h,v 1.8 2001/08/27 08:13:48 jorge Exp $ */
+/* $Id: communications.h,v 1.9 2001/09/01 20:00:38 jorge Exp $ */
 
 #ifndef _COMMUNICATIONS_H_
 #define _COMMUNICATIONS_H_
@@ -8,7 +8,7 @@
 #include "database.h"
 
 int get_socket (short port);
-int accept_socket (int sfd,struct database *wdb,int *index);
+int accept_socket (int sfd,struct database *wdb,int *index,struct sockaddr_in *addr);
 int accept_socket_slave (int sfd);
 int connect_to_master (void);
 int connect_to_slave (char *slave);
