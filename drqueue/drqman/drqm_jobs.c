@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.52 2001/11/22 14:44:28 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.53 2001/11/23 11:51:40 jorge Exp $
  */
 
 #include <string.h>
@@ -319,6 +319,7 @@ static GtkWidget *CreateMenu (struct drqm_jobs_info *info)
   gtk_menu_append(GTK_MENU(menu),menu_item);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(HStopJob),info);
   gtk_tooltips_set_tip (tooltips,menu_item,"Set the job as 'Stopped' killing all running frames",NULL);
+  gtk_widget_set_name (menu_item,"warning");
 
   menu_item = gtk_menu_item_new_with_label("Continue");
   gtk_menu_append(GTK_MENU(menu),menu_item);
@@ -329,6 +330,7 @@ static GtkWidget *CreateMenu (struct drqm_jobs_info *info)
   gtk_menu_append(GTK_MENU(menu),menu_item);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(DeleteJob),info);
   gtk_tooltips_set_tip (tooltips,menu_item,"Delete the job from the queue killing running frames",NULL);
+  gtk_widget_set_name (menu_item,"danger");
 
   gtk_signal_connect(GTK_OBJECT((info->clist)),"event",GTK_SIGNAL_FUNC(PopupMenu),info);
 
@@ -991,6 +993,7 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
 		      GTK_SIGNAL_FUNC(HStopJob),info);
   gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_update),info);
   gtk_tooltips_set_tip (tooltips,button,"Set the job as 'Stopped' killing all running frames",NULL);
+  gtk_widget_set_name (GTK_WIDGET(button),"warning");
 
   /* Continue */
   button = gtk_button_new_with_label ("Continue");
@@ -1006,6 +1009,7 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   gtk_signal_connect (GTK_OBJECT(button),"clicked",
 		      GTK_SIGNAL_FUNC(DeleteJob),info);
   gtk_tooltips_set_tip (tooltips,button,"Delete the job from the queue killing running frames",NULL);
+  gtk_widget_set_name (GTK_WIDGET(button),"danger");
 
   /* Button Refresh */
   button = gtk_button_new_with_label ("Refresh");
@@ -1235,6 +1239,7 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info)
   gtk_tooltips_set_tip(tooltips,menu_item,"This option will kill and requeue al selected frames that are "
 		       "currently running. Those running frames will start rendering again.\n"
 		       "This option has no effect on frames that are not running.",NULL);
+  gtk_widget_set_name (menu_item,"warning");
 
   menu_item = gtk_menu_item_new_with_label("Set Finished (skip waiting)");
   gtk_menu_append(GTK_MENU(menu),menu_item);
@@ -1252,6 +1257,7 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info)
 		       "that are currently running. So the render will stop and won't be requeued again (unless "
 		       "manually requeued).\n"
 		       "This option has no effect on frames that are not running.", NULL);
+  gtk_widget_set_name (menu_item,"warning");
 
   /* Separation bar */
   menu_item = gtk_menu_item_new ();
@@ -1828,11 +1834,15 @@ static GtkWidget *dnj_limits_widgets (struct drqm_jobs_info *info)
   gtk_container_add (GTK_CONTAINER(frame2),hbox);
   cbutton = gtk_check_button_new_with_label ("Irix");
   info->dnj.limits.cb_irix = cbutton;
+  gtk_tooltips_set_tip (tooltips,cbutton,"If set this job will try to be executed on Irix "
+			"computers. If not set it won't.", NULL);
 
   gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
   cbutton = gtk_check_button_new_with_label ("Linux");
   gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
   info->dnj.limits.cb_linux = cbutton;
+  gtk_tooltips_set_tip (tooltips,cbutton,"If set this job will try to be executed on Linux "
+			"computers. If not set it won't.", NULL);
 
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.limits.cb_irix),TRUE);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.limits.cb_linux),TRUE);

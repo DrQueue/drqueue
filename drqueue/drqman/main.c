@@ -1,8 +1,10 @@
 /* 
- * $Header: /root/cvs/drqueue/drqman/main.c,v 1.7 2001/11/08 11:47:43 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/main.c,v 1.8 2001/11/23 11:51:41 jorge Exp $
  */
 
+#include <stdlib.h>
 #include <gtk/gtk.h>
+
 #include "drqman.h"
 #include "notebook.h"
 #include "libdrqueue.h"
@@ -13,13 +15,16 @@ int main (int argc, char *argv[])
 {
   GtkWidget *window;
   GtkWidget *main_vbox;
-  
+  char rc_file[MAXCMDLEN];
+
   if (!common_environment_check()) {
     fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
     exit (1);
   }
 
   gtk_init(&argc,&argv);
+  snprintf(rc_file,MAXCMDLEN-1,"%s/etc/drqman.rc",getenv("DRQUEUE_ROOT"));
+  gtk_rc_parse(rc_file);
 
   /* Init for button boxes */
   gtk_hbutton_box_set_layout_default (GTK_BUTTONBOX_SPREAD);
