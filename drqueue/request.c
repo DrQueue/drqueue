@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.42 2001/09/06 23:02:05 jorge Exp $ */
+/* $Id: request.c,v 1.43 2001/09/07 09:36:43 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -696,7 +696,7 @@ void request_task_finished (struct slave_database *sdb)
       exit (0);
     }
   } else {
-    fprintf (stderr,"ERROR: Not appropiate answer to request R_R_TASKFINI\n");
+    log_slave_computer (L_ERROR,"Not appropiate answer to request R_R_TASKFINI\n");
     exit (0);
   }
 
