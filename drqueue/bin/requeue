@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id: requeue,v 1.4 2004/04/26 16:25:51 jorge Exp $
+# $Id$
 #
 
 if [ ! $DRQUEUE_ROOT ]; then
@@ -16,7 +16,7 @@ fi
 RQ_CMD=$DRQUEUE_ROOT/bin/requeue.`uname -s`
 
 if [ ! -x $RQ_CMD ]; then
-  echo ERROR: requeue for your platform \(master.`uname -s`\) does not exist in $DRQUEUE_ROOT/bin.
+  echo ERROR: requeue for your platform \(requeue.`uname -s`\) does not exist in $DRQUEUE_ROOT/bin.
   echo Perhaps you did not install it \(make miniinstall or make install\).
   exit 3
 fi

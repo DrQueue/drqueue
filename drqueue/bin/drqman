@@ -16,7 +16,7 @@ fi
 DQM_CMD=$DRQUEUE_ROOT/bin/drqman.`uname -s`
 
 if [ ! -x $DQM_CMD ]; then
-  echo ERROR: drqman for your platform \(master.`uname -s`\) does not exist in $DRQUEUE_ROOT/bin.
+  echo ERROR: drqman for your platform \(drqman.`uname -s`\) does not exist in $DRQUEUE_ROOT/bin.
   echo Perhaps you did not install it \(make miniinstall or make install\).
   exit 3
 fi
