@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_computers.c,v 1.15 2001/09/09 22:03:39 jorge Exp $
+ * $Id: drqm_computers.c,v 1.16 2001/09/11 12:52:29 jorge Exp $
  */
 
 #include <stdlib.h>
@@ -21,12 +21,19 @@ static void ComputerDetails(GtkWidget *menu_item, struct drqm_computers_info *in
 static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info);
 static int cdd_update (GtkWidget *w, struct drqm_computers_info *info);
 static GtkWidget *CreateTasksClist (void);
+static GtkWidget *CreateMenuTasks (struct drqm_computers_info *info);
+static gint PopupMenuTasks (GtkWidget *clist, GdkEvent *event, struct drqm_computers_info *info);
 static void cdd_limits_nmaxcpus_bcp (GtkWidget *button, struct drqm_computers_info *info);
 static GtkWidget *nmc_dialog (struct drqm_computers_info *info);
 static void nmcd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info);
 static void cdd_limits_maxfreeloadcpu_bcp (GtkWidget *button, struct drqm_computers_info *info);
 static GtkWidget *mflc_dialog (struct drqm_computers_info *info);
 static void mflcd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info);
+
+static void KillTask (GtkWidget *menu_item, struct drqm_computers_info *info);
+static GtkWidget *KillTaskDialog (struct drqm_computers_info *info);
+static void dtk_bok_pressed (GtkWidget *button,struct drqm_computers_info *info);
+
 
 void CreateComputersPage (GtkWidget *notebook,struct info_drqm *info)
 {
@@ -172,11 +179,10 @@ static GtkWidget *CreateMenu (struct drqm_computers_info *info)
   menu_item = gtk_menu_item_new_with_label("Details");
   gtk_menu_append(GTK_MENU(menu),menu_item);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(ComputerDetails),info);
-  gtk_widget_show(menu_item);
 
   gtk_signal_connect(GTK_OBJECT((info->clist)),"event",GTK_SIGNAL_FUNC(PopupMenu),info);
 
-  gtk_widget_show(menu);
+  gtk_widget_show_all(menu);
 
   return (menu);
 }
@@ -329,6 +335,8 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
   gtk_container_add (GTK_CONTAINER(swin),clist);
   info->cdd.clist = clist;
 
+  info->cdd.menu = CreateMenuTasks(info);
+
   if (!cdd_update (window,info)) {
     gtk_widget_destroy (GTK_WIDGET(window));
     return NULL;
@@ -375,7 +383,7 @@ static int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
   char msg[BUFFERLEN];
   char **buff;			/* for hte clist stuff */
   int ncols = 9;
-  int i;
+  int i,row;
   
 
   if (!request_comp_xfer(info->icomp,&info->computers[info->icomp],CLIENT)) {
@@ -422,6 +430,7 @@ static int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
   
   gtk_clist_freeze(GTK_CLIST(info->cdd.clist));
   gtk_clist_clear(GTK_CLIST(info->cdd.clist));
+  row = 0;
   for (i=0; i < MAXTASKS; i++) {
     if (info->computers[info->icomp].status.task[i].used) {
       snprintf (buff[0],BUFFERLEN-1,"%i",i);
@@ -435,6 +444,10 @@ static int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
       strncpy(buff[7],"Not yet implemented",BUFFERLEN); 
       strncpy(buff[8],"Not yet implemented",BUFFERLEN);
       gtk_clist_append(GTK_CLIST(info->cdd.clist),buff);
+      
+      /* Row data */
+      gtk_clist_set_row_data (GTK_CLIST(info->cdd.clist),row,(gpointer)i);
+      row++;
     }
   }
 
@@ -593,3 +606,101 @@ void mflcd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info)
 	   info->computers[info->icomp].limits.maxfreeloadcpu);
   gtk_label_set_text (GTK_LABEL(info->cdd.limits.lmaxfreeloadcpu),msg);
 }
+
+static void KillTask (GtkWidget *menu_item, struct drqm_computers_info *info)
+{
+  GtkWidget *dialog;
+
+  if (!info->selected)
+    return;
+
+  dialog = KillTaskDialog(info);
+  if (dialog)
+    gtk_window_set_modal(GTK_WINDOW(dialog),TRUE);
+}
+
+static GtkWidget *KillTaskDialog (struct drqm_computers_info *info)
+{
+  GtkWidget *dialog;
+  GtkWidget *label;
+  GtkWidget *button;
+
+  /* Dialog */
+  dialog = gtk_dialog_new ();
+  gtk_window_set_title (GTK_WINDOW(dialog),"You Sure?");
+
+  /* Label */
+  label = gtk_label_new ("Do you really want to kill the task(s)?");
+  gtk_misc_set_padding (GTK_MISC(label), 10, 10);
+  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox),label,TRUE,TRUE,5);
+ 
+  /* Buttons */
+  button = gtk_button_new_with_label ("Yes");
+  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->action_area),button, TRUE, TRUE, 5);
+  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(dtk_bok_pressed),info);
+  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(cdd_update),info);
+  gtk_signal_connect_object(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(gtk_widget_destroy),
+			    (GtkObject*)dialog);
+
+  button = gtk_button_new_with_label ("No");
+  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->action_area),button, TRUE, TRUE, 5);
+  gtk_signal_connect_object(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(gtk_widget_destroy),
+			    (GtkObject*)dialog);
+  GTK_WIDGET_SET_FLAGS(button,GTK_CAN_DEFAULT);
+  gtk_widget_grab_default(button);
+
+  gtk_widget_show_all (dialog);
+
+  return dialog;
+}
+
+static void dtk_bok_pressed (GtkWidget *button,struct drqm_computers_info *info)
+{
+  /* Requeues the finished frames, sets them as waiting again */
+  GList *sel;
+  uint32_t itask;
+
+  if (!(sel = GTK_CLIST(info->cdd.clist)->selection)) {
+    return;
+  }
+
+  for (;sel;sel = sel->next) {
+    itask = (uint32_t) gtk_clist_get_row_data(GTK_CLIST(info->cdd.clist), (gint)sel->data);
+    drqm_request_slave_task_kill (info->computers[info->icomp].hwinfo.name,itask);
+/*      printf ("Killing task: %i on computer: %s\n",itask,info->computers[info->icomp].hwinfo.name); */
+  }
+}
+
+static GtkWidget *CreateMenuTasks (struct drqm_computers_info *info)
+{
+  GtkWidget *menu;
+  GtkWidget *menu_item;
+
+  menu = gtk_menu_new ();
+  menu_item = gtk_menu_item_new_with_label("Kill");
+  gtk_menu_append(GTK_MENU(menu),menu_item);
+  gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(KillTask),info);
+
+  gtk_signal_connect(GTK_OBJECT((info->cdd.clist)),"event",GTK_SIGNAL_FUNC(PopupMenuTasks),info);
+
+  gtk_widget_show_all(menu);
+
+  return (menu);
+}
+
+static gint PopupMenuTasks (GtkWidget *clist, GdkEvent *event, struct drqm_computers_info *info)
+{
+  if (event->type == GDK_BUTTON_PRESS) {
+    GdkEventButton *bevent = (GdkEventButton *) event;
+    if (bevent->button != 3)
+      return FALSE;
+    info->cdd.selected = gtk_clist_get_selection_info(GTK_CLIST(info->cdd.clist),
+						      (int)bevent->x,(int)bevent->y,
+						      &info->cdd.row,&info->cdd.column);
+    gtk_menu_popup (GTK_MENU(info->cdd.menu), NULL, NULL, NULL, NULL,
+		    bevent->button, bevent->time);
+    return TRUE;
+  }
+  return FALSE;
+}
+
