@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.46 2004/10/09 03:39:25 jorge Exp $
+# $Id: Makefile,v 1.47 2004/10/09 03:42:36 jorge Exp $
 
 CC = gcc
 CPP = g++
@@ -94,6 +94,16 @@ FreeBSD_install:
 	chmod 0755 $(INSTROOT)/bin/* || exit 0
 	chown $(INSTUID):$(INSTGID) $(INSTROOT)/bin/*
 
+Darwin_install:
+	install -d -m 0777 $(INSTROOT)/tmp
+	install -d -m 0777 $(INSTROOT)/logs
+	install -d -m 0755 $(INSTROOT)/bin
+	install -d -m 0755 $(INSTROOT)/etc
+	install -d -m 0777 $(INSTROOT)/db
+	cp ./bin/* $(INSTROOT)/bin/ || exit 0
+	cp ./etc/* $(INSTROOT)/etc/ || exit 0
+	chmod 0755 $(INSTROOT)/bin/* || exit 0
+	chown $(INSTUID):$(INSTGID) $(INSTROOT)/bin/*
 
 miniinstall: base
 ifeq ($(systype),IRIX)
