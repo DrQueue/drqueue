@@ -1,4 +1,4 @@
-/* $Id: drqm_request.c,v 1.9 2001/08/28 15:36:28 jorge Exp $ */
+/* $Id: drqm_request.c,v 1.10 2001/09/04 23:28:37 jorge Exp $ */
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -9,7 +9,7 @@
 #include "drqm_computers.h"
 #include "drqm_request.h"
 
-void drqm_request_joblist (struct info_drqm_jobs *info)
+void drqm_request_joblist (struct drqm_jobs_info *info)
 {
   /* This function is called non-blocked */
   /* This function is called from inside drqman */
@@ -53,7 +53,7 @@ void drqm_request_joblist (struct info_drqm_jobs *info)
   close (sfd);
 }
 
-void clean_joblist (struct info_drqm_jobs *info)
+void clean_joblist (struct drqm_jobs_info *info)
 {
   if (info->jobs) {
     free (info->jobs);
@@ -116,7 +116,7 @@ void clean_computerlist (struct info_drqm_computers *info)
   }
 }
 
-void drqm_request_job_delete (struct info_drqm_jobs *info)
+void drqm_request_job_delete (struct drqm_jobs_info *info)
 {
   /* This function sends the request to delete the job selected from the queue */
 /*    int n; */
@@ -129,7 +129,7 @@ void drqm_request_job_delete (struct info_drqm_jobs *info)
   }
 }
 
-void drqm_request_job_stop (struct info_drqm_jobs *info)
+void drqm_request_job_stop (struct drqm_jobs_info *info)
 {
   /* This function sends the request to stop the job selected from the queue */
   if (info->njobs) {
@@ -137,7 +137,7 @@ void drqm_request_job_stop (struct info_drqm_jobs *info)
   }
 }
 
-void drqm_request_job_hstop (struct info_drqm_jobs *info)
+void drqm_request_job_hstop (struct drqm_jobs_info *info)
 {
   /* This function sends the request to hard stop the job selected from the queue */
   if (info->njobs) {
@@ -145,7 +145,7 @@ void drqm_request_job_hstop (struct info_drqm_jobs *info)
   }
 }
 
-void drqm_request_job_continue (struct info_drqm_jobs *info)
+void drqm_request_job_continue (struct drqm_jobs_info *info)
 {
   /* This function sends the request to continue the (stopped) job selected from the queue */
   if (info->njobs) {
@@ -153,5 +153,7 @@ void drqm_request_job_continue (struct info_drqm_jobs *info)
   }
 }
 
-
-
+void drqm_request_job_frame_waiting (uint32_t jobid,uint32_t frame)
+{
+  request_job_frame_waiting (jobid,frame,CLIENT);
+}
