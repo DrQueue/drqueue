@@ -1,0 +1,9 @@
+Mental Ray standalone issues:
+
+- Three environment variables PATH, SI_LINKTAB_LOCATION and
+  SPM_HOST should be set appropriately in mentalray.sg
+- When submitting a mental ray job using drqman, the "Maximum
+  number of cpus on one computer" should better be set to '1'.
+  Since each instance exhausts a dedicated license without any
+  gain in performance.
+
