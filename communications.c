@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.47 2002/02/15 11:51:00 jorge Exp $ */
+/* $Id: communications.c,v 1.48 2002/06/20 15:28:48 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -306,7 +306,7 @@ int send_computer_status (int sfd, struct computer_status *status)
 
   bswapped.ntasks = htons (bswapped.ntasks);
 
-  bleft = sizeof (uint16_t) * 4; /* 3 loadvg + 1 ntasks */
+  bleft = sizeof (uint16_t) * 20; /* 20 * 2 just in case */
   while ((w = write(sfd,buf,bleft)) < bleft) {
     bleft -= w;
     buf += w;
@@ -345,7 +345,7 @@ int recv_computer_status (int sfd, struct computer_status *status)
   computer_status_init (status);
 
   buf = status;
-  bleft = sizeof (uint16_t) * 4; /* 3 loadavg + 1 ntasks */
+  bleft = sizeof (uint16_t) * 20; /* 20 * 2, just in case */
   while ((r = read (sfd,buf,bleft)) < bleft) {
     if ((r == -1) || ((r == 0) && (bleft > 0))) {
       /* if r is error or if there are no more bytes left on the socket but there _SHOULD_ be */
@@ -530,6 +530,9 @@ int recv_task (int sfd, struct task *task)
   /* network byte order, so we put them in host byte order */
   task->ijob = ntohl (task->ijob);
   task->frame = ntohl (task->frame);
+  task->frame_start = ntohl (task->frame_start);
+  task->frame_end = ntohl (task->frame_end);
+  task->frame_step = ntohl (task->frame_step);
   task->pid = ntohl (task->pid);
   task->exitstatus = ntohl (task->exitstatus);
   task->itask = ntohs (task->itask);
@@ -549,6 +552,9 @@ int send_task (int sfd, struct task *task)
   /* Prepare for sending */
   bswapped.ijob = htonl (bswapped.ijob);
   bswapped.frame = htonl (bswapped.frame);
+  bswapped.frame_start = htonl (bswapped.frame_start);
+  bswapped.frame_end = htonl (bswapped.frame_end);
+  bswapped.frame_step = htonl (bswapped.frame_step);
   bswapped.pid = htonl (bswapped.pid);
   bswapped.exitstatus = htonl (bswapped.exitstatus);
   bswapped.itask = htons (bswapped.itask);
