@@ -24,7 +24,10 @@
 if ($DRQUEUE_OS == "WINDOWS") then
   set BLOCK=`"$DRQUEUE_BIN/expr.exe" $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
   set DRQUEUE_SCENE=`"$DRQUEUE_BIN/cygpath.exe" -w $DRQUEUE_SCENE`
-  set DRQUEUE_RD=`"$DRQUEUE_BIN/cygpath.exe" -w $DRQUEUE_RD`
+  set DRQUEUE_PD=`"$DRQUEUE_BIN/cygpath.exe" -w $DRQUEUE_PD`
+  if ($DRQUEUE_CD != "")
+    set DRQUEUE_CD=`"$DRQUEUE_BIN/cygpath.exe" -w $DRQUEUE_CD`
+  endif
 else
   set BLOCK=`expr $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
 endif
@@ -32,18 +35,18 @@ if ($BLOCK > $DRQUEUE_ENDFRAME) then
   set BLOCK = $DRQUEUE_ENDFRAME;
 endif
 
-echo lwsn3 -3 -d$DRQUEUE_RD -q$DRQUEUE_SCENE $DRQUEUE_FRAME $BLOCK 1
-lwsn3 -3 -d$DRQUEUE_RD -q$DRQUEUE_SCENE $DRQUEUE_FRAME $BLOCK 1
+if ($DRQUEUE_CD != "") then
+	echo lwsn3 -3 "-c$DRQUEUE_CD" "-d$DRQUEUE_PD" "-q$DRQUEUE_SCENE" $DRQUEUE_FRAME $BLOCK $DRQUEUE_STEPFRAME
+	lwsn3 -3 "-c$DRQUEUE_CD" "-d$DRQUEUE_PD" "-q$DRQUEUE_SCENE" $DRQUEUE_FRAME $BLOCK $DRQUEUE_STEPFRAME
+else
+	echo lwsn3 -3 "-d$DRQUEUE_PD" "-q$DRQUEUE_SCENE" $DRQUEUE_FRAME $BLOCK $DRQUEUE_STEPFRAME
+	lwsn3 -3 "-d$DRQUEUE_PD" "-q$DRQUEUE_SCENE" $DRQUEUE_FRAME $BLOCK $DRQUEUE_STEPFRAME
+endif
 
 # This should requeue the frame if failed
 if ( $? != 0 ) then
   echo "Requeueing frame..."
   kill -INT $$
-else
-  if ($DRQUEUE_OS != "WINDOWS") then
-    # The frame was rendered properly
-    $DRQUEUE_BIN/chown_block $RF_OWNER $DRQUEUE_RD/$DRQUEUE_IMAGE $DRQUEUE_FRAME $BLOCK 
-  endif
 endif
 
 #

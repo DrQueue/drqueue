@@ -693,6 +693,8 @@ void job_environment_set (struct job *job, uint32_t iframe)
   static char s_frame[BUFFERLEN];
   static char scene[BUFFERLEN];
   static char renderdir[BUFFERLEN];
+  static char projectdir[BUFFERLEN];
+  static char configdir[BUFFERLEN];
   static char image[BUFFERLEN];
   static char owner[BUFFERLEN];
   static char startframe[BUFFERLEN];
@@ -763,9 +765,20 @@ void job_environment_set (struct job *job, uint32_t iframe)
   case KOJ_BMRT:
     snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.bmrt.scene);
     break;
+  case KOJ_PIXIE:
+    snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.pixie.scene);
+    break;
   case KOJ_3DELIGHT:
     snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.threedelight.scene);
     break;
+  case KOJ_LIGHTWAVE:
+    snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.lightwave.scene);
+    putenv (scene);
+    snprintf (projectdir,BUFFERLEN-1,"DRQUEUE_PD=%s",job->koji.lightwave.projectdir);
+    putenv (renderdir);
+    snprintf (configdir,BUFFERLEN-1,"DRQUEUE_CD=%s",job->koji.lightwave.configdir);
+    putenv (renderdir);
+	break;
   }
 }
 
@@ -886,6 +899,9 @@ char *job_koj_string (struct job *job)
 	case KOJ_3DELIGHT:
 		msg = "3delight";
 		break;
+  case KOJ_LIGHTWAVE:
+	msg = "Lightwave";
+	break;
   default:
     msg = "DEFAULT (ERROR)";
   }
