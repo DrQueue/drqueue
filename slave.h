@@ -1,4 +1,4 @@
-/* $Id: slave.h,v 1.9 2001/07/24 14:49:36 jorge Exp $ */
+/* $Id: slave.h,v 1.10 2001/07/30 12:49:12 jorge Exp $ */
 
 #ifndef _SLAVE_H_
 #define _SLAVE_H_
@@ -19,6 +19,7 @@ struct slave_database {
   int itask;			/* Index to current process task */
 };				/* slave database */
 
+void usage (void);
 
 void set_signal_handlers (void);
 void set_signal_handlers_child_listening (void); /* For the accepting process */
@@ -34,7 +35,7 @@ void slave_listening_process (struct slave_database *sdb);
 void launch_task (struct slave_database *sdb);
 void set_environment (struct slave_database *sdb);
 
-int get_shared_memory_slave (void);
+int get_shared_memory_slave (int force);
 int get_semaphores_slave (void);
 void *attach_shared_memory_slave (int shmid);
 

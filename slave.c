@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.25 2001/07/24 15:42:42 jorge Exp $ */
+/* $Id: slave.c,v 1.26 2001/07/30 12:49:11 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -20,11 +20,26 @@ struct slave_database sdb;	/* slave database */
 
 int main (int argc,char *argv[])
 {
+  int force = 0;
+  int opt;
+
 /*    printf ("struct request: %i\n",sizeof(struct request)); */
   log_slave_computer (L_INFO,"Starting...");
   set_signal_handlers ();
 
-  sdb.shmid = get_shared_memory_slave ();
+  while ((opt = getopt (argc,argv,"fh")) != -1) {
+    switch (opt) {
+    case 'f':
+      force = 1;
+      break;
+    case '?':
+    case 'h':
+      usage();
+      exit (1);
+    }
+  }
+
+  sdb.shmid = get_shared_memory_slave (force);
   sdb.comp = attach_shared_memory_slave (sdb.shmid);
   sdb.semid = get_semaphores_slave ();
 
@@ -111,18 +126,27 @@ void clean_out (int signal, siginfo_t *info, void *data)
 }
 
 
-int get_shared_memory_slave (void)
+int get_shared_memory_slave (int force)
 {
   key_t key;
   int shmid;
+  int shmflg;
 
   if ((key = ftok ("./slave",'A')) == -1) {
     perror ("ftok");
     exit (1);
   }
   
-  if ((shmid = shmget (key,sizeof(struct computer), IPC_EXCL|IPC_CREAT|0600)) == -1) {
+  if (force) {
+    shmflg = IPC_CREAT|0600;
+  } else {
+    shmflg = IPC_EXCL|IPC_CREAT|0600;
+  }
+
+  if ((shmid = shmget (key,sizeof(struct computer),shmflg)) == -1) {
     perror ("shmget");
+    if (!force)
+      fprintf (stderr,"Try with option -f (if you are sure that no other slave is running)\n");
     exit (1);
   }
 
@@ -401,8 +425,9 @@ char *parse_arg (char *cmd,int pos,int len)
   return a;
 }
 
-
-
-
-
-
+void usage (void)
+{
+  fprintf (stderr,"Valid options:\n"
+	  "\t-f to force continuing if shared memory already exists\n"
+	  "\t-h prints this help\n");
+}
