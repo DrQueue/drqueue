@@ -1,4 +1,4 @@
-/* $Id: communications.h,v 1.14 2001/11/07 10:20:45 jorge Exp $ */
+/* $Id: communications.h,v 1.15 2001/11/16 15:47:50 jorge Exp $ */
 
 #ifndef _COMMUNICATIONS_H_
 #define _COMMUNICATIONS_H_
@@ -14,7 +14,7 @@ extern long int brecv;		/* Bytes received */
 
 
 int get_socket (short port);
-int accept_socket (int sfd,struct database *wdb,int *index,struct sockaddr_in *addr);
+int accept_socket (int sfd,struct database *wdb,struct sockaddr_in *addr);
 int accept_socket_slave (int sfd);
 int connect_to_master (void);
 int connect_to_slave (char *slave);
