@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.38 2001/09/05 15:18:40 jorge Exp $ */
+/* $Id: slave.c,v 1.39 2001/09/06 10:18:29 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -464,6 +464,7 @@ void usage (void)
 	   "\t-f to force continuing if shared memory already exists\n"
 	   "\t-l <loglevel> From 0 to 3 (0=errors,1=warnings,2=info,3=debug).\n\t\tDefaults to 1. Each level logs all the previous levels\n"
 	   "\t-o log on screen instead of on files\n"
+	   "\t-v version information\n"
 	   "\t-h prints this help\n");
 }
 
