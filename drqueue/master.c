@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.8 2001/07/06 14:15:21 jorge Exp $ */
+/* $Id: master.c,v 1.9 2001/07/06 14:20:28 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -29,7 +29,7 @@ int main (int argc, char *argv[])
   int csfd;			/* child sfd, the socket once accepted the connection */
   int shmid;			/* shared memory id */
 
-  fprintf (stderr,"Master at: %i\n",getpid());
+  fprintf (stderr,"Master at: %i\n",(int)getpid());
 
   log_master (L_INFO,"Starting...");
   set_signal_handlers ();
@@ -42,7 +42,7 @@ int main (int argc, char *argv[])
   database_init(wdb);
 
   if (fork() == 0) {
-    fprintf (stderr,"Consistency checks at: %i\n",getpid());
+    fprintf (stderr,"Consistency checks at: %i\n",(int)getpid());
     /* Create the consistency checks process */
 /*      strcpy (argv[0],"DrQueue - Consistency checks"); */
     set_signal_handlers_child_cchecks ();
@@ -58,7 +58,7 @@ int main (int argc, char *argv[])
     printf ("Waiting for connections...\n");
     if ((csfd = accept_socket (sfd,wdb,&icomp)) != -1) {
       if (fork() == 0) {
-	fprintf (stderr,"Child at: %i\n",getpid());
+	fprintf (stderr,"Child at: %i\n",(int)getpid());
 	fflush(stderr);
 	/* Create a connection handler */
 /*  	strcpy (argv[0],"DrQueue - Connection handler"); */
@@ -226,7 +226,7 @@ void clean_out (int signal, siginfo_t *info, void *data)
     perror ("wdb->shmid");
   }
 
-  fprintf (stderr,"PID,Signal that caused death: %i,%i\n",getpid(),signal);
+  fprintf (stderr,"PID,Signal that caused death: %i,%i\n",(int)getpid(),signal);
 
   exit (1);
 }
