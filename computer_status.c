@@ -1,4 +1,4 @@
-/* $Id: computer_status.c,v 1.5 2001/07/06 13:13:21 jorge Exp $ */
+/* $Id: computer_status.c,v 1.6 2001/07/11 13:11:25 jorge Exp $ */
 
 #include <stdio.h>
 #include <signal.h>
@@ -8,6 +8,7 @@
 #else
 # ifdef __IRIX
 #include <sys/types.h>
+#include <sys/sysget.h>
 # else
 #  error You need to define the OS, or OS defined not supported
 # endif
@@ -76,13 +77,10 @@ void get_loadavg (uint16_t *loadavg)
 # ifdef __IRIX
 void get_loadavg (uint16_t *loadavg)
 {
-  float a,b,c;
-  
-  a = b = c = 0;
+  sgt_cookie_t cookie;
 
-  loadavg[0] = a * 100;
-  loadavg[1] = b * 100;
-  loadavg[2] = c * 100;
+  SGT_COOKIE_SET_KSYM (&cookie,KSYM_AVENRUN);
+  sysget (SGT_KSYM,(char *)loadavg,sizeof(loadavg),SGT_READ,&cookie);
 }
 # else
 #  error You need to define the OS, or OS defined not supported
