@@ -1,5 +1,5 @@
 //
-// $Id: sendjob.cpp,v 1.3 2003/12/15 22:18:32 jorge Exp $
+// $Id: sendjob.cpp,v 1.4 2004/10/06 16:26:53 jorge Exp $
 // 
 // To set up a maya job from a file and send it to the master
 //
@@ -46,13 +46,13 @@ int main (int argc,char *argv[])
   }
 
   
-  ifstream infile(argv[1]);
+  std::ifstream infile(argv[1]);
   if (RegisterJobFromFile (infile)) {
-    cerr << "Error register job from file: " << argv[1] << endl;
+		std::cerr << "Error register job from file: " << argv[1] << std::endl;
     exit (1);
   }
 
-  cerr << "Job sent successfuly to the queue\n";
+  std::cerr << "Job sent successfuly to the queue\n";
 
   //  register_job (&job);
 
@@ -61,7 +61,7 @@ int main (int argc,char *argv[])
 
 void presentation (void)
 {
-  cout << "DrQueue - by Jorge Daza García Blanes\n\n";
+  std::cout << "DrQueue - by Jorge Daza García Blanes\n\n";
 }
 
 void cleanup (int signum)
@@ -71,27 +71,27 @@ void cleanup (int signum)
 
 void usage (void)
 {
-  cerr << "Usage: sendjob [-vh] <job_file>\n";
-  cerr << "Valid options:\n"
-       << "\t-v version information\n"
-       << "\t-h prints this help\n";
+  std::cerr << "Usage: sendjob [-vh] <job_file>\n"
+						<< "Valid options:\n"
+						<< "\t-v version information\n"
+						<< "\t-h prints this help\n";
 }
 
-int RegisterJobFromFile (ifstream &infile)
+int RegisterJobFromFile (std::ifstream &infile)
 {
   // Job variables for the script generator
   struct job job;
   struct mayasgi mayaSgi;
 
-  string owner;
-  string jobName;
-  string camera;
+  std::string owner;
+  std::string jobName;
+  std::string camera;
   int frameStart,frameEnd,frameStep;
   int resX,resY;
-  string scenePath;
-  string renderDir;
-  string fileFormat;
-  string image;
+  std::string scenePath;
+  std::string renderDir;
+  std::string fileFormat;
+  std::string image;
   char *pathToScript;
 
   getline(infile,owner);
@@ -119,7 +119,7 @@ int RegisterJobFromFile (ifstream &infile)
   strncpy(mayaSgi.image,image.c_str(),BUFFERLEN-1);
 
   if (!(pathToScript = mayasg_create(&mayaSgi))) {
-    cerr << "Error creating script file\n";
+    std::cerr << "Error creating script file\n";
     return 1;
   }
 
@@ -143,7 +143,7 @@ int RegisterJobFromFile (ifstream &infile)
   job.limits.nmaxcpuscomputer = -1;
 
   if (!register_job(&job)) {
-    cerr << "Error sending job to the queue\n";
+    std::cerr << "Error sending job to the queue\n";
     return 1;
   }
 
