@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_computers.h,v 1.6 2001/09/08 21:39:48 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_computers.h,v 1.7 2002/02/21 15:56:25 jorge Exp $
  */
 
 #ifndef _DRQM_COMPUTERS_H
@@ -21,6 +21,8 @@ struct drqmc_cddi {		/* computer details dialog information */
     GtkWidget *enmaxcpus;	/* Entry */
     GtkWidget *lmaxfreeloadcpu;	/* Label maximum free load cpu */
     GtkWidget *emaxfreeloadcpu;	/* Entry */
+    GtkWidget *lautoenabletime;	/* Autoenable time */
+    GtkWidget *eautoenabletime;	/* Entry */
   } limits;
 
   GtkWidget *clist;		/* List of tasks */
