@@ -529,15 +529,18 @@ int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
 
 	if (info->computers[info->row].limits.npools) {
 		struct pool *pool;
-		pool = computer_pool_attach_shared_memory(info->computers[info->row].limits.poolshmid);
-		snprintf (msg,BUFFERLEN,"%s",pool[0].name);
-		for (i=1;i<info->computers[info->row].limits.npools;i++) {
-			snprintf (msg2,BUFFERLEN,"%s,%s",msg,pool[i].name);
-			strncpy (msg,msg2,BUFFERLEN-1);
+		if ((pool = computer_pool_attach_shared_memory(info->computers[info->row].limits.poolshmid)) != (void*)-1) {
+			snprintf (msg,BUFFERLEN,"%s",pool[0].name);
+			for (i=1;i<info->computers[info->row].limits.npools;i++) {
+				snprintf (msg2,BUFFERLEN,"%s,%s",msg,pool[i].name);
+				strncpy (msg,msg2,BUFFERLEN-1);
+			}
+			gtk_label_set_text (GTK_LABEL(info->cdd.limits.lpools),msg);
+			computer_pool_detach_shared_memory(pool);
+			computer_pool_free(&info->computers[info->row].limits);
+		} else {
+			gtk_label_set_text (GTK_LABEL(info->cdd.limits.lpools),"WARNING: Could not attach pool shared memory");
 		}
-		gtk_label_set_text (GTK_LABEL(info->cdd.limits.lpools),msg);
-		computer_pool_detach_shared_memory(pool);
-		computer_pool_free(&info->computers[info->row].limits);
 	} else {
 		gtk_label_set_text (GTK_LABEL(info->cdd.limits.lpools),"WARNING: This computer doesn't belong to any pool");
 	}
