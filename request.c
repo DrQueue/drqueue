@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.30 2001/08/28 12:59:30 jorge Exp $ */
+/* $Id: request.c,v 1.31 2001/08/29 13:16:11 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -689,11 +689,11 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
     return;
   }
 
-  if (task.jobindex >= MAXJOBS)
+  if (task.ijob >= MAXJOBS)
     return;
 
-  if ((!wdb->job[task.jobindex].used) 
-      || (strcmp(task.jobname,wdb->job[task.jobindex].name) != 0)) {
+  if ((!wdb->job[task.ijob].used) 
+      || (strcmp(task.jobname,wdb->job[task.ijob].name) != 0)) {
     log_master (L_WARNING,"frame finished of non-existing job");
     return;
   }
@@ -702,15 +702,15 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
   /* Once we have the task struct we need to update the information */
   /* on the job struct */
   semaphore_lock(wdb->semid);
-  if (task.jobindex > MAXJOBS) { /* jobindex is always > 0 */
-    /* task.jobindex out of range ! */
-    log_master (L_ERROR,"jobindex out of range in handle_r_r_taskfini");
+  if (task.ijob > MAXJOBS) { /* ijob is always > 0 */
+    /* task.ijob out of range ! */
+    log_master (L_ERROR,"ijob out of range in handle_r_r_taskfini");
   }
 
-  fi = attach_frame_shared_memory(wdb->job[task.jobindex].fishmid);
-  if (job_frame_number_correct (&wdb->job[task.jobindex],task.frame)) {
+  fi = attach_frame_shared_memory(wdb->job[task.ijob].fishmid);
+  if (job_frame_number_correct (&wdb->job[task.ijob],task.frame)) {
     /* Frame is in range */
-    task.frame = job_frame_number_to_index (&wdb->job[task.jobindex],task.frame);/* frame converted to index frame */
+    task.frame = job_frame_number_to_index (&wdb->job[task.ijob],task.frame);/* frame converted to index frame */
     /* Now we should check the exit code to act accordingly */
     if (DR_WIFEXITED(task.exitstatus)) {
       fi[task.frame].status = FS_FINISHED;
@@ -721,24 +721,24 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
       if (DR_WIFSIGNALED(task.exitstatus)) {
 	int sig = DR_WTERMSIG(task.exitstatus);
 	snprintf(msg,BUFFERLEN-1,"Signaled with %i",sig);
-	log_master_job (&wdb->job[task.jobindex],L_DEBUG,msg);
+	log_master_job (&wdb->job[task.ijob],L_DEBUG,msg);
 	if ((sig == SIGTERM) || (sig == SIGINT) || (sig == SIGKILL)) {
 	  /* Somebody killed the process, so it should be retried */
-	  snprintf(msg,BUFFERLEN-1,"Retrying frame %i", job_frame_index_to_number (&wdb->job[task.jobindex],task.frame));
-	  log_master_job (&wdb->job[task.jobindex],L_INFO,msg);
+	  snprintf(msg,BUFFERLEN-1,"Retrying frame %i", job_frame_index_to_number (&wdb->job[task.ijob],task.frame));
+	  log_master_job (&wdb->job[task.ijob],L_INFO,msg);
 	  fi[task.frame].status = FS_WAITING;
 	} else {
 	  snprintf(msg,BUFFERLEN-1,"Frame %i died signal not catched", 
-		   job_frame_index_to_number (&wdb->job[task.jobindex],task.frame));
-	  log_master_job (&wdb->job[task.jobindex],L_INFO,msg);
+		   job_frame_index_to_number (&wdb->job[task.ijob],task.frame));
+	  log_master_job (&wdb->job[task.ijob],L_INFO,msg);
 	  fi[task.frame].status = FS_ERROR;
 	  time(&fi[task.frame].end_time);
 	}
       } else {
 	/* This must be WIFSTOPPED, but I'm not sure */
 	snprintf(msg,BUFFERLEN-1,"Frame %i died abnormally", 
-		 job_frame_index_to_number (&wdb->job[task.jobindex],task.frame));
-	log_master_job (&wdb->job[task.jobindex],L_INFO,msg);
+		 job_frame_index_to_number (&wdb->job[task.ijob],task.frame));
+	log_master_job (&wdb->job[task.ijob],L_INFO,msg);
 	fi[task.frame].status = FS_ERROR;
 	time(&fi[task.frame].end_time);
       }
@@ -748,7 +748,7 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
   }
   semaphore_release(wdb->semid);
 
-  job_update_info(wdb,task.jobindex);
+  job_update_info(wdb,task.ijob);
 }
 
 void handle_r_r_listjobs (int sfd,struct database *wdb,int icomp)
