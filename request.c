@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.19 2001/08/02 10:19:03 jorge Exp $ */
+/* $Id: request.c,v 1.20 2001/08/06 12:31:25 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -27,38 +27,41 @@ void handle_request_master (int sfd,struct database *wdb,int icomp)
   recv_request (sfd,&request,MASTER);
   switch (request.type) {
   case R_R_REGISTER:
-    log_master (L_INFO,"Registration of new slave request");
+    log_master (L_DEBUG,"Registration of new slave request");
     handle_r_r_register (sfd,wdb,icomp);
     break;
   case R_R_UCSTATUS:
-    log_master (L_INFO,"Update computer status request");
+    log_master (L_DEBUG,"Update computer status request");
     handle_r_r_ucstatus (sfd,wdb,icomp);
     break;
   case R_R_REGISJOB:
-    log_master (L_INFO,"Registration of new job request");
+    log_master (L_DEBUG,"Registration of new job request");
     handle_r_r_regisjob (sfd,wdb);
-    exit (0);			/* Because we don't want to update the lastconn time */
-				/* The process that sends this request is not a slave */
+    break;
   case R_R_AVAILJOB:
-    log_master (L_INFO,"Request of available job");
+    log_master (L_DEBUG,"Request of available job");
     handle_r_r_availjob (sfd,wdb,icomp);
     break;
   case R_R_TASKFINI:
-    log_master (L_INFO,"Request task finished");
+    log_master (L_DEBUG,"Request task finished");
     handle_r_r_taskfini (sfd,wdb,icomp);
     break;
   case R_R_LISTJOBS:
-    log_master (L_INFO,"Request list of jobs");
+    log_master (L_DEBUG,"Request list of jobs");
     handle_r_r_listjobs (sfd,wdb,icomp);
-    exit (0);
+    break;
   case R_R_LISTCOMP:
-    log_master (L_INFO,"Request list of computers");
+    log_master (L_DEBUG,"Request list of computers");
     handle_r_r_listcomp (sfd,wdb,icomp);
-    exit (0);
+    break;
+  case R_R_DELETJOB:
+    log_master (L_DEBUG,"Request job deletion");
+    handle_r_r_deletjob (sfd,wdb,icomp);
+    break;
   default:
     log_master (L_WARNING,"Unknown request");
   }
-  if (icomp != -1) {
+  if ((icomp != -1) && (request.who != CLIENT)) {
     semaphore_lock (wdb->semid);
     /* set the time of the last connection */
     time(&wdb->computer[icomp].lastconn);
@@ -72,6 +75,11 @@ void handle_request_slave (int sfd,struct slave_database *sdb)
   struct request request;
 
   recv_request (sfd,&request,SLAVE_CHANDLER);
+  switch (request.type) {
+  case RS_R_KILLTASK:
+    log_slave_computer (L_DEBUG,"Request kill task");
+    handle_rs_r_killtask (sfd,sdb,&request);
+  }
 }
 
 void handle_r_r_register (int sfd,struct database *wdb,int icomp)
@@ -97,7 +105,6 @@ void handle_r_r_register (int sfd,struct database *wdb,int icomp)
     log_master (L_WARNING,"No space left for computer");
     answer.type = R_A_REGISTER;
     answer.data_s = RERR_NOSPACE;
-    answer.slave = 0;
     send_request (sfd,&answer,MASTER);
     exit (0);
   }
@@ -109,7 +116,6 @@ void handle_r_r_register (int sfd,struct database *wdb,int icomp)
   /* computer to be registered */
   answer.type = R_A_REGISTER;
   answer.data_s = RERR_NOERROR;
-  answer.slave = 0;
   send_request (sfd,&answer,MASTER);
   
   recv_computer_hwinfo (sfd, &hwinfo, MASTER);
@@ -133,10 +139,9 @@ void update_computer_status (struct computer *computer)
   }
 
   req.type = R_R_UCSTATUS;
-  req.slave = 1;
-
   send_request (sfd,&req,SLAVE);
   recv_request (sfd,&req,SLAVE);
+
   if (req.type == R_A_UCSTATUS) {
     switch (req.data_s) {
     case RERR_NOERROR:
@@ -208,7 +213,6 @@ void handle_r_r_ucstatus (int sfd,struct database *wdb,int icomp)
     log_master (L_WARNING,"Not registered computer requesting update of computer status");
     answer.type = R_A_UCSTATUS;
     answer.data_s = RERR_NOREGIS;
-    answer.slave = 0;
     send_request (sfd,&answer,MASTER);
     exit (0);
   }
@@ -240,10 +244,9 @@ int register_job (struct job *job)
   }
 
   req.type = R_R_REGISJOB;
-  req.slave = 0;
-
   send_request (sfd,&req,CLIENT);
   recv_request (sfd,&req,CLIENT);
+
   if (req.type == R_A_REGISJOB) {
     switch (req.data_s) {
     case RERR_NOERROR:
@@ -550,6 +553,13 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
   /* Receive task */
   recv_task(sfd,&task,MASTER);
 
+  if ((!wdb->job[task.jobindex].used) 
+      || (strcmp(task.jobname,wdb->job[task.jobindex].name) != 0)) {
+    log_master (L_WARNING,"frame finished of non-existing job");
+    return;
+  }
+
+
   /* Once we have the task struct we need to update the information */
   /* on the job struct */
   semaphore_lock(wdb->semid);
@@ -562,7 +572,7 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
   if ((task.frame >= wdb->job[task.jobindex].frame_start)
       || (task.frame <= wdb->job[task.jobindex].frame_end)) {
     /* Frame is in range */
-    task.frame -= wdb->job[task.jobindex].frame_start;
+    task.frame -= wdb->job[task.jobindex].frame_start;/* frame converted to index frame */
     /* Now we should check the exit code to act accordingly */
     if (DR_WIFEXITED(task.exitstatus)) {
       fi[task.frame].status = FS_FINISHED;
@@ -636,5 +646,110 @@ void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp)
       send_computer (sfd,&wdb->computer[i],MASTER);
     }
   }
+}
+
+int request_job_delete (struct job *job, int who)
+{
+  /* On error returns 0, error otherwise drerrno is set to the error */
+  int sfd;
+  struct request req;
+
+  if ((sfd = connect_to_master ()) == -1) {
+    drerrno = DRE_NOCONNECT;
+    return 0;
+  }
+
+  req.type = R_R_DELETJOB;
+
+  send_request (sfd,&req,who);
+  recv_request (sfd,&req,who);
+
+  if (req.type == R_A_DELETJOB) {
+    switch (req.data_s) {
+    case RERR_NOERROR: 
+      /* We continue processing the matter */
+      break;
+    default:
+      drerrno = DRE_ANSWERNOTLISTED;
+      return 0;
+    }
+  } else {
+    drerrno = DRE_ANSWERNOTRIGHT;
+    return 0;
+  }
+
+  send_job (sfd,job,who);
+
+  close (sfd);
+  return 1;
+}
+
+void handle_r_r_deletjob (int sfd,struct database *wdb,int icomp)
+{
+  /* The master handles this type of packages */
+  /* This function is called unlocked */
+  /* This function is called by the master */
+  struct request answer;
+  struct job job;
+  int i;
+  uint32_t ijob;
+  struct frame_info *fi;
+  int nframes;
+
+  answer.type = R_A_DELETJOB;
+  answer.data_s = RERR_NOERROR;
+  
+  send_request (sfd,&answer,MASTER);
+  recv_job (sfd,&job,MASTER);
+
+  ijob = (uint32_t) job.id;
+
+  semaphore_lock (wdb->semid);
+
+  if ((wdb->job[ijob].used) 
+      && (!strncmp(wdb->job[ijob].name,job.name,MAXNAMELEN))) {
+    fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
+    nframes = job_nframes (&wdb->job[ijob]);
+    for (i=0;i<nframes;i++) {
+      if (fi[i].status == FS_ASSIGNED) {
+	request_slave_killtask (wdb->computer[fi[i].icomp].hwinfo.name,fi[i].itask);
+      }
+    }
+    detach_frame_shared_memory (fi);
+  }
+
+  wdb->job[(int)job.id].used = 0;
+
+  semaphore_release (wdb->semid);
+}
+
+int request_slave_killtask (char *slave,uint16_t itask)
+{
+  /* This function is called by the master */
+  /* It just sends a slave a request to kill a particular task */
+  /* Returns 0 on failure */
+  int sfd;
+  struct request request;
+
+  if ((sfd = connect_to_slave (slave)) == -1) {
+    drerrno = DRE_NOCONNECT;
+    return 0;
+  }
+  
+  request.type = RS_R_KILLTASK;
+  request.data_s = itask;
+
+  if (!send_request (sfd,&request,MASTER)) {
+    drerrno = DRE_ERRORSENDING;
+    return 0;
+  }
+  
+  return 1;
+}
+
+void handle_rs_r_killtask (int sfd,struct slave_database *sdb,struct request *req)
+{
+  /* This function is called by the slave unlocked */
+  kill(sdb->comp->status.task[req->data_s].pid,SIGTERM);
 }
 
