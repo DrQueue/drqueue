@@ -1,4 +1,4 @@
-/* $Id: request_codes.h,v 1.7 2001/08/06 12:32:28 jorge Exp $ */
+/* $Id: request_codes.h,v 1.8 2001/08/07 13:03:36 jorge Exp $ */
 
 #ifndef _REQUEST_CODES_H_
 #define _REQUEST_CODES_H_
@@ -19,7 +19,12 @@
 #define R_A_LISTCOMP 14		/* Answer to the previous */
 #define R_R_DELETJOB 15		/* Request a job to be deleted */
 #define R_A_DELETJOB 16
-
+#define R_R_STOPJOB  17		/* Stop a job */
+#define R_A_STOPJOB  18
+#define R_R_CONTJOB  19		/* Continue a stopped job */
+#define R_A_CONTJOB  20
+#define R_R_HSTOPJOB 21		/* Hard stop a job */
+#define R_A_HSTOPJOB 22
 
 /* Requests to the slave */
 #define RS_R_KILLTASK 1		/* Request to slave to kill a task */
