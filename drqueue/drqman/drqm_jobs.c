@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.63 2002/08/02 17:40:21 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.64 2002/08/04 21:20:23 jorge Exp $
  */
 
 #include <string.h>
@@ -707,6 +707,7 @@ static int dnj_submit (struct drqmj_dnji *info)
 
 static void dnj_destroyed (GtkWidget *dialog, struct drqm_jobs_info *info)
 {
+  info->dnj.fkoj = NULL;
   drqm_request_joblist (info);
   drqm_update_joblist (info);
 }
