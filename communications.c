@@ -300,15 +300,16 @@ int send_computer_status (int sfd, struct computer_status *status)
   bswapped.loadavg[2] = htons(bswapped.loadavg[2]);
 
   /* Count the tasks. (Shouldn't be necessary) */
+	// FIXME: Remove this ?
   bswapped.ntasks = 0;
   for (i=0;i<MAXTASKS;i++) {
-    if (bswapped.task[i].used)
+		if (bswapped.task[i].used)
       bswapped.ntasks++;
   }
 
   bswapped.ntasks = htons (bswapped.ntasks);
 
-  if (!dr_write(sfd,buf,sizeof(uint16_t) * 4)) {
+  if (!dr_write(sfd,buf,sizeof(struct computer_status))) {
     return 0;
   }
   
@@ -316,7 +317,7 @@ int send_computer_status (int sfd, struct computer_status *status)
   for (i=0;i<MAXTASKS;i++) {
     if (bswapped.task[i].used) {
       if (!send_task(sfd,&bswapped.task[i]))
-	return 0;
+				return 0;
     }
   }
 

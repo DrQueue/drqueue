@@ -199,10 +199,86 @@ void computer_update_assigned (struct database *wdb,uint32_t ijob,int iframe,int
 
 void computer_init (struct computer *computer)
 {
+	// This function is called by the master when a computer is not longer on the list
   computer->used = 0;
   computer_status_init(&computer->status);
-  /* We do not call computer_init_limits because it depends on */
-  /* the hardware information properly set */
+}
+
+void computer_pool_init (struct computer *computer)
+{
+	computer->pool = (char **) malloc (sizeof (char*));
+	computer->pool[0] = NULL;
+}
+
+int computer_npools (struct computer *computer)
+{
+	int i;
+	int npools = 1;
+
+	for (i=0;computer->pool[i] != NULL;i++) 
+		npools++;
+
+	return npools;
+}
+
+void computer_pool_add (struct computer *computer, char *pool)
+{
+	int npools;
+	char **new_pool;
+
+	if (computer_pool_exists(computer,pool))
+		return;
+
+	npools = computer_npools (computer);
+
+	new_pool = (char **) realloc (computer->pool,sizeof (char*) * (npools+1));
+	new_pool[npools] = NULL;
+	new_pool[npools-1] = (char *) malloc (strlen(pool)+1);
+	strncpy (new_pool[npools-1],pool,strlen(pool)+1);
+	computer->pool = new_pool;
+}
+
+void computer_pool_remove (struct computer *computer, char *pool)
+{
+	int i,j;
+	int npools;
+	char **new_pool;
+
+	npools = computer_npools (computer);
+
+	new_pool = (char **) realloc (computer->pool,sizeof (char*) * (npools-1));
+	for (i=0,j=0;computer->pool[i] != NULL; i++) {
+		if (strncmp(computer->pool[i],pool,strlen(pool)+1) == 0) {
+			continue;
+		} else {
+			new_pool[j] = computer->pool[i];
+			j++;
+		}
+	}
+
+	new_pool[j] = NULL;
+}
+
+void computer_pool_list (struct computer *computer)
+{
+	int i;
+
+	fprintf (stderr,"Pools:\n");
+	for (i=0;computer->pool[i] != NULL; i++)
+		fprintf (stderr,"\t* %s\n",computer->pool[i]);
+}
+
+int computer_pool_exists (struct computer *computer,char *pool)
+{
+	int i;
+
+	for (i=0;computer->pool[i] != NULL; i++) {
+		if (strncmp(computer->pool[i],pool,strlen(pool)+1) == 0) {
+			return 1;
+		}
+	}
+
+	return 0;
 }
 
 int computer_ncomputers_masterdb (struct database *wdb)
@@ -263,7 +339,7 @@ int computer_ntasks_job (struct computer *comp,uint32_t ijob)
 
   for (c=0;c<MAXTASKS;c++) {
     if ((comp->status.task[c].used)
-	&& (comp->status.task[c].ijob == ijob)) {
+				&& (comp->status.task[c].ijob == ijob)) {
       n++;
     }
   }

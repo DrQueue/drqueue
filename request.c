@@ -2616,8 +2616,8 @@ void update_computer_limits (struct computer_limits *limits)
     switch (req.data) {
     case RERR_NOERROR:
       if (!send_computer_limits (sfd,limits)) {
-	log_slave_computer (L_ERROR,"Sending computer limits (update_computer_limits)");
-	kill(0,SIGINT);
+				log_slave_computer (L_ERROR,"Sending computer limits (update_computer_limits)");
+				kill(0,SIGINT);
       }
       break;
     case RERR_NOREGIS:
