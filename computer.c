@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.11 2001/08/08 10:52:11 jorge Exp $ */
+/* $Id: computer.c,v 1.12 2001/08/08 12:57:39 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -6,6 +6,8 @@
 #include <netdb.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/types.h>
+#include <signal.h>
 
 #include "computer.h"
 #include "database.h"
