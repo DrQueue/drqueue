@@ -1,4 +1,4 @@
-/* $Id: drerrno.h,v 1.5 2001/08/27 08:14:13 jorge Exp $ */
+/* $Id: drerrno.h,v 1.6 2001/09/02 14:17:20 jorge Exp $ */
 
 #ifndef _DRERRNO_H_
 #define _DRERRNO_H_
@@ -15,6 +15,8 @@ extern int drerrno;		/* global errno */
 #define DRE_ERRORSENDING    7	/* Error sending :) */
 #define DRE_ERRORRECEIVING  8	/* Error receiving */
 #define DRE_NOTREGISTERED   9	/* Not registered */
+#define DRE_NOENVMASTER     10	/* Environment variable for master not set */
+#define DRE_NOENVROOT       11	/* Environment variable for root not set */
 
 char *drerrno_str (void);
 
