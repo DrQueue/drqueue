@@ -30,6 +30,8 @@
 #include <stdint.h>
 #elif defined (__FREEBSD)
 #include <stdint.h>
+#elif defined (__CYGWIN)
+#include <stdint.h>
 #else
 #error You need to define the OS, or OS defined not supported
 #endif
@@ -147,6 +149,7 @@ typedef enum {
 #define OSF_LINUX         (1<<1) /* If set will run on Linux */
 #define OSF_OSX						(1<<2) /* If set will run on OSX */
 #define OSF_FREEBSD				(1<<3) /* If set will run on FreeBSD */
+#define OSF_CYGWIN	(1<<4) /* If set will run on Windows */
 
 /* THE JOB ITSELF */
 struct job {

@@ -73,18 +73,18 @@ int main (int argc, char *argv[])
 	// the path to the config file
 	config_parse(conf);
 	set_default_env();  // Config files overrides environment CHANGE (?)
-
   log_master (L_INFO,"Starting...");
 
   if (!common_environment_check()) {
     fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
     exit (1);
   }
-
   set_signal_handlers ();
 
   shmid = get_shared_memory (force);
-  wdb = attach_shared_memory (shmid);
+
+  if ((wdb = attach_shared_memory (shmid)) == (void *) -1)
+	exit (1);
   wdb->shmid = shmid;
   wdb->semid = get_semaphores (force);
 
@@ -103,7 +103,6 @@ int main (int argc, char *argv[])
     master_consistency_checks (wdb);
     exit (0);
   }
-
   if ((sfd = get_socket(MASTERPORT)) == -1) {
     kill(0,SIGINT);
   }
@@ -173,7 +172,7 @@ int get_shared_memory (int force)
     shmflg = IPC_EXCL|IPC_CREAT|0600;
   }
 
-  if ((shmid = shmget (key,sizeof(struct database), shmflg)) == -1) {
+ if ((shmid = shmget (key,sizeof(struct database), shmflg)) == -1) {
     perror ("Getting shared memory");
     if (!force)
       fprintf (stderr,"Try with option -f (if you are sure that no other master is running)\n");
@@ -236,8 +235,8 @@ void *attach_shared_memory (int shmid)
   void *rv;			/* return value */
 
   if ((rv = shmat (shmid,0,0)) == (void *)-1) {
-    perror ("shmat");
-    exit (1);
+    perror ("master shmat");
+    return ((void *) -1);
   }
 
   return rv;

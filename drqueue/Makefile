@@ -8,7 +8,7 @@ OBJS_LIBDRQUEUE = computer_info.o computer_status.o task.o logger.o communicatio
 LDFLAGS =
 
 ifeq ($(origin INSTROOT),undefined)
-INSTROOT = /lot/s800/HOME/RENDUSR/drqueue
+INSTROOT = /usr/local/drqueue
 endif
 
 ifeq ($(origin INSTUID),undefined)
@@ -16,7 +16,7 @@ INSTUID = drqueue
 endif
 
 ifeq ($(origin INSTGID),undefined)
-INSTGID = drqueue
+INSTGID = drqueue 
 endif
 
 #Figure out OS-specific Configuration parameters
@@ -44,7 +44,14 @@ else
     CPPFLAGS = -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__FREEBSD -g -O2
 	  MAKE = gmake
 	 else
-$(error Cannot make DrQueue -- systype "$(systype)" is unknown)
+	  ifeq ($(systype),CYGWIN_NT-5.1)
+	   CFLAGS = -DCOMM_REPORT -Wall -I. -D__CYGWIN -g -O2 -I/usr/include/cygipc 
+     CPPFLAGS = -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__CYGWIN -g -O2 -I/usr/include/cygipc
+	   MAKE = make
+	   LDFLAGS += -lcygipc
+ 	  else
+ $(error Cannot make DrQueue -- systype "$(systype)" is unknown)
+	  endif
 	 endif
 	endif
  endif	
@@ -98,6 +105,21 @@ Linux_install:
 	chown $(INSTUID):$(INSTGID) $(INSTROOT)/bin/*
 	chown $(INSTUID):$(INSTGID) $(INSTROOT)/contrib/*
 
+CYGWIN_NT-5.1_install:
+	install -d -m 0777 $(INSTROOT)/tmp
+	install -d -m 0777 $(INSTROOT)/logs
+	install -d -m 0755 $(INSTROOT)/bin
+	install -d -m 0755 $(INSTROOT)/etc
+	install -d -m 0777 $(INSTROOT)/db
+	install -d -m 0777 $(INSTROOT)/contrib
+	cp ./bin/*.exe $(INSTROOT)/bin/ || exit 0
+	cp ./etc/* $(INSTROOT)/etc/ || exit 0
+	cp ./contrib/* $(INSTROOT)/contrib/ || exit 0
+	chmod 0755 $(INSTROOT)/bin/* || exit 0
+	chmod 0755 $(INSTROOT)/contrib/* || exit 0
+	chown $(INSTUID):$(INSTGID) $(INSTROOT)/bin/*
+	chown $(INSTUID):$(INSTGID) $(INSTROOT)/contrib/*
+
 FreeBSD_install:
 	install -d -m 0777 $(INSTROOT)/tmp
 	install -d -m 0777 $(INSTROOT)/logs
@@ -140,6 +162,17 @@ ifeq ($(systype),IRIX)
 	install -root $(PWD) -m 0755 -f /bin -src sendjob sendjob.$(systype)
 	test -x ./drqman/drqman && install -root $(PWD) -m 0755 -f /bin -src drqman/drqman drqman.$(systype) || test 1
 else
+ ifeq ($(systype),CYGWIN_NT-5.1)
+	install -d -m 0755 bin
+	install -m 0755 -p ./slave.exe bin/slave.exe
+	install -m 0755 -p ./master.exe bin/master.exe
+	install -m 0755 -p ./requeue.exe bin/requeue.exe
+	install -m 0755 -p ./jobfinfo.exe bin/jobfinfo.exe
+	install -m 0755 -p ./blockhost.exe bin/blockhost.exe
+	install -m 0755 -p ./cjob.exe bin/cjob.exe
+	install -m 0755 -p ./sendjob.exe bin/sendjob.exe
+	test -x ./drqman/drqman.exe && install -m 0755 -p ./drqman/drqman.exe bin/drqman.exe || exit 0
+else
 	install -d -m 0755 bin
 	install -m 0755 -p ./slave bin/slave.$(systype)
 	install -m 0755 -p ./master bin/master.$(systype)
@@ -149,6 +182,7 @@ else
 	install -m 0755 -p ./cjob bin/cjob.$(systype)
 	install -m 0755 -p ./sendjob bin/sendjob.$(systype)
 	test -x ./drqman/drqman && install -m 0755 -p ./drqman/drqman bin/drqman.$(systype) || exit 0
+endif
 endif
 
 doc:
@@ -167,7 +201,9 @@ clean:
 libdrqueue.a : $(OBJS_LIBDRQUEUE) libdrqueue.h
 	ar sq $@ $(OBJS_LIBDRQUEUE)
 slave: slave.o libdrqueue.a
+	$(CC) -o $@ slave.o libdrqueue.a $(LDFLAGS) 
 master: master.o libdrqueue.a
+	$(CC) -o $@ master.o libdrqueue.a $(LDFLAGS) 
 requeue: requeue.o libdrqueue.a
 requeue.o: requeue.c
 	$(CC) -c $(CFLAGS) -o $@ $<

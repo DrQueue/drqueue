@@ -30,6 +30,10 @@
 #include "drqm_common.h"
 #include "drqm_jobs_maya.h"
 
+#ifdef __CYGWIN
+  void cygwin_conv_to_win32_path(const char *path, char *win32_path);
+#endif
+
 static void dnj_koj_frame_maya_renderdir_search (GtkWidget *button, struct drqmj_koji_maya *info);
 static void dnj_koj_frame_maya_renderdir_set (GtkWidget *button, struct drqmj_koji_maya *info);
 static void dnj_koj_frame_maya_script_search (GtkWidget *button, struct drqmj_koji_maya *info);
@@ -246,6 +250,7 @@ static void dnj_koj_frame_maya_renderdir_search (GtkWidget *button, struct drqmj
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
+
 static void dnj_koj_frame_maya_renderdir_set (GtkWidget *button, struct drqmj_koji_maya *info)
 {
   char buf[BUFFERLEN];
@@ -253,6 +258,16 @@ static void dnj_koj_frame_maya_renderdir_set (GtkWidget *button, struct drqmj_ko
   
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsrenderdir)),BUFFERLEN-1);
   p = strrchr(buf,'/');
+
+#ifdef __CYGWIN
+  char *win32_path;
+
+  if ((win32_path = malloc(MAXCMDLEN)) == NULL)
+	return;
+  cygwin_conv_to_win32_path(p, win32_path);
+  p = win32_path;
+#endif 
+
   if (p)
     *p = 0;
   gtk_entry_set_text (GTK_ENTRY(info->erenderdir),buf);
@@ -292,6 +307,16 @@ static void dnj_koj_frame_maya_scene_set (GtkWidget *button, struct drqmj_koji_m
 /*    p = ( p ) ? p+1 : buf; */
   /* We need the whole scene path */
   p = buf;
+
+#ifdef __CYGWIN
+  char *win32_path;
+
+  if ((win32_path = malloc(MAXCMDLEN)) == NULL)
+	return;
+  cygwin_conv_to_win32_path(p, win32_path);
+  p = win32_path;
+#endif
+
   gtk_entry_set_text (GTK_ENTRY(info->escene),p);
 }
 

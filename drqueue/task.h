@@ -34,7 +34,11 @@
 #   ifdef __FREEBSD
 #    include <stdint.h>
 #   else
-#    error You need to define the OS, or OS defined not supported
+#    ifdef __CYGWIN
+#     include <stdint.h>
+#    else
+#     error You need to define the OS, or OS defined not supported
+#    endif
 #   endif
 #  endif
 # endif
