@@ -49,6 +49,7 @@ extern int drerrno;		/* global errno */
 #define DRE_NOBINDIR        22  /* No bin directory */
 #define DRE_NOETCDIR        23	/* No etc directory */
 #define DRE_RMSHMEM					24 	// Remove shared memory
+#define DRE_NOMEMORY        25  // Not enough memory
 
 char *drerrno_str (void);
 
