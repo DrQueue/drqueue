@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.22 2001/09/08 16:58:43 jorge Exp $ */
+/* $Id: computer.c,v 1.23 2001/09/08 17:00:10 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -120,7 +120,7 @@ int computer_available (struct computer *computer)
     kill (0,SIGINT);
   }
 
-  printf ("Number of possible tasks: %i\n",npt);
+/*    printf ("Number of possible tasks: %i\n",npt); */
     
   if (npt <= 0)
     return 0;
