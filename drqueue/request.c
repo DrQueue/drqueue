@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.39 2001/09/05 12:49:37 jorge Exp $ */
+/* $Id: request.c,v 1.40 2001/09/06 10:18:54 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -91,6 +91,10 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
   case R_R_JOBFWAIT:
     log_master (L_DEBUG,"Request job frame set to waiting");
     handle_r_r_jobfwait (sfd,wdb,icomp,&request);
+    break;
+  case R_R_JOBFKILL:
+    log_master (L_DEBUG,"Request job frame kill");
+    handle_r_r_jobfkill (sfd,wdb,icomp,&request);
     break;
   default:
     log_master (L_WARNING,"Unknown request");
@@ -1445,6 +1449,94 @@ void handle_r_r_jobfwait (int sfd,struct database *wdb,int icomp,struct request 
   log_master(L_DEBUG,"Exiting handle_r_r_jobfwait");
 }
 
+int request_job_frame_kill (uint32_t ijob, uint32_t frame, int who)
+{
+  /* On error returns 0, error otherwise drerrno is set to the error */
+  int sfd;
+  struct request req;
+
+  if ((sfd = connect_to_master ()) == -1) {
+    drerrno = DRE_NOCONNECT;
+    return 0;
+  }
+
+  req.type = R_R_JOBFKILL;
+  req.data = ijob;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORSENDING;
+    close (sfd);
+    return 0;
+  }
+
+  req.type = R_R_JOBFKILL;
+  req.data = frame;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORSENDING;
+    close (sfd);
+    return 0;
+  }
+
+  close (sfd);
+  return 1;
+}
+
+void handle_r_r_jobfkill (int sfd,struct database *wdb,int icomp,struct request *req)
+{
+  /* The master handles this type of packages */
+  /* This function is called unlocked */
+  /* This function is called by the master */
+  uint32_t ijob;
+  uint32_t frame;
+  uint32_t iframe;
+  uint32_t nframes;
+  struct frame_info *fi;
+  char msg[BUFFERLEN];
+
+  log_master(L_DEBUG,"Entering handle_r_r_jobfkill");
+
+  ijob = req->data;
+
+  if (!recv_request (sfd,req)) {
+    return;
+  }
+
+  frame = req->data;
+  
+  snprintf(msg,BUFFERLEN-1,"Requested job frame kill for Job %i Frame %i ",ijob,frame);
+  log_master(L_DEBUG,msg);
+
+  semaphore_lock(wdb->semid);
+
+  if (!job_index_correct_master(wdb,ijob))
+    return;
+
+  nframes = job_nframes (&wdb->job[ijob]);
+
+  if (!job_frame_number_correct(&wdb->job[ijob],frame))
+    return;
+  
+  nframes = job_nframes (&wdb->job[ijob]);
+  iframe = job_frame_number_to_index (&wdb->job[ijob],frame);
+  
+  fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
+  switch (fi[iframe].status) {
+  case FS_WAITING:
+    break;
+  case FS_ASSIGNED:
+    request_slave_killtask (wdb->computer[fi[iframe].icomp].hwinfo.name,fi[iframe].itask);
+    break;
+  case FS_ERROR:
+  case FS_FINISHED:
+    fi[iframe].status = FS_WAITING;
+  }
+  detach_frame_shared_memory (fi);
+
+  semaphore_release (wdb->semid);
+
+  log_master(L_DEBUG,"Exiting handle_r_r_jobfwait");
+}
 
 
 
