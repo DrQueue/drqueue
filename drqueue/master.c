@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.37 2002/05/17 16:05:57 jorge Exp $ */
+/* $Id: master.c,v 1.38 2002/08/04 21:19:33 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -117,7 +117,7 @@ int get_shared_memory (int force)
   char *root;
 
   root = getenv("DRQUEUE_ROOT");
-  snprintf (file,BUFFERLEN-1,"%s/bin/master.sh",root);
+  snprintf (file,BUFFERLEN-1,KEY,root);
 
   if ((key = ftok (file,'Z')) == -1) {
     perror ("Getting key for shared memory");
@@ -150,7 +150,7 @@ int get_semaphores (int force)
   char *root;
 
   root = getenv("DRQUEUE_ROOT");
-  snprintf (file,BUFFERLEN-1,"%s/bin/master.sh",root);
+  snprintf (file,BUFFERLEN-1,KEY,root);
 
   if ((key = ftok (file,'Z')) == -1) {
     perror ("Getting key for semaphores");
