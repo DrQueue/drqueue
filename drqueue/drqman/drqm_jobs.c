@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.22 2001/09/03 16:03:43 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.23 2001/09/04 16:00:04 jorge Exp $
  */
 
 #include <string.h>
@@ -64,6 +64,7 @@ static void msgd_scene_search (GtkWidget *button, struct info_msgd *info);
 static void msgd_set_scene (GtkWidget *button, struct info_msgd *info);
 static void msgd_project_search (GtkWidget *button, struct info_msgd *info);
 static void msgd_set_project (GtkWidget *button, struct info_msgd *info);
+char *default_script_path (void);
 
 void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info)
 {
@@ -1200,6 +1201,7 @@ static GtkWidget *MayaScriptGeneratorDialog (struct info_drqm_jobs *info_dj)
   GtkWidget *entry; 
   GtkWidget *button;
   GtkWidget *bbox;
+  
 
   /* Dialog */
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -1232,6 +1234,7 @@ static GtkWidget *MayaScriptGeneratorDialog (struct info_drqm_jobs *info_dj)
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
   gtk_signal_connect (GTK_OBJECT(button),"clicked",msgd_scene_search,&info_dj->msgd);
 
+
   /* Project directory */
   hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
@@ -1255,6 +1258,15 @@ static GtkWidget *MayaScriptGeneratorDialog (struct info_drqm_jobs *info_dj)
   info_dj->msgd.eimage = entry;
   gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
 
+  /* Script location */
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Script location:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
+  info_dj->msgd.escript = entry;
+  gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
+  gtk_entry_set_text (GTK_ENTRY(entry),default_script_path());
 
   /* Buttons */
   /* Create */
@@ -1299,8 +1311,14 @@ static void msgd_project_search (GtkWidget *button, struct info_msgd *info)
 
 static void msgd_set_project (GtkWidget *button, struct info_msgd *info)
 {
-  gtk_entry_set_text (GTK_ENTRY(info->eproject),
-		      gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsproject)));
+  char buf[BUFFERLEN];
+  char *p;
+  
+  strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsproject)),BUFFERLEN-1);
+  p = strrchr(buf,'/');
+  if (p)
+    *p = 0;
+  gtk_entry_set_text (GTK_ENTRY(info->eproject),buf);
 }
 
 static void msgd_scene_search (GtkWidget *button, struct info_msgd *info)
@@ -1324,9 +1342,28 @@ static void msgd_scene_search (GtkWidget *button, struct info_msgd *info)
 
 static void msgd_set_scene (GtkWidget *button, struct info_msgd *info)
 {
-  gtk_entry_set_text (GTK_ENTRY(info->escene),
-		      gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscene)));
+  char buf[BUFFERLEN];
+  char *p;
+  
+  strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscene)),BUFFERLEN-1);
+  p = strrchr(buf,'/');
+  p = ( p ) ? p+1 : buf;
+  gtk_entry_set_text (GTK_ENTRY(info->escene),p);
 }
 
+char *default_script_path (void)
+{
+  static char buf[BUFFERLEN];
+  char *p;
 
+  if (!(p = getenv("DRQUEUE_ROOT"))) {
+    return ("/drqueue_root/not/set/");
+  }
+  
+  if (p[strlen(p)-1] == '/')
+    p[strlen(p)-1] = 0;		/* ATENTION this modifies the environment */
 
+  snprintf (buf,BUFFERLEN-1,"%s/tmp/",p);
+
+  return buf;
+}
