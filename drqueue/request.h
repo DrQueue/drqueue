@@ -1,4 +1,4 @@
-/* $Id: request.h,v 1.16 2001/08/28 12:59:31 jorge Exp $ */
+/* $Id: request.h,v 1.17 2001/08/30 13:16:54 jorge Exp $ */
 /* The request structure is not just used for the requests themselves */
 /* but also for the answers to the requests */
 
@@ -30,7 +30,7 @@ struct request {
 void handle_request_master (int sfd,struct database *wdb,int icomp);
 void handle_request_slave (int sfd,struct slave_database *sdb);
 
-/* MASTER */
+/* handled by MASTER */
 void handle_r_r_register (int sfd,struct database *wdb,int icomp);
 void handle_r_r_ucstatus (int sfd,struct database *wdb,int icomp);
 void handle_r_r_regisjob (int sfd,struct database *wdb);
@@ -44,8 +44,9 @@ void handle_r_r_contjob  (int sfd,struct database *wdb,int icomp,struct request 
 void handle_r_r_hstopjob (int sfd,struct database *wdb,int icomp,struct request *req);
 void handle_r_r_jobxfer (int sfd,struct database *wdb,int icomp,struct request *req);
 void handle_r_r_jobxferfi (int sfd,struct database *wdb,int icomp,struct request *req);
+void handle_r_r_compxfer (int sfd,struct database *wdb,int icomp,struct request *req);
 
-/* TO MASTER */
+/* sent TO MASTER */
 void update_computer_status (struct computer *computer); /* The slave calls this function to update the */
                                                         /* information that the master has about him */
 void register_slave (struct computer *computer);
@@ -58,11 +59,12 @@ int request_job_hstop (uint32_t ijob, int who);
 int request_job_continue (uint32_t ijob, int who);
 int request_job_xfer (uint32_t ijob, struct job *job, int who);
 int request_job_xferfi (uint32_t ijob, struct frame_info *fi, int nframes, int who);
+int request_comp_xfer (uint32_t icomp, struct computer *comp, int who);
 
-/* TO SLAVE */
+/* sent TO SLAVE */
 int request_slave_killtask (char *slave,uint16_t itask);
 
-/* SLAVE */
+/* handled by SLAVE */
 void handle_rs_r_killtask (int sfd,struct slave_database *sdb,struct request *req);
 
 #endif /* _REQUEST_H_ */
