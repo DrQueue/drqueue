@@ -1,4 +1,4 @@
-/* $Id: task.c,v 1.8 2001/09/21 14:43:39 jorge Exp $ */
+/* $Id: task.c,v 1.9 2001/10/02 12:40:46 jorge Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,6 +25,7 @@ void task_init (struct task *task)
   strcpy(task->owner,"NOBODY");
   task->frame = 0;
   task->pid = 0;
+  task->itask = 0;
   task->exitstatus = 0;
   task->status = 0;
 }
@@ -39,6 +40,7 @@ int task_available (struct slave_database *sdb)
     if (sdb->comp->status.task[i].used == 0) {
       r = i;
       sdb->comp->status.task[i].used = 1;
+      sdb->comp->status.task[i].itask = (uint16_t) i;
       sdb->comp->status.task[i].status = TASKSTATUS_LOADING;
       break;
     }
@@ -55,6 +57,7 @@ void task_report (struct task *task)
   printf ("Job command:\t%s\n",task->jobcmd);
   printf ("Frame:\t\t%i\n",task->frame);
   printf ("Task pid:\t%i\n",task->pid);
+  printf ("Task index:\t%i\n",task->itask);
   printf ("Task status:\t%s\n",task_status_string(task->status));
 }
 
@@ -67,12 +70,6 @@ char *task_status_string (unsigned char status)
     break;
   case TASKSTATUS_RUNNING:
     st_string = "Running";
-    break;
-  case TASKSTATUS_STOPPED:
-    st_string = "Stopped";
-    break;
-  case TASKSTATUS_KILLFRAME:
-    st_string = "Kill frame";
     break;
   default:
     st_string = "UNKNOWN";
