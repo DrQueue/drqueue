@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.26 2001/09/18 10:48:10 jorge Exp $ */
+/* $Id: master.c,v 1.27 2001/09/19 09:08:45 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -337,7 +337,7 @@ void check_lastconn_times (struct database *wdb)
       if ((now - wdb->computer[i].lastconn) > MAXTIMENOCONN) {
 	snprintf (msg,BUFFERLEN-1,"Maximum time without connecting exceeded. Deleting. (Time not connected: %i)",
 		  (int) (now - wdb->computer[i].lastconn));
-	log_master_computer (&wdb->computer[i],L_INFO,msg);
+	log_master_computer (&wdb->computer[i],L_WARNING,msg);
 	semaphore_lock(wdb->semid);
 	/* We only need to remove it this way, without requeueing its frames because */
 	/* the frames will be requeued on the consistency checks (job_update_info) */
