@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.14 2001/08/06 12:39:23 jorge Exp $ */
+/* $Id: job.c,v 1.15 2001/08/07 12:59:23 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -120,12 +120,6 @@ char *job_status_string (char status)
   case JOBSTATUS_STOPPED:
     strncpy (sstring,"Stopped",BUFFERLEN-1);
     break;
-  case JOBSTATUS_HSTOPPED:
-    strncpy (sstring,"Hard Stopped",BUFFERLEN-1);
-    break;
-  case JOBSTATUS_DELETING:
-    strncpy (sstring,"Deleting",BUFFERLEN-1);
-    break;
   case JOBSTATUS_FINISHED:
     strncpy (sstring,"Finished",BUFFERLEN-1);
     break;
@@ -155,13 +149,14 @@ int job_available (struct database *wdb,uint32_t ijob, int *iframe)
   if (wdb->job[ijob].used == 0)
     return 0;
 
-  if ((*iframe = job_first_frame_available (wdb,ijob)) == -1)
+  if (!((wdb->job[ijob].status == JOBSTATUS_WAITING) || (wdb->job[ijob].status == JOBSTATUS_ACTIVE)))
     return 0;
 
-  if ((wdb->job[ijob].status == JOBSTATUS_WAITING) || (wdb->job[ijob].status == JOBSTATUS_ACTIVE))
-    return 1;
+  if ((*iframe = job_first_frame_available (wdb,ijob)) == -1) /* This must be the last test because it actually */
+							      /* reserves one frame (sets it to assigned) */
+    return 0;
 
-  return 0;
+  return 1;
 }
 
 int job_first_frame_available (struct database *wdb,uint32_t ijob)
@@ -318,8 +313,6 @@ void job_update_info (struct database *wdb,uint32_t ijob)
       }
     }
     break;
-  case JOBSTATUS_DELETING:
-  case JOBSTATUS_HSTOPPED:
   case JOBSTATUS_STOPPED:
   }
   semaphore_release(wdb->semid);
@@ -380,4 +373,31 @@ int priority_job_compare (const void *a,const void *b)
     return -1;
 
   return 0;
+}
+
+void job_stop (struct job *job)
+{
+  /* This function is called locked */
+  switch (job->status) {
+  case JOBSTATUS_WAITING:
+  case JOBSTATUS_ACTIVE:
+    job->status = JOBSTATUS_STOPPED;
+    break;
+  case JOBSTATUS_STOPPED:
+  case JOBSTATUS_FINISHED:
+  }
+}
+
+void job_continue (struct job *job)
+{
+  /* This function is called locked */
+  switch (job->status) {
+  case JOBSTATUS_WAITING:
+  case JOBSTATUS_ACTIVE:
+    break;
+  case JOBSTATUS_STOPPED:
+    job->status = JOBSTATUS_WAITING;
+    break;
+  case JOBSTATUS_FINISHED:
+  }
 }
