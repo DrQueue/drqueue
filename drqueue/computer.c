@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.24 2001/09/10 09:15:50 jorge Exp $ */
+/* $Id: computer.c,v 1.25 2001/09/17 10:56:15 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -100,7 +100,7 @@ int computer_available (struct computer *computer)
 /*    printf ("1) npt: %i\n",npt); */
 
   /* then npt is the minimum of npt or the number of free tasks structures */
-  npt = (npt < (MAXTASKS - computer->status.ntasks)) ? npt : (MAXTASKS - computer->status.ntasks);
+  npt = (npt < MAXTASKS) ? npt : MAXTASKS;
 /*    printf ("2) npt: %i\n",npt); */
 
   /* Prevent floating point exception */
