@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.45 2004/10/06 16:33:17 jorge Exp $
+# $Id: Makefile,v 1.46 2004/10/09 03:39:25 jorge Exp $
 
 CC = gcc
 CPP = g++
@@ -55,7 +55,7 @@ endif
 #abstract make targets
 .PHONY: default all install miniinstall irix_install linux_install doc tags clean
 
-all: base  drqman
+all: base drqman
 
 base: slave master requeue
 
@@ -73,13 +73,15 @@ IRIX_install:
 	cp ./drqman/drqman /usr/local/software
 
 Linux_install:
-#	install -v -d -m 0777 -o rendusr -g 103 $(INSTROOT)/bin
+	install -d -m 0777 $(INSTROOT)/tmp
+	install -d -m 0777 $(INSTROOT)/logs
+	install -d -m 0755 $(INSTROOT)/bin
+	install -d -m 0755 $(INSTROOT)/etc
+	install -d -m 0777 $(INSTROOT)/db
 	cp ./bin/* $(INSTROOT)/bin/ || exit 0
 	cp ./etc/* $(INSTROOT)/etc/ || exit 0
-	cp ./requeue $(INSTROOT)/bin/requeue.Linux
-	cp ./sendjob $(INSTROOT)/bin/sendjob.Linux
-	chmod 0777 $(INSTROOT)/bin/* || exit 0
-	chown rendusr.103 $(INSTROOT)/bin/*
+	chmod 0755 $(INSTROOT)/bin/* || exit 0
+	chown $(INSTUID):$(INSTGID) $(INSTROOT)/bin/*
 
 FreeBSD_install:
 	install -d -m 0777 $(INSTROOT)/tmp
@@ -115,7 +117,7 @@ tags:
 	etags *.[ch] drqman/*.[ch]
 
 clean:
-	rm -fR *.o *~ *\# libdrqueue.a slave master sendjob requeue TAGS tmp/* logs/* db/*
+	rm -fR *.o *~ *\ libdrqueue.a slave master sendjob requeue TAGS tmp/* logs/* db/* bin/*.Linux
 	$(MAKE) -C drqman clean
 
 
