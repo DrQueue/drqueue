@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.36 2001/09/24 16:10:43 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.37 2001/09/25 09:29:39 jorge Exp $
  */
 
 #include <string.h>
@@ -124,6 +124,7 @@ static GtkWidget *CreateJobsList(struct drqm_jobs_info *info)
 
   /* Scrolled window */
   window = gtk_scrolled_window_new(NULL,NULL);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   info->clist = CreateClist(window);
 
   /* Create the popup menu */
@@ -828,6 +829,7 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   gtk_box_pack_start (GTK_BOX(vbox),frame,TRUE,TRUE,2);
   /* Clist with the frame info */
   swin = gtk_scrolled_window_new (NULL,NULL);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(swin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_container_add (GTK_CONTAINER(frame),swin);
   clist = CreateFrameInfoClist ();
   gtk_clist_set_selection_mode(GTK_CLIST(clist),GTK_SELECTION_EXTENDED);
@@ -1283,6 +1285,7 @@ static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info)
 
   /* Text */
   swin = gtk_scrolled_window_new(NULL,NULL);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(swin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_container_add (GTK_CONTAINER(frame),swin);
   text = gtk_text_new (NULL,NULL);
   gtk_container_add (GTK_CONTAINER(swin),text);
