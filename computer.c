@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.27 2001/09/25 15:50:43 jorge Exp $ */
+/* $Id: computer.c,v 1.28 2001/10/02 12:37:59 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -178,6 +178,7 @@ void computer_update_assigned (struct database *wdb,uint32_t ijob,int iframe,int
 void computer_init (struct computer *computer)
 {
   computer->used = 0;
+  computer_status_init(&computer->status);
 }
 
 int computer_ncomputers_masterdb (struct database *wdb)
