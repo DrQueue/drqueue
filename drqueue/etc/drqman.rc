@@ -1,0 +1,17 @@
+style "default" {
+  font = "-b&h-lucida-bold-r-normal-*-12-*-*-*-p-*-iso8859-1"
+}
+
+style "danger" {
+  bg[NORMAL] = { 1.0,0.1,0.1 }
+  bg[PRELIGHT] = { 1.0,0.4,0.4 }
+}
+
+style "warning" {
+  bg[PRELIGHT] = { 1.0,0.5,0.5 }
+}
+
+widget_class "*" style "default"
+
+widget "*danger*" style "danger"
+widget "*warning*" style "warning"
