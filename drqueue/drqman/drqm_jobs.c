@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.46 2001/10/24 14:53:16 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.47 2001/11/13 09:50:02 jorge Exp $
  */
 
 #include <string.h>
@@ -60,6 +60,9 @@ static void jdd_limits_nmaxcpuscomputer_bcp (GtkWidget *button, struct drqm_jobs
 static GtkWidget *jdd_nmcc_dialog (struct drqm_jobs_info *info);
 static void jdd_nmccd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *info);
 
+/* Flags */
+static GtkWidget *jdd_flags_widgets (struct drqm_jobs_info *info);
+
 /* Koj viewers */
 static void jdd_maya_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 
@@ -89,6 +92,8 @@ static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_
 /* Limits */
 static GtkWidget *dnj_limits_widgets (struct drqm_jobs_info *info);
 
+/* Flags */
+static GtkWidget *dnj_flags_widgets (struct drqm_jobs_info *info);
 
 static void DeleteJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
 static GtkWidget *DeleteJobDialog (struct drqm_jobs_info *info);
@@ -485,6 +490,10 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
   frame = dnj_limits_widgets (info);
   gtk_box_pack_start(GTK_BOX(vbox),frame,TRUE,TRUE,5);
 
+  /* Flags STUFF */
+  frame = dnj_flags_widgets (info);
+  gtk_box_pack_start(GTK_BOX(vbox),frame,TRUE,TRUE,5);
+
   /* KOJ STUFF */
   frame = dnj_koj_widgets (info);
   gtk_box_pack_start(GTK_BOX(vbox),frame,TRUE,TRUE,5);
@@ -635,6 +644,12 @@ static int dnj_submit (struct drqmj_dnji *info)
     return 0;
   if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->limits.enmaxcpuscomputer)),"%hu",&job.limits.nmaxcpuscomputer) != 1)
     return 0;
+
+  /* Flags */
+  job.flags = 0;
+  if (GTK_TOGGLE_BUTTON(info->flags.cbmailnotify)->active) {
+    job.flags = job.flags | (JF_MAILNOTIFY);
+  }
 
   if (!register_job (&job))
     return 0;
@@ -896,6 +911,10 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
 
   /* Limits */
   frame = jdd_limits_widgets (info);
+  gtk_box_pack_start (GTK_BOX(vbox),frame,FALSE,FALSE,2);
+
+  /* Flags */
+  frame = jdd_flags_widgets (info);
   gtk_box_pack_start (GTK_BOX(vbox),frame,FALSE,FALSE,2);
 
   /* Clist with the frame info */
@@ -2172,4 +2191,56 @@ static void jdd_pcd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *i
   gtk_label_set_text (GTK_LABEL(info->jdd.lpri),msg);
 }
 
+GtkWidget *dnj_flags_widgets (struct drqm_jobs_info *info)
+{
+  GtkWidget *frame;
+  GtkWidget *vbox, *hbox;
+  GtkWidget *cbutton;
+  GtkTooltips *tooltips;
+
+  tooltips = TooltipsNew ();
+
+  frame = gtk_frame_new ("Flags");
+  vbox = gtk_vbox_new (FALSE,2);
+  gtk_container_add (GTK_CONTAINER(frame),vbox);
+
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,TRUE,FALSE,2);
+
+  cbutton = gtk_check_button_new_with_label ("Mail notification");
+  gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
+  gtk_tooltips_set_tip(tooltips,cbutton,"When set DrQueue will send emails to the owner of the job to "
+		       "notify about important events.",NULL);
+  info->dnj.flags.cbmailnotify = cbutton;
+
+  return (frame);
+}
+
+GtkWidget *jdd_flags_widgets (struct drqm_jobs_info *info)
+{
+  GtkWidget *frame;
+  GtkWidget *vbox, *hbox;
+  GtkWidget *label;
+  GtkTooltips *tooltips;
+
+  tooltips = TooltipsNew ();
+
+  frame = gtk_frame_new ("Flags");
+  vbox = gtk_vbox_new (FALSE,2);
+  gtk_container_add (GTK_CONTAINER(frame),vbox);
+
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,TRUE,FALSE,2);
+
+  if (info->jobs[info->row].flags & (JF_MAILNOTIFY)) {
+    label = gtk_label_new ("Mail notifications: ON");
+  } else {
+    label = gtk_label_new ("Mail notifications: OFF");
+  }
+/*    GTK_WIDGET_UNSET_FLAGS(GTK_WIDGET(label),GTK_CAN_FOCUS); */
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+
+
+  return (frame);
+}
 
