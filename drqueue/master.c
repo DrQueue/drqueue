@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.27 2001/09/19 09:08:45 jorge Exp $ */
+/* $Id: master.c,v 1.28 2001/09/19 09:35:10 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -27,6 +27,7 @@ int main (int argc, char *argv[])
   int shmid;			/* shared memory id */
   int force = 0;		/* force even if shmem already exists */
   struct sockaddr_in addr;	/* Address of the remote host */
+  pid_t child;
 
 
   master_get_options (&argc,&argv,&force);
@@ -63,7 +64,7 @@ int main (int argc, char *argv[])
   printf ("Waiting for connections...\n");
   while (1) {
     if ((csfd = accept_socket (sfd,wdb,&icomp,&addr)) != -1) {
-      if (fork() == 0) {
+      if ((child = fork()) == 0) {
 	/* Create a connection handler */
 	fflush(stderr);
 	set_signal_handlers_child_conn_handler ();
@@ -72,10 +73,14 @@ int main (int argc, char *argv[])
 	handle_request_master (csfd,wdb,icomp,&addr);
 	close (csfd);
 	exit (0);
-      } else {
+      } else if (child != -1) {
 	close (csfd);
 	if (csfd > 4)
 	  printf ("Growing !! csfd: %i\n",csfd);
+      } else {
+	close (csfd);
+	log_master (L_ERROR,"Forking !!\n");
+	sleep (5);
       }
     }
   }
