@@ -23,7 +23,7 @@
 #define _SLAVE_H_
 
 #include <signal.h>
-#if defined (__OSX)
+#if defined (__OSX) || defined (__FREEBSD)
 #include <sys/syslimits.h>
 #endif
 
