@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_computers.h,v 1.5 2001/09/08 15:35:54 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_computers.h,v 1.6 2001/09/08 21:39:48 jorge Exp $
  */
 
 #ifndef _DRQM_COMPUTERS_H
@@ -18,7 +18,9 @@ struct drqmc_cddi {		/* computer details dialog information */
 
   struct cdd_li {		/* Computer details dialog limits info */
     GtkWidget *lnmaxcpus;	/* Label maximum number of cpus */
+    GtkWidget *enmaxcpus;	/* Entry */
     GtkWidget *lmaxfreeloadcpu;	/* Label maximum free load cpu */
+    GtkWidget *emaxfreeloadcpu;	/* Entry */
   } limits;
 
   GtkWidget *clist;		/* List of tasks */
