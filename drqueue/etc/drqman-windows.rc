@@ -1,0 +1,26 @@
+style "dark" {
+  fg[NORMAL]           = { 0.75, 0.75, 0.68 }
+  fg[PRELIGHT]         = { 0.89, 0.89, 0.84 }
+  fg[ACTIVE]           = { 0.75, 0.75, 0.68 }
+  fg[SELECTED]         = { 0.89, 0.89, 0.84 }
+  fg[INSENSITIVE]      = { 0.48, 0.48, 0.44 }
+  bg[NORMAL]           = { 0.40, 0.40, 0.40 }
+  bg[PRELIGHT]         = { 0.38, 0.38, 0.38 }
+  bg[ACTIVE]           = { 0.25, 0.25, 0.25 }
+  bg[SELECTED]         = { 0.30, 0.30, 0.34 }
+  bg[INSENSITIVE]      = { 0.20, 0.20, 0.20 }
+  base[NORMAL]         = { 0.40, 0.40, 0.37 }
+  base[PRELIGHT]       = { 0.12, 0.12, 0.08 }
+  base[ACTIVE]         = { 0.35, 0.35, 0.30 }
+  base[SELECTED]       = { 0.40, 0.40, 0.30 }
+  base[INSENSITIVE]    = { 0.12, 0.12, 0.08 }
+  text[NORMAL]           = { 0.75, 0.75, 0.68 }
+  text[PRELIGHT]         = { 0.89, 0.89, 0.84 }
+  text[ACTIVE]           = { 0.75, 0.75, 0.68 }
+  text[SELECTED]         = { 0.89, 0.89, 0.84 }
+  text[INSENSITIVE]      = { 0.48, 0.48, 0.44 }
+}
+
+class  "*" style "dark"
+widget "*" style "dark"
+

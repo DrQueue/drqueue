@@ -35,6 +35,8 @@ endif
 
 if ($DRQUEUE_OS == "WINDOWS") then
   set BLOCK=`"$DRQUEUE_BIN/expr.exe" $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
+  set DRQUEUE_SCENE=`"$DRQUEUE_BIN/cygpath.exe" -w $DRQUEUE_SCENE`
+  set DRQUEUE_RD=`"$DRQUEUE_BIN/cygpath.exe" -w $DRQUEUE_RD`
 else
   set BLOCK=`expr $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
 endif
@@ -77,11 +79,13 @@ if ( $? != 0 ) then
 	echo "Requeueing frame..."
 	kill -INT $$
 else
-	# The frame was rendered properly
-	${DRQUEUE_ROOT}/bin/chown_block $RF_OWNER $DRQUEUE_RD/$DRQUEUE_IMAGE $DRQUEUE_FRAME $BLOCK
-	# You may or may not want to comment out the 'exit 0' belown depending on how important
-	# you consider changing the files ownership is.
-	exit 0
+	if ($DRQUEUE_OS != "WINDOWS") then
+	  # The frame was rendered properly
+	  ${DRQUEUE_ROOT}/bin/chown_block $RF_OWNER $DRQUEUE_RD/$DRQUEUE_IMAGE $DRQUEUE_FRAME $BLOCK
+	  # You may or may not want to comment out the 'exit 0' belown depending on how important
+	  # you consider changing the files ownership is.
+	  exit 0
+	endif
 endif
 
 #
