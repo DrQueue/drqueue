@@ -1,4 +1,4 @@
-/* $Id: semaphores.c,v 1.4 2001/07/06 14:10:47 jorge Exp $ */
+/* $Id: semaphores.c,v 1.5 2001/07/06 14:47:14 jorge Exp $ */
 
 #include <sys/sem.h>
 #include <signal.h>
@@ -30,7 +30,7 @@ void semaphore_release (int semid)
   fprintf (stderr,"Unlocking... semval: %i semid: %i\n",semctl (semid,0,GETVAL),semid);
   op.sem_num = 0;
   op.sem_op = 1;
-  op.sem_flg = 0; /*  SEM_UNDO; */
+  op.sem_flg = SEM_UNDO; /*  SEM_UNDO; */
   if (semop(semid,&op,1) == -1) {
     perror ("semaphore_release");
     kill(0,SIGINT);
