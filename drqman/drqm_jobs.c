@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.24 2001/09/04 23:27:50 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.25 2001/09/06 10:19:41 jorge Exp $
  */
 
 #include <string.h>
@@ -35,6 +35,7 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info);
 static gint PopupMenuFrames (GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *info);
 static void SeeFrameLog (GtkWidget *w, struct drqm_jobs_info *info);
 static void jdd_requeue_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
+static void jdd_kill_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
 static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info);
 
 static void NewJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
@@ -1078,9 +1079,14 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info)
   GtkWidget *menu_item;
 
   menu = gtk_menu_new ();
-  menu_item = gtk_menu_item_new_with_label("Set Waiting (requeue)");
+  menu_item = gtk_menu_item_new_with_label("Set Waiting (requeue finished)");
   gtk_menu_append(GTK_MENU(menu),menu_item);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_requeue_frames),info);
+  gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_update),info);
+
+  menu_item = gtk_menu_item_new_with_label("Kill + Wait (requeue running)");
+  gtk_menu_append(GTK_MENU(menu),menu_item);
+  gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_kill_frames),info);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_update),info);
 
   menu_item = gtk_menu_item_new_with_label("Set Finished");
@@ -1118,11 +1124,24 @@ static void jdd_requeue_frames (GtkWidget *button,struct drqm_jobs_info *info_dj
 
   for (;sel;sel = sel->next) {
     frame = (uint32_t) gtk_clist_get_row_data(GTK_CLIST(info_dj->jdd.clist), (gint)sel->data);
-    printf ("Requeueing Frame: %i\n",frame);
     drqm_request_job_frame_waiting (info_dj->jobs[info_dj->ijob].id,frame);
   }
 }
 
+static void jdd_kill_frames (GtkWidget *button,struct drqm_jobs_info *info_dj)
+{
+  GList *sel;
+  uint32_t frame;
+
+  if (!(sel = GTK_CLIST(info_dj->jdd.clist)->selection)) {
+    return;
+  }
+
+  for (;sel;sel = sel->next) {
+    frame = (uint32_t) gtk_clist_get_row_data(GTK_CLIST(info_dj->jdd.clist), (gint)sel->data);
+    drqm_request_job_frame_kill (info_dj->jobs[info_dj->ijob].id,frame);
+  }
+}
 
 static gint PopupMenuFrames (GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *info)
 {
