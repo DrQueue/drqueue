@@ -897,14 +897,6 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
     return;
   }
 
-	if (task.frame == (uint32_t) -1) {
-		// The frame just finished was the cmd_on_finished
-		wdb->job[task.ijob].flags |= JF_COFDONE;
-		semaphore_release(wdb->semid);
-		log_master (L_INFO,"Command on finished executed for job %i",task.ijob);
-		return;
-	}
-
   /* Once we have the task struct we need to update the information */
   /* on the job struct */
   if ((fi = attach_frame_shared_memory(wdb->job[task.ijob].fishmid)) == (struct frame_info *)-1) {

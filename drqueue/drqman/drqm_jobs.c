@@ -751,7 +751,6 @@ static int dnj_submit (struct drqmj_dnji *info)
   if (strlen(job.name) == 0)
     return 0;
   strncpy(job.cmd,gtk_entry_get_text(GTK_ENTRY(info->ecmd)),MAXCMDLEN-1);
-	//	strncpy(job.cmdonfinish,"ls -altr; sleep 30; echo DONE",MAXCMDLEN-1);
   if (strlen(job.cmd) == 0)
     return 0;
   if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->esf)),"%u",&job.frame_start) != 1)
@@ -858,7 +857,6 @@ static int dnj_submit (struct drqmj_dnji *info)
 
   /* Flags */
   job.flags = 0;
-	// job.flags |= JF_CMDONFINISH;
   if (GTK_TOGGLE_BUTTON(info->flags.cbmailnotify)->active) {
     job.flags = job.flags | (JF_MAILNOTIFY);
   }
