@@ -1,4 +1,4 @@
-/* $Id: common.c,v 1.2 2001/09/02 14:16:54 jorge Exp $ */
+/* $Id: common.c,v 1.3 2001/09/05 15:17:38 jorge Exp $ */
 
 #include <stdlib.h>
 
@@ -21,3 +21,12 @@ int common_environment_check (void)
 
   return 1;
 }
+
+void show_version (char **argv)
+{
+  printf ("\nDistributed Rendering Queue\n");
+  printf ("by Triple-e VFX\n\n");
+  printf ("%s version: %s\n",argv[0],VERSION);
+  printf ("\n");
+}
+
