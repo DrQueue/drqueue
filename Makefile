@@ -227,7 +227,7 @@ contrib/windows/Resources/drqueue.res: contrib/windows/Resources/drqueue.rc
 slave: slave.o libdrqueue.a
 	$(CC) -o $@ slave.o libdrqueue.a $(LDFLAGS) #$(UIFLAGS) 
 master: master.o libdrqueue.a contrib/windows/Resources/drqueue.res
-	$(CC) -o $@ master.o libdrqueue.a $(LDFLAGS) #$(UIFLAGS) 
+	$(CC) -o $@ master.o libdrqueue.a $(LDFLAGS) $(UIFLAGS) 
 
 else
 

@@ -101,7 +101,7 @@ namespace ServicesController
 			// 
 			// Drqueue_off
 			// 
-			this.Drqueue_off.Icon = ((System.Drawing.Icon)(resources.GetObject("drqueue_off.Icon")));
+			this.Drqueue_off.Icon = ((System.Drawing.Icon)(resources.GetObject("Drqueue_off.Icon")));
 			this.Drqueue_off.Text = "";
 			// 
 			// button_slave
@@ -143,14 +143,13 @@ namespace ServicesController
 			// 
 			// DrQueue
 			// 
-			this.DrQueue.Icon = ((System.Drawing.Icon)(resources.GetObject("drqueue.Icon")));
-			this.DrQueue.Text = "DrQeue";
+			this.DrQueue.Text = "DrQueue";
 			this.DrQueue.Visible = true;
 			this.DrQueue.MouseDown += new System.Windows.Forms.MouseEventHandler(this.NotifyIcon1MouseDown);
 			// 
 			// Drqueue_on
 			// 
-			this.Drqueue_on.Icon = ((System.Drawing.Icon)(resources.GetObject("drqueue_on.Icon")));
+			this.Drqueue_on.Icon = ((System.Drawing.Icon)(resources.GetObject("Drqueue_on.Icon")));
 			this.Drqueue_on.Text = "";
 			// 
 			// button1
@@ -197,7 +196,6 @@ namespace ServicesController
 			this.Controls.Add(this.button_master);
 			this.Controls.Add(this.button_ipc);
 			this.ForeColor = System.Drawing.Color.White;
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "Form1";
@@ -408,5 +406,6 @@ namespace ServicesController
 		{
 			Kill(SLAVE);
 		}
+		
 	}
 }
