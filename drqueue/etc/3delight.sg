@@ -23,27 +23,27 @@
 #
 
 # Begin Script
-if [ $CUSTOM_CROP ]; then
-	crop_args="-crop $CROP_XMIN $CROP_XMAX $CROP_YMIN $CROP_YMAX"
-fi
+#if [ $CUSTOM_CROP ]; then
+#	crop_args="-crop $CROP_XMIN $CROP_XMAX $CROP_YMIN $CROP_YMAX"
+#fi
 
-if [ $CUSTOM_PROGRESS ]; then
-	progress_args="-progress"
-fi
+#if [ $CUSTOM_PROGRESS ]; then
+#	progress_args="-progress"
+#fi
 
-if [ $DISP_STATS ]; then
-	stats_args="-stats"
-fi
+#if [ $DISP_STATS ]; then
+#	stats_args="-stats"
+#fi
 
-if [ $CUSTOM_BEEP ]; then
-	beep_args="-beeps"
-fi
-
-
-echo "renderdl -frames $DRQUEUE_FRAME $DRQUEUE_FRAME $crop_args $progress_args $stats_args $beep_args $DRQUEUE_SCENE"
+#if [ $CUSTOM_BEEP ]; then
+#	beep_args="-beeps"
+#fi
 
 
-renderdl -frames $DRQUEUE_FRAME $DRQUEUE_FRAME $crop_args $progress_args $stats_args $beep_args $DRQUEUE_SCENE
+echo "renderdl -frames $DRQUEUE_FRAME $DRQUEUE_FRAME $DRQUEUE_SCENE"
+
+
+renderdl -frames $DRQUEUE_FRAME $DRQUEUE_FRAME $DRQUEUE_SCENE
 # This should requeue the frame if failed
 if ( $? != 0 ) then
   echo "Requeueing frame..."
