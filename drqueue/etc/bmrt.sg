@@ -30,30 +30,44 @@ endif
 
 if ( $CUSTOM_CROP ) then
 	set crop_args = "-crop $CROP_XMIN $CROP_XMAX $CROP_YMIN $CROP_YMAX";
+else
+	set crop_args = "";
 endif
 
 if ( $CUSTOM_SAMPLES ) then
 	set sample_args = "-samples $XSAMPLES $YSAMPLES";
+else
+	set sample_args = "";
 endif
 
 if ( $DISP_STATS ) then
 	set stats_args = "-stats";
+else
+	set stats_args = "";
 endif
 
 if ( $VERBOSE ) then
 	set verbose_args = "-v";
+else
+	set verbose_args = "";	
 endif
 
 if ( $CUSTOM_RADIOSITY ) then
 	set radiosity_args="-radio $RADIOSITY_SAMPLES";
+else
+	set radiosity_args="";
 endif
 
 if ( $CUSTOM_RAYSAMPLES ) then
 	set rsamples_args="-rsamples $RAYSAMPLES";
+else
+	set rsamples_args="";
 endif
 
 if ( $CUSTOM_BEEP ) then
 	set beep_args="-beep";
+else
+	set beep_args="";
 endif
 
 
