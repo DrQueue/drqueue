@@ -1,4 +1,4 @@
-/* $Id: drqm_request.c,v 1.22 2001/10/22 14:16:54 jorge Exp $ */
+/* $Id: drqm_request.c,v 1.23 2001/10/24 14:53:17 jorge Exp $ */
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -31,7 +31,7 @@ void drqm_request_joblist (struct drqm_jobs_info *info)
   if (!recv_request (sfd,&req))
     goto end;
 
-  if (req.type == R_A_LISTJOBS) {
+  if (req.type == R_R_LISTJOBS) {
     info->njobs = req.data;
   } else {
     fprintf (stderr,"ERROR: Not appropiate answer to request R_R_LISTJOBS\n");
@@ -86,7 +86,7 @@ void drqm_request_computerlist (struct drqm_computers_info *info)
     goto end;
   }
 
-  if (req.type == R_A_LISTCOMP) {
+  if (req.type == R_R_LISTCOMP) {
     info->ncomputers = req.data;
   } else {
     fprintf (stderr,"ERROR: Not appropiate answer to request R_R_TASKFINI\n");
@@ -200,4 +200,9 @@ void drqm_request_job_limits_nmaxcpus_set (uint32_t jobid, uint16_t nmaxcpus)
 void drqm_request_job_limits_nmaxcpuscomputer_set (uint32_t jobid, uint16_t nmaxcpuscomputer)
 {
   request_job_limits_nmaxcpuscomputer_set (jobid,nmaxcpuscomputer,CLIENT);
+}
+
+void drqm_request_job_priority_update (uint32_t jobid, uint32_t priority)
+{
+  request_job_priority_update (jobid,priority,CLIENT);
 }
