@@ -1,7 +1,8 @@
-/* $Id: computer.c,v 1.5 2001/07/05 15:19:39 jorge Exp $ */
+/* $Id: computer.c,v 1.6 2001/07/06 13:13:21 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <sys/socket.h>
 #include <netdb.h>
 #include <stdio.h>
 #include <string.h>

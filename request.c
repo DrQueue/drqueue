@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.8 2001/07/05 15:19:39 jorge Exp $ */
+/* $Id: request.c,v 1.9 2001/07/06 13:13:21 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -150,6 +150,8 @@ void register_slave (struct computer *computer)
   /* The slave calls this function to register himself on the master */
   struct request req;
   int sfd;
+
+  log_slave_computer (L_DEBUG,"Entering register_slave");
 
   if ((sfd = connect_to_master ()) == -1) {
     log_slave_computer(L_ERROR,drerrno_str());
@@ -304,6 +306,8 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
   int itask;
   int iframe;
   char msg[BUFFERLEN];
+
+  log_master (L_DEBUG,"Entering handle_r_r_availjob");
 
   if (icomp == -1) {
     log_master (L_WARNING,"Not registered computer requesting available job");

@@ -1,4 +1,4 @@
-/* $Id: computer_info.c,v 1.2 2001/05/30 15:11:47 jorge Exp $ */
+/* $Id: computer_info.c,v 1.3 2001/07/06 13:13:21 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -7,6 +7,8 @@
 
 #include "constants.h"
 #include "computer_info.h"
+
+#ifdef __LINUX			/* __LINUX */
 
 void get_hwinfo (struct computer_hwinfo *hwinfo)
 {
@@ -21,8 +23,6 @@ void get_hwinfo (struct computer_hwinfo *hwinfo)
   hwinfo->numproc = get_numproc();
   hwinfo->speedindex = get_speedindex (hwinfo);
 }
-
-#ifdef __LINUX			/* __LINUX */
 
 t_proctype get_proctype (void)
 {
@@ -113,8 +113,39 @@ int get_numproc (void)
   return numproc;
 }
 
-#else
-#error You need to define the OS, or OS defined not supported
+#else 
+# ifdef __IRIX
+void get_hwinfo (struct computer_hwinfo *hwinfo)
+{
+  if (gethostname (hwinfo->name,MAXNAMELEN-1) == -1) {
+    perror ("get_hwinfo: gethostname");
+    exit (1);
+  }
+  hwinfo->arch = ARCH_MIPS;
+  hwinfo->os = OS_IRIX;
+  hwinfo->proctype = get_proctype();
+  hwinfo->procspeed = get_procspeed();
+  hwinfo->numproc = get_numproc();
+  hwinfo->speedindex = get_speedindex (hwinfo);
+}
+
+t_proctype get_proctype (void)
+{
+  return PROCTYPE_MIPSR5000;
+}
+
+int get_procspeed (void)
+{
+  return 200;
+}
+
+int get_numproc (void)
+{
+  return 1;
+}
+# else 
+#  error You need to define the OS, or OS defined not supported
+# endif
 #endif
 
 int get_speedindex (struct computer_hwinfo *hwinfo)

@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.7 2001/07/05 10:53:24 jorge Exp $ */
+/* $Id: communications.c,v 1.8 2001/07/06 13:13:21 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -231,7 +231,7 @@ void send_request (int sfd, struct request *request,int who)
 
   request->data_s = htons (request->data_s);
 
-  if (who == SLAVE)
+  if ((who == SLAVE) || (who == SLAVE_CHANDLER) || (who || SLAVE_LAUNCHER))
     request->slave = 1;
   else
     request->slave = 0;

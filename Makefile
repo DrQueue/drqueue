@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.9 2001/07/04 10:13:59 jorge Exp $
+# $Id: Makefile,v 1.10 2001/07/06 13:13:21 jorge Exp $
 
 CC = gcc
 OBJS_SLAVE = computer_info.o computer_status.o slave.o task.o logger.o communications.o \
@@ -23,7 +23,7 @@ endif
 linux: 
 	make systype=linux all
 irix:
-	make systype=irix all
+	/usr/freeware/bin/gmake systype=irix all
 
 all: slave master sendjob
 
