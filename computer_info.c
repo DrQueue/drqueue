@@ -67,6 +67,7 @@ void report_hwinfo (struct computer_hwinfo *hwinfo)
   printf ("Processor speed:\t%i MHz\n",hwinfo->procspeed);
   printf ("Number of processors:\t%i\n",hwinfo->ncpus);
   printf ("Speed index:\t\t%i\n",hwinfo->speedindex);
+	printf ("Memory:\t\t\t%i Mbytes\n",hwinfo->memory);
 }
 
 char *osstring (t_os os)
