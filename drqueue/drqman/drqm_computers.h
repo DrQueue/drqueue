@@ -31,6 +31,7 @@ struct drqmc_cddi {					 /* computer details dialog information */
   GtkWidget *lname;							/* label name */
   GtkWidget *los;								/* OS */
   GtkWidget *lcpuinfo;					/* cpu info */
+  GtkWidget *lmemory;		// Memory label
   GtkWidget *lloadavg;					/* load average */
   GtkWidget *lntasks;						/* Number of tasks running */
 
