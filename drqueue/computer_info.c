@@ -1,9 +1,12 @@
-/* $Id: computer_info.c,v 1.3 2001/07/06 13:13:21 jorge Exp $ */
+/* $Id: computer_info.c,v 1.4 2001/07/17 10:24:32 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#ifdef __IRIX
+#include <sys/sysmp.h>
+#endif
 
 #include "constants.h"
 #include "computer_info.h"
@@ -141,7 +144,7 @@ int get_procspeed (void)
 
 int get_numproc (void)
 {
-  return 1;
+  return sysmp (MP_NPROCS);
 }
 # else 
 #  error You need to define the OS, or OS defined not supported
