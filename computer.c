@@ -211,8 +211,10 @@ int computer_free (struct computer *computer)
 {
 	computer->used = 0;
 	computer_status_init(&computer->status);
-	if (!computer_pool_free (&computer->limits))
-		return 0;
+	if (!computer_pool_free (&computer->limits)) {
+		// What ?
+	}
+	computer_pool_init (&computer->limits);
 
 	return 1;
 }
@@ -374,6 +376,7 @@ int computer_pool_free (struct computer_limits *cl)
 			return 0;
     }
 	}
+	
 	computer_pool_init (cl);
 
 	return 1;

@@ -625,12 +625,9 @@ int send_string (int sfd, char *str)
 	lensw = htons (len);
 	if (!dr_write (sfd,&lensw,sizeof (len)))
 		return 0;
-	fprintf (stderr,"Send strlen: %u\n",len);
 
 	if (!dr_write (sfd,str,len))
 		return 0;
-
-	fprintf (stderr,"Send str: %s\n",str);
 
 	return 1;
 }
@@ -643,14 +640,10 @@ int recv_string (int sfd, char **str)
 		return 0;
 
 	len = ntohs (len);
-	fprintf (stderr,"Recv strlen: %u\n",len);
-
 
 	*str = (char *) malloc (len);
 	if (!dr_read (sfd,*str,len))
 		return 0;
-
-	fprintf (stderr,"Recv str: %s\n",*str);
 
 	return 1;
 }
@@ -669,6 +662,8 @@ int send_computer_pools (int sfd, struct computer_limits *cl)
 	
 	if (cl->npools) {
 		if ((pool = computer_pool_attach_shared_memory(cl->poolshmid)) == (void*)-1) {
+			//perror ("Attaching");
+			//fprintf (stderr,"ERROR ataching memory\n");
 			return 0;
 		}
 
@@ -696,7 +691,9 @@ int recv_computer_pools (int sfd, struct computer_limits *cl)
 	npools = ntohs (npools);
 	fprintf (stderr,"Recv npools: %u\n",npools);
 
-	computer_pool_free (cl);
+	// WHY ?
+	// but if I use it the master fails to attach shmem
+	//computer_pool_free (cl);
 	for (i=0;i<npools;i++) {
 		if (!dr_read(sfd,&pool,sizeof(pool))) {
 			return 0;
@@ -725,8 +722,8 @@ int recv_computer_limits (int sfd, struct computer_limits *cl)
   /* Autoenable stuff */
   cl->autoenable.last = ntohl (cl->autoenable.last);
 
+	// Pools
 	cl->npools = ntohs (cl->npools);
-
 	if (!recv_computer_pools (sfd,cl)) {
 		return 0;
 	}
@@ -754,6 +751,7 @@ int send_computer_limits (int sfd, struct computer_limits *cl)
     return 0;
   }
 
+	// Pools
 	if (!send_computer_pools(sfd,cl)) {
 		return 0;
 	}

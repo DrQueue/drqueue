@@ -138,11 +138,11 @@ void drqm_request_computerlist (struct drqm_computers_info *info)
 
 		tcomputer = info->computers;
 		for (i=0;i<info->ncomputers;i++) {
-			computer_free(tcomputer);
 			if (!recv_computer (sfd,tcomputer)) {
 				fprintf (stderr,"ERROR: Receiving computer structure (drqm_request_computerlist) [%i]\n",i);
-				exit (1);
+				// exit (1);
 			}
+			computer_pool_init(&tcomputer->limits);
 			tcomputer++;
 		}
 	}
@@ -152,7 +152,11 @@ void drqm_request_computerlist (struct drqm_computers_info *info)
 
 void drqm_clean_computerlist (struct drqm_computers_info *info)
 {
+	int i;
+
   if (info->computers) {
+		for (i=0;i<info->ncomputers;i++)
+			computer_free(&info->computers[i]);
     free (info->computers);
     info->computers = NULL;
   }

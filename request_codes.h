@@ -52,6 +52,7 @@
 #define R_R_JOBDELBLKHOST 28 // Job block host delete
 #define R_R_JOBLSTBLKHOST 29 // Job block host list
 #define R_R_JOBLMS        30 // Job limits memory set
+#define R_R_JOBLPS				31 // Job limits pool set
 
 /* Requests to the slave */
 #define RS_R_KILLTASK           1 /* Request to slave to kill a task */
