@@ -585,9 +585,9 @@ int priority_job_compare (const void *a,const void *b)
   bpt = (struct tpol *)b;
 
   if (apt->pri > bpt->pri)
-    return 1;
-  else if (apt->pri < bpt->pri)
     return -1;
+  else if (apt->pri < bpt->pri)
+    return 1;
   else if (apt->index > bpt->index)
     return 1;
   else if (apt->index < bpt->index)
