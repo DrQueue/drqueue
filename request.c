@@ -1590,6 +1590,9 @@ int request_comp_xfer (uint32_t icomp, struct computer *comp, int who)
   struct request req;
   int sfd;
 
+	// Computer must be freed before receiving
+	computer_free (comp);
+
   if ((sfd = connect_to_master ()) == -1) {
     drerrno = DRE_NOCONNECT;
     return 0;
