@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.53 2003/12/18 04:11:07 jorge Exp $ */
+/* $Id: communications.c,v 1.54 2003/12/20 13:08:35 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -330,7 +330,17 @@ int recv_job (int sfd, struct job *job)
   case KOJ_GENERAL:
   case KOJ_MAYA:
 	case KOJ_BLENDER:
+		break;
 	case KOJ_BMRT:
+		job->koji.bmrt.xmin = ntohl (job->koji.bmrt.xmin);
+		job->koji.bmrt.xmax = ntohl (job->koji.bmrt.xmax);
+		job->koji.bmrt.ymin = ntohl (job->koji.bmrt.ymin);
+		job->koji.bmrt.ymax = ntohl (job->koji.bmrt.ymax);
+		job->koji.bmrt.xsamples = ntohl (job->koji.bmrt.xsamples);
+		job->koji.bmrt.ysamples = ntohl (job->koji.bmrt.ysamples);
+		job->koji.bmrt.radiosity_samples = ntohl (job->koji.bmrt.radiosity_samples);
+		job->koji.bmrt.raysamples = ntohl (job->koji.bmrt.raysamples);
+		break;
 	case KOJ_3DELIGHT:
 	case KOJ_PIXIE:
     break;
@@ -381,7 +391,17 @@ int send_job (int sfd, struct job *job)
   case KOJ_GENERAL:
   case KOJ_MAYA:
 	case KOJ_BLENDER:
+		break;
 	case KOJ_BMRT:
+		bswapped.koji.bmrt.xmin = htonl (bswapped.koji.bmrt.xmin);
+		bswapped.koji.bmrt.xmax = htonl (bswapped.koji.bmrt.xmax);
+		bswapped.koji.bmrt.ymin = htonl (bswapped.koji.bmrt.ymin);
+		bswapped.koji.bmrt.ymax = htonl (bswapped.koji.bmrt.ymax);
+		bswapped.koji.bmrt.xsamples = htonl (bswapped.koji.bmrt.xsamples);
+		bswapped.koji.bmrt.ysamples = htonl (bswapped.koji.bmrt.ysamples);
+		bswapped.koji.bmrt.radiosity_samples = htonl (bswapped.koji.bmrt.radiosity_samples);
+		bswapped.koji.bmrt.raysamples = htonl (bswapped.koji.bmrt.raysamples);
+		break;
 	case KOJ_3DELIGHT:
 	case KOJ_PIXIE:
     break;
