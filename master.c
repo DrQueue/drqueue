@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.16 2001/08/22 10:15:26 jorge Exp $ */
+/* $Id: master.c,v 1.17 2001/08/27 08:15:20 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -283,7 +283,7 @@ void sigalarm_handler (int signal, siginfo_t *info, void *data)
 
 void sigpipe_handler (int signal, siginfo_t *info, void *data)
 {
-  char *msg = "Broken connection while reading or writing";
+  char *msg = "Broken connection while reading or writing (SIGPIPE)";
 
   if (icomp != -1)
     log_master_computer (&wdb->computer[icomp],L_WARNING,msg);
