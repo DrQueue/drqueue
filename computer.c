@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.34 2002/06/20 15:28:48 jorge Exp $ */
+/* $Id: computer.c,v 1.35 2003/12/15 22:18:32 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -274,3 +274,4 @@ void computer_autoenable_check (struct slave_database *sdb)
       }
   }
 }
+
