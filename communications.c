@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.8 2001/07/06 13:13:21 jorge Exp $ */
+/* $Id: communications.c,v 1.9 2001/07/06 15:07:09 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -50,7 +50,7 @@ int accept_socket (int sfd,struct database *wdb,int *index)
   /* the lastconn time of the client if this exists */
   int fd;
   struct sockaddr_in addr;
-  int len;
+  int len = sizeof (struct sockaddr_in);
 
   if ((fd = accept (sfd,(struct sockaddr *)&addr,&len)) != -1) {
     *index = computer_index_addr (wdb,addr.sin_addr);
