@@ -452,6 +452,7 @@ void usage (void)
 	   "\t-f to force continuing if shared memory already exists\n"
 	   "\t-l <loglevel> From 0 to 3 (0=errors,1=warnings,2=info,3=debug).\n\t\tDefaults to 1. Each level logs all the previous levels\n"
 	   "\t-o log on screen instead of on files\n"
+		 "\t-c <config_file> use this config file\n"
 	   "\t-v version information\n"
 	   "\t-h prints this help\n");
 }
