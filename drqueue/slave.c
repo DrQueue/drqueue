@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.49 2001/09/21 14:42:02 jorge Exp $ */
+/* $Id: slave.c,v 1.50 2001/10/04 08:20:47 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -45,7 +45,10 @@ int main (int argc,char *argv[])
   report_hwinfo (&sdb.comp->hwinfo);
 
   register_slave (sdb.comp);
-  update_computer_limits(&sdb.comp->limits);
+  update_computer_limits(&sdb.comp->limits); /* Does not need to be locked because at this point */
+					     /* because there is only one process running. The rest of the time */
+					     /* either we call it locked or we make a copy of the limits while locked */
+					     /* and then we send that copy */
 
   if (fork() == 0) {
     /* Create the listening process */
@@ -67,8 +70,8 @@ int main (int argc,char *argv[])
       }
     } /* WARNING could be in this loop forever if no care is taken !! */
 
-    update_computer_status (sdb.comp); /* sends the computer status to the master */
-
+    update_computer_status (&sdb); /* sends the computer status to the master */
+				/* Does not need to be locked because we lock inside it */
     if (launched) {
       /* Just to have good load values on next loop */
       /* if we don't wait more here, the load won't have */
