@@ -27,6 +27,10 @@
 #include "notebook.h"
 #include "libdrqueue.h"
 
+#include "weasel.xpm"
+
+GdkPixbuf *drqman_icon;
+
 static struct info_drqm info;
 char conf[PATH_MAX];
 
@@ -62,6 +66,10 @@ int main (int argc, char *argv[])
 									 G_CALLBACK(gtk_main_quit), NULL);
   gtk_widget_set_usize(window,200,200);
   info.main_window = window;
+
+	// The icon
+	drqman_icon = gdk_pixbuf_new_from_xpm_data ((const char **)weasel_xpm);
+	gtk_window_set_default_icon (drqman_icon);
 
   main_vbox = gtk_vbox_new(FALSE,1);
   gtk_container_add(GTK_CONTAINER(window),main_vbox);
