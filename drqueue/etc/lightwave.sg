@@ -1,0 +1,51 @@
+#
+# THIS IS A TCSH SCRIPT FILE
+# 
+# Default configuration for maya script generator
+# You can set the environment variables here (csh style)
+
+#
+# For platform dependend environment setting a form like this
+# can be used :
+#
+#
+# if ($DRQUEUE_OS == "LINUX") then
+#    # Environment for Linux
+# else if ($DRQUEUE_OS == "IRIX") then
+#    # Environment for Irix
+# else
+#    # Some error messages
+# endif
+#
+# The same structure can be used with the Render command
+#
+#
+
+if ($DRQUEUE_OS == "WINDOWS") then
+  set BLOCK=`"$DRQUEUE_BIN/expr.exe" $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
+  set DRQUEUE_SCENE=`"$DRQUEUE_BIN/cygpath.exe" -w $DRQUEUE_SCENE`
+  set DRQUEUE_RD=`"$DRQUEUE_BIN/cygpath.exe" -w $DRQUEUE_RD`
+else
+  set BLOCK=`expr $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
+endif
+if ($BLOCK > $DRQUEUE_ENDFRAME) then
+  set BLOCK = $DRQUEUE_ENDFRAME;
+endif
+
+echo lwsn3 -3 -d$DRQUEUE_RD -q$DRQUEUE_SCENE $DRQUEUE_FRAME $BLOCK 1
+lwsn3 -3 -d$DRQUEUE_RD -q$DRQUEUE_SCENE $DRQUEUE_FRAME $BLOCK 1
+
+# This should requeue the frame if failed
+if ( $? != 0 ) then
+  echo "Requeueing frame..."
+  kill -INT $$
+else
+  if ($DRQUEUE_OS != "WINDOWS") then
+    # The frame was rendered properly
+    $DRQUEUE_BIN/chown_block $RF_OWNER $DRQUEUE_RD/$DRQUEUE_IMAGE $DRQUEUE_FRAME $BLOCK 
+  endif
+endif
+
+#
+# Notice that the exit code of the last command is received by DrQueue
+#
