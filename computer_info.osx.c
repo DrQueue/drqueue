@@ -36,7 +36,7 @@ void get_hwinfo (struct computer_hwinfo *hwinfo)
   hwinfo->proctype = PROCTYPE_PPC;
   hwinfo->ncpus = get_numproc();
   hwinfo->speedindex = get_speedindex (hwinfo);
-	len = 8;
+	len = 8; // Hardcoded (?)
 	sysctlbyname ("hw.cpufrequency",&freq,&len,NULL,0);
   hwinfo->procspeed = freq / 10e5;
 }
