@@ -1,4 +1,4 @@
-/* $Id: computer.h,v 1.9 2001/09/01 16:32:28 jorge Exp $ */
+/* $Id: computer.h,v 1.10 2001/09/07 16:42:47 jorge Exp $ */
 
 #ifndef _COMPUTER_H_
 #define _COMPUTER_H_
@@ -9,9 +9,15 @@
 #include "computer_info.h"
 #include "computer_status.h"
 
+struct computer_limits {
+  uint16_t nmaxcpus;		/* Maximum number of cpus running */
+  uint16_t maxfreeloadcpu;	/* Maximum load that a cpu can have to be considered free */
+};
+
 struct computer {
   struct computer_hwinfo hwinfo;
   struct computer_status status;
+  struct computer_limits limits;
   time_t lastconn;		/* Time of last connection to the master */
   unsigned char used;		/* If the record is being used or not */
 };
@@ -26,7 +32,7 @@ int computer_ntasks (struct computer *comp);
 void computer_update_assigned (struct database *wdb,uint32_t ijob,int iframe,int icomp,int itask);
 void computer_init (struct computer *computer);
 int computer_ncomputers_masterdb (struct database *wdb);
-
+void computer_init_limits (struct computer *comp);
 
 
 #endif /* _COMPUTER_H_ */
