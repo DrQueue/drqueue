@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.28 2001/09/06 13:59:13 jorge Exp $ */
+/* $Id: communications.c,v 1.29 2001/09/07 16:39:21 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -507,16 +507,22 @@ int send_task (int sfd, struct task *task)
   return 1;
 }
 
-void send_computer (int sfd, struct computer *computer,int who)
+int send_computer (int sfd, struct computer *computer,int who)
 {
   send_computer_status (sfd,&computer->status,who);
   send_computer_hwinfo (sfd,&computer->hwinfo,who);
+  if (!send_computer_limits (sfd,&computer->limits,who)) {
+    return 0;
+  }
 }
 
-void recv_computer (int sfd, struct computer *computer,int who)
+int recv_computer (int sfd, struct computer *computer,int who)
 {
   recv_computer_status (sfd,&computer->status,who);
   recv_computer_hwinfo (sfd,&computer->hwinfo,who);
+  if (!recv_computer_limits (sfd,&computer->limits,who)) {
+    return 0;
+  }
 }
 
 int recv_frame_info (int sfd, struct frame_info *fi)
@@ -574,4 +580,54 @@ int send_frame_info (int sfd, struct frame_info *fi)
   return 1;
 }
 
+int recv_computer_limits (int sfd, struct computer_limits *cl)
+{
+  int r;
+  int bleft;
+  void *buf;
+
+  buf = cl;
+  bleft = sizeof (struct computer_limits);
+  while ((r = read (sfd,buf,bleft)) < bleft) {
+    bleft -= r;
+    buf += r;
+
+    if ((r == -1) || ((r == 0) && (bleft > 0))) {
+      /* if w is error or if no more bytes are read but they _SHOULD_ be */
+      drerrno = DRE_ERRORRECEIVING;
+      return 0;
+    }
+  }
+  fi->nmaxcpus = ntohs (fi->nmaxcpus);
+  fi->maxfreeloadcpu = ntohs (fi->maxfreeloadcpu);
+
+  return 1;
+}
+
+int send_computer_limits (int sfd, struct computer_limits *cl)
+{
+  struct computer_limits bswapped;
+  int w;
+  int bleft;
+  void *buf = &bswapped;
+  
+  /* We make a copy coz we need to modify the values */
+  memcpy (buf,fi,sizeof(bswapped));
+  /* Prepare for sending */
+  bswapped.nmaxcpus = htons (bswapped.nmaxcpus);
+  bswapped.maxfreeloadcpu = htons (bswapped.maxfreeloadcpu);
+
+  bleft = sizeof (bswapped);
+  while ((w = write(sfd,buf,bleft)) < bleft) {
+    bleft -= w;
+    buf += w;
+    if ((w == -1) || ((w == 0) && (bleft > 0))) {
+      /* if w is error or if no more bytes are written but they _SHOULD_ be */
+      drerrno = DRE_ERRORSENDING;
+      return 0;
+    }
+  }
+
+  return 1;
+}
 
