@@ -1,4 +1,4 @@
-/* $Id: computer_status.c,v 1.12 2001/09/21 14:40:04 jorge Exp $ */
+/* $Id: computer_status.c,v 1.13 2001/10/02 12:38:53 jorge Exp $ */
 
 #include <stdio.h>
 #include <signal.h>
@@ -32,6 +32,8 @@ void get_computer_status (struct computer_status *cstatus)
 
 void computer_status_init (struct computer_status *cstatus)
 {
+  cstatus->loadavg[0]=cstatus->loadavg[1]=cstatus->loadavg[2]=0;
+  cstatus->ntasks = 0;
   task_init_all (cstatus->task);
 }
 
@@ -134,9 +136,4 @@ void report_computer_status (struct computer_status *status)
     }
   }
 }
-
-
-
-
-
 
