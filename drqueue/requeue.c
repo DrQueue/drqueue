@@ -60,6 +60,8 @@ int main (int argc,char *argv[])
     usage ();
     exit (1);
   }
+	
+	set_default_env();
 
   if (!common_environment_check()) {
     fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
