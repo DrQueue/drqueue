@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.67 2001/11/23 15:07:48 jorge Exp $ */
+/* $Id: request.c,v 1.68 2001/11/23 15:28:12 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -231,7 +231,15 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
     log_master (L_ERROR,"Sending request (handle_r_r_register)");
     return -1;
   }
-  
+
+  /* Now send to the computer it's id, it's position on the master */
+  answer.data = (uint32_t) index;
+  if (!send_request (sfd,&answer,MASTER)) {
+    wdb->computer[index].used = 0;
+    semaphore_release(wdb->semid);
+    log_master (L_ERROR,"Sending request (handle_r_r_register)");
+    return -1;
+  }
   
   if (!recv_computer_hwinfo (sfd, &hwinfo)) {
     wdb->computer[index].used = 0;
@@ -243,7 +251,6 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
   memcpy (&wdb->computer[index].hwinfo, &hwinfo, sizeof(hwinfo));
   strncpy(wdb->computer[index].hwinfo.name,name,MAXNAMELEN); /* We substitute the name that the computer sent */
 							     /* with the name that we obtained resolving it's ip */
-  wdb->computer[index].hwinfo.id = index;
 
   semaphore_release(wdb->semid);
 
@@ -326,6 +333,11 @@ void register_slave (struct computer *computer)
   if (req.type == R_R_REGISTER) {
     switch (req.data) {
     case RERR_NOERROR:
+      if (!recv_request (sfd,&req)) {
+	log_slave_computer (L_ERROR,"Receiving request (register_slave)");
+	kill (0,SIGINT);
+      }
+      computer->hwinfo.id = req.data;
       if (!send_computer_hwinfo (sfd,&computer->hwinfo)) {
 	log_slave_computer (L_ERROR,"Sending computer hardware info (register_slave)");
 	kill (0,SIGINT);
