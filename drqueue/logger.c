@@ -1,4 +1,4 @@
-/* $Id: logger.c,v 1.18 2001/09/02 14:16:28 jorge Exp $ */
+/* $Id: logger.c,v 1.19 2001/09/03 10:06:35 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -87,6 +87,9 @@ FILE *log_slave_open_task (struct task *task)
 	return f;
       }
     }
+    perror ("log_slave_open_task");
+    fprintf (stderr,"So... logging on screen.\n");
+    logonscreen = 1;
   }
   
   return f;
@@ -95,7 +98,8 @@ FILE *log_slave_open_task (struct task *task)
 void log_slave_computer (int level, char *msg)
 {
   FILE *f_log;
-  char name[MAXNAMELEN];
+  char name2[MAXNAMELEN];
+  char *name = NULL;		/* To only make a call to gethostname */
   char buf[BUFFERLEN];
   time_t now;
   
@@ -105,6 +109,13 @@ void log_slave_computer (int level, char *msg)
   time (&now);
   strncpy (buf,ctime(&now),BUFFERLEN-1);
   buf[strlen(buf)-1] = '\0';
+
+  if (name == NULL) {
+    if (gethostname(name2,MAXNAMELEN-1) == -1) {
+      strcpy (name2,"UNKNOWN");
+    }
+    name = name2;
+  }
 
   if (!logonscreen) {
     f_log = log_slave_open_computer (name);
