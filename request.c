@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.26 2001/08/27 14:15:14 jorge Exp $ */
+/* $Id: request.c,v 1.27 2001/08/27 15:29:16 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -106,6 +106,7 @@ void handle_request_slave (int sfd,struct slave_database *sdb)
   case RS_R_KILLTASK:
     log_slave_computer (L_DEBUG,"Request kill task");
     handle_rs_r_killtask (sfd,sdb,&request);
+    break;
   default:
     log_slave_computer (L_WARNING,"Unknown request received");
   }
