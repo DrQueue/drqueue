@@ -1,4 +1,4 @@
-/* $Id: computer_status.h,v 1.8 2002/03/01 11:38:07 jorge Exp $ */
+/* $Id: computer_status.h,v 1.9 2004/01/22 17:48:24 jorge Exp $ */
 
 #ifndef _COMPUTER_STATUS_H_
 #define _COMPUTER_STATUS_H_
@@ -9,7 +9,11 @@
 # ifdef __IRIX
 #include <sys/types.h>
 # else
-#  error You need to define the OS, or OS defined not supported
+#  ifdef __OSX
+#   include <stdint.h>
+#  else
+#   error You need to define the OS, or OS defined not supported
+#  endif
 # endif
 #endif
 
