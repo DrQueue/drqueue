@@ -165,7 +165,7 @@ int get_shared_memory (int force)
     perror ("Getting key for shared memory");
     exit (1);
   }
-  
+
   if (force) {
     shmflg = IPC_CREAT|0600;
   } else {
