@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.17 2001/08/28 20:56:55 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.18 2001/08/29 15:27:41 jorge Exp $
  */
 
 #include <string.h>
@@ -8,11 +8,9 @@
 #include <pwd.h>
 #include <sys/types.h>
 
+#include "drqman.h"
 #include "drqm_request.h"
 #include "drqm_jobs.h"
-
-/* Global variable */
-static struct info_drqm_jobs info;
 
 /* Static functions declaration */
 static GtkWidget *CreateJobsList(struct info_drqm_jobs *info);
@@ -54,7 +52,7 @@ static void djhs_bok_pressed (GtkWidget *button, struct info_drqm_jobs *info);
 
 static void ContinueJob (GtkWidget *menu_item, struct info_drqm_jobs *info);
 
-void CreateJobsPage (GtkWidget *notebook)
+void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info)
 {
   /* This function receives the notebook widget to wich the new tab will append */
   GtkWidget *label;
@@ -71,19 +69,19 @@ void CreateJobsPage (GtkWidget *notebook)
   gtk_container_add(GTK_CONTAINER(container),vbox);
 
   /* Clist */
-  clist = CreateJobsList (&info);
+  clist = CreateJobsList (&info->idj);
   gtk_box_pack_start(GTK_BOX(vbox),clist,TRUE,TRUE,2);
   
   /* Button refresh */
-  buttonRefresh = CreateButtonRefresh (&info);
+  buttonRefresh = CreateButtonRefresh (&info->idj);
   gtk_box_pack_end(GTK_BOX(vbox),buttonRefresh,FALSE,FALSE,2);
 
   /* Append the page */
   gtk_notebook_append_page (GTK_NOTEBOOK(notebook), container, label);
 
   /* Put the jobs on the list */
-  drqm_request_joblist (&info);
-  drqm_update_joblist (&info);
+  drqm_request_joblist (&info->idj);
+  drqm_update_joblist (&info->idj);
 
   gtk_widget_show(clist);
   gtk_widget_show(vbox);
@@ -856,7 +854,7 @@ static GtkWidget *CreateFrameInfoClist (void)
 
 static int jdd_update (GtkWidget *w, struct info_drqm_jobs *info)
 {
-  /* This function depends on job->ijob properly set */
+  /* This function depends on info->ijob properly set */
   int nframes;
   struct frame_info *fi;
   char msg[BUFFERLEN];
