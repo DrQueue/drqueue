@@ -1,3 +1,14 @@
+2004-10-13 20:36:03  Rev 765    jorge
+
+	* ChangeLog Revision common.h:
+	  Changes that happened while testing new build_package.sh
+
+2004-10-13 20:32:46  Rev 764    jorge
+
+	* svn-scripts/build_release.sh:
+	  Now packages untar on directory drqueue.<version> instead of drqueue.
+
+
 2004-10-13 20:07:56  Rev 763    jorge
 
 	* bin/drqman:
