@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.13 2001/08/29 15:27:42 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.14 2001/09/03 16:03:44 jorge Exp $
  */
 
 #ifndef _DRQM_JOBS_H_
@@ -34,6 +34,15 @@ struct info_jdd {		/* job details dialog */
   int selected;			/* if a frame is selected */
 };
 
+struct info_msgd {		/* Maya script generator dialog */
+  GtkWidget *dialog;
+  GtkWidget *escene;		/* Entry scene */
+  GtkWidget *fsscene;		/* File selector for the scene */
+  GtkWidget *eproject;		/* Entry project */
+  GtkWidget *fsproject;		/* File selector for the project */
+  GtkWidget *eimage;		/* Entry image name */
+};
+
 struct info_drqm_jobs {
   GtkWidget *clist;		/* main clist */
   gint row, column;		/* selected job */
@@ -44,6 +53,7 @@ struct info_drqm_jobs {
   struct job *jobs;		/* The job list */
   struct info_dnj dnj;		/* dialog new job */
   struct info_jdd jdd;		/* job details dialog */
+  struct info_msgd msgd;	/* Maya script generator dialog */
 };
 
 struct info_drqm;
@@ -52,5 +62,11 @@ void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info);
 void drqm_update_joblist (struct info_drqm_jobs *info);
 
 #endif /* _DRQM_JOBS_H */
+
+
+
+
+
+
 
 
