@@ -73,7 +73,7 @@ void check_tasks (struct computer_status *cstatus, int semid)
 	  cstatus->ntasks++;
 	} else {
 	  /* task is registered but not running */
-	  /* FIXME: this should be logged, because it should never happen */
+		log_slave_task(&cstatus->task[i],L_WARNING,"Check tasks found no task where there should have been one.");
 	  cstatus->task[i].used = 0;
 	}
       } else {
