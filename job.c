@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.10 2001/07/20 08:27:33 jorge Exp $ */
+/* $Id: job.c,v 1.11 2001/07/24 14:15:30 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -310,6 +310,8 @@ void job_update_info (struct database *wdb,uint32_t ijob)
     }
     if (nprocs > 0) {
       wdb->job[ijob].status = JOBSTATUS_ACTIVE;
+    } else {
+      wdb->job[ijob].status = JOBSTATUS_WAITING;
     }
     break;
   case JOBSTATUS_DELETING:
