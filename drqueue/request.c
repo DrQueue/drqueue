@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.23 2001/08/22 09:05:03 jorge Exp $ */
+/* $Id: request.c,v 1.24 2001/08/23 13:23:57 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -403,7 +403,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
   }
 
   if (i==MAXJOBS) {
-    log_master(L_DEBUG,"No available job");
+    log_master_computer(&wdb->computer[icomp],L_DEBUG,"No available job");
     answer.type = R_A_AVAILJOB;
     answer.data_s = RERR_NOAVJOB;
     if (!send_request (sfd,&answer,MASTER)) {
@@ -411,6 +411,8 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
     }
     exit (0);
   } 
+
+  log_master (L_DEBUG,"Available job. Sending request RERR_NOERROR");
 
   /* ijob is now the index to the first available job */
   answer.type = R_A_AVAILJOB;
@@ -421,6 +423,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
     exit (0);
   }
 
+  log_master (L_DEBUG,"Receiving task availability");
   /* Now we receive if there is a task structure available */
   if (!recv_request (sfd,&answer)) {
     log_master(L_WARNING,"Error receiving request (handle_r_r_availjob)");
@@ -471,8 +474,9 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
 
   job_update_info(wdb,ijob);
 
+  log_master_computer (&wdb->computer[icomp],L_DEBUG,"Sending updated task");
   if (!send_task (sfd,&wdb->computer[icomp].status.task[itask])) {
-    log_master_computer (&wdb->computer[icomp],L_ERROR,"Not appropiate answer, expecting task index");
+    log_master_computer (&wdb->computer[icomp],L_ERROR,drerrno_str());
     job_frame_waiting (wdb,ijob,iframe);
     exit (0);
   }    
@@ -546,6 +550,7 @@ int request_job_available (struct slave_database *sdb)
     return 0;
   }
 
+  log_slave_computer (L_DEBUG,"There is an available task. Sending RERR_NOERROR");
   /* We've got an available task */
   req.type = R_A_AVAILJOB;
   req.data_s = RERR_NOERROR;
@@ -554,13 +559,15 @@ int request_job_available (struct slave_database *sdb)
     kill (0,SIGINT);
   }
 
+  log_slave_computer (L_DEBUG,"Sending index to task.");
   /* So then we send the index */
   req.data_s = sdb->itask;
   if (!send_request(sfd,&req,SLAVE)) {
     log_slave_computer (L_ERROR,drerrno_str());
     kill (0,SIGINT);
   }
-
+  
+  log_slave_computer (L_DEBUG,"Receiving the task");
   /* Then we receive the task */
   if (!recv_task(sfd,&ttask)) {
     log_slave_computer (L_ERROR,drerrno_str());
