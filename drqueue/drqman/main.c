@@ -43,7 +43,7 @@ int main (int argc, char *argv[])
   GtkWidget *main_vbox;
   char rc_file[MAXCMDLEN];
 
-	fprintf (stderr,"drqman pid: %i\n",getpid());
+	//	fprintf (stderr,"drqman pid: %i\n",getpid());
 
 	strncpy (conf,DRQMAN_CONF_FILE,PATH_MAX);
 	config_parse(conf);
