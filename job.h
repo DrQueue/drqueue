@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.10 2001/07/20 15:26:39 jorge Exp $ */
+/* $Id: job.h,v 1.11 2001/07/31 13:08:02 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -28,7 +28,6 @@ typedef enum {
 
 typedef enum {
   FS_WAITING,			/* Waiting to be assigned */
-  FS_LOADING,			/* Assigned but not running */
   FS_ASSIGNED,			/* Currently assigned but not finished (so RUNNING) */
   FS_ERROR,			/* Finished with error */
   FS_FINISHED			/* Finished with success */
@@ -56,11 +55,15 @@ struct job {
   time_t est_finish_time;	/* Estimated finish time */
   struct frame_info *frame_info; /* Status of every frame */
   int fishmid;			/* Shared memory id for the frame_info structure */
+  uint32_t priority;		/* Priority */
 };
 
-struct job;
 struct database;
 
+struct tpol {			/* Priority ordered list of jobs */
+  uint32_t index;		/* index to unordered list */
+  uint32_t pri;			/* priority of that job */
+};
 
 int job_index_free (void *pwdb);
 void job_report (struct job *job);
@@ -74,12 +77,14 @@ void job_init (struct job *job);
 void job_delete (struct job *job);
 int job_njobs_masterdb (struct database *wdb);
 void job_update_info (struct database *wdb,uint32_t ijob);
+void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe);
 
 
 int get_frame_shared_memory (int nframes); /* ipc shared memory */
 void *attach_frame_shared_memory (int shmid);
 void detach_frame_shared_memory (struct frame_info *fishp);
 
+int priority_job_compare (const void *a,const void *b);
 
 #endif /* _JOB_H_ */
 
