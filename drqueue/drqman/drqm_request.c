@@ -103,9 +103,6 @@ void drqm_request_computerlist (struct drqm_computers_info *info)
 
   drqm_clean_computerlist (info);
 
-  #ifdef __CYGWIN
-	return; // TODO: fix for cygwin
-  #endif
   if ((sfd = connect_to_master ()) == -1) {
     fprintf(stderr,"%s\n",drerrno_str());
     return;
@@ -145,6 +142,9 @@ void drqm_request_computerlist (struct drqm_computers_info *info)
 			if (!recv_computer (sfd,tcomputer)) {
 				fprintf (stderr,"ERROR: Receiving computer structure (drqm_request_computerlist) [%i]\n",i);
 				fflush(stderr);
+				//tcomputer--;
+				//info->ncomputers--;
+				//i--;
 				exit (1);  // FIXME: should free pool shared memory from other received computers
 			}
 			tcomputer++;

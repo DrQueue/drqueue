@@ -55,7 +55,11 @@ int main (int argc, char *argv[])
   }
 
   gtk_init(&argc,&argv);
+#ifdef __CYGWIN
+  snprintf(rc_file,MAXCMDLEN-1,"%s/drqman-windows.rc",getenv("DRQUEUE_ETC"));
+#else
   snprintf(rc_file,MAXCMDLEN-1,"%s/drqman.rc",getenv("DRQUEUE_ETC"));
+#endif
   gtk_rc_parse(rc_file);
 
   /* Init for button boxes */

@@ -30,10 +30,6 @@
 #include "drqm_common.h"
 #include "drqm_jobs_maya.h"
 
-#ifdef __CYGWIN
-  void cygwin_conv_to_win32_path(const char *path, char *win32_path);
-#endif
-
 static void dnj_koj_frame_maya_renderdir_search (GtkWidget *button, struct drqmj_koji_maya *info);
 static void dnj_koj_frame_maya_renderdir_set (GtkWidget *button, struct drqmj_koji_maya *info);
 static void dnj_koj_frame_maya_script_search (GtkWidget *button, struct drqmj_koji_maya *info);
@@ -233,10 +229,12 @@ static void dnj_koj_frame_maya_renderdir_search (GtkWidget *button, struct drqmj
   dialog = gtk_file_selection_new ("Please select the output directory");
   info->fsrenderdir = dialog;
 
+#ifndef __CYGWIN
   if (strlen(gtk_entry_get_text(GTK_ENTRY(info->erenderdir)))) {
     strncpy (dir,gtk_entry_get_text(GTK_ENTRY(info->erenderdir)),BUFFERLEN-1);
     gtk_file_selection_set_filename (GTK_FILE_SELECTION(dialog),strcat(dir,"/"));
   }
+#endif
 
   gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
 		      "clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_maya_renderdir_set), info);
@@ -258,15 +256,6 @@ static void dnj_koj_frame_maya_renderdir_set (GtkWidget *button, struct drqmj_ko
   
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsrenderdir)),BUFFERLEN-1);
   p = strrchr(buf,'/');
-
-#ifdef __CYGWIN
-  char *win32_path;
-
-  if ((win32_path = malloc(MAXCMDLEN)) == NULL)
-	return;
-  cygwin_conv_to_win32_path(p, win32_path);
-  p = win32_path;
-#endif 
 
   if (p)
     *p = 0;
@@ -307,16 +296,6 @@ static void dnj_koj_frame_maya_scene_set (GtkWidget *button, struct drqmj_koji_m
 /*    p = ( p ) ? p+1 : buf; */
   /* We need the whole scene path */
   p = buf;
-
-#ifdef __CYGWIN
-  char *win32_path;
-
-  if ((win32_path = malloc(MAXCMDLEN)) == NULL)
-	return;
-  cygwin_conv_to_win32_path(p, win32_path);
-  p = win32_path;
-#endif
-
   gtk_entry_set_text (GTK_ENTRY(info->escene),p);
 }
 
@@ -335,11 +314,21 @@ static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_
   mayasgi.res_x = mayasgi.res_y = -1;
   strncpy (mayasgi.format,"",BUFFERLEN-1);
 
+#ifdef __CYGWIN
+  strncpy(mayasgi.scene, conv_to_posix_path(mayasgi.scene), BUFFERLEN-1);
+  strncpy(mayasgi.renderdir, conv_to_posix_path(mayasgi.renderdir), BUFFERLEN-1);
+  strncpy(mayasgi.scriptdir, conv_to_posix_path(mayasgi.scriptdir), BUFFERLEN-1);
+#endif
+
   if ((file = mayasg_create (&mayasgi)) == NULL) {
     fprintf (stderr,"ERROR: %s\n",drerrno_str());
     return;
   } else {
+#ifdef __CYGWIN
+    strncpy(file, conv_to_win32_path(file), BUFFERLEN-1);
+#endif
     gtk_entry_set_text(GTK_ENTRY(info->ecmd),file);
+
   } 
 }
 
@@ -350,9 +339,11 @@ static void dnj_koj_frame_maya_script_search (GtkWidget *button, struct drqmj_ko
   dialog = gtk_file_selection_new ("Please select a script directory");
   info->fsscript = dialog;
 
+#ifndef __CYGWIN
   if (strlen(gtk_entry_get_text(GTK_ENTRY(info->escript)))) {
     gtk_file_selection_set_filename (GTK_FILE_SELECTION(dialog),gtk_entry_get_text(GTK_ENTRY(info->escript)));
   }
+#endif
 
   gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
 		      "clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_maya_script_set), info);

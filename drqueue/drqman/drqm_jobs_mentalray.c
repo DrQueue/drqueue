@@ -217,10 +217,12 @@ static void dnj_koj_frame_mentalray_renderdir_search (GtkWidget *button, struct 
   dialog = gtk_file_selection_new ("Please select the output directory");
   info->fsrenderdir = dialog;
 
+#ifndef __CYGWIN
   if (strlen(gtk_entry_get_text(GTK_ENTRY(info->erenderdir)))) {
     strncpy (dir,gtk_entry_get_text(GTK_ENTRY(info->erenderdir)),BUFFERLEN-1);
     gtk_file_selection_set_filename (GTK_FILE_SELECTION(dialog),strcat(dir,"/"));
   }
+#endif
 
   gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
 		      "clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_mentalray_renderdir_set), info);
@@ -301,6 +303,13 @@ static void dnj_koj_frame_mentalray_bcreate_pressed (GtkWidget *button, struct d
   mentalraysgi.res_x = mentalraysgi.res_y = -1;
   strncpy (mentalraysgi.format,"",BUFFERLEN-1);
 
+#ifdef CYGWIN
+  strncpy(mentalraysgi.scene, conv_to_posix_path(mentalraysgi.scene), BUFFERLEN-1);
+  strncpy(mentalraysgi.renderdir, conv_to_posix_path(mentalraysgi.renderdir), BUFFERLEN-1);
+  strncpy(mentalraysgi.image, conv_to_posix_path(mentalraysgi.image), BUFFERLEN-1);
+  strncpy(mentalraysgi.scriptdir, conv_to_posix_path(mentalraysgi.scriptdir), BUFFERLEN-1);
+#endif
+
   if ((file = mentalraysg_create (&mentalraysgi)) == NULL) {
     fprintf (stderr,"ERROR: %s\n",drerrno_str());
     return;
@@ -316,9 +325,11 @@ static void dnj_koj_frame_mentalray_script_search (GtkWidget *button, struct drq
   dialog = gtk_file_selection_new ("Please select a script directory");
   info->fsscript = dialog;
 
+#ifndef __CYGWIN
   if (strlen(gtk_entry_get_text(GTK_ENTRY(info->escript)))) {
     gtk_file_selection_set_filename (GTK_FILE_SELECTION(dialog),gtk_entry_get_text(GTK_ENTRY(info->escript)));
   }
+#endif
 
   gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
 		      "clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_mentalray_script_set), info);
