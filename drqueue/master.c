@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.11 2001/07/06 15:07:09 jorge Exp $ */
+/* $Id: master.c,v 1.12 2001/07/13 15:44:00 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -12,12 +12,7 @@
 #include <stdlib.h>
 
 #include "master.h"
-#include "database.h"
-#include "logger.h"
-#include "communications.h"
-#include "request.h"
-#include "semaphores.h"
-#include "drerrno.h"
+#include "libdrqueue.h"
 
 struct database *wdb;		/* whole database */
 int sfd;			/* socket file descriptor */
