@@ -382,6 +382,7 @@ int recv_job (int sfd, struct job *job)
   switch (job->koj) {
   case KOJ_GENERAL:
   case KOJ_MAYA:
+  case KOJ_MENTALRAY:
 	case KOJ_BLENDER:
 		break;
 	case KOJ_BMRT:
@@ -442,6 +443,7 @@ int send_job (int sfd, struct job *job)
   switch (bswapped.koj) {
   case KOJ_GENERAL:
   case KOJ_MAYA:
+  case KOJ_MENTALRAY:
 	case KOJ_BLENDER:
 		break;
 	case KOJ_BMRT:

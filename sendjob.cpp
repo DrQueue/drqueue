@@ -78,6 +78,12 @@ int main (int argc,char *argv[])
     		exit (1);
   		}
 			break;
+		case TOJ_MENTALRAY:
+  		if (RegisterMentalrayJobFromFile (infile)) {
+				std::cerr << "Error registering MENTALRAY job from file: " << argv[argc-1] << std::endl;
+    		exit (1);
+  		}
+			break;
 		case TOJ_BLENDER:
   		if (RegisterBlenderJobFromFile (infile)) {
 				std::cerr << "Error registering BLENDER job from file: " << argv[argc-1] << std::endl;
@@ -107,7 +113,7 @@ void usage (void)
 						<< "Valid options:\n"
 						<< "\t-v version information\n"
 						<< "\t-h prints this help\n"
-						<< "\t-t [maya|blender] type of job\n";
+						<< "\t-t [maya|blender|mentalray] type of job\n";
 }
 
 int RegisterMayaJobFromFile (std::ifstream &infile)
@@ -184,6 +190,80 @@ int RegisterMayaJobFromFile (std::ifstream &infile)
   return 0;
 }
 
+int RegisterMentalrayJobFromFile (std::ifstream &infile)
+{
+  // Job variables for the script generator
+  struct job job;
+  struct mentalraysgi mentalraySgi;
+
+  std::string owner;
+  std::string jobName;
+  std::string camera;
+  int frameStart,frameEnd,frameStep;
+  int resX,resY;
+  std::string scenePath;
+  std::string renderDir;
+  std::string fileFormat;
+  std::string image;
+  char *pathToScript;
+
+  getline(infile,owner);
+  getline(infile,jobName);
+  getline(infile,camera);
+  infile >> frameStart;
+  infile >> frameEnd;
+  infile >> frameStep;
+  infile >> resX;
+  infile >> resY;
+  getline(infile,scenePath);	//
+  getline(infile,scenePath);	// Get two times because '>>' leaves the pointer before \n 
+  getline(infile,renderDir);
+  getline(infile,fileFormat);
+  getline(infile,image);
+
+  strncpy(mentalraySgi.file_owner,owner.c_str(),BUFFERLEN-1);
+  strncpy(mentalraySgi.camera,camera.c_str(),BUFFERLEN-1);
+  mentalraySgi.res_x = resX;
+  mentalraySgi.res_y = resY;
+  strncpy(mentalraySgi.scene,scenePath.c_str(),BUFFERLEN-1);
+  strncpy(mentalraySgi.renderdir,renderDir.c_str(),BUFFERLEN-1);
+  strncpy(mentalraySgi.format,fileFormat.c_str(),BUFFERLEN-1);
+  snprintf(mentalraySgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
+  strncpy(mentalraySgi.image,image.c_str(),BUFFERLEN-1);
+
+  if (!(pathToScript = mentalraysg_create(&mentalraySgi))) {
+    std::cerr << "Error creating script file\n";
+    return 1;
+  }
+
+  strncpy (job.name,jobName.c_str(),MAXNAMELEN-1);
+  strncpy (job.cmd,pathToScript,MAXCMDLEN-1);
+  strncpy (job.owner,owner.c_str(),MAXNAMELEN-1);
+  strncpy (job.email,owner.c_str(),MAXNAMELEN-1);
+  job.frame_start = frameStart;
+  job.frame_end = frameEnd;
+  job.frame_step = frameStep;
+  job.priority = 500;
+
+  job.koj = KOJ_MENTALRAY;
+  strncpy (job.koji.mentalray.scene,scenePath.c_str(),BUFFERLEN-1);
+  strncpy (job.koji.mentalray.renderdir,renderDir.c_str(),BUFFERLEN-1);
+  strncpy (job.koji.mentalray.image,"",BUFFERLEN-1);
+  strncpy (job.koji.mentalray.viewcmd,"",BUFFERLEN-1);
+
+  job.limits.os_flags = OSF_LINUX;
+  job.limits.nmaxcpus = (uint16_t)-1;
+  job.limits.nmaxcpuscomputer = (uint16_t)-1;
+	job.limits.memory = 0;
+
+  if (!register_job(&job)) {
+    std::cerr << "Error sending job to the queue\n";
+    return 1;
+  }
+
+  return 0;
+}
+
 int RegisterBlenderJobFromFile (std::ifstream &infile)
 {
   // Job variables for the script generator
@@ -243,6 +323,8 @@ int str2toj (char *str)
 
 	if (strstr(str,"maya") != NULL) {
 		toj = TOJ_MAYA;
+	} else if (strstr(str,"mentalray") != NULL) {
+		toj = TOJ_MENTALRAY;
 	} else if (strstr(str,"blender") != NULL) {
 		toj = TOJ_BLENDER;
 	}

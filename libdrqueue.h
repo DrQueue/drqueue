@@ -39,6 +39,7 @@ extern "C" {
 
 /* Script generators */
 #include "mayasg.h"
+#include "mentalraysg.h"
 #include "blendersg.h"
 #include "bmrtsg.h"
 #include "pixiesg.h"
