@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.64 2001/11/08 09:14:03 jorge Exp $ */
+/* $Id: request.c,v 1.65 2001/11/21 10:16:05 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -195,6 +195,7 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
   semaphore_lock(wdb->semid);	/* I put the lock here so no race condition can appear... */
 
   if (icomp != -1) {
+    semaphore_release(wdb->semid);
     log_master (L_INFO,"Already registered computer requesting registration");
     answer.type = R_R_REGISTER;
     answer.data = RERR_ALREADY;
@@ -205,6 +206,7 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
   }
 
   if ((index = computer_index_free(wdb)) == -1) {
+    semaphore_release(wdb->semid);
     /* No space left on database */
     log_master (L_WARNING,"No space left for computer");
     answer.type = R_R_REGISTER;
@@ -224,15 +226,17 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
   answer.type = R_R_REGISTER;
   answer.data = RERR_NOERROR;
   if (!send_request (sfd,&answer,MASTER)) {
-    log_master (L_ERROR,"Sending request (handle_r_r_register)");
     wdb->computer[index].used = 0;
+    semaphore_release(wdb->semid);
+    log_master (L_ERROR,"Sending request (handle_r_r_register)");
     return -1;
   }
   
   
   if (!recv_computer_hwinfo (sfd, &hwinfo)) {
-    log_master (L_ERROR,"Receiving computer hardware info (handle_r_r_register)");
     wdb->computer[index].used = 0;
+    semaphore_release(wdb->semid);
+    log_master (L_ERROR,"Receiving computer hardware info (handle_r_r_register)");
     return -1;
   }
 
