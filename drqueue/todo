@@ -16,6 +16,8 @@ TO DO:
   they grow.
 * Silent logging, no output at all.
 * Mail notifications
+* On the registration if the computer ip can not be resolved
+  then use the string of the ip address as name.
 
 BUGS:
 ----
