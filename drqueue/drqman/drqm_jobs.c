@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.27 2001/09/06 14:32:39 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.28 2001/09/06 23:03:04 jorge Exp $
  */
 
 #include <string.h>
@@ -37,6 +37,7 @@ static void SeeFrameLog (GtkWidget *w, struct drqm_jobs_info *info);
 static void jdd_requeue_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
 static void jdd_kill_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
 static void jdd_finish_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
+static void jdd_kill_finish_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
 static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info);
 
 static void NewJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
@@ -1098,7 +1099,8 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info)
 
   menu_item = gtk_menu_item_new_with_label("Kill + Finished (skip running)");
   gtk_menu_append(GTK_MENU(menu),menu_item);
-/*    gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(StopJob),info); */
+  gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_kill_finish_frames),info);
+  gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_update),info);
 
   /* Separation bar */
   menu_item = gtk_menu_item_new ();
@@ -1164,6 +1166,21 @@ static void jdd_finish_frames (GtkWidget *button,struct drqm_jobs_info *info_dj)
   }
 }
 
+static void jdd_kill_finish_frames (GtkWidget *button,struct drqm_jobs_info *info_dj)
+{
+  /* Sets the waiting frames as finished */
+  GList *sel;
+  uint32_t frame;
+
+  if (!(sel = GTK_CLIST(info_dj->jdd.clist)->selection)) {
+    return;
+  }
+
+  for (;sel;sel = sel->next) {
+    frame = (uint32_t) gtk_clist_get_row_data(GTK_CLIST(info_dj->jdd.clist), (gint)sel->data);
+    drqm_request_job_frame_kill_finish (info_dj->jobs[info_dj->ijob].id,frame);
+  }
+}
 
 static gint PopupMenuFrames (GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *info)
 {
