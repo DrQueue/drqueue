@@ -128,6 +128,12 @@ struct info_drqm;
 void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info);
 void drqm_update_joblist (struct drqm_jobs_info *info);
 
+void DeleteJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
+void StopJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
+void HStopJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
+void ContinueJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
+
+
 #endif /* _DRQM_JOBS_H */
 
 
