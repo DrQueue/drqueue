@@ -1,4 +1,4 @@
-/* $Id: logger.c,v 1.12 2001/08/22 10:15:24 jorge Exp $ */
+/* $Id: logger.c,v 1.13 2001/08/28 15:34:12 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -270,7 +270,7 @@ int log_dumptask_open (struct task *t)
 	return -1;
       }
       if ((lfd = open (filename, O_CREAT|O_APPEND|O_RDWR, 0664)) == -1) {
-	log_slave_task (t,L_ERROR,"Couldn't file for task log");
+	log_slave_task (t,L_ERROR,"Couldn't open file for task log");
 	return -1;
       }
     }
@@ -283,3 +283,24 @@ int log_dumptask_open (struct task *t)
   return lfd;
 }
 
+int log_dumptask_open_ro (struct task *t)
+{
+  /* Open in read only for clients */
+  int lfd;
+  char filename[BUFFERLEN];
+  char dir[BUFFERLEN];
+  char *basedir;
+
+  if ((basedir = getenv("DRQUEUE_ROOT")) == NULL) {
+    fprintf (stderr,"Environment variable DRQUEUE_ROOT not set. Aborting...\n");
+    exit (1);
+  }
+
+  snprintf(dir,BUFFERLEN-1,"%s/logs/%s",basedir,t->jobname);
+  snprintf(filename,BUFFERLEN-1,"%s/%s.%04i",dir,t->jobname,t->frame);
+  if ((lfd = open (filename,O_RDONLY)) == -1) {
+    return -1;
+  }
+  
+  return lfd;
+}
