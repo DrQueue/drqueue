@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.74 2002/02/27 16:36:35 jorge Exp $ */
+/* $Id: request.c,v 1.75 2002/05/17 16:05:58 jorge Exp $ */
 #include <unistd.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -889,6 +889,7 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
   semaphore_release(wdb->semid);
   
   log_master (L_DEBUG,"Everything right. Calling job_update_info.");
+
   job_update_info(wdb,task.ijob);
 
   log_master (L_DEBUG,"Exiting handle_r_r_taskfini");
