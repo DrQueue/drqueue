@@ -39,6 +39,7 @@ void task_init (struct task *task)
   task->used = 0;
   strcpy(task->jobname,"EMPTY");
   task->ijob = 0;
+	task->icomp = 0;
   strcpy(task->jobcmd,"NONE");
   strcpy(task->owner,"NOBODY");
   task->frame = 0;
@@ -106,6 +107,7 @@ void task_environment_set (struct task *task)
   static char frame_step[BUFFERLEN];
   static char block_size[BUFFERLEN];
   static char ijob[BUFFERLEN];
+  static char icomp[BUFFERLEN];
 
   /* Padded frame number */
   /* TODO: make padding length user defined */
@@ -131,6 +133,9 @@ void task_environment_set (struct task *task)
   /* Job Index */
   snprintf (ijob,BUFFERLEN-1,"DRQUEUE_JOBID=%i",task->ijob);
   putenv (ijob);
+	// Computer Index
+	snprintf (icomp,BUFFERLEN-1,"DRQUEUE_COMPID=%i",task->icomp);
+	putenv (icomp);
 
   /* OS */
 #if defined(__LINUX)
