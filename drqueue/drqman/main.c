@@ -1,5 +1,5 @@
 /* 
- * $Header: /root/cvs/drqueue/drqman/main.c,v 1.4 2001/08/29 15:28:02 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/main.c,v 1.5 2001/09/03 16:03:20 jorge Exp $
  */
 
 #include <gtk/gtk.h>
@@ -14,6 +14,9 @@ int main (int argc, char *argv[])
   GtkWidget *main_vbox;
   
   gtk_init(&argc,&argv);
+
+  /* Init for button boxes */
+  gtk_hbutton_box_set_layout_default (GTK_BUTTONBOX_SPREAD);
 
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(window),"DrQueue Manager");
