@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.21 2001/09/02 14:19:11 jorge Exp $ */
+/* $Id: master.c,v 1.22 2001/09/04 23:24:01 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -242,6 +242,13 @@ void clean_out (int signal, siginfo_t *info, void *data)
   int rc;
   pid_t child_pid;
   int i;
+  struct sigaction ignore;
+
+  /* Ignore new int signals that could arrive during clean up */
+  ignore.sa_handler = SIG_IGN;
+  sigemptyset (&ignore.sa_mask);
+  ignore.sa_flags = 0;
+  sigaction (SIGINT, &ignore, NULL);
 
   kill(0,SIGINT);		/* Kill all the children (Wow, I don't really want to do that...) */
   while ((child_pid = wait (&rc)) != -1) {
