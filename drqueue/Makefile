@@ -1,7 +1,7 @@
-# $Id: Makefile,v 1.43 2004/04/26 16:25:51 jorge Exp $
+# $Id: Makefile,v 1.44 2004/10/06 16:26:53 jorge Exp $
 
 CC = gcc
-CPP = g++-2.95
+CPP = g++
 OBJS_LIBDRQUEUE = computer_info.o computer_status.o task.o logger.o communications.o \
 			computer.o request.o semaphores.o job.o drerrno.o database.o common.o \
 			mayasg.o blendersg.o bmrtsg.o pixiesg.o
