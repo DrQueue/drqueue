@@ -23,8 +23,6 @@ TO DO:
 BUGS:
 ----
 
-* When I set a frame as waiting it must check before if it is finished.
-
 NOTES:
 -----
 
