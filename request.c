@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.31 2001/08/29 13:16:11 jorge Exp $ */
+/* $Id: request.c,v 1.32 2001/08/30 13:16:52 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -80,6 +80,10 @@ void handle_request_master (int sfd,struct database *wdb,int icomp)
   case R_R_JOBXFERFI:
     log_master (L_DEBUG,"Request frame info transfer");
     handle_r_r_jobxferfi (sfd,wdb,icomp,&request);
+    break;
+  case R_R_COMPXFER:
+    log_master (L_DEBUG,"Request computer transfer");
+    handle_r_r_compxfer (sfd,wdb,icomp,&request);
     break;
   default:
     log_master (L_WARNING,"Unknown request");
@@ -1097,7 +1101,7 @@ void handle_r_r_jobxfer (int sfd,struct database *wdb,int icomp,struct request *
   ijob = req->data;
   
   if ((ijob >= MAXJOBS) || !wdb->job[ijob].used) {
-    log_master_computer(&wdb->computer[icomp],L_INFO,"Job asked to be transfered does not exist");
+    log_master (L_INFO,"Job asked to be transfered does not exist");
     req->type = R_A_JOBXFER;
     req->data = RERR_NOREGIS;
     if (!send_request(sfd,req,MASTER))
@@ -1110,7 +1114,7 @@ void handle_r_r_jobxfer (int sfd,struct database *wdb,int icomp,struct request *
   if (!send_request(sfd,req,MASTER))
     return;
 
-  log_master_computer (&wdb->computer[icomp],L_DEBUG,"Sending job");
+  log_master (L_DEBUG,"Sending job");
   send_job (sfd,&wdb->job[ijob],MASTER);
 }
 
@@ -1187,7 +1191,7 @@ void handle_r_r_jobxferfi (int sfd,struct database *wdb,int icomp,struct request
   ijob = req->data;
   
   if ((ijob >= MAXJOBS) || !wdb->job[ijob].used) {
-    log_master_computer(&wdb->computer[icomp],L_INFO,"Job asked to be transfered frame info does not exist");
+    log_master (L_INFO,"Job asked to be transfered frame info does not exist");
     req->type = R_A_JOBXFERFI;
     req->data = RERR_NOREGIS;
     if (!send_request(sfd,req,MASTER))
@@ -1202,10 +1206,10 @@ void handle_r_r_jobxferfi (int sfd,struct database *wdb,int icomp,struct request
   fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
   nframes = job_nframes (&wdb->job[ijob]);
 
-  log_master_computer (&wdb->computer[icomp],L_DEBUG,"Sending frame info");
+  log_master (L_DEBUG,"Sending frame info");
   for (i=0;i<nframes;i++) {
     if (!send_frame_info (sfd,fi)) {
-      log_master_computer(&wdb->computer[icomp],L_ERROR,"Sending frame info");
+      log_master (L_ERROR,"Sending frame info");
       return;
     }
     fi++;
@@ -1214,5 +1218,82 @@ void handle_r_r_jobxferfi (int sfd,struct database *wdb,int icomp,struct request
   detach_frame_shared_memory(fi);
 }
 
+int request_comp_xfer (uint32_t icomp, struct computer *comp, int who)
+{
+  /* This function can be called by anyone */
+  struct request req;
+  int sfd;
+
+  if ((sfd = connect_to_master ()) == -1) {
+    drerrno = DRE_NOCONNECT;
+    return 0;
+  }
+
+  req.type = R_R_COMPXFER;
+  req.data = icomp;
+  
+  if (!send_request (sfd,&req,who)) {
+    close (sfd);
+    return 0;
+  }
+
+  if (!recv_request (sfd,&req)) {
+    close (sfd);
+    return 0;
+  }
+
+  if (req.type == R_A_COMPXFER) {
+    switch (req.data) {
+    case RERR_NOERROR: 
+      /* We continue processing the matter */
+      break;
+    case RERR_NOREGIS:
+      drerrno = DRE_NOTREGISTERED;
+      close (sfd);
+      return 0;
+    default:
+      drerrno = DRE_ANSWERNOTLISTED;
+      close (sfd);
+      return 0;
+    }
+  } else {
+    drerrno = DRE_ANSWERNOTRIGHT;
+    close (sfd);
+    return 0;
+  }
+  
+  recv_computer (sfd,comp,who);
+
+  close (sfd);
+  return 1;
+}
+
+void handle_r_r_compxfer (int sfd,struct database *wdb,int icomp,struct request *req)
+{
+  /* The master handles this type of packages */
+  /* This function is called unlocked */
+  /* This function is called by the master */
+  uint32_t icomp2;		/* The id of the computer asked to be transfered */
+
+  log_master (L_DEBUG,"Entering handle_r_r_compxfer");
+
+  icomp2 = req->data;
+  
+  if ((icomp2 >= MAXCOMPUTERS) || !wdb->computer[icomp2].used) {
+    log_master_computer(&wdb->computer[icomp],L_INFO,"Computer asked to be transfered is not registered");
+    req->type = R_A_COMPXFER;
+    req->data = RERR_NOREGIS;
+    send_request(sfd,req,MASTER);
+    return;
+  }
+
+  req->type = R_A_COMPXFER;
+  req->data = RERR_NOERROR;
+  if (!send_request(sfd,req,MASTER))
+    return;
+
+  log_master (L_DEBUG,"Sending computer");
+  send_computer (sfd,&wdb->computer[icomp2],MASTER);
+}
 
 
