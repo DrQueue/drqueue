@@ -1,4 +1,6 @@
-/* $Id: task.c,v 1.2 2001/05/30 15:11:47 jorge Exp $ */
+/* $Id: task.c,v 1.3 2001/06/05 12:45:36 jorge Exp $ */
+
+#include <stdio.h>
 
 #include "task.h"
 #include "slave.h"
@@ -29,4 +31,37 @@ int task_available (struct slave_database *sdb)
   semaphore_release(sdb->semid);
 
   return r;
+}
+
+void task_report (struct task *task)
+{
+  printf ("Job name:\t%s\n",task->jobname);
+  printf ("Job index:\t%i\n",task->jobindex);
+  printf ("Job command:\t%s\n",task->jobcmd);
+  printf ("Frame:\t\t%i\n",task->frame);
+  printf ("Task pid:\t%i\n",task->pid);
+  printf ("Task status:\t%s\n",task_status_string(task->status));
+}
+
+char *task_status_string (unsigned char status)
+{
+  char *st_string;
+  switch (status) {
+  case TASKSTATUS_LOADING:
+    st_string = "Loading";
+    break;
+  case TASKSTATUS_RUNNING:
+    st_string = "Running";
+    break;
+  case TASKSTATUS_STOPPED:
+    st_string = "Stopped";
+    break;
+  case TASKSTATUS_KILLFRAME:
+    st_string = "Kill frame";
+    break;
+  default:
+    st_string = "UNKNOWN";
+  }
+
+  return st_string;
 }
