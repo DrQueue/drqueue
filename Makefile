@@ -60,7 +60,7 @@ endif
 
 all: base drqman
 
-base: slave master requeue sendjob jobfinfo
+base: slave master requeue sendjob jobfinfo listjobs
 
 install: miniinstall $(systype)_install 
 
@@ -145,7 +145,7 @@ tags:
 	etags *.[ch] drqman/*.[ch]
 
 clean:
-	rm -fR *.o *~ libdrqueue.a slave master sendjob requeue jobfinfo TAGS tmp/* logs/* db/* bin/*.$(systype)
+	rm -fR *.o *~ libdrqueue.a slave master sendjob requeue jobfinfo listjobs TAGS tmp/* logs/* db/* bin/*.$(systype)
 	$(MAKE) -C drqman clean
 
 #actual object make targets
@@ -159,6 +159,9 @@ requeue.o: requeue.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 jobfinfo: jobfinfo.o libdrqueue.a
 jobfinfo.o: jobfinfo.c
+	$(CC) -c $(CFLAGS) -o $@ $<
+listjobs: listjobs.o libdrqueue.a
+listjobs.o: listjobs.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 sendjob: sendjob.o libdrqueue.a

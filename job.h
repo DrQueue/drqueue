@@ -166,7 +166,6 @@ struct job {
   int fishmid;			/* Shared memory id for the frame_info structure */
 
 	// Blocked hosts
-	struct blocked_host *blocked_host;
 	int	bhshmid;  // Shared memory id for the blocked_host structure
 	uint16_t nblocked; // Number of blocked hosts
 
