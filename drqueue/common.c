@@ -47,6 +47,7 @@ int common_environment_check (void)
     return 0;
   }
 
+#ifndef IS_MASTER
   snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_TMP"));
   if (stat (dir_str,&s_stat) == -1) {
     drerrno = DRE_NOTMPDIR;
@@ -62,7 +63,7 @@ int common_environment_check (void)
     }
   }
 #endif
-
+#endif
   snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_DB"));
   if (stat (dir_str,&s_stat) == -1) {
     drerrno = DRE_NODBDIR;
