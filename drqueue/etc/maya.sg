@@ -1,4 +1,6 @@
-
+#
+# THIS IS A TCSH SCRIPT FILE
+# 
 # Default configuration for maya script generator
 # You can set the environment variables here (csh style)
 # setupenv -ver 4.0 maya
@@ -16,11 +18,43 @@
 #    # Some error messages
 # endif
 #
-#
-#
 # The same structure can be used with the Render command
+#
+#
 
-Render -s $FRAME -e $FRAME -rd $RD -p $IMAGE $SCENE
+if ($?IMAGE) then
+  set CIMAGE = "-p $IMAGE"
+else
+  set CIMAGE = ""
+endif
+
+if ($?CAMERA) then
+  set CAMERA = "-cam $CAMERA"
+else
+  set CAMERA = ""
+endif
+
+if ($?RESX) then
+  set RESX = "-x $RESX"
+else
+  set RESX = ""
+endif
+
+if ($?RESY) then
+  set RESY = "-y $RESY"
+else
+  set RESY = ""
+endif
+
+if ($?FFORMAT) then
+  set FFORMAT = "-of $FFORMAT"
+else
+  set FFORMAT = ""
+endif
+
+echo Render -s $FRAME -e $FRAME $RESX $RESY -rd $RD $CIMAGE $CAMERA $SCENE
+
+Render -s $FRAME -e $FRAME $RESX $RESY $FFORMAT -rd $RD $CIMAGE $CAMERA $SCENE
 
 # This should requeue the frame if failed
 if ( $? != 0 ) then

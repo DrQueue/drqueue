@@ -1,4 +1,4 @@
-/* $Id: request.h,v 1.31 2002/02/26 15:52:05 jorge Exp $ */
+/* $Id: request.h,v 1.32 2002/09/22 19:10:24 jorge Exp $ */
 /* The request structure is not just used for the requests themselves */
 /* but also for the answers to the requests */
 
@@ -20,6 +20,11 @@
 #include "request_errors.h"
 #include "request_codes.h"
 #include "slave.h"
+
+
+#ifdef __CPLUSPLUS
+extern "C" {
+#endif 
 
 struct request {
   unsigned char type;		/* Kind of request */
@@ -93,6 +98,10 @@ void handle_rs_r_killtask (int sfd,struct slave_database *sdb,struct request *re
 void handle_rs_r_setnmaxcpus (int sfd,struct slave_database *sdb,struct request *req);
 void handle_rs_r_setmaxfreeloadcpu (int sfd,struct slave_database *sdb,struct request *req);
 void handle_rs_r_setautoenable (int sfd,struct slave_database *sdb,struct request *req);
+
+#ifdef __CPLUSPLUS
+}
+#endif 
 
 #endif /* _REQUEST_H_ */
 
