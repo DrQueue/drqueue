@@ -5,6 +5,8 @@ TO DO:
 * Priority support for jobs				[DONE]
 * Check frames registered as running if running really	[DONE]
 * Process output logging				[DONE]
+* Checks at the beginning of every program for the 
+  environment variables and directories.
 * Names of computers instead of id numbers
 * limit structures for jobs and computers
 * Master database saved and reloaded from disk
