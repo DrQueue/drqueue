@@ -1,4 +1,4 @@
-/* $Id: drqm_request.c,v 1.18 2001/09/11 12:52:54 jorge Exp $ */
+/* $Id: drqm_request.c,v 1.19 2001/10/02 12:41:22 jorge Exp $ */
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -100,7 +100,11 @@ void drqm_request_computerlist (struct drqm_computers_info *info)
   }
   tcomputer = info->computers;
   for (i=0;i<info->ncomputers;i++) {
-    recv_computer (sfd,tcomputer,CLIENT);
+    computer_init(tcomputer);
+    if (!recv_computer (sfd,tcomputer,CLIENT)) {
+      fprintf (stderr,"ERROR: Receiving computer structure\n");
+      exit (1);
+    }
     tcomputer++;
   }
 

@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_computers.c,v 1.18 2001/09/25 09:29:38 jorge Exp $
+ * $Id: drqm_computers.c,v 1.19 2001/10/02 12:41:21 jorge Exp $
  */
 
 #include <stdlib.h>
@@ -373,6 +373,8 @@ static GtkWidget *CreateTasksClist (void)
   gtk_clist_set_column_width (GTK_CLIST(clist),7,180);
   gtk_clist_set_column_width (GTK_CLIST(clist),8,180);
 
+  gtk_clist_set_selection_mode(GTK_CLIST(clist),GTK_SELECTION_EXTENDED);
+
   gtk_widget_show(clist);
 
   return (clist);
@@ -435,7 +437,7 @@ static int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
   row = 0;
   for (i=0; i < MAXTASKS; i++) {
     if (info->computers[info->icomp].status.task[i].used) {
-      snprintf (buff[0],BUFFERLEN-1,"%i",i);
+      snprintf (buff[0],BUFFERLEN-1,"%i",info->computers[info->icomp].status.task[i].itask);
       snprintf (buff[1],BUFFERLEN-1,"%s",
 		task_status_string(info->computers[info->icomp].status.task[i].status));
       snprintf (buff[2],BUFFERLEN-1,"%s",info->computers[info->icomp].status.task[i].jobname);
@@ -448,7 +450,8 @@ static int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
       gtk_clist_append(GTK_CLIST(info->cdd.clist),buff);
       
       /* Row data */
-      gtk_clist_set_row_data (GTK_CLIST(info->cdd.clist),row,(gpointer)i);
+      gtk_clist_set_row_data (GTK_CLIST(info->cdd.clist),row,
+			      (gpointer)(uint32_t)info->computers[info->icomp].status.task[i].itask);
       row++;
     }
   }
@@ -630,16 +633,17 @@ static void KillTask (GtkWidget *menu_item, struct drqm_computers_info *info)
 
 static void dtk_bok_pressed (GtkWidget *button,struct drqm_computers_info *info)
 {
+  /* Kill the tasks */
   /* Requeues the finished frames, sets them as waiting again */
   GList *sel;
-  uint32_t itask;
+  uint16_t itask;
 
   if (!(sel = GTK_CLIST(info->cdd.clist)->selection)) {
     return;
   }
 
   for (;sel;sel = sel->next) {
-    itask = (uint32_t) gtk_clist_get_row_data(GTK_CLIST(info->cdd.clist), (gint)sel->data);
+    itask = (uint16_t)(uint32_t) gtk_clist_get_row_data(GTK_CLIST(info->cdd.clist),(gint)sel->data);
     drqm_request_slave_task_kill (info->computers[info->icomp].hwinfo.name,itask);
 /*      printf ("Killing task: %i on computer: %s\n",itask,info->computers[info->icomp].hwinfo.name); */
   }
