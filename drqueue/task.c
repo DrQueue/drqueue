@@ -1,4 +1,4 @@
-/* $Id: task.c,v 1.9 2001/10/02 12:40:46 jorge Exp $ */
+/* $Id: task.c,v 1.10 2002/03/01 09:36:51 jorge Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -80,8 +80,9 @@ char *task_status_string (unsigned char status)
 
 void task_environment_set (struct task *task)
 {
-  char padframe[BUFFERLEN];
-  char frame[BUFFERLEN];
+  static char padframe[BUFFERLEN];
+  static char frame[BUFFERLEN];
+  static char owner[BUFFERLEN];
 
   /* Padded frame number */
   snprintf (padframe,BUFFERLEN,"PADFRAME=%04i",task->frame);
@@ -89,6 +90,9 @@ void task_environment_set (struct task *task)
   /* Frame number */
   snprintf (frame,BUFFERLEN,"FRAME=%i",task->frame);
   putenv (frame);
+  /* Owner of the job */
+  snprintf (owner,BUFFERLEN-1,"OWNER=%s",task->owner);
+  putenv (owner);
 
   /* OS */
 #ifdef __LINUX
