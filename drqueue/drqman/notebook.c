@@ -1,11 +1,12 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/notebook.c,v 1.5 2001/11/08 11:10:24 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/notebook.c,v 1.6 2001/11/14 16:12:12 jorge Exp $
  */
 
 #include <gtk/gtk.h>
 #include "notebook.h"
 #include "drqm_jobs.h"
 #include "drqm_computers.h"
+#include "drqm_info.h"
 
 void CreateNotebook (GtkWidget *window,GtkWidget *vbox,struct info_drqm *info)
 {
