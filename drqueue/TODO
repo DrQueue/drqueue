@@ -10,7 +10,6 @@ TO DO:
 * User defined shell for script generators
 * Renice options
 * STEPFRAME included in all .sg files
-* Autoenable flag. For 0.52
 * Computer limits renderer. 0.52
 * Jobs can have a list of denied hosts where they won't render. 0.54
 * Slave pools. 0.60
