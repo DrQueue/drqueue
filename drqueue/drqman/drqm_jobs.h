@@ -16,37 +16,23 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-/*
- * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.34 2004/10/06 16:16:57 jorge Exp $
- */
+//
+// $Id$
+//
 
 #ifndef _DRQM_JOBS_H_
 #define _DRQM_JOBS_H_
 
 #include <gtk/gtk.h>
 #include "libdrqueue.h"
+#include "drqm_jobs_common.h"
+#include "drqm_jobs_jdd.h"
+
+// Script generators
 #include "drqm_jobs_maya.h"
 #include "drqm_jobs_blender.h"
 #include "drqm_jobs_bmrt.h"
 #include "drqm_jobs_pixie.h"
-
-struct drqmj_sesframes {
-  GtkWidget *eframe_start;
-  GtkWidget *eframe_end;
-  GtkWidget *eframe_step;
-	GtkWidget *eblock_size;
-};
-
-struct drqmj_limits {
-  GtkWidget *enmaxcpus;		/* Entries */
-  GtkWidget *enmaxcpuscomputer;
-  GtkWidget *lnmaxcpus;		/* Labels*/
-  GtkWidget *lnmaxcpuscomputer;
-  GtkWidget *cb_irix;		/* Check buttons */
-  GtkWidget *cb_linux;
-	GtkWidget *cb_osx;
-	GtkWidget *cb_freebsd;
-};
 
 struct drqmj_flags {
   GtkWidget *cbmailnotify;			/* Check button */
@@ -75,40 +61,6 @@ struct drqmj_dnji {							/* dialog new job info */
   struct drqmj_koji_pixie koji_pixie; /* koj info for pixie */
   struct drqmj_limits limits;		/* limits info */
   struct drqmj_flags flags;			/* flags info */
-};
-
-struct drqmj_jddi {							/* job details dialog info*/
-  GtkWidget *dialog;						/* Main dialog */
-  GtkWidget *lname;							/* label name */
-  GtkWidget *lowner;						/* label owner */
-  GtkWidget *lstatus;						/* label status */
-  GtkWidget *lcmd;							/* label command */
-  GtkWidget *lstartend;					/* start and end frames */
-	GtkWidget *lblock_size;				/* label block_size */
-  GtkWidget *lpri;							/* priority */
-  GtkWidget *cpri;							/* Combo */
-  GtkWidget *epri;							/* entry priority when changing */
-  GtkWidget *lfrldf;						/* frames left, done and failed */
-	GtkWidget *lbs;								/* block size */
-  GtkWidget *lavgt;							/* average time per frame */
-  GtkWidget *lestf;							/* estimated finish time */
-
-	// Frames
-  GtkWidget *clist;							/* frame info clist */
-  GtkWidget *menu;							/* Popup menu */
-	GtkWidget *swindow;						// Scrolled window so get can get the adjustments later
-
-	// Blocked hosts
-	GtkWidget *menu_bh;						// Blocked hosts menu
-	GtkWidget *clist_bh;					// Blocked hosts clist
-	GtkWidget *entry_bh;					// Entry to add a blocked host
-
-  gint row,column;							/* selected frame */
-  int selected;									/* if a frame is selected */
-  struct job job;								/* The struct of the selected job */
-  struct drqmj_limits limits;		/* Limits info */
-  struct drqmj_sesframes sesframes;	/* Info about start, end, step frames */
-	struct drqm_jobs_info *oldinfo; // Pointer to the previous info, so we can update the joblist
 };
 
 struct drqm_jobs_info {

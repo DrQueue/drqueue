@@ -17,7 +17,48 @@
 // USA
 // 
 //
-// $Id: drqm_jobs.c 851 2004-10-19 11:08:56Z jorge $
+// $Id$
 //
 
+#ifndef _DRQM_JOBS_JDD_H_
+#define _DRQM_JOBS_JDD_H_
+
+#include "drqm_jobs_common.h"
+
+struct drqmj_jddi {							/* job details dialog info*/
+  GtkWidget *dialog;						/* Main dialog */
+  GtkWidget *lname;							/* label name */
+  GtkWidget *lowner;						/* label owner */
+  GtkWidget *lstatus;						/* label status */
+  GtkWidget *lcmd;							/* label command */
+  GtkWidget *lstartend;					/* start and end frames */
+	GtkWidget *lblock_size;				/* label block_size */
+  GtkWidget *lpri;							/* priority */
+  GtkWidget *cpri;							/* Combo */
+  GtkWidget *epri;							/* entry priority when changing */
+  GtkWidget *lfrldf;						/* frames left, done and failed */
+	GtkWidget *lbs;								/* block size */
+  GtkWidget *lavgt;							/* average time per frame */
+  GtkWidget *lestf;							/* estimated finish time */
+
+	// Frames
+  GtkWidget *clist;							/* frame info clist */
+  GtkWidget *menu;							/* Popup menu */
+	GtkWidget *swindow;						// Scrolled window so get can get the adjustments later
+
+	// Blocked hosts
+	GtkWidget *menu_bh;						// Blocked hosts menu
+	GtkWidget *clist_bh;					// Blocked hosts clist
+	GtkWidget *entry_bh;					// Entry to add a blocked host
+
+  gint row,column;							/* selected frame */
+  int selected;									/* if a frame is selected */
+  struct job job;								/* The struct of the selected job */
+  struct drqmj_limits limits;		/* Limits info */
+  struct drqmj_sesframes sesframes;	/* Info about start, end, step frames */
+	struct drqm_jobs_info *oldinfo; // Pointer to the previous info, so we can update the joblist
+};
+
 void JobDetails(GtkWidget *menu_item, struct drqm_jobs_info *info);
+
+#endif
