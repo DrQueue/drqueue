@@ -367,6 +367,9 @@ int recv_job (int sfd, struct job *job)
   job->nprocs = ntohs (job->nprocs);
   job->status = ntohs (job->status);
 
+	job->fishmid = -1;
+	job->bhshmid = -1;
+
   /* Koj Stuff */
   job->koj = ntohs (job->koj);
   switch (job->koj) {
@@ -418,8 +421,6 @@ int send_job (int sfd, struct job *job)
 {
   /* This function _sets_ frame_info = NULL before sending */
   struct job bswapped;
-  int w;
-  int bleft;
   void *buf = &bswapped;
   
   /* We make a copy coz we need to modify the values */
@@ -471,22 +472,9 @@ int send_job (int sfd, struct job *job)
   bswapped.limits.nmaxcpuscomputer = htons (bswapped.limits.nmaxcpuscomputer);
   bswapped.limits.os_flags = htons (bswapped.limits.os_flags);
 
-  bleft = sizeof (bswapped);
-  while ((w = write(sfd,buf,bleft)) < bleft) {
-    bleft -= w;
-    buf += w;
-    if ((w == -1) || ((w == 0) && (bleft > 0))) {
-      /* if w is error or if no more bytes are written but they _SHOULD_ be */
-      drerrno = DRE_ERRORWRITING;
-      return 0;
-    }
-#ifdef COMM_REPORT
-    bsent += w;
-#endif
-  }
-#ifdef COMM_REPORT
-  bsent += w;
-#endif
+  if (!dr_write (sfd,buf,sizeof(bswapped))) {
+		return 0;
+	}
   
   return 1;
 }
@@ -739,6 +727,24 @@ int recv_autoenable (int sfd, struct autoenable *ae)
   ae->last = ntohl (ae->last);
 
   return 1;
+}
+
+int send_blocked_host (int sfd, struct blocked_host *bh)
+{
+	if (!dr_write(sfd,bh,sizeof (struct blocked_host))) {
+		return 0;
+	}
+
+	return 1;
+}
+
+int recv_blocked_host (int sfd, struct blocked_host *bh)
+{
+	if (!dr_read (sfd,bh,sizeof (struct blocked_host))) {
+		return 0;
+	}
+
+	return 1;
 }
 
 int dr_read (int fd, void *buf, uint32_t len)

@@ -25,20 +25,14 @@
 
 #ifdef __LINUX
 #include <stdint.h>
+#elif defined (__IRIX)
+#include <sys/types.h>
+#elif defined (__OSX)
+#include <stdint.h>
+#elif defined (__FREEBSD)
+#include <stdint.h>
 #else
-# ifdef __IRIX
-#  include <sys/types.h>
-# else
-#  ifdef __OSX
-#   include <stdint.h>
-#  else
-#   ifdef __FREEBSD
-#    include <stdint.h>
-#   else
-#    error You need to define the OS, or OS defined not supported
-#   endif
-#  endif
-# endif
+#error You need to define the OS, or OS defined not supported
 #endif
 
 #include "job.h"
@@ -88,6 +82,7 @@ void handle_r_r_joblnmccs (int sfd,struct database *wdb,int icomp,struct request
 void handle_r_r_jobpriup (int sfd,struct database *wdb,int icomp,struct request *req);
 void handle_r_r_jobfinfo (int sfd,struct database *wdb,int icomp,struct request *req);
 void handle_r_r_jobfrstrqd (int sfd,struct database *wdb,int icomp,struct request *req);
+void handle_r_r_jobblkhost (int sfd,struct database *wdb,int icomp,struct request *req);
 
 /* sent TO MASTER */
 void update_computer_status (struct slave_database *database); /* The slave calls this function to update the */

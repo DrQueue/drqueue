@@ -61,6 +61,11 @@ struct frame_info {
 // Frame Flags
 #define FF_REQUEUE	(1<<0)	// Frame has to be requeued when finished.
 
+// BLOCKED HOSTS SECTION
+struct blocked_host {
+	char name[MAXNAMELEN];
+};
+
 /* LIMITS SECTION */
 struct job_limits {
   uint16_t nmaxcpus;		/* Maximum number of cpus running the job */
@@ -160,6 +165,11 @@ struct job {
   struct frame_info *frame_info; /* Status of every frame */
   int fishmid;			/* Shared memory id for the frame_info structure */
 
+	// Blocked hosts
+	struct blocked_host *blocked_host;
+	int	bhshmid;  // Shared memory id for the blocked_host structure
+	uint16_t nblocked; // Number of blocked hosts
+
   uint32_t flags;		/* Job flags */
 
   struct job_limits limits;
@@ -209,6 +219,11 @@ void job_logs_remove (struct job *job);
 int get_frame_shared_memory (int nframes); /* ipc shared memory */
 void *attach_frame_shared_memory (int shmid);
 void detach_frame_shared_memory (struct frame_info *fishp);
+
+// Blocked hosts
+int get_blocked_host_shared_memory (int nframes); /* ipc shared memory */
+void *attach_blocked_host_shared_memory (int shmid);
+void detach_blocked_host_shared_memory (struct blocked_host *bhshp);
 
 int priority_job_compare (const void *a,const void *b);
 

@@ -48,7 +48,6 @@ void database_init (struct database *wdb)
 #ifdef COMM_REPORT
   wdb->bsent = wdb->brecv = 0;
 #endif
-
 }
 
 int database_load (struct database *wdb)
@@ -100,22 +99,22 @@ int database_load (struct database *wdb)
     if (wdb->job[c].used) {
       nframes = job_nframes (&wdb->job[c]);
       if ((wdb->job[c].fishmid = get_frame_shared_memory (nframes)) == -1) {
-	drerrno = DRE_GETSHMEM;
-	close (fd);
-	return 0;
+				drerrno = DRE_GETSHMEM;
+				close (fd);
+				return 0;
       }
       if ((fi = attach_frame_shared_memory(wdb->job[c].fishmid)) == (void *)-1) {
-	drerrno = DRE_ATTACHSHMEM;
-	close (fd);
-	return 0;
+				drerrno = DRE_ATTACHSHMEM;
+				close (fd);
+				return 0;
       }
       for (d=0;d<nframes;d++) {
-	if (!recv_frame_info (fd,&fi[d])) {
-	  /* FIXME : If there is an error we should FREE the allocated shared memory */
-	  drerrno = DRE_ERRORREADING;
-	  close (fd);
-	  return 0;
-	}
+				if (!recv_frame_info (fd,&fi[d])) {
+					/* FIXME : If there is an error we should FREE the allocated shared memory */
+					drerrno = DRE_ERRORREADING;
+					close (fd);
+					return 0;
+				}
       }
       detach_frame_shared_memory(fi);
     }
