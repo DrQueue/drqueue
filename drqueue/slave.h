@@ -1,4 +1,4 @@
-/* $Id: slave.h,v 1.15 2004/01/07 21:50:21 jorge Exp $ */
+/* $Id$ */
 
 #ifndef _SLAVE_H_
 #define _SLAVE_H_
@@ -37,6 +37,7 @@ void sigalarm_handler (int signal, siginfo_t *info, void *data);
 void sigpipe_handler (int signal, siginfo_t *info, void *data);
 
 void slave_listening_process (struct slave_database *sdb);
+void slave_consistency_process (struct slave_database *sdb);
 void launch_task (struct slave_database *sdb);
 
 int get_shared_memory_slave (int force);

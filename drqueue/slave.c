@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.65 2004/04/26 16:25:51 jorge Exp $ */
+/* $Id$ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -74,6 +74,14 @@ int main (int argc,char *argv[])
     slave_listening_process (&sdb);
     exit (0);
   }
+
+	if (fork() == 0) {
+		// Create the consistency checks process
+		// Signal are treated the same way as the listening process
+		set_signal_handlers_child_listening ();
+		slave_consistency_process (&sdb);
+		exit (0);
+	}
 
   while (1) {
     get_computer_status (&sdb.comp->status,sdb.semid);
@@ -328,6 +336,24 @@ void set_signal_handlers_task_exec (void)
 #else
   sigaction (SIGCLD, &action_dfl, NULL);
 #endif
+}
+
+void slave_consistency_process (struct slave_database *sdb)
+{
+	int i;
+
+	while (1) {
+		for (i=0;i<MAXTASKS;i++) {
+			if ((sdb->comp->status.task[i].used) && (kill(sdb->comp->status.task[i].pid,0) == -1)) {
+				// There is process registered as running, but not running.
+				semaphore_lock(sdb->semid);
+				sdb->comp->status.task[i].used = 0;
+				semaphore_release(sdb->semid);
+				log_slave_computer(L_WARNING,"Process registered as running was not running. Removed.");
+			}
+		}
+		sleep (SLAVEDELAY);
+	}
 }
 
 void slave_listening_process (struct slave_database *sdb)
