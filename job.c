@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.27 2001/09/05 12:56:08 jorge Exp $ */
+/* $Id: job.c,v 1.28 2001/09/16 15:36:16 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -542,3 +542,83 @@ int job_index_correct_master (struct database *wdb,uint32_t ijob)
   return 1;
 }
 
+void job_environment_set (struct job *job, uint32_t iframe)
+{
+  char msg[BUFFERLEN];
+  uint32_t frame = job_frame_index_to_number (job,iframe);
+
+#ifdef __LINUX
+  /* Padded frame number */
+  snprintf (msg,BUFFERLEN-1,"%04i",frame);
+  if (setenv("PADFRAME",msg,1) == -1) {
+    fprintf (stderr,"ERROR: job_environment_set\n");
+    kill(0,SIGINT);
+  }
+  /* Frame number */
+  snprintf (msg,BUFFERLEN-1,"%i",frame);
+  if (setenv("FRAME",msg,1) == -1) {
+    fprintf (stderr,"ERROR: job_environment_set\n");
+    kill(0,SIGINT);
+  }
+  /* Frame index */
+  snprintf (msg,BUFFERLEN-1,"%i",iframe);
+  if (setenv("IFRAME",msg,1) == -1) {
+    fprintf (stderr,"ERROR: job_environment_set\n");
+    kill(0,SIGINT);
+  }
+  /* OS */
+  if (setenv("DRQUEUE_OS","LINUX",1) == -1) {
+    fprintf (stderr,"ERROR: job_environment_set\n");
+    kill(0,SIGINT);
+  }
+
+  /* KOJ */
+  switch (job->koj) {
+  case KOJ_GENERAL:
+    break;
+  case KOJ_MAYA:
+    if (setenv("SCENE",job->koji.maya.scene,1) == -1) {
+      fprintf (stderr,"ERROR: job_environment_set\n");
+      kill(0,SIGINT);
+    }
+    if (setenv("PROJECT",job->koji.maya.project,1) == -1) {
+      fprintf (stderr,"ERROR: job_environment_set\n");
+      kill(0,SIGINT);
+    }
+    if (setenv("IMAGE",job->koji.maya.image,1) == -1) {
+      fprintf (stderr,"ERROR: job_environment_set\n");
+      kill(0,SIGINT);
+    }
+    break;
+  }
+
+#else
+  /* Padded frame number */
+  snprintf (msg,BUFFERLEN-1,"PADFRAME=%04i",frame);
+  putenv (msg);
+  /* Frame number */
+  snprintf (msg,BUFFERLEN-1,"FRAME=%i",frame);
+  putenv (msg);
+  /* Frame index */
+  snprintf (msg,BUFFERLEN-1,"IFRAME=%i",iframe);
+  putenv (msg);
+  /* OS */
+  putenv ("DRQUEUE_OS=IRIX");
+
+  switch (job->koj) {
+  case KOJ_GENERAL:
+    break;
+  case KOJ_MAYA:
+    snprintf (msg,BUFFERLEN-1,"SCENE=%s",job->koji.maya.scene);
+    putenv (msg);
+    snprintf (msg,BUFFERLEN-1,"PROJECT=%s",job->koji.maya.project);
+    putenv (msg);
+    snprintf (msg,BUFFERLEN-1,"IMAGE=%s",job->koji.maya.image);
+    putenv (msg);
+    break;
+  }
+
+
+#endif
+
+}
