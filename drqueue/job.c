@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.41 2001/10/11 10:32:04 jorge Exp $ */
+/* $Id: job.c,v 1.42 2001/10/22 14:12:26 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -475,7 +475,7 @@ void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe
     wdb->job[ijob].frame_info[iframe].status = FS_WAITING;
   }
 
-  log_master (L_DEBUG,"Exiting job_check_frame_status.");
+/*    log_master (L_DEBUG,"Exiting job_check_frame_status."); */
 }
 
 int priority_job_compare (const void *a,const void *b)
