@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.30 2001/11/23 15:47:45 jorge Exp $
+# $Id: Makefile,v 1.31 2002/05/17 16:02:05 jorge Exp $
 
 CC = gcc
 OBJS_LIBDRQUEUE = computer_info.o computer_status.o task.o logger.o communications.o \
@@ -7,8 +7,6 @@ OBJS_LIBDRQUEUE = computer_info.o computer_status.o task.o logger.o communicatio
 LDFLAGS =
 
 INSTROOT = /lot/s800/HOME/RENDUSR/drqueue
-IRIX_INSTROOT = $(INSTROOT)/irix
-LINUX_INSTROOT = $(INSTROOT)/linux
 
 ifeq ($(systype),linux)
 	CFLAGS = -DCOMM_REPORT -Wall -I. -D__LINUX -g -O2
@@ -31,15 +29,22 @@ irix:
 	(cd drqman; $(MAKE) irix)
 
 irix_install: irix
-	install -d -u rendusr -g staff -m 0777 $(IRIX_INSTROOT)/bin
-	su rendusr -c "install -m 0777 -u rendusr -g staff ./slave ./master $(IRIX_INSTROOT)/bin/"
-	install -d -u rendusr -g staff -m 0777 $(IRIX_INSTROOT)/etc
-	su rendusr -c "cd etc; install -m 0777 -u rendusr -g staff ./maya.sg ./drqman.rc $(IRIX_INSTROOT)/etc/"
+	install -d -u rendusr -g staff -m 0777 $(INSTROOT)/bin
+	su rendusr -c "install -m 0777 -u rendusr -g nisuser ./slave ./master $(IRIX_INSTROOT)/bin/"
+	install -d -u rendusr -g staff -m 0777 $(INSTROOT)/etc
+	su rendusr -c "cd etc; install -m 0777 -u rendusr -g nisuser ./maya.sg ./drqman.rc $(IRIX_INSTROOT)/etc/"
 	cp ./drqman/drqman /usr/local/software
 
 linux_install: linux
-	install -d -o rendusr -g staff -m 0777 $(LINUX_INSTROOT)/bin
-	install -p ./slave ./master ./drqman/drqman $(LINUX_INSTROOT)/bin/
+#	install -v -d -m 0777 -o rendusr -g 103 $(INSTROOT)/bin
+	cp ./slave $(INSTROOT)/bin/slave.linux
+	cp ./master $(INSTROOT)/bin/master.linux
+	cp ./drqman/drqman $(INSTROOT)/bin/drqman.linux
+	cp ./bin/slave.sh $(INSTROOT)/bin/slave.sh
+	cp ./bin/master.sh $(INSTROOT)/bin/master.sh
+	cp ./bin/path2unix.pl $(INSTROOT)/bin/path2unix.pl
+	chmod 0777 $(INSTROOT)/bin/*.linux $(INSTROOT)/bin/*.sh $(INSTROOT)/bin/*.pl
+	chown rendusr.103 $(INSTROOT)/bin/*.linux $(INSTROOT)/bin/*.sh $(INSTROOT)/bin/*.pl
 
 linux_miniinstall: linux
 	install -d -m 0777 ./bin
