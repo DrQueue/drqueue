@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.16 2001/08/28 15:35:55 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.17 2001/08/28 20:56:55 jorge Exp $
  */
 
 #include <string.h>
@@ -781,6 +781,7 @@ static GtkWidget *JobDetailsDialog (struct info_drqm_jobs *info)
   info->jdd.menu = CreateMenuFrames(info);
 
   if (!jdd_update (window,info)) {
+    gtk_widget_destroy (GTK_WIDGET(window));
     return NULL;
   }
 
@@ -1104,7 +1105,6 @@ static GtkWidget *SeeFrameLogDialog (struct info_drqm_jobs *info)
   if ((fd = log_dumptask_open_ro (&task)) == -1) {
     char msg[] = "Couldn't open log file";
     gtk_text_insert (GTK_TEXT(text),NULL,NULL,NULL,msg,strlen(msg));
-    printf ("%s\n",msg);
   } else {
     while ((n = read (fd,buf,BUFFERLEN))) {
       gtk_text_insert (GTK_TEXT(text),NULL,NULL,NULL,buf,n);
