@@ -16,39 +16,26 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-// $Id$
-//
 
-#ifndef _LIBDRQUEUE_H_
-#define _LIBDRQUEUE_H_
+#ifndef _DRQM_JOBS_3DELIGHT_H_
+#define _DRQM_JOBS_3DELIGHT_H_
 
-#ifdef __CPLUSPLUS
-extern "C" {
-#endif 
+#include <gtk/gtk.h>
 
-#include "computer.h"
-#include "job.h"
-#include "task.h"
-#include "logger.h"
-#include "communications.h"
-#include "request.h"
-#include "drerrno.h"
-#include "database.h"
-#include "semaphores.h"
-#include "common.h"
+#define KOJ_3DELIGHT_DFLT_VIEWCMD "imf_disp $DRQUEUE_RD/$DRQUEUE_IMAGE.$DRQUEUE_FRAME.iff"
 
-/* Script generators */
-#include "mayasg.h"
-#include "mentalraysg.h"
-#include "blendersg.h"
-#include "bmrtsg.h"
-#include "pixiesg.h"
-#include "3delightsg.h"
+struct drqmj_koji_3delight {
+  GtkWidget *escene;
+  GtkWidget *fsscene;		         /* File selector for the scene */
+  GtkWidget *eviewcmd;
+  GtkWidget *escript;            /* Entry script location */
+  GtkWidget *fsscript;		       /* File selectot for the script directory */
+  GtkWidget *efile_owner;	       /* Owner of the rendered files */
+};
 
-int phantom[2];									/* FIXME: This should be local to the slave */
+struct drqm_jobs_info;
 
-#ifdef __CPLUSPLUS
-}
-#endif 
+GtkWidget *jdd_koj_3delight_widgets (struct drqm_jobs_info *info);
+GtkWidget *dnj_koj_frame_3delight (struct drqm_jobs_info *info);
 
-#endif /* _libdrqueue_h_ */
+#endif /* _DRQM_JOBS_3DELIGHT_H_ */
