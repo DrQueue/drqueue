@@ -113,7 +113,8 @@ database_load (struct database *wdb)
 			}
 			for (d = 0; d < nframes; d++) {
 				if (!recv_frame_info (fd, &fi[d])) {
-					/* FIXME : If there is an error we should FREE the allocated shared memory */
+					/* CHECK : If there is an error we should FREE the allocated shared memory */
+					job_delete(&wdb->job[c]);
 					drerrno = DRE_ERRORREADING;
 					close (fd);
 					return 0;
