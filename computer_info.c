@@ -1,4 +1,4 @@
-/* $Id: computer_info.c,v 1.6 2001/08/29 09:22:13 jorge Exp $ */
+/* $Id: computer_info.c,v 1.7 2001/08/29 09:44:19 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -78,7 +78,7 @@ int get_procspeed (void)
   
   if ((cpuinfo = fopen("/proc/cpuinfo","r")) == NULL) {
     perror ("get_procspeed: fopen");
-    exit (1);
+    kill (0,SIGINT);
   }
 
   while (!(found || feof (cpuinfo))) {
@@ -94,7 +94,7 @@ int get_procspeed (void)
 
   if (!found) {
     fprintf (stderr,"ERROR: Proc speed not found on /proc/cpuinfo\n");
-    exit (1);
+    kill (0,SIGINT);
   }
 
   fclose (cpuinfo);
@@ -110,7 +110,7 @@ int get_numproc (void)
   
   if ((cpuinfo = fopen("/proc/cpuinfo","r")) == NULL) {
     perror ("get_numproc: fopen");
-    exit (1);
+    kill (0,SIGINT);
   }
 
   while (!feof (cpuinfo)) {
