@@ -1,7 +1,4 @@
-/* $Id: request.c,v 1.72 2002/02/26 15:52:04 jorge Exp $ */
-/* For the differences between data in big endian and little endian */
-/* I transmit everything in network byte order */
-
+/* $Id: request.c,v 1.73 2002/02/27 10:42:50 jorge Exp $ */
 #include <unistd.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -24,6 +21,9 @@
 #include "slave.h"
 #include "drerrno.h"
 #include "job.h"
+
+/* For the differences between data in big endian and little endian */
+/* I transmit everything in network byte order */
 
 void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockaddr_in *addr)
 {
@@ -179,7 +179,6 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
   struct request answer;
   struct computer_hwinfo hwinfo;
   int index = -1;		/* CHECK THIS: the index in the computer is an uint32_t. */
-  char msg[BUFFERLEN];
   char *name;
   char *dot;
   struct hostent *host;
@@ -187,8 +186,7 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
   log_master (L_DEBUG,"Entering handle_r_r_register");
 
   if ((host = gethostbyaddr ((const void *)&addr->sin_addr.s_addr,sizeof (struct in_addr),AF_INET)) == NULL) {
-    snprintf(msg,BUFFERLEN-1,"Could not resolve name for: %s",inet_ntoa(addr->sin_addr));
-    log_master (L_WARNING,msg);
+    log_master (L_WARNING,"Could not resolve name for: %s",inet_ntoa(addr->sin_addr));
     return -1;
   } else {
     if ((dot = strchr (host->h_name,'.')) != NULL) 
@@ -258,9 +256,8 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
 
   semaphore_release(wdb->semid);
 
-  snprintf(msg,BUFFERLEN-1,"Exiting handle_r_r_register. Computer %s registered with id %i.",
-	   wdb->computer[index].hwinfo.name,index);
-  log_master (L_DEBUG,msg);
+  log_master (L_DEBUG,"Exiting handle_r_r_register. Computer %s registered with id %i.",
+	      wdb->computer[index].hwinfo.name,index);
 
   return index;
 }
@@ -458,7 +455,6 @@ void handle_r_r_regisjob (int sfd,struct database *wdb)
   struct request answer;
   struct job job;
   int index;
-  char msg[BUFFERLEN];
 
   /* TO DO */
   /* Check if the job is already registered ! Or not ? */
@@ -477,8 +473,7 @@ void handle_r_r_regisjob (int sfd,struct database *wdb)
   semaphore_release(wdb->semid);
 
   /* Debug */
-  snprintf(msg,BUFFERLEN,"Job index %i free",index);
-  log_master(L_DEBUG,msg);
+  log_master(L_DEBUG,"Job index %i free",index);
 
   /* No errors, we (master) can receive the job from the remote */
   /* computer to be registered */
@@ -505,7 +500,6 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
   uint32_t ijob = 0,i;
   uint16_t itask;
   int iframe;
-  char msg[BUFFERLEN];
   struct tpol pol[MAXJOBS];
 
   log_master (L_DEBUG,"Entering handle_r_r_availjob");
@@ -534,8 +528,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
     /* ATENTION job_available sets the available frame as FS_ASSIGNED !! */
     /* We need to set it back to FS_WAITING if something fails */
     if (job_available(wdb,ijob,&iframe,icomp)) {
-      snprintf(msg,BUFFERLEN-1,"Frame %i assigned",iframe);
-      log_master_job(&wdb->job[ijob],L_INFO,msg);
+      log_master_job(&wdb->job[ijob],L_INFO,"Frame %i assigned",iframe);
       break;
     }
   }
@@ -550,8 +543,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
     exit (0);
   } 
 
-  snprintf(msg,BUFFERLEN-1,"Available job (%i) on frame %i assigned. Sending RERR_NOERROR",ijob,iframe);
-  log_master (L_DEBUG,msg);
+  log_master (L_DEBUG,"Available job (%i) on frame %i assigned. Sending RERR_NOERROR",ijob,iframe);
 
   /* ijob is now the index to the first available job */
   answer.type = R_R_AVAILJOB;
@@ -598,8 +590,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
   }
   if (answer.type == R_R_AVAILJOB) {
     itask = (uint16_t) answer.data;
-    snprintf(msg,BUFFERLEN,"Task index %i on computer %i",itask,icomp);
-    log_master_computer(&wdb->computer[icomp],L_DEBUG,msg);
+    log_master_computer(&wdb->computer[icomp],L_DEBUG,"Task index %i on computer %i",itask,icomp);
   } else {
     log_master_computer (&wdb->computer[icomp],L_ERROR,"Not appropiate answer, expecting task index");
     job_frame_waiting (wdb,ijob,iframe);
@@ -801,7 +792,6 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
   struct request answer;
   struct task task;
   struct frame_info *fi;
-  char msg[BUFFERLEN];
 
   log_master (L_DEBUG,"Entering handle_r_r_taskfini");
 
@@ -862,12 +852,11 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
       /* Process exited abnormally either killed by us or by itself (SIGSEGV) */
       if (DR_WIFSIGNALED(task.exitstatus)) {
 	int sig = DR_WTERMSIG(task.exitstatus);
-	snprintf(msg,BUFFERLEN-1,"Signaled with %i",sig);
-	log_master_job (&wdb->job[task.ijob],L_DEBUG,msg);
+	log_master_job (&wdb->job[task.ijob],L_DEBUG,"Signaled with %i",sig);
 	if ((sig == SIGTERM) || (sig == SIGINT) || (sig == SIGKILL)) {
 	  /* Somebody killed the process, so it should be retried */
-	  snprintf(msg,BUFFERLEN-1,"Retrying frame %i", job_frame_index_to_number (&wdb->job[task.ijob],task.frame));
-	  log_master_job (&wdb->job[task.ijob],L_INFO,msg);
+	  log_master_job (&wdb->job[task.ijob],L_INFO,"Retrying frame %i",
+			  job_frame_index_to_number (&wdb->job[task.ijob],task.frame));
 	  switch (fi[task.frame].status) {
 	  case FS_WAITING:
 	    break;
@@ -881,17 +870,15 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
 	  fi[task.frame].start_time = 0;
 	  fi[task.frame].end_time = 0;
 	} else {
-	  snprintf(msg,BUFFERLEN-1,"Frame %i died signal not catched", 
-		   job_frame_index_to_number (&wdb->job[task.ijob],task.frame));
-	  log_master_job (&wdb->job[task.ijob],L_INFO,msg);
+	  log_master_job (&wdb->job[task.ijob],L_INFO,"Frame %i died signal not catched", 
+			  job_frame_index_to_number (&wdb->job[task.ijob],task.frame));
 	  fi[task.frame].status = FS_ERROR;
 	  time(&fi[task.frame].end_time);
 	}
       } else {
 	/* This must be WIFSTOPPED, but I'm not sure */
-	snprintf(msg,BUFFERLEN-1,"Frame %i died abnormally", 
-		 job_frame_index_to_number (&wdb->job[task.ijob],task.frame));
-	log_master_job (&wdb->job[task.ijob],L_INFO,msg);
+	log_master_job (&wdb->job[task.ijob],L_INFO,"Frame %i died abnormally", 
+			job_frame_index_to_number (&wdb->job[task.ijob],task.frame));
 	fi[task.frame].status = FS_ERROR;
 	time(&fi[task.frame].end_time);
       }
@@ -1682,7 +1669,6 @@ void handle_r_r_jobfkill (int sfd,struct database *wdb,int icomp,struct request 
   uint32_t iframe;
   uint32_t nframes;
   struct frame_info *fi;
-  char msg[BUFFERLEN];
 
   log_master(L_DEBUG,"Entering handle_r_r_jobfkill");
 
@@ -1694,8 +1680,7 @@ void handle_r_r_jobfkill (int sfd,struct database *wdb,int icomp,struct request 
 
   frame = req->data;
   
-  snprintf(msg,BUFFERLEN-1,"Requested job frame kill for Job %i Frame %i ",ijob,frame);
-  log_master(L_DEBUG,msg);
+  log_master(L_DEBUG,"Requested job frame kill for Job %i Frame %i ",ijob,frame);
 
   semaphore_lock(wdb->semid);
 
@@ -1880,7 +1865,6 @@ void handle_r_r_jobfkfin (int sfd,struct database *wdb,int icomp,struct request 
   uint32_t iframe;
   uint32_t nframes;
   struct frame_info *fi;
-  char msg[BUFFERLEN];
 
   log_master(L_DEBUG,"Entering handle_r_r_jobfkfin");
 
@@ -1892,8 +1876,7 @@ void handle_r_r_jobfkfin (int sfd,struct database *wdb,int icomp,struct request 
 
   frame = req->data;
   
-  snprintf(msg,BUFFERLEN-1,"Requested job frame kill and finish for Job %i Frame %i ",ijob,frame);
-  log_master(L_DEBUG,msg);
+  log_master(L_DEBUG,"Requested job frame kill and finish for Job %i Frame %i ",ijob,frame);
 
   semaphore_lock(wdb->semid);
 
@@ -1985,24 +1968,16 @@ int request_slave_limits_autoenable_set (char *slave, uint32_t h, uint32_t m, in
 
 void handle_rs_r_setnmaxcpus (int sfd,struct slave_database *sdb,struct request *req)
 {
-  char msg[BUFFERLEN];
   struct computer_limits limits;
 
   log_slave_computer(L_DEBUG,"Entering handle_rs_r_setnmaxcpus");
-
-  snprintf(msg,BUFFERLEN-1,"Received maximum cpus: %i",req->data);
-  log_slave_computer(L_DEBUG,msg);
+  log_slave_computer(L_DEBUG,"Received maximum cpus: %i",req->data);
 
   semaphore_lock(sdb->semid);
 
-  snprintf(msg,BUFFERLEN-1,"Previous maximum cpus: %i",sdb->comp->limits.nmaxcpus);
-  log_slave_computer(L_DEBUG,msg);
-
+  log_slave_computer(L_DEBUG,"Previous maximum cpus: %i",sdb->comp->limits.nmaxcpus);
   sdb->comp->limits.nmaxcpus = (req->data < sdb->comp->hwinfo.ncpus) ? req->data : sdb->comp->hwinfo.ncpus;
-
-  snprintf(msg,BUFFERLEN-1,"Set maximum cpus: %i",sdb->comp->limits.nmaxcpus);
-  log_slave_computer(L_DEBUG,msg);
-
+  log_slave_computer(L_DEBUG,"Set maximum cpus: %i",sdb->comp->limits.nmaxcpus);
   memcpy (&limits,&sdb->comp->limits,sizeof(struct computer_limits));
 
   semaphore_release(sdb->semid);
@@ -2014,7 +1989,6 @@ void handle_rs_r_setnmaxcpus (int sfd,struct slave_database *sdb,struct request 
 
 void handle_rs_r_setautoenable (int sfd,struct slave_database *sdb,struct request *req)
 {
-  char msg[BUFFERLEN];
   struct computer_limits limits;
   uint32_t h,m;
 
@@ -2029,24 +2003,21 @@ void handle_rs_r_setautoenable (int sfd,struct slave_database *sdb,struct reques
   
   m = req->data % 60;		/* Take care in case it exceeds the limits */
 
-  snprintf(msg,BUFFERLEN-1,"Received autoenable hour: %i:%02i",h,m);
-  log_slave_computer(L_DEBUG,msg);
+  log_slave_computer(L_DEBUG,"Received autoenable hour: %i:%02i",h,m);
 
   semaphore_lock(sdb->semid);
 
-  snprintf(msg,BUFFERLEN-1,"Previous autoenable hour: %i:%02i",
-	   sdb->comp->limits.autoenable.h,
-	   sdb->comp->limits.autoenable.m);
-  log_slave_computer(L_DEBUG,msg);
+  log_slave_computer(L_DEBUG,"Previous autoenable hour: %i:%02i",
+		     sdb->comp->limits.autoenable.h,
+		     sdb->comp->limits.autoenable.m);
 
   sdb->comp->limits.autoenable.h = h;
   sdb->comp->limits.autoenable.m = m;
   sdb->comp->limits.autoenable.last = time(NULL) - AE_DELAY;
 
-  snprintf(msg,BUFFERLEN-1,"Set autoenable hour: %i:%02i",
+  log_slave_computer(L_DEBUG,"Set autoenable hour: %i:%02i",
 	   sdb->comp->limits.autoenable.h,
 	   sdb->comp->limits.autoenable.m);
-  log_slave_computer(L_DEBUG,msg);
 
   memcpy (&limits,&sdb->comp->limits,sizeof(struct computer_limits));
 
@@ -2141,30 +2112,21 @@ void handle_r_r_uclimits (int sfd,struct database *wdb,int icomp, struct request
 
 void handle_rs_r_setmaxfreeloadcpu (int sfd,struct slave_database *sdb,struct request *req)
 {
-  char msg[BUFFERLEN];
   struct computer_limits limits;
 
   log_slave_computer(L_DEBUG,"Entering handle_rs_r_setmaxfreeloadcpu");
-
-  snprintf(msg,BUFFERLEN-1,"Received maximum free load cpu: %i",req->data);
-  log_slave_computer(L_DEBUG,msg);
+  log_slave_computer(L_DEBUG,"Received maximum free load cpu: %i",req->data);
 
   semaphore_lock(sdb->semid);
 
-  snprintf(msg,BUFFERLEN-1,"Previous maximum free load cpu: %i",sdb->comp->limits.maxfreeloadcpu);
-  log_slave_computer(L_DEBUG,msg);
-
+  log_slave_computer(L_DEBUG,"Previous maximum free load cpu: %i",sdb->comp->limits.maxfreeloadcpu);
   sdb->comp->limits.maxfreeloadcpu = req->data;
-
-  snprintf(msg,BUFFERLEN-1,"Set maximum free load cpu: %i",sdb->comp->limits.maxfreeloadcpu);
-  log_slave_computer(L_DEBUG,msg);
-
+  log_slave_computer(L_DEBUG,"Set maximum free load cpu: %i",sdb->comp->limits.maxfreeloadcpu);
   memcpy (&limits,&sdb->comp->limits,sizeof(struct computer_limits));
 
   semaphore_release(sdb->semid);
 
   update_computer_limits (&limits);
-
   log_slave_computer(L_DEBUG,"Exiting handle_rs_r_setmaxfreeloadcpu");
 }
 
@@ -2220,7 +2182,9 @@ void handle_r_r_slavexit (int sfd,struct database *wdb,int icomp,struct request 
   /* This function is called unlocked */
   /* This function is called by the master */
   uint32_t icomp2;
-  char msg[BUFFERLEN];
+
+
+  /* FIXME: Check if icomp2 != icomp... that shouldn't be */
 
   log_master (L_DEBUG,"Entering handle_r_r_slavexit");
 
@@ -2232,10 +2196,8 @@ void handle_r_r_slavexit (int sfd,struct database *wdb,int icomp,struct request 
     semaphore_release (wdb->semid);
     return;
   }
-
   if (wdb->computer[icomp2].hwinfo.id == icomp) {
-    snprintf (msg,BUFFERLEN-1,"Exiting computer: %i\n", icomp2);
-    log_master (L_DEBUG,msg);
+    log_master (L_DEBUG,"Exiting computer: %i\n", icomp2);
     wdb->computer[icomp2].used = 0;
   }
 
@@ -2469,7 +2431,6 @@ void handle_r_r_joblnmcs (int sfd,struct database *wdb,int icomp,struct request 
   /* This function is called by the master */
   uint32_t ijob;
   uint16_t nmaxcpus;
-  char msg[BUFFERLEN];
 
   log_master(L_DEBUG,"Entering handle_r_r_joblnmcs");
 
@@ -2482,8 +2443,7 @@ void handle_r_r_joblnmcs (int sfd,struct database *wdb,int icomp,struct request 
 
   nmaxcpus = (uint16_t) req->data;
   
-  snprintf(msg,BUFFERLEN-1,"Requested job (ijob:%u) limits nmaxcpus set to: %u",ijob,nmaxcpus);
-  log_master(L_DEBUG,msg);
+  log_master(L_DEBUG,"Requested job (ijob:%u) limits nmaxcpus set to: %u",ijob,nmaxcpus);
 
   semaphore_lock(wdb->semid);
 
@@ -2533,12 +2493,11 @@ int request_job_limits_nmaxcpuscomputer_set (uint32_t ijob, uint16_t nmaxcpuscom
 
 void handle_r_r_joblnmccs (int sfd,struct database *wdb,int icomp,struct request *req)
 {
-  /* The master handles this type of packages */
+  /* joblnmccs = job_limits_number_max_computer_cpus_set */
   /* This function is called unlocked */
   /* This function is called by the master */
   uint32_t ijob;
   uint16_t nmaxcpuscomputer;
-  char msg[BUFFERLEN];
 
   log_master(L_DEBUG,"Entering handle_r_r_joblnmccs");
 
@@ -2551,8 +2510,7 @@ void handle_r_r_joblnmccs (int sfd,struct database *wdb,int icomp,struct request
 
   nmaxcpuscomputer = (uint16_t) req->data;
   
-  snprintf(msg,BUFFERLEN-1,"Requested job (ijob:%u) limits nmaxcpuscomputer set to: %u",ijob,nmaxcpuscomputer);
-  log_master(L_DEBUG,msg);
+  log_master(L_DEBUG,"Requested job (ijob:%u) limits nmaxcpuscomputer set to: %u",ijob,nmaxcpuscomputer);
 
   semaphore_lock(wdb->semid);
 
@@ -2606,7 +2564,6 @@ void handle_r_r_jobpriup (int sfd,struct database *wdb,int icomp,struct request 
   /* This function is called unlocked */
   uint32_t ijob;
   uint32_t priority;
-  char msg[BUFFERLEN];
 
   log_master(L_DEBUG,"Entering handle_r_r_jobpriup");
 
@@ -2619,8 +2576,7 @@ void handle_r_r_jobpriup (int sfd,struct database *wdb,int icomp,struct request 
 
   priority = req->data;
   
-  snprintf(msg,BUFFERLEN-1,"Requested job (ijob:%u) priority set to: %u",ijob,priority);
-  log_master(L_DEBUG,msg);
+  log_master(L_DEBUG,"Requested job (ijob:%u) priority set to: %u",ijob,priority);
 
   semaphore_lock(wdb->semid);
 
