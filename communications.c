@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.43 2001/11/08 09:13:57 jorge Exp $ */
+/* $Id: communications.c,v 1.44 2001/11/09 15:00:13 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -428,6 +428,8 @@ int recv_job (int sfd, struct job *job)
 
   job->priority = ntohl (job->priority);
 
+  job->flags = ntohl (job->flags);
+
   drerrno = DRE_NOERROR;
   return 1;
 }
@@ -466,6 +468,8 @@ int send_job (int sfd, struct job *job)
   bswapped.ffailed = htonl (bswapped.ffailed);
 
   bswapped.priority = htonl (bswapped.priority);
+
+  bswapped.flags = htonl (bswapped.flags);
 
   bleft = sizeof (bswapped);
   while ((w = write(sfd,buf,bleft)) < bleft) {
