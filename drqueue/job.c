@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.67 2004/10/06 13:56:02 jorge Exp $ */
+/* $Id: job.c,v 1.68 2004/10/06 16:16:57 jorge Exp $ */
 
 #ifdef __FREEBSD
 # include <sys/types.h>
@@ -695,19 +695,17 @@ int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp)
   if (computer_ntasks_job(&wdb->computer[icomp],ijob) >= wdb->job[ijob].limits.nmaxcpuscomputer)
     return 0;
 
-#ifdef __LINUX
+#if defined (__LINUX)
   if (!(wdb->job[ijob].limits.os_flags & OSF_LINUX))
 		return 0;
-#else
-# ifdef __IRIX	
+#elif defined (_IRIX)
   if (!(wdb->job[ijob].limits.os_flags & OSF_IRIX))
     return 0;
-# else
-#  ifdef __OSX
+#elif defined (__OSX)
   if (!(wdb->job[ijob].limits.os_flags & OSF_OSX))
     return 0;
-#  endif
-# endif
+#elif defined (__FREEBSD)
+	if (!(wdb->job[ijob].limits.os_flags & OSF_FREEBSD)
 #endif
 
   return 1;
