@@ -23,6 +23,7 @@
 #ifndef _DRQM_CYGWIN_H_
 #define _DRQM_CYGWIN_H_
 
+void cygwin_shell_execute(char *verb, char *path);
 char *cygwin_file_dialog(char *fname, char *pat, char *message, char save);
 char *cygwin_dir_dialog(char *message);
 
