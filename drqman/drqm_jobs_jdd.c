@@ -17,7 +17,7 @@
 // USA
 // 
 //
-// $Id: drqm_jobs.c 851 2004-10-19 11:08:56Z jorge $
+// $Id$
 //
 
 #include <stdlib.h>
