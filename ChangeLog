@@ -1,3 +1,45 @@
+2004-11-16 22:24:55  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /branches/0.55.x/ChangeLog
+
+	* ChangeLog commited by build_package.sh
+
+2004-11-16 22:24:49  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /branches/0.55.x/common.h
+
+	* New version number on common.h: 0.55.2
+
+2004-11-16 22:24:22  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /branches/0.55.x/computer_info.c
+	   M /branches/0.55.x/computer_info.h
+	   M /branches/0.55.x/computer_info.linux.c
+	   M /branches/0.55.x/drqman/drqm_computers.c
+	   M /branches/0.55.x/drqman/drqm_computers.h
+	   M /branches/0.55.x/drqman/drqm_jobs_blender.h
+	   M /branches/0.55.x/drqman/drqm_jobs_bmrt.h
+	   M /branches/0.55.x/drqman/drqm_jobs_maya.h
+	   M /branches/0.55.x/drqman/drqm_jobs_pixie.h
+	   M /branches/0.55.x/etc/maya.sg
+	   M /branches/0.55.x/job.h
+	   M /branches/0.55.x/mayasg.c
+	   M /branches/0.55.x/slave.c
+
+	* drqman reports the pools a computer belongs to, but cannot change them yet.
+	* maya.sg and mayasg.c have been corrected to use latest environment variables
+	* Intel Xeon has been added as a processor type.
+
+2004-11-15 21:32:17  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /branches/0.55.x/Revision
+
+	* New Revision commited by build_package.sh
+
 2004-11-15 21:32:00  Jorge Daza <jorge@drqueue.org>
 
 	* Changed paths:
