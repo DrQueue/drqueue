@@ -155,8 +155,10 @@ void drqm_clean_computerlist (struct drqm_computers_info *info)
 	int i;
 
   if (info->computers) {
-		for (i=0;i<info->ncomputers;i++)
+		for (i=0;i<info->ncomputers;i++) {
+			fprintf (stderr,"Freeing computer %i\n",i);
 			computer_free(&info->computers[i]);
+		}
     free (info->computers);
     info->computers = NULL;
   }
