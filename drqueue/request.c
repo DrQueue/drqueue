@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.29 2001/08/28 09:03:52 jorge Exp $ */
+/* $Id: request.c,v 1.30 2001/08/28 12:59:30 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -59,7 +59,7 @@ void handle_request_master (int sfd,struct database *wdb,int icomp)
     break;
   case R_R_DELETJOB:
     log_master (L_DEBUG,"Request job deletion");
-    handle_r_r_deletjob (sfd,wdb,icomp);
+    handle_r_r_deletjob (sfd,wdb,icomp,&request);
     break;
   case R_R_STOPJOB:
     log_master (L_DEBUG,"Request job stop");
@@ -799,7 +799,7 @@ void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp)
   }
 }
 
-int request_job_delete (struct job *job, int who)
+int request_job_delete (uint32_t ijob, int who)
 {
   /* On error returns 0, error otherwise drerrno is set to the error */
   int sfd;
@@ -811,68 +811,36 @@ int request_job_delete (struct job *job, int who)
   }
 
   req.type = R_R_DELETJOB;
+  req.data = ijob;
 
   if (!send_request (sfd,&req,who)) {
-    /* send_request sets the value for drerrno */
+    drerrno = DRE_ERRORSENDING;
     close (sfd);
     return 0;
   }
-  if (!recv_request (sfd,&req)) {
-    return 0;
-  }
-
-  if (req.type == R_A_DELETJOB) {
-    switch (req.data) {
-    case RERR_NOERROR: 
-      /* We continue processing the matter */
-      break;
-    default:
-      drerrno = DRE_ANSWERNOTLISTED;
-      close (sfd);
-      return 0;
-    }
-  } else {
-    drerrno = DRE_ANSWERNOTRIGHT;
-    close (sfd);
-    return 0;
-  }
-
-  send_job (sfd,job,who);
 
   close (sfd);
   return 1;
 }
 
-void handle_r_r_deletjob (int sfd,struct database *wdb,int icomp)
+void handle_r_r_deletjob (int sfd,struct database *wdb,int icomp,struct request *req)
 {
   /* The master handles this type of packages */
   /* This function is called unlocked */
   /* This function is called by the master */
-  struct request answer;
-  struct job job;
   int i;
   uint32_t ijob;
   struct frame_info *fi;
   int nframes;
 
-  answer.type = R_A_DELETJOB;
-  answer.data = RERR_NOERROR;
-  
-  if (!send_request (sfd,&answer,MASTER)) {
-    log_master (L_ERROR,"Error receiving request (handle_r_r_deletjob)");
-    return;
-  }
-  recv_job (sfd,&job,MASTER);
+  ijob = req->data;
 
-  ijob = (uint32_t) job.id;
-  
   if (ijob >= MAXJOBS)
     return;
 
   semaphore_lock (wdb->semid);
 
-  if ((wdb->job[ijob].used) 
-      && (!strncmp(wdb->job[ijob].name,job.name,MAXNAMELEN))) {
+  if (wdb->job[ijob].used) {
     fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
     nframes = job_nframes (&wdb->job[ijob]);
     for (i=0;i<nframes;i++) {
@@ -883,6 +851,8 @@ void handle_r_r_deletjob (int sfd,struct database *wdb,int icomp)
     detach_frame_shared_memory (fi);
 
     job_delete (&wdb->job[ijob]);
+  } else {
+    log_master (L_INFO,"Request for deletion of an unused job");
   }
 
   semaphore_release (wdb->semid);
