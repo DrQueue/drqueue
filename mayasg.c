@@ -31,6 +31,11 @@
 #include "mayasg.h"
 #include "libdrqueue.h"
 
+#ifdef __CYGWIN
+  void cygwin_conv_to_posix_path(const char *path, char *posix_path);
+#endif
+
+
 char *mayasg_create (struct mayasgi *info)
 {
   /* This function creates the maya render script based on the information given */
@@ -45,6 +50,8 @@ char *mayasg_create (struct mayasgi *info)
   char image_arg[BUFFERLEN];
   int size;
   char *p;			/* Scene filename without path */
+  char *scene;
+  char *renderdir;
 
   /* Check the parameters */
   if ((!strlen(info->renderdir)) || (!strlen(info->scene))) {
@@ -52,8 +59,18 @@ char *mayasg_create (struct mayasgi *info)
     return NULL;
   }
 
-  p = strrchr(info->scene,'/');
-  p = ( p ) ? p+1 : info->scene;
+#ifdef __CYGWIN
+  if ((scene = malloc(MAXCMDLEN)) == NULL) return (NULL);
+  if ((renderdir = malloc(MAXCMDLEN)) == NULL) return (NULL);
+  cygwin_conv_to_posix_path(info->scene, scene);
+  cygwin_conv_to_posix_path(info->renderdir, renderdir);
+#else
+  scene = info->scene;
+  renderdir = info->renderdir;
+#endif
+
+  p = strrchr(scene,'/');
+  p = ( p ) ? p+1 : scene;
   snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
   if ((f = fopen (filename, "a")) == NULL) {
@@ -76,8 +93,8 @@ char *mayasg_create (struct mayasgi *info)
 
   /* So now we have the file open and so we must write to it */
   fprintf(f,"#!/bin/tcsh\n\n");
-  fprintf(f,"set DRQUEUE_RD=%s\n",info->renderdir);
-  fprintf(f,"set DRQUEUE_SCENE=%s\n",info->scene);
+  fprintf(f,"set DRQUEUE_RD=\"%s\"\n",info->renderdir);
+  fprintf(f,"set DRQUEUE_SCENE=\"%s\"\n",info->scene);
   fprintf(f,"set RF_OWNER=%s\n",info->file_owner);
   if (strlen(info->format)) {
     fprintf(f,"set FFORMAT=%s\n",info->format);

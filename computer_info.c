@@ -43,6 +43,8 @@
 #include "computer_info.osx.c"
 #elif defined (__FREEBSD)
 #include "computer_info.freebsd.c"
+#elif defined (__CYGWIN)
+#include "computer_info.cygwin.c"
 #else 
 #error You need to define the OS, or OS defined not supported
 #endif
@@ -84,7 +86,7 @@ char *osstring (t_os os)
   case OS_LINUX:
     msg = "Linux";
     break;
-  case OS_WINDOWS:
+  case OS_CYGWIN:
     msg = "Windows";
     break;
   case OS_OSX:

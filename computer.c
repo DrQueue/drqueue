@@ -273,7 +273,6 @@ void *computer_pool_attach_shared_memory (int shmid)
 		drerrno = DRE_ATTACHSHMEM;
 		return rv;
   }
-
 	drerrno = DRE_NOERROR;
   return rv;
 }
@@ -332,7 +331,7 @@ int computer_pool_add (struct computer_limits *cl, char *pool)
 	cl->npools++;
 
 	//	fprintf(stderr,"New number of pools: %i\n",cl->npools);
-
+	computer_pool_detach_shared_memory(npool);
 	return 1;
 }
 
@@ -378,26 +377,25 @@ void computer_pool_remove (struct computer_limits *cl, char *pool)
 		drerrno = DRE_RMSHMEM;
 		return;
 	}
-
 	cl->poolshmid = npoolshmid;
 	cl->npools--;
-
+	computer_pool_detach_shared_memory (npool);
 	return;
 }
 
 void computer_pool_list (struct computer_limits *cl)
 {
 	int i;
-	
-	if (cl->poolshmid != -1) {
-		cl->pool = computer_pool_attach_shared_memory (cl->poolshmid);
+	struct pool *pool;
 
+	if (cl->poolshmid != -1) {
+		pool = computer_pool_attach_shared_memory (cl->poolshmid);
 		printf ("Pools:	\n");
 		for (i = 0; i < cl->npools; i++) {
-			printf ("	\t%i - %s\n",i,cl->pool[i].name);
+			printf ("	\t%i - %s\n",i,pool[i].name);
 		}
 
-		computer_pool_detach_shared_memory (cl->pool);
+		computer_pool_detach_shared_memory (pool);
 	}
 }
 

@@ -271,6 +271,8 @@ int job_first_frame_available (struct database *wdb,uint32_t ijob,uint32_t icomp
 
   nframes = job_nframes (&wdb->job[ijob]);
   fi = attach_frame_shared_memory(wdb->job[ijob].fishmid);
+  if (fi == (void *) -1)
+	return (-1);
   for (i=0;i<nframes;i++) {
     if (fi[i].status == FS_WAITING) {
       r = i;			/* return = current */
@@ -305,7 +307,8 @@ void job_update_assigned (struct database *wdb, uint32_t ijob, int iframe, int i
     return;
   }
 
-  wdb->job[ijob].frame_info = attach_frame_shared_memory (wdb->job[ijob].fishmid);
+  if ((wdb->job[ijob].frame_info = attach_frame_shared_memory (wdb->job[ijob].fishmid)) == (void *) -1)
+	return;
 
   /* The status should already be FS_ASSIGNED */
   if (wdb->job[ijob].frame_info[iframe].status != FS_ASSIGNED) {
@@ -346,7 +349,7 @@ void *attach_blocked_host_shared_memory (int shmid)
 
   if ((rv = shmat (shmid,0,0)) == (void *)-1) {
     log_master (L_ERROR,"attach_blocked_host_shared_memory: shmat");
-    perror ("shmat");
+    perror ("blocked host shmat");
   }
 
   return rv;
@@ -378,7 +381,8 @@ void *attach_frame_shared_memory (int shmid)
 
   if ((rv = shmat (shmid,0,0)) == (void *)-1) {
     log_master (L_ERROR,"attach_frame_shared_memory: shmat");
-    perror ("shmat");
+    perror ("frame shmat");
+    return rv;
   }
 
   return rv;
@@ -433,6 +437,8 @@ void job_update_info (struct database *wdb,uint32_t ijob)
   total = job_nframes(&wdb->job[ijob]);
 
   fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
+  if (fi == (void *) -1)
+	return;
   wdb->job[ijob].frame_info = fi;
 /*    log_master (L_DEBUG,"job_update_info: Before checking frame status"); */
   for (i=0;i<total;i++) {
@@ -633,6 +639,8 @@ void job_frame_waiting (struct database *wdb,uint32_t ijob, int iframe)
     return;
 
   fi = attach_frame_shared_memory(wdb->job[ijob].fishmid);
+  if (fi == (void *) -1)
+	return;
   fi[iframe].status = FS_WAITING;
 	fi[iframe].start_time = 0;
 	fi[iframe].requeued++;
@@ -724,6 +732,8 @@ void job_environment_set (struct job *job, uint32_t iframe)
   putenv ("DRQUEUE_OS=FREEBSD");
 #elif defined(__OSX)
   putenv ("DRQUEUE_OS=OSX");
+#elif defined(__CYGWIN)
+  putenv ("DRQUEUE_OS=WINDOWS");
 #else
   putenv ("DRQUEUE_OS=IRIX");
 #endif
@@ -792,6 +802,8 @@ int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp)
   if ((wdb->computer[icomp].hwinfo.os == OS_OSX) && !(wdb->job[ijob].limits.os_flags & OSF_OSX))
 		return 0;
   if ((wdb->computer[icomp].hwinfo.os == OS_FREEBSD) && !(wdb->job[ijob].limits.os_flags & OSF_FREEBSD))
+		return 0;
+  if ((wdb->computer[icomp].hwinfo.os == OS_CYGWIN) && !(wdb->job[ijob].limits.os_flags & OSF_CYGWIN))
 		return 0;
 
 	// Memory
@@ -925,6 +937,8 @@ int job_first_frame_available_no_icomp (struct database *wdb,uint32_t ijob)
 
   nframes = job_nframes (&wdb->job[ijob]);
   fi = attach_frame_shared_memory(wdb->job[ijob].fishmid);
+  if (fi == (void *) -1)
+	return -1;
   for (i=0;i<nframes;i++) {
     if (fi[i].status == FS_WAITING) {
       r = i;										/* return = current */

@@ -145,6 +145,8 @@ void task_environment_set (struct task *task)
   putenv ("DRQUEUE_OS=FREEBSD");
 #elif defined(__OSX)
   putenv ("DRQUEUE_OS=OSX");
+#elif defined(__CYGWIN)
+  putenv ("DRQUEUE_OS=WINDOWS");
 #else
   putenv ("DRQUEUE_OS=IRIX");
 #endif
