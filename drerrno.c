@@ -1,4 +1,4 @@
-/* $Id: drerrno.c,v 1.3 2001/08/08 10:52:58 jorge Exp $ */
+/* $Id: drerrno.c,v 1.4 2001/08/22 09:02:48 jorge Exp $ */
 
 #include "drerrno.h"
 #include "constants.h"
@@ -33,6 +33,9 @@ char *drerrno_str (void)
     break;
   case DRE_ERRORSENDING:
     msg = "Error sending through socket";
+    break;
+  case DRE_ERRORRECEIVING:
+    msg = "Error receiving through socket";
     break;
   default:
     msg = "drerrno NOT listed !!";
