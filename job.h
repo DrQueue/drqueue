@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.18 2001/09/13 15:55:39 jorge Exp $ */
+/* $Id: job.h,v 1.19 2001/09/14 08:56:18 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -47,7 +47,7 @@ union koj_info {		/* Kind of job information */
 };
 
 /* Koj types */
-#define KOJ_DEFAULT 0		/* Default koj */
+#define KOJ_GENERAL 0		/* Not specific koj */
 #define KOJ_MAYA    1		/* Maya koj */
 
 /* JOB SECTION */
