@@ -100,6 +100,9 @@ char *drerrno_str (void)
   case DRE_NOETCDIR:
     msg = "Directory for configuration files ($DRQUEUE_ETC) does not exist";
     break;
+	case DRE_RMSHMEM:
+		msg = "Could not remove shared memory";
+		break;
   default:
     msg = "drerrno NOT listed !!";
   }

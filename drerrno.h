@@ -16,7 +16,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-/* $Id$ */
+// $Id$
+// 
 
 #ifndef _DRERRNO_H_
 #define _DRERRNO_H_
@@ -47,6 +48,7 @@ extern int drerrno;		/* global errno */
 #define DRE_NOLOGDIR        21  /* No logs directory */
 #define DRE_NOBINDIR        22  /* No bin directory */
 #define DRE_NOETCDIR        23	/* No etc directory */
+#define DRE_RMSHMEM					24 	// Remove shared memory
 
 char *drerrno_str (void);
 

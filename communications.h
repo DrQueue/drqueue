@@ -58,6 +58,11 @@ int recv_autoenable (int sfd, struct autoenable *ae);
 int send_autoenable (int sfd, struct autoenable *ae);
 int send_blocked_host (int sdf, struct blocked_host *bh);
 int recv_blocked_host (int sdf, struct blocked_host *bh);
+int send_computer_pools (int sfd, struct computer_limits *cl);
+int recv_computer_pools (int sfd, struct computer_limits *cl);
+
+int send_string (int sfd, char *str);
+int recv_string (int sfd, char **str);
 
 int write_32b (int sfd, void *data);
 int write_16b (int sfd, void *data);

@@ -68,16 +68,16 @@ void check_tasks (struct computer_status *cstatus, int semid)
   for (i=0;i<MAXTASKS;i++) {
     if (cstatus->task[i].used) {
       if (cstatus->task[i].status != TASKSTATUS_LOADING) {
-	/* If the task is LOADING then there is no process running yet */
-	if (kill(cstatus->task[i].pid,0) == 0) { /* check if task is running */
-	  cstatus->ntasks++;
-	} else {
-	  /* task is registered but not running */
-		log_slave_task(&cstatus->task[i],L_WARNING,"Check tasks found no task where there should have been one.");
-	  cstatus->task[i].used = 0;
-	}
+				/* If the task is LOADING then there is no process running yet */
+				if (kill(cstatus->task[i].pid,0) == 0) { /* check if task is running */
+					cstatus->ntasks++;
+				} else {
+					/* task is registered but not running */
+					log_slave_task(&cstatus->task[i],L_WARNING,"Check tasks found no task where there should have been one.");
+					cstatus->task[i].used = 0;
+				}
       } else {
-	cstatus->ntasks++;
+				cstatus->ntasks++;
       }
     }
   }
