@@ -107,7 +107,7 @@ void usage (void)
 						<< "Valid options:\n"
 						<< "\t-v version information\n"
 						<< "\t-h prints this help\n"
-						<< "\t-t [maya|blender] type of job";
+						<< "\t-t [maya|blender] type of job\n";
 }
 
 int RegisterMayaJobFromFile (std::ifstream &infile)

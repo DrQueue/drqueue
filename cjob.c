@@ -120,7 +120,7 @@ void usage (void)
 						 "Valid options:\n"
 						 "\t-s will do a soft stop\n"
 						 "\t-k will do a hard stop\n"
-						 "\t-d will de	lete the job (be careful, no confirmation asked)\n"
+						 "\t-d will delete the job (be careful, no confirmation asked)\n"
 						 "\t-c will continue a previously stopped job\n"
 						 "\t-t show the status of the job\n"
 						 "\t-j <job_id>\n"
