@@ -1,4 +1,4 @@
-/* $Id: computer_info.h,v 1.2 2001/04/25 15:55:24 jorge Exp $ */
+/* $Id: computer_info.h,v 1.3 2001/04/26 14:20:55 jorge Exp $ */
 
 #ifndef _COMPUTER_INFO_H_
 #define _COMPUTER_INFO_H_
@@ -39,7 +39,12 @@ struct computer_hwinfo {
 
 void get_hwinfo (struct computer_hwinfo *hwinfo);
 t_proctype get_proctype (void);
+int get_procspeed (void);
+int get_numproc (void);
+int get_speedindex (struct computer_hwinfo *hwinfo);
+
 void report_hwinfo (struct computer_hwinfo *hwinfo);
+
 char *osstring (t_os os);
 char *archstring (t_arch arch);
 char *proctypestring (t_proctype proctype);
