@@ -29,6 +29,9 @@
 #include "drqman.h"
 #include "drqm_common.h"
 
+// Icons
+#include "info_icon.h"
+
 /* Static functions declarations */
 extern GdkPixbuf *drqman_icon;
 
@@ -40,10 +43,11 @@ void CreateInfoPage (GtkWidget *notebook, struct info_drqm *info)
   GtkWidget *vbox;
   GtkWidget *logo;
   GtkWidget *text;
+	GtkWidget *hbox;
+	GtkWidget *icon;
+	GdkPixbuf *info_icon_pb;
   char msg[BUFFERLEN];
 
-  /* Label */
-  label = gtk_label_new ("Info");
   container = gtk_frame_new ("About DrQueue");
   gtk_container_border_width (GTK_CONTAINER(container),2);
   vbox = gtk_vbox_new(FALSE,2);
@@ -58,8 +62,19 @@ void CreateInfoPage (GtkWidget *notebook, struct info_drqm *info)
   text = gtk_label_new (msg);
   gtk_box_pack_start (GTK_BOX(vbox),text,FALSE,FALSE,2);
 
+
+  /* Label */
+  label = gtk_label_new ("Info");
+	gtk_widget_show(label);
+	// Image
+	info_icon_pb = gdk_pixbuf_new_from_inline (1019,info_icon,0,NULL);
+	icon = gtk_image_new_from_pixbuf (info_icon_pb);
+	gtk_widget_show(icon);
+	hbox = gtk_hbox_new (FALSE,0);
+	gtk_box_pack_start(GTK_BOX(hbox),icon,TRUE,TRUE,2);
+	gtk_box_pack_start(GTK_BOX(hbox),label,TRUE,TRUE,2);
   /* Append the page */
-  gtk_notebook_append_page (GTK_NOTEBOOK(notebook), container, label);
+  gtk_notebook_append_page (GTK_NOTEBOOK(notebook), container, hbox);
 
   gtk_widget_show_all(vbox);
   gtk_widget_show(label);
