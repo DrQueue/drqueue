@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.7 2001/07/17 10:19:02 jorge Exp $ */
+/* $Id: job.h,v 1.8 2001/07/17 15:06:01 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -43,6 +43,8 @@ struct frame_info {
 
 struct job {
   char used;
+  char id;			/* Position in the master's list of jobs */
+  uint16_t nprocs;		/* Number of procs currently assigned */
   uint16_t status;		/* Status of the job */
   char name[MAXNAMELEN];
   char cmd[MAXCMDLEN];
@@ -62,13 +64,14 @@ int job_index_free (void *pwdb);
 void job_report (struct job *job);
 char *job_status_string (char status);
 int job_nframes (struct job *job);
-int job_available (struct database *wdb,int ijob, int *iframe);
-int job_first_frame_available (struct database *wdb,int ijob);
-void job_update_assigned (struct database *wdb, int ijob, int iframe, int icomp, int itask);
-void job_init_registered (struct database *wdb,int ijob,struct job *job);
+int job_available (struct database *wdb,uint32_t ijob, int *iframe);
+int job_first_frame_available (struct database *wdb,uint32_t ijob);
+void job_update_assigned (struct database *wdb,uint32_t ijob, int iframe, int icomp, int itask);
+void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job);
 void job_init (struct job *job);
 void job_delete (struct job *job);
 int job_njobs_masterdb (struct database *wdb);
+void job_update_info (struct database *wdb,uint32_t ijob);
 
 
 int get_frame_shared_memory (int nframes); /* ipc shared memory */
