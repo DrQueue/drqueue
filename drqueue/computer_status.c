@@ -1,4 +1,4 @@
-/* $Id: computer_status.c,v 1.7 2001/07/19 09:04:57 jorge Exp $ */
+/* $Id: computer_status.c,v 1.8 2001/07/23 10:29:23 jorge Exp $ */
 
 #include <stdio.h>
 #include <signal.h>
@@ -78,9 +78,13 @@ void get_loadavg (uint16_t *loadavg)
 void get_loadavg (uint16_t *loadavg)
 {
   sgt_cookie_t cookie;
+  uint32_t tla[3];
 
   SGT_COOKIE_SET_KSYM (&cookie,KSYM_AVENRUN);
-  sysget (SGT_KSYM,(char *)loadavg,sizeof(loadavg),SGT_READ,&cookie);
+  sysget (SGT_KSYM,(char *)tla,sizeof(uint32_t)*3,SGT_READ,&cookie);
+  loadavg[0] = (uint16_t) (tla[0]/10);
+  loadavg[1] = (uint16_t) (tla[1]/10);
+  loadavg[2] = (uint16_t) (tla[2]/10);
 }
 # else
 #  error You need to define the OS, or OS defined not supported
