@@ -1,9 +1,11 @@
-/* $Id: computer_info.c,v 1.5 2001/08/27 21:16:17 jorge Exp $ */
+/* $Id: computer_info.c,v 1.6 2001/08/29 09:22:13 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <sys/types.h>
+#include <signal.h>
 #ifdef __IRIX
 #include <sys/sysmp.h>
 #endif
@@ -17,7 +19,7 @@ void get_hwinfo (struct computer_hwinfo *hwinfo)
 {
   if (gethostname (hwinfo->name,MAXNAMELEN-1) == -1) {
     perror ("get_hwinfo: gethostname");
-    exit (1);
+    kill(0,SIGINT);
   }
   hwinfo->arch = ARCH_INTEL;
   hwinfo->os = OS_LINUX;
@@ -36,7 +38,7 @@ t_proctype get_proctype (void)
 
   if ((cpuinfo = fopen("/proc/cpuinfo","r")) == NULL) {
     perror ("get_proctype: fopen");
-    exit (1);
+    kill (0,SIGINT);
   }
 
   while (!(found || feof (cpuinfo))) {
@@ -55,6 +57,11 @@ t_proctype get_proctype (void)
     }
   }
 
+  if (!found) {
+    fprintf (stderr,"ERROR: Proc type not found on /proc/cpuinfo\n");
+    kill(0,SIGINT);
+  }
+
   fclose (cpuinfo);
 
   return proctype;
@@ -63,7 +70,7 @@ t_proctype get_proctype (void)
 int get_procspeed (void)
 {
   FILE *cpuinfo;
-  int procspeed = 0;
+  int procspeed = 1;
   char buf[BUFFERLEN];
   float st;			/* speed temp */
   int found = 0;
@@ -124,7 +131,7 @@ void get_hwinfo (struct computer_hwinfo *hwinfo)
 {
   if (gethostname (hwinfo->name,MAXNAMELEN-1) == -1) {
     perror ("get_hwinfo: gethostname");
-    exit (1);
+    kill(0,SIGINT);
   }
   hwinfo->arch = ARCH_MIPS;
   hwinfo->os = OS_IRIX;
@@ -136,12 +143,66 @@ void get_hwinfo (struct computer_hwinfo *hwinfo)
 
 t_proctype get_proctype (void)
 {
-  return PROCTYPE_MIPSR5000;
+  FILE *hinv;
+  char buf[BUFFERLEN];
+  t_proctype proctype = PROCTYPE_UNKNOWN;
+  int found = 0;
+
+  if ((hinv = popen ("/sbin/hinv","r")) == NULL) {
+    fprintf (stderr,"Warning: Problems executing '/sbin/hinv'\n");
+    return proctype;
+  }
+
+  while (fgets (buf,BUFFERLEN,hinv) != NULL) {
+    if (strstr(buf,"CPU:") != NULL) {
+      if (strstr(buf,"R5000") != NULL) {
+	proctype = PROCTYPE_MIPSR5000;
+	found = 1;
+      } else if (strstr(buf,"R10000") != NULL) {
+	proctype = PROCTYPE_MIPSR10000;
+	found = 1;
+      }
+    }
+  }
+
+  pclose (hinv);
+
+  if (!found) {
+    fprintf (stderr,"Warning processor type not listed or couldn't be found\n");
+  }
+  
+  return proctype;
 }
 
 int get_procspeed (void)
 {
-  return 200;
+  FILE *hinv;
+  int procspeed = 1;
+  char buf[BUFFERLEN];
+  int nprocs;			/* number of cpus */
+  int found = 0;
+
+  if ((hinv = popen ("/sbin/hinv","r")) == NULL) {
+    fprintf (stderr,"Warning: Problems executing '/sbin/hinv'\n");
+    return procspeed;
+  }
+
+  while (fgets (buf,BUFFERLEN,hinv) != NULL) {
+    if (strstr(buf,"MHZ") != NULL) {
+      /* The MHz are the second number on this line */
+      if (sscanf (buf,"%i %i",&nprocs,&procspeed) == 2) {
+	found = 1;
+      }
+    }
+  }
+
+  if (!found) {
+    fprintf (stderr,"ERROR: Proc speed not found on\n");
+  }
+
+  pclose (hinv);
+
+  return procspeed;
 }
 
 int get_numproc (void)
