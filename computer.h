@@ -73,5 +73,6 @@ void computer_pool_add (struct computer_limits *cl, char *pool);
 void computer_pool_remove (struct computer_limits *cl, char *pool);
 void computer_pool_list (struct computer_limits *cl);
 int computer_pool_exists (struct computer_limits *cl,char *pool);
+void computer_pool_free (struct computer_limits *cl);
 
 #endif /* _COMPUTER_H_ */

@@ -285,6 +285,18 @@ int computer_pool_exists (struct computer_limits *cl,char *pool)
 	return 0;
 }
 
+void computer_pool_free (struct computer_limits *cl)
+{
+	int i;
+
+	if (cl->pool) {
+		for (i=0;cl->pool[i]!=NULL;i++)
+			free (cl->pool[i]);
+		free (cl->pool);
+		cl->pool = NULL;
+	}
+}
+
 int computer_ncomputers_masterdb (struct database *wdb)
 {
   /* Returns the number of computers that are registered in the master database */
