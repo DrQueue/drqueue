@@ -625,9 +625,12 @@ int send_string (int sfd, char *str)
 	lensw = htons (len);
 	if (!dr_write (sfd,&lensw,sizeof (len)))
 		return 0;
+	fprintf (stderr,"Send strlen: %u\n",len);
 
 	if (!dr_write (sfd,str,len))
 		return 0;
+
+	fprintf (stderr,"Send str: %s\n",str);
 
 	return 1;
 }
@@ -639,9 +642,15 @@ int recv_string (int sfd, char **str)
 	if (!dr_read (sfd,&len,sizeof(len)))
 		return 0;
 
+	len = ntohs (len);
+	fprintf (stderr,"Recv strlen: %u\n",len);
+
+
 	*str = (char *) malloc (len);
 	if (!dr_read (sfd,*str,len))
 		return 0;
+
+	fprintf (stderr,"Recv str: %s\n",*str);
 
 	return 1;
 }
@@ -659,8 +668,8 @@ int send_computer_pools (int sfd, struct computer_limits *cl)
 	}
 
 	for (i=0;cl->pool[i] != NULL; i++) 
-
-	computer_pool_list (cl);
+		if (!send_string (sfd,cl->pool[i]))
+			return 0;
 
 	return 1;
 }
@@ -669,7 +678,7 @@ int recv_computer_pools (int sfd, struct computer_limits *cl)
 {
 	uint16_t npools;
 	int i;
-	char *string;
+	char *str;
 
 	if (!dr_read (sfd,&npools,sizeof(npools))) {
 		return 0;
@@ -677,12 +686,13 @@ int recv_computer_pools (int sfd, struct computer_limits *cl)
 	npools = ntohs (npools);
 	fprintf (stderr,"Recv npools: %u\n",npools);
 
-	computer_pool_free (cl);
-
 	for (i = 0; i < (npools-1); i++) {
-		recv_string (sfd,&string);
-		computer_pool_add (cl,string);
+		recv_string (sfd,&str);
+		computer_pool_add (cl,str);
+		fprintf (stderr,"Added :%s\n",str);
 	}
+
+	computer_pool_list (cl);
 
 	return 1;
 }

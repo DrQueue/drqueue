@@ -202,7 +202,6 @@ void computer_init (struct computer *computer)
 	// This function is called by the master when a computer is not longer on the list
   computer->used = 0;
   computer_status_init(&computer->status);
-	computer_pool_free (&computer->limits);
 }
 
 void computer_pool_init (struct computer_limits *cl)
@@ -269,18 +268,25 @@ void computer_pool_list (struct computer_limits *cl)
 	int i;
 
 	fprintf (stderr,"Pools:\n");
-	for (i=0;cl->pool[i] != NULL; i++)
-		fprintf (stderr,"\t* %s\n",cl->pool[i]);
+	if (cl->pool) 
+		for (i=0;cl->pool[i] != NULL; i++)
+			fprintf (stderr,"\t* %s\n",cl->pool[i]);
+	else
+		computer_pool_init (cl);
 }
 
 int computer_pool_exists (struct computer_limits *cl,char *pool)
 {
 	int i;
 
-	for (i=0;cl->pool[i] != NULL; i++) {
-		if (strncmp(cl->pool[i],pool,strlen(pool)+1) == 0) {
-			return 1;
+	if (cl->pool) {
+		for (i=0;cl->pool[i] != NULL; i++) {
+			if (strncmp(cl->pool[i],pool,strlen(pool)+1) == 0) {
+				return 1;
+			}
 		}
+	} else {
+		computer_pool_init (cl);
 	}
 
 	return 0;

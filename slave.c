@@ -88,6 +88,7 @@ int main (int argc,char *argv[])
   report_hwinfo (&sdb.comp->hwinfo);
 
   register_slave (sdb.comp);
+	computer_pool_add (&sdb.comp->limits,"Pool 1");
   update_computer_limits(&sdb.comp->limits); /* Does not need to be locked because at this point */
 																/* because there is only one process running. The rest of the time */
 																/* either we call it locked or we make a copy of the limits while locked */
@@ -112,6 +113,8 @@ int main (int argc,char *argv[])
 		slave_consistency_process (&sdb);
 		exit (0);
 	}
+
+
 
   while (1) {
     get_computer_status (&sdb.comp->status,sdb.semid);
