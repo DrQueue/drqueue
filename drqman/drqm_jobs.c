@@ -974,10 +974,10 @@ static GtkWidget *DeleteJobDialog (struct drqm_jobs_info *info)
   button = gtk_button_new_with_label ("Yes");
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->action_area),button, TRUE, TRUE, 5);
   gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(djd_bok_pressed),info);
-	gtk_signal_connect_object(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(gtk_widget_destroy),
-					(GtkObject*)info->jdd.dialog);
   gtk_signal_connect_object(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(gtk_widget_destroy),
 			    (GtkObject*)dialog);
+	gtk_signal_connect_object(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(gtk_widget_destroy),
+					(GtkObject*)info->jdd.dialog);
 
   button = gtk_button_new_with_label ("No");
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->action_area),button, TRUE, TRUE, 5);
@@ -994,6 +994,7 @@ static GtkWidget *DeleteJobDialog (struct drqm_jobs_info *info)
 static void djd_bok_pressed (GtkWidget *button, struct drqm_jobs_info *info)
 {
   drqm_request_job_delete (info);
+	dnj_destroyed (button,info);
 }
 
 static void StopJob (GtkWidget *menu_item, struct drqm_jobs_info *info)
