@@ -1,13 +1,18 @@
-/* $Id: drerrno.c,v 1.2 2001/08/06 12:33:50 jorge Exp $ */
+/* $Id: drerrno.c,v 1.3 2001/08/08 10:52:58 jorge Exp $ */
 
 #include "drerrno.h"
 #include "constants.h"
+
+int drerrno = DRE_NODRMAENV;
 
 char *drerrno_str (void)
 {
   char *msg;
 
   switch (drerrno) {
+  case DRE_NOERROR:
+    msg = "No error";
+    break;
   case DRE_NODRMAENV:
     msg = "DRQUEUE_MASTER not defined on environment";
     break;

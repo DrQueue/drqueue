@@ -1,10 +1,11 @@
-/* $Id: drerrno.h,v 1.2 2001/08/06 12:33:51 jorge Exp $ */
+/* $Id: drerrno.h,v 1.3 2001/08/08 10:52:59 jorge Exp $ */
 
 #ifndef _DRERRNO_H_
 #define _DRERRNO_H_
 
-int drerrno;			/* global errno */
+extern int drerrno;		/* global errno */
 
+#define DRE_NOERROR         0	/* No error */
 #define DRE_NODRMAENV       1	/* No DRQUEUE_MASTER on the environment */
 #define DRE_NOTRESOLV       2	/* Could not resolve hostname */
 #define DRE_NOSOCKET        3	/* Could not open socket */
