@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_computers.c,v 1.7 2001/08/28 21:49:25 jorge Exp $
+ * $Id: drqm_computers.c,v 1.8 2001/08/29 15:26:32 jorge Exp $
  */
 
 #include <stdlib.h>
@@ -20,6 +20,7 @@ static GtkWidget *CreateMenu (struct info_drqm_computers *info);
 static void ComputerDetails(GtkWidget *menu_item, struct info_drqm_computers *info);
 static GtkWidget *ComputerDetailsDialog (struct info_drqm_computers *info);
 static int cdd_update (GtkWidget *w, struct info_drqm_computers *info);
+static GtkWidget *CreateTasksClist (void);
 
 
 void CreateComputersPage (GtkWidget *notebook,struct info_drqm *info)
@@ -38,19 +39,19 @@ void CreateComputersPage (GtkWidget *notebook,struct info_drqm *info)
   gtk_container_add(GTK_CONTAINER(container),vbox);
 
   /* Clist */
-  clist = CreateComputersList (&info->ct);
+  clist = CreateComputersList (&info->idc);
   gtk_box_pack_start(GTK_BOX(vbox),clist,TRUE,TRUE,2);
   
   /* Button refresh */
-  buttonRefresh = CreateButtonRefresh (&info->ct);
+  buttonRefresh = CreateButtonRefresh (&info->idc);
   gtk_box_pack_end(GTK_BOX(vbox),buttonRefresh,FALSE,FALSE,2);
 
   /* Append the page */
   gtk_notebook_append_page (GTK_NOTEBOOK(notebook), container, label);
 
   /* Put the computers on the list */
-  drqm_request_computerlist (&info->ct);
-  drqm_update_computerlist (&info->ct);
+  drqm_request_computerlist (&info->idc);
+  drqm_update_computerlist (&info->idc);
 
   gtk_widget_show(clist);
   gtk_widget_show(vbox);
@@ -211,7 +212,7 @@ static GtkWidget *ComputerDetailsDialog (struct info_drqm_computers *info)
   gtk_window_set_title (GTK_WINDOW(window),"Computer Details");
   gtk_signal_connect_object(GTK_OBJECT(window),"destroy",GTK_SIGNAL_FUNC(gtk_widget_destroy),
 			    (GtkObject*)window);
-  gtk_window_set_default_size(GTK_WINDOW(window),800,500);
+  gtk_window_set_default_size(GTK_WINDOW(window),1000,500);
   gtk_container_set_border_width (GTK_CONTAINER(window),5);
   info->cdd.dialog = window;
 
@@ -238,16 +239,56 @@ static GtkWidget *ComputerDetailsDialog (struct info_drqm_computers *info)
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
   info->cdd.lname = label;
 
+  /* OS information */
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("OS:");
+  gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  label = gtk_label_new (NULL);
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  info->cdd.los = label;
 
-  /* Clist with the proc info */
+  /* CPU information */
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("CPU Info:");
+  gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  label = gtk_label_new (NULL);
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  info->cdd.lcpuinfo = label;
+
+  /* Load average */
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Load average:");
+  gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  label = gtk_label_new (NULL);
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  info->cdd.lloadavg = label;
+
+  /* Number of tasks running */
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Number of tasks running:");
+  gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  label = gtk_label_new (NULL);
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  info->cdd.lntasks = label;
+
+
+  /* Clist with the task info */
   /* Frame */
-  frame = gtk_frame_new ("Processor information");
+  frame = gtk_frame_new ("Task information");
   gtk_box_pack_start (GTK_BOX(vbox),frame,TRUE,TRUE,2);
   swin = gtk_scrolled_window_new (NULL,NULL);
   gtk_container_add (GTK_CONTAINER(frame),swin);
-/*    clist = CreateFrameInfoClist (); */
-/*    gtk_container_add (GTK_CONTAINER(swin),clist); */
-/*    info->cdd.clist = clist; */
+  clist = CreateTasksClist ();
+  gtk_container_add (GTK_CONTAINER(swin),clist);
+  info->cdd.clist = clist;
 
   if (!cdd_update (window,info)) {
     gtk_widget_destroy (GTK_WIDGET(window));
@@ -265,8 +306,137 @@ static GtkWidget *ComputerDetailsDialog (struct info_drqm_computers *info)
   return window;
 }
 
+static GtkWidget *CreateTasksClist (void)
+{
+  gchar *titles[] = { "ID","Status","Job name","Job index","Owner","Frame","PID","Start","End"};
+  GtkWidget *clist;
+
+  clist = gtk_clist_new_with_titles (9, titles);
+  gtk_clist_column_titles_show(GTK_CLIST(clist));
+  gtk_clist_column_titles_passive(GTK_CLIST(clist));
+  gtk_clist_set_column_width (GTK_CLIST(clist),0,40);
+  gtk_clist_set_column_width (GTK_CLIST(clist),1,95);
+  gtk_clist_set_column_width (GTK_CLIST(clist),2,150);
+  gtk_clist_set_column_width (GTK_CLIST(clist),3,75);
+  gtk_clist_set_column_width (GTK_CLIST(clist),4,85);
+  gtk_clist_set_column_width (GTK_CLIST(clist),5,45);
+  gtk_clist_set_column_width (GTK_CLIST(clist),6,45);
+  gtk_clist_set_column_width (GTK_CLIST(clist),7,180);
+  gtk_clist_set_column_width (GTK_CLIST(clist),8,180);
+
+  gtk_widget_show(clist);
+
+  return (clist);
+
+}
+
 static int cdd_update (GtkWidget *w, struct info_drqm_computers *info)
 {
+  /* This function depends on info->icomp properly set */
+  char msg[BUFFERLEN];
+  char *buf;
+  char **buff;			/* for hte clist stuff */
+  int ncols = 7;
+  int i;
+
+  if (!request_job_xfer(info->ijob,&info->jobs[info->ijob],CLIENT)) {
+    if (drerrno == DRE_NOTREGISTERED) {
+      gtk_object_destroy (GTK_OBJECT(info->jdd.dialog));
+/*        gtk_widget_destroy (info->jdd.dialog); */
+/*        gtk_signal_emit_by_name (GTK_OBJECT(info->jdd.dialog),"destroy"); */
+    } else {
+      fprintf (stderr,"Error request job xfer: %s\n",drerrno_str());
+    }
+    return 0;
+  }
+
+  nframes = job_nframes (&info->jobs[info->ijob]);
+
+  if (!info->jobs[info->ijob].frame_info) {
+    if (!(fi = malloc(sizeof (struct frame_info) * nframes))) {
+      fprintf (stderr,"Error allocating memory for frame information\n");
+      return 0;
+    }
+
+    if (!request_job_xferfi (info->ijob,fi,nframes,CLIENT)) {
+      fprintf (stderr,"Error request job frame info xfer: %s\n",drerrno_str());
+      free (fi);
+      return 0;
+    }
+
+    info->jobs[info->ijob].frame_info = fi;
+  }
+
+  gtk_label_set_text (GTK_LABEL(info->jdd.lname),info->jobs[info->ijob].name);
+  gtk_label_set_text (GTK_LABEL(info->jdd.lcmd),info->jobs[info->ijob].cmd);
+  gtk_label_set_text (GTK_LABEL(info->jdd.lstatus),job_status_string(info->jobs[info->ijob].status));
+  
+  snprintf(msg,BUFFERLEN-1,"From %i to %i every %i",
+	   info->jobs[info->ijob].frame_start,
+	   info->jobs[info->ijob].frame_end,
+	   info->jobs[info->ijob].frame_step);
+  gtk_label_set_text (GTK_LABEL(info->jdd.lstartend),msg);
+  
+  snprintf(msg,BUFFERLEN-1,"%i",info->jobs[info->ijob].priority);
+  gtk_label_set_text (GTK_LABEL(info->jdd.lpri),msg);
+
+  snprintf(msg,BUFFERLEN-1,"%i,%i,%i,%i",
+	   info->jobs[info->ijob].nprocs,
+	   info->jobs[info->ijob].fleft,
+	   info->jobs[info->ijob].fdone,
+	   info->jobs[info->ijob].ffailed);
+  gtk_label_set_text (GTK_LABEL(info->jdd.lfrldf),msg);
+
+  if ((info->jobs[info->ijob].avg_frame_time / 3600) > 0) {
+    snprintf(msg,BUFFERLEN-1,"%li hours %li minutes %li seconds",
+	     info->jobs[info->ijob].avg_frame_time / 3600,
+	     (info->jobs[info->ijob].avg_frame_time % 3600) / 60,
+	     (info->jobs[info->ijob].avg_frame_time % 3600) % 60);
+  } else if ((info->jobs[info->ijob].avg_frame_time / 60) > 0) {
+    snprintf(msg,BUFFERLEN-1,"%li minutes %li seconds",
+	     (info->jobs[info->ijob].avg_frame_time) / 60,
+	     (info->jobs[info->ijob].avg_frame_time) % 60);
+  } else {
+    snprintf(msg,BUFFERLEN-1,"%li seconds",
+	     info->jobs[info->ijob].avg_frame_time);
+  }
+  gtk_label_set_text (GTK_LABEL(info->jdd.lavgt),msg);
+  
+  snprintf(msg,BUFFERLEN-1,"%s",ctime(&info->jobs[info->ijob].est_finish_time));
+  buf = strchr (msg,'\n');
+  if (buf != NULL)
+    *buf = '\0';
+  gtk_label_set_text (GTK_LABEL(info->jdd.lestf),msg);
+
+
+  buff = (char**) g_malloc((ncols + 1) * sizeof(char*));
+  for (i=0;i<ncols;i++)
+    buff[i] = (char*) g_malloc (BUFFERLEN);
+  buff[ncols] = NULL;
+  
+  gtk_clist_freeze(GTK_CLIST(info->jdd.clist));
+  gtk_clist_clear(GTK_CLIST(info->jdd.clist));
+  for (i=0; i < nframes; i++) {
+    snprintf (buff[0],BUFFERLEN-1,"%i",job_frame_index_to_number (&info->jobs[info->ijob],i));
+    strncpy(buff[1],job_frame_status_string(info->jobs[info->ijob].frame_info[i].status),BUFFERLEN);
+    if (info->jobs[info->ijob].frame_info[i].status != FS_WAITING) {
+      strncpy(buff[2],ctime(&info->jobs[info->ijob].frame_info[i].start_time),BUFFERLEN); 
+      strncpy(buff[3],ctime(&info->jobs[info->ijob].frame_info[i].end_time),BUFFERLEN);
+    } else {
+      strncpy(buff[2],"Not started",BUFFERLEN); 
+      strncpy(buff[3],"Not started",BUFFERLEN);
+    }      
+    snprintf (buff[4],BUFFERLEN,"%i",info->jobs[info->ijob].frame_info[i].exitcode);
+    snprintf (buff[5],BUFFERLEN,"%i",info->jobs[info->ijob].frame_info[i].icomp);
+    snprintf (buff[6],BUFFERLEN,"%i",info->jobs[info->ijob].frame_info[i].itask);
+    gtk_clist_append(GTK_CLIST(info->jdd.clist),buff);
+  }
+
+  gtk_clist_thaw(GTK_CLIST(info->jdd.clist));
+
+  for(i=0;i<ncols;i++)
+    g_free (buff[i]);
+
   return 1;
 }
 
