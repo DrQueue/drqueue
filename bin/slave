@@ -1,19 +1,29 @@
 #!/bin/sh
 #
-# $Id: slave,v 1.4 2002/12/02 22:42:25 jorge Exp $
+# $Id: slave,v 1.5 2004/04/26 16:25:51 jorge Exp $
 #
 # Slave starting program that restarts the slave after failure
 #
-    
-if [ `uname -s` == "Linux" ]; then
-  while [ 1 ]; do
-    $DRQUEUE_ROOT/bin/slave.linux $*
-    sleep 60
-  done
-else
-  echo "Irix"
-  while [ 1 ]; do
-    $DRQUEUE_ROOT/bin/slave.irix $*
-    sleep 60
-  done
+
+if [ ! $DRQUEUE_ROOT ]; then
+  echo ERROR: DRQUEUE_ROOT not set in environment
+  exit 1
 fi
+
+if [ ! $DRQUEUE_MASTER ]; then
+  echo ERROR: DRQUEUE_MASTER not set in environment
+  exit 2
+fi
+
+SLAVE_CMD=$DRQUEUE_ROOT/bin/slave.`uname -s`
+
+if [ ! -x $SLAVE_CMD ]; then
+  echo ERROR: slave for your platform \(slave.`uname -s`\) does not exist in $DRQUEUE_ROOT/bin.
+  echo Perhaps you did not install it \(make miniinstall or make install\).
+  exit 3
+fi
+
+while [ 1 ]; do
+  $SLAVE_CMD $*
+  sleep 60
+done

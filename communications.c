@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.55 2004/01/23 03:27:59 jorge Exp $ */
+/* $Id: communications.c,v 1.56 2004/04/26 16:25:51 jorge Exp $ */
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -21,6 +21,13 @@
 #include "job.h"
 #include "drerrno.h"
 #include "task.h"
+
+#ifdef LIBWRAP
+#include <tcpd.h>
+#include <syslog.h>
+int allow_severity = LOG_INFO;
+int deny_severity = LOG_WARNING;
+#endif /* LIBWRAP */
 
 #ifdef COMM_REPORT
 long int bsent;			/* Bytes sent */
@@ -67,6 +74,22 @@ int accept_socket (int sfd,struct database *wdb,struct sockaddr_in *addr)
     exit (1);
   }
 
+#ifdef LIBWRAP
+  /* Check whether logins are denied from this host. */
+  {
+    struct request_info req;
+    
+    request_init(&req, RQ_DAEMON, "drqueue-master", RQ_FILE, fd, 0);
+    fromhost(&req);
+    
+    if (!hosts_access(&req)) {
+      close(fd);
+      log_master (L_WARNING,"Connection refused by tcp wrapper.");
+      return (-1);
+    }
+  }
+#endif /* LIBWRAP */
+
   return fd;
 }
 
@@ -80,6 +103,24 @@ int accept_socket_slave (int sfd)
     log_slave_computer (L_ERROR,"Accepting connection.");
     exit (1);
   }
+
+#ifdef LIBWRAP
+  /* Check whether logins are denied from this host. */
+  {
+  printf ("cleb\n");
+    struct request_info req;
+    
+    request_init(&req, RQ_DAEMON, "drqueue-slave", RQ_FILE, fd, 0);
+    fromhost(&req);
+    
+    if (!hosts_access(&req)) {
+      close(fd);
+      log_slave_computer (L_WARNING,"Connection refused by tcp wrapper.");
+      return (-1);
+    }
+  }
+#endif /* LIBWRAP */
+
 
   return fd;
 }

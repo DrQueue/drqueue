@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.64 2004/02/24 10:39:28 jorge Exp $ */
+/* $Id: slave.c,v 1.65 2004/04/26 16:25:51 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -15,6 +15,9 @@
 
 #ifdef __OSX
 # include <sys/select.h>
+#endif
+#ifdef __FREEBSD
+# define SIGCLD SIGCHLD
 #endif
 
 #include "slave.h"

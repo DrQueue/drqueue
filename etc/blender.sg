@@ -22,14 +22,14 @@
 #
 #
 
-set BLOCK=`expr $FRAME + $BLOCKSIZE - 1`
-if ($BLOCK > $ENDFRAME) then
-	BLOCK = $ENDFRAME;
+set BLOCK=`expr $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
+if ($BLOCK > $DRQUEUE_ENDFRAME) then
+	BLOCK = $DRQUEUE_ENDFRAME;
 endif
 
-echo blender -b $SCENE -s $FRAME -e $BLOCK -a
+echo blender -b $SCENE -s $DRQUEUE_FRAME -e $BLOCK -a
 
-blender -b $SCENE -s $FRAME -e $BLOCK -a
+blender -b $SCENE -s $DRQUEUE_FRAME -e $BLOCK -a
 
 # This should requeue the frame if failed
 if ( $? != 0 ) then
@@ -38,7 +38,7 @@ if ( $? != 0 ) then
 else
   # The frame was rendered properly
 	# We don't know the output image name. If we knew we could set this correctly
-  # chown_block $RF_OWNER $RD/$IMAGE $FRAME $BLOCK 
+  # chown_block $RF_OWNER $RD/$IMAGE $DRQUEUE_FRAME $BLOCK 
 endif
 
 #
