@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.46 2001/09/18 12:38:40 jorge Exp $ */
+/* $Id: slave.c,v 1.47 2001/09/18 12:58:46 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -330,12 +330,8 @@ void launch_task (struct slave_database *sdb)
       /* This child execs the command */
       /* This child also creates the directory for logging if it doesn't exist */
       /* and prepares the file descriptors so every output will be logged */
-      const char *new_argv[64];
-
+      const char *new_argv[4];
       int lfd;			/* logger fd */
-/*        int i,len; */
-/*        const char *targ; */
-/*        char cmd[MAXCMDLEN]; */
 
       new_argv[0] = SHELL_NAME;
       new_argv[1] = "-c";
@@ -344,18 +340,6 @@ void launch_task (struct slave_database *sdb)
 
       setpgid(0,0);		/* So this process doesn't receive signals from the others */
       set_signal_handlers_task_exec ();
-/*        strncpy(cmd,sdb->comp->status.task[sdb->itask].jobcmd,MAXCMDLEN); */
-/*        len = strlen (cmd); */
-/*        zerocmd (cmd); */
-/*        for (i=0;i<64;i++) { */
-/*  	if ((targ = parse_arg(cmd,i,len)) != NULL) { */
-/*  	  new_argv[i] = targ; */
-/*  	  printf ("new argv %i: %s\n",i,new_argv[i]); */
-/*  	} else { */
-/*  	  break; */
-/*  	} */
-/*        } */
-/*        new_argv[i] = NULL; */
 
       if ((lfd = log_dumptask_open (&sdb->comp->status.task[sdb->itask])) != -1) {
 	dup2 (lfd,STDOUT_FILENO);
@@ -365,7 +349,6 @@ void launch_task (struct slave_database *sdb)
 
       task_environment_set(&sdb->comp->status.task[sdb->itask]);
 
-/*        execve(new_argv[0],(char*const*)new_argv,environ); */
       execve(SHELL_PATH,(char*const*)new_argv,environ);
       perror("execve");
       exit(errno);		/* If we arrive here, something happened exec'ing */
