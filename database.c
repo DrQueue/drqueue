@@ -1,4 +1,4 @@
-/* $Id: database.c,v 1.8 2001/11/02 16:12:19 jorge Exp $ */
+/* $Id: database.c,v 1.9 2001/11/08 09:13:58 jorge Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <unistd.h>
 
 #include "database.h"
 #include "computer.h"
@@ -33,18 +34,85 @@ void database_init (struct database *wdb)
 
 int database_load (struct database *wdb)
 {
+  /* This function returns 1 on success and 0 on failure */
+  /* It logs failure and maybe it should leave that task to the calling function */
+  /* README : this function writes to the database without locking */
+  struct database_hdr hdr;
+  char *basedir;
+  char filename[BUFFERLEN];
+  int fd;
+  int c,d;			/* counters */
+  struct frame_info *fi;
+  int nframes;
 
+  if ((basedir = getenv("DRQUEUE_ROOT")) == NULL) {
+    /* This should never happen because we check it at the beginning of the program */
+    drerrno = DRE_NOENVROOT;
+    return 0;
+  }
+
+  snprintf(filename,BUFFERLEN-1,"%s/db/drqueue.db",basedir);
+  if ((fd = open (filename, O_RDONLY)) == -1) {
+    drerrno = DRE_ERROROPENING;
+    return 0;
+  }
+
+  read_32b (fd,&hdr.magic);
+  if (hdr.magic != DB_MAGIC) {
+    drerrno = DRE_DIFFILEFORMAT;
+    return 0;
+  }
+  read_32b (fd,&hdr.version);
+  if (hdr.version != DB_VERSION) {
+    drerrno = DRE_DIFVERSION;
+    return 0;
+  }
+  read_16b (fd,&hdr.job_size);
+  if (hdr.job_size != MAXJOBS) {
+    drerrno = DRE_DIFJOBSIZE;
+    return 0;
+  }
+
+  for (c=0;c<hdr.job_size;c++) {
+    recv_job(fd,&wdb->job[c]);
+    if (wdb->job[c].used) {
+      nframes = job_nframes (&wdb->job[c]);
+      if ((wdb->job[c].fishmid = get_frame_shared_memory (nframes)) == -1) {
+	drerrno = DRE_GETSHMEM;
+	return 0;
+      }
+      if ((fi = attach_frame_shared_memory(wdb->job[c].fishmid)) == (void *)-1) {
+	drerrno = DRE_ATTACHSHMEM;
+	return 0;
+      }
+      for (d=0;d<nframes;d++) {
+	if (!recv_frame_info (fd,&fi[d])) {
+	  /* FIXME : If there is an error we should FREE the allocated shared memory */
+	  drerrno = DRE_ERRORREADING;
+	  return 0;
+	}
+      }
+      detach_frame_shared_memory(fi);
+    }
+  }
+
+  drerrno = DRE_NOERROR;
+  close (fd);
+  return 1;
 }
 
 int database_save (struct database *wdb)
 {
   /* This function returns 1 on success and 0 on failure */
   /* It logs failure and maybe it should leave that task to the calling function */
+  /* README : this function reads from the database without locking */
   struct database_hdr hdr;
   char *basedir;
   char dir[BUFFERLEN];
   char filename[BUFFERLEN];
   int fd;
+  int c;
+  struct frame_info *fi;
 
   if ((basedir = getenv("DRQUEUE_ROOT")) == NULL) {
     /* This should never happen because we check it at the beginning of the program */
@@ -82,7 +150,42 @@ int database_save (struct database *wdb)
   write_32b (fd,&hdr.magic);
   write_32b (fd,&hdr.version);
   write_16b (fd,&hdr.job_size);
-  write_16b (fd,&hdr.computer_size);
   
+  for (c=0;c<MAXJOBS;c++) {
+    if (!send_job (fd,&wdb->job[c])) {
+      return 0;
+    }
+    if (wdb->job[c].used) {
+      int nframes = job_nframes (&wdb->job[c]);
+      int i;
+      if ((fi = attach_frame_shared_memory (wdb->job[c].fishmid)) == (void *)-1) {
+	/* If we fail to attach the frame shared memory we need to save empty frames */
+	/* because we already save the info about the job and then when loading it will try */
+	/* to load the number of frames there specified */
+	struct frame_info fi2;
+	job_frame_info_init (&fi2);
+	for (i=0;i<nframes;i++) {
+	  /* So we save empty frame infos */
+	  if (!send_frame_info(fd,&fi2)) {
+	    return 0;
+	  }
+	}
+      } else {
+	/* We have the frame info attached */
+	for (i=0;i<nframes;i++) {
+	  if (!send_frame_info(fd,&fi[i])) {
+	    detach_frame_shared_memory (fi);
+	    return 0;
+	  }
+	}
+	detach_frame_shared_memory (fi);
+      } 
+    }
+  }
+
+  return 1;
 }
+
+
+
 

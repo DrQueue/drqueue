@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.31 2001/11/02 10:53:00 jorge Exp $ */
+/* $Id: master.c,v 1.32 2001/11/08 09:14:02 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -54,7 +54,10 @@ int main (int argc, char *argv[])
   wdb->shmid = shmid;
   wdb->semid = get_semaphores (force);
 
-  database_init(wdb);
+  if (!database_load(wdb)) {
+    fprintf (stderr,"Could not load database: %s. Initializing.\n",drerrno_str());
+    database_init(wdb);
+  }
 
   if (fork() == 0) {
     fprintf (stderr,"Consistency checks at: %i\n",(int)getpid());
