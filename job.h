@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.14 2001/08/27 14:13:44 jorge Exp $ */
+/* $Id: job.h,v 1.15 2001/09/05 09:53:27 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -84,6 +84,7 @@ void job_update_info (struct database *wdb,uint32_t ijob);
 void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe);
 void job_stop (struct job *job);
 void job_continue (struct job *job);
+int job_index_correct_master (struct database *wdb,uint32_t ijob);
 
 int get_frame_shared_memory (int nframes); /* ipc shared memory */
 void *attach_frame_shared_memory (int shmid);

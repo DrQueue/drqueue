@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.24 2001/09/01 16:34:49 jorge Exp $ */
+/* $Id: job.c,v 1.25 2001/09/05 09:53:21 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -214,12 +214,25 @@ void job_update_assigned (struct database *wdb, uint32_t ijob, int iframe, int i
   /* Here we should set all the information inside the task structure (slave) */
   /* about the assigned job (master) into the remote computer */
   /* This function is called by the master, locked */
+  char msg[BUFFERLEN];
+
+  if (!job_index_correct_master (wdb,ijob)) {
+    /* Somebody could have deleted the job meanwhile */
+    return;
+  }
+
+  if (!job_frame_number_correct (&wdb->job[ijob],
+				 job_frame_index_to_number(&wdb->job[ijob],iframe))) {
+    /* Or the data could be malicious... */
+    return;
+  }
+
   wdb->job[ijob].frame_info = attach_frame_shared_memory (wdb->job[ijob].fishmid);
 
   /* The status should already be FS_ASSIGNED */
   if (wdb->job[ijob].frame_info[iframe].status != FS_ASSIGNED) {
-    fprintf (stderr,"(wdb->job[ijob].frame_info[iframe].status != FS_ASSIGNED)\n");
-    fprintf (stderr,"%s:%i\n",__FILE__,__LINE__);
+    snprintf (msg,BUFFERLEN-1,"(wdb->job[%i].frame_info[%i].status != FS_ASSIGNED)\n",ijob,iframe);
+    log_master (L_ERROR,msg);
     wdb->job[ijob].frame_info[iframe].status = FS_ASSIGNED;
   }
 
@@ -295,12 +308,15 @@ void job_update_info (struct database *wdb,uint32_t ijob)
   static int old_fdone = 0;	/* Old frames done to update or not the estimated finish time */
   static int old_nprocs = 0;	/* Same that old_fdone */
 
-  if (ijob > MAXJOBS)
-    return;
 
   log_master (L_DEBUG,"Entering job_update_info.");
 
   semaphore_lock(wdb->semid);
+
+  if (!job_index_correct_master (wdb,ijob)) {
+    /* Somebody could have deleted the job meanwhile */
+    return;
+  }
 
   total = job_nframes(&wdb->job[ijob]);
 
@@ -499,3 +515,14 @@ int job_frame_number_correct (struct job *job,uint32_t number)
 
   return 1;
 }
+
+int job_index_correct_master (struct database *wdb,uint32_t ijob)
+{
+  if (ijob > MAXJOBS)
+    return 0;
+  if (!wdb->job[ijob].used)
+    return 0;
+
+  return 1;
+}
+
