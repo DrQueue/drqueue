@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.33 2001/08/31 08:20:52 jorge Exp $ */
+/* $Id: request.c,v 1.34 2001/08/31 14:06:23 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -481,6 +481,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
     exit (0);
   }
 
+  log_master (L_DEBUG,"Updating structures to be sent");
   semaphore_lock(wdb->semid);
   job_update_assigned (wdb,ijob,iframe,icomp,itask);
   computer_update_assigned (wdb,ijob,iframe,icomp,itask);
@@ -696,16 +697,16 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
   if (task.ijob >= MAXJOBS)
     return;
 
+  semaphore_lock(wdb->semid);
   if ((!wdb->job[task.ijob].used) 
       || (strcmp(task.jobname,wdb->job[task.ijob].name) != 0)) {
     log_master (L_WARNING,"frame finished of non-existing job");
     return;
   }
-
+  log_master (L_DEBUG,"Job index correct");
 
   /* Once we have the task struct we need to update the information */
   /* on the job struct */
-  semaphore_lock(wdb->semid);
   if (task.ijob > MAXJOBS) { /* ijob is always > 0 */
     /* task.ijob out of range ! */
     log_master (L_ERROR,"ijob out of range in handle_r_r_taskfini");
@@ -713,6 +714,7 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
 
   fi = attach_frame_shared_memory(wdb->job[task.ijob].fishmid);
   if (job_frame_number_correct (&wdb->job[task.ijob],task.frame)) {
+    log_master (L_DEBUG,"Frame number correct");
     /* Frame is in range */
     task.frame = job_frame_number_to_index (&wdb->job[task.ijob],task.frame);/* frame converted to index frame */
     /* Now we should check the exit code to act accordingly */
@@ -751,7 +753,8 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
     log_master (L_ERROR,"frame out of range in handle_r_r_taskfini");
   }
   semaphore_release(wdb->semid);
-
+  
+  log_master (L_DEBUG,"Everything right. Calling job_update_info.");
   job_update_info(wdb,task.ijob);
 }
 
