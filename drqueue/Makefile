@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.44 2004/10/06 16:26:53 jorge Exp $
+# $Id: Makefile,v 1.45 2004/10/06 16:33:17 jorge Exp $
 
 CC = gcc
 CPP = g++
@@ -15,7 +15,7 @@ ifeq ($(origin INSTUID),undefined)
 INSTUID = drqueue
 endif
 
-ifeq ($(origin INSTUID),undefined)
+ifeq ($(origin INSTGID),undefined)
 INSTGID = drqueue
 endif
 
