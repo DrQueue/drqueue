@@ -77,6 +77,7 @@ static GtkWidget *dnj_limits_widgets (struct drqm_jobs_info *info);
 static GtkWidget *dnj_flags_widgets (struct drqm_jobs_info *info);
 static void dnj_flags_cbmailnotify_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info);
 static void dnj_flags_cbdifemail_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info);
+static void dnj_flags_cbjobdepend_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info);
 
 /* JOB ACTIONS */
 static GtkWidget *DeleteJobDialog (struct drqm_jobs_info *info);
@@ -849,8 +850,6 @@ static int dnj_submit (struct drqmj_dnji *info)
 
   /* Flags */
   job.flags = 0;
-	//	job.flags |= JF_DEPEND;
-	//	job.dependid = 0;
   if (GTK_TOGGLE_BUTTON(info->flags.cbmailnotify)->active) {
     job.flags = job.flags | (JF_MAILNOTIFY);
   }
@@ -860,6 +859,10 @@ static int dnj_submit (struct drqmj_dnji *info)
   } else {
     strncpy(job.email,job.owner,MAXNAMELEN-1);
   }
+	if (GTK_TOGGLE_BUTTON(info->flags.cbjobdepend)->active) {
+		job.flags |= JF_JOBDEPEND;
+		job.dependid = atoi (gtk_entry_get_text(GTK_ENTRY(info->flags.ejobdepend)));
+	}
 
   if (!register_job (&job))
     return 0;
@@ -1234,8 +1237,35 @@ GtkWidget *dnj_flags_widgets (struct drqm_jobs_info *info)
   gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.flags.cbdifemail),FALSE);
   gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.flags.edifemail),FALSE);
 
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,TRUE,FALSE,2);
+
+  cbutton = gtk_check_button_new_with_label ("Job depends on another");
+  gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
+  gtk_tooltips_set_tip(tooltips,cbutton,"When set DrQueue won't render any frame until it's related is finished",NULL);
+  g_signal_connect (G_OBJECT(cbutton),"toggled",G_CALLBACK(dnj_flags_cbjobdepend_toggled),info);
+  info->dnj.flags.cbjobdepend = cbutton;
+
+  entry = gtk_entry_new ();
+  gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
+  gtk_tooltips_set_tip(tooltips,entry,"Write here the job index to depend on",NULL);
+  info->dnj.flags.ejobdepend = entry;
+
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.flags.cbjobdepend),FALSE);
+  gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.flags.ejobdepend),FALSE);
+
   return (frame);
 }
+
+void dnj_flags_cbjobdepend_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info)
+{
+  if (GTK_TOGGLE_BUTTON(info->dnj.flags.cbjobdepend)->active) {
+    gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.flags.ejobdepend),TRUE);
+  } else {
+    gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.flags.ejobdepend),FALSE);
+  }
+}
+
 
 void dnj_flags_cbdifemail_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info)
 {

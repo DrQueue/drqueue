@@ -1732,7 +1732,7 @@ GtkWidget *jdd_flags_widgets (struct drqm_jobs_info *info)
   hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start (GTK_BOX(vbox),hbox,TRUE,FALSE,2);
 
-  if (info->jdd.job.flags & (JF_MAILNOTIFY)) {
+  if (info->jdd.job.flags & JF_MAILNOTIFY) {
     snprintf (msg,BUFFERLEN-1,"Mail notifications: ON going to email: %s",info->jdd.job.email);
     label = gtk_label_new (msg);
   } else {
@@ -1741,6 +1741,14 @@ GtkWidget *jdd_flags_widgets (struct drqm_jobs_info *info)
 /*    GTK_WIDGET_UNSET_FLAGS(GTK_WIDGET(label),GTK_CAN_FOCUS); */
   gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
 
+	// Job dependencies
+	if (info->jdd.job.flags & JF_JOBDEPEND) {
+		hbox = gtk_hbox_new (TRUE,2);
+		gtk_box_pack_start (GTK_BOX(vbox),hbox,TRUE,FALSE,2);
+		snprintf (msg,BUFFERLEN,"Job depends on %i",info->jdd.job.dependid);
+		label = gtk_label_new (msg);
+		gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+	}
 
   return (frame);
 }
