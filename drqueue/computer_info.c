@@ -1,4 +1,4 @@
-/* $Id: computer_info.c,v 1.16 2004/10/09 03:31:30 jorge Exp $ */
+/* $Id$ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -47,7 +47,7 @@ t_proctype get_proctype (void)
   while (!(found || feof (cpuinfo))) {
     fgets (buf,BUFFERLEN-1,cpuinfo);
     if (strstr(buf,"model name") != NULL) {
-			if (strstr(buf,"AMD Opteron") != NULL) {
+			if (strstr(buf,"Opteron") != NULL) {
 				proctype = PROCTYPE_OPTERON;
       } else if (strstr(buf,"AMD Athlon") != NULL) {
 				proctype = PROCTYPE_ATHLON;
