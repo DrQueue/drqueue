@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.21 2001/08/06 12:40:08 jorge Exp $ */
+/* $Id: request.c,v 1.22 2001/08/07 13:03:01 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -57,6 +57,18 @@ void handle_request_master (int sfd,struct database *wdb,int icomp)
   case R_R_DELETJOB:
     log_master (L_DEBUG,"Request job deletion");
     handle_r_r_deletjob (sfd,wdb,icomp);
+    break;
+  case R_R_STOPJOB:
+    log_master (L_DEBUG,"Request job stop");
+    handle_r_r_stopjob (sfd,wdb,icomp,&request);
+    break;
+  case R_R_CONTJOB:
+    log_master (L_DEBUG,"Request job continue");
+    handle_r_r_contjob (sfd,wdb,icomp,&request);
+    break;
+  case R_R_HSTOPJOB:
+    log_master (L_DEBUG,"Request job hard stop");
+    handle_r_r_hstopjob (sfd,wdb,icomp,&request);
     break;
   default:
     log_master (L_WARNING,"Unknown request");
@@ -498,7 +510,11 @@ void request_task_finished (struct slave_database *sdb)
 
   req.type = R_R_TASKFINI;
 
-  send_request (sfd,&req,SLAVE_LAUNCHER);
+  if (!send_request (sfd,&req,SLAVE_LAUNCHER)) {
+    log_slave_computer (L_WARNING,"Error sending request");
+    return;
+  }
+
   recv_request (sfd,&req,SLAVE_LAUNCHER);
 
   if (req.type == R_A_TASKFINI) {
@@ -552,6 +568,9 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
 
   /* Receive task */
   recv_task(sfd,&task,MASTER);
+
+  if (task.jobindex >= MAXJOBS)
+    return;
 
   if ((!wdb->job[task.jobindex].used) 
       || (strcmp(task.jobname,wdb->job[task.jobindex].name) != 0)) {
@@ -703,6 +722,9 @@ void handle_r_r_deletjob (int sfd,struct database *wdb,int icomp)
   recv_job (sfd,&job,MASTER);
 
   ijob = (uint32_t) job.id;
+  
+  if (ijob >= MAXJOBS)
+    return;
 
   semaphore_lock (wdb->semid);
 
@@ -716,9 +738,9 @@ void handle_r_r_deletjob (int sfd,struct database *wdb,int icomp)
       }
     }
     detach_frame_shared_memory (fi);
-  }
 
-  job_delete (&wdb->job[(int)job.id]);
+    job_delete (&wdb->job[ijob]);
+  }
 
   semaphore_release (wdb->semid);
 }
@@ -752,4 +774,147 @@ void handle_rs_r_killtask (int sfd,struct slave_database *sdb,struct request *re
   /* This function is called by the slave unlocked */
   kill(sdb->comp->status.task[req->data_s].pid,SIGTERM);
 }
+
+int request_job_stop (uint32_t ijob, int who)
+{
+  /* On error returns 0, error otherwise drerrno is set to the error */
+  int sfd;
+  struct request req;
+
+  if ((sfd = connect_to_master ()) == -1) {
+    drerrno = DRE_NOCONNECT;
+    return 0;
+  }
+
+  req.type = R_R_STOPJOB;
+  req.data_s = (uint16_t) ijob;
+
+  send_request (sfd,&req,who);
+
+  close (sfd);
+  return 1;
+}
+
+int request_job_continue (uint32_t ijob, int who)
+{
+  /* On error returns 0, error otherwise drerrno is set to the error */
+  int sfd;
+  struct request req;
+
+  if ((sfd = connect_to_master ()) == -1) {
+    drerrno = DRE_NOCONNECT;
+    return 0;
+  }
+
+  req.type = R_R_CONTJOB;
+  req.data_s = (uint16_t) ijob;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORSENDING;
+    return 0;
+  }
+
+  close (sfd);
+  return 1;
+}
+
+void handle_r_r_stopjob (int sfd,struct database *wdb,int icomp,struct request *req)
+{
+  /* The master handles this type of packages */
+  /* This function is called unlocked */
+  /* This function is called by the master */
+  uint32_t ijob;
+
+  ijob = (uint32_t) req->data_s;
+
+  if (ijob >= MAXJOBS)
+    return;
+
+  semaphore_lock (wdb->semid);
+
+  if (wdb->job[ijob].used) {
+    job_stop (&wdb->job[ijob]);
+  }
+
+  semaphore_release (wdb->semid);
+}
+
+void handle_r_r_contjob (int sfd,struct database *wdb,int icomp,struct request *req)
+{
+  /* The master handles this type of packages */
+  /* This function is called unlocked */
+  /* This function is called by the master */
+  uint32_t ijob;
+
+  ijob = (uint32_t) req->data_s;
+
+  if (ijob >= MAXJOBS)
+    return;
+
+  semaphore_lock (wdb->semid);
+
+  if (wdb->job[ijob].used) {
+    job_continue (&wdb->job[ijob]);
+  }
+
+  semaphore_release (wdb->semid);
+}
+
+void handle_r_r_hstopjob (int sfd,struct database *wdb,int icomp,struct request *req)
+{
+  /* The master handles this type of packages */
+  /* This function is called unlocked */
+  /* This function is called by the master */
+  int i;
+  uint32_t ijob;
+  struct frame_info *fi;
+  int nframes;
+
+  ijob = (uint32_t) req->data_s;
+  
+  if (ijob >= MAXJOBS)
+    return;
+
+  semaphore_lock (wdb->semid);
+
+  if (wdb->job[ijob].used) {
+    fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
+    nframes = job_nframes (&wdb->job[ijob]);
+    for (i=0;i<nframes;i++) {
+      if (fi[i].status == FS_ASSIGNED) {
+	request_slave_killtask (wdb->computer[fi[i].icomp].hwinfo.name,fi[i].itask);
+      }
+    }
+    detach_frame_shared_memory (fi);
+
+    job_stop (&wdb->job[ijob]);
+  }
+
+  semaphore_release (wdb->semid);
+}
+
+int request_job_hstop (uint32_t ijob, int who)
+{
+  /* On error returns 0, error otherwise drerrno is set to the error */
+  int sfd;
+  struct request req;
+
+  if ((sfd = connect_to_master ()) == -1) {
+    drerrno = DRE_NOCONNECT;
+    return 0;
+  }
+
+  req.type = R_R_HSTOPJOB;
+  req.data_s = (uint16_t) ijob;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORSENDING;
+    return 0;
+  }
+
+  close (sfd);
+  return 1;
+}
+
+
 
