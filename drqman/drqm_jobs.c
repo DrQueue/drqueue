@@ -65,7 +65,6 @@ static void dnj_bsubmit_pressed (GtkWidget *button, struct drqmj_dnji *info);
 static void dnj_bsubmitstopped_pressed (GtkWidget *button, struct drqmj_dnji *info);
 static int dnj_submit (struct drqmj_dnji *info);
 static void dnj_destroyed (GtkWidget *dialog, struct drqm_jobs_info *info);
-static void dnj_cleanup (GtkWidget *button, struct drqmj_dnji *info);
 
 /* KOJ STUFF */
 /* Basic koj handling */
@@ -648,8 +647,6 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
   button = gtk_button_new_with_label ("Cancel");
   gtk_tooltips_set_tip(tooltips,button,"Close without sending any information",NULL);
   gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,TRUE,2);
-	//  g_signal_connect (G_OBJECT(button),"clicked",
-	//										G_CALLBACK(dnj_cleanup),&info->dnj);
   g_signal_connect_swapped (G_OBJECT(button),"clicked",
 														G_CALLBACK(gtk_widget_destroy),
 														(gpointer) window);
@@ -662,11 +659,6 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
 static void dnj_bsubmitstopped_pressed (GtkWidget *button, struct drqmj_dnji *info)
 {
 	info->submitstopped = 1;
-}
-
-static void dnj_cleanup (GtkWidget *button, struct drqmj_dnji *info)
-{
-	gtk_widget_destroy (info->fkoj);
 }
 
 static void dnj_psearch (GtkWidget *button, struct drqmj_dnji *info)
