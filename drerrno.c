@@ -1,4 +1,4 @@
-/* $Id: drerrno.c,v 1.9 2001/11/08 09:14:00 jorge Exp $ */
+/* $Id: drerrno.c,v 1.10 2001/11/15 14:30:56 jorge Exp $ */
 
 #include "drerrno.h"
 #include "constants.h"
@@ -63,6 +63,18 @@ char *drerrno_str (void)
     break;
   case DRE_ATTACHSHMEM:
     msg = "Could not attach shared memory";
+    break;
+  case DRE_NOTMPDIR:
+    msg = "Directory for temporary files ($DRQUEUE_ROOT/tmp) does not exist or is not writeable";
+    break;
+  case DRE_NODBDIR:
+    msg = "Directory for database files ($DRQUEUE_ROOT/db) does not exist or is not writeable";
+    break;
+  case DRE_NOLOGDIR:
+    msg = "Directory for log files ($DRQUEUE_ROOT/logs) does not exist or is not writeable";
+    break;
+  case DRE_NOBINDIR:
+    msg = "Directory for binary files ($DRQUEUE_ROOT/bin) does not exist";
     break;
   default:
     msg = "drerrno NOT listed !!";
