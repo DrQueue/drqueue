@@ -39,6 +39,7 @@
 
 /* Koj includes */
 #include "drqm_jobs_maya.h"
+#include "drqm_jobs_mentalray.h"
 #include "drqm_jobs_blender.h"
 #include "drqm_jobs_bmrt.h"
 #include "drqm_jobs_pixie.h"
@@ -423,6 +424,13 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info)
     gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_maya.eviewcmd),
 											 info->jobs[info->row].koji.maya.viewcmd);
     break;
+  case KOJ_MENTALRAY:
+    gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(info->dnj.ckoj)->entry), "Mental Ray");
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_mentalray.escene), info->jobs[info->row].koji.mentalray.scene);
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_mentalray.erenderdir), info->jobs[info->row].koji.mentalray.renderdir);
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_mentalray.eimage), info->jobs[info->row].koji.mentalray.image);
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_mentalray.eviewcmd), info->jobs[info->row].koji.mentalray.viewcmd);
+    break;
   case KOJ_BLENDER:
 		gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(info->dnj.ckoj)->entry),
 											 "Blender");
@@ -473,6 +481,7 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info)
 																 info->jobs[info->row].koji.bmrt.custom_raysamples);
 		snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].koji.bmrt.raysamples);
 		gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_bmrt.eraysamples),buf);
+		break;
   case KOJ_PIXIE:
 		gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(info->dnj.ckoj)->entry),
 											 "Pixie");
@@ -809,6 +818,12 @@ static int dnj_submit (struct drqmj_dnji *info)
     strncpy(job.koji.maya.image,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eimage)),BUFFERLEN-1);
     strncpy(job.koji.maya.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eviewcmd)),BUFFERLEN-1);
     break;
+  case KOJ_MENTALRAY:
+    strncpy(job.koji.mentalray.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_mentalray.escene)),BUFFERLEN-1);
+    strncpy(job.koji.mentalray.renderdir,gtk_entry_get_text(GTK_ENTRY(info->koji_mentalray.erenderdir)),BUFFERLEN-1);
+    strncpy(job.koji.mentalray.image,gtk_entry_get_text(GTK_ENTRY(info->koji_mentalray.eimage)),BUFFERLEN-1);
+    strncpy(job.koji.mentalray.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_mentalray.eviewcmd)),BUFFERLEN-1);
+    break;
   case KOJ_BLENDER:
     strncpy(job.koji.blender.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_blender.escene)),BUFFERLEN-1);
     strncpy(job.koji.blender.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_blender.eviewcmd)),BUFFERLEN-1);
@@ -1085,6 +1100,7 @@ static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info)
   gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,2);
   items = g_list_append (items,"General");
   items = g_list_append (items,"Maya");
+  items = g_list_append (items,"Mental Ray");
 	items = g_list_append (items,"Blender");
 	items = g_list_append (items,"Bmrt");
 	items = g_list_append (items,"Pixie");
@@ -1111,6 +1127,8 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
     new_koj = KOJ_GENERAL;
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Maya") == 0) {
     new_koj = KOJ_MAYA;
+  } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Mental Ray") == 0) {
+    new_koj = KOJ_MENTALRAY;
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Blender") == 0) {
     new_koj = KOJ_BLENDER;
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Bmrt") == 0) {
@@ -1134,6 +1152,10 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
       break;
     case KOJ_MAYA:
       info->dnj.fkoj = dnj_koj_frame_maya (info);
+      gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
+      break;
+    case KOJ_MENTALRAY:
+      info->dnj.fkoj = dnj_koj_frame_mentalray (info);
       gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
       break;
     case KOJ_BLENDER:

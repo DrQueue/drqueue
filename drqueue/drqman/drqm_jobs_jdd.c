@@ -99,6 +99,7 @@ static GtkWidget *jdd_flags_widgets (struct drqm_jobs_info *info);
 static GtkWidget *jdd_koj_widgets (struct drqm_jobs_info *info);
 /* Koj viewers */
 static void jdd_maya_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
+static void jdd_mentalray_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 static void jdd_blender_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 static void jdd_bmrt_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 static void jdd_pixie_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
@@ -232,6 +233,13 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info)
     menu_item = gtk_menu_item_new_with_label("Watch image");
     gtk_menu_append(GTK_MENU(menu),menu_item);
     gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_maya_viewcmd_exec),info);
+    break;
+  case KOJ_MENTALRAY:
+    menu_item = gtk_menu_item_new ();
+    gtk_menu_append(GTK_MENU(menu),menu_item);
+    menu_item = gtk_menu_item_new_with_label("Watch image");
+    gtk_menu_append(GTK_MENU(menu),menu_item);
+    gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_mentalray_viewcmd_exec),info);
     break;
   case KOJ_BLENDER:
     menu_item = gtk_menu_item_new ();
@@ -1202,6 +1210,38 @@ static void jdd_maya_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *inf
   }
 }
 
+static void jdd_mentalray_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info)
+{
+  /* Sets the waiting frames as finished */
+  GList *sel;
+  uint32_t frame,iframe;
+  const char *new_argv[4];
+  extern char **environ;
+  struct row_data *rdata;
+  
+  if (!(sel = GTK_CLIST(info->jdd.clist)->selection)) {
+    return;
+  }
+
+  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+  frame = rdata->frame;
+  
+  iframe = job_frame_number_to_index (&info->jdd.job,frame);
+
+  if (fork() == 0) {
+    new_argv[0] = SHELL_NAME;
+    new_argv[1] = "-c";
+    new_argv[2] = info->jdd.job.koji.mentalray.viewcmd;
+    new_argv[3] = NULL;
+    
+    job_environment_set(&info->jdd.job,iframe);
+    
+    execve(SHELL_PATH,(char*const*)new_argv,environ);
+    perror("execve");
+    exit (1);
+  }
+}
+
 static void jdd_blender_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info)
 {
   /* Sets the waiting frames as finished */
@@ -1929,6 +1969,10 @@ GtkWidget *jdd_koj_widgets (struct drqm_jobs_info *info)
     break;
   case KOJ_MAYA:
     koj_vbox = jdd_koj_maya_widgets (info);
+    gtk_box_pack_start (GTK_BOX(vbox),koj_vbox,FALSE,FALSE,2);
+    break;
+  case KOJ_MENTALRAY:
+    koj_vbox = jdd_koj_mentalray_widgets (info);
     gtk_box_pack_start (GTK_BOX(vbox),koj_vbox,FALSE,FALSE,2);
     break;
   case KOJ_BLENDER:
