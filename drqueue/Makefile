@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.37 2003/12/18 20:39:41 jorge Exp $
+# $Id: Makefile,v 1.38 2003/12/19 17:26:22 jorge Exp $
 
 CC = gcc
 CPP = g++-2.95
@@ -80,7 +80,7 @@ libdrqueue.h: computer_info.h computer_status.h task.h logger.h communications.h
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 clean:
-	rm -f *.o *~ libdrqueue.a slave master sendjob requeue TAGS tmp/* logs/* db/*
+	rm -fR *.o *~ libdrqueue.a slave master sendjob requeue TAGS tmp/* logs/* db/*
 	(cd drqman; $(MAKE) clean)
 
 tags:

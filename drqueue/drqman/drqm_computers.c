@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_computers.c,v 1.23 2002/02/26 15:52:05 jorge Exp $
+ * $Id: drqm_computers.c,v 1.24 2003/12/19 17:26:23 jorge Exp $
  */
 
 #include <stdlib.h>
@@ -317,7 +317,7 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
   gtk_box_pack_start (GTK_BOX(hbox2),label,TRUE,TRUE,2);
   button = gtk_button_new_with_label ("Change");
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
-  gtk_signal_connect (GTK_OBJECT(button),"clicked",cdd_limits_nmaxcpus_bcp,info);
+  g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(cdd_limits_nmaxcpus_bcp),info);
   /* Limits maxload */
   hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start(GTK_BOX(vbox2),hbox,FALSE,FALSE,2);
@@ -332,7 +332,7 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
   gtk_box_pack_start (GTK_BOX(hbox2),label,TRUE,TRUE,2);
   button = gtk_button_new_with_label ("Change");
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
-  gtk_signal_connect (GTK_OBJECT(button),"clicked",cdd_limits_maxfreeloadcpu_bcp,info);
+  g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(cdd_limits_maxfreeloadcpu_bcp),info);
   /* Limits autoenable */
   hbox = gtk_hbox_new (FALSE,0);
   gtk_box_pack_start (GTK_BOX(vbox2),hbox,FALSE,FALSE,2);
@@ -347,7 +347,7 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
   gtk_box_pack_start (GTK_BOX(hbox2),label,TRUE,TRUE,2);
   button = gtk_button_new_with_label ("Change");
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
-  gtk_signal_connect (GTK_OBJECT(button),"clicked",cdd_limits_autoenable_bcp,info);
+  g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(cdd_limits_autoenable_bcp),info);
 
   /* Clist with the task info */
   /* Frame */
@@ -370,7 +370,7 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
   /* Button Refresh */
   button = gtk_button_new_with_label ("Refresh");
   gtk_container_border_width (GTK_CONTAINER(button),5);
-  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(cdd_update),info);
+  g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(cdd_update),info);
   gtk_box_pack_start (GTK_BOX(vbox),button,FALSE,FALSE,2);
 
   gtk_widget_show_all(window);
@@ -513,7 +513,7 @@ GtkWidget *nmc_dialog (struct drqm_computers_info *info)
   GtkWidget *button;
   char msg[BUFFERLEN];
 
-  window = gtk_window_new (GTK_WINDOW_DIALOG);
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW(window),"New maximum number of cpus");
   gtk_window_set_policy(GTK_WINDOW(window),FALSE,FALSE,TRUE);
   vbox = gtk_vbox_new (FALSE,2);
@@ -587,9 +587,9 @@ GtkWidget *mflc_dialog (struct drqm_computers_info *info)
   GtkWidget *button;
   char msg[BUFFERLEN];
 
-  window = gtk_window_new (GTK_WINDOW_DIALOG);
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW(window),"New maximum free load");
-  gtk_window_set_policy(GTK_WINDOW(window),FALSE,FALSE,TRUE);
+/*   gtk_window_set_policy(GTK_WINDOW(window),FALSE,FALSE,TRUE); */
   vbox = gtk_vbox_new (FALSE,2);
   gtk_container_add(GTK_CONTAINER(window),vbox);
 
@@ -731,7 +731,7 @@ GtkWidget *autoenable_change_dialog (struct drqm_computers_info *info)
   GtkWidget *button;
   char msg[BUFFERLEN];
 
-  window = gtk_window_new (GTK_WINDOW_DIALOG);
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW(window),"New autoenable time");
   gtk_window_set_policy(GTK_WINDOW(window),FALSE,FALSE,TRUE);
   vbox = gtk_vbox_new (FALSE,2);
