@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.62 2004/01/22 17:48:24 jorge Exp $ */
+/* $Id: slave.c,v 1.63 2004/02/20 23:24:23 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -375,10 +375,10 @@ void launch_task (struct slave_database *sdb)
   /* Here we get the job ready in the process task structure */
   /* pointed by sdb->itask */
   int rc;
-  pid_t task_pid;
+  pid_t task_pid,waiter_pid;
   extern char **environ;
 
-  if (fork() == 0) {
+  if ((waiter_pid = fork()) == 0) {
     /* This child reports the execution of the command itself */
     set_signal_handlers_child_launcher ();
     if ((task_pid = fork()) == 0) {
@@ -407,7 +407,13 @@ void launch_task (struct slave_database *sdb)
       execve(SHELL_PATH,(char*const*)new_argv,environ);
       perror("execve");
       exit(errno);		/* If we arrive here, something happened exec'ing */
-    }
+    } else if (task_pid == -1) {
+			log_slave_task(&sdb->comp->status.task[sdb->itask],L_WARNING,"Fork failed for task");
+			semaphore_lock(sdb->semid);
+			sdb->comp->status.task[sdb->itask].used = 0; /* We don't need the task anymore */
+			semaphore_release(sdb->semid);
+			exit (1);
+		}
 		
     /* Then we set the process as running */
     semaphore_lock(sdb->semid);
@@ -449,7 +455,13 @@ void launch_task (struct slave_database *sdb)
     }
 		
     exit (0);
-  }
+	} else if (waiter_pid == -1) {
+		log_slave_task(&sdb->comp->status.task[sdb->itask],L_WARNING,"Fork failed for task waiter");
+		semaphore_lock(sdb->semid);
+		sdb->comp->status.task[sdb->itask].used = 0; /* We don't need the task anymore */
+		semaphore_release(sdb->semid);
+		exit (1);
+	}
 }
 
 
