@@ -2,7 +2,6 @@ TO DO:
 -----
 
 * Checks at the beginning of every program for the directories.
-* Master database saved and reloaded from disk.
 * The slave must check that the requests come from the
   master.
 * job permissions.
@@ -10,8 +9,6 @@ TO DO:
   return int. And error checking should be coded 
   extensively.
 * file locking on logging functions.
-* check file descriptor numbers on connect to see if
-  they grow.
 * Mail notifications
 * On the registration if the computer ip can not be resolved
   then use the string of the ip address as name.
