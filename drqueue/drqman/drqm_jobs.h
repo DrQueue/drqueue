@@ -35,6 +35,7 @@
 #include "drqm_jobs_bmrt.h"
 #include "drqm_jobs_pixie.h"
 #include "drqm_jobs_3delight.h"
+#include "drqm_jobs_lightwave.h"
 
 enum {
 	DNJ_FLAGS_DEPEND_COL_ID = 0,
@@ -74,6 +75,7 @@ struct drqmj_dnji {							/* dialog new job info */
   struct drqmj_koji_bmrt koji_bmrt; /* koj info for bmrt */
   struct drqmj_koji_pixie koji_pixie; /* koj info for pixie */
 	struct drqmj_koji_3delight koji_3delight;
+	struct drqmj_koji_lightwave koji_lightwave;
   struct drqmj_limits limits;		/* limits info */
   struct drqmj_flags flags;			/* flags info */
 	
