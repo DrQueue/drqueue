@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.16 2001/08/31 08:48:49 jorge Exp $ */
+/* $Id: computer.c,v 1.17 2001/09/01 16:32:27 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -15,6 +15,7 @@
 
 int computer_index_addr (void *pwdb,struct in_addr addr)
 {
+  /* This function is called by the master */
   int index;
   struct hostent *host;
   char *dot;
@@ -22,9 +23,10 @@ int computer_index_addr (void *pwdb,struct in_addr addr)
   char msg[BUFFERLEN];
   char *name;
 
+  log_master (L_DEBUG,"Entering computer_index_addr");
+
   if ((host = gethostbyaddr ((const void *)&addr.s_addr,sizeof (struct in_addr),AF_INET)) == NULL) {
     snprintf(msg,BUFFERLEN-1,"Could not resolve name for: %s",inet_ntoa(addr));
-    fprintf (stderr,"%s\n",msg);
     log_master (L_WARNING,msg);
     return -1;
   } else {
@@ -44,7 +46,8 @@ int computer_index_addr (void *pwdb,struct in_addr addr)
 
   index = computer_index_name (pwdb,name);
 
-/*    printf ("Index %i\n", index); */
+  snprintf (msg,BUFFERLEN-1,"Exiting computer_index_addr. Index of computer %s is %i.",name,index);
+  log_master (L_DEBUG,msg);
 
   return index;
 }
@@ -84,7 +87,7 @@ int computer_index_free (void *pwdb)
 int computer_available (struct computer *computer)
 {
   /* Returns 1 or 0 if the computer is or not available for rendering */
-  if (computer->status.ntasks >= (computer->hwinfo.numproc)) {
+  if (computer->status.ntasks >= (computer->hwinfo.numproc * 100)) {
     /* If we already have all the processors running... */
     return 0;
   }
@@ -142,3 +145,16 @@ int computer_ncomputers_masterdb (struct database *wdb)
   return c;
 }
 
+int computer_ntasks (struct computer *comp)
+{
+  /* This function should be called locked */
+  int i;
+  int ntasks = 0;
+
+  for (i=0; i < MAXTASKS; i++) {
+    if (comp->status.task[i].used)
+      ntasks ++;
+  }
+
+  return ntasks;
+}
