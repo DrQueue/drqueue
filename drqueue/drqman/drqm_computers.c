@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_computers.c,v 1.16 2001/09/11 12:52:29 jorge Exp $
+ * $Id: drqm_computers.c,v 1.17 2001/09/18 09:25:03 jorge Exp $
  */
 
 #include <stdlib.h>
@@ -8,6 +8,7 @@
 #include "drqman.h"
 #include "drqm_request.h"
 #include "drqm_computers.h"
+#include "drqm_common.h"
 
 /* Static functions declaration */
 static GtkWidget *CreateComputersList(struct drqm_computers_info *info);
@@ -31,7 +32,6 @@ static GtkWidget *mflc_dialog (struct drqm_computers_info *info);
 static void mflcd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info);
 
 static void KillTask (GtkWidget *menu_item, struct drqm_computers_info *info);
-static GtkWidget *KillTaskDialog (struct drqm_computers_info *info);
 static void dtk_bok_pressed (GtkWidget *button,struct drqm_computers_info *info);
 
 
@@ -610,48 +610,20 @@ void mflcd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info)
 static void KillTask (GtkWidget *menu_item, struct drqm_computers_info *info)
 {
   GtkWidget *dialog;
+  static GList *cbs = NULL;		/* callbacks */
 
   if (!info->selected)
     return;
 
-  dialog = KillTaskDialog(info);
+  if (!cbs) {
+    cbs = g_list_append (cbs,dtk_bok_pressed);
+    cbs = g_list_append (cbs,cdd_update);
+  }
+
+  dialog = ConfirmDialog ("Do you really want to kill the tasks ?",
+			  cbs,(gpointer)info);
   if (dialog)
     gtk_window_set_modal(GTK_WINDOW(dialog),TRUE);
-}
-
-static GtkWidget *KillTaskDialog (struct drqm_computers_info *info)
-{
-  GtkWidget *dialog;
-  GtkWidget *label;
-  GtkWidget *button;
-
-  /* Dialog */
-  dialog = gtk_dialog_new ();
-  gtk_window_set_title (GTK_WINDOW(dialog),"You Sure?");
-
-  /* Label */
-  label = gtk_label_new ("Do you really want to kill the task(s)?");
-  gtk_misc_set_padding (GTK_MISC(label), 10, 10);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox),label,TRUE,TRUE,5);
- 
-  /* Buttons */
-  button = gtk_button_new_with_label ("Yes");
-  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->action_area),button, TRUE, TRUE, 5);
-  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(dtk_bok_pressed),info);
-  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(cdd_update),info);
-  gtk_signal_connect_object(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(gtk_widget_destroy),
-			    (GtkObject*)dialog);
-
-  button = gtk_button_new_with_label ("No");
-  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->action_area),button, TRUE, TRUE, 5);
-  gtk_signal_connect_object(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(gtk_widget_destroy),
-			    (GtkObject*)dialog);
-  GTK_WIDGET_SET_FLAGS(button,GTK_CAN_DEFAULT);
-  gtk_widget_grab_default(button);
-
-  gtk_widget_show_all (dialog);
-
-  return dialog;
 }
 
 static void dtk_bok_pressed (GtkWidget *button,struct drqm_computers_info *info)
