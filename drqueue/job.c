@@ -516,6 +516,7 @@ void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe
   uint16_t icomp,itask;
   t_taskstatus tstatus;
 
+	log_master (L_DEBUG,"Entering job_check_frame_status.");
 
   fistatus = wdb->job[ijob].frame_info[iframe].status;
   icomp = wdb->job[ijob].frame_info[iframe].icomp;
@@ -523,37 +524,37 @@ void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe
 
   if (fistatus == FS_ASSIGNED) {
     if (!computer_index_correct_master(wdb,icomp)) {
-      log_master (L_WARNING,"Index not correct.");
+      log_master (L_WARNING,"Computer index not correct (%i)",icomp);
       running = 0;
     } else if (itask != (uint16_t)-1) {
       if (wdb->computer[icomp].status.task[itask].used == 0) {
-	/* If it has a task assigned and that's not beign used */
-	log_master (L_WARNING,"Task in the computer is not being used");
-	running = 0;
+				/* If it has a task assigned and that's not beign used */
+				log_master (L_WARNING,"Task in computer (%s:%i) is not being used",wdb->computer[icomp].hwinfo.name,icomp);
+				running = 0;
       } else {
-	tstatus = wdb->computer[icomp].status.task[itask].status;
+				tstatus = wdb->computer[icomp].status.task[itask].status;
 	
-	/* check if the task status is running */
-	if ((tstatus != TASKSTATUS_RUNNING) && (tstatus != TASKSTATUS_LOADING)) {
-	  log_master (L_WARNING,"Task status is not running or loading");
-	  running = 0;
-	}
+				/* check if the task status is running */
+				if ((tstatus != TASKSTATUS_RUNNING) && (tstatus != TASKSTATUS_LOADING)) {
+					log_master (L_WARNING,"Task status in computer (%s:%i) is not running or loading", wdb->computer[icomp].hwinfo.name,icomp);
+					running = 0;
+				}
 	
-	/* check if the job is the same in index */
-	if (wdb->computer[icomp].status.task[itask].ijob != ijob) {
-	  log_master (L_WARNING,"Job indices between task and frame info differ");
-	  running = 0;
-	}
-	/* check if the job is the same in name */
-	if (!job_index_correct_master (wdb,ijob)) {
-	  log_master (L_WARNING,"Job index is not correct");
-	  running = 0;
-	} else if (strcmp (wdb->computer[icomp].status.task[itask].jobname,wdb->job[ijob].name) != 0) {
-	  log_master (L_WARNING,"Job names are different between task and job");
-	  running = 0;
-	}
+				/* check if the job is the same in index */
+				if (wdb->computer[icomp].status.task[itask].ijob != ijob) {
+					log_master (L_WARNING,"Job indices between task and frame info differ");
+					running = 0;
+				}
+				/* check if the job is the same in name */
+				if (!job_index_correct_master (wdb,ijob)) {
+					log_master (L_WARNING,"Job index is not correct");
+					running = 0;
+				} else if (strcmp (wdb->computer[icomp].status.task[itask].jobname,wdb->job[ijob].name) != 0) {
+					log_master (L_WARNING,"Job names are different between task and job");
+					running = 0;
+				}
       }
-    } else {
+    } else { // itask == -1
       /* The task is being loaded, so it hasn't yet a itask assigned  */
     }
   }
@@ -567,7 +568,7 @@ void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe
     wdb->job[ijob].frame_info[iframe].requeued++;
   }
 
-/*    log_master (L_DEBUG,"Exiting job_check_frame_status."); */
+	log_master (L_DEBUG,"Exiting job_check_frame_status.");
 }
 
 int priority_job_compare (const void *a,const void *b)

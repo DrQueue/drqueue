@@ -150,13 +150,13 @@ void drqm_request_computerlist (struct drqm_computers_info *info)
   close (sfd);
 }
 
-void drqm_clean_computerlist (struct drqm_computers_info *info)
+void drqm_clean_computerlist (struct drqm_computers_info *info)	
 {
 	int i;
 
   if (info->computers) {
 		for (i=0;i<info->ncomputers;i++) {
-			fprintf (stderr,"drqm_clean_computerlist: Freeing computer %i\n",i);
+			//			fprintf (stderr,"drqm_clean_computerlist: Freeing computer %i\n",i);
 			computer_free(&info->computers[i]);
 		}
     g_free (info->computers);
