@@ -859,6 +859,14 @@ int job_available_no_icomp (struct database *wdb,uint32_t ijob, int *iframe)
     semaphore_release(wdb->semid);
     return 0;
   }
+
+	if ((wdb->job[ijob].flags &= JF_JOBDEPEND)
+			&& (wdb->job[wdb->job[ijob].dependid].status != JOBSTATUS_FINISHED))
+		{
+			// If this job depends on another and that one hasn't finished, job is not available
+			semaphore_release(wdb->semid);
+			return 0;
+		}
   
   if ((*iframe = job_first_frame_available_no_icomp (wdb,ijob)) == -1) {
     semaphore_release(wdb->semid);
