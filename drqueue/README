@@ -16,7 +16,7 @@ command line.
 DrQueue could be run in Windows with the help of UWin. Any feedback on
 this topic will be welcome.
 
-DrQueue if fully scriptable, through is API one can code complex
+DrQueue if fully scriptable, through it's API one can code complex
 distributed systems but out of the box is easily managed by advanced end
 users.
 
