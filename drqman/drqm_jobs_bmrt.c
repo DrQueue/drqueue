@@ -462,10 +462,6 @@ static void dnj_koj_frame_bmrt_bcreate_pressed (GtkWidget *button, struct drqmj_
 		if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eraysamples)),"%u",&bmrtsgi.raysamples) != 1)
 			return;
 	}
-#ifdef __CYGWIN
-  strncpy(bmrtsgi.scene, conv_to_posix_path(bmrtsgi.scene), BUFFERLEN-1);
-  strncpy(bmrtsgi.scriptdir, conv_to_posix_path(bmrtsgi.scriptdir), BUFFERLEN-1);
-#endif
 
   if ((file = bmrtsg_create (&bmrtsgi)) == NULL) {
     fprintf (stderr,"ERROR: %s\n",drerrno_str());

@@ -219,11 +219,6 @@ static void dnj_koj_frame_3delight_bcreate_pressed (GtkWidget *button, struct dr
   strncpy (threedelightsgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->koji_3delight.escript)),BUFFERLEN-1);
   strncpy (threedelightsgi.file_owner,gtk_entry_get_text(GTK_ENTRY(info->koji_3delight.efile_owner)),BUFFERLEN-1);
 
-#ifdef __CYGWIN
-  strncpy(threedelightsgi.scene, conv_to_posix_path(threedelightsgi.scene), BUFFERLEN-1);
-  strncpy(threedelightsgi.scriptdir, conv_to_posix_path(threedelightsgi.scriptdir), BUFFERLEN-1);
-#endif
-
   if ((file = threedelightsg_create (&threedelightsgi)) == NULL) {
     fprintf (stderr,"ERROR: %s\n",drerrno_str());
     return;

@@ -202,11 +202,6 @@ static void dnj_koj_frame_blender_bcreate_pressed (GtkWidget *button, struct drq
   strncpy (blendersgi.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_blender.escene)),BUFFERLEN-1);
   strncpy (blendersgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->koji_blender.escript)),BUFFERLEN-1);
 
-#ifdef __CYGWIN
-  strncpy(blendersgi.scene, conv_to_posix_path(blendersgi.scene), BUFFERLEN-1);
-  strncpy(blendersgi.scriptdir, conv_to_posix_path(blendersgi.scriptdir), BUFFERLEN-1);
-#endif
-
   if ((file = blendersg_create (&blendersgi)) == NULL) {
     fprintf (stderr,"ERROR: %s\n",drerrno_str());
     return;

@@ -329,19 +329,10 @@ static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_
   mayasgi.res_x = mayasgi.res_y = -1;
   strncpy (mayasgi.format,"",BUFFERLEN-1);
 
-#ifdef __CYGWIN
-  strncpy(mayasgi.scene, conv_to_posix_path(mayasgi.scene), BUFFERLEN-1);
-  strncpy(mayasgi.renderdir, conv_to_posix_path(mayasgi.renderdir), BUFFERLEN-1);
-  strncpy(mayasgi.scriptdir, conv_to_posix_path(mayasgi.scriptdir), BUFFERLEN-1);
-#endif
-
   if ((file = mayasg_create (&mayasgi)) == NULL) {
     fprintf (stderr,"ERROR: %s\n",drerrno_str());
     return;
   } else {
-#ifdef __CYGWIN
-    strncpy(file, conv_to_win32_path(file), BUFFERLEN-1);
-#endif
     gtk_entry_set_text(GTK_ENTRY(info->ecmd),file);
 
   } 
