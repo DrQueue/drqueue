@@ -244,7 +244,7 @@ void computer_pool_set_from_environment (struct computer_limits *cl)
 
 void computer_pool_init (struct computer_limits *cl)
 {
-	fprintf (stderr,"PID (%i) poolshmid (%i) : COMPUTER_POOL_INIT\n",getpid(),cl->poolshmid);
+	//	fprintf (stderr,"PID (%i) poolshmid (%i) : COMPUTER_POOL_INIT\n",getpid(),cl->poolshmid);
 	cl->poolshmid = -1;
 	cl->npools = 0;
 }
@@ -259,7 +259,7 @@ int computer_pool_get_shared_memory (int npools)
 		return shmid;
 	}
 
-	fprintf(stderr,"PID (%i) shmid (%i): Allocated space for %i pools\n", getpid(),shmid,npools);
+	// fprintf(stderr,"PID (%i) shmid (%i): Allocated space for %i pools\n", getpid(),shmid,npools);
 
 	drerrno = DRE_NOERROR;
 	return shmid;
@@ -292,7 +292,7 @@ int computer_pool_add (struct computer_limits *cl, char *pool)
 	struct pool *npool;
 	int npoolshmid;
 
-	fprintf (stderr,"computer_pool_add (cl=%x,cl->poolshmid=%i)\n",cl,cl->poolshmid);
+	//	fprintf (stderr,"computer_pool_add (cl=%x,cl->poolshmid=%i)\n",cl,cl->poolshmid);
 
 	if (computer_pool_exists (cl,pool)) {
 		// It is already on the list
@@ -319,7 +319,7 @@ int computer_pool_add (struct computer_limits *cl, char *pool)
 	
 	if ((cl->npools) && (opool != (void*) -1)) {
 		memcpy (npool,opool,sizeof (struct pool) * cl->npools);
-		fprintf (stderr,"Copied %i pools\n",cl->npools);
+		//		fprintf (stderr,"Copied %i pools\n",cl->npools);
 		computer_pool_detach_shared_memory (opool);
 		if (shmctl (cl->poolshmid,IPC_RMID,NULL) == -1) {
 			drerrno = DRE_RMSHMEM;
@@ -331,7 +331,7 @@ int computer_pool_add (struct computer_limits *cl, char *pool)
 	strncpy (npool[cl->npools].name,pool,MAXNAMELEN-1);
 	cl->npools++;
 
-	fprintf(stderr,"New number of pools: %i\n",cl->npools);
+	//	fprintf(stderr,"New number of pools: %i\n",cl->npools);
 
 	return 1;
 }
@@ -425,7 +425,7 @@ int computer_pool_exists (struct computer_limits *cl,char *pool)
 
 int computer_pool_free (struct computer_limits *cl)
 {
-	fprintf (stderr,"PID (%i): computer_pool_free (cl=%x,cl->poolshmid=%i,cl->npools=%i)\n",getpid(),cl,cl->poolshmid,cl->npools);
+	//	fprintf (stderr,"PID (%i): computer_pool_free (cl=%x,cl->poolshmid=%i,cl->npools=%i)\n",getpid(),cl,cl->poolshmid,cl->npools);
 	if (cl->poolshmid != -1) {
     if (shmctl (cl->poolshmid,IPC_RMID,NULL) == -1) {
 			fprintf (stderr,"ERROR: deleting poolshmid (%i)\n",cl->poolshmid);
