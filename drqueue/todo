@@ -2,9 +2,8 @@ TO DO:
 -----
 
 * Frame_info memory allocation and deallocation		[DONE]
-* Priority support for jobs
-* Check frames registered as running if running really
-* Check frames registered as loading if loading really
+* Priority support for jobs				[DONE]
+* Check frames registered as running if running really	[DONE]
 * Process output logging				[DONE]
 * file locking on logging functions
 * limit structures for jobs and computers
