@@ -1,5 +1,5 @@
 /* 
- * $Id: drqm_jobs_bmrt.c,v 1.1 2003/12/18 20:39:41 jorge Exp $ 
+ * $Id: drqm_jobs_bmrt.c,v 1.2 2003/12/18 21:11:44 jorge Exp $ 
  */
 
 #include <string.h>
@@ -322,13 +322,32 @@ static void dnj_koj_frame_bmrt_bcreate_pressed (GtkWidget *button, struct drqmj_
   strncpy (bmrtsgi.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.escene)),BUFFERLEN-1);
   strncpy (bmrtsgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.escript)),BUFFERLEN-1);
 	bmrtsgi.custom_crop = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbcrop)->active;
-
+ 	if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropxmin)),"%u",&bmrtsgi.xmin) != 1)
+		return;
+	if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropxmax)),"%u",&bmrtsgi.xmax) != 1)
+		return;
+	if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropymin)),"%u",&bmrtsgi.ymin) != 1)
+		return;
+	if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropymax)),"%u",&bmrtsgi.ymax) != 1)
+		return;
 	bmrtsgi.custom_samples = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbsamples)->active;
-
-	bmrtsgi.custom_crop = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbcrop)->active;
-
-	bmrtsgi.custom_crop = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbcrop)->active;
-
+	if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.exsamples)),"%u",&bmrtsgi.xsamples) != 1)
+		return;
+	if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eysamples)),"%u",&bmrtsgi.ysamples) != 1)
+		return;
+	bmrtsgi.disp_stats = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbstats)->active;
+	bmrtsgi.verbose = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbverbose)->active;
+	bmrtsgi.custom_beep = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbbeep)->active;
+	/* Custom radiosity */
+	bmrtsgi.custom_radiosity = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbradiositysamples)->active;
+	if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eradiositysamples)),"%u",&bmrtsgi.radiosity_samples) != 1)
+		return;
+	/* Custom ray samples */
+	bmrtsgi.custom_raysamples = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbraysamples)->active;
+	if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eraysamples)),"%u",&bmrtsgi.raysamples) != 1)
+		return;
+  
+  
   if ((file = bmrtsg_create (&bmrtsgi)) == NULL) {
     fprintf (stderr,"ERROR: %s\n",drerrno_str());
     return;
