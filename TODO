@@ -8,7 +8,6 @@ TO DO:
 * STEPFRAME included in all .sg files
 * sendjob accepting XML
 * Slave pools. 0.60
-* detect computer memory (missing FreeBSD and Irix)
 
 BUGS:
 ----
