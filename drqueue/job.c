@@ -771,7 +771,7 @@ int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp)
 		return 0;
 
 	if (wdb->job[ijob].nblocked
-									&& ((bh = attach_blocked_host_shared_memory (wdb->job[ijob].bhshmid)) != -1))
+									&& ((bh = attach_blocked_host_shared_memory (wdb->job[ijob].bhshmid)) != (void *)-1))
 	{
 		for (i=0;i<wdb->job[ijob].nblocked;i++) {
 			if (strcmp(wdb->computer[icomp].hwinfo.name,bh[i].name) == 0) {

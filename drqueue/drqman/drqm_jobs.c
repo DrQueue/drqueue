@@ -104,6 +104,9 @@ static void jdd_maya_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *inf
 static void jdd_blender_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 static void jdd_bmrt_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 static void jdd_pixie_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
+// Blocked hosts
+static GtkWidget *CreateBlockedHostsClist (void);
+static int jdd_update_blocked_hosts (GtkWidget *w, struct drqm_jobs_info *info);
 
 /* NEW JOB */
 static void NewJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
@@ -1244,6 +1247,19 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   gtk_container_add (GTK_CONTAINER(swin),clist);
   newinfo->jdd.clist = clist;
 
+	// New notebook page
+	frame = gtk_frame_new ("Block list");
+	label = gtk_label_new ("Block list");
+	gtk_notebook_append_page (GTK_NOTEBOOK(notebook),GTK_WIDGET(frame),GTK_WIDGET(label));
+	// Clist with the block list
+  swin = gtk_scrolled_window_new (NULL,NULL);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(swin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+  gtk_container_add (GTK_CONTAINER(frame),swin);
+  clist = CreateBlockedHostsClist ();
+  gtk_clist_set_selection_mode(GTK_CLIST(clist),GTK_SELECTION_EXTENDED);
+  gtk_container_add (GTK_CONTAINER(swin),clist);
+  newinfo->jdd.clist_bh = clist;
+
   newinfo->jdd.menu = CreateMenuFrames(newinfo);
 
   if (!jdd_update (window,newinfo)) {
@@ -1305,6 +1321,11 @@ static void jdd_destroy (GtkWidget *w, struct drqm_jobs_info *info)
     g_free (info->jdd.job.frame_info);
     info->jdd.job.frame_info = NULL;
   }
+
+	if (info->jdd.job.blocked_host) {
+		free (info->jdd.job.blocked_host);
+		info->jdd.job.blocked_host = NULL;
+	}
 	
 	g_free (info);
 }
@@ -1331,7 +1352,55 @@ static GtkWidget *CreateFrameInfoClist (void)
   gtk_widget_show(clist);
 
   return (clist);
+}
 
+static GtkWidget *CreateBlockedHostsClist (void)
+{
+	gchar *titles[] = { "Pos","Name" };
+	GtkWidget *clist;
+
+	clist = gtk_clist_new_with_titles (2,titles);
+  gtk_clist_column_titles_show(GTK_CLIST(clist));
+
+	gtk_widget_show(clist);
+
+	return clist;
+}
+
+static int jdd_update_blocked_hosts (GtkWidget *w, struct drqm_jobs_info *info)
+{
+	int ncols = 2;
+	int i;
+	char **buff;
+
+	if (info->jdd.job.blocked_host) {
+		free (info->jdd.job.blocked_host);
+		info->jdd.job.blocked_host = NULL;
+	}
+
+	if (!request_job_list_blocked_host(info->jdd.job.id, &info->jdd.job.blocked_host, &info->jdd.job.nblocked, CLIENT)) {
+		fprintf (stderr,"Error request_job_list_blocked_host\n");
+		if (info->jdd.job.blocked_host) {
+			free (info->jdd.job.blocked_host);
+		}
+		return 0;
+	}
+
+  buff = (char**) g_malloc((ncols + 1) * sizeof(char*));
+  for (i=0;i<ncols;i++)
+    buff[i] = (char*) g_malloc (BUFFERLEN);
+  buff[ncols] = NULL;
+  
+  gtk_clist_freeze(GTK_CLIST(info->jdd.clist_bh));
+  gtk_clist_clear(GTK_CLIST(info->jdd.clist_bh));
+  for (i=0; i < info->jdd.job.nblocked; i++) {
+    snprintf (buff[0],BUFFERLEN-1,"%i",i);
+    snprintf (buff[1],BUFFERLEN,"%s",info->jdd.job.blocked_host[i].name);
+		
+		gtk_clist_append (GTK_CLIST(info->jdd.clist_bh),buff);
+  }
+
+	return 1;
 }
 
 static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
@@ -1341,7 +1410,7 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
   struct frame_info *fi = NULL;
   char msg[BUFFERLEN];
   char *buf;
-  char **buff;			/* for hte clist stuff */
+  char **buff;			/* for the clist stuff */
   int ncols = 8;
   int i;
   GtkWidget *toplevel;
@@ -1354,6 +1423,8 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
   static GdkPixmap *f_data = NULL;
   static GdkBitmap *e_mask = NULL;
   static GdkPixmap *e_data = NULL;
+
+	jdd_update_blocked_hosts (w,info);
 
   if (!request_job_xfer(info->jdd.job.id,&info->jdd.job,CLIENT)) {
     if (drerrno == DRE_NOTREGISTERED) {
