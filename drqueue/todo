@@ -19,6 +19,8 @@ TO DO:
   return int. And error checking should be coded 
   extensively.
 * file locking on logging functions
+* check file descriptor numbers on connect to see if
+  they grow.
 
 BUGS:
 ----
