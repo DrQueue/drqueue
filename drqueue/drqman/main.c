@@ -30,6 +30,7 @@
 #include "weasel.xpm"
 
 GdkPixbuf *drqman_icon;
+GList *icon_list;
 
 static struct info_drqm info;
 char conf[PATH_MAX];
@@ -69,7 +70,8 @@ int main (int argc, char *argv[])
 
 	// The icon
 	drqman_icon = gdk_pixbuf_new_from_xpm_data ((const char **)weasel_xpm);
-	gtk_window_set_default_icon (drqman_icon);
+	icon_list = g_list_append (NULL,drqman_icon);
+	gtk_window_set_default_icon_list (icon_list);
 
   main_vbox = gtk_vbox_new(FALSE,1);
   gtk_container_add(GTK_CONTAINER(window),main_vbox);
