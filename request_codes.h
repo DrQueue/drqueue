@@ -52,6 +52,7 @@
 #define R_R_JOBDELBLKHOST 28 // Job block host delete
 #define R_R_JOBLSTBLKHOST 29 // Job block host list
 #define R_R_JOBLMS        30 // Job limits memory set
+#define R_R_JOBLPS				31 // Job limits pool set
 
 /* Requests to the slave */
 #define RS_R_KILLTASK           1 /* Request to slave to kill a task */
@@ -59,5 +60,7 @@
 #define RS_R_SETMAXFREELOADCPU  3 /* Request to set limits maxfreeloadcpu */
 #define RS_R_SETAUTOENABLE      4 /* Request to set autoenable info */
 #define RS_R_JOBAVAILABLE				5	/* Request indicates master has a job available */
+#define RS_R_LIMITSPOOLADD			6 // Add pool
+#define RS_R_LIMITSPOOLREMOVE		7 // Remove pool
 
 #endif /* _REQUEST_CODES_H_ */

@@ -39,6 +39,8 @@ struct drqmj_limits {
   GtkWidget *lnmaxcpuscomputer;
 	GtkWidget *lmemory;
 	GtkWidget *ememory;
+	GtkWidget *lpool;
+	GtkWidget *epool;
   GtkWidget *cb_irix;		/* Check buttons */
   GtkWidget *cb_linux;
 	GtkWidget *cb_osx;

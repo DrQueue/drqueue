@@ -16,9 +16,9 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-/*
- * $Id$
- */
+//
+// $Id$
+//
 
 #include <stdlib.h>
 #include <string.h>
@@ -27,6 +27,8 @@
 #include "drqm_request.h"
 #include "drqm_computers.h"
 #include "drqm_common.h"
+
+#include "slave_icon.h"
 
 /* Static functions declaration */
 static GtkWidget *CreateComputersList(struct drqm_computers_info *info);
@@ -55,6 +57,11 @@ static void mflcd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info
 static void cdd_limits_autoenable_bcp (GtkWidget *button, struct drqm_computers_info *info);
 static GtkWidget *autoenable_change_dialog (struct drqm_computers_info *info);
 static void aecd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info);
+// pool
+static void cdd_limits_pool_bcp (GtkWidget *bclicked, struct drqm_computers_info *info);
+static void cdd_limits_pool_refresh_pool_list (GtkWidget *bclicked, struct drqm_computers_info *info);
+static void cdd_limits_pool_add_clicked (GtkWidget *bclicked, struct drqm_computers_info *info);
+static void cdd_limits_pool_remove_clicked (GtkWidget *bclicked, struct drqm_computers_info *info);
 /* kill task */
 static void KillTask (GtkWidget *menu_item, struct drqm_computers_info *info);
 static void dtk_bok_pressed (GtkWidget *button,struct drqm_computers_info *info);
@@ -67,6 +74,9 @@ void CreateComputersPage (GtkWidget *notebook,struct info_drqm *info)
   GtkWidget *clist;
   GtkWidget *buttonRefresh;	/* Button to refresh the computer list */
   GtkWidget *vbox;
+	GtkWidget *hbox;
+	GtkWidget *image;
+	GdkPixbuf *slave_icon_pb;
 
   /* Label */
   label = gtk_label_new ("Computers");
@@ -74,6 +84,14 @@ void CreateComputersPage (GtkWidget *notebook,struct info_drqm *info)
   gtk_container_border_width (GTK_CONTAINER(container),2);
   vbox = gtk_vbox_new(FALSE,2);
   gtk_container_add(GTK_CONTAINER(container),vbox);
+
+	// Image
+	slave_icon_pb = gdk_pixbuf_new_from_inline (2028,slave_icon,0,NULL);
+	image = gtk_image_new_from_pixbuf (slave_icon_pb);
+	gtk_widget_show(image);
+	hbox = gtk_hbox_new (FALSE,0);
+	gtk_box_pack_start(GTK_BOX(hbox),image,TRUE,TRUE,2);
+	gtk_box_pack_start(GTK_BOX(hbox),label,TRUE,TRUE,2);
 
   /* Clist */
   clist = CreateComputersList (&info->idc);
@@ -84,7 +102,7 @@ void CreateComputersPage (GtkWidget *notebook,struct info_drqm *info)
   gtk_box_pack_end(GTK_BOX(vbox),buttonRefresh,FALSE,FALSE,2);
 
   /* Append the page */
-  gtk_notebook_append_page (GTK_NOTEBOOK(notebook), container, label);
+  gtk_notebook_append_page (GTK_NOTEBOOK(notebook), container, hbox);
 
   /* Put the computers on the list */
   drqm_request_computerlist (&info->idc);
@@ -331,12 +349,13 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
   hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start(GTK_BOX(vbox2),hbox,FALSE,FALSE,2);
   label = gtk_label_new ("Maximum number of cpus:");
+	gtk_misc_set_alignment (GTK_MISC(label), 0, .5);
   gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
   gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
   hbox2 = gtk_hbox_new (FALSE,0);
   gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
-  gtk_widget_show (hbox2);
   label = gtk_label_new ("0");
+	gtk_misc_set_alignment (GTK_MISC(label), 1, .5);
   info->cdd.limits.lnmaxcpus = label;
   gtk_box_pack_start (GTK_BOX(hbox2),label,TRUE,TRUE,2);
   button = gtk_button_new_with_label ("Change");
@@ -346,12 +365,13 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
   hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start(GTK_BOX(vbox2),hbox,FALSE,FALSE,2);
   label = gtk_label_new ("Maximum load a cpu can have to be considered free:");
+	gtk_misc_set_alignment (GTK_MISC(label), 0, .5);
   gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
   gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
   hbox2 = gtk_hbox_new (FALSE,0);
   gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
-  gtk_widget_show (hbox2);
   label = gtk_label_new ("80");
+	gtk_misc_set_alignment (GTK_MISC(label), 1, .5);
   info->cdd.limits.lmaxfreeloadcpu = label;
   gtk_box_pack_start (GTK_BOX(hbox2),label,TRUE,TRUE,2);
   button = gtk_button_new_with_label ("Change");
@@ -361,17 +381,33 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
   hbox = gtk_hbox_new (FALSE,0);
   gtk_box_pack_start (GTK_BOX(vbox2),hbox,FALSE,FALSE,2);
   label = gtk_label_new ("Autoenable Time:");
+	gtk_misc_set_alignment (GTK_MISC(label), 0, .5);
   gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
   gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
   hbox2 = gtk_hbox_new (FALSE,0);
   gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
-  gtk_widget_show (hbox2);
   label = gtk_label_new ("21:00");
   info->cdd.limits.lautoenabletime = label;
+	gtk_misc_set_alignment (GTK_MISC(label), 1, .5);
   gtk_box_pack_start (GTK_BOX(hbox2),label,TRUE,TRUE,2);
   button = gtk_button_new_with_label ("Change");
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
   g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(cdd_limits_autoenable_bcp),info);
+	// Limits pools,
+  hbox = gtk_hbox_new (FALSE,0);
+  gtk_box_pack_start (GTK_BOX(vbox2),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Pools this computer belongs to:");
+	gtk_misc_set_alignment (GTK_MISC(label), 0, .5);
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+	hbox2 = gtk_hbox_new (FALSE,0);
+	gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
+  label = gtk_label_new ("Default");
+	gtk_misc_set_alignment (GTK_MISC(label), 1, .5);
+  info->cdd.limits.lpools = label;
+  gtk_box_pack_start (GTK_BOX(hbox2),label,TRUE,TRUE,2);
+  button = gtk_button_new_with_label ("Change");
+  gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
+  g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(cdd_limits_pool_bcp),info);
 
   /* Clist with the task info */
   /* Frame */
@@ -434,6 +470,7 @@ int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
   /* info->icomp and info->row are related, the first is the id of the computer in */
   /* the master, the second is the index in the local structure of computer */
   char msg[BUFFERLEN];
+  char msg2[BUFFERLEN];
   char **buff;			/* for hte clist stuff */
   int ncols = 9;
   int i,row;
@@ -486,6 +523,20 @@ int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
 		gtk_label_set_text (GTK_LABEL(info->cdd.limits.lautoenabletime),msg);
 	} else {
 		gtk_label_set_text (GTK_LABEL(info->cdd.limits.lautoenabletime),"OFF");
+	}
+
+	if (info->computers[info->row].limits.npools) {
+		struct pool *pool;
+		pool = computer_pool_attach_shared_memory(info->computers[info->row].limits.poolshmid);
+		snprintf (msg,BUFFERLEN,"%s",pool[0].name);
+		for (i=1;i<info->computers[info->row].limits.npools;i++) {
+			snprintf (msg2,BUFFERLEN,"%s,%s",msg,pool[i].name);
+			strncpy (msg,msg2,BUFFERLEN-1);
+		}
+		gtk_label_set_text (GTK_LABEL(info->cdd.limits.lpools),msg);
+		computer_pool_detach_shared_memory(pool);
+	} else {
+		gtk_label_set_text (GTK_LABEL(info->cdd.limits.lpools),"WARNING: This computer doesn't belong to any pool");
 	}
 
   /* Tasks clist */
@@ -745,6 +796,126 @@ static gint PopupMenuTasks (GtkWidget *clist, GdkEvent *event, struct drqm_compu
   }
   return FALSE;
 }
+
+void cdd_limits_pool_bcp (GtkWidget *bclicked, struct drqm_computers_info *info)
+{
+  /* Computer Details Dialog Limits pool Button Change Pressed */
+	GtkWidget *dialog;
+	GtkWidget *swindow;
+	GtkWidget *button;
+	GtkWidget *entry;
+
+	// TreeView stuff
+	GtkCellRenderer *renderer;
+	GtkTreeModel *model;
+	GtkWidget *view;
+	// Store
+	GtkListStore *store;
+
+	dialog = gtk_dialog_new();
+	gtk_window_set_title (GTK_WINDOW(dialog),"List of pools");
+	gtk_window_set_default_size (GTK_WINDOW(dialog),300,200);
+
+	swindow = gtk_scrolled_window_new (NULL,NULL);
+	// Scrolled window
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(swindow),GTK_POLICY_AUTOMATIC,GTK_POLICY_AUTOMATIC);
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),swindow,TRUE,TRUE,2);
+	// Refresh button
+	button = gtk_button_new_with_label("Refresh");
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),button,FALSE,FALSE,2);
+	g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(cdd_limits_pool_refresh_pool_list),info);
+	// Entry
+	entry = gtk_entry_new_with_max_length (MAXNAMELEN-1);
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),entry,FALSE,FALSE,2);
+	info->cdd.limits.epool = entry;
+
+	// The view
+	view = gtk_tree_view_new();
+	info->cdd.limits.pool_view = GTK_TREE_VIEW (view);
+	gtk_container_add(GTK_CONTAINER(swindow),view);
+	
+
+
+	// Column 1
+	renderer = gtk_cell_renderer_text_new();
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW(view),
+																							 -1,
+																							 "Pool name",
+																							 renderer,
+																							 "text",CDD_POOL_COL_NAME,
+																							 NULL);
+	
+	// Store & TreeView
+	store = gtk_list_store_new (CDD_POOL_NUM_COLS, G_TYPE_STRING);
+	info->cdd.limits.pool_store = store;
+	model = GTK_TREE_MODEL (store);
+	gtk_tree_view_set_model (GTK_TREE_VIEW(view),model);
+	g_object_unref (model);
+
+	// Add
+	button = gtk_button_new_with_label ("Add");
+	gtk_box_pack_end(GTK_BOX(GTK_DIALOG(dialog)->action_area),button,TRUE,TRUE,2);
+	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(cdd_limits_pool_add_clicked),info);
+	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(cdd_limits_pool_refresh_pool_list),info);
+	// Remove
+	button = gtk_button_new_with_label ("Remove");
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->action_area),button,TRUE,TRUE,2);
+	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(cdd_limits_pool_remove_clicked),info);
+	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(cdd_limits_pool_refresh_pool_list),info);
+	
+	cdd_limits_pool_refresh_pool_list (button,info);
+
+	gtk_widget_show_all (dialog);
+
+	gtk_grab_add (dialog);
+}
+
+void cdd_limits_pool_add_clicked (GtkWidget *bclicked, struct drqm_computers_info *info)
+{
+	drqm_request_slave_limits_pool_add (info->computers[info->row].hwinfo.name,
+																			(char *)gtk_entry_get_text(GTK_ENTRY(info->cdd.limits.epool)));
+	cdd_limits_pool_refresh_pool_list (bclicked,info);
+}
+
+void cdd_limits_pool_remove_clicked (GtkWidget *bclicked, struct drqm_computers_info *info)
+{
+	GtkTreeSelection *selection = NULL;
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+
+	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(info->cdd.limits.pool_view));
+
+	if (gtk_tree_selection_get_selected (selection,&model,&iter)) {
+		char *buf;
+
+		gtk_tree_model_get (GTK_TREE_MODEL(model),&iter,CDD_POOL_COL_NAME,&buf,-1);
+		drqm_request_slave_limits_pool_remove(info->computers[info->row].hwinfo.name,buf);
+		cdd_limits_pool_refresh_pool_list (bclicked,info);
+	}
+}
+
+
+void cdd_limits_pool_refresh_pool_list (GtkWidget *bclicked, struct drqm_computers_info *info)
+{
+	GtkListStore *store = info->cdd.limits.pool_store;
+	GtkTreeIter iter;
+	int i;
+
+	gtk_list_store_clear (GTK_LIST_STORE(store));
+	cdd_update(bclicked,info);
+	if (info->computers[info->row].limits.npools) {
+		struct pool *pool;
+		pool = computer_pool_attach_shared_memory(info->computers[info->row].limits.poolshmid);
+		for (i=0;i<info->computers[info->row].limits.npools;i++) {
+			gtk_list_store_append (store,&iter);
+			gtk_list_store_set (store, &iter,
+													CDD_POOL_COL_NAME,pool[i].name,
+													-1);
+		}
+		computer_pool_detach_shared_memory(pool);
+	}
+}
+
 
 void cdd_limits_autoenable_bcp (GtkWidget *button, struct drqm_computers_info *info)
 {

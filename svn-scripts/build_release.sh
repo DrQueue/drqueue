@@ -6,7 +6,7 @@
 usage () {
 	cat <<END
 DrQueue .tgz builder. Jorge Daza Garcia-Blanes
-echo "Usage: $0 <version>
+Usage: $0 <version>
 
 Example: $0 0.50rc4
 END
@@ -56,7 +56,7 @@ fi
 read -p "Do you want to create a tag for this package ? (y/n) " CRTTAG
 if [ "$CRTTAG" = "y" ]; then
 	echo "Creating tag $VERSION"
-	(cd ..; svn cp -m "Tag $VERSION created by build_release.sh" drqueue http://www.drqueue.org/svn/tags/$VERSION)
+	(cd ..; svn cp -m "Tag $VERSION created by build_release.sh" drqueue https://ssl.drqueue.org/svn/tags/$VERSION)
 	echo "Created !"
   # Update Revision
   echo "Updating Revision"
@@ -79,7 +79,7 @@ mv drqueue-$VERSION drqueue
 read -p "Do you want to create a package ChangeLog compared to previous tag ? (y/n) " CHLG
 if [ "$CHLG" = "y" ]; then
 	read -p "From tag ?: " OLDTAG
-	OLDREV=`svn log --stop-on-copy http://www.drqueue.org/svn/tags/$OLDTAG | awk '/^r[0-9]+/ { sub (/r/,"",$1); print $1; }'`
+	OLDREV=`svn log --stop-on-copy https://ssl.drqueue.org/svn/tags/$OLDTAG | awk '/^r[0-9]+/ { sub (/r/,"",$1); print $1; }'`
 	echo "Old Revision number: $OLDREV"
 	echo "Creating ChangeLog.$VERSION"
 	(svn log -v -r HEAD:$OLDREV | ./svn-scripts/svn2cl.pl > ../ChangeLog.$VERSION )

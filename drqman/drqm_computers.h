@@ -26,6 +26,11 @@
 #include <gtk/gtk.h>
 #include "libdrqueue.h"
 
+enum {
+	CDD_POOL_COL_NAME = 0,
+	CDD_POOL_NUM_COLS
+};
+
 struct drqmc_cddi {					 /* computer details dialog information */
   GtkWidget *dialog;
   GtkWidget *lname;							/* label name */
@@ -44,6 +49,10 @@ struct drqmc_cddi {					 /* computer details dialog information */
     GtkWidget *lautoenabletime;	/* Autoenable time */
     GtkWidget *eautoenabletime_h; /* Entry for the hour */
     GtkWidget *eautoenabletime_m; /* Entry for the minutes */
+		GtkWidget *lpools;          // Label Pools
+		GtkWidget *epool;           // Entry pool
+		GtkListStore *pool_store;	// List of pools
+		GtkTreeView *pool_view;
   } limits;
 
   GtkWidget *clist;							/* List of tasks */
