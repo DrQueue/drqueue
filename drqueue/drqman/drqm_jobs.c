@@ -16,9 +16,9 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-/*
- * $Id$
- */
+//
+// $Id$
+//
 
 #include <string.h>
 #include <unistd.h>
@@ -70,6 +70,7 @@ static void jdd_kill_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
 static void jdd_finish_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
 static void jdd_kill_finish_frames_confirm (GtkWidget *button, struct drqm_jobs_info *info_dj);
 static void jdd_kill_finish_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
+static void jdd_frames_reset_requeued (GtkWidget *button,struct drqm_jobs_info *info);
 static void jdd_sesframes_bcp (GtkWidget *button, struct drqm_jobs_info *info);
 static GtkWidget *jdd_sesframes_change_dialog (struct drqm_jobs_info *info);
 static void jdd_sesframes_cd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *info);
@@ -85,6 +86,7 @@ static int jdd_framelist_cmp_status (GtkCList *clist, gconstpointer ptr1, gconst
 static int jdd_framelist_cmp_icomp (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
 static int jdd_framelist_cmp_start_time (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
 static int jdd_framelist_cmp_end_time (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+static int jdd_framelist_cmp_requeued (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
 /* Limits */
 static GtkWidget *jdd_limits_widgets (struct drqm_jobs_info *info);
 static void jdd_limits_nmaxcpus_bcp (GtkWidget *button, struct drqm_jobs_info *info);
@@ -1309,18 +1311,19 @@ static void jdd_destroy (GtkWidget *w, struct drqm_jobs_info *info)
 
 static GtkWidget *CreateFrameInfoClist (void)
 {
-  gchar *titles[] = { "Number","Status","Start","End","Exit Code","Icomp","Itask" };
+  gchar *titles[] = { "Number","Status","Requeued","Start","End","Exit Code","Icomp","Itask" };
   GtkWidget *clist;
 
-  clist = gtk_clist_new_with_titles (7, titles);
+  clist = gtk_clist_new_with_titles (8, titles);
   gtk_clist_column_titles_show(GTK_CLIST(clist));
-  gtk_clist_set_column_width (GTK_CLIST(clist),0,75);
+  gtk_clist_set_column_width (GTK_CLIST(clist),0,55);
   gtk_clist_set_column_width (GTK_CLIST(clist),1,95);
-  gtk_clist_set_column_width (GTK_CLIST(clist),2,180);
+  gtk_clist_set_column_width (GTK_CLIST(clist),2,85);
   gtk_clist_set_column_width (GTK_CLIST(clist),3,180);
-  gtk_clist_set_column_width (GTK_CLIST(clist),4,85);
-  gtk_clist_set_column_width (GTK_CLIST(clist),5,45);
+  gtk_clist_set_column_width (GTK_CLIST(clist),4,180);
+  gtk_clist_set_column_width (GTK_CLIST(clist),5,85);
   gtk_clist_set_column_width (GTK_CLIST(clist),6,45);
+  gtk_clist_set_column_width (GTK_CLIST(clist),7,45);
 
   gtk_clist_set_sort_type (GTK_CLIST(clist),GTK_SORT_ASCENDING);
   gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_frame);
@@ -1339,7 +1342,7 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
   char msg[BUFFERLEN];
   char *buf;
   char **buff;			/* for hte clist stuff */
-  int ncols = 7;
+  int ncols = 8;
   int i;
   GtkWidget *toplevel;
 
@@ -1458,22 +1461,23 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
 
     snprintf (buff[0],BUFFERLEN-1,"%i",job_frame_index_to_number (&info->jdd.job,i));
     strncpy(buff[1],job_frame_status_string(info->jdd.job.frame_info[i].status),BUFFERLEN);
+    snprintf (buff[2],BUFFERLEN-1,"%i",info->jdd.job.frame_info[i].requeued);
     if (info->jdd.job.frame_info[i].start_time != 0) {
-      strncpy(buff[2],ctime(&info->jdd.job.frame_info[i].start_time),BUFFERLEN); 
-			buf = strchr (buff[2],'\n');
-			if (buf != NULL)
-				*buf = '\0';
-      strncpy(buff[3],ctime(&info->jdd.job.frame_info[i].end_time),BUFFERLEN);
+      strncpy(buff[3],ctime(&info->jdd.job.frame_info[i].start_time),BUFFERLEN); 
 			buf = strchr (buff[3],'\n');
 			if (buf != NULL)
 				*buf = '\0';
+      strncpy(buff[4],ctime(&info->jdd.job.frame_info[i].end_time),BUFFERLEN);
+			buf = strchr (buff[4],'\n');
+			if (buf != NULL)
+				*buf = '\0';
     } else {
-      strncpy(buff[2],"Not started",BUFFERLEN); 
-      strncpy(buff[3],"Not started",BUFFERLEN);
+      strncpy(buff[3],"Not started",BUFFERLEN); 
+      strncpy(buff[4],"Not started",BUFFERLEN);
     }      
-    snprintf (buff[4],BUFFERLEN,"%i",info->jdd.job.frame_info[i].exitcode);
-    snprintf (buff[5],BUFFERLEN,"%i",info->jdd.job.frame_info[i].icomp);
-    snprintf (buff[6],BUFFERLEN,"%i",info->jdd.job.frame_info[i].itask);
+    snprintf (buff[5],BUFFERLEN,"%i",info->jdd.job.frame_info[i].exitcode);
+    snprintf (buff[6],BUFFERLEN,"%i",info->jdd.job.frame_info[i].icomp);
+    snprintf (buff[7],BUFFERLEN,"%i",info->jdd.job.frame_info[i].itask);
     gtk_clist_append(GTK_CLIST(info->jdd.clist),buff);
     switch (info->jdd.job.frame_info[i].status) {
     case FS_WAITING:
@@ -1514,6 +1518,7 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
 
   for(i=0;i<ncols;i++)
     g_free (buff[i]);
+	g_free (buff);
 
   return 1;
 }
@@ -1562,6 +1567,21 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info)
 		       "This option has no effect on frames that are not running.", NULL);
   gtk_widget_set_name (menu_item,"warning");
 
+  /* Separation bar */
+  menu_item = gtk_menu_item_new ();
+  gtk_menu_append(GTK_MENU(menu),menu_item);
+	
+	// Reset requeued counter.
+  menu_item = gtk_menu_item_new_with_label("Reset requeued counter");
+  gtk_menu_append(GTK_MENU(menu),menu_item);
+  gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_frames_reset_requeued),info);
+  gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_update),info);
+  gtk_tooltips_set_tip(tooltips,menu_item,"This option will kill and set as finished those selected frames "
+		       "that are currently running. So the render will stop and won't be requeued again (unless "
+		       "manually requeued).\n"
+		       "This option has no effect on frames that are not running.", NULL);
+  gtk_widget_set_name (menu_item,"warning");
+		
   /* Separation bar */
   menu_item = gtk_menu_item_new ();
   gtk_menu_append(GTK_MENU(menu),menu_item);
@@ -1683,6 +1703,24 @@ static void jdd_finish_frames (GtkWidget *button,struct drqm_jobs_info *info)
     rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
     frame = rdata->frame;
     drqm_request_job_frame_finish (info->jdd.job.id,frame);
+  }
+}
+
+static void jdd_frames_reset_requeued (GtkWidget *button,struct drqm_jobs_info *info)
+{
+  /* Sets the waiting frames as finished */
+  GList *sel;
+  uint32_t frame;
+  struct row_data *rdata;
+
+  if (!(sel = GTK_CLIST(info->jdd.clist)->selection)) {
+    return;
+  }
+
+  for (;sel;sel = sel->next) {
+    rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+    frame = rdata->frame;
+    drqm_request_job_frame_reset_requeued (info->jdd.job.id,frame);
   }
 }
 
@@ -2721,21 +2759,51 @@ void jdd_framelist_column_clicked (GtkCList *clist, gint column, struct drqm_job
     gtk_clist_sort (GTK_CLIST(clist));
   } else if (column == 2) {
     gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
-    gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_start_time);
+    gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_requeued);
     gtk_clist_sort (GTK_CLIST(clist));
   } else if (column == 3) {
     gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
-    gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_end_time);
+    gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_start_time);
     gtk_clist_sort (GTK_CLIST(clist));
   } else if (column == 4) {
     gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
-    gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_exitcode);
+    gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_end_time);
     gtk_clist_sort (GTK_CLIST(clist));
   } else if (column == 5) {
+    gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+    gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_exitcode);
+    gtk_clist_sort (GTK_CLIST(clist));
+  } else if (column == 6) {
     gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
     gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_icomp);
     gtk_clist_sort (GTK_CLIST(clist));
   }
+}
+
+int jdd_framelist_cmp_requeued (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+	struct row_data *ra,*rb;
+	char a,b;
+	uint32_t ifa,ifb;
+
+	ra = (struct row_data *) ((GtkCListRow*)ptr1)->data;
+	rb = (struct row_data *) ((GtkCListRow*)ptr2)->data;
+
+	ifa = job_frame_number_to_index (&ra->info->jdd.job,ra->frame);
+	ifb = job_frame_number_to_index (&rb->info->jdd.job,rb->frame);
+
+	a = ra->info->jdd.job.frame_info[ifa].requeued;
+	b = rb->info->jdd.job.frame_info[ifb].requeued;
+
+	if (a > b) {
+		return 1;
+	} else if (a == b) {
+		return 0;
+	} else {
+		return -1;
+	}
+
+	return 0;
 }
 
 int jdd_framelist_cmp_frame (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)

@@ -45,7 +45,8 @@
 #define R_R_JOBLNMCS   22	/* Job limit nmaxcpus set */
 #define R_R_JOBLNMCCS  23	/* Job limit nmaxcpuscomputer set */
 #define R_R_JOBPRIUP   24	/* Job priority update */
-
+#define R_R_JOBFINFO   25 // Job frame info
+#define R_R_JOBFRSTRQD 26 // Job frame reset requeued
 
 /* Requests to the slave */
 #define RS_R_KILLTASK           1 /* Request to slave to kill a task */

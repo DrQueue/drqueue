@@ -357,27 +357,10 @@ int recv_computer_status (int sfd, struct computer_status *status)
 
 int recv_job (int sfd, struct job *job)
 {
-  int r;
-  int bleft;
-  void *buf;
-
-  buf = job;			/* So when copying to buf we're really copying into job */
-  bleft = sizeof (struct job);
-  while ((r = read (sfd,buf,bleft)) < bleft) {
-    if ((r == -1) || ((r == 0) && (bleft > 0))) {
-      /* if r is error or if there are no more bytes left on the socket but there _SHOULD_ be */
-      drerrno = DRE_ERRORREADING;
-      return 0;
-    }
-    bleft -= r;
-    buf += r;
-#ifdef COMM_REPORT
-    brecv += r;
-#endif
-  }
-#ifdef COMM_REPORT
-  brecv += r;
-#endif
+	if (!dr_read(sfd,job,sizeof (struct job))) {
+		return 0;
+	}
+	
   /* Now we should have the computer hardware info with the values in */
   /* network byte order, so we put them in host byte order */
   job->id = ntohl (job->id);
@@ -560,43 +543,16 @@ int send_task (int sfd, struct task *task)
 
 int send_computer (int sfd, struct computer *computer)
 {
-  uint16_t check = 0x0f0f;
-
-  /* Check point */
-  if (!write_16b(sfd,&check)) {
-    printf ("error sending check 0\n");
-    return 0;
-  }
-
   if (!send_computer_status (sfd,&computer->status)) {
     printf ("error send_computer_status\n");
     return 0;
   }
-  /* Check point */
-  if (!write_16b(sfd,&check)) {
-    printf ("error sending check 1\n");
-    return 0;
-  }
-
   if (!send_computer_hwinfo (sfd,&computer->hwinfo)) {
     printf ("error send_computer_hwinfo\n");
     return 0;
   }
-
-  /* Check point */
-  if (!write_16b(sfd,&check)) {
-    printf ("error sending check 2\n");
-    return 0;
-  }
-
   if (!send_computer_limits (sfd,&computer->limits)) {
     printf ("error send_computer_limits\n");
-    return 0;
-  }
-
-  /* Check point */
-  if (!write_16b(sfd,&check)) {
-    printf ("error sending check 3\n");
     return 0;
   }
 
@@ -605,40 +561,16 @@ int send_computer (int sfd, struct computer *computer)
 
 int recv_computer (int sfd, struct computer *computer)
 {
-  uint16_t  check;
-
-  if ((!read_16b(sfd,&check)) || (check != 0x0f0f)) {
-    printf ("error receiving check 0\n");
-    return 0;
-  }
-
   if (!recv_computer_status (sfd,&computer->status)) {
     printf ("error recv_computer_status\n");
     return 0;
   }
-
-  if ((!read_16b(sfd,&check)) || (check != 0x0f0f)) {
-    printf ("error receiving check 1\n");
-    return 0;
-  }
-
   if (!recv_computer_hwinfo (sfd,&computer->hwinfo)) {
     printf ("error recv_computer_hwinfo\n");
     return 0;
   }
-
-  if ((!read_16b(sfd,&check)) || (check != 0x0f0f)) {
-    printf ("error receiving check 2\n");
-    return 0;
-  }
-
   if (!recv_computer_limits (sfd,&computer->limits)) {
     printf ("error recv_computer_limits\n");
-    return 0;
-  }
-
-  if ((!read_16b(sfd,&check)) || (check != 0x0f0f)) {
-    printf ("error receiving check 3\n");
     return 0;
   }
 
@@ -658,6 +590,8 @@ int recv_frame_info (int sfd, struct frame_info *fi)
   fi->end_time = ntohl (fi->end_time);
   fi->icomp = ntohl (fi->icomp);
   fi->itask = ntohs (fi->itask);
+	fi->requeued = ntohs (fi->requeued);
+	fi->flags = ntohs (fi->flags);
 
   return 1;
 }
@@ -674,6 +608,8 @@ int send_frame_info (int sfd, struct frame_info *fi)
   bswapped.end_time = htonl (bswapped.end_time);
   bswapped.icomp = htonl (bswapped.icomp);
   bswapped.itask = htons (bswapped.itask);
+  bswapped.requeued = htons (bswapped.requeued);
+	bswapped.flags = htons (bswapped.flags);
 
   if (!dr_write (sfd,buf,sizeof (struct frame_info))) {
     return 0;
