@@ -1,4 +1,4 @@
-/* $Id: request_codes.h,v 1.16 2001/09/09 22:02:30 jorge Exp $ */
+/* $Id: request_codes.h,v 1.17 2001/09/18 13:24:05 jorge Exp $ */
 
 #ifndef _REQUEST_CODES_H_
 #define _REQUEST_CODES_H_
@@ -41,12 +41,14 @@
 #define R_A_JOBFKFIN   36
 #define R_R_UCLIMITS   37	/* Update computer limits */
 #define R_A_UCLIMITS   38
+#define R_R_SLAVEXIT   39	/* Slave exit, one slave must be removed from the queue */
+#define R_A_SLAVEXIT   40
 
 /* Requests to the slave */
-#define RS_R_KILLTASK     1	/* Request to slave to kill a task */
-#define RS_A_KILLTASK     2
-#define RS_R_SETNMAXCPUS  3	/* Request to set limits nmaxcpus */
-#define RS_A_SETNMAXCPUS  4
+#define RS_R_KILLTASK           1 /* Request to slave to kill a task */
+#define RS_A_KILLTASK           2
+#define RS_R_SETNMAXCPUS        3 /* Request to set limits nmaxcpus */
+#define RS_A_SETNMAXCPUS        4
 #define RS_R_SETMAXFREELOADCPU  5 /* Request to set limits maxfreeloadcpu */
 #define RS_A_SETMAXFREELOADCPU  6
 
