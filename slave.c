@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.50 2001/10/04 08:20:47 jorge Exp $ */
+/* $Id: slave.c,v 1.51 2001/10/04 08:29:57 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -72,6 +72,7 @@ int main (int argc,char *argv[])
 
     update_computer_status (&sdb); /* sends the computer status to the master */
 				/* Does not need to be locked because we lock inside it */
+
     if (launched) {
       /* Just to have good load values on next loop */
       /* if we don't wait more here, the load won't have */
