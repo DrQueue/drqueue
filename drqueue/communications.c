@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.36 2001/10/04 08:17:25 jorge Exp $ */
+/* $Id: communications.c,v 1.37 2001/10/04 08:29:51 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -357,6 +357,8 @@ int recv_computer_status (int sfd, struct computer_status *status)
   void *buf;
   int i;
   struct task task;
+
+  computer_status_init (status);
 
   buf = status;
   bleft = sizeof (uint16_t) * 4; /* 3 loadavg + 1 ntasks */
