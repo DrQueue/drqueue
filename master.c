@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.40 2004/01/07 21:50:21 jorge Exp $ */
+/* $Id: master.c,v 1.41 2004/01/23 03:28:00 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -7,7 +7,11 @@
 #include <sys/shm.h>
 #include <sys/sem.h>
 #include <signal.h>
-#include <wait.h>
+#ifndef __OSX
+# include <wait.h>
+#else
+# include <sys/wait.h>
+#endif
 #include <time.h>
 #include <stdlib.h>
 #include <sys/socket.h>
@@ -216,7 +220,11 @@ void set_signal_handlers (void)
   sigemptyset (&ignore.sa_mask);
   ignore.sa_flags = 0;
   sigaction (SIGHUP, &ignore, NULL);
+#ifdef __OSX
+	sigaction (SIGCHLD, &ignore, NULL);
+#else
   sigaction (SIGCLD, &ignore, NULL);
+#endif
 }
 
 

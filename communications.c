@@ -1,5 +1,6 @@
-/* $Id: communications.c,v 1.54 2003/12/20 13:08:35 jorge Exp $ */
+/* $Id: communications.c,v 1.55 2004/01/23 03:27:59 jorge Exp $ */
 
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>

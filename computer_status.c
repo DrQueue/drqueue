@@ -1,4 +1,4 @@
-/* $Id: computer_status.c,v 1.15 2002/03/01 11:38:06 jorge Exp $ */
+/* $Id: computer_status.c,v 1.16 2004/01/23 03:28:00 jorge Exp $ */
 
 #include <stdio.h>
 #include <signal.h>
@@ -13,7 +13,12 @@
 #include <sys/types.h>
 #include <sys/sysget.h>
 # else
-#  error You need to define the OS, or OS defined not supported
+#  ifdef __OSX
+#   include <stdint.h>
+#   include <string.h>
+#  else
+#   error You need to define the OS, or OS defined not supported
+#  endif
 # endif
 #endif
 
@@ -105,18 +110,18 @@ void get_loadavg (uint16_t *loadavg)
 
     while (fgets (buf,BUFFERLEN,uptime) != NULL) {
       if ((fd = strstr(buf,"average:")) != NULL) {
-	while (!isdigit((int)*fd))
-	  fd++;
-	if (sscanf (fd,"%f, %f, %f",&f1,&f2,&f3) != 3) {
-	  log_slave_computer (L_WARNING,"Problems on get_loadavg\n");
-	  f1 = f2 = f3 = 0;
-	}
-	tla[0] = f1 * 1000;
-	tla[1] = f2 * 1000;
-	tla[2] = f3 * 1000;
+				while (!isdigit((int)*fd))
+					fd++;
+				if (sscanf (fd,"%f, %f, %f",&f1,&f2,&f3) != 3) {
+					log_slave_computer (L_WARNING,"Problems on get_loadavg\n");
+					f1 = f2 = f3 = 0;
+				}
+				tla[0] = f1 * 1000;
+				tla[1] = f2 * 1000;
+				tla[2] = f3 * 1000;
       }
     }
-
+		
     pclose (uptime);
   }
   loadavg[0] = (uint16_t) (tla[0]/10);
@@ -124,7 +129,39 @@ void get_loadavg (uint16_t *loadavg)
   loadavg[2] = (uint16_t) (tla[2]/10);
 }
 # else
-#  error You need to define the OS, or OS defined not supported
+#  ifdef __OSX
+void get_loadavg (uint16_t *loadavg)
+{
+	FILE *uptime;
+	char buf[BUFFERLEN];
+	char *fd;			/* first digit */
+	float f1,f2,f3;
+    
+	if ((uptime = popen ("/usr/bin/uptime","r")) == NULL) {
+		fprintf (stderr,"Warning: Problems executing '/usr/bin/uptime'\n");
+		f1 = f2 = f3 = 0;
+	}
+
+	while (fgets (buf,BUFFERLEN,uptime) != NULL) {
+		if ((fd = strstr(buf,"averages:")) != NULL) {
+			while (!isdigit((int)*fd))
+				fd++;
+			if (sscanf (fd,"%f %f %f",&f1,&f2,&f3) != 3) {
+				log_slave_computer (L_WARNING,"Problems on get_loadavg\n");
+				f1 = f2 = f3 = 0;
+			}
+		}
+	}
+
+	loadavg[0] = f1 * 100;
+	loadavg[1] = f2 * 100;
+	loadavg[2] = f3 * 100;
+	
+	pclose (uptime);
+}
+#  else
+#   error You need to define the OS, or OS defined not supported
+#  endif
 # endif
 #endif 
 

@@ -1,5 +1,6 @@
-/* $Id: computer.c,v 1.37 2004/01/07 21:50:21 jorge Exp $ */
+/* $Id: computer.c,v 1.38 2004/01/23 03:28:00 jorge Exp $ */
 
+#include <sys/types.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
