@@ -2681,6 +2681,8 @@ void handle_r_r_uclimits (int sfd,struct database *wdb,int icomp, struct request
   memcpy (&wdb->computer[icomp].limits, &limits, sizeof(limits));
   semaphore_release(wdb->semid);
 
+	computer_pool_list (&limits);
+
   log_master (L_DEBUG,"Exiting handle_r_r_uclimits");
 }
 
