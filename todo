@@ -1,6 +1,7 @@
 TO DO:
 -----
 
+* Mail notifications
 * Checks at the beginning of every program for the directories.
 * The slave must check that the requests come from the
   master.
@@ -9,7 +10,6 @@ TO DO:
   return int. And error checking should be coded 
   extensively.
 * file locking on logging functions.
-* Mail notifications
 * On the registration if the computer ip can not be resolved
   then use the string of the ip address as name.
 * There are no consistency checks in the slave. Should be.
@@ -29,7 +29,6 @@ DRQMAN
 ------
 
 * Put KOJ information in the job details view
-* Buttons for changing job limits.
 * Autorefresh configurable
 * Watching the output logs as tail -f does.
 * Names of computers instead of id numbers.
