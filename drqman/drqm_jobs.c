@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.34 2001/09/18 09:25:20 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.35 2001/09/18 12:54:57 jorge Exp $
  */
 
 #include <string.h>
@@ -134,10 +134,10 @@ static GtkWidget *CreateJobsList(struct drqm_jobs_info *info)
 
 static GtkWidget *CreateClist (GtkWidget *window)
 {
-  gchar *titles[] = { "ID","Name","Owner","Status","Processors","Left","Done","Failed","Pri" };
+  gchar *titles[] = { "ID","Name","Owner","Status","Processors","Left","Done","Failed","Total","Pri" };
   GtkWidget *clist;
 
-  clist = gtk_clist_new_with_titles (9, titles);
+  clist = gtk_clist_new_with_titles (10, titles);
   gtk_container_add(GTK_CONTAINER(window),clist);
   gtk_clist_column_titles_show(GTK_CLIST(clist));
   gtk_clist_column_titles_passive(GTK_CLIST(clist));
@@ -149,8 +149,9 @@ static GtkWidget *CreateClist (GtkWidget *window)
   gtk_clist_set_column_width (GTK_CLIST(clist),5,45);
   gtk_clist_set_column_width (GTK_CLIST(clist),6,45);
   gtk_clist_set_column_width (GTK_CLIST(clist),7,45);
+  gtk_clist_set_column_width (GTK_CLIST(clist),8,45);
 
-  gtk_clist_set_sort_column (GTK_CLIST(clist),8);
+  gtk_clist_set_sort_column (GTK_CLIST(clist),9);
   gtk_clist_set_sort_type (GTK_CLIST(clist),GTK_SORT_ASCENDING);
   gtk_clist_set_compare_func (GTK_CLIST(clist),pri_cmp_clist);
 
@@ -182,7 +183,7 @@ void drqm_update_joblist (struct drqm_jobs_info *info)
 {
   int i;
   char **buff;
-  int ncols = 9;
+  int ncols = 10;
 
   buff = (char**) g_malloc((ncols + 1) * sizeof(char*));
   for (i=0;i<ncols;i++)
@@ -200,8 +201,11 @@ void drqm_update_joblist (struct drqm_jobs_info *info)
     snprintf (buff[5],BUFFERLEN,"%i",info->jobs[i].fleft);
     snprintf (buff[6],BUFFERLEN,"%i",info->jobs[i].fdone);
     snprintf (buff[7],BUFFERLEN,"%i",info->jobs[i].ffailed);
-    snprintf (buff[8],BUFFERLEN,"%i",info->jobs[i].priority);
+    snprintf (buff[8],BUFFERLEN,"%i",job_nframes(&info->jobs[i]));
+    snprintf (buff[9],BUFFERLEN,"%i",info->jobs[i].priority);
+
     gtk_clist_append(GTK_CLIST(info->clist),buff);
+
     gtk_clist_set_row_data(GTK_CLIST(info->clist),i,(gpointer)info->jobs[i].priority);
   }
 
