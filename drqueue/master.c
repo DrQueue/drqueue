@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.20 2001/09/01 20:00:40 jorge Exp $ */
+/* $Id: master.c,v 1.21 2001/09/02 14:19:11 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -27,31 +27,19 @@ int main (int argc, char *argv[])
   int csfd;			/* child sfd, the socket once accepted the connection */
   int shmid;			/* shared memory id */
   int force = 0;		/* force even if shmem already exists */
-  int opt;
   struct sockaddr_in addr;	/* Address of the remote host */
 
-  log_master (L_INFO,"Starting...");
-  set_signal_handlers ();
 
-  while ((opt = getopt (argc,argv,"fl:oh")) != -1) {
-    switch (opt) {
-    case 'f':
-      force = 1;
-      break;
-    case 'l':
-      loglevel = atoi (optarg);
-      printf ("Logging level set to: %i\n",loglevel);
-      break;
-    case 'o':
-      logonscreen = 1;
-      printf ("Logging on screen.\n");
-      break;
-    case '?':
-    case 'h':
-      usage();
-      exit (1);
-    }
+  master_get_options (&argc,&argv,&force);
+
+  log_master (L_INFO,"Starting...");
+
+  if (!common_environment_check()) {
+    fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
+    exit (1);
   }
+
+  set_signal_handlers ();
 
   shmid = get_shared_memory (force);
   wdb = attach_shared_memory (shmid);
@@ -101,10 +89,15 @@ int get_shared_memory (int force)
   key_t key;
   int shmid;
   int shmflg;
+  char file[BUFFERLEN];
+  char *root;
 
-  if ((key = ftok ("./master",'Z')) == -1) {
-    perror ("ftok");
-    exit (1);
+  root = getenv("DRQUEUE_ROOT");
+  snprintf (file,BUFFERLEN-1,"%s/bin/master",root);
+
+  if ((key = ftok (file,'Z')) == -1) {
+    perror ("Getting key for shared memory");
+    kill(0,SIGINT);
   }
   
   if (force) {
@@ -114,10 +107,10 @@ int get_shared_memory (int force)
   }
 
   if ((shmid = shmget (key,sizeof(struct database), shmflg)) == -1) {
-    perror ("shmget");
+    perror ("Getting shared memory");
     if (!force)
       fprintf (stderr,"Try with option -f (if you are sure that no other master is running)\n");
-    exit (1);
+    kill(0,SIGINT);
   }
 
   return shmid;
@@ -129,9 +122,14 @@ int get_semaphores (int force)
   int semid;
   struct sembuf op;
   int semflg;
+  char file[BUFFERLEN];
+  char *root;
 
-  if ((key = ftok ("master",'Z')) == -1) {
-    perror ("ftok");
+  root = getenv("DRQUEUE_ROOT");
+  snprintf (file,BUFFERLEN-1,"%s/bin/master",root);
+
+  if ((key = ftok (file,'Z')) == -1) {
+    perror ("Getting key for semaphores");
     kill (0,SIGINT);
   }
 
@@ -142,7 +140,7 @@ int get_semaphores (int force)
   }
 
   if ((semid = semget (key,1,semflg)) == -1) {
-    perror ("semget");
+    perror ("Getting semaphores");
     if (!force)
       fprintf (stderr,"Try with option -f (if you are sure that no other master is running)\n");
     kill (0,SIGINT);
@@ -352,3 +350,27 @@ void usage (void)
 	   "\t-h prints this help\n");
 }
 
+void master_get_options (int *argc,char ***argv, int *force)
+{
+  int opt;
+
+  while ((opt = getopt (*argc,*argv,"fl:oh")) != -1) {
+    switch (opt) {
+    case 'f':
+      *force = 1;
+      break;
+    case 'l':
+      loglevel = atoi (optarg);
+      printf ("Logging level set to: %i\n",loglevel);
+      break;
+    case 'o':
+      logonscreen = 1;
+      printf ("Logging on screen.\n");
+      break;
+    case '?':
+    case 'h':
+      usage();
+      exit (1);
+    }
+  }
+}
