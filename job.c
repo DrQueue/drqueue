@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.8 2001/07/17 10:29:55 jorge Exp $ */
+/* $Id: job.c,v 1.9 2001/07/17 15:06:00 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -41,7 +41,7 @@ void job_report (struct job *job)
   printf ("Frame start,end:\t%i,%i\n",job->frame_start,job->frame_end);
 }
 
-void job_init_registered (struct database *wdb,int ijob,struct job *job)
+void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job)
 {
   /* Called we we have just received a job to be registered */
   int i;
@@ -52,6 +52,7 @@ void job_init_registered (struct database *wdb,int ijob,struct job *job)
 
   memcpy (&wdb->job[ijob], job, sizeof(struct job));
   wdb->job[ijob].used = 1;
+  wdb->job[ijob].id = ijob;	/* Check ranges !!! */
   wdb->job[ijob].status = JOBSTATUS_WAITING;
   /* We allocate the memory for the frame_info */
   nframes = job_nframes (&wdb->job[ijob]);
@@ -139,7 +140,7 @@ int job_nframes (struct job *job)
 }
 
 
-int job_available (struct database *wdb,int ijob, int *iframe)
+int job_available (struct database *wdb,uint32_t ijob, int *iframe)
 {
   if (wdb->job[ijob].used == 0)
     return 0;
@@ -153,7 +154,7 @@ int job_available (struct database *wdb,int ijob, int *iframe)
   return 1;
 }
 
-int job_first_frame_available (struct database *wdb,int ijob)
+int job_first_frame_available (struct database *wdb,uint32_t ijob)
 {
   /* This function not only returns the first frame */
   /* This function is called non blocked */
@@ -180,7 +181,7 @@ int job_first_frame_available (struct database *wdb,int ijob)
   return r;
 }
 
-void job_update_assigned (struct database *wdb, int ijob, int iframe, int icomp, int itask)
+void job_update_assigned (struct database *wdb, uint32_t ijob, int iframe, int icomp, int itask)
 {
   /* LOCK BEFORE CALLING THIS FUNCTION */
   /* Here we should set all the information inside the task structure (slave) */
@@ -252,3 +253,28 @@ int job_njobs_masterdb (struct database *wdb)
 
   return c;
 }
+
+void job_update_info (struct database *wdb,uint32_t ijob)
+{
+  /* This function is called by the master */
+  /* It updates the number of process running */
+  /* This function is called unlocked */
+  int i,c=0;
+  struct frame_info *fi;
+
+  if (ijob > MAXJOBS)
+    return;
+
+  fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
+  for (i=0;i<job_nframes(&wdb->job[ijob]);i++) {
+    if ((fi[i].status == FS_ASSIGNED) || (fi[i].status == FS_LOADING)) {
+      c++;
+    }
+  }
+  detach_frame_shared_memory(fi);
+
+  semaphore_lock(wdb->semid);
+  wdb->job[ijob].nprocs = c;
+  semaphore_release(wdb->semid);
+}
+
