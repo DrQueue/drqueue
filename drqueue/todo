@@ -17,7 +17,7 @@ TO DO:
   return int. And error checking should be coded 
   extensively.
 * job permissions.
-* flag on master and slave to set kind of logging.
+* flag on master and slave to set logging level.	[DONE]
 
 BUGS:
 ----
