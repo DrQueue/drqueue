@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: chown_block,v 1.4 2002/06/27 09:47:59 jorge Exp $
+# $Id$
 #
 # This script changes the owner and group of a list of files
 # as stated in the command line.

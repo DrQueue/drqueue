@@ -32,7 +32,13 @@ else
     LDFLAGS = `pkg-config --libs gtk+-2.0`
     MAKE = gmake
    else
+    ifeq ($(systype),CYGWIN_NT-5.1)
+     CFLAGS = -Wall -I.. -D__CYGWIN -g `pkg-config --cflags gtk+-2.0` -O2
+     LDFLAGS = `pkg-config --libs gtk+-2.0`
+     MAKE = make
+    else
 $(error Cannot make DrQueueManager -- systype "$(systype)" is unknown)
+    endif
    endif
   endif
  endif	
