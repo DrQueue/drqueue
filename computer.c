@@ -202,6 +202,7 @@ void computer_init (struct computer *computer)
 	// This function is called by the master when a computer is not longer on the list
   computer->used = 0;
   computer_status_init(&computer->status);
+	computer_pool_free (&computer->limits);
 }
 
 void computer_pool_init (struct computer_limits *cl)

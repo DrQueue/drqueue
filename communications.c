@@ -677,6 +677,8 @@ int recv_computer_pools (int sfd, struct computer_limits *cl)
 	npools = ntohs (npools);
 	fprintf (stderr,"Recv npools: %u\n",npools);
 
+	computer_pool_free (cl);
+
 	for (i = 0; i < (npools-1); i++) {
 		recv_string (sfd,&string);
 		computer_pool_add (cl,string);
