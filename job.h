@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.26 2001/11/09 15:01:05 jorge Exp $ */
+/* $Id: job.h,v 1.27 2001/11/13 08:38:32 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -16,6 +16,8 @@
 #include <time.h>
 
 #include "constants.h"
+
+
 
 /* FRAME SECTION */
 typedef enum {
@@ -66,6 +68,10 @@ typedef enum {
   JOBSTATUS_FINISHED
 } t_jobstatus;
 
+/* JOB FLAGS */
+#define JF_MAILNOTIFY     (1<<0) /* Mail notifications on events */
+
+/* THE JOB ITSELF */
 struct job {
   char used;
   uint32_t id;			/* Id number for the job */
