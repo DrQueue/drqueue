@@ -1,6 +1,7 @@
-# $Id: Makefile,v 1.33 2002/06/26 13:31:00 jorge Exp $
+# $Id: Makefile,v 1.34 2002/09/22 19:10:24 jorge Exp $
 
 CC = gcc
+CPP = g++
 OBJS_LIBDRQUEUE = computer_info.o computer_status.o task.o logger.o communications.o \
 			computer.o request.o semaphores.o job.o drerrno.o database.o common.o \
 			mayasg.o
@@ -10,6 +11,7 @@ INSTROOT = /lot/s800/HOME/RENDUSR/drqueue
 
 ifeq ($(systype),linux)
 	CFLAGS = -DCOMM_REPORT -Wall -I. -D__LINUX -g -O2
+	CPPFLAGS = -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__LINUX -g -O2
 	MAKE = make
 else 
  ifeq ($(systype),irix)
@@ -40,13 +42,11 @@ linux_install: linux
 	cp ./slave $(INSTROOT)/bin/slave.linux
 	cp ./master $(INSTROOT)/bin/master.linux
 	cp ./drqman/drqman $(INSTROOT)/bin/drqman.linux
-	cp ./bin/slave $(INSTROOT)/bin/slave
-	cp ./bin/master $(INSTROOT)/bin/master
-	cp ./bin/requeue $(INSTROOT)/bin/requeue
-	cp ./bin/path2unix.pl $(INSTROOT)/bin/path2unix.pl
-	cp ./bin/chown_block $(INSTROOT)/bin/chown_block
+	cp ./bin/* $(INSTROOT)/bin/ || exit 0
+	cp ./etc/* $(INSTROOT)/etc/ || exit 0
 	cp ./requeue $(INSTROOT)/bin/requeue.linux
-	chmod 0777 $(INSTROOT)/bin/*
+	cp ./sendjob $(INSTROOT)/bin/sendjob.linux
+	chmod 0777 $(INSTROOT)/bin/* || exit 0
 	chown rendusr.103 $(INSTROOT)/bin/*
 
 linux_miniinstall: linux
@@ -60,20 +60,25 @@ irix_miniinstall: irix
 doc:
 	cxref *.[ch] drqman/*.[ch] -all-comments -xref-all -index-all -R/home/jorge/prog/drqueue -O/home/jorge/prog/drqueue/doc -html32 -D__LINUX
 
-all: slave master requeue
+all: slave master requeue sendjob
 
 libdrqueue.a : $(OBJS_LIBDRQUEUE) libdrqueue.h
 	ar sq $@ $(OBJS_LIBDRQUEUE)
 slave: slave.o libdrqueue.a
 master: master.o libdrqueue.a
-sendjob: sendjob.o libdrqueue.a
 requeue: requeue.o libdrqueue.a
+requeue.o: requeue.c
+	$(CC) -c $(CFLAGS) -o $@ $<
+
+sendjob: sendjob.o libdrqueue.a
+	$(CPP) $(CPPDFLAGS) -o $@ sendjob.o libdrqueue.a
 
 libdrqueue.h: computer_info.h computer_status.h task.h logger.h communications.h \
 			computer.h request.h semaphores.h job.h drerrno.h database.h common.h
 
 %.o: %.c %.h constants.h
 	$(CC) -c $(CFLAGS) -o $@ $<
+
 clean:
 	rm -f *.o *~ libdrqueue.a slave master sendjob TAGS
 	(cd drqman; $(MAKE) clean)
