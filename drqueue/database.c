@@ -1,4 +1,4 @@
-/* $Id: database.c,v 1.10 2001/11/21 16:07:37 jorge Exp $ */
+/* $Id: database.c,v 1.11 2002/02/27 10:41:17 jorge Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -132,18 +132,18 @@ int database_save (struct database *wdb)
     if (errno == ENOENT) {
       /* If its because the directory does not exist we try creating it first */
       if (mkdir (dir,0775) == -1) {
-	log_master (L_WARNING,"Could not create database directory. Check permissions.");
+	log_master (L_WARNING,"Could not create database directory. Check permissions: %s",dir);
 	drerrno = DRE_COULDNOTCREATE;
 	return 0;
       }
       if ((fd = open (filename, O_CREAT|O_TRUNC|O_RDWR, 0664)) == -1) {
-	log_master (L_WARNING,"Could not open database file for writing. Check permissions.");
+	log_master (L_WARNING,"Could not open database file for writing. Check permissions: %s",filename);
 	drerrno = DRE_COULDNOTCREATE;
 	return 0;
       }
     } else {
       /* could not open the file for other reasons */
-      log_master (L_WARNING,"Could not open database file for writing. Check permissions.");
+      log_master (L_WARNING,"Could not open database file for writing. Check permissions: %s",filename);
       drerrno = DRE_COULDNOTCREATE;
       return 0;
     }
