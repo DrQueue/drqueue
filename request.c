@@ -3449,10 +3449,7 @@ void handle_rs_r_limitspoolremove (int sfd,struct slave_database *sdb,struct req
   semaphore_lock(sdb->semid);
 	
 	log_slave_computer(L_INFO,"Pool to be removed from list: %s",pool);
-	fprintf(stderr,"Pool to be removed from list: %s<---\n",pool);
-	computer_pool_list(&sdb->comp->limits);
 	computer_pool_remove(&sdb->comp->limits,pool);
-	computer_pool_list(&sdb->comp->limits);
 
   semaphore_release(sdb->semid);
 
