@@ -678,8 +678,8 @@ int send_computer_pools (int sfd, struct computer_limits *cl)
 		computer_pool_detach_shared_memory (pool);
 	}
 
-	fprintf (stderr,"communications.c\n");
-	computer_pool_list (cl);
+	//	fprintf (stderr,"communications.c\n");
+	//	computer_pool_list (cl);
 
 	return 1;
 }
@@ -694,7 +694,7 @@ int recv_computer_pools (int sfd, struct computer_limits *cl)
 		return 0;
 	}
 	npools = ntohs (npools);
-	fprintf (stderr,"Recv npools: %u\n",npools);
+	//	fprintf (stderr,"Recv npools: %u\n",npools);
 
 	computer_pool_free (cl);
 	for (i=0;i<npools;i++) {
@@ -704,7 +704,7 @@ int recv_computer_pools (int sfd, struct computer_limits *cl)
 		computer_pool_add (cl,pool.name);
 	}
 
-	// computer_pool_list (cl);
+	//	computer_pool_list (cl);
 
 	return 1;
 }
@@ -714,7 +714,7 @@ int recv_computer_limits (int sfd, struct computer_limits *cl)
   void *buf;
 
 	// Pool before receiving must be freed
-	computer_pool_free(cl);
+	// computer_pool_free(cl);
 
   buf = cl;
   if (!dr_read (sfd,buf,sizeof(struct computer_limits))) {
