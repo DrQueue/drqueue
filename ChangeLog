@@ -1,3 +1,34 @@
+2004-10-16 11:03:43  Rev 811    jorge
+
+	* common.h:
+	  New version number on common.h: 0.51.1
+
+2004-10-15 23:24:38  Rev 810    jorge
+
+	* TODO:
+	  Updated TODO
+
+2004-10-15 21:15:58  Rev 809    jorge
+
+	* drqman/drqm_request.h drqman/drqm_computers.c request.c 
+	  drqman/drqm_computers.h drqman/drqm_request.c request.h:
+	  Full support for autoenable active flag.
+
+2004-10-15 20:10:33  Rev 808    jorge
+
+	* computer.h slave.c computer.c slave.h:
+	  Added autoenable flag.
+
+2004-10-15 09:49:33  Rev 805    jorge
+
+	* Revision:
+	  New Revision commited by build_package.sh
+
+2004-10-15 09:49:06  Rev 803    jorge
+
+	* ChangeLog:
+	  Changelog commited by build_package.sh
+
 2004-10-15 09:48:46  Rev 802    jorge
 
 	* common.h:
