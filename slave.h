@@ -25,6 +25,8 @@
 #include <signal.h>
 #if defined (__OSX) || defined (__FREEBSD)
 #include <sys/syslimits.h>
+#elif defined (__IRIX)
+#include <limits.h>
 #endif
 
 #include "computer.h"
