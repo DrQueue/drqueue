@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.40 2001/09/28 14:59:30 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.41 2001/10/01 10:30:54 jorge Exp $
  */
 
 #include <string.h>
@@ -738,6 +738,7 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   GtkWidget *swin;
   GtkWidget *button;
   char *buf;
+  GtkTooltips *tooltips;
 
   if (info->njobs) {
     gtk_clist_get_text(GTK_CLIST(info->clist),info->row,0,&buf);
@@ -745,6 +746,8 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   } else {
     return NULL;
   }
+
+  tooltips = TooltipsNew ();
 
   /* Dialog */
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -883,23 +886,30 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   gtk_signal_connect (GTK_OBJECT(button),"clicked",
 		      StopJob,info);
   gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_update),info);
+  gtk_tooltips_set_tip (tooltips,button,"Set the job as 'Stopped' but let the running frames finish",NULL);
+
   /* Hard Stop */
   button = gtk_button_new_with_label ("Hard Stop");
   gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
   gtk_signal_connect (GTK_OBJECT(button),"clicked",
 		      GTK_SIGNAL_FUNC(HStopJob),info);
   gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_update),info);
+  gtk_tooltips_set_tip (tooltips,button,"Set the job as 'Stopped' killing all running frames",NULL);
+
   /* Continue */
   button = gtk_button_new_with_label ("Continue");
   gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
   gtk_signal_connect (GTK_OBJECT(button),"clicked",
 		      GTK_SIGNAL_FUNC(ContinueJob),info);
   gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_update),info);
+  gtk_tooltips_set_tip (tooltips,button,"Set a 'Stopped' job as 'Waiting' again",NULL);
+
   /* Delete */
   button = gtk_button_new_with_label ("Delete");
   gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
   gtk_signal_connect (GTK_OBJECT(button),"clicked",
 		      GTK_SIGNAL_FUNC(DeleteJob),info);
+  gtk_tooltips_set_tip (tooltips,button,"Delete the job from the queue killing running frames",NULL);
 
   /* Button Refresh */
   button = gtk_button_new_with_label ("Refresh");
