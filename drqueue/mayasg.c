@@ -1,4 +1,4 @@
-/* $Id: mayasg.c,v 1.6 2001/11/21 10:15:49 jorge Exp $ */
+/* $Id: mayasg.c,v 1.7 2002/06/17 16:27:31 jorge Exp $ */
 
 #include <stdio.h>
 #include <time.h>
@@ -25,14 +25,17 @@ char *mayasg_create (struct mayasgi *info)
   char buf[BUFFERLEN];
   char image_arg[BUFFERLEN];
   int size;
-  
+  char *p;			/* Scene filename without path */
+
   /* Check the parameters */
-  if ((!strlen(info->project)) || (!strlen(info->scene))) {
+  if ((!strlen(info->renderdir)) || (!strlen(info->scene))) {
     drerrno = DRE_NOTCOMPLETE;
     return NULL;
   }
 
-  snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,info->scene,time(NULL));
+  p = strrchr(info->scene,'/');
+  p = ( p ) ? p+1 : info->scene;
+  snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,time(NULL));
 
   if ((f = fopen (filename, "a")) == NULL) {
     if (errno == ENOENT) {
@@ -54,7 +57,7 @@ char *mayasg_create (struct mayasgi *info)
 
   /* So now we have the file open and so we must write to it */
   fprintf(f,"#!/bin/tcsh\n\n");
-  fprintf(f,"set PROJ=%s\n",info->project);
+  fprintf(f,"set RD=%s\n",info->renderdir);
   fprintf(f,"set SCENE=%s\n",info->scene);
   if (strlen(info->image)) {
     fprintf(f,"set IMAGE=%s\n",info->image);
@@ -72,8 +75,8 @@ char *mayasg_create (struct mayasgi *info)
     fprintf(f,"echo ATTENTION ! There was a problem opening: %s\n",fn_etc_maya_sg);
     fprintf(f,"echo So the default configuration will be used\n");
     fprintf(f,"echo -------------------------------------------------\n");
-    fprintf(f,"\n\nsetupenv -ver 4.0 maya\n");
-    fprintf(f,"Render -s $FRAME -e $FRAME -proj $PROJ %s $PROJ/scenes/$SCENE\n\n",image_arg);
+    fprintf(f,"\n\n");
+    fprintf(f,"Render -s $FRAME -e $FRAME -rd $RD %s $SCENE\n\n",image_arg);
   } else {
     fd_etc_maya_sg = fileno (etc_maya_sg);
     fd_f = fileno (f);

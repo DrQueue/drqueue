@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.26 2001/11/22 14:44:29 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.27 2002/06/17 16:27:34 jorge Exp $
  */
 
 #ifndef _DRQM_JOBS_H_
@@ -32,8 +32,8 @@ struct drqmj_flags {
 struct drqmj_koji_maya {
   GtkWidget *escene;
   GtkWidget *fsscene;		/* File selector for the scene */
-  GtkWidget *eproject;
-  GtkWidget *fsproject;		/* File selector for the project */
+  GtkWidget *erenderdir;
+  GtkWidget *fsrenderdir;	/* File selector for the output directory */
   GtkWidget *eimage;
   GtkWidget *eviewcmd;
   GtkWidget *escript;		/* Entry script location */
