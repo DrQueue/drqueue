@@ -9,7 +9,6 @@ TO DO:
 * functions that return void in communications should
   return int. And error checking should be coded 
   extensively.
-* file locking on logging functions.
 * On the registration if the computer ip can not be resolved
   then use the string of the ip address as name.
 * There are no consistency checks in the slave. Should be.
