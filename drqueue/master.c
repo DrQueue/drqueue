@@ -102,15 +102,22 @@ int main (int argc, char *argv[])
     master_consistency_checks (wdb);
     exit (0);
   }
+#ifndef __CYGWIN
   if ((sfd = get_socket(MASTERPORT)) == -1) {
     kill(0,SIGINT);
   }
+#endif
 
   printf ("Waiting for connections...\n");
   while (1) {
 		if (n_children < MASTERNCHILDREN) {
       if ((child = fork()) == 0) {
 				set_signal_handlers_child_conn_handler ();
+#ifdef __CYGWIN
+  if ((sfd = get_socket(MASTERPORT)) == -1) {
+    kill(0,SIGINT);
+  }
+#endif
 				if ((csfd = accept_socket (sfd,wdb,&addr)) != -1) {
 #ifdef COMM_REPORT
 					long int bsentb = bsent; /* Bytes sent before */
