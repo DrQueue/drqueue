@@ -1,0 +1,22 @@
+<Project name="Service-ipc" standardNamespace="Service_ipc" description="" newfilesearch="None" enableviewstate="True" version="1.1" projecttype="C#" xmlns:convtool="urn:convtool">
+  <Contents>
+    <File name=".\AssemblyInfo.cs" buildaction="Compile" subtype="Code" />
+    <File name=".\Service.cs" buildaction="Compile" subtype="Code" />
+    <File name=".\Services.Service.resources" buildaction="EmbedAsResource" subtype="Code" />
+  </Contents>
+  <DeploymentInformation target="" script="" strategy="File" />
+  <Configurations active="Debug">
+    <Configuration runwithwarnings="True" name="Debug">
+      <CodeGeneration runtime="MsNet" compiler="Csc" warninglevel="4" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" mainclass="" target="WinExe" definesymbols="DEBUG;TRACE" generatexmldocumentation="False" win32Icon="" />
+      <Execution commandlineparameters="" consolepause="True" />
+      <Output directory=".\bin\Debug\" assembly="Service-ipc" />
+    </Configuration>
+    <Configuration runwithwarnings="True" name="Release">
+      <CodeGeneration runtime="MsNet" compiler="Csc" warninglevel="4" includedebuginformation="False" optimize="True" unsafecodeallowed="False" generateoverflowchecks="False" mainclass="" target="WinExe" definesymbols="TRACE" generatexmldocumentation="False" win32Icon="" />
+      <Execution commandlineparameters="" consolepause="True" />
+      <Output directory=".\bin\Release\" assembly="Service-ipc" />
+    </Configuration>
+  </Configurations>
+  <References>
+  </References>
+</Project>
