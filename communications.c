@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.49 2002/06/26 13:33:54 jorge Exp $ */
+/* $Id: communications.c,v 1.50 2002/06/26 17:22:29 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -155,27 +155,12 @@ int connect_to_slave (char *slave)
 
 int recv_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo)
 {
-  int r;
-  int bleft;
   void *buf;
 
   buf = hwinfo;
-  bleft = sizeof (struct computer_hwinfo);
-  while ((r = read (sfd,buf,bleft)) < bleft) {
-    if ((r == -1) || ((r == 0) && (bleft > 0))) {
-      /* if r is error or if there are no more bytes left on the socket but there _SHOULD_ be */
-      drerrno = DRE_ERRORREADING;
-      return 0;
-    }
-    bleft -= r;
-    buf += r;
-#ifdef COMM_REPORT
-    brecv += r;
-#endif
+  if (!dr_read (sfd,buf,sizeof(struct computer_hwinfo))) {
+    return 0;
   }
-#ifdef COMM_REPORT
-  brecv += r;
-#endif
 
   /* Now we should have the computer hardware info with the values in */
   /* network byte order, so we put them in host byte order */
@@ -191,8 +176,6 @@ int recv_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo)
 int send_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo)
 {
   struct computer_hwinfo bswapped;
-  int w;
-  int bleft;
   void *buf = &bswapped;
   
   /* We make a copy coz we need to modify the values */
@@ -203,22 +186,9 @@ int send_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo)
   bswapped.ncpus = htons (bswapped.ncpus);
   bswapped.speedindex = htonl (bswapped.speedindex);
 
-  bleft = sizeof (bswapped);
-  while ((w = write(sfd,buf,bleft)) < bleft) {
-    if ((w == -1) || ((w == 0) && (bleft > 0))) {
-      /* if w is error or if there are no more bytes are written but they _SHOULD_ be */
-      drerrno = DRE_ERRORWRITING;
-      return 0;
-    }
-    bleft -= w;
-    buf += w;
-#ifdef COMM_REPORT
-    bsent += w;
-#endif
+  if (!dr_write (sfd, buf, sizeof (struct computer_hwinfo))) {
+    return 0;
   }
-#ifdef COMM_REPORT
-  bsent += w;
-#endif
   
   drerrno = DRE_NOERROR;
   return 1;
@@ -227,26 +197,11 @@ int send_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo)
 int recv_request (int sfd, struct request *request)
 {
   /* Returns 0 on failure */
-  int r;			/* bytes read */
-  int bleft;			/* bytes left for reading */
   void *buf = request;
 
-  bleft = sizeof (struct request);
-  while ((r = read(sfd,buf,bleft)) < bleft) {
-    if ((r == -1) || ((r == 0) && (bleft > 0))) {
-      /* if r is error or if there are no more bytes left on the socket but there _SHOULD_ be */
-      drerrno = DRE_ERRORREADING;
-      return 0;
-    }
-    bleft -= r;
-    buf += r;
-#ifdef COMM_REPORT
-    brecv += r;
-#endif
+  if (!dr_read(sfd,buf,sizeof(struct request))) {
+    return 0;
   }
-#ifdef COMM_REPORT
-  brecv += r;
-#endif
 
   /* Byte order ! */
   request->data = ntohl (request->data);
@@ -256,29 +211,14 @@ int recv_request (int sfd, struct request *request)
 
 int send_request (int sfd, struct request *request,int who)
 {
-  int w;
-  int bleft;
   void *buf = request;
 
   request->data = htonl (request->data);
   request->who = who;
 
-  bleft = sizeof (struct request);
-  while ((w = write(sfd,buf,bleft)) < bleft) {
-    bleft -= w;
-    buf += w;
-    if ((w == -1) || ((w == 0) && (bleft > 0))) {
-      /* if w is error or if there are no more bytes are written but they _SHOULD_ be */
-      drerrno = DRE_ERRORWRITING;
-      return 0;
-    }
-#ifdef COMM_REPORT
-    bsent += w;
-#endif
+  if (!dr_write (sfd,buf,sizeof(struct request))) {
+    return 0;
   }
-#ifdef COMM_REPORT
-    bsent += w;
-#endif
 
   drerrno = DRE_NOERROR;
   return 1;
@@ -291,21 +231,12 @@ int send_computer_status (int sfd, struct computer_status *status)
   uint16_t i;
   
   /* We make a copy coz we need to modify the values */
-  memcpy (buf,status,sizeof(bswapped));
+  memcpy (buf,status,sizeof(struct computer_status));
 
   /* Prepare for sending */
-  if (!write_16b (sfd,&status->loadavg[0])) {
-    drerrno = DRE_ERRORWRITING;
-    return 0;
-  }
-  if (!write_16b (sfd,&status->loadavg[1])) {
-    drerrno = DRE_ERRORWRITING;
-    return 0;
-  }
-  if (!write_16b (sfd,&status->loadavg[2])) {
-    drerrno = DRE_ERRORWRITING;
-    return 0;
-  }
+  bswapped.loadavg[0] = htons(bswapped.loadavg[0]);
+  bswapped.loadavg[1] = htons(bswapped.loadavg[1]);
+  bswapped.loadavg[2] = htons(bswapped.loadavg[2]);
 
   /* Count the tasks. (Shouldn't be necessary) */
   bswapped.ntasks = 0;
@@ -313,12 +244,13 @@ int send_computer_status (int sfd, struct computer_status *status)
     if (bswapped.task[i].used)
       bswapped.ntasks++;
   }
-  /* Send the number of tasks */
-  if (!write_16b (sfd,&bswapped.ntasks)) {
-    drerrno = DRE_ERRORWRITING;
+
+  bswapped.ntasks = htons (bswapped.ntasks);
+
+  if (!dr_write(sfd,buf,sizeof(uint16_t) * 4)) {
     return 0;
   }
-
+  
   /* We just send the used tasks */
   for (i=0;i<MAXTASKS;i++) {
     if (bswapped.task[i].used) {
@@ -339,21 +271,17 @@ int recv_computer_status (int sfd, struct computer_status *status)
   computer_status_init (status);
 
   buf = status;
-  if (!read_16b (sfd,&status->loadavg[0])) {
-    drerrno = DRE_ERRORREADING;
+  if (!dr_read(sfd,buf,sizeof(uint16_t) * 4)) {
     return 0;
   }
-  if (!read_16b (sfd,&status->loadavg[1])) {
-    drerrno = DRE_ERRORREADING;
-    return 0;
-  }
-  if (!read_16b (sfd,&status->loadavg[2])) {
-    drerrno = DRE_ERRORREADING;
-    return 0;
-  }
-  if (!read_16b (sfd,&status->ntasks)) {
-    drerrno = DRE_ERRORREADING;
-    return 0;
+  status->loadavg[0] = ntohs(status->loadavg[0]);
+  status->loadavg[1] = ntohs(status->loadavg[1]);
+  status->loadavg[2] = ntohs(status->loadavg[2]);
+  status->ntasks = ntohs(status->ntasks);
+
+  if (status->ntasks > MAXTASKS) {
+    printf ("WARNING: ntasks > MAXTASKS (%i)\n",status->ntasks);
+    status->ntasks = 0;
   }
 
   for (i=0;i<status->ntasks;i++) {
@@ -605,27 +533,13 @@ int recv_computer (int sfd, struct computer *computer)
 
 int recv_frame_info (int sfd, struct frame_info *fi)
 {
-  int r;
-  int bleft;
   void *buf;
 
   buf = fi;
-  bleft = sizeof (struct frame_info);
-  while ((r = read (sfd,buf,bleft)) < bleft) {
-    if ((r == -1) || ((r == 0) && (bleft > 0))) {
-      /* if w is error or if no more bytes are read but they _SHOULD_ be */
-      drerrno = DRE_ERRORREADING;
-      return 0;
-    }
-    bleft -= r;
-    buf += r;
-#ifdef COMM_REPORT
-    brecv += r;
-#endif
- }
-#ifdef COMM_REPORT
-  brecv += r;
-#endif
+  if (!dr_read (sfd,buf,sizeof (struct frame_info))) {
+    return 0;
+  }
+
   fi->start_time = ntohl (fi->start_time);
   fi->end_time = ntohl (fi->end_time);
   fi->icomp = ntohl (fi->icomp);
@@ -637,8 +551,6 @@ int recv_frame_info (int sfd, struct frame_info *fi)
 int send_frame_info (int sfd, struct frame_info *fi)
 {
   struct frame_info bswapped;
-  int w;
-  int bleft;
   void *buf = &bswapped;
   
   /* We make a copy coz we need to modify the values */
@@ -649,49 +561,23 @@ int send_frame_info (int sfd, struct frame_info *fi)
   bswapped.icomp = htonl (bswapped.icomp);
   bswapped.itask = htons (bswapped.itask);
 
-  bleft = sizeof (bswapped);
-  while ((w = write(sfd,buf,bleft)) < bleft) {
-    bleft -= w;
-    buf += w;
-    if ((w == -1) || ((w == 0) && (bleft > 0))) {
-      /* if w is error or if no more bytes are written but they _SHOULD_ be */
-      drerrno = DRE_ERRORWRITING;
-      return 0;
-    }
-#ifdef COMM_REPORT
-    bsent += w;
-#endif
+  if (!dr_write (sfd,buf,sizeof (struct frame_info))) {
+    return 0;
   }
-#ifdef COMM_REPORT
-  bsent += w;
-#endif
 
   return 1;
 }
 
 int recv_computer_limits (int sfd, struct computer_limits *cl)
 {
-  int r;
-  int bleft;
   void *buf;
 
   buf = cl;
-  bleft = sizeof (struct computer_limits);
-  while ((r = read (sfd,buf,bleft)) < bleft) {
-    if ((r == -1) || ((r == 0) && (bleft > 0))) {
-      /* if w is error or if no more bytes are read but they _SHOULD_ be */
-      drerrno = DRE_ERRORREADING;
-      return 0;
-    }
-    bleft -= r;
-    buf += r;
-#ifdef COMM_REPORT
-    brecv += r;
-#endif
+  if (!dr_read (sfd,buf,sizeof(struct computer_limits))) {
+    return 0;
   }
-#ifdef COMM_REPORT
-  brecv += r;
-#endif
+
+  /* Swapping bytes */
   cl->nmaxcpus = ntohs (cl->nmaxcpus);
   cl->maxfreeloadcpu = ntohs (cl->maxfreeloadcpu);
 
@@ -704,8 +590,6 @@ int recv_computer_limits (int sfd, struct computer_limits *cl)
 int send_computer_limits (int sfd, struct computer_limits *cl)
 {
   struct computer_limits bswapped;
-  int w;
-  int bleft;
   void *buf = &bswapped;
   
   /* We make a copy coz we need to modify the values */
@@ -716,22 +600,9 @@ int send_computer_limits (int sfd, struct computer_limits *cl)
   /* Autoenable stuff */
   bswapped.autoenable.last = htonl (bswapped.autoenable.last);
 
-  bleft = sizeof (bswapped);
-  while ((w = write(sfd,buf,bleft)) < bleft) {
-    bleft -= w;
-    buf += w;
-    if ((w == -1) || ((w == 0) && (bleft > 0))) {
-      /* if w is error or if no more bytes are written but they _SHOULD_ be */
-      drerrno = DRE_ERRORWRITING;
-      return 0;
-    }
-#ifdef COMM_REPORT
-    bsent += w;
-#endif
+  if (!dr_write(sfd,buf,sizeof(struct computer_limits))) {
+    return 0;
   }
-#ifdef COMM_REPORT
-  bsent += w;
-#endif
 
   return 1;
 }
@@ -739,19 +610,11 @@ int send_computer_limits (int sfd, struct computer_limits *cl)
 int write_32b (int sfd, void *data)
 {
   uint32_t bswapped;
-  int w;
-  int bleft;
   void *buf = &bswapped;
 
   bswapped = htonl (*(uint32_t *)data);
-  bleft = sizeof (bswapped);
-  while ((w = write (sfd,buf,bleft)) < bleft) {
-    bleft -= w;
-    buf += w;
-    if ((w == -1) || ((w == 0) && (bleft > 0))) {
-      drerrno = DRE_ERRORWRITING;
-      return 0;
-    }
+  if (!dr_write (sfd,buf,sizeof (uint32_t))) {
+    return 0;
   }
 
   return 1;
@@ -760,19 +623,11 @@ int write_32b (int sfd, void *data)
 int write_16b (int sfd, void *data)
 {
   uint16_t bswapped;
-  int w;
-  int bleft;
   void *buf = &bswapped;
 
   bswapped = htons (*(uint16_t *)data);
-  bleft = sizeof (bswapped);
-  while ((w = write (sfd,buf,bleft)) < bleft) {
-    bleft -= w;
-    buf += w;
-    if ((w == -1) || ((w == 0) && (bleft > 0))) {
-      drerrno = DRE_ERRORWRITING;
-      return 0;
-    }
+  if (!dr_write (sfd,buf,sizeof (uint16_t))) {
+    return 0;
   }
 
   return 1;
@@ -780,19 +635,11 @@ int write_16b (int sfd, void *data)
 
 int read_32b (int sfd, void *data)
 {
-  int r;
-  int bleft;
   void *buf;
 
   buf = data;
-  bleft = sizeof (uint32_t);
-  while ((r = read (sfd,buf,bleft)) < bleft) {
-    if ((r == -1) || ((r == 0) && (bleft > 0))) {
-      drerrno = DRE_ERRORREADING;
-      return 0;
-    }
-    bleft -= r;
-    buf += r;
+  if (!dr_read (sfd,buf,sizeof(uint32_t))) {
+    return 0;
   }
 
   *(uint32_t *)data = ntohl (*((uint32_t *)data));
@@ -802,19 +649,11 @@ int read_32b (int sfd, void *data)
 
 int read_16b (int sfd, void *data)
 {
-  int r;
-  int bleft;
   void *buf;
 
   buf = data;
-  bleft = sizeof (uint16_t);
-  while ((r = read (sfd,buf,bleft)) < bleft) {
-    if ((r == -1) || ((r == 0) && (bleft > 0))) {
-      drerrno = DRE_ERRORREADING;
-      return 0;
-    }
-    bleft -= r;
-    buf += r;
+  if (!dr_read (sfd,buf,sizeof(uint16_t))) {
+    return 0;
   }
 
   *(uint16_t *)data = ntohs (*((uint16_t *)data));
@@ -825,8 +664,6 @@ int read_16b (int sfd, void *data)
 int send_autoenable (int sfd, struct autoenable *ae)
 {
   struct autoenable bswapped;
-  int w;
-  int bleft;
   void *buf = &bswapped;
   
   /* We make a copy coz we need to modify the values */
@@ -834,52 +671,18 @@ int send_autoenable (int sfd, struct autoenable *ae)
   /* Prepare for sending */
   bswapped.last = htonl (bswapped.last);
 
-  bleft = sizeof (bswapped);
-  while ((w = write(sfd,buf,bleft)) < bleft) {
-    bleft -= w;
-    buf += w;
-    if ((w == -1) || ((w == 0) && (bleft > 0))) {
-      /* if w is error or if no more bytes are written but they _SHOULD_ be */
-      drerrno = DRE_ERRORWRITING;
-      return 0;
-    }
-#ifdef COMM_REPORT
-    bsent += w;
-#endif
+  if (!dr_write(sfd,buf,sizeof(struct autoenable))) {
+    return 0;
   }
-#ifdef COMM_REPORT
-  bsent += w;
-#endif
 
   return 1;
 }
 
 int recv_autoenable (int sfd, struct autoenable *ae)
 {
-  int r;
-  int bleft;
-  void *buf;
-
-  buf = ae;			/* So when copying to buf we're really copying into job */
-  bleft = sizeof (struct autoenable);
-  while ((r = read (sfd,buf,bleft)) < bleft) {
-    bleft -= r;
-    buf += r;
-
-    if ((r == -1) || ((r == 0) && (bleft > 0))) {
-      /* if w is error or if no more bytes are read but they _SHOULD_ be */
-      drerrno = DRE_ERRORREADING;
-      return 0;
-    }
-    bleft -= r;
-    buf += r;
-#ifdef COMM_REPORT
-    brecv += r;
-#endif
+  if (!dr_read(sfd,ae,sizeof(struct autoenable))) {
+    return 0;
   }
-#ifdef COMM_REPORT
-  brecv += r;
-#endif
 
   /* Now we should have the autoenable info with the values in */
   /* network byte order, so we put them in host byte order */
