@@ -10,7 +10,7 @@
 
 #define TOOLTIPS_DELAY 1000
 
-GtkWidget *ConfirmDialog (char *text, GList *callbacks, gpointer data);
+GtkWidget *ConfirmDialog (char *text, GList *callbacks);
 GtkTooltips *TooltipsNew (void);
 
 #endif /* _DRQM_COMMON_H */
