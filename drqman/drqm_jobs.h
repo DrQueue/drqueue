@@ -34,6 +34,12 @@
 #include "drqm_jobs_bmrt.h"
 #include "drqm_jobs_pixie.h"
 
+enum {
+	DNJ_FLAGS_DEPEND_COL_ID = 0,
+	DNJ_FLAGS_DEPEND_COL_NAME,
+	DNJ_FLAGS_DEPEND_NUM_COLS
+};
+
 struct drqmj_flags {
   GtkWidget *cbmailnotify;			/* Check button */
   GtkWidget *cbdifemail;	/* Specific email for mail notification ? */
@@ -41,6 +47,8 @@ struct drqmj_flags {
 	GtkWidget *cbjobdepend;       // Depends on another job
 	GtkWidget *ejobdepend;        // Which one ?
 	GtkWidget *bjobdepend;        // Show a list
+	GtkListStore *store;					// List of jobs
+	GtkTreeView *view;
 };
 
 struct drqmj_dnji {							/* dialog new job info */
@@ -79,6 +87,7 @@ struct drqm_jobs_info {
   struct drqmj_dnji dnj;				/* dialog new job */
   struct drqmj_jddi jdd;				/* job details dialog */
 };
+
 
 struct info_drqm;
 
