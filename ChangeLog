@@ -1,274 +1,93 @@
-2004-11-16 22:24:55  Jorge Daza <jorge@drqueue.org>
+2004-11-21 19:26:50  Jorge Daza <jorge@drqueue.org>
 
 	* Changed paths:
-	   M /branches/0.55.x/ChangeLog
+	   M /trunk/drqueue/ChangeLog
+	   M /trunk/drqueue/Revision
+	   M /trunk/drqueue/TODO
+	   M /trunk/drqueue/common.c
+	   M /trunk/drqueue/common.h
+	   M /trunk/drqueue/communications.c
+	   M /trunk/drqueue/computer.c
+	   M /trunk/drqueue/computer.h
+	   M /trunk/drqueue/computer_info.c
+	   M /trunk/drqueue/computer_info.h
+	   M /trunk/drqueue/computer_info.linux.c
+	   M /trunk/drqueue/constants.h
+	   M /trunk/drqueue/drqman/drqm_computers.c
+	   M /trunk/drqueue/drqman/drqm_computers.h
+	   M /trunk/drqueue/drqman/drqm_info.c
+	   M /trunk/drqueue/drqman/drqm_jobs.c
+	   M /trunk/drqueue/drqman/drqm_jobs_blender.h
+	   M /trunk/drqueue/drqman/drqm_jobs_bmrt.h
+	   M /trunk/drqueue/drqman/drqm_jobs_common.h
+	   M /trunk/drqueue/drqman/drqm_jobs_jdd.c
+	   M /trunk/drqueue/drqman/drqm_jobs_maya.c
+	   M /trunk/drqueue/drqman/drqm_jobs_maya.h
+	   M /trunk/drqueue/drqman/drqm_jobs_pixie.h
+	   M /trunk/drqueue/drqman/drqm_request.c
+	   M /trunk/drqueue/drqman/drqm_request.h
+	   A /trunk/drqueue/drqman/icons (from /branches/0.55.x/drqman/icons:1063)
+	   R /trunk/drqueue/drqman/icons/info_icon.xcf (from /branches/0.55.x/drqman/icons/info_icon.xcf:1063)
+	   R /trunk/drqueue/drqman/icons/job_icon.xcf (from /branches/0.55.x/drqman/icons/job_icon.xcf:1063)
+	   R /trunk/drqueue/drqman/icons/slave_icon.xcf (from /branches/0.55.x/drqman/icons/slave_icon.xcf:1063)
+	   A /trunk/drqueue/drqman/info_icon.h (from /branches/0.55.x/drqman/info_icon.h:1063)
+	   A /trunk/drqueue/drqman/job_icon.h (from /branches/0.55.x/drqman/job_icon.h:1063)
+	   A /trunk/drqueue/drqman/slave_icon.h (from /branches/0.55.x/drqman/slave_icon.h:1063)
+	   M /trunk/drqueue/etc/maya.sg
+	   M /trunk/drqueue/etc/slave.conf
+	   M /trunk/drqueue/job.c
+	   M /trunk/drqueue/job.h
+	   M /trunk/drqueue/mayasg.c
+	   M /trunk/drqueue/mayasg.h
+	   M /trunk/drqueue/request.c
+	   M /trunk/drqueue/request.h
+	   M /trunk/drqueue/request_codes.h
+	   M /trunk/drqueue/slave.c
+	   M /trunk/drqueue/svn-scripts/build_release.sh
 
-	* ChangeLog commited by build_package.sh
-
-2004-11-16 22:24:49  Jorge Daza <jorge@drqueue.org>
-
-	* Changed paths:
-	   M /branches/0.55.x/common.h
-
-	* New version number on common.h: 0.55.2
-
-2004-11-16 22:24:22  Jorge Daza <jorge@drqueue.org>
-
-	* Changed paths:
-	   M /branches/0.55.x/computer_info.c
-	   M /branches/0.55.x/computer_info.h
-	   M /branches/0.55.x/computer_info.linux.c
-	   M /branches/0.55.x/drqman/drqm_computers.c
-	   M /branches/0.55.x/drqman/drqm_computers.h
-	   M /branches/0.55.x/drqman/drqm_jobs_blender.h
-	   M /branches/0.55.x/drqman/drqm_jobs_bmrt.h
-	   M /branches/0.55.x/drqman/drqm_jobs_maya.h
-	   M /branches/0.55.x/drqman/drqm_jobs_pixie.h
-	   M /branches/0.55.x/etc/maya.sg
-	   M /branches/0.55.x/job.h
-	   M /branches/0.55.x/mayasg.c
-	   M /branches/0.55.x/slave.c
-
-	* drqman reports the pools a computer belongs to, but cannot change them yet.
-	* maya.sg and mayasg.c have been corrected to use latest environment variables
-	* Intel Xeon has been added as a processor type.
-
-2004-11-15 21:32:17  Jorge Daza <jorge@drqueue.org>
-
-	* Changed paths:
-	   M /branches/0.55.x/Revision
-
-	* New Revision commited by build_package.sh
-
-2004-11-15 21:32:00  Jorge Daza <jorge@drqueue.org>
-
-	* Changed paths:
-	   M /branches/0.55.x/ChangeLog
-
-	* ChangeLog commited by build_package.sh
-
-2004-11-15 21:31:52  Jorge Daza <jorge@drqueue.org>
-
-	* Changed paths:
-	   M /branches/0.55.x/common.h
-
-	* New version number on common.h: 0.55.1
-
-2004-11-15 21:30:43  Jorge Daza <jorge@drqueue.org>
-
-	* Changed paths:
-	   M /branches/0.55.x/communications.c
-	   M /branches/0.55.x/drqman/drqm_jobs_maya.c
-	   M /branches/0.55.x/drqman/drqm_jobs_maya.h
-	   M /branches/0.55.x/etc/maya.sg
-	   M /branches/0.55.x/mayasg.c
-	   M /branches/0.55.x/mayasg.h
-	   M /branches/0.55.x/slave.c
-
+	* Merged from branches/0.55.x revisions 1025:1063.
+	* Slave pools.
+	* Pre-forking.
+	* Icons.
 	* Support for mental ray jobs on maya's koj.
+	* Added Intel Xeon as proctype.
+	* maya.sg and maya.c updated.
 
-2004-11-15 11:03:35  Jorge Daza <jorge@drqueue.org>
-
-	* Changed paths:
-	   M /branches/0.55.x/communications.c
-	   M /branches/0.55.x/computer.c
-	   M /branches/0.55.x/slave.c
-
-	* Finally I found the bug that prevented the master from freeing computer pools properly.
-
-2004-11-15 04:20:41  Jorge Daza <jorge@drqueue.org>
+2004-11-14 14:00:42  Jorge Daza <jorge@drqueue.org>
 
 	* Changed paths:
-	   M /branches/0.55.x/communications.c
-	   M /branches/0.55.x/computer.c
-	   M /branches/0.55.x/drqman/drqm_jobs_jdd.c
-	   M /branches/0.55.x/drqman/drqm_request.c
-	   M /branches/0.55.x/etc/slave.conf
-	   M /branches/0.55.x/request.c
-	   M /branches/0.55.x/request.h
-	   M /branches/0.55.x/request_codes.h
+	   M /trunk/drqueue/sendjob.cpp
 
-	* * Added pool change button on job detail's dialog
-	* * Solved bug that caused drqman to exit on computer updates
+	* Missing fix.
 
-2004-11-14 20:09:49  Jorge Daza <jorge@drqueue.org>
+2004-11-14 13:32:48  Jorge Daza <jorge@drqueue.org>
 
 	* Changed paths:
-	   M /branches/0.55.x/Revision
+	   M /trunk/drqueue/Revision
 
 	* New Revision commited by build_package.sh
 
-2004-11-14 20:09:34  Jorge Daza <jorge@drqueue.org>
+2004-11-14 13:32:23  Jorge Daza <jorge@drqueue.org>
 
 	* Changed paths:
-	   M /branches/0.55.x/ChangeLog
+	   M /trunk/drqueue/ChangeLog
 
 	* ChangeLog commited by build_package.sh
 
-2004-11-14 20:09:28  Jorge Daza <jorge@drqueue.org>
+2004-11-14 13:32:16  Jorge Daza <jorge@drqueue.org>
 
 	* Changed paths:
-	   M /branches/0.55.x/common.h
+	   M /trunk/drqueue/common.h
 
-	* New version number on common.h: 0.55.0
+	* New version number on common.h: 0.54.1
 
-2004-11-14 20:03:40  Jorge Daza <jorge@drqueue.org>
-
-	* Changed paths:
-	   M /branches/0.55.x/common.c
-	   M /branches/0.55.x/computer.c
-	   M /branches/0.55.x/computer.h
-	   M /branches/0.55.x/constants.h
-	   M /branches/0.55.x/drqman/drqm_jobs.c
-	   M /branches/0.55.x/drqman/drqm_jobs_common.h
-	   M /branches/0.55.x/drqman/drqm_jobs_jdd.c
-	   M /branches/0.55.x/etc/slave.conf
-	   M /branches/0.55.x/job.c
-	   M /branches/0.55.x/job.h
-	   M /branches/0.55.x/slave.c
-
-	* Basic support for slave pools as limits.
-
-2004-11-14 13:58:54  Jorge Daza <jorge@drqueue.org>
+2004-11-14 13:25:46  Jorge Daza <jorge@drqueue.org>
 
 	* Changed paths:
-	   M /branches/0.55.x/sendjob.cpp
+	   M /trunk/drqueue/drqman/drqm_jobs.c
+	   M /trunk/drqueue/sendjob.cpp
 
-	* Missing limit on bugfix
-
-2004-11-14 13:57:41  Jorge Daza <jorge@drqueue.org>
-
-	* Changed paths:
-	   M /branches/0.55.x/drqman/drqm_jobs.c
-	   M /branches/0.55.x/sendjob.cpp
-
-	* Merged from trunk 1011:1025. Bug fixes.
-
-2004-11-14 12:57:32  Jorge Daza <jorge@drqueue.org>
-
-	* Changed paths:
-	   M /branches/0.55.x/job.c
-	   M /branches/0.55.x/master.c
-	   M /branches/0.55.x/request.c
-
-	* Working on slave pools.
-
-2004-11-14 12:43:37  Jorge Daza <jorge@drqueue.org>
-
-	* Changed paths:
-	   M /branches/0.55.x/communications.c
-	   M /branches/0.55.x/computer.c
-	   M /branches/0.55.x/computer.h
-	   M /branches/0.55.x/drerrno.c
-	   M /branches/0.55.x/drerrno.h
-	   M /branches/0.55.x/drqman/drqm_request.c
-	   M /branches/0.55.x/job.c
-	   M /branches/0.55.x/request.c
-	   M /branches/0.55.x/slave.c
-
-	* Pool communications seem to work now. I'm using more shared memory.
-
-2004-11-14 02:54:29  Jorge Daza <jorge@drqueue.org>
-
-	* Changed paths:
-	   M /branches/0.55.x/communications.c
-	   M /branches/0.55.x/computer.c
-	   M /branches/0.55.x/slave.c
-
-	* More work on slave pools.
-
-2004-11-14 02:29:16  Jorge Daza <jorge@drqueue.org>
-
-	* Changed paths:
-	   M /branches/0.55.x/communications.c
-	   M /branches/0.55.x/computer.c
-
-	* Working on slave pools.
-
-2004-11-14 02:25:44  Jorge Daza <jorge@drqueue.org>
-
-	* Changed paths:
-	   M /branches/0.55.x/communications.c
-
-	* Working on slave pools
-
-2004-11-14 01:43:42  Jorge Daza <jorge@drqueue.org>
-
-	* Changed paths:
-	   M /branches/0.55.x/communications.c
-	   M /branches/0.55.x/communications.h
-	   M /branches/0.55.x/computer.c
-	   M /branches/0.55.x/computer.h
-
-	* Working on slave pools
-
-2004-11-14 00:50:10  Jorge Daza <jorge@drqueue.org>
-
-	* Changed paths:
-	   M /branches/0.55.x/communications.c
-	   M /branches/0.55.x/computer.c
-	   M /branches/0.55.x/computer.h
-	   M /branches/0.55.x/master.c
-	   M /branches/0.55.x/slave.c
-
-	* Working on the slave pools.
-
-2004-11-13 22:29:22  Jorge Daza <jorge@drqueue.org>
-
-	* Changed paths:
-	   M /branches/0.55.x/communications.c
-	   M /branches/0.55.x/computer.c
-	   M /branches/0.55.x/computer.h
-	   M /branches/0.55.x/computer_status.c
-	   M /branches/0.55.x/request.c
-	   M /branches/0.55.x/slave.c
-
-	* Basic computer pool routines working.
-
-2004-11-13 16:43:46  Jorge Daza <jorge@drqueue.org>
-
-	* Changed paths:
-	   M /branches/0.55.x/SConstruct
-
-	* Some other minor changes to SConstruct.
-
-2004-11-13 16:38:34  Jorge Daza <jorge@drqueue.org>
-
-	* Changed paths:
-	   M /branches/0.55.x/SConstruct
-
-	* SConstruct working for building
-
-2004-11-13 15:51:01  Jorge Daza <jorge@drqueue.org>
-
-	* Changed paths:
-	   M /branches/0.55.x/SConstruct
-
-	* Added tools to SConstruct
-
-2004-11-13 14:26:54  Jorge Daza <jorge@drqueue.org>
-
-	* Changed paths:
-	   M /branches/0.55.x/drerrno.h
-
-	* Minor change
-
-2004-11-13 03:08:07  Jorge Daza <jorge@drqueue.org>
-
-	* Changed paths:
-	   A /branches/0.55.x/SConstruct
-
-	* Preliminary SConstruct.
-
-2004-11-12 16:13:26  Jorge Daza <jorge@drqueue.org>
-
-	* Changed paths:
-	   A /branches/0.55.x (from /trunk/drqueue:1010)
-	   M /branches/0.55.x/communications.c
-	   M /branches/0.55.x/constants.h
-	   M /branches/0.55.x/master.c
-
-	* Prefork test.
+	* Bugs reported by Goran Kocov resolved.
 
 2004-11-04 06:02:40  Jorge Daza <jorge@drqueue.org>
 
