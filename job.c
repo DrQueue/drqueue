@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.62 2003/12/18 23:08:58 jorge Exp $ */
+/* $Id: job.c,v 1.63 2004/01/07 21:50:21 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -745,3 +745,49 @@ char *job_koj_string (struct job *job)
   return msg;
 }
 	  
+int job_available_no_icomp (struct database *wdb,uint32_t ijob, int *iframe)
+{
+	/* This function returns 1 in case there is a job available without asigning it to any computer */
+  semaphore_lock(wdb->semid);
+
+  if (!job_index_correct_master(wdb,ijob)) {
+    semaphore_release(wdb->semid);
+    return 0;
+  }
+
+  if (!((wdb->job[ijob].status == JOBSTATUS_WAITING) || (wdb->job[ijob].status == JOBSTATUS_ACTIVE))) {
+    semaphore_release(wdb->semid);
+    return 0;
+  }
+  
+  if ((*iframe = job_first_frame_available_no_icomp (wdb,ijob)) == -1) {
+    semaphore_release(wdb->semid);
+    return 0;
+  }
+  
+  semaphore_release(wdb->semid);
+  return 1;
+}
+
+int job_first_frame_available_no_icomp (struct database *wdb,uint32_t ijob)
+{
+  /* To be called LOCKED */
+  /* This function not only returns the first frame */
+  /* available without updating the job structure */
+  int i;
+  int r = -1;
+  int nframes;
+  struct frame_info *fi;
+
+  nframes = job_nframes (&wdb->job[ijob]);
+  fi = attach_frame_shared_memory(wdb->job[ijob].fishmid);
+  for (i=0;i<nframes;i++) {
+    if (fi[i].status == FS_WAITING) {
+      r = i;										/* return = current */
+      break;
+    }
+  }
+  detach_frame_shared_memory(fi);
+
+  return r;
+}

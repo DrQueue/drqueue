@@ -1,4 +1,4 @@
-/* $Id: libdrqueue.h,v 1.5 2003/12/18 20:39:41 jorge Exp $ */
+/* $Id: libdrqueue.h,v 1.6 2004/01/07 21:50:21 jorge Exp $ */
 #ifndef _LIBDRQUEUE_H_
 #define _LIBDRQUEUE_H_
 
@@ -17,5 +17,7 @@
 #include "mayasg.h"
 #include "blendersg.h"
 #include "bmrtsg.h"
+
+int phantom[2];									/* FIXME: This should be local to the slave */
 
 #endif /* _libdrqueue_h_ */
