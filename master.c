@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.25 2001/09/06 23:01:30 jorge Exp $ */
+/* $Id: master.c,v 1.26 2001/09/18 10:48:10 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -316,6 +316,7 @@ void master_consistency_checks (struct database *wdb)
 
     for (i=0;i<MAXJOBS;i++) {
       if (wdb->job[i].used) {
+	/* In this function we requeue non running frames registered as running */
 	job_update_info (wdb,i);
       }
     }
@@ -338,6 +339,8 @@ void check_lastconn_times (struct database *wdb)
 		  (int) (now - wdb->computer[i].lastconn));
 	log_master_computer (&wdb->computer[i],L_INFO,msg);
 	semaphore_lock(wdb->semid);
+	/* We only need to remove it this way, without requeueing its frames because */
+	/* the frames will be requeued on the consistency checks (job_update_info) */
 	wdb->computer[i].used = 0;
 	semaphore_release(wdb->semid);
       }
