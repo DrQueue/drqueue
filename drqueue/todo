@@ -5,8 +5,8 @@ TO DO:
 * Priority support for jobs				[DONE]
 * Check frames registered as running if running really	[DONE]
 * Process output logging				[DONE]
+* Names of computers instead of id numbers
 * limit structures for jobs and computers
-* Negative and backwards frame numbers
 * Master database saved and reloaded from disk
 * Update the r_r_taskfini protocol			[DONE]
 * -f to force if shared memory or semaphores exist	[DONE]
@@ -25,19 +25,19 @@ TO DO:
 BUGS:
 ----
 
-* If there is no task space available on a computer the frame is still assigned.
-  This happens ONLY if there are more processors than MAXTASKS, so the computer
-  is still available even with all the tasks filled.
 
 NOTES:
 -----
 
 * The frame number in the task struct is _different_ from iframe in the job handling stuff
 * I should use a dynamically allocated structure for the computers' tasks (or not?)
-
+* Both the index frame and the frame number are uint32 so no negative numbers supported.
 
 DRQMAN
 ------
+
+* Update button in the detailed job information dialog.
+
 BUGS:
 ----
 
