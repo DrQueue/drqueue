@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.70 2001/11/26 12:19:05 jorge Exp $Id 2001/11/23 15:53:38 jorge Exp $ */
+/* $Id: request.c,v 1.71 2001/11/26 12:19:50 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
