@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.32 2001/08/30 13:16:52 jorge Exp $ */
+/* $Id: request.c,v 1.33 2001/08/31 08:20:52 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -889,7 +889,7 @@ int request_slave_killtask (char *slave,uint16_t itask)
 void handle_rs_r_killtask (int sfd,struct slave_database *sdb,struct request *req)
 {
   /* This function is called by the slave unlocked */
-  kill(sdb->comp->status.task[req->data].pid,SIGTERM);
+  kill(-sdb->comp->status.task[req->data].pid,SIGINT);
 }
 
 int request_job_stop (uint32_t ijob, int who)
