@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.9 2001/07/06 14:20:28 jorge Exp $ */
+/* $Id: master.c,v 1.10 2001/07/06 14:47:14 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -124,6 +124,8 @@ int get_semaphores (void)
       kill(0,SIGINT);
     }
   }
+
+  fprintf (stderr,"semval: %i semid: %i\n",semctl (semid,0,GETVAL),semid);
 
   return semid;
 }
