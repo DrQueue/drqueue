@@ -9,6 +9,7 @@ TO DO:
 * sendjob accepting XML
 * Slave pools. 0.60
 * job dependencies
+* send job in stopped mode
 
 BUGS:
 ----
