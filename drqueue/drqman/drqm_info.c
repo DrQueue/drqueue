@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_info.c,v 1.2 2001/11/08 11:47:41 jorge Exp $
+ * $Id: drqm_info.c,v 1.3 2001/11/08 12:04:21 jorge Exp $
  */
 
 #include <string.h>
@@ -24,6 +24,8 @@ void CreateInfoPage (GtkWidget *notebook, struct info_drqm *info)
   GtkWidget *container;
   GtkWidget *vbox;
   GtkWidget *logo;
+  GtkWidget *text;
+  char msg[BUFFERLEN];
 
   /* Label */
   label = gtk_label_new ("Info");
@@ -33,8 +35,12 @@ void CreateInfoPage (GtkWidget *notebook, struct info_drqm *info)
   gtk_container_add(GTK_CONTAINER(container),vbox);
 
   logo = CreateLogoWidget (info->main_window);
-
   gtk_box_pack_start (GTK_BOX(vbox),logo,FALSE,FALSE,2);
+
+  snprintf (msg,BUFFERLEN-1,"DrQueue Version %s\nby Triple-e VFX\n"
+	    "European Electronic Effects",VERSION);
+  text = gtk_label_new (msg);
+  gtk_box_pack_start (GTK_BOX(vbox),text,FALSE,FALSE,2);
 
   /* Append the page */
   gtk_notebook_append_page (GTK_NOTEBOOK(notebook), container, label);
