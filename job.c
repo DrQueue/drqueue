@@ -232,6 +232,7 @@ int job_available (struct database *wdb,uint32_t ijob, int *iframe, uint32_t ico
 	if ((wdb->job[ijob].flags &= JF_JOBDEPEND)
 			&& (wdb->job[wdb->job[ijob].dependid].status != JOBSTATUS_FINISHED))
 		{
+			// If this job depends on another and that one hasn't finished, job is not available
 			semaphore_release(wdb->semid);
 			return 0;
 		}
