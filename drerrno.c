@@ -1,9 +1,9 @@
-/* $Id: drerrno.c,v 1.7 2001/09/04 16:05:39 jorge Exp $ */
+/* $Id: drerrno.c,v 1.8 2001/10/31 15:59:37 jorge Exp $ */
 
 #include "drerrno.h"
 #include "constants.h"
 
-int drerrno = DRE_NODRMAENV;
+int drerrno = DRE_NOERROR;
 
 char *drerrno_str (void)
 {
@@ -12,9 +12,6 @@ char *drerrno_str (void)
   switch (drerrno) {
   case DRE_NOERROR:
     msg = "No error";
-    break;
-  case DRE_NODRMAENV:
-    msg = "DRQUEUE_MASTER not defined on environment";
     break;
   case DRE_NOTRESOLV:
     msg = "Could not resolv hostname";
