@@ -95,6 +95,10 @@ int main (int argc,char *argv[])
 																/* because there is only one process running. The rest of the time */
 																/* either we call it locked or we make a copy of the limits while locked */
 																/* and then we send that copy */
+  update_computer_limits(&sdb.comp->limits); /* Does not need to be locked because at this point */
+  update_computer_limits(&sdb.comp->limits); /* Does not need to be locked because at this point */
+  update_computer_limits(&sdb.comp->limits); /* Does not need to be locked because at this point */
+  update_computer_limits(&sdb.comp->limits); /* Does not need to be locked because at this point */
 
 	if (pipe(phantom) != 0) {
 		fprintf (stderr,"Phantom pipe could not be created\n");
