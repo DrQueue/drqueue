@@ -97,7 +97,19 @@ namespace Service_master
 			theProcess.StartInfo.FileName = "master.exe";
 			theProcess.StartInfo.WorkingDirectory = Environment.GetEnvironmentVariable("DRQUEUE_BIN");
 			theProcess.Start();
-			timer1.Start();
+		    //try
+			//{
+		    	//Process []findProcess;
+		    	//do
+		    	//{
+		    		//findProcess = Process.GetProcessesByName("master");
+		    	//}
+		    	//while (findProcess.Length < 1);
+				timer1.Start();
+		    //}
+			//catch (System.ServiceProcess.TimeoutException)
+			//{
+			//}
 		}
  
 		/// <summary>
