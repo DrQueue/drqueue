@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.20 2001/08/31 19:34:45 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.21 2001/09/01 16:43:20 jorge Exp $
  */
 
 #include <string.h>
@@ -867,6 +867,7 @@ static int jdd_update (GtkWidget *w, struct info_drqm_jobs *info)
   char **buff;			/* for hte clist stuff */
   int ncols = 7;
   int i;
+  GtkWidget *toplevel;
 
   static GdkBitmap *w_mask = NULL;
   static GdkPixmap *w_data = NULL;
@@ -879,7 +880,7 @@ static int jdd_update (GtkWidget *w, struct info_drqm_jobs *info)
 
   if (!request_job_xfer(info->ijob,&info->jobs[info->ijob],CLIENT)) {
     if (drerrno == DRE_NOTREGISTERED) {
-      gtk_object_destroy (GTK_OBJECT(info->jdd.dialog));
+/*        gtk_object_destroy (GTK_OBJECT(info->jdd.dialog)); */
 /*        gtk_widget_destroy (info->jdd.dialog); */
 /*        gtk_signal_emit_by_name (GTK_OBJECT(info->jdd.dialog),"destroy"); */
     } else {
@@ -948,15 +949,16 @@ static int jdd_update (GtkWidget *w, struct info_drqm_jobs *info)
 
   
   /* Pixmap stuff */
-  if (!w_mask)
-    w_data = gdk_pixmap_create_from_xpm_d (info->jdd.dialog->window,&w_mask,NULL,(gchar**)waiting_xpm);
-  if (!r_mask)
-    r_data = gdk_pixmap_create_from_xpm_d (info->jdd.dialog->window,&r_mask,NULL,(gchar**)running_xpm);
-  if (!f_mask)
-    f_data = gdk_pixmap_create_from_xpm_d (info->jdd.dialog->window,&f_mask,NULL,(gchar**)finished_xpm);
-  if (!e_mask)
-    e_data = gdk_pixmap_create_from_xpm_d (info->jdd.dialog->window,&e_mask,NULL,(gchar**)error_xpm);
-
+  if (!w_mask) {
+    toplevel = gtk_widget_get_toplevel(info->jdd.dialog);
+    w_data = gdk_pixmap_create_from_xpm_d (GTK_WIDGET(toplevel)->window,&w_mask,NULL,(gchar**)waiting_xpm);
+    if (!r_mask)
+      r_data = gdk_pixmap_create_from_xpm_d (GTK_WIDGET(toplevel)->window,&r_mask,NULL,(gchar**)running_xpm);
+    if (!f_mask)
+      f_data = gdk_pixmap_create_from_xpm_d (GTK_WIDGET(toplevel)->window,&f_mask,NULL,(gchar**)finished_xpm);
+    if (!e_mask)
+      e_data = gdk_pixmap_create_from_xpm_d (GTK_WIDGET(toplevel)->window,&e_mask,NULL,(gchar**)error_xpm);
+  }
 
   buff = (char**) g_malloc((ncols + 1) * sizeof(char*));
   for (i=0;i<ncols;i++)
@@ -1071,7 +1073,7 @@ static GtkWidget *CreateMenuFrames (struct info_drqm_jobs *info)
 /*    gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(StopJob),info); */
 
   /* Separation bar */
-  menu_item = gtk_menu_item_new_with_label(NULL);
+  menu_item = gtk_menu_item_new ();
   gtk_menu_append(GTK_MENU(menu),menu_item);
 
   menu_item = gtk_menu_item_new_with_label("Watch frame Log");
