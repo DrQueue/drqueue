@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_computers.c,v 1.10 2001/08/31 19:35:01 jorge Exp $
+ * $Id: drqm_computers.c,v 1.11 2001/09/03 09:17:15 jorge Exp $
  */
 
 #include <stdlib.h>
