@@ -1,7 +1,9 @@
-/* $Id: task.h,v 1.2 2001/04/26 14:20:55 jorge Exp $ */
+/* $Id: task.h,v 1.3 2001/05/09 10:53:08 jorge Exp $ */
 
 #ifndef _TASK_H_
 #define _TASK_H_
+
+#include <stdint.h>
 
 #include "constants.h"
 
@@ -13,14 +15,14 @@ typedef enum {
 } t_taskstatus;
 
 struct t_task {
-  int used;
+  uint8_t used;
   char jobname[MAXNAMELEN];	/* jobname */
-  int jobindex;			/* index to the job in the global db */
+  uint16_t jobindex;		/* index to the job in the global db */
   char jobcmd[MAXCMDLEN];	/* string the is being executed */
   char owner[MAXNAMELEN];	/* owner of the job */
-  int frame;			/* current frame */
-  int pid;			/* pid */
-  t_taskstatus status;		/* status */
+  uint16_t frame;		/* current frame */
+  int32_t pid;			/* pid */
+  uint8_t status;		/* status */
 };
 
 void init_tasks (struct t_task *task);

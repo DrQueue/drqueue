@@ -1,8 +1,8 @@
-/* $Id: semaphores.c,v 1.1 2001/05/07 15:35:04 jorge Exp $ */
+/* $Id: semaphores.c,v 1.2 2001/05/09 10:53:08 jorge Exp $ */
 
 #include <sys/sem.h>
 
-void lock_semaphore (int semid)
+void semaphore_lock (int semid)
 {
   struct sembuf op;
 
@@ -12,7 +12,7 @@ void lock_semaphore (int semid)
   semop(semid,&op,1);
 }
 
-void release_semaphore (int semid)
+void semaphore_release (int semid)
 {
   struct sembuf op;
 
