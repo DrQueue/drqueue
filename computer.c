@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.25 2001/09/17 10:56:15 jorge Exp $ */
+/* $Id: computer.c,v 1.26 2001/09/18 13:18:16 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -191,3 +191,11 @@ void computer_init_limits (struct computer *comp)
   comp->limits.maxfreeloadcpu = 80;
 }
 
+int computer_index_correct_master (struct database *wdb, uint32_t icomp)
+{
+  if (icomp > MAXCOMPUTERS)
+    return 0;
+  if (!wdb->computer[icomp].used)
+    return 0;
+  return 1;
+}
