@@ -53,9 +53,15 @@
 #define SLAVEPORT 2345		/* Slave listening port */
 
 /* Delays */
+#ifdef __CYGWIN
+#define SLAVEDELAY 10		/* Delay between each loop on the slave */
+#define MAXTIMECONNECTION 30	/* Maximum time that can take to handle a request */
+#define MASTERCCHECKSDELAY 10	/* Delay between every consistency check */
+#else
 #define SLAVEDELAY 15		/* Delay between each loop on the slave */
 #define MAXTIMECONNECTION 60	/* Maximum time that can take to handle a request */
 #define MASTERCCHECKSDELAY 10	/* Delay between every consistency check */
+#endif
 #define MAXTIMENOCONN 120	/* If this time is exceeded without connecting to the */
                                 /* master the computer is erased from the db */
 
