@@ -1,4 +1,4 @@
-/* $Id: drerrno.c,v 1.12 2002/05/17 16:03:23 jorge Exp $ */
+/* $Id: drerrno.c,v 1.13 2002/12/02 22:24:08 jorge Exp $ */
 
 #include "drerrno.h"
 #include "constants.h"
@@ -16,8 +16,8 @@ char *drerrno_str (void)
   case DRE_ERROROPENING:
     msg = "Could not open file or directory";
     break;
-  case DRE_NOTRESOLV:
-    msg = "Could not resolv hostname";
+  case DRE_NOTRESOLVE:
+    msg = "Could not resolve hostname";
     break;
   case DRE_NOSOCKET:
     msg = "Could not open socket";
