@@ -219,6 +219,11 @@ static void dnj_koj_frame_3delight_bcreate_pressed (GtkWidget *button, struct dr
   strncpy (threedelightsgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->koji_3delight.escript)),BUFFERLEN-1);
   strncpy (threedelightsgi.file_owner,gtk_entry_get_text(GTK_ENTRY(info->koji_3delight.efile_owner)),BUFFERLEN-1);
 
+#ifdef CYGWIN
+  strncpy(threedelightsgi.scene, conv_to_posix_path(threedelightsgi.scene), BUFFERLEN-1);
+  strncpy(threedelightsgi.scriptdir, conv_to_posix_path(threedelightsgi.scriptdir), BUFFERLEN-1);
+#endif
+
   if ((file = threedelightsg_create (&threedelightsgi)) == NULL) {
     fprintf (stderr,"ERROR: %s\n",drerrno_str());
     return;
@@ -234,9 +239,11 @@ static void dnj_koj_frame_3delight_script_search (GtkWidget *button, struct drqm
   dialog = gtk_file_selection_new ("Please select a script directory");
   info->fsscript = dialog;
 
+#ifndef __CYGWIN
   if (strlen(gtk_entry_get_text(GTK_ENTRY(info->escript)))) {
     gtk_file_selection_set_filename (GTK_FILE_SELECTION(dialog),gtk_entry_get_text(GTK_ENTRY(info->escript)));
   }
+#endif
 
   gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
 		      "clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_3delight_script_set), info);

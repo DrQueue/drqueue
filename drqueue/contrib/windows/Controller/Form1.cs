@@ -20,17 +20,19 @@ namespace ServicesController
 		private System.Windows.Forms.Button button_master;
 		private System.Windows.Forms.Button button2;
 		private System.Windows.Forms.Button button1;
+		private System.Windows.Forms.NotifyIcon Drqueue_on;
 		private System.Windows.Forms.NotifyIcon DrQueue;
 		private System.Windows.Forms.Button button_ipc;
 		private System.Windows.Forms.Button button3;
 		private System.Timers.Timer timer1;
 		private System.Windows.Forms.Button button_slave;
+		private System.Windows.Forms.NotifyIcon Drqueue_off;
 		private System.Windows.Forms.Label statusBar1;
 
 		private System.ServiceProcess.ServiceController serviceControllerIpc;
 		private System.ServiceProcess.ServiceController serviceControllerMaster;
 
-		private const string IPC = "ipc-daemon2";
+		private const string IPC = "cygserver";
 		private const string MASTER = "master";
 		private const string SLAVE = "slave";
 
@@ -77,11 +79,13 @@ namespace ServicesController
 			this.components = new System.ComponentModel.Container();
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(Form1));
 			this.statusBar1 = new System.Windows.Forms.Label();
+			this.Drqueue_off = new System.Windows.Forms.NotifyIcon(this.components);
 			this.button_slave = new System.Windows.Forms.Button();
 			this.timer1 = new System.Timers.Timer();
 			this.button3 = new System.Windows.Forms.Button();
 			this.button_ipc = new System.Windows.Forms.Button();
 			this.DrQueue = new System.Windows.Forms.NotifyIcon(this.components);
+			this.Drqueue_on = new System.Windows.Forms.NotifyIcon(this.components);
 			this.button1 = new System.Windows.Forms.Button();
 			this.button2 = new System.Windows.Forms.Button();
 			this.button_master = new System.Windows.Forms.Button();
@@ -94,6 +98,11 @@ namespace ServicesController
 			this.statusBar1.Name = "statusBar1";
 			this.statusBar1.Size = new System.Drawing.Size(272, 16);
 			this.statusBar1.TabIndex = 8;
+			// 
+			// Drqueue_off
+			// 
+			this.Drqueue_off.Icon = ((System.Drawing.Icon)(resources.GetObject("Drqueue_off.Icon")));
+			this.Drqueue_off.Text = "";
 			// 
 			// button_slave
 			// 
@@ -138,6 +147,11 @@ namespace ServicesController
 			this.DrQueue.Text = "DrQeue";
 			this.DrQueue.Visible = true;
 			this.DrQueue.MouseDown += new System.Windows.Forms.MouseEventHandler(this.NotifyIcon1MouseDown);
+			// 
+			// Drqueue_on
+			// 
+			this.Drqueue_on.Icon = ((System.Drawing.Icon)(resources.GetObject("Drqueue_on.Icon")));
+			this.Drqueue_on.Text = "";
 			// 
 			// button1
 			// 
@@ -220,7 +234,17 @@ namespace ServicesController
 			theProcess.StartInfo.UseShellExecute = true;
 			theProcess.StartInfo.WorkingDirectory = Environment.GetEnvironmentVariable("DRQUEUE_BIN");
 			theProcess.StartInfo.FileName = name + ".exe";
-			theProcess.Start();			
+			theProcess.Start();
+		}
+				
+		private void Activate(string name, string argument)
+		{
+			Process theProcess = new Process();
+			theProcess.StartInfo.UseShellExecute = true;
+			theProcess.StartInfo.WorkingDirectory = Environment.GetEnvironmentVariable("DRQUEUE_BIN");
+			theProcess.StartInfo.FileName = name + ".exe";
+			theProcess.StartInfo.Arguments = argument;
+			theProcess.Start();
 		}
 
 		private void Kill(string name)
@@ -247,9 +271,22 @@ namespace ServicesController
 				button_master.BackColor = System.Drawing.Color.Red;
 
 			if (!IsActive(SLAVE))
-				button_slave.BackColor = System.Drawing.Color.DimGray;
+			{
+				if (button_slave.BackColor != System.Drawing.Color.DimGray)
+				{
+					this.DrQueue.Icon = Drqueue_off.Icon;
+					button_slave.BackColor = System.Drawing.Color.DimGray;
+				}
+			}
+				
 			else
-				button_slave.BackColor = System.Drawing.Color.Red;
+			{
+				if (button_slave.BackColor != System.Drawing.Color.Red)
+				{
+					this.DrQueue.Icon = Drqueue_on.Icon;
+					button_slave.BackColor = System.Drawing.Color.Red;
+				}
+			}
 		}
 
 		private void button_ipc_Click(object sender, System.EventArgs e)
@@ -301,7 +338,7 @@ namespace ServicesController
 						serviceControllerIpc.Start();
 						System.Threading.Thread.Sleep(1000);
 					}
-					Activate(SLAVE);
+					Activate(SLAVE, "-f");
 				}
 				else
 					Kill(SLAVE);

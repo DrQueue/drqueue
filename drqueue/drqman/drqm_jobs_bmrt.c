@@ -395,7 +395,7 @@ static void dnj_koj_frame_bmrt_scene_search (GtkWidget *button, struct drqmj_koj
   if (strlen(gtk_entry_get_text(GTK_ENTRY(info->escene)))) {
     gtk_file_selection_set_filename (GTK_FILE_SELECTION(dialog),gtk_entry_get_text(GTK_ENTRY(info->escene)));
   }
-
+  
   gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
 		      "clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_bmrt_scene_set), info);
   gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
@@ -462,7 +462,11 @@ static void dnj_koj_frame_bmrt_bcreate_pressed (GtkWidget *button, struct drqmj_
 		if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eraysamples)),"%u",&bmrtsgi.raysamples) != 1)
 			return;
 	}
-  
+#ifdef CYGWIN
+  strncpy(bmrtsgi.scene, conv_to_posix_path(bmrtsgi.scene), BUFFERLEN-1);
+  strncpy(bmrtsgi.scriptdir, conv_to_posix_path(bmrtsgi.scriptdir), BUFFERLEN-1);
+#endif
+
   if ((file = bmrtsg_create (&bmrtsgi)) == NULL) {
     fprintf (stderr,"ERROR: %s\n",drerrno_str());
     return;
@@ -478,9 +482,11 @@ static void dnj_koj_frame_bmrt_script_search (GtkWidget *button, struct drqmj_ko
   dialog = gtk_file_selection_new ("Please select a script directory");
   info->fsscript = dialog;
 
+#ifndef __CYGWIN
   if (strlen(gtk_entry_get_text(GTK_ENTRY(info->escript)))) {
     gtk_file_selection_set_filename (GTK_FILE_SELECTION(dialog),gtk_entry_get_text(GTK_ENTRY(info->escript)));
   }
+#endif
 
   gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
 		      "clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_bmrt_script_set), info);

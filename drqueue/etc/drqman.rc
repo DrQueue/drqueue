@@ -12,6 +12,5 @@ style "warning" {
 }
 
 widget_class "*" style "default"
-
 widget "*danger*" style "danger"
 widget "*warning*" style "warning"
