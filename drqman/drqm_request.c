@@ -1,4 +1,4 @@
-/* $Id: drqm_request.c,v 1.7 2001/08/23 13:25:13 jorge Exp $ */
+/* $Id: drqm_request.c,v 1.8 2001/08/27 15:17:30 jorge Exp $ */
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -32,7 +32,7 @@ void drqm_request_joblist (struct info_drqm_jobs *info)
     goto end;
 
   if (req.type == R_A_LISTJOBS) {
-    info->njobs = req.data_s;
+    info->njobs = req.data;
   } else {
     fprintf (stderr,"ERROR: Not appropiate answer to request R_R_TASKFINI\n");
     goto end;			/* Should I use gotos ? It seems like a reasonable option for this case */
@@ -87,7 +87,7 @@ void drqm_request_computerlist (struct info_drqm_computers *info)
   }
 
   if (req.type == R_A_LISTCOMP) {
-    info->ncomputers = req.data_s;
+    info->ncomputers = req.data;
   } else {
     fprintf (stderr,"ERROR: Not appropiate answer to request R_R_TASKFINI\n");
     goto end;			/* Should I use gotos ? It seems like a reasonable option for this case */
