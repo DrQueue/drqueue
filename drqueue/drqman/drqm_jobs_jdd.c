@@ -46,13 +46,6 @@ static gint PopupMenuFrames (GtkWidget *clist, GdkEvent *event, struct drqm_jobs
 static void SeeFrameLog (GtkWidget *w, struct drqm_jobs_info *info);
 static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info);
 static void jdd_requeue_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
-
-// Blocked hosts
-static GtkWidget *CreateBlockedHostsClist (void);
-static int jdd_update_blocked_hosts (GtkWidget *w, struct drqm_jobs_info *info);
-
-
-// OLD FIXME classify
 static void jdd_kill_frames_confirm (GtkWidget *button, struct drqm_jobs_info *info_dj);
 static void jdd_kill_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
 static void jdd_finish_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
@@ -75,6 +68,15 @@ static int jdd_framelist_cmp_icomp (GtkCList *clist, gconstpointer ptr1, gconstp
 static int jdd_framelist_cmp_start_time (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
 static int jdd_framelist_cmp_end_time (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
 static int jdd_framelist_cmp_requeued (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+
+// Blocked hosts
+static GtkWidget *CreateBlockedHostsClist (void);
+static int jdd_update_blocked_hosts (GtkWidget *w, struct drqm_jobs_info *info);
+static gint PopupMenuBlockedHosts (GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *info);
+static void jdd_delete_blocked_host (GtkWidget *w, struct drqm_jobs_info *info);
+static void jdd_add_blocked_host_bp (GtkWidget *button, struct drqm_jobs_info *info);
+static GtkWidget *jdd_add_blocked_host_dialog (struct drqm_jobs_info *info);
+
 /* Limits */
 static GtkWidget *jdd_limits_widgets (struct drqm_jobs_info *info);
 static void jdd_limits_nmaxcpus_bcp (GtkWidget *button, struct drqm_jobs_info *info);
@@ -92,16 +94,13 @@ static void jdd_maya_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *inf
 static void jdd_blender_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 static void jdd_bmrt_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 static void jdd_pixie_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
-// Blocked hosts
-static gint PopupMenuBlockedHosts (GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *info);
-static void jdd_delete_blocked_host (GtkWidget *w, struct drqm_jobs_info *info);
-static void jdd_add_blocked_host_bp (GtkWidget *button, struct drqm_jobs_info *info);
-static GtkWidget *jdd_add_blocked_host_dialog (struct drqm_jobs_info *info);
+
 
 struct row_data {
   uint32_t frame;
   struct drqm_jobs_info *info;
 };
+
 
 void JobDetails(GtkWidget *menu_item, struct drqm_jobs_info *info)
 {
@@ -135,7 +134,6 @@ static GtkWidget *CreateMenuBlockedHosts (struct drqm_jobs_info *info)
 	menu_item = gtk_menu_item_new_with_label("Add");
 	gtk_menu_append(GTK_MENU(menu),menu_item);
 	g_signal_connect(G_OBJECT(menu_item),"activate",G_CALLBACK(jdd_add_blocked_host_bp),info);
-	g_signal_connect(G_OBJECT(menu_item),"activate",G_CALLBACK(jdd_update),info);
 
 	menu_item = gtk_menu_item_new_with_label("Delete");
 	gtk_menu_append(GTK_MENU(menu),menu_item);
