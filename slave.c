@@ -53,8 +53,6 @@ char buffer[BUFFERLEN];					/* Buffer to read from phantom */
 int main (int argc,char *argv[])
 {
   int force = 0;
-  int launched;
-
 
 	strncpy (sdb.conf,SLAVE_CONF_FILE,PATH_MAX);
 
@@ -123,11 +121,9 @@ int main (int argc,char *argv[])
 
     computer_autoenable_check (&sdb); /* Check if it's time for autoenable */
 
-    launched = 0;
     while (computer_available(sdb.comp)) {
       if (request_job_available(&sdb)) {
 				launch_task(&sdb);
-				launched = 1;
       } else {
 				break;			/* The while */
       }
@@ -140,16 +136,6 @@ int main (int argc,char *argv[])
 		FD_SET(phantom[0],&read_set);
 		timeout.tv_sec = SLAVEDELAY;
 		timeout.tv_usec = 0;
-		if (launched) {
-      /* Just to have good load values on next loop */
-      /* if we don't wait more here, the load won't have */
-      /* assimilated the new processes */
-      /* It takes a while (1 minute) to the load average to reflect the real load */
-      /* But we need to connect before MAXTIMENOCONN because if not */
-      /* the computer is removed from the queue */
-			timeout.tv_sec = SLAVEDELAY*2;
-			timeout.tv_usec = 0;
-    }
 		rs = select (phantom[0]+1,&read_set,NULL,NULL,&timeout);
 		switch (rs) {
 		case -1:
