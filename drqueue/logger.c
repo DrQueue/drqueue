@@ -1,4 +1,4 @@
-/* $Id: logger.c,v 1.9 2001/07/24 10:30:20 jorge Exp $ */
+/* $Id: logger.c,v 1.10 2001/08/07 13:00:32 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -23,6 +23,9 @@ void log_slave_task (struct task *task,int level,char *msg)
   char buf[BUFFERLEN];
   time_t now;
   
+  if (level > loglevel)
+    return;
+
   if (gethostname (name,MAXNAMELEN-1) == -1) {
     strcpy (name,"UNKNOWN");
   }
@@ -76,6 +79,9 @@ void log_slave_computer (int level, char *msg)
   char buf[BUFFERLEN];
   time_t now;
   
+  if (level > loglevel)
+    return;
+
   if (gethostname (name,MAXNAMELEN-1) == -1) {
     strcpy (name,"UNKNOWN");
   }
@@ -117,6 +123,9 @@ void log_master_job (struct job *job, int level, char *msg)
   char buf[BUFFERLEN];
   time_t now;
   
+  if (level > loglevel)
+    return;
+
   time (&now);
   strncpy (buf,ctime(&now),BUFFERLEN-1);
   buf[strlen(buf)-1] = '\0';
@@ -132,6 +141,9 @@ void log_master_computer (struct computer *computer, int level, char *msg)
   char buf[BUFFERLEN];
   time_t now;
   
+  if (level > loglevel)
+    return;
+
   time (&now);
   strncpy (buf,ctime(&now),BUFFERLEN-1);
   buf[strlen(buf)-1] = '\0';
@@ -147,6 +159,9 @@ void log_master (int level,char *msg)
   char buf[BUFFERLEN];
   time_t now;
   
+  if (level > loglevel)
+    return;
+
   time (&now);
   strncpy (buf,ctime(&now),BUFFERLEN-1);
   buf[strlen(buf)-1] = '\0';
@@ -243,3 +258,4 @@ int log_dumptask_open (struct task *t)
   write(lfd,filename,strlen(filename));
   return lfd;
 }
+
