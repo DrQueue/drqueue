@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.7 2001/07/06 09:14:11 jorge Exp $ */
+/* $Id: master.c,v 1.8 2001/07/06 14:15:21 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -100,6 +100,7 @@ int get_semaphores (void)
 {
   key_t key;
   int semid;
+  struct sembuf op;
 
   if ((key = ftok ("master",'Z')) == -1) {
     perror ("ftok");
@@ -113,6 +114,15 @@ int get_semaphores (void)
   if (semctl (semid,0,SETVAL,1) == -1) {
     perror ("semctl SETVAL -> 1");
     kill (0,SIGINT);
+  }
+  if (semctl (semid,0,GETVAL) == 0) {
+    op.sem_num = 0;
+    op.sem_op = 1;
+    op.sem_flg = 0;
+    if (semop(semid,&op,1) == -1) {
+      perror ("semaphore_release");
+      kill(0,SIGINT);
+    }
   }
 
   return semid;
