@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.13 2001/07/17 15:07:29 jorge Exp $ */
+/* $Id: master.c,v 1.14 2001/07/30 12:49:09 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -23,16 +23,29 @@ int main (int argc, char *argv[])
 {
   int csfd;			/* child sfd, the socket once accepted the connection */
   int shmid;			/* shared memory id */
+  int force = 0;		/* force even if shmem already exists */
+  int opt;
 
   fprintf (stderr,"Master at: %i\n",(int)getpid());
-
   log_master (L_INFO,"Starting...");
   set_signal_handlers ();
 
-  shmid = get_shared_memory ();
+  while ((opt = getopt (argc,argv,"fh")) != -1) {
+    switch (opt) {
+    case 'f':
+      force = 1;
+      break;
+    case '?':
+    case 'h':
+      usage();
+      exit (1);
+    }
+  }
+
+  shmid = get_shared_memory (force);
   wdb = attach_shared_memory (shmid);
   wdb->shmid = shmid;
-  wdb->semid = get_semaphores ();
+  wdb->semid = get_semaphores (force);
 
   database_init(wdb);
 
@@ -73,37 +86,55 @@ int main (int argc, char *argv[])
   exit (0);
 }
 
-int get_shared_memory (void)
+int get_shared_memory (int force)
 {
   key_t key;
   int shmid;
+  int shmflg;
 
   if ((key = ftok ("./master",'Z')) == -1) {
     perror ("ftok");
     exit (1);
   }
   
-  if ((shmid = shmget (key,sizeof(struct database), IPC_EXCL|IPC_CREAT|0600)) == -1) {
+  if (force) {
+    shmflg = IPC_CREAT|0600;
+  } else {
+    shmflg = IPC_EXCL|IPC_CREAT|0600;
+  }
+
+  if ((shmid = shmget (key,sizeof(struct database), shmflg)) == -1) {
     perror ("shmget");
+    if (!force)
+      fprintf (stderr,"Try with option -f (if you are sure that no other master is running)\n");
     exit (1);
   }
 
   return shmid;
 }
 
-int get_semaphores (void)
+int get_semaphores (int force)
 {
   key_t key;
   int semid;
   struct sembuf op;
+  int semflg;
 
   if ((key = ftok ("master",'Z')) == -1) {
     perror ("ftok");
     kill (0,SIGINT);
   }
 
-  if ((semid = semget (key,1, IPC_EXCL|IPC_CREAT|0600)) == -1) {
+  if (force) {
+    semflg = IPC_CREAT|0600;
+  } else {
+    semflg = IPC_EXCL|IPC_CREAT|0600;
+  }
+
+  if ((semid = semget (key,1,semflg)) == -1) {
     perror ("semget");
+    if (!force)
+      fprintf (stderr,"Try with option -f (if you are sure that no other master is running)\n");
     kill (0,SIGINT);
   }
   if (semctl (semid,0,SETVAL,1) == -1) {
@@ -299,5 +330,10 @@ void check_lastconn_times (struct database *wdb)
   }
 }
 
-
+void usage (void)
+{
+  fprintf (stderr,"Valid options:\n"
+	  "\t-f to force continuing if shared memory already exists\n"
+	  "\t-h prints this help\n");
+}
 

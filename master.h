@@ -1,12 +1,14 @@
-/* $Id: master.h,v 1.4 2001/06/05 12:19:45 jorge Exp $ */
+/* $Id: master.h,v 1.5 2001/07/30 12:49:10 jorge Exp $ */
 
 #ifndef _MASTER_H_
 #define _MASTER_H_
 
 #include "database.h"
 
-int get_shared_memory (void);
-int get_semaphores (void);
+void usage (void);
+
+int get_shared_memory (int force);
+int get_semaphores (int force);
 void *attach_shared_memory (int shmid);
 
 void set_signal_handlers (void);
