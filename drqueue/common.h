@@ -1,4 +1,4 @@
-/* $Id: common.h,v 1.27 2003/12/18 20:40:35 jorge Exp $ */
+/* $Id: common.h,v 1.28 2003/12/19 17:50:30 jorge Exp $ */
 
 #ifndef _COMMON_H_
 #define _COMMON_H_
@@ -15,7 +15,7 @@
 
 #include "job.h"
 
-#define VERSION "v_0-43"
+#define VERSION "v_0-44"
 
 int common_environment_check (void);
 void show_version (char **argv);
