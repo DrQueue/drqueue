@@ -1,4 +1,4 @@
-/* $Id: mayasg.h,v 1.7 2002/09/22 19:10:24 jorge Exp $ */
+/* $Id: mayasg.h,v 1.8 2003/12/18 20:39:41 jorge Exp $ */
 
 #ifndef _MAYASG_H_
 #define _MAYASG_H_
@@ -21,7 +21,6 @@ struct mayasgi {		/* Maya Script Generator Info */
 };
 
 char *mayasg_create (struct mayasgi *info);
-char *mayablocksg_create (struct mayasgi *info);
 
 char *mayasg_default_script_path (void);
 

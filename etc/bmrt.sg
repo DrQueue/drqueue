@@ -23,39 +23,44 @@
 #
 
 # Begin Script
-if [ $CUSTOM_CROP ]; then
+set BLOCK=`expr $FRAME + $BLOCKSIZE - 1`
+if ($BLOCK > $ENDFRAME) then
+	BLOCK = $ENDFRAME;
+endif
+
+if ( $CUSTOM_CROP ) then
 	crop_args="-crop $CROP_XMIN $CROP_XMAX $CROP_YMIN $CROP_YMAX"
 fi
 
-if [ $CUSTOM_SAMPLES ]; then
-	sample_args="-samples $XSAMP $YSAMP"
+if ( $CUSTOM_SAMPLES ) then
+	sample_args="-samples $XSAMPLES $YSAMPLES"
 fi
 
-if [ $DISP_STATS ]; then
+if ( $DISP_STATS ) then
 	stats_args="-stats"
 fi
 
-if [ $DISP_VERBOSE ]; then
+if ( $VERBOSE ) then
 	verbose_args="-v"
 fi
 
-if [ $CUSTOM_RADIOSITY ]; then
+if ( $CUSTOM_RADIOSITY ) then
 	radiosity_args="-radio $RADIOSITY_SAMPLES"
 fi
 
-if [ $CUSTOM_RAYSAMPLES ]; then
+if ( $CUSTOM_RAYSAMPLES ) then
 	rsamples_args="-rsamples $RAYSAMPLES"
 fi
 
-if [ $CUSTOM_BEEP ]; then
+if ( $CUSTOM_BEEP ) then
 	beep_args="-beep"
 fi
 
 
-echo "rendrib -frames $FRAME $FRAME $crop_args $sample_args $stats_args $verbose_args $radiosity_args $rsamples_args $beep_args"
+echo "rendrib -frames $FRAME $BLOCK $crop_args $sample_args $stats_args $verbose_args $radiosity_args $rsamples_args $beep_args $SCENE"
 
+rendrib -frames $FRAME $BLOCK $crop_args $sample_args $stats_args $verbose_args $radiosity_args $rsamples_args $beep_args $SCENE
 
-rendrib -frames $FRAME $FRAME $crop_args $sample_args $stats_args $verbose_args $radiosity_args $rsamples_args $beep_args
 # This should requeue the frame if failed
 if ( $? != 0 ) then
   echo "Requeueing frame..."

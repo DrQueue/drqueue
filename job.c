@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.59 2003/12/18 04:11:07 jorge Exp $ */
+/* $Id: job.c,v 1.60 2003/12/18 20:39:41 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -655,6 +655,11 @@ void job_environment_set (struct job *job, uint32_t iframe)
     putenv (renderdir);
     snprintf (image,BUFFERLEN-1,"IMAGE=%s",job->koji.maya.image);
     putenv (image);
+	case KOJ_BLENDER:
+		snprintf (scene,BUFFERLEN-1,"SCENE=%s",job->koji.blender.scene);
+    break;
+	case KOJ_BMRT:
+		snprintf (scene,BUFFERLEN-1,"SCENE=%s",job->koji.bmrt.scene);
     break;
   }
 }
