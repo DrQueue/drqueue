@@ -1,0 +1,12 @@
+#!/usr/bin/perl -w
+
+if ($ARGV[1] eq "add") {
+    print "Tag added\n";
+} elsif ($ARGV[1] eq "mov") {
+    print "Tag moved\n";
+} elsif ($ARGV[1] eq "del") {
+    print "Tag deleted\n";
+}
+
+exit 1;
+
