@@ -1,4 +1,4 @@
-/* $Id: drerrno.h,v 1.11 2001/11/21 10:15:22 jorge Exp $ */
+/* $Id: drerrno.h,v 1.12 2002/12/02 22:24:08 jorge Exp $ */
 
 #ifndef _DRERRNO_H_
 #define _DRERRNO_H_
@@ -7,7 +7,7 @@ extern int drerrno;		/* global errno */
 
 #define DRE_NOERROR         0	/* No error */
 #define DRE_ERROROPENING    1   /* Could not open file or directory */
-#define DRE_NOTRESOLV       2	/* Could not resolve hostname */
+#define DRE_NOTRESOLVE      2	/* Could not resolve hostname */
 #define DRE_NOSOCKET        3	/* Could not open socket */
 #define DRE_NOCONNECT       4	/* Could not connect */
 #define DRE_ANSWERNOTLISTED 5	/* Answer received not listed */

@@ -1,4 +1,4 @@
-/* $Id: task.c,v 1.11 2002/06/20 15:28:48 jorge Exp $ */
+/* $Id: task.c,v 1.12 2002/12/02 22:24:08 jorge Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -89,6 +89,7 @@ void task_environment_set (struct task *task)
   static char ijob[BUFFERLEN];
 
   /* Padded frame number */
+  /* TODO: make padding length user defined */
   snprintf (padframe,BUFFERLEN,"PADFRAME=%04i",task->frame);
   putenv (padframe);
   /* Frame number */

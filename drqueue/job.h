@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.33 2002/06/20 15:28:48 jorge Exp $ */
+/* $Id: job.h,v 1.34 2002/12/02 22:24:08 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -60,7 +60,7 @@ union koj_info {		/* Kind of job information */
 #define KOJ_MAYABLOCK   2	/* Maya block koj */
 
 /* koj constants */
-#define KOJ_MAYA_DFLT_VIEWCMD "fcheck $PROJECT/images/$IMAGE.$PADFRAME.sgi"
+#define KOJ_MAYA_DFLT_VIEWCMD "fcheck $RD/$IMAGE.$PADFRAME.sgi"
 
 /* JOB SECTION */
 typedef enum {
