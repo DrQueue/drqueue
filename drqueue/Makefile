@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.50 2004/10/09 05:22:02 jorge Exp $
+# $Id: Makefile,v 1.51 2004/10/09 05:50:13 jorge Exp $
 
 CC = gcc
 CPP = g++
@@ -140,7 +140,7 @@ tags:
 	etags *.[ch] drqman/*.[ch]
 
 clean:
-	rm -fR *.o *~ *\ libdrqueue.a slave master sendjob requeue TAGS tmp/* logs/* db/* 
+	rm -fR *.o *~ libdrqueue.a slave master sendjob requeue TAGS tmp/* logs/* db/* 
 	$(MAKE) -C drqman clean
 
 
