@@ -16,9 +16,9 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-/*
- * $Header: /root/cvs/drqueue/drqman/drqm_computers.h,v 1.8 2002/02/26 15:52:05 jorge Exp $
- */
+//
+// $Header: /root/cvs/drqueue/drqman/drqm_computers.h,v 1.8 2002/02/26 15:52:05 jorge Exp $
+//
 
 #ifndef _DRQM_COMPUTERS_H
 #define _DRQM_COMPUTERS_H
