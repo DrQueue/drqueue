@@ -174,6 +174,7 @@ int RegisterMayaJobFromFile (std::ifstream &infile)
   job.limits.os_flags = OSF_LINUX;
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
+	job.limits.memory = 0;
 
   if (!register_job(&job)) {
     std::cerr << "Error sending job to the queue\n";
