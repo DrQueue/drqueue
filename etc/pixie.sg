@@ -24,36 +24,20 @@
 
 # Begin Script
 
+echo "rndr -f $FRAME $RIBFILE"
 
+set RIBFILE_TMP = $RIBFILE'-'$FRAME
 
-if [ $DISP_PROGRESS ]; then
-	progress_args="-progress"
-fi
+awk '{if ($1 == "FrameBegin" && $2 == frame) x=1}; {if (x==1) print}; {if ($1 == "FrameEnd") x=0}' frame=$FRAME $RIBFILE > $RIBFILE_TMP
 
-if [ $DISP_SILENT ]; then
-	silent_args="-silent"
-fi
+rndr $RIBFILE_TMP
 
-# if [ $CUSTOM_START_DAEMON ]; then
-#	daemon_args="-d $USERPORT"
-# fi
-#
-# if [ $CUSTOM_USE_DAEMON ]; then
-#	daemon_args="-s $SERVERPORTLIST"
-# fi
+rm $RIBFILE_TMP
 
-echo "rndr -f $FRAME $FRAME $silent_args $progress_args $daemon_args $RIBFILE"
-
-
-rndr -f $FRAME $FRAME $silent_args $progress_args $daemon_args $RIBFILE
 # This should requeue the frame if failed
 if ( $? != 0 ) then
   echo "Requeueing frame..."
   kill -INT $$
-else
-  # The frame was rendered properly
-	# We don't know the output image name. If we knew we could set this correctly
-  # chown_block $RF_OWNER $RD/$IMAGE $FRAME $FRAME 
 endif
 
 #

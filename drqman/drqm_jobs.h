@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.32 2003/12/18 20:39:41 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.33 2004/03/09 18:53:22 jorge Exp $
  */
 
 #ifndef _DRQM_JOBS_H_
@@ -10,6 +10,7 @@
 #include "drqm_jobs_maya.h"
 #include "drqm_jobs_blender.h"
 #include "drqm_jobs_bmrt.h"
+#include "drqm_jobs_pixie.h"
 
 struct drqmj_sesframes {
   GtkWidget *eframe_start;
@@ -24,6 +25,7 @@ struct drqmj_limits {
   GtkWidget *lnmaxcpuscomputer;
   GtkWidget *cb_irix;		/* Check buttons */
   GtkWidget *cb_linux;
+	GtkWidget *cb_osx;
 };
 
 struct drqmj_flags {
@@ -47,8 +49,9 @@ struct drqmj_dnji {							/* dialog new job info */
   GtkWidget *fkoj;							/* frame koj */
   uint16_t koj;									/* koj */
   struct drqmj_koji_maya koji_maya; /* koj info for maya */
-	struct drqmj_koji_blender koji_blender; /* koj info for blender */
-	struct drqmj_koji_bmrt koji_bmrt; /* koj info for bmrt */
+  struct drqmj_koji_blender koji_blender; /* koj info for blender */
+  struct drqmj_koji_bmrt koji_bmrt; /* koj info for bmrt */
+  struct drqmj_koji_pixie koji_pixie; /* koj info for pixie */
   struct drqmj_limits limits;		/* limits info */
   struct drqmj_flags flags;			/* flags info */
 };
