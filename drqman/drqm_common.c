@@ -1,16 +1,18 @@
 /*
- * $Id: drqm_common.c,v 1.2 2001/09/24 16:10:19 jorge Exp $
+ * $Id$
  */
 
 #include <gtk/gtk.h>
 
 #include "drqm_common.h"
 
-GtkWidget *ConfirmDialog (char *text, GList *callbacks, gpointer data)
+GtkWidget *ConfirmDialog (char *text, GList *callbacks)
 {
   GtkWidget *dialog;
   GtkWidget *label;
   GtkWidget *button;
+	GList *cb2;
+	gpointer data;
 
   /* Dialog */
   dialog = gtk_dialog_new ();
@@ -27,7 +29,9 @@ GtkWidget *ConfirmDialog (char *text, GList *callbacks, gpointer data)
   /* Buttons */
   button = gtk_button_new_with_label ("Yes");
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->action_area),button, TRUE, TRUE, 5);
-  for (;callbacks;callbacks = callbacks->next) {
+  for (;callbacks;callbacks = cb2->next) {
+		cb2 = callbacks->next;
+		data = cb2->data;
     gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(callbacks->data),data);
   }
   gtk_signal_connect_object(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(gtk_widget_destroy),
