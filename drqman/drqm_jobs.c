@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.45 2001/10/24 12:51:58 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.46 2001/10/24 14:53:16 jorge Exp $
  */
 
 #include <string.h>
@@ -38,8 +38,10 @@ static gint PopupMenuFrames (GtkWidget *clist, GdkEvent *event, struct drqm_jobs
 static void SeeFrameLog (GtkWidget *w, struct drqm_jobs_info *info);
 static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info);
 static void jdd_requeue_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
+static void jdd_kill_frames_confirm (GtkWidget *button, struct drqm_jobs_info *info_dj);
 static void jdd_kill_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
 static void jdd_finish_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
+static void jdd_kill_finish_frames_confirm (GtkWidget *button, struct drqm_jobs_info *info_dj);
 static void jdd_kill_finish_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
 static void jdd_sesframes_bcp (GtkWidget *button, struct drqm_jobs_info *info);
 static GtkWidget *jdd_sesframes_change_dialog (struct drqm_jobs_info *info);
@@ -47,15 +49,16 @@ static void jdd_sesframes_cd_bsumbit_pressed (GtkWidget *button, struct drqm_job
 static void jdd_priority_bcp (GtkWidget *button, struct drqm_jobs_info *info);
 static GtkWidget *jdd_priority_change_dialog (struct drqm_jobs_info *info);
 static void jdd_pcd_cpri_changed (GtkWidget *entry, struct drqmj_jddi *info);
+static void jdd_pcd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *info);
 
 /* Limits */
 static GtkWidget *jdd_limits_widgets (struct drqm_jobs_info *info);
 static void jdd_limits_nmaxcpus_bcp (GtkWidget *button, struct drqm_jobs_info *info);
-static GtkWidget *nmc_dialog (struct drqm_jobs_info *info);
-static void nmcd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *info);
+static GtkWidget *jdd_nmc_dialog (struct drqm_jobs_info *info);
+static void jdd_nmcd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *info);
 static void jdd_limits_nmaxcpuscomputer_bcp (GtkWidget *button, struct drqm_jobs_info *info);
-static GtkWidget *nmcc_dialog (struct drqm_jobs_info *info);
-static void nmccd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *info);
+static GtkWidget *jdd_nmcc_dialog (struct drqm_jobs_info *info);
+static void jdd_nmccd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *info);
 
 /* Koj viewers */
 static void jdd_maya_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
@@ -1172,12 +1175,12 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info)
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_requeue_frames),info);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_update),info);
   gtk_tooltips_set_tip(tooltips,menu_item,"This option will requeue al selected frames that are "
-		       "currently finished. Those finished frames will be rerendered.\n"
+		       "currently finished. Those finished frames will be rendered again.\n"
 		       "This option has no effect on frames that are not finished.",NULL);
   
   menu_item = gtk_menu_item_new_with_label("Kill + Wait (requeue running)");
   gtk_menu_append(GTK_MENU(menu),menu_item);
-  gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_kill_frames),info);
+  gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_kill_frames_confirm),info);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_update),info);
   gtk_tooltips_set_tip(tooltips,menu_item,"This option will kill and requeue al selected frames that are "
 		       "currently running. Those running frames will start rendering again.\n"
@@ -1193,7 +1196,7 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info)
 
   menu_item = gtk_menu_item_new_with_label("Kill + Finished (skip running)");
   gtk_menu_append(GTK_MENU(menu),menu_item);
-  gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_kill_finish_frames),info);
+  gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_kill_finish_frames_confirm),info);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_update),info);
   gtk_tooltips_set_tip(tooltips,menu_item,"This option will kill and set as finished those selected frames "
 		       "that are currently running. So the render will stop and won't be requeued again (unless "
@@ -1243,9 +1246,30 @@ static void jdd_requeue_frames (GtkWidget *button,struct drqm_jobs_info *info_dj
   }
 }
 
+static void jdd_kill_frames_confirm (GtkWidget *button, struct drqm_jobs_info *info_dj)
+{
+  GtkWidget *dialog;
+  GList *cbs = NULL ;		/* callbacks */
+  GList *sel;
+
+  if (!(sel = GTK_CLIST(info_dj->jdd.clist)->selection)) {
+    return;
+  }
+  
+  cbs = g_list_append (cbs,jdd_kill_frames);
+
+  dialog = ConfirmDialog ("Do you really want to kill and requeue the running frames?\n"
+			  "(You will lose the partially rendered images)",
+			  cbs,info_dj);
+
+  g_list_free (cbs);
+
+  gtk_grab_add(dialog);
+}
+
 static void jdd_kill_frames (GtkWidget *button,struct drqm_jobs_info *info_dj)
 {
-  /* Signales the running frames and queues them again */
+  /* Signals the running frames and queues them again */
   GList *sel;
   uint32_t frame;
 
@@ -1273,6 +1297,27 @@ static void jdd_finish_frames (GtkWidget *button,struct drqm_jobs_info *info_dj)
     frame = (uint32_t) gtk_clist_get_row_data(GTK_CLIST(info_dj->jdd.clist), (gint)sel->data);
     drqm_request_job_frame_finish (info_dj->jobs[info_dj->ijob].id,frame);
   }
+}
+
+static void jdd_kill_finish_frames_confirm (GtkWidget *button, struct drqm_jobs_info *info_dj)
+{
+  GtkWidget *dialog;
+  GList *cbs = NULL ;		/* callbacks */
+  GList *sel;
+
+  if (!(sel = GTK_CLIST(info_dj->jdd.clist)->selection)) {
+    return;
+  }
+  
+  cbs = g_list_append (cbs,jdd_kill_finish_frames);
+
+  dialog = ConfirmDialog ("Do you really want to kill and set as finished the running frames?\n"
+			  "(Running frames won't be really finished even when they are marked as so)",
+			  cbs,info_dj);
+
+  g_list_free (cbs);
+
+  gtk_grab_add(dialog);
 }
 
 static void jdd_kill_finish_frames (GtkWidget *button,struct drqm_jobs_info *info_dj)
@@ -1867,12 +1912,12 @@ void jdd_limits_nmaxcpus_bcp (GtkWidget *button, struct drqm_jobs_info *info)
   /* Job Details Dialog Limits nmaxcpus Button Change Pressed */
   GtkWidget *dialog;
 
-  dialog = nmc_dialog (info);
+  dialog = jdd_nmc_dialog (info);
   if (dialog)
     gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-GtkWidget *nmc_dialog (struct drqm_jobs_info *info)
+GtkWidget *jdd_nmc_dialog (struct drqm_jobs_info *info)
 {
   GtkWidget *window;
   GtkWidget *vbox;
@@ -1902,7 +1947,7 @@ GtkWidget *nmc_dialog (struct drqm_jobs_info *info)
   gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
   button = gtk_button_new_with_label ("Submit");
   gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
-  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(nmcd_bsumbit_pressed),info);
+  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_nmcd_bsumbit_pressed),info);
 /*    gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(cdd_update),info); */
   gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
 			     GTK_SIGNAL_FUNC(gtk_widget_destroy),
@@ -1919,7 +1964,7 @@ GtkWidget *nmc_dialog (struct drqm_jobs_info *info)
   return window;
 }
 
-void nmcd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *info)
+void jdd_nmcd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *info)
 {
   uint32_t nmaxcpus;
   char msg[BUFFERLEN];
@@ -1941,12 +1986,12 @@ void jdd_limits_nmaxcpuscomputer_bcp (GtkWidget *button, struct drqm_jobs_info *
   /* Job Details Dialog Limits nmaxcpus Button Change Pressed */
   GtkWidget *dialog;
 
-  dialog = nmcc_dialog (info);
+  dialog = jdd_nmcc_dialog (info);
   if (dialog)
     gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-GtkWidget *nmcc_dialog (struct drqm_jobs_info *info)
+GtkWidget *jdd_nmcc_dialog (struct drqm_jobs_info *info)
 {
   GtkWidget *window;
   GtkWidget *vbox;
@@ -1976,7 +2021,7 @@ GtkWidget *nmcc_dialog (struct drqm_jobs_info *info)
   gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
   button = gtk_button_new_with_label ("Submit");
   gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
-  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(nmccd_bsumbit_pressed),info);
+  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_nmccd_bsumbit_pressed),info);
   gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
 			     GTK_SIGNAL_FUNC(gtk_widget_destroy),
 			     (gpointer) window);
@@ -1992,7 +2037,7 @@ GtkWidget *nmcc_dialog (struct drqm_jobs_info *info)
   return window;
 }
 
-void nmccd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *info)
+void jdd_nmccd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *info)
 {
   uint32_t nmaxcpuscomputer;
   char msg[BUFFERLEN];
@@ -2070,8 +2115,7 @@ GtkWidget *jdd_priority_change_dialog (struct drqm_jobs_info *info)
   gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
   button = gtk_button_new_with_label ("Submit");
   gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
-/*    gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(nmcd_bsumbit_pressed),info); */
-/*    gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(cdd_update),info); */
+  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_pcd_bsumbit_pressed),info);
   gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
 			     GTK_SIGNAL_FUNC(gtk_widget_destroy),
 			     (gpointer) window);
@@ -2111,3 +2155,21 @@ static void jdd_pcd_cpri_changed (GtkWidget *entry, struct drqmj_jddi *info)
     fprintf (stderr,"Not listed!\n");
   }
 }
+
+static void jdd_pcd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *info)
+{
+  uint32_t priority;
+  char msg[BUFFERLEN];
+
+  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->jdd.epri)),"%u",&priority) != 1)
+    return;			/* Error in the entry */
+
+  drqm_request_job_priority_update(info->jobs[info->row].id,priority);
+
+  info->jobs[info->row].priority = priority;
+
+  snprintf(msg,BUFFERLEN-1,"%u", info->jobs[info->row].priority);
+  gtk_label_set_text (GTK_LABEL(info->jdd.lpri),msg);
+}
+
+
