@@ -176,6 +176,10 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
 		log_master (L_DEBUG,"Host block");
 		handle_r_r_jobblkhost (sfd,wdb,icomp,&request);
 		break;
+	case R_R_JOBDELBLKHOST:
+		log_master (L_DEBUG,"Host block delete");
+		handle_r_r_jobdelblkhost (sfd,wdb,icomp,&request);
+		break;
   default:
     log_master (L_WARNING,"Unknown request");
   }
@@ -1677,6 +1681,65 @@ int request_job_frame_info (uint32_t ijob, uint32_t frame, struct frame_info *fi
 	return 1;
 }
 
+int request_job_delete_blocked_host (uint32_t ijob, uint32_t icomp, int who)
+{
+	int sfd;
+	struct request req;
+
+	if ((sfd = connect_to_master ()) == -1) {
+		drerrno = DRE_NOCONNECT;
+		return 0;
+	}
+	
+	req.type = R_R_JOBDELBLKHOST;
+	req.data = ijob;
+
+  if (!send_request (sfd,&req,who)) {
+		drerrno = DRE_ERRORWRITING;
+		close (sfd);
+		return 0;
+	}
+
+	req.type = R_R_JOBDELBLKHOST  ;
+	req.data = icomp;
+  if (!send_request (sfd,&req,who)) {
+		drerrno = DRE_ERRORWRITING;
+		close (sfd);
+		return 0;
+	}
+
+	return 1;
+}
+
+int request_job_add_blocked_host (uint32_t ijob, uint32_t icomp, int who)
+{
+	int sfd;
+	struct request req;
+
+	if ((sfd = connect_to_master ()) == -1) {
+		drerrno = DRE_NOCONNECT;
+		return 0;
+	}
+	
+	req.type = R_R_JOBBLKHOST;
+	req.data = ijob;
+  if (!send_request (sfd,&req,who)) {
+		drerrno = DRE_ERRORWRITING;
+		close (sfd);
+		return 0;
+	}
+
+	req.type = R_R_JOBBLKHOST  ;
+	req.data = icomp;
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORWRITING;
+    close (sfd);
+    return 0;
+  }
+
+	return 1;
+}
+
 int request_job_frame_waiting (uint32_t ijob, uint32_t frame, int who)
 {
   /* On error returns 0, error otherwise drerrno is set to the error */
@@ -2003,6 +2066,69 @@ void handle_r_r_jobffini (int sfd,struct database *wdb,int icomp,struct request 
   log_master(L_DEBUG,"Exiting handle_r_r_jobffini");
 }
 
+void handle_r_r_jobdelblkhost (int sfd, struct database *wdb, int icomp, struct request *req)
+{
+	uint32_t ijob;
+	uint32_t ihost;
+	struct blocked_host *nbh,*obh = NULL,*tnbh;
+	int	nbhshmid;
+	int i;
+
+	log_master(L_DEBUG,"Entering handle_r_r_jobdelblkhost");
+
+	ijob = req->data;
+
+	if (!recv_request(sfd,req)) {
+		return;
+	}
+	ihost = req->data;
+
+	semaphore_lock (wdb->semid);
+
+	if (ihost >= wdb->job[ijob].nblocked) {
+		// ihost out of range
+		return;
+	}
+
+	// If we reach this point means that there are computers on the block list
+	if (wdb->job[ijob].nblocked > 1) { // There are more than one hosts on the list
+		if ((obh = attach_blocked_host_shared_memory (wdb->job[ijob].bhshmid)) == (void *)-1) {
+			return;
+		}
+		if ((nbhshmid = get_blocked_host_shared_memory (sizeof(struct blocked_host)*(wdb->job[ijob].nblocked-1))) == -1) {
+			return;
+		}
+		if ((nbh = attach_blocked_host_shared_memory (nbhshmid)) == (void *)-1) {
+			return;
+		}
+		tnbh = nbh;
+		for (i=0; i < wdb->job[ijob].nblocked; i++) {
+			if (i != ihost) {
+				memcpy (tnbh,obh,sizeof(struct blocked_host));
+				tnbh++;
+			}
+		}
+		// Once copied all but the removed host we can detach and remove the old shared memory
+		detach_blocked_host_shared_memory (obh);
+		detach_blocked_host_shared_memory (nbh);
+		if (shmctl (wdb->job[ijob].bhshmid,IPC_RMID,NULL) == -1) {
+	      log_master_job(&wdb->job[ijob],L_ERROR,
+												"job_delete: shmctl (job->bhshmid,IPC_RMID,NULL) [Removing blocked hosts shared memory]");
+		}
+		wdb->job[ijob].bhshmid = nbhshmid;
+	} else {
+		// nblocked must be 1
+		if (shmctl (wdb->job[ijob].bhshmid,IPC_RMID,NULL) == -1) {
+	      log_master_job(&wdb->job[ijob],L_ERROR,
+												"job_delete: shmctl (job->bhshmid,IPC_RMID,NULL) [Removing blocked hosts shared memory]");
+		}
+		wdb->job[ijob].nblocked = 0;
+	}
+	semaphore_release(wdb->semid);
+
+	log_master(L_DEBUG,"Exiting handle_r_r_jobdelblkhost");
+}
+
 void handle_r_r_jobblkhost (int sfd, struct database *wdb, int icomp, struct request *req)
 {
 	uint32_t ijob;
@@ -2057,7 +2183,8 @@ void handle_r_r_jobblkhost (int sfd, struct database *wdb, int icomp, struct req
 
 	if (wdb->job[ijob].nblocked) {
 		memcpy (nbh,obh,sizeof(struct blocked_host)*wdb->job[ijob].nblocked);
-	// Once copied we can remove the previous list
+		// Once copied we can remove the previous list
+		detach_blocked_host_shared_memory (obh);
 		if (shmctl (wdb->job[ijob].bhshmid,IPC_RMID,NULL) == -1) {
 	      log_master_job(&wdb->job[ijob],L_ERROR,
 												"job_delete: shmctl (job->bhshmid,IPC_RMID,NULL) [Removing blocked hosts shared memory]");
