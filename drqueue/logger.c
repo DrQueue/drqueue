@@ -1,10 +1,15 @@
-/* $Id: logger.c,v 1.6 2001/07/06 13:13:21 jorge Exp $ */
+/* $Id: logger.c,v 1.7 2001/07/20 15:27:33 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <time.h>
 
 #include "logger.h"
 #include "task.h"
@@ -27,7 +32,7 @@ void log_slave_task (struct task *task,int level,char *msg)
   buf[strlen(buf)-1] = '\0';
 
   f_log = log_slave_open_task (task);
-  fprintf (f_log,"%10s : %10s -> Job: %10s || Owner: %10s || Frame: %4i || %s: %s\n",buf,name,
+  fprintf (f_log,"%8s : %8s -> Job: %8s || Owner: %8s || Frame: %4i || %s: %s\n",buf,name,
 	   task->jobname,task->owner,task->frame,log_level_str(level),msg);
 
   fclose (f_log);
@@ -70,7 +75,7 @@ void log_slave_computer (int level, char *msg)
   buf[strlen(buf)-1] = '\0';
 
   f_log = log_slave_open_computer (name);
-  fprintf (f_log,"%10s : %10s -> %s: %s\n",buf,name,log_level_str(level),msg);
+  fprintf (f_log,"%8s : %8s -> %s: %s\n",buf,name,log_level_str(level),msg);
 
   fclose (f_log);
 }
@@ -107,7 +112,7 @@ void log_master_job (struct job *job, int level, char *msg)
   buf[strlen(buf)-1] = '\0';
 
   f_log = log_master_open ();
-  fprintf (f_log,"%10s : Job: %10s || Owner: %10s || %s: %s\n",buf,job->name,job->owner,log_level_str(level),msg);
+  fprintf (f_log,"%8s : Job: %8s || Owner: %8s || %s: %s\n",buf,job->name,job->owner,log_level_str(level),msg);
   fclose (f_log);
 }
 
@@ -122,7 +127,7 @@ void log_master_computer (struct computer *computer, int level, char *msg)
   buf[strlen(buf)-1] = '\0';
 
   f_log = log_master_open ();
-  fprintf (f_log,"%10s : Computer: %10s || %s: %s\n",buf,computer->hwinfo.name,log_level_str(level),msg);
+  fprintf (f_log,"%8s : Computer: %8s || %s: %s\n",buf,computer->hwinfo.name,log_level_str(level),msg);
   fclose (f_log);
 }
 
@@ -137,7 +142,7 @@ void log_master (int level,char *msg)
   buf[strlen(buf)-1] = '\0';
 
   f_log = log_master_open ();
-  fprintf (f_log,"%10s : %s: %s\n",buf,log_level_str(level),msg);
+  fprintf (f_log,"%8s : %s: %s\n",buf,log_level_str(level),msg);
   fclose (f_log);
 }
 
@@ -192,5 +197,39 @@ char *log_level_str (int level)
   return msg;
 }
 
+int log_dumptask_open (struct task *t)
+{
+  int lfd;
+  char filename[BUFFERLEN];
+  char dir[BUFFERLEN];
+  char *basedir;
+  char name[MAXNAMELEN];
+  time_t tm;
 
+  if ((basedir = getenv("DRQUEUE_ROOT")) == NULL) {
+    fprintf (stderr,"Environment variable DRQUEUE_ROOT not set. Aborting...\n");
+    exit (1);
+  }
 
+  snprintf(dir,BUFFERLEN-1,"%s/logs/%s",basedir,t->jobname);
+  snprintf(filename,BUFFERLEN-1,"%s/%s.%04i",dir,t->jobname,t->frame);
+  if ((lfd = open (filename, O_CREAT|O_APPEND|O_RDWR, 0664)) == -1) {
+    if (errno == ENOENT) {
+      /* If its because the directory does not exist we try creating it first */
+      if (mkdir (dir,0775) == -1) {
+	log_slave_task (t,L_ERROR,"Couldn't create directory for task logs");
+	return -1;
+      }
+      if ((lfd = open (filename, O_CREAT|O_APPEND|O_RDWR, 0664)) == -1) {
+	log_slave_task (t,L_ERROR,"Couldn't file for task log");
+	return -1;
+      }
+    }
+  }
+  
+  time (&tm);
+  gethostname (name,MAXNAMELEN-1);
+  sprintf(filename,"Log started at %sComputer: %s\n\n",ctime(&tm),name);
+  write(lfd,filename,strlen(filename));
+  return lfd;
+}
