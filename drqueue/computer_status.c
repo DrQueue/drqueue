@@ -1,7 +1,8 @@
-/* $Id: computer_status.c,v 1.8 2001/07/23 10:29:23 jorge Exp $ */
+/* $Id: computer_status.c,v 1.9 2001/09/03 10:33:12 jorge Exp $ */
 
 #include <stdio.h>
 #include <signal.h>
+#include <ctype.h>
 
 #ifdef __LINUX
 #include <stdint.h>
@@ -81,7 +82,33 @@ void get_loadavg (uint16_t *loadavg)
   uint32_t tla[3];
 
   SGT_COOKIE_SET_KSYM (&cookie,KSYM_AVENRUN);
-  sysget (SGT_KSYM,(char *)tla,sizeof(uint32_t)*3,SGT_READ,&cookie);
+  if (sysget (SGT_KSYM,(char *)tla,sizeof(uint32_t)*3,SGT_READ,&cookie) == -1) {
+    FILE *uptime;
+    char buf[BUFFERLEN];
+    char *fd;			/* first digit */
+    float f1,f2,f3;
+    
+    if ((uptime = popen ("/usr/bsd/uptime","r")) == NULL) {
+      fprintf (stderr,"Warning: Problems executing '/usr/bsd/uptime'\n");
+      tla[0] = tla[1] = tla[2] = 0;
+    }
+
+    while (fgets (buf,BUFFERLEN,uptime) != NULL) {
+      if ((fd = strstr(buf,"average:")) != NULL) {
+	while (!isdigit(*fd))
+	  fd++;
+	if (sscanf (fd,"%f, %f, %f",&f1,&f2,&f3) != 3) {
+	  log_slave_computer (L_WARNING,"Problems on get_loadavg\n");
+	  f1 = f2 = f3 = 0;
+	}
+	tla[0] = f1 * 1000;
+	tla[1] = f2 * 1000;
+	tla[2] = f3 * 1000;
+      }
+    }
+
+    pclose (uptime);
+  }
   loadavg[0] = (uint16_t) (tla[0]/10);
   loadavg[1] = (uint16_t) (tla[1]/10);
   loadavg[2] = (uint16_t) (tla[2]/10);
