@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.34 2001/08/31 14:06:23 jorge Exp $ */
+/* $Id: request.c,v 1.35 2001/08/31 14:07:58 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -703,7 +703,6 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
     log_master (L_WARNING,"frame finished of non-existing job");
     return;
   }
-  log_master (L_DEBUG,"Job index correct");
 
   /* Once we have the task struct we need to update the information */
   /* on the job struct */
