@@ -35,7 +35,6 @@ NOTES:
 DRQMAN
 ------
 
-* Watching the frame with fchech while rendering.
 * Autorefresh configurable
 * Watching the output logs as tail -f does.
 * Names of computers instead of id numbers.
