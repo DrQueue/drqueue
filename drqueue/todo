@@ -21,3 +21,4 @@ NOTES:
 -----
 
 * The frame number in the task struct is _different_ from iframe in the job handling stuff
+* I should use a dynamically allocated structure for the computers' tasks
