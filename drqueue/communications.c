@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.46 2001/11/22 14:43:02 jorge Exp $ */
+/* $Id: communications.c,v 1.47 2002/02/15 11:51:00 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -88,6 +88,7 @@ int connect_to_master (void)
 {
   /* To be used by a slave ! */
   /* Connects to the master and returns the socket fd */
+  /* or -1 in case of error */
   int sfd;
   char *master;
   struct sockaddr_in addr;
@@ -698,6 +699,9 @@ int recv_computer_limits (int sfd, struct computer_limits *cl)
   cl->nmaxcpus = ntohs (cl->nmaxcpus);
   cl->maxfreeloadcpu = ntohs (cl->maxfreeloadcpu);
 
+  /* Autoenable stuff */
+  cl->autoenable.last = ntohl (cl->autoenable.last);
+
   return 1;
 }
 
@@ -713,6 +717,8 @@ int send_computer_limits (int sfd, struct computer_limits *cl)
   /* Prepare for sending */
   bswapped.nmaxcpus = htons (bswapped.nmaxcpus);
   bswapped.maxfreeloadcpu = htons (bswapped.maxfreeloadcpu);
+  /* Autoenable stuff */
+  bswapped.autoenable.last = htonl (bswapped.autoenable.last);
 
   bleft = sizeof (bswapped);
   while ((w = write(sfd,buf,bleft)) < bleft) {
@@ -820,4 +826,68 @@ int read_16b (int sfd, void *data)
   return 1;
 }
 
+int send_autoenable (int sfd, struct autoenable *ae)
+{
+  struct autoenable bswapped;
+  int w;
+  int bleft;
+  void *buf = &bswapped;
+  
+  /* We make a copy coz we need to modify the values */
+  memcpy (buf,ae,sizeof(bswapped));
+  /* Prepare for sending */
+  bswapped.last = htonl (bswapped.last);
 
+  bleft = sizeof (bswapped);
+  while ((w = write(sfd,buf,bleft)) < bleft) {
+    bleft -= w;
+    buf += w;
+    if ((w == -1) || ((w == 0) && (bleft > 0))) {
+      /* if w is error or if no more bytes are written but they _SHOULD_ be */
+      drerrno = DRE_ERRORWRITING;
+      return 0;
+    }
+#ifdef COMM_REPORT
+    bsent += w;
+#endif
+  }
+#ifdef COMM_REPORT
+  bsent += w;
+#endif
+
+  return 1;
+}
+
+int recv_autoenable (int sfd, struct autoenable *ae)
+{
+  int r;
+  int bleft;
+  void *buf;
+
+  buf = ae;			/* So when copying to buf we're really copying into job */
+  bleft = sizeof (struct autoenable);
+  while ((r = read (sfd,buf,bleft)) < bleft) {
+    bleft -= r;
+    buf += r;
+
+    if ((r == -1) || ((r == 0) && (bleft > 0))) {
+      /* if w is error or if no more bytes are read but they _SHOULD_ be */
+      drerrno = DRE_ERRORREADING;
+      return 0;
+    }
+    bleft -= r;
+    buf += r;
+#ifdef COMM_REPORT
+    brecv += r;
+#endif
+  }
+#ifdef COMM_REPORT
+  brecv += r;
+#endif
+
+  /* Now we should have the autoenable info with the values in */
+  /* network byte order, so we put them in host byte order */
+  ae->last = ntohl (ae->last);
+
+  return 1;
+}

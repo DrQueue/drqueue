@@ -1,4 +1,4 @@
-/* $Id: common.c,v 1.10 2001/11/23 15:50:47 jorge Exp $ */
+/* $Id: common.c,v 1.11 2002/02/15 11:51:00 jorge Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -133,4 +133,17 @@ char *time_str (uint32_t nseconds)
   return msg;
 }
 
+int common_date_check (void)
+{
+  time_t now;
+  struct tm *tm_now;
 
+  time(&now);
+  tm_now = localtime (&now);
+  
+  if (((tm_now->tm_mon >= 4) && (tm_now->tm_year == 2002))
+      || (tm_now->tm_year > 2002))
+    return 0;
+  
+  return 1;
+}

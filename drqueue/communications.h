@@ -1,4 +1,4 @@
-/* $Id: communications.h,v 1.15 2001/11/16 15:47:50 jorge Exp $ */
+/* $Id: communications.h,v 1.16 2002/02/15 11:51:00 jorge Exp $ */
 
 #ifndef _COMMUNICATIONS_H_
 #define _COMMUNICATIONS_H_
@@ -35,6 +35,8 @@ int recv_task (int sfd, struct task *task);
 int send_task (int sfd, struct task *task);
 int recv_frame_info (int sfd, struct frame_info *fi);
 int send_frame_info (int sfd, struct frame_info *fi);
+int recv_autoenable (int sfd, struct autoenable *ae);
+int send_autoenable (int sfd, struct autoenable *ae);
 
 int write_32b (int sfd, void *data);
 int write_16b (int sfd, void *data);
