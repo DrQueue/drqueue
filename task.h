@@ -1,4 +1,4 @@
-/* $Id: task.h,v 1.17 2001/10/02 12:40:47 jorge Exp $ */
+/* $Id: task.h,v 1.18 2002/06/20 15:28:48 jorge Exp $ */
 
 #ifndef _TASK_H_
 #define _TASK_H_
@@ -36,6 +36,8 @@ struct task {
   char jobcmd[MAXCMDLEN];	/* string that will be executed */
   char owner[MAXNAMELEN];	/* owner of the job */
   uint32_t frame;		/* current _real_ frame number (!!not index!!) */
+  uint32_t frame_start,frame_end;
+  uint32_t frame_step;
   int32_t pid;			/* pid */
   int32_t exitstatus;		/* exit status */
   uint8_t status;		/* status */

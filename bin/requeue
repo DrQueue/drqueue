@@ -1,11 +1,11 @@
 #!/bin/sh
 #
-# $Id: requeue,v 1.2 2002/06/18 12:27:46 jorge Exp $
+# $Id: requeue,v 1.3 2002/06/20 15:28:48 jorge Exp $
 #
 
 if [ `uname -s` == "Linux" ]; then
-	$DRQUEUE_ROOT/bin/requeue.linux
+	$DRQUEUE_ROOT/bin/requeue.linux $*
 else
 	echo "Irix"
-	$DRQUEUE_ROOT/bin/requeue.irix
+	$DRQUEUE_ROOT/bin/requeue.irix $*
 fi

@@ -1,11 +1,11 @@
 #!/bin/sh
 #
-# $Id: master,v 1.2 2002/06/18 12:27:46 jorge Exp $
+# $Id: master,v 1.3 2002/06/20 15:28:48 jorge Exp $
 #
 
 if [ `uname -s` == "Linux" ]; then
-	$DRQUEUE_ROOT/bin/master.linux
+	$DRQUEUE_ROOT/bin/master.linux $*
 else
 	echo "Irix"
-	$DRQUEUE_ROOT/bin/master.irix
+	$DRQUEUE_ROOT/bin/master.irix $*
 fi
