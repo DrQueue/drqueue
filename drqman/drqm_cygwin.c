@@ -31,13 +31,15 @@
 #define OPENFILENAME_SIZE_VERSION_400 sizeof(OPENFILENAME)
 #endif
 
+#include "drqm_common.h"
+#include <sys/cygwin.h>
 
 void cygwin_shell_execute(char *verb, char *path)
 {
   SHELLEXECUTEINFO ShExecInfo;
 
         ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-        ShExecInfo.fMask = NULL;
+        ShExecInfo.fMask = 0;
         ShExecInfo.hwnd = NULL;
         ShExecInfo.lpVerb = verb;
         ShExecInfo.lpFile = path;
@@ -97,4 +99,25 @@ char *cygwin_file_dialog(char *fname, char *pat, char *message, char save)
   return (NULL);
 }
 
+char *conv_to_posix_path(char *win32_path)
+{
+  char *posix_path;
+  
+  if ((posix_path = malloc(MAXCMDLEN)) == NULL)
+	return (NULL);
+  cygwin_conv_to_posix_path(win32_path, posix_path);
+  return (posix_path);
+}
+
+char *conv_to_win32_path(char *posix_path)
+{
+  char *win32_path;
+  
+  if ((win32_path = malloc(MAXCMDLEN)) == NULL)
+	return(NULL);
+  cygwin_conv_to_win32_path(posix_path, win32_path);
+  return (win32_path);
+}
+
 #endif // __CYGWIN
+

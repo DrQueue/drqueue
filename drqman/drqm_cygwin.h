@@ -26,6 +26,8 @@
 void cygwin_shell_execute(char *verb, char *path);
 char *cygwin_file_dialog(char *fname, char *pat, char *message, char save);
 char *cygwin_dir_dialog(char *message);
+//char *conv_to_posix_path(char *win32_path);
+//char *conv_to_win32_path(char *posix_path);
 
 #endif /* _DRQM_CYGWIN_H */
 
