@@ -1,4 +1,4 @@
-/* $Id: communications.h,v 1.11 2001/09/20 10:52:55 jorge Exp $ */
+/* $Id: communications.h,v 1.12 2001/10/02 12:37:10 jorge Exp $ */
 
 #ifndef _COMMUNICATIONS_H_
 #define _COMMUNICATIONS_H_
@@ -25,8 +25,8 @@ int  send_computer (int sfd, struct computer *computer,int who);
 int  recv_computer (int sfd, struct computer *computer,int who);
 void recv_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo,int who);
 void send_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo,int who);
-void recv_computer_status (int sfd, struct computer_status *status,int who);
-void send_computer_status (int sfd, struct computer_status *status,int who);
+int  recv_computer_status (int sfd, struct computer_status *status);
+int  send_computer_status (int sfd, struct computer_status *status);
 int  recv_computer_limits (int sfd, struct computer_limits *cl);
 int  send_computer_limits (int sfd, struct computer_limits *cl);
 void recv_job (int sfd, struct job *job,int who);
