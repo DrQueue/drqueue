@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.14 2001/07/12 13:10:53 jorge Exp $
+# $Id: Makefile,v 1.15 2001/07/17 10:03:42 jorge Exp $
 
 CC = gcc
 OBJS_LIBDRQUEUE = computer_info.o computer_status.o task.o logger.o communications.o \
@@ -36,4 +36,4 @@ clean:
 	rm -f *.o *~ libdrqueue.a slave master sendjob TAGS
 
 tags:
-	etags *.[ch]
+	etags *.[ch] drqman/*.[ch]
