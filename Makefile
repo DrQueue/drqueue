@@ -137,6 +137,7 @@ ifeq ($(systype),IRIX)
 	install -root $(PWD) -m 0755 -f /bin -src jobfinfo jobfinfo.$(systype)
 	install -root $(PWD) -m 0755 -f /bin -src blockhost blockhost.$(systype)
 	install -root $(PWD) -m 0755 -f /bin -src cjob cjob.$(systype)
+	install -root $(PWD) -m 0755 -f /bin -src sendjob sendjob.$(systype)
 	test -x ./drqman/drqman && install -root $(PWD) -m 0755 -f /bin -src drqman/drqman drqman.$(systype) || test 1
 else
 	install -d -m 0755 bin
@@ -146,6 +147,7 @@ else
 	install -m 0755 -p ./jobfinfo bin/jobfinfo.$(systype)
 	install -m 0755 -p ./blockhost bin/blockhost.$(systype)
 	install -m 0755 -p ./cjob bin/cjob.$(systype)
+	install -m 0755 -p ./sendjob bin/sendjob.$(systype)
 	test -x ./drqman/drqman && install -m 0755 -p ./drqman/drqman bin/drqman.$(systype) || exit 0
 endif
 
