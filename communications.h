@@ -1,4 +1,4 @@
-/* $Id: communications.h,v 1.5 2001/07/19 09:03:20 jorge Exp $ */
+/* $Id: communications.h,v 1.6 2001/08/06 10:29:26 jorge Exp $ */
 
 #ifndef _COMMUNICATIONS_H_
 #define _COMMUNICATIONS_H_
@@ -11,9 +11,10 @@ int get_socket (short port);
 int accept_socket (int sfd,struct database *wdb,int *index);
 int accept_socket_slave (int sfd);
 int connect_to_master (void);
+int connect_to_slave (char *slave);
 
 void recv_request (int sfd, struct request *request,int who);
-void send_request (int sfd, struct request *request,int who);
+int  send_request (int sfd, struct request *request,int who);
 void send_computer (int sfd, struct computer *computer,int who);
 void recv_computer (int sfd, struct computer *computer,int who);
 void recv_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo,int who);
