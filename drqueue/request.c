@@ -178,6 +178,10 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
 		log_master (L_DEBUG,"Blocked hosts list");
 		handle_r_r_joblstblkhost (sfd,wdb,icomp,&request);
 		break;
+	case R_R_JOBLMS:
+		log_master (L_DEBUG,"Request job limit memory set");
+		handle_r_r_joblms (sfd,wdb,icomp,&request);
+		break;
   default:
     log_master (L_WARNING,"Unknown request");
   }
@@ -2960,6 +2964,73 @@ void handle_r_r_jobsesup (int sfd,struct database *wdb,int icomp,struct request 
   detach_frame_shared_memory (ofi);
 
   log_master (L_DEBUG,"Exiting handle_r_r_jobsesup");
+}
+
+int request_job_limits_memory_set (uint32_t ijob, uint32_t memory, int who)
+{
+  /* On error returns 0, error otherwise drerrno is set to the error */
+  /* This function request the master to set a new limit for job's nmaxcpus */
+  int sfd;
+  struct request req;
+
+  if ((sfd = connect_to_master ()) == -1) {
+    drerrno = DRE_NOCONNECT;
+    return 0;
+  }
+
+  req.type = R_R_JOBLMS;
+  req.data = ijob;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORWRITING;
+    close (sfd);
+    return 0;
+  }
+
+  req.type = R_R_JOBLMS;
+  req.data = memory;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORWRITING;
+    close (sfd);
+    return 0;
+  }
+
+  close (sfd);
+  return 1;
+}
+
+void handle_r_r_joblms (int sfd,struct database *wdb,int icomp,struct request *req)
+{
+  /* The master handles this type of packages */
+  /* This function is called unlocked */
+  /* This function is called by the master */
+  uint32_t ijob;
+  uint32_t memory;
+
+  log_master(L_DEBUG,"Entering handle_r_r_joblms");
+
+  ijob = req->data;
+
+  /* Second packet */
+  if (!recv_request (sfd,req)) {
+    return;
+  }
+
+  memory = req->data;
+  
+  log_master(L_DEBUG,"Requested job (ijob:%u) limits memory set to: %u",ijob,memory);
+
+  semaphore_lock(wdb->semid);
+
+  if (!job_index_correct_master(wdb,ijob))
+    return;
+
+  wdb->job[ijob].limits.memory = memory;
+
+  semaphore_release (wdb->semid);
+
+  log_master(L_DEBUG,"Exiting handle_r_r_joblms");
 }
 
 int request_job_limits_nmaxcpus_set (uint32_t ijob, uint16_t nmaxcpus, int who)
