@@ -1,9 +1,9 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.4 2001/07/17 15:10:12 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.5 2001/07/19 09:07:10 jorge Exp $
  */
 
-#ifndef _DRQM_JOBS_H
-#define _DRQM_JOBS_H
+#ifndef _DRQM_JOBS_H_
+#define _DRQM_JOBS_H_
 
 #include <gtk/gtk.h>
 #include "libdrqueue.h"
@@ -17,10 +17,6 @@ struct info_drqm_jobs {
 };
 
 void CreateJobsPage (GtkWidget *);
-GtkWidget *CreateJobsList(struct info_drqm_jobs *info);
-GtkWidget *CreateClist (GtkWidget *window);
-GtkWidget *CreateButtonRefresh (struct info_drqm_jobs *info);
-void PressedButtonRefresh (GtkWidget *b, struct info_drqm_jobs *info);
 void drqm_update_joblist (struct info_drqm_jobs *info);
 
 #endif /* _DRQM_JOBS_H */
