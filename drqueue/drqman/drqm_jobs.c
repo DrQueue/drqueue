@@ -1274,7 +1274,7 @@ GtkWidget *dnj_flags_widgets (struct drqm_jobs_info *info)
 	hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start (GTK_BOX(vbox),hbox,TRUE,FALSE,2);
 
-  cbutton = gtk_check_button_new_with_label ("Job depends on another");
+  cbutton = gtk_check_button_new_with_label ("Job depends on (jobid):");
   gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
   gtk_tooltips_set_tip(tooltips,cbutton,"When set DrQueue won't render any frame until it's related is finished",NULL);
   g_signal_connect (G_OBJECT(cbutton),"toggled",G_CALLBACK(dnj_flags_cbjobdepend_toggled),info);
