@@ -119,11 +119,11 @@ void usage (void)
     fprintf (stderr,"Usage: blockhost [-vh] -[s|k|d|c|s] -j <job_id>\n"
 						 "Valid options:\n"
 						 "\t-s will do a soft stop\n"
-						 "\t-k 	will do a hard stop\n"
+						 "\t-k will do a hard stop\n"
 						 "\t-d will de	lete the job (be careful, no confirmation asked)\n"
-						 "\t-c will continue a	 previously stopped job\n"
+						 "\t-c will continue a previously stopped job\n"
 						 "\t-t show the status of the job\n"
-						 "\t-j 	<job_id>\n"
+						 "\t-j <job_id>\n"
 						 "\t-v print v	ersion\n"
 						 "\t-h print this help	\n");
 }
