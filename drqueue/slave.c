@@ -399,7 +399,6 @@ void slave_listening_process (struct slave_database *sdb)
   #define SLAVENCHILDREN 20 
   
   printf ("Waiting for connections...\n");
-  sdb->comp->listening = 0;
   signal(SIGCHLD,SIG_IGN); // FIXME: sigaction
   while (1)
   {
@@ -414,11 +413,9 @@ void slave_listening_process (struct slave_database *sdb)
           log_slave_computer (L_ERROR,"Unable to open socket");
           kill(0,SIGINT);
         }
-        sdb->comp->listening = 1;
         if ((csfd = accept_socket_slave (sfd)) != -1)
         {
           close (sfd);
-          sdb->comp->listening = 0;
           alarm (MAXTIMECONNECTION);
           handle_request_slave (csfd,sdb);
           close (csfd);
@@ -426,7 +423,6 @@ void slave_listening_process (struct slave_database *sdb)
         }
         else
 	{
-          sdb->comp->listening = 0;
 	  close (sfd);
 	  exit (0);
 	}
