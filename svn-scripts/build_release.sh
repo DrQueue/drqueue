@@ -22,8 +22,7 @@ fi
 VERSION=$1
 
 awk '/VERSION/ { print $1,$2," \"SED_VERSION_CHANGE_ME\""; next; }; /.*/ { print }' common.h > common.h.tmp
-sed -e "s/SED_VERSION_CHANGE_ME/$VERSION/g" common.h.tmp > common.h.mod
-mv -f common.h.mod common.h
+sed -e "s/SED_VERSION_CHANGE_ME/$VERSION/g" common.h.tmp > common.h
 rm -f common.h.tmp
 
 read -p "You are about to commit changes to common.h . Are you sure ? (y/n) " SURE
