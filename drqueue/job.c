@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.11 2001/07/24 14:15:30 jorge Exp $ */
+/* $Id: job.c,v 1.12 2001/07/31 13:10:12 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -237,6 +237,7 @@ void *attach_frame_shared_memory (int shmid)
 
   if ((rv = shmat (shmid,0,0)) == (void *)-1) {
     log_master (L_ERROR,"attach_frame_shared_memory: shmat");
+    perror ("shmat");
     exit (1);
   }
 
@@ -278,10 +279,11 @@ void job_update_info (struct database *wdb,uint32_t ijob)
   total = job_nframes(&wdb->job[ijob]);
 
   fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
+  wdb->job[ijob].frame_info = fi;
   for (i=0;i<total;i++) {
+    job_check_frame_status (wdb,ijob,i);
     switch (fi[i].status) {
     case FS_ASSIGNED:
-    case FS_LOADING:
       nprocs++;
       break;
     case FS_WAITING:
@@ -305,13 +307,14 @@ void job_update_info (struct database *wdb,uint32_t ijob)
   switch (wdb->job[ijob].status) {
   case JOBSTATUS_WAITING:
   case JOBSTATUS_ACTIVE:
-    if (fleft == 0) {
-      wdb->job[ijob].status = JOBSTATUS_FINISHED;
-    }
     if (nprocs > 0) {
       wdb->job[ijob].status = JOBSTATUS_ACTIVE;
     } else {
-      wdb->job[ijob].status = JOBSTATUS_WAITING;
+      if (fleft == 0) {
+	wdb->job[ijob].status = JOBSTATUS_FINISHED;
+      } else {
+	wdb->job[ijob].status = JOBSTATUS_WAITING;
+      }
     }
     break;
   case JOBSTATUS_DELETING:
@@ -321,3 +324,60 @@ void job_update_info (struct database *wdb,uint32_t ijob)
   semaphore_release(wdb->semid);
 }
 
+void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe)
+{
+  /* This function is called by the master, unlocked */
+  /* This function check if the running or loading (in frame_info at job) process is actually */
+  /* runnning or not (in task at computer) */
+  /* This function is called with the frame info memory ATTACHED <------- */
+  t_framestatus fistatus;
+  int running = 1;
+  uint16_t icomp,itask;
+  t_taskstatus tstatus;
+
+  semaphore_lock(wdb->semid);
+  
+  fistatus = wdb->job[ijob].frame_info[iframe].status;
+  icomp = wdb->job[ijob].frame_info[iframe].icomp;
+  itask = wdb->job[ijob].frame_info[iframe].itask;
+
+  tstatus = wdb->computer[icomp].status.task[itask].status;
+
+  if (fistatus == FS_ASSIGNED) {
+    /* check if the task status is running */
+    if ((tstatus != TASKSTATUS_RUNNING) && (tstatus != TASKSTATUS_LOADING))
+      running = 0;
+    /* check if the job is the same in index */
+    if (wdb->computer[icomp].status.task[itask].jobindex != ijob)
+      running = 0;
+    /* check if the job is the same in name */
+    if (strcmp (wdb->computer[icomp].status.task[itask].jobname,wdb->job[ijob].name) != 0)
+      running = 0;
+    if (!running) {
+      log_master_job (&wdb->job[ijob],L_WARNING,"Task registered as running not running. Requeued");
+      wdb->job[ijob].frame_info[iframe].status = FS_WAITING;
+    }
+  }
+
+  semaphore_release(wdb->semid);
+
+}
+
+int priority_job_compare (const void *a,const void *b)
+{
+  struct tpol *apt,*bpt;
+  
+  apt = (struct tpol *)a;
+  bpt = (struct tpol *)b;
+
+  if (apt->pri > bpt->pri)
+    return 1;
+  else if (apt->pri < bpt->pri)
+    return -1;
+  else if (apt->index > bpt->index)
+    return 1;
+  else if (apt->index < bpt->index)
+    return -1;
+
+  return 0;
+}
