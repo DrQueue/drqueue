@@ -35,8 +35,10 @@
 #include "drqm_cygwin.h"
 #endif
 
-static void dnj_koj_frame_lightwave_renderdir_search (GtkWidget *button, struct drqmj_koji_lightwave *info);
-static void dnj_koj_frame_lightwave_renderdir_set (GtkWidget *button, struct drqmj_koji_lightwave *info);
+static void dnj_koj_frame_lightwave_projectdir_search (GtkWidget *button, struct drqmj_koji_lightwave *info);
+static void dnj_koj_frame_lightwave_projectdir_set (GtkWidget *button, struct drqmj_koji_lightwave *info);
+static void dnj_koj_frame_lightwave_configdir_search (GtkWidget *button, struct drqmj_koji_lightwave *info);
+static void dnj_koj_frame_lightwave_configdir_set (GtkWidget *button, struct drqmj_koji_lightwave *info);
 static void dnj_koj_frame_lightwave_script_search (GtkWidget *button, struct drqmj_koji_lightwave *info);
 static void dnj_koj_frame_lightwave_script_set (GtkWidget *button, struct drqmj_koji_lightwave *info);
 static void dnj_koj_frame_lightwave_scene_search (GtkWidget *button, struct drqmj_koji_lightwave *info);
@@ -84,31 +86,36 @@ GtkWidget *dnj_koj_frame_lightwave (struct drqm_jobs_info *info)
   /* Project directory */
   hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
-  label = gtk_label_new ("Render directory:");
+  label = gtk_label_new ("Project directory:");
   gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
   hbox2 = gtk_hbox_new (FALSE,0);
   gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
   entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
-  gtk_tooltips_set_tip(tooltips,entry,"Directory where the images should be stored",NULL);
-  info->dnj.koji_lightwave.erenderdir = entry;
+  gtk_tooltips_set_tip(tooltips,entry,"Directory where the project is stored",NULL);
+  info->dnj.koji_lightwave.eprojectdir = entry;
   gtk_box_pack_start (GTK_BOX(hbox2),entry,TRUE,TRUE,2);
   button = gtk_button_new_with_label ("Search");
-  gtk_tooltips_set_tip(tooltips,button,"File selector for the lightwave render directory",NULL);
+  gtk_tooltips_set_tip(tooltips,button,"File selector for the lightwave project directory",NULL);
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
   g_signal_connect (G_OBJECT(button),"clicked",
-										G_CALLBACK(dnj_koj_frame_lightwave_renderdir_search),&info->dnj.koji_lightwave);
+										G_CALLBACK(dnj_koj_frame_lightwave_projectdir_search),&info->dnj.koji_lightwave);
 
-  /* Output Image file name */
+  /* Config directory */
   hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
-  label = gtk_label_new ("Output image filename:");
-  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  label = gtk_label_new ("Config directory:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  hbox2 = gtk_hbox_new (FALSE,0);
+  gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
   entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
-  gtk_tooltips_set_tip(tooltips,entry,"File name of the output image without extension. "
-		       "The extension will be taken from the scene. "
-		       "If no image name is specified it will be taken from the scene",NULL);
-  info->dnj.koji_lightwave.eimage = entry;
-  gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
+  gtk_tooltips_set_tip(tooltips,entry,"Directory where the configuration is stored",NULL);
+  info->dnj.koji_lightwave.econfigdir = entry;
+  gtk_box_pack_start (GTK_BOX(hbox2),entry,TRUE,TRUE,2);
+  button = gtk_button_new_with_label ("Search");
+  gtk_tooltips_set_tip(tooltips,button,"File selector for the lightwave config directory",NULL);
+  gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
+  g_signal_connect (G_OBJECT(button),"clicked",
+										G_CALLBACK(dnj_koj_frame_lightwave_configdir_search),&info->dnj.koji_lightwave);
 
   /* File Owner */
   hbox = gtk_hbox_new (TRUE,2);
@@ -188,8 +195,8 @@ GtkWidget *jdd_koj_lightwave_widgets (struct drqm_jobs_info *info)
   GtkWidget *label;
   GtkAttachOptions options = GTK_EXPAND | GTK_SHRINK | GTK_FILL ;
   char *labels[] = { "Scene:", info->jdd.job.koji.lightwave.scene,
-		     "Render directory:", info->jdd.job.koji.lightwave.renderdir,
-		     "Output image:", info->jdd.job.koji.lightwave.image,
+		     "Project directory:", info->jdd.job.koji.lightwave.projectdir,
+		     "Config directory:", info->jdd.job.koji.lightwave.configdir,
 		     "View command:", info->jdd.job.koji.lightwave.viewcmd,
 		     NULL };
   char **cur;
@@ -217,22 +224,22 @@ GtkWidget *jdd_koj_lightwave_widgets (struct drqm_jobs_info *info)
   return table;
 }
 
-static void dnj_koj_frame_lightwave_renderdir_search (GtkWidget *button, struct drqmj_koji_lightwave *info)
+static void dnj_koj_frame_lightwave_projectdir_search (GtkWidget *button, struct drqmj_koji_lightwave *info)
 {
   GtkWidget *dialog;
   char dir[BUFFERLEN];
 
 #ifndef __CYGWIN
-  dialog = gtk_file_selection_new ("Please select the output directory");
-  info->fsrenderdir = dialog;
+  dialog = gtk_file_selection_new ("Please select the project directory");
+  info->fsprojectdir = dialog;
 
-  if (strlen(gtk_entry_get_text(GTK_ENTRY(info->erenderdir)))) {
-    strncpy (dir,gtk_entry_get_text(GTK_ENTRY(info->erenderdir)),BUFFERLEN-1);
+  if (strlen(gtk_entry_get_text(GTK_ENTRY(info->eprojectdir)))) {
+    strncpy (dir,gtk_entry_get_text(GTK_ENTRY(info->eprojectdir)),BUFFERLEN-1);
     gtk_file_selection_set_filename (GTK_FILE_SELECTION(dialog),strcat(dir,"/"));
   }
 
   gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
-		      "clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_lightwave_renderdir_set), info);
+		      "clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_lightwave_projectdir_set), info);
   gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
 			     "clicked", GTK_SIGNAL_FUNC (gtk_widget_destroy),
 			     (gpointer) dialog);
@@ -242,26 +249,73 @@ static void dnj_koj_frame_lightwave_renderdir_search (GtkWidget *button, struct 
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 #else
-  gtk_entry_set_text (GTK_ENTRY(info->erenderdir), cygwin_dir_dialog(NULL));
+  gtk_entry_set_text (GTK_ENTRY(info->eprojectdir), cygwin_dir_dialog(NULL));
 #endif
 
 }
 
 
-static void dnj_koj_frame_lightwave_renderdir_set (GtkWidget *button, struct drqmj_koji_lightwave *info)
+static void dnj_koj_frame_lightwave_projectdir_set (GtkWidget *button, struct drqmj_koji_lightwave *info)
 {
   struct stat s;
   char buf[BUFFERLEN];
   char *p;
   
-  strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsrenderdir)),BUFFERLEN-1);
+  strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsprojectdir)),BUFFERLEN-1);
   stat(buf, &s);
   if (!S_ISDIR(s.st_mode)) {
     p = strrchr(buf,'/');
     if (p)
       *p = 0;
   }
-  gtk_entry_set_text (GTK_ENTRY(info->erenderdir),buf);
+  gtk_entry_set_text (GTK_ENTRY(info->eprojectdir),buf);
+}
+
+static void dnj_koj_frame_lightwave_configdir_search (GtkWidget *button, struct drqmj_koji_lightwave *info)
+{
+  GtkWidget *dialog;
+  char dir[BUFFERLEN];
+
+#ifndef __CYGWIN
+  dialog = gtk_file_selection_new ("Please select the config directory");
+  info->fsconfigdir = dialog;
+
+  if (strlen(gtk_entry_get_text(GTK_ENTRY(info->econfigdir)))) {
+    strncpy (dir,gtk_entry_get_text(GTK_ENTRY(info->econfigdir)),BUFFERLEN-1);
+    gtk_file_selection_set_filename (GTK_FILE_SELECTION(dialog),strcat(dir,"/"));
+  }
+
+  gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
+		      "clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_lightwave_configdir_set), info);
+  gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
+			     "clicked", GTK_SIGNAL_FUNC (gtk_widget_destroy),
+			     (gpointer) dialog);
+  gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->cancel_button),
+			     "clicked", GTK_SIGNAL_FUNC (gtk_widget_destroy),
+			     (gpointer) dialog);
+  gtk_widget_show (dialog);
+  gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
+#else
+  gtk_entry_set_text (GTK_ENTRY(info->econfigdir), cygwin_dir_dialog(NULL));
+#endif
+
+}
+
+
+static void dnj_koj_frame_lightwave_configdir_set (GtkWidget *button, struct drqmj_koji_lightwave *info)
+{
+  struct stat s;
+  char buf[BUFFERLEN];
+  char *p;
+  
+  strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsconfigdir)),BUFFERLEN-1);
+  stat(buf, &s);
+  if (!S_ISDIR(s.st_mode)) {
+    p = strrchr(buf,'/');
+    if (p)
+      *p = 0;
+  }
+  gtk_entry_set_text (GTK_ENTRY(info->econfigdir),buf);
 }
 
 static void dnj_koj_frame_lightwave_scene_search (GtkWidget *button, struct drqmj_koji_lightwave *info)
@@ -310,9 +364,9 @@ static void dnj_koj_frame_lightwave_bcreate_pressed (GtkWidget *button, struct d
   struct lightwavesgi lightwavesgi;	/* Maya script generator info */
   char *file;
 
-  strncpy (lightwavesgi.renderdir,gtk_entry_get_text(GTK_ENTRY(info->koji_lightwave.erenderdir)),BUFFERLEN-1);
+  strncpy (lightwavesgi.projectdir,gtk_entry_get_text(GTK_ENTRY(info->koji_lightwave.eprojectdir)),BUFFERLEN-1);
+  strncpy (lightwavesgi.configdir,gtk_entry_get_text(GTK_ENTRY(info->koji_lightwave.econfigdir)),BUFFERLEN-1);
   strncpy (lightwavesgi.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_lightwave.escene)),BUFFERLEN-1);
-  strncpy (lightwavesgi.image,gtk_entry_get_text(GTK_ENTRY(info->koji_lightwave.eimage)),BUFFERLEN-1);
   strncpy (lightwavesgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->koji_lightwave.escript)),BUFFERLEN-1);
   strncpy (lightwavesgi.file_owner,gtk_entry_get_text(GTK_ENTRY(info->koji_lightwave.efile_owner)),BUFFERLEN-1);
   strncpy (lightwavesgi.camera,"",BUFFERLEN-1);

@@ -507,10 +507,10 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info)
 											 "Lightwave");
     gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_lightwave.escene),
 											 info->jobs[info->row].koji.lightwave.scene);
-    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_lightwave.erenderdir),
-											 info->jobs[info->row].koji.lightwave.renderdir);
-    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_lightwave.eimage),
-											 info->jobs[info->row].koji.lightwave.image);
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_lightwave.eprojectdir),
+											 info->jobs[info->row].koji.lightwave.projectdir);
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_lightwave.econfigdir),
+											 info->jobs[info->row].koji.lightwave.configdir);
     gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_lightwave.eviewcmd),
 											 info->jobs[info->row].koji.lightwave.viewcmd);
     break;
@@ -902,8 +902,8 @@ static int dnj_submit (struct drqmj_dnji *info)
     break;
   case KOJ_LIGHTWAVE:
     strncpy(job.koji.lightwave.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_lightwave.escene)),BUFFERLEN-1);
-    strncpy(job.koji.lightwave.renderdir,gtk_entry_get_text(GTK_ENTRY(info->koji_lightwave.erenderdir)),BUFFERLEN-1);
-    strncpy(job.koji.lightwave.image,gtk_entry_get_text(GTK_ENTRY(info->koji_lightwave.eimage)),BUFFERLEN-1);
+    strncpy(job.koji.lightwave.projectdir,gtk_entry_get_text(GTK_ENTRY(info->koji_lightwave.eprojectdir)),BUFFERLEN-1);
+    strncpy(job.koji.lightwave.configdir,gtk_entry_get_text(GTK_ENTRY(info->koji_lightwave.econfigdir)),BUFFERLEN-1);
     strncpy(job.koji.lightwave.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_lightwave.eviewcmd)),BUFFERLEN-1);
     break;
   }

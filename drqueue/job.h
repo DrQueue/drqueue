@@ -122,8 +122,8 @@ union koj_info {		/* Kind of job information */
 	} threedelight;
   struct koji_lightwave {
     char scene[BUFFERLEN];
-    char renderdir[BUFFERLEN];	/* Project directory for the images */
-    char image[BUFFERLEN];
+    char projectdir[BUFFERLEN];	/* Project directory */
+    char configdir[BUFFERLEN];	/* Config directory */
     char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
   } lightwave;
 };
