@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_computers.c,v 1.20 2001/10/11 10:32:50 jorge Exp $
+ * $Id: drqm_computers.c,v 1.21 2002/02/21 15:50:02 jorge Exp $
  */
 
 #include <stdlib.h>
@@ -310,6 +310,7 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
   button = gtk_button_new_with_label ("Change");
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
   gtk_signal_connect (GTK_OBJECT(button),"clicked",cdd_limits_nmaxcpus_bcp,info);
+  /* Limits maxload */
   hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start(GTK_BOX(vbox2),hbox,FALSE,FALSE,2);
   label = gtk_label_new ("Maximum load a cpu can have to be considered free:");
@@ -324,7 +325,20 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
   button = gtk_button_new_with_label ("Change");
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
   gtk_signal_connect (GTK_OBJECT(button),"clicked",cdd_limits_maxfreeloadcpu_bcp,info);
-
+  /* Limits autoenable */
+  hbox = gtk_hbox_new (FALSE,0);
+  gtk_box_pack_start (GTK_BOX(vbox2),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Autoenable time:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
+  hbox2 = gtk_hbox_new (FALSE,0);
+  gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
+  gtk_widget_show (hbox2);
+  label = gtk_label_new ("21:00");
+  gtk_box_pack_start (GTK_BOX(hbox2),label,TRUE,TRUE,2);
+  button = gtk_button_new_with_label ("Change");
+  gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
+/*    gtk_signal_connect (GTK_OBJECT(button),"clicked",cdd_limits_maxfreeloadcpu_bcp,info); */
 
   /* Clist with the task info */
   /* Frame */
