@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.14 2001/09/03 16:03:44 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.15 2001/09/04 16:00:04 jorge Exp $
  */
 
 #ifndef _DRQM_JOBS_H_
@@ -18,7 +18,7 @@ struct info_dnj {		/* dialog new job */
 };
 
 struct info_jdd {		/* job details dialog */
-  GtkWidget *dialog;
+  GtkWidget *dialog;		/* Main dialog */
   GtkWidget *lname;		/* label name */
   GtkWidget *lstatus;		/* label status */
   GtkWidget *lcmd;		/* label command */
@@ -41,6 +41,7 @@ struct info_msgd {		/* Maya script generator dialog */
   GtkWidget *eproject;		/* Entry project */
   GtkWidget *fsproject;		/* File selector for the project */
   GtkWidget *eimage;		/* Entry image name */
+  GtkWidget *escript;		/* Entry script location */
 };
 
 struct info_drqm_jobs {
