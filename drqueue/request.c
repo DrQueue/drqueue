@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.57 2001/10/05 15:50:30 jorge Exp $ */
+/* $Id: request.c,v 1.58 2001/10/08 12:32:55 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -13,6 +13,8 @@
 #include <string.h>
 #include <wait.h>
 #include <stdlib.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
 
 #include "request.h"
 #include "database.h"
@@ -795,6 +797,7 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
   /* on the job struct */
   if ((fi = attach_frame_shared_memory(wdb->job[task.ijob].fishmid)) == (struct frame_info *)-1) {
     /* We are locked */
+    printf ("Problematic fishmid: %i\n",wdb->job[task.ijob].fishmid);
     job_delete(&wdb->job[task.ijob]);
     semaphore_release(wdb->semid);
     log_master (L_ERROR,"Couldn't attach frame shared memory on r_r_taskfini. Deleting job.");
@@ -855,6 +858,8 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
   
   log_master (L_DEBUG,"Everything right. Calling job_update_info.");
   job_update_info(wdb,task.ijob);
+
+  log_master (L_DEBUG,"Exiting handle_r_r_taskfini");
 }
 
 void handle_r_r_listjobs (int sfd,struct database *wdb,int icomp)
@@ -2136,10 +2141,15 @@ void handle_r_r_jobsesup (int sfd,struct database *wdb,int icomp,struct request 
   /* This function is called unlocked */
   /* This function is called by the master */
   uint32_t ijob;
-  uint32_t frame_start,frame_end,frame_step;
-  uint32_t nframes;
+  uint32_t nnframes;		/* Number of frames for the new job */
+  uint32_t onframes;		/* Number of frames of the old job */
   struct job job;		/* Temporary job to calc nframes */
+  struct job ojob;		/* Temporary old ojb info */
   struct frame_info *nfi,*ofi;	/* new and old frame_info */
+  uint32_t i;
+  int nfishmid;			/* New identifier for new shared frame info struct */
+  int ofishmid;			/* Old identifier */
+  char cname[MAXNAMELEN];	/* Computer name */
 
   log_master (L_DEBUG,"Entering handle_r_r_jobsesup");
 
@@ -2154,9 +2164,10 @@ void handle_r_r_jobsesup (int sfd,struct database *wdb,int icomp,struct request 
     return;
   job.frame_step = req->data;
 
-  nframes = job_nframes (&job);
-
   semaphore_lock(wdb->semid);
+
+  nnframes = job_nframes (&job);
+  onframes = job_nframes (&wdb->job[ijob]);
 
   if (!job_index_correct_master (wdb,ijob)) {
     semaphore_release(wdb->semid);
@@ -2164,19 +2175,97 @@ void handle_r_r_jobsesup (int sfd,struct database *wdb,int icomp,struct request 
     return;
   }
 
-  if ((nfi = get_frame_shared_memory (nframes)) == -1) {
+  if ((nfishmid = get_frame_shared_memory (nnframes)) == -1) {
     semaphore_release(wdb->semid);
-    log_master (L_ERROR,"Could not allocate memory for new SES. Aborting operation.");
+    log_master (L_ERROR,"Could not allocate memory for new SES. Could not proceed updating SES.");
     return;
   }
 
-  if ((ofi = attach_frame_shared_memory(wdb->job[ijob].fishmid)) == -1) {
+  if ((nfi = attach_frame_shared_memory (nfishmid)) == (void *)-1) {
     semaphore_release(wdb->semid);
-    log_master (L_ERROR,"Could not attach frame shared memory.");
+    log_master (L_ERROR,"Could not attach new frame shared memory. Could not proceed updating SES.");
     return;
   }
 
+  if ((ofi = attach_frame_shared_memory(wdb->job[ijob].fishmid)) == (void *)-1) {
+    semaphore_release(wdb->semid);
+    log_master (L_ERROR,"Could not attach old frame shared memory. Could not proceed updating SES");
+    return;
+  }
+
+  /* We init the new frame info struct */
+  for (i=0;i<nnframes;i++) {
+    job_frame_info_init(&nfi[i]);
+  }
+
+  /* First we check the old frames that are inside the new range */
+  for (i=0;i<nnframes;i++) {
+    if (job_frame_number_correct(&wdb->job[ijob],
+				  job_frame_index_to_number(&job,i))) {
+      /* If the frame number of the new job was part of the old job */
+      /* then we must copy the contents of the frame info */
+
+      memcpy(&nfi[i],&ofi[job_frame_number_to_index(&wdb->job[ijob],
+						    job_frame_index_to_number(&job,i))],
+	     sizeof(struct frame_info));
+    }
+    /* The rest of frames are already initialized to WAITING */
+  }
+
+  /* We save the old job info for later use when killing frames */
+  /* The only information we need is for passing from frame number to index and viceversa */
+  /* so we only need SES info and also fishmid for deletion */
+  ojob.frame_start = wdb->job[ijob].frame_start;
+  ojob.frame_end = wdb->job[ijob].frame_end;
+  ojob.frame_step = wdb->job[ijob].frame_step;
+
+  /* Now everything can continue using the new frame info */
+  wdb->job[ijob].frame_start = job.frame_start;
+  wdb->job[ijob].frame_end = job.frame_end;
+  wdb->job[ijob].frame_step = job.frame_step;
+  
+  ofishmid = wdb->job[ijob].fishmid;
+  wdb->job[ijob].fishmid = nfishmid;
+
+  printf ("Nes fishmid: %i\n",wdb->job[ijob].fishmid);
+
+  detach_frame_shared_memory(nfi);
+
+  /* Everything should continue now. Killing old out of range frames does not need to be locked */
   semaphore_release(wdb->semid);
+
+  /* Now we check the old frames that are outside the new range */
+  /* Nobody should be accesing this information now except this process */
+  for (i=0;i<onframes;i++) {
+    if (!job_frame_number_correct(&job,
+				  job_frame_index_to_number(&ojob,i))) {
+      /* And we act accordingly to the status */
+      /* We kill the frames that are running and are not inside the range */
+      switch (ofi[i].status) {
+      case FS_WAITING:
+	break;
+      case FS_ASSIGNED:
+	semaphore_lock (wdb->semid);
+	if (computer_index_correct_master(wdb,ofi[i].icomp)) {
+	  strncpy(cname,wdb->computer[ofi[i].icomp].hwinfo.name,MAXNAMELEN-1);
+	}
+	semaphore_release (wdb->semid);
+	request_slave_killtask (cname,ofi[i].itask,MASTER);
+	break;
+      case FS_ERROR:
+      case FS_FINISHED:
+	break;
+      }
+    }
+  }
+
+  if (shmctl (ofishmid,IPC_RMID,NULL) == -1) {
+      /* We delete the old frame shared memory */
+/*        log_master_job(job,L_ERROR,"job_delete: shmctl (job->fishmid,IPC_RMID,NULL) [Removing frame shared memory]"); */
+  }
+
+  detach_frame_shared_memory (ofi);
 
   log_master (L_DEBUG,"Exiting handle_r_r_jobsesup");
 }
+
