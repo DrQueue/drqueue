@@ -751,6 +751,8 @@ void job_init_limits (struct job *job)
 int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp)
 {
   /* This function should return 0 in case the limits are not met for the computer */
+	int i;
+	struct blocked_host *bh;
   
   if (wdb->job[ijob].nprocs >= wdb->job[ijob].limits.nmaxcpus)
     return 0;
@@ -767,6 +769,16 @@ int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp)
 		return 0;
   if ((wdb->computer[icomp].hwinfo.os == OSF_FREEBSD) && !(wdb->job[ijob].limits.os_flags & OSF_FREEBSD))
 		return 0;
+
+	if (wdb->job[ijob].nblocked
+									&& ((bh = attach_blocked_host_shared_memory (wdb->job[ijob].bhshmid)) != -1))
+	{
+		for (i=0;i<wdb->job[ijob].nblocked;i++) {
+			if (strcmp(wdb->computer[icomp].hwinfo.name,bh[i].name) == 0) {
+				return 0;
+			}
+		}
+	}
 
   return 1;
 }

@@ -491,6 +491,7 @@ int recv_task (int sfd, struct task *task)
   /* Now we should have the task info with the values in */
   /* network byte order, so we put them in host byte order */
   task->ijob = ntohl (task->ijob);
+  task->icomp = ntohl (task->icomp);
   task->itask = ntohs (task->itask);
 
   task->frame = ntohl (task->frame);
@@ -513,6 +514,7 @@ int send_task (int sfd, struct task *task)
   memcpy (buf,task,sizeof(bswapped));
   /* Prepare for sending */
   bswapped.ijob = htonl (bswapped.ijob);
+  bswapped.icomp = htonl (bswapped.icomp);
   bswapped.itask = htons (bswapped.itask);
   bswapped.frame = htonl (bswapped.frame);
   bswapped.frame_start = htonl (bswapped.frame_start);

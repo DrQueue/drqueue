@@ -58,6 +58,7 @@ struct task {
   uint8_t used;
   char jobname[MAXNAMELEN];	/* jobname */
   uint32_t ijob;		/* index to the job in the global db */
+	uint32_t icomp;		// Index to the computer that renders this frame
   uint16_t itask;		/* index to the task in the computer !not in the global db! */
   char jobcmd[MAXCMDLEN];	/* string that will be executed */
   char owner[MAXNAMELEN];	/* owner of the job */

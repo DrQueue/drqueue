@@ -60,7 +60,7 @@ endif
 
 all: base drqman
 
-base: slave master requeue sendjob jobfinfo listjobs
+base: slave master requeue sendjob jobfinfo listjobs blockhost
 
 install: miniinstall $(systype)_install 
 
@@ -146,6 +146,7 @@ tags:
 
 clean:
 	rm -fR *.o *~ libdrqueue.a slave master sendjob requeue jobfinfo listjobs TAGS tmp/* logs/* db/* bin/*.$(systype)
+	rm -fR blockhost
 	$(MAKE) -C drqman clean
 
 #actual object make targets
@@ -162,6 +163,9 @@ jobfinfo.o: jobfinfo.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 listjobs: listjobs.o libdrqueue.a
 listjobs.o: listjobs.c
+	$(CC) -c $(CFLAGS) -o $@ $<
+blockhost: blockhost.o libdrqueue.a
+blockhost.o: blockhost.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 sendjob: sendjob.o libdrqueue.a
