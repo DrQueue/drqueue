@@ -1,4 +1,4 @@
-/* $Id: task.c,v 1.10 2002/03/01 09:36:51 jorge Exp $ */
+/* $Id: task.c,v 1.11 2002/06/20 15:28:48 jorge Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -83,6 +83,10 @@ void task_environment_set (struct task *task)
   static char padframe[BUFFERLEN];
   static char frame[BUFFERLEN];
   static char owner[BUFFERLEN];
+  static char frame_start[BUFFERLEN];
+  static char frame_end[BUFFERLEN];
+  static char frame_step[BUFFERLEN];
+  static char ijob[BUFFERLEN];
 
   /* Padded frame number */
   snprintf (padframe,BUFFERLEN,"PADFRAME=%04i",task->frame);
@@ -93,6 +97,17 @@ void task_environment_set (struct task *task)
   /* Owner of the job */
   snprintf (owner,BUFFERLEN-1,"OWNER=%s",task->owner);
   putenv (owner);
+  /* Start, end and step frame numbers */
+  snprintf (frame_start,BUFFERLEN-1,"STARTFRAME=%i",task->frame_start);
+  putenv (frame_start);
+  snprintf (frame_end,BUFFERLEN-1,"ENDFRAME=%i",task->frame_end);
+  putenv (frame_end);
+  snprintf (frame_step,BUFFERLEN-1,"STEPFRAME=%i",task->frame_step);
+  putenv (frame_step);
+
+  /* Job Index */
+  snprintf (ijob,BUFFERLEN-1,"JOBID=%i",task->ijob);
+  putenv (ijob);
 
   /* OS */
 #ifdef __LINUX

@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.55 2002/06/17 16:27:29 jorge Exp $ */
+/* $Id: job.c,v 1.56 2002/06/20 15:28:48 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -608,6 +608,9 @@ void job_environment_set (struct job *job, uint32_t iframe)
   static char renderdir[BUFFERLEN];
   static char image[BUFFERLEN];
   static char owner[BUFFERLEN];
+  static char startframe[BUFFERLEN];
+  static char endframe[BUFFERLEN];
+  static char stepframe[BUFFERLEN];
 
   frame = job_frame_index_to_number (job,iframe);
 
@@ -617,6 +620,15 @@ void job_environment_set (struct job *job, uint32_t iframe)
   /* Frame number */
   snprintf (s_frame,BUFFERLEN-1,"FRAME=%i",frame);
   putenv (s_frame);
+  /* Start and end frame numbers */
+  snprintf (startframe,BUFFERLEN-1,"STARTFRAME=%i",job->frame_start);
+  putenv (startframe);
+  snprintf (endframe,BUFFERLEN-1,"ENDFRAME=%i",job->frame_end);
+  putenv (endframe);
+  /* Step frames */
+  snprintf (stepframe,BUFFERLEN-1,"STEPFRAME=%i",job->frame_step);
+  putenv (stepframe);
+
   /* Owner of the job */
   snprintf (owner,BUFFERLEN-1,"OWNER=%s",job->owner);
   putenv (owner);
@@ -709,6 +721,9 @@ char *job_koj_string (struct job *job)
     break;
   case KOJ_MAYA:
     msg = "Maya";
+    break;
+  case KOJ_MAYABLOCK:
+    msg = "Maya Block";
     break;
   default:
     msg = "DEFAULT (ERROR)";
