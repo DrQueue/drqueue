@@ -91,7 +91,6 @@ int main (int argc,char *argv[])
 	// Before sending the limits we have to set the pools
 	computer_pool_set_from_environment (&sdb.comp->limits);
 	computer_pool_list (&sdb.comp->limits);
-	//computer_pool_add(&sdb.comp->limits,"Default2");
   update_computer_limits(&sdb.comp->limits); /* Does not need to be locked because at this point */
 																/* because there is only one process running. The rest of the time */
 																/* either we call it locked or we make a copy of the limits while locked */
