@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.55 2001/10/02 14:36:03 jorge Exp $ */
+/* $Id: request.c,v 1.56 2001/10/04 08:19:25 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -230,11 +230,12 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
   return index;
 }
 
-void update_computer_status (struct computer *computer)
+void update_computer_status (struct slave_database *sdb)
 {
   /* The slave calls this function to update the information about */
   /* his own status on the master */
   struct request req;
+  struct computer_status status;
   int sfd;
 
   if ((sfd = connect_to_master ()) == -1) {
@@ -255,7 +256,10 @@ void update_computer_status (struct computer *computer)
   if (req.type == R_A_UCSTATUS) {
     switch (req.data) {
     case RERR_NOERROR:
-      send_computer_status (sfd,&computer->status);
+      semaphore_lock(sdb->semid);
+      memcpy(&status,&sdb->comp->status,sizeof(status));
+      semaphore_release(sdb->semid);
+      send_computer_status (sfd,&status);
       break;
     case RERR_NOREGIS:
       log_slave_computer (L_ERROR,"Computer not registered");
