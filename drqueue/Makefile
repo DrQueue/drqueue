@@ -56,7 +56,7 @@ else
 	   CFLAGS = -DCOMM_REPORT -Wall -I. -D__CYGWIN -g -O2 
      CPPFLAGS = -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__CYGWIN -g -O2
 	   MAKE = make
-	   UIFLAGS += #-e _mainCRTStartup -mwindows contrib/windows/Resources/drqueue.res 
+	   UIFLAGS += -e _mainCRTStartup -mwindows contrib/windows/Resources/drqueue.res 
  	  else
  $(error Cannot make DrQueue -- systype "$(systype)" is unknown)
 	  endif
