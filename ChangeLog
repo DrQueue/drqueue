@@ -1,3 +1,23 @@
+2004-10-23 16:44:33  Rev 895    jorge
+
+	* common.h:
+	  New version number on common.h: 0.51.8
+
+2004-10-23 14:08:57  Rev 894    jorge
+
+	* sendjob.cpp blockhost.c requeue.c jobfinfo.c cjob.c:
+	  Bugfixes and now cjob can retrieve the status of a job.
+
+2004-10-23 11:45:26  Rev 893    jorge
+
+	* Revision:
+	  New Revision commited by build_package.sh
+
+2004-10-23 11:45:06  Rev 891    jorge
+
+	* ChangeLog:
+	  Changelog commited by build_package.sh
+
 2004-10-23 11:44:47  Rev 890    jorge
 
 	* common.h:
