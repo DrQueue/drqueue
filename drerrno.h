@@ -1,4 +1,4 @@
-/* $Id: drerrno.h,v 1.6 2001/09/02 14:17:20 jorge Exp $ */
+/* $Id: drerrno.h,v 1.7 2001/09/04 16:05:40 jorge Exp $ */
 
 #ifndef _DRERRNO_H_
 #define _DRERRNO_H_
@@ -17,6 +17,8 @@ extern int drerrno;		/* global errno */
 #define DRE_NOTREGISTERED   9	/* Not registered */
 #define DRE_NOENVMASTER     10	/* Environment variable for master not set */
 #define DRE_NOENVROOT       11	/* Environment variable for root not set */
+#define DRE_COULDNOTCREATE  12	/* Could not create the file or directory */
+#define DRE_NOTCOMPLETE     13	/* Information not complete */
 
 char *drerrno_str (void);
 
