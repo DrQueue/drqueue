@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.13 2001/08/27 15:16:24 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.14 2001/08/27 22:10:04 jorge Exp $
  */
 
 #include <string.h>
@@ -674,6 +674,17 @@ static GtkWidget *JobDetailsDialog (struct info_drqm_jobs *info)
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
   info->djd.lname = label;
 
+  /* Status */
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Status:");
+  gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  label = gtk_label_new (NULL);
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  info->djd.lstatus = label;
+
+
   /* Cmd of the job */
   hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
@@ -750,6 +761,34 @@ static GtkWidget *JobDetailsDialog (struct info_drqm_jobs *info)
     return NULL;
   }
 
+  /* Buttons */
+  /* Stop */
+  hbox = gtk_hbutton_box_new ();
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,5);
+  button = gtk_button_new_with_label ("Stop");
+  gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
+  gtk_signal_connect (GTK_OBJECT(button),"clicked",
+		      StopJob,info);
+  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(djd_update),info);
+  /* Hard Stop */
+  button = gtk_button_new_with_label ("Hard Stop");
+  gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
+  gtk_signal_connect (GTK_OBJECT(button),"clicked",
+		      GTK_SIGNAL_FUNC(HStopJob),info);
+  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(djd_update),info);
+  /* Continue */
+  button = gtk_button_new_with_label ("Continue");
+  gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
+  gtk_signal_connect (GTK_OBJECT(button),"clicked",
+		      GTK_SIGNAL_FUNC(ContinueJob),info);
+  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(djd_update),info);
+  /* Delete */
+  button = gtk_button_new_with_label ("Delete");
+  gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
+  gtk_signal_connect (GTK_OBJECT(button),"clicked",
+		      GTK_SIGNAL_FUNC(DeleteJob),info);
+  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(djd_update),info);
+
   /* Button Refresh */
   button = gtk_button_new_with_label ("Refresh");
   gtk_container_border_width (GTK_CONTAINER(button),5);
@@ -803,7 +842,12 @@ static int djd_update (GtkWidget *w, struct info_drqm_jobs *info)
   int i;
 
   if (!request_job_xfer(info->ijob,&info->jobs[info->ijob],CLIENT)) {
-    fprintf (stderr,"Error request job xfer: %s\n",drerrno_str());
+    if (drerrno == DRE_NOTREGISTERED) {
+/*        gtk_widget_destroy (info->djd.dialog); */
+      gtk_signal_emit_by_name (GTK_OBJECT(info->djd.dialog),"destroy");
+    } else {
+      fprintf (stderr,"Error request job xfer: %s\n",drerrno_str());
+    }
     return 0;
   }
 
@@ -826,7 +870,8 @@ static int djd_update (GtkWidget *w, struct info_drqm_jobs *info)
 
   gtk_label_set_text (GTK_LABEL(info->djd.lname),info->jobs[info->ijob].name);
   gtk_label_set_text (GTK_LABEL(info->djd.lcmd),info->jobs[info->ijob].cmd);
-
+  gtk_label_set_text (GTK_LABEL(info->djd.lstatus),job_status_string(info->jobs[info->ijob].status));
+  
   snprintf(msg,BUFFERLEN-1,"From %i to %i every %i",
 	   info->jobs[info->ijob].frame_start,
 	   info->jobs[info->ijob].frame_end,
