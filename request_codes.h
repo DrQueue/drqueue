@@ -60,5 +60,7 @@
 #define RS_R_SETMAXFREELOADCPU  3 /* Request to set limits maxfreeloadcpu */
 #define RS_R_SETAUTOENABLE      4 /* Request to set autoenable info */
 #define RS_R_JOBAVAILABLE				5	/* Request indicates master has a job available */
+#define RS_R_LIMITSPOOLADD			6 // Add pool
+#define RS_R_LIMITSPOOLREMOVE		7 // Remove pool
 
 #endif /* _REQUEST_CODES_H_ */

@@ -56,8 +56,10 @@ static void cdd_limits_autoenable_bcp (GtkWidget *button, struct drqm_computers_
 static GtkWidget *autoenable_change_dialog (struct drqm_computers_info *info);
 static void aecd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info);
 // pool
-static void cdd_limits_pool_bcp (GtkWidget *bp, struct drqm_computers_info *info);
+static void cdd_limits_pool_bcp (GtkWidget *bclicked, struct drqm_computers_info *info);
 static void cdd_limits_pool_refresh_pool_list (GtkWidget *bclicked, struct drqm_computers_info *info);
+static void cdd_limits_pool_add_clicked (GtkWidget *bclicked, struct drqm_computers_info *info);
+static void cdd_limits_pool_remove_clicked (GtkWidget *bclicked, struct drqm_computers_info *info);
 /* kill task */
 static void KillTask (GtkWidget *menu_item, struct drqm_computers_info *info);
 static void dtk_bok_pressed (GtkWidget *button,struct drqm_computers_info *info);
@@ -782,7 +784,7 @@ static gint PopupMenuTasks (GtkWidget *clist, GdkEvent *event, struct drqm_compu
   return FALSE;
 }
 
-void cdd_limits_pool_bcp (GtkWidget *bp, struct drqm_computers_info *info)
+void cdd_limits_pool_bcp (GtkWidget *bclicked, struct drqm_computers_info *info)
 {
   /* Computer Details Dialog Limits pool Button Change Pressed */
 	GtkWidget *dialog;
@@ -840,9 +842,11 @@ void cdd_limits_pool_bcp (GtkWidget *bp, struct drqm_computers_info *info)
 	// Add
 	button = gtk_button_new_with_label ("Add");
 	gtk_box_pack_end(GTK_BOX(GTK_DIALOG(dialog)->action_area),button,TRUE,TRUE,2);
+	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(cdd_limits_pool_add_clicked),info);
 	// Remove
 	button = gtk_button_new_with_label ("Remove");
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->action_area),button,TRUE,TRUE,2);
+	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(cdd_limits_pool_remove_clicked),info);
 	
 	cdd_limits_pool_refresh_pool_list (button,info);
 
@@ -850,6 +854,31 @@ void cdd_limits_pool_bcp (GtkWidget *bp, struct drqm_computers_info *info)
 
 	gtk_grab_add (dialog);
 }
+
+void cdd_limits_pool_add_clicked (GtkWidget *bclicked, struct drqm_computers_info *info)
+{
+	drqm_request_slave_limits_pool_add (info->computers[info->row].hwinfo.name,
+																			(char *)gtk_entry_get_text(GTK_ENTRY(info->cdd.limits.epool)));
+	cdd_limits_pool_refresh_pool_list (bclicked,info);
+}
+
+void cdd_limits_pool_remove_clicked (GtkWidget *bclicked, struct drqm_computers_info *info)
+{
+	GtkTreeSelection *selection = NULL;
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+
+	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(info->cdd.limits.pool_view));
+
+	if (gtk_tree_selection_get_selected (selection,&model,&iter)) {
+		char *buf;
+
+		gtk_tree_model_get (GTK_TREE_MODEL(model),&iter,CDD_POOL_COL_NAME,&buf,-1);
+		drqm_request_slave_limits_pool_remove(info->computers[info->row].hwinfo.name,buf);
+		cdd_limits_pool_refresh_pool_list (bclicked,info);
+	}
+}
+
 
 void cdd_limits_pool_refresh_pool_list (GtkWidget *bclicked, struct drqm_computers_info *info)
 {

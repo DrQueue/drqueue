@@ -296,7 +296,6 @@ int computer_pool_add (struct computer_limits *cl, char *pool)
 	if (cl->npools && 
 			((opool = computer_pool_attach_shared_memory(cl->poolshmid)) == (void *) -1))
 	{
-		drerrno = DRE_ATTACHSHMEM;
 		return 0;
 	}
 	
@@ -328,6 +327,51 @@ int computer_pool_add (struct computer_limits *cl, char *pool)
 
 void computer_pool_remove (struct computer_limits *cl, char *pool)
 {
+	struct pool *opool = (void*)-1;
+	struct pool *npool;
+	int npoolshmid;
+	int i,j;
+
+	if (!computer_pool_exists (cl,pool)) {
+		// It is not on the list
+		return;
+	}
+	
+	if (!cl->npools)
+		return;
+
+	if (cl->npools && 
+			((opool = computer_pool_attach_shared_memory(cl->poolshmid)) == (void *) -1))
+	{
+		return;
+	}
+	
+	if ((npoolshmid = computer_pool_get_shared_memory(sizeof(struct pool)*(cl->npools-1))) == -1) {
+		return;
+	}
+
+	if ((npool = computer_pool_attach_shared_memory(npoolshmid)) == (void *) -1) {
+		return;
+	}
+	
+	for (i=0,j=0;i<cl->npools;i++) {
+		if (strncmp(opool[i].name,pool,strlen(pool)+1) == 0) {
+			continue;
+		}
+		memcpy(&npool[j],&opool[i],sizeof(struct pool));
+		j++;
+	}
+
+	computer_pool_detach_shared_memory (opool);
+	if (shmctl (cl->poolshmid,IPC_RMID,NULL) == -1) {
+		drerrno = DRE_RMSHMEM;
+		return;
+	}
+
+	cl->poolshmid = npoolshmid;
+	cl->npools--;
+
+	return;
 }
 
 void computer_pool_list (struct computer_limits *cl)

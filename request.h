@@ -129,6 +129,8 @@ int request_slave_killtask (char *slave,uint16_t itask,int who);
 int request_slave_limits_nmaxcpus_set (char *slave, uint32_t nmaxcpus, int who);
 int request_slave_limits_maxfreeloadcpu_set (char *slave, uint32_t maxfreeloadcpu, int who);
 int request_slave_limits_autoenable_set (char *slave, uint32_t h, uint32_t m, unsigned char flags, int who);
+int request_slave_limits_pool_add (char *slave, char *pool, int who);
+int request_slave_limits_pool_remove (char *slave, char *pool, int who);
 int request_slave_job_available (char *slave, int who);
 void request_all_slaves_job_available (struct database *wdb);
 
@@ -137,6 +139,8 @@ void handle_rs_r_killtask (int sfd,struct slave_database *sdb,struct request *re
 void handle_rs_r_setnmaxcpus (int sfd,struct slave_database *sdb,struct request *req);
 void handle_rs_r_setmaxfreeloadcpu (int sfd,struct slave_database *sdb,struct request *req);
 void handle_rs_r_setautoenable (int sfd,struct slave_database *sdb,struct request *req);
+void handle_rs_r_limitspooladd (int sfd,struct slave_database *sdb,struct request *req);
+void handle_rs_r_limitspoolremove (int sfd,struct slave_database *sdb,struct request *req);
 
 #ifdef __CPLUSPLUS
 }

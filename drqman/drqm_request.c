@@ -251,3 +251,13 @@ void drqm_request_job_priority_update (uint32_t jobid, uint32_t priority)
 {
   request_job_priority_update (jobid,priority,CLIENT);
 }
+
+void drqm_request_slave_limits_pool_add (char *slave,char *pool)
+{
+	request_slave_limits_pool_add (slave,pool,CLIENT);
+}
+
+void drqm_request_slave_limits_pool_remove (char *slave,char *pool)
+{
+	request_slave_limits_pool_remove (slave,pool,CLIENT);
+}

@@ -7,7 +7,6 @@ TO DO:
 * Renice options
 * STEPFRAME included in all .sg files
 * sendjob accepting XML
-* Slave pools. 0.60
 
 BUGS:
 ----
