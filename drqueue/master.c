@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.28 2001/09/19 09:35:10 jorge Exp $ */
+/* $Id: master.c,v 1.29 2001/09/20 10:52:56 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -20,6 +20,10 @@
 struct database *wdb;		/* whole database */
 int icomp;			/* index to accepted computer, local to every child */
 
+#ifdef COMM_REPORT
+time_t tstart;			/* Time at wich the master has started running */
+#endif
+
 int main (int argc, char *argv[])
 {
   int sfd;			/* socket file descriptor */
@@ -29,6 +33,10 @@ int main (int argc, char *argv[])
   struct sockaddr_in addr;	/* Address of the remote host */
   pid_t child;
 
+#ifdef COMM_REPORT
+  bsent = brecv = 0;
+  time(&tstart);
+#endif
 
   master_get_options (&argc,&argv,&force);
 
@@ -65,6 +73,10 @@ int main (int argc, char *argv[])
   while (1) {
     if ((csfd = accept_socket (sfd,wdb,&icomp,&addr)) != -1) {
       if ((child = fork()) == 0) {
+#ifdef COMM_REPORT
+	long int bsentb = bsent; /* Bytes sent before */
+	long int brecvb = brecv; /* Bytes received before */
+#endif
 	/* Create a connection handler */
 	fflush(stderr);
 	set_signal_handlers_child_conn_handler ();
@@ -72,6 +84,12 @@ int main (int argc, char *argv[])
 	set_alarm ();
 	handle_request_master (csfd,wdb,icomp,&addr);
 	close (csfd);
+#ifdef COMM_REPORT
+	semaphore_lock(wdb->semid);
+	wdb->bsent += bsent - bsentb;
+	wdb->brecv += brecv - brecvb;
+	semaphore_release(wdb->semid);
+#endif
 	exit (0);
       } else if (child != -1) {
 	close (csfd);
@@ -247,12 +265,26 @@ void clean_out (int signal, siginfo_t *info, void *data)
   pid_t child_pid;
   int i;
   struct sigaction ignore;
+#ifdef COMM_REPORT
+  time_t tstop;			/* Time at wich the master stops running */
+  time_t ttotal;		/* Total time */
+#endif
 
   /* Ignore new int signals that could arrive during clean up */
   ignore.sa_handler = SIG_IGN;
   sigemptyset (&ignore.sa_mask);
   ignore.sa_flags = 0;
   sigaction (SIGINT, &ignore, NULL);
+
+#ifdef COMM_REPORT
+  time(&tstop);
+  ttotal = tstop - tstart;
+  printf ("Report of communications:\n");
+  printf ("Kbytes sent:\t\t%li\tBytes:\t%li\n",wdb->bsent/1024,wdb->bsent);
+  printf ("Kbytes recv:\t\t%li\tBytes:\t%li\n",wdb->brecv/1024,wdb->brecv);
+  printf ("Kbytes sent/second:\t%f\n",(float)(wdb->bsent/1024)/ttotal);
+  printf ("Kbytes recv/second:\t%f\n",(float)(wdb->brecv/1024)/ttotal);
+#endif
 
   kill(0,SIGINT);		/* Kill all the children (Wow, I don't really want to do that...) */
   while ((child_pid = wait (&rc)) != -1) {
@@ -272,6 +304,7 @@ void clean_out (int signal, siginfo_t *info, void *data)
   }
 
   fprintf (stderr,"PID,Signal that caused death: %i,%i\n",(int)getpid(),signal);
+
 
   exit (1);
 }

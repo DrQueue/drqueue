@@ -1,4 +1,4 @@
-/* $Id: database.c,v 1.3 2001/06/05 12:19:45 jorge Exp $ */
+/* $Id: database.c,v 1.4 2001/09/20 10:51:32 jorge Exp $ */
 
 #include "database.h"
 #include "computer.h"
@@ -14,4 +14,9 @@ void database_init (struct database *wdb)
   for (i=0;i<MAXCOMPUTERS;i++) {
     computer_init (&wdb->computer[i]);
   }
+
+#ifdef COMM_REPORT
+  wdb->bsent = wdb->brecv = 0;
+#endif
+
 }
