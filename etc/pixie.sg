@@ -23,11 +23,11 @@
 
 # Begin Script
 
-echo "rndr -f $FRAME $RIBFILE"
+echo "rndr -f $DRQUEUE_FRAME $RIBFILE"
 
-set RIBFILE_TMP = "$RIBFILE"'-'$FRAME
+set RIBFILE_TMP = "$RIBFILE"'-'$DRQUEUE_FRAME
 
-awk '{if ($1 == "FrameBegin" && $2 == frame) x=1}; {if (x==1) print}; {if ($1 == "FrameEnd") x=0}' frame=$FRAME "$RIBFILE" > "$RIBFILE_TMP"
+awk '{if ($1 == "FrameBegin" && $2 == frame) x=1}; {if (x==1) print}; {if ($1 == "FrameEnd") x=0}' frame=$DRQUEUE_FRAME "$RIBFILE" > "$RIBFILE_TMP"
 
 rndr "$RIBFILE_TMP"
 
