@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.8 2001/07/17 15:06:01 jorge Exp $ */
+/* $Id: job.h,v 1.9 2001/07/20 08:27:34 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -22,7 +22,8 @@ typedef enum {
   JOBSTATUS_ACTIVE,		/* Already dispatched */
   JOBSTATUS_STOPPED,		/* Stopped, waiting for current frames to finish */
   JOBSTATUS_HSTOPPED,		/* Hard stopped, killing current frames */
-  JOBSTATUS_DELETING		/* Deleting implies a hard stop and then removing */
+  JOBSTATUS_DELETING,		/* Deleting implies a hard stop and then removing */
+  JOBSTATUS_FINISHED
 } t_jobstatus;
 
 typedef enum {
@@ -50,6 +51,7 @@ struct job {
   char cmd[MAXCMDLEN];
   char owner[MAXNAMELEN];
   uint32_t frame_start,frame_end; /* first and last frames */
+  uint32_t fleft,fdone,ffailed;	/* Frames left,done and failed */
   time_t avg_frame_time;	/* Average frame time */
   time_t est_finish_time;	/* Estimated finish time */
   struct frame_info *frame_info; /* Status of every frame */
