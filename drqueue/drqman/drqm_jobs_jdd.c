@@ -120,6 +120,7 @@ static GtkWidget *CreateBlockedHostsClist (void)
 
 	clist = gtk_clist_new_with_titles (2,titles);
   gtk_clist_column_titles_show(GTK_CLIST(clist));
+  gtk_clist_set_selection_mode(GTK_CLIST(clist),GTK_SELECTION_EXTENDED);
 
 	gtk_widget_show(clist);
 
@@ -728,7 +729,6 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(swin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_container_add (GTK_CONTAINER(frame),swin);
   clist = CreateBlockedHostsClist ();
-  gtk_clist_set_selection_mode(GTK_CLIST(clist),GTK_SELECTION_EXTENDED);
   gtk_container_add (GTK_CONTAINER(swin),clist);
   newinfo->jdd.clist_bh = clist;
 	newinfo->jdd.menu_bh = CreateMenuBlockedHosts (newinfo);
