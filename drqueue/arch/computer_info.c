@@ -1,4 +1,4 @@
-/* $Id: computer_info.c,v 1.3 2001/04/26 14:20:55 jorge Exp $ */
+/* $Id: computer_info.c,v 1.4 2001/04/26 16:06:22 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -21,6 +21,8 @@ void get_hwinfo (struct computer_hwinfo *hwinfo)
   hwinfo->numproc = get_numproc();
   hwinfo->speedindex = get_speedindex (hwinfo);
 }
+
+#ifdef __LINUX			/* __LINUX */
 
 t_proctype get_proctype (void)
 {
@@ -110,6 +112,10 @@ int get_numproc (void)
 
   return numproc;
 }
+
+#else
+#error You need to define the OS, or OS defined not supported
+#endif
 
 int get_speedindex (struct computer_hwinfo *hwinfo)
 {
