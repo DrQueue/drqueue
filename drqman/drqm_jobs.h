@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.16 2001/09/04 23:27:51 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.17 2001/09/06 10:42:41 jorge Exp $
  */
 
 #ifndef _DRQM_JOBS_H_
@@ -41,6 +41,7 @@ struct drqmj_msgdi {		/* Maya script generator dialog */
   GtkWidget *eproject;		/* Entry project */
   GtkWidget *fsproject;		/* File selector for the project */
   GtkWidget *eimage;		/* Entry image name */
+  GtkWidget *fsscript;		/* File selectot for the script directory */
   GtkWidget *escript;		/* Entry script location */
 };
 
