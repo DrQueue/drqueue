@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.27 2002/06/17 16:27:34 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.28 2002/08/02 17:40:21 jorge Exp $
  */
 
 #ifndef _DRQM_JOBS_H_
@@ -38,6 +38,7 @@ struct drqmj_koji_maya {
   GtkWidget *eviewcmd;
   GtkWidget *escript;		/* Entry script location */
   GtkWidget *fsscript;		/* File selectot for the script directory */
+  GtkWidget *efile_owner;	/* Owner of the rendered files */
 };
 
 struct drqmj_dnji {		/* dialog new job */
