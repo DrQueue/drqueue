@@ -101,7 +101,7 @@ namespace ServicesController
 			// 
 			// Drqueue_off
 			// 
-			this.Drqueue_off.Icon = ((System.Drawing.Icon)(resources.GetObject("Drqueue_off.Icon")));
+			this.Drqueue_off.Icon = ((System.Drawing.Icon)(resources.GetObject("drqueue_off.Icon")));
 			this.Drqueue_off.Text = "";
 			// 
 			// button_slave
@@ -143,14 +143,14 @@ namespace ServicesController
 			// 
 			// DrQueue
 			// 
-			this.DrQueue.Icon = ((System.Drawing.Icon)(resources.GetObject("DrQueue.Icon")));
+			this.DrQueue.Icon = ((System.Drawing.Icon)(resources.GetObject("drqueue.Icon")));
 			this.DrQueue.Text = "DrQeue";
 			this.DrQueue.Visible = true;
 			this.DrQueue.MouseDown += new System.Windows.Forms.MouseEventHandler(this.NotifyIcon1MouseDown);
 			// 
 			// Drqueue_on
 			// 
-			this.Drqueue_on.Icon = ((System.Drawing.Icon)(resources.GetObject("Drqueue_on.Icon")));
+			this.Drqueue_on.Icon = ((System.Drawing.Icon)(resources.GetObject("drqueue_on.Icon")));
 			this.Drqueue_on.Text = "";
 			// 
 			// button1
