@@ -373,7 +373,20 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info)
   gtk_entry_set_text(GTK_ENTRY(info->dnj.limits.enmaxcpuscomputer),buf);
 
   /* Flags */
-  /* TODO: copy flags */
+	if (info->jobs[info->row].flags & JF_MAILNOTIFY) {
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.flags.cbmailnotify),TRUE);
+		if (info->jobs[info->row].flags & JF_MNDIFEMAIL) {
+			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.flags.cbdifemail),TRUE);
+			gtk_entry_set_text (GTK_ENTRY(info->dnj.flags.edifemail),
+													info->jobs[info->row].email);
+		}
+	}
+	if (info->jobs[info->row].flags & JF_JOBDEPEND) {
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.flags.cbjobdepend),TRUE);
+		snprintf(buf,BUFFERLEN,"%i",info->jobs[info->row].dependid);
+		gtk_entry_set_text (GTK_ENTRY(info->dnj.flags.ejobdepend),buf);
+	}
+
 
   /* KOJ */
   switch (info->jobs[info->row].koj) {
