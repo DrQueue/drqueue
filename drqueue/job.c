@@ -124,6 +124,8 @@ void job_init (struct job *job)
   job->used = 0;
   job->frame_info = NULL;
   job->fishmid = -1;		/* -1 when not reserved */
+	job->bhshmid = -1;		// -1 when not reserved 
+	job->nblocked = 0;
 
   job->flags = 0;
 }
@@ -139,6 +141,13 @@ void job_delete (struct job *job)
       log_master_job(job,L_ERROR,"job_delete: shmctl (job->fishmid,IPC_RMID,NULL) [Removing frame shared memory]");
     }
     job->fishmid = -1;
+  }
+
+	if (job->bhshmid != -1) {
+    if (shmctl (job->bhshmid,IPC_RMID,NULL) == -1) {
+      log_master_job(job,L_ERROR,"job_delete: shmctl (job->bhshmid,IPC_RMID,NULL) [Removing blocked hosts shared memory]");
+    }
+    job->bhshmid = -1;
   }
 
   job_init (job);
@@ -305,6 +314,38 @@ void job_update_assigned (struct database *wdb, uint32_t ijob, int iframe, int i
   wdb->job[ijob].frame_info[iframe].exitcode = 0;
 
   detach_frame_shared_memory(wdb->job[ijob].frame_info);
+}
+
+int get_blocked_host_shared_memory (int nhosts)
+{
+	int shmid;
+					  
+	if ((shmid = shmget (IPC_PRIVATE,sizeof(struct blocked_host)*nhosts, IPC_EXCL|IPC_CREAT|0600)) == -1) {
+		log_master (L_ERROR,"get_blocked_host_shared_memory: shmget");
+		perror ("shmget");
+		return shmid;
+	}
+
+	return shmid;
+}
+
+void *attach_blocked_host_shared_memory (int shmid)
+{
+  void *rv;			/* return value */
+
+  if ((rv = shmat (shmid,0,0)) == (void *)-1) {
+    log_master (L_ERROR,"attach_blocked_host_shared_memory: shmat");
+    perror ("shmat");
+  }
+
+  return rv;
+}
+
+void detach_blocked_host_shared_memory (struct blocked_host *bhshp)
+{
+  if (shmdt((char*)bhshp) == -1) {
+    log_master (L_WARNING,"Call to shmdt failed");
+  }
 }
 
 int get_frame_shared_memory (int nframes)
