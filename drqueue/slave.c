@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.47 2001/09/18 12:58:46 jorge Exp $ */
+/* $Id: slave.c,v 1.48 2001/09/18 13:25:10 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -118,15 +118,19 @@ void clean_out (int signal, siginfo_t *info, void *data)
   ignore.sa_flags = 0;
   sigaction (SIGINT, &ignore, NULL);
 
+  log_slave_computer (L_INFO,"Cleaning...");
+
   for (i=0;i<MAXTASKS;i++) {
     if (sdb.comp->status.task[i].used)
       kill(-sdb.comp->status.task[i].pid,SIGINT);
   }
   kill (0,SIGINT);
-  log_slave_computer (L_INFO,"Cleaning...");
+
   while ((child_pid = wait (&rc)) != -1) {
     printf ("Child arrived ! %i\n",(int)child_pid); 
   }
+
+  request_slavexit (sdb.comp->hwinfo.id,SLAVE);
 
   if (semctl (sdb.semid,0,IPC_RMID,NULL) == -1) {
     perror ("semid");
