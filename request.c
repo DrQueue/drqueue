@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.80 2004/04/26 16:25:51 jorge Exp $ */
+/* $Id$ */
 #include <unistd.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -1457,6 +1457,8 @@ void handle_r_r_jobxferfi (int sfd,struct database *wdb,int icomp,struct request
     }
     fi_copy++;
   }
+
+	free (fi_copy);
 
   log_master (L_DEBUG,"Exiting handle_r_r_jobxferfi");
 }
