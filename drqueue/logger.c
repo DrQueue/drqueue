@@ -1,4 +1,4 @@
-/* $Id: logger.c,v 1.14 2001/08/29 09:22:57 jorge Exp $ */
+/* $Id: logger.c,v 1.15 2001/08/29 09:42:50 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -38,10 +38,13 @@ void log_slave_task (struct task *task,int level,char *msg)
   strncpy (buf,ctime(&now),BUFFERLEN-1);
   buf[strlen(buf)-1] = '\0';
 
-  if (!logonscreen)
+  if (!logonscreen) {
     f_log = log_slave_open_task (task);
-  else
+    if (!f_log)
+      f_log = stdout;
+  } else {
     f_log = stdout;
+  }
   fprintf (f_log,"%8s : %8s -> Job: %8s || Owner: %8s || Frame: %4i || %s: %s\n",buf,name,
 	   task->jobname,task->owner,task->frame,log_level_str(level),msg);
 
@@ -68,11 +71,15 @@ FILE *log_slave_open_task (struct task *task)
       /* If its because the directory does not exist we try creating it first */
       if (mkdir (dir,0775) == -1) {
 	perror ("log_slave_open_task: Couldn't create directory for task logging");
-	exit (1);
+	fprintf (stderr,"So... logging on screen.\n");
+	logonscreen = 1;
+	return f;
       }
       if ((f = fopen (filename, "a")) == NULL) {
-	perror ("log_slave_open_task: Couldn't open file for writing");
-	exit (1);
+	perror ("log_slave_open_task: Couldn't open file for writing.");
+	fprintf (stderr,"So... logging on screen.\n");
+	logonscreen = 1;
+	return f;
       }
     }
   }
@@ -98,10 +105,13 @@ void log_slave_computer (int level, char *msg)
   strncpy (buf,ctime(&now),BUFFERLEN-1);
   buf[strlen(buf)-1] = '\0';
 
-  if (!logonscreen)
+  if (!logonscreen) {
     f_log = log_slave_open_computer (name);
-  else
+    if (!f_log)
+      f_log = stdout;
+  } else {
     f_log = stdout;
+  }
 
   fprintf (f_log,"%8s : %8s -> %s: %s\n",buf,name,log_level_str(level),msg);
 
@@ -124,7 +134,8 @@ FILE *log_slave_open_computer (char *name)
   
   if ((f = fopen (filename,"a")) == NULL) {
     perror ("log_slave_open_computer: Couldn't open file for writing");
-    exit (1);
+    fprintf (stderr,"So... logging on screen.\n");
+    logonscreen = 1;
   }
 
   return f;
@@ -143,10 +154,13 @@ void log_master_job (struct job *job, int level, char *msg)
   strncpy (buf,ctime(&now),BUFFERLEN-1);
   buf[strlen(buf)-1] = '\0';
 
-  if (!logonscreen)
+  if (!logonscreen) {
     f_log = log_master_open ();
-  else
+    if (!f_log)
+      f_log = stdout;
+  } else {
     f_log = stdout;
+  }
   fprintf (f_log,"%8s : Job: %8s || Owner: %8s || %s: %s\n",buf,job->name,job->owner,log_level_str(level),msg);
   if (!logonscreen)
     fclose (f_log);
@@ -165,10 +179,14 @@ void log_master_computer (struct computer *computer, int level, char *msg)
   strncpy (buf,ctime(&now),BUFFERLEN-1);
   buf[strlen(buf)-1] = '\0';
 
-  if (!logonscreen)
+  if (!logonscreen) {
     f_log = log_master_open ();
-  else
+    if (!f_log)
+      f_log = stdout;
+  } else {
     f_log = stdout;
+  }
+
   fprintf (f_log,"%8s : Computer: %8s || %s: %s\n",buf,computer->hwinfo.name,log_level_str(level),msg);
   if (!logonscreen)
     fclose (f_log);
@@ -187,10 +205,14 @@ void log_master (int level,char *msg)
   strncpy (buf,ctime(&now),BUFFERLEN-1);
   buf[strlen(buf)-1] = '\0';
 
-  if (!logonscreen)
+  if (!logonscreen) {
     f_log = log_master_open ();
-  else
+    if (!f_log)
+      f_log = stdout;
+  } else {
     f_log = stdout;
+  }
+
   fprintf (f_log,"%8s : %s: %s\n",buf,log_level_str(level),msg);
   if (!logonscreen)
     fclose (f_log);
@@ -211,12 +233,14 @@ FILE *log_master_open (void)
 #ifdef __LINUX
   if ((f = fopen (filename,"a")) == NULL) {
     perror ("log_master_open: Couldn't open file for writing");
-    exit (1);
+    fprintf (stderr,"So... logging on screen.\n");
+    logonscreen = 1;
   }
 #else
   if ((f = fopen (filename,"ab")) == NULL) {
     perror ("log_master_open: Couldn't open file for writing");
-    exit (1);
+    fprintf (stderr,"So... logging on screen.\n");
+    logonscreen = 1;
   }
 #endif 
 
