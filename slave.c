@@ -550,6 +550,7 @@ void usage (void)
 {
   fprintf (stderr,"Valid options:\n"
 	   "\t-a <hour:minute> to use autoenable\n"
+		 "\t-n <nprocs> to set the maximum number of CPUs\n"
 	   "\t-f to force continuing if shared memory already exists\n"
 	   "\t-l <loglevel> From 0 to 3 (0=errors,1=warnings,2=info,3=debug).\n\t\tDefaults to 1. Each level logs all the previous levels\n"
 	   "\t-o log on screen instead of on files\n"
@@ -562,7 +563,7 @@ void slave_get_options (int *argc,char ***argv, int *force, struct slave_databas
   int opt;
 	char *hour,*min;
 
-  while ((opt = getopt (*argc,*argv,"a:fl:ohv")) != -1) {
+  while ((opt = getopt (*argc,*argv,"a:n:fl:ohv")) != -1) {
     switch (opt) {
 		case 'a':
 			sdb->limits.autoenable.flags |= AEF_ACTIVE;
@@ -575,6 +576,10 @@ void slave_get_options (int *argc,char ***argv, int *force, struct slave_databas
 			min++;
 			sdb->limits.autoenable.h = atoi (hour) % 24;
 			sdb->limits.autoenable.m = atoi (min) % 60;
+			break;
+		case 'n':
+			sdb->limits.nmaxcpus = atoi (optarg);
+			sdb->flags |= SDBF_SETMAXCPUS;
 			break;
     case 'f':
       *force = 1;
@@ -604,5 +609,13 @@ void slave_set_limits (struct slave_database *sdb)
 		sdb->comp->limits.autoenable.flags = sdb->limits.autoenable.flags;
 		sdb->comp->limits.autoenable.h = sdb->limits.autoenable.h % 24;
 		sdb->comp->limits.autoenable.m = sdb->limits.autoenable.m % 60;
+		log_slave_computer (L_INFO,"Setting autoenable time to %i:%02i",
+										sdb->comp->limits.autoenable.h, sdb->comp->limits.autoenable.m);
+	}
+	if (sdb->flags &= SDBF_SETMAXCPUS) {
+		sdb->comp->limits.nmaxcpus = (sdb->limits.nmaxcpus > sdb->comp->limits.nmaxcpus) ? 
+						sdb->comp->limits.nmaxcpus : sdb->limits.nmaxcpus;
+		log_slave_computer (L_INFO,"Setting maximum number of CPUs to %i",
+										sdb->comp->limits.nmaxcpus);
 	}
 }
