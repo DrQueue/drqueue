@@ -1,4 +1,4 @@
-/* $Id: task.c,v 1.3 2001/06/05 12:45:36 jorge Exp $ */
+/* $Id: task.c,v 1.4 2001/08/29 13:16:12 jorge Exp $ */
 
 #include <stdio.h>
 
@@ -36,7 +36,7 @@ int task_available (struct slave_database *sdb)
 void task_report (struct task *task)
 {
   printf ("Job name:\t%s\n",task->jobname);
-  printf ("Job index:\t%i\n",task->jobindex);
+  printf ("Job index:\t%i\n",task->ijob);
   printf ("Job command:\t%s\n",task->jobcmd);
   printf ("Frame:\t\t%i\n",task->frame);
   printf ("Task pid:\t%i\n",task->pid);
