@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.31 2003/12/18 04:11:07 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.32 2003/12/18 20:39:41 jorge Exp $
  */
 
 #ifndef _DRQM_JOBS_H_
@@ -9,6 +9,7 @@
 #include "libdrqueue.h"
 #include "drqm_jobs_maya.h"
 #include "drqm_jobs_blender.h"
+#include "drqm_jobs_bmrt.h"
 
 struct drqmj_sesframes {
   GtkWidget *eframe_start;
@@ -47,6 +48,7 @@ struct drqmj_dnji {							/* dialog new job info */
   uint16_t koj;									/* koj */
   struct drqmj_koji_maya koji_maya; /* koj info for maya */
 	struct drqmj_koji_blender koji_blender; /* koj info for blender */
+	struct drqmj_koji_bmrt koji_bmrt; /* koj info for bmrt */
   struct drqmj_limits limits;		/* limits info */
   struct drqmj_flags flags;			/* flags info */
 };

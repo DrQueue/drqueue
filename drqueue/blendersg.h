@@ -1,4 +1,4 @@
-/* $Id: blendersg.h,v 1.1 2003/12/15 22:18:32 jorge Exp $ */
+/* $Id: blendersg.h,v 1.2 2003/12/18 20:39:41 jorge Exp $ */
 
 #ifndef _BLENDERSG_H_
 #define _BLENDERSG_H_
@@ -15,7 +15,6 @@ struct blendersgi {		/* Blender Script Generator Info */
 };
 
 char *blendersg_create (struct blendersgi *info);
-char *blenderblocksg_create (struct blendersgi *info);
 
 char *blendersg_default_script_path (void);
 
