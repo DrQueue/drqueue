@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.30 2001/09/17 12:35:54 jorge Exp $ */
+/* $Id: job.c,v 1.31 2001/09/17 14:51:30 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -547,7 +547,6 @@ void job_environment_set (struct job *job, uint32_t iframe)
   uint32_t frame;
   static char padframe[BUFFERLEN];
   static char s_frame[BUFFERLEN];
-  static char s_iframe[BUFFERLEN];
   static char scene[BUFFERLEN];
   static char project[BUFFERLEN];
   static char image[BUFFERLEN];
@@ -560,9 +559,7 @@ void job_environment_set (struct job *job, uint32_t iframe)
   /* Frame number */
   snprintf (s_frame,BUFFERLEN-1,"FRAME=%i",frame);
   putenv (s_frame);
-  /* Frame index */
-  snprintf (s_iframe,BUFFERLEN-1,"IFRAME=%i",iframe);
-  putenv (s_iframe);
+
   /* OS */
 #ifdef __LINUX
   putenv ("DRQUEUE_OS=LINUX");
