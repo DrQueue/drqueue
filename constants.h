@@ -1,7 +1,10 @@
-/* $Id: constants.h,v 1.7 2001/06/05 12:19:45 jorge Exp $ */
+/* $Id: constants.h,v 1.8 2001/07/04 10:13:59 jorge Exp $ */
 
 #ifndef _CONSTANTS_H_
 #define _CONSTANTS_H_
+
+#define SHELL_NAME "sh"
+#define SHELL_PATH "/bin/sh"
 
 #define MASTER 0
 #define SLAVE 1
