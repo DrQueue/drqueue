@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.43 2001/09/16 15:38:12 jorge Exp $ */
+/* $Id: slave.c,v 1.44 2001/09/17 14:53:15 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -21,6 +21,7 @@ struct slave_database sdb;	/* slave database */
 int main (int argc,char *argv[])
 {
   int force = 0;
+  int launched;
 
   slave_get_options(&argc,&argv,&force);
 
@@ -58,15 +59,24 @@ int main (int argc,char *argv[])
   while (1) {
     get_computer_status (&sdb.comp->status);
 
+    launched = 0;
     while (computer_available(sdb.comp)) {
       if (request_job_available(&sdb)) {
 	launch_task(&sdb);
+	launched = 1;
       } else {
 	break;			/* The while */
       }
     } /* WARNING could be in this loop forever if no care is taken !! */
 
     update_computer_status (sdb.comp); /* sends the computer status to the master */
+
+    if (launched) {
+      sleep (SLAVEDELAY * 3);	/* Just to have good load values on next loop */
+				/* if we don't wait more here, the load won't have */
+				/* assimilated the new processes */
+				/* It takes a while (1 minute) to the load average to reflect the real load */
+    }
     sleep (SLAVEDELAY);
   }
 
