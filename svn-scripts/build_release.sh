@@ -48,12 +48,13 @@ if [ "$CHLG" != "n" ]; then
 	echo "Created !"
 fi
 
+# Creating tag
+echo "Creating tag $VERSION"
+(cd ..; svn cp -m "Tag $VERSION created by build_release.sh" drqueue http://www.drqueue.org/svn/tags/$VERSION)
+
 # Update Revision
 echo "Updating Revision"
 svn update > Revision
-echo "Commiting New Revision"
-svn ci -m "Commited by build_release.sh" Revision
-(cd ..; svn cp drqueue http://www.drqueue.org/svn/tags/$VERSION)
 
 # Build package
 make clean > /dev/null
