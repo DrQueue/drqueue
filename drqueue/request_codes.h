@@ -1,4 +1,4 @@
-/* $Id: request_codes.h,v 1.20 2001/10/24 14:52:52 jorge Exp $ */
+/* $Id: request_codes.h,v 1.21 2002/02/26 15:52:05 jorge Exp $ */
 
 #ifndef _REQUEST_CODES_H_
 #define _REQUEST_CODES_H_
@@ -33,5 +33,6 @@
 #define RS_R_KILLTASK           1 /* Request to slave to kill a task */
 #define RS_R_SETNMAXCPUS        2 /* Request to set limits nmaxcpus */
 #define RS_R_SETMAXFREELOADCPU  3 /* Request to set limits maxfreeloadcpu */
+#define RS_R_SETAUTOENABLE      4 /* Request to set autoenable info */
 
 #endif /* _REQUEST_CODES_H_ */

@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.54 2002/02/21 15:49:23 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.55 2002/02/26 15:52:05 jorge Exp $
  */
 
 #include <string.h>
@@ -29,7 +29,7 @@ static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *
 static GtkWidget *CreateMenu (struct drqm_jobs_info *info);
 static int pri_cmp_clist (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
 
-
+/* JOB DETAILS */
 static void JobDetails(GtkWidget *menu_item, struct drqm_jobs_info *info);
 static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info);
 static GtkWidget *CreateFrameInfoClist (void);
@@ -52,7 +52,6 @@ static void jdd_priority_bcp (GtkWidget *button, struct drqm_jobs_info *info);
 static GtkWidget *jdd_priority_change_dialog (struct drqm_jobs_info *info);
 static void jdd_pcd_cpri_changed (GtkWidget *entry, struct drqmj_jddi *info);
 static void jdd_pcd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *info);
-
 /* Limits */
 static GtkWidget *jdd_limits_widgets (struct drqm_jobs_info *info);
 static void jdd_limits_nmaxcpus_bcp (GtkWidget *button, struct drqm_jobs_info *info);
@@ -61,18 +60,15 @@ static void jdd_nmcd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *
 static void jdd_limits_nmaxcpuscomputer_bcp (GtkWidget *button, struct drqm_jobs_info *info);
 static GtkWidget *jdd_nmcc_dialog (struct drqm_jobs_info *info);
 static void jdd_nmccd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *info);
-
 /* Flags */
 static GtkWidget *jdd_flags_widgets (struct drqm_jobs_info *info);
-
 /* KOJ */
 static GtkWidget *jdd_koj_widgets (struct drqm_jobs_info *info);
 static GtkWidget *jdd_koj_maya_widgets (struct drqm_jobs_info *info);
-
 /* Koj viewers */
 static void jdd_maya_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 
-
+/* NEW JOB */
 static void NewJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
 static GtkWidget *NewJobDialog (struct drqm_jobs_info *info);
 static void dnj_psearch (GtkWidget *button, struct drqmj_dnji *info);
@@ -95,25 +91,28 @@ static void dnj_koj_frame_maya_script_set (GtkWidget *button, struct drqmj_koji_
 static void dnj_koj_frame_maya_scene_search (GtkWidget *button, struct drqmj_koji_maya *info);
 static void dnj_koj_frame_maya_scene_set (GtkWidget *button, struct drqmj_koji_maya *info);
 static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info);
-
 /* Limits */
 static GtkWidget *dnj_limits_widgets (struct drqm_jobs_info *info);
-
 /* Flags */
 static GtkWidget *dnj_flags_widgets (struct drqm_jobs_info *info);
 static void dnj_flags_cbmailnotify_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info);
 static void dnj_flags_cbdifemail_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info);
 
+/* DELETE JOB */
 static void DeleteJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
 static GtkWidget *DeleteJobDialog (struct drqm_jobs_info *info);
 static void djd_bok_pressed (GtkWidget *button, struct drqm_jobs_info *info);
 
+/* STOP JOB */
 static void StopJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
 
+/* HARD STOP JOB */
 static void HStopJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
 static void job_hstop_cb (GtkWidget *button, struct drqm_jobs_info *info);
 
+/* CONTINUE JOB */
 static void ContinueJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
+
 
 void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info)
 {
