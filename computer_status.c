@@ -1,4 +1,4 @@
-/* $Id: computer_status.c,v 1.13 2001/10/02 12:38:53 jorge Exp $ */
+/* $Id: computer_status.c,v 1.14 2002/02/15 11:51:00 jorge Exp $ */
 
 #include <stdio.h>
 #include <signal.h>
@@ -39,6 +39,7 @@ void computer_status_init (struct computer_status *cstatus)
 
 void check_tasks (struct computer_status *cstatus)
 {
+  /* CHECKME: Could this create a race condition ? */
   int i;
 
   cstatus->ntasks = 0;
