@@ -46,10 +46,10 @@ fi
 read -p "Do you want to create recreate the ChangeLog ? (y/n) " CHLG
 if [ "$CHLG" != "n" ]; then
 	echo "Creating ChangeLog"
-	svn2cl ChangeLog 0 # 0 means from HEAD to revision 0, that is all ChangeLog
+	svn log | svn2cl.pl > ChangeLog # Dump log to ChangeLog
 	echo "Created !"
 	echo "Commiting ChangeLog"
-	svn ci -m "Changelog commited by build_package.sh" ChangeLog
+#	svn ci -m "Changelog commited by build_package.sh" ChangeLog
 fi
 
 # Creating tag
@@ -82,5 +82,5 @@ if [ "$CHLG" = "y" ]; then
 	OLDREV=`svn log --stop-on-copy http://www.drqueue.org/svn/tags/$OLDTAG | awk '/^r[0-9]+/ { sub (/r/,"",$1); print $1; }'`
 	echo "Old Revision number: $OLDREV"
 	echo "Creating ChangeLog.$VERSION"
-	(cd ..; svn2cl ChangeLog.$VERSION $OLDREV )
+	(svn log -r HEAD:$OLDREV | svn2cl.pl > ../ChangeLog.$VERSION )
 fi
