@@ -121,7 +121,7 @@ namespace ServicesController
 			// DrQueue
 			// 
 			this.DrQueue.Icon = ((System.Drawing.Icon)(resources.GetObject("DrQueue.Icon")));
-			this.DrQueue.Text = "notifyIcon1";
+			this.DrQueue.Text = "DrQeue";
 			this.DrQueue.Visible = true;
 			this.DrQueue.MouseDown += new System.Windows.Forms.MouseEventHandler(this.NotifyIcon1MouseDown);
 			// 
