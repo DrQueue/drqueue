@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.32 2001/09/14 08:55:44 jorge Exp $ */
+/* $Id: communications.c,v 1.33 2001/09/20 10:52:54 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <netdb.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "communications.h"
 #include "database.h"
@@ -19,6 +20,11 @@
 #include "job.h"
 #include "drerrno.h"
 #include "task.h"
+
+#ifdef COMM_REPORT
+long int bsent;			/* Bytes sent */
+long int brecv;			/* Bytes received */
+#endif
 
 int get_socket (short port)
 {
@@ -156,9 +162,6 @@ void recv_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo,int who)
   buf = hwinfo;
   bleft = sizeof (struct computer_hwinfo);
   while ((r = read (sfd,buf,bleft)) < bleft) {
-    bleft -= r;
-    buf += r;
-
     if ((r == -1) || ((r == 0) && (bleft > 0))) {
       /* if r is error or if there are no more bytes left on the socket but there _SHOULD_ be */
       if (who == MASTER) {
@@ -172,7 +175,16 @@ void recv_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo,int who)
 	exit (1);
       }
     }
+    bleft -= r;
+    buf += r;
+#ifdef COMM_REPORT
+    brecv += r;
+#endif
   }
+#ifdef COMM_REPORT
+  brecv += r;
+#endif
+
   /* Now we should have the computer hardware info with the values in */
   /* network byte order, so we put them in host byte order */
   hwinfo->id = ntohl (hwinfo->id);
@@ -198,8 +210,6 @@ void send_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo,int who)
 
   bleft = sizeof (bswapped);
   while ((w = write(sfd,buf,bleft)) < bleft) {
-    bleft -= w;
-    buf += w;
     if ((w == -1) || ((w == 0) && (bleft > 0))) {
       /* if w is error or if there are no more bytes are written but they _SHOULD_ be */
       if (who == MASTER) {
@@ -213,7 +223,15 @@ void send_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo,int who)
 	exit (1);
       }
     }
+    bleft -= w;
+    buf += w;
+#ifdef COMM_REPORT
+    bsent += w;
+#endif
   }
+#ifdef COMM_REPORT
+  bsent += w;
+#endif
 }
 
 int recv_request (int sfd, struct request *request)
@@ -225,15 +243,21 @@ int recv_request (int sfd, struct request *request)
 
   bleft = sizeof (struct request);
   while ((r = read(sfd,buf,bleft)) < bleft) {
-    bleft -= r;
-    buf += r;
-
     if ((r == -1) || ((r == 0) && (bleft > 0))) {
       /* if r is error or if there are no more bytes left on the socket but there _SHOULD_ be */
       drerrno = DRE_ERRORRECEIVING;
       return 0;
     }
+    bleft -= r;
+    buf += r;
+#ifdef COMM_REPORT
+    brecv += r;
+#endif
   }
+#ifdef COMM_REPORT
+  brecv += r;
+#endif
+
   /* Byte order ! */
   request->data = ntohl (request->data);
   
@@ -258,7 +282,13 @@ int send_request (int sfd, struct request *request,int who)
       drerrno = DRE_ERRORSENDING;
       return 0;
     }
+#ifdef COMM_REPORT
+    bsent += w;
+#endif
   }
+#ifdef COMM_REPORT
+    bsent += w;
+#endif
 
   drerrno = DRE_NOERROR;
   return 1;
@@ -304,7 +334,13 @@ void send_computer_status (int sfd, struct computer_status *status,int who)
 	exit (1);
       }
     }
+#ifdef COMM_REPORT
+    bsent += w;
+#endif
   }
+#ifdef COMM_REPORT
+  bsent += w;
+#endif
 }
 
 void recv_computer_status (int sfd, struct computer_status *status,int who)
@@ -317,9 +353,6 @@ void recv_computer_status (int sfd, struct computer_status *status,int who)
   buf = status;
   bleft = sizeof (struct computer_status);
   while ((r = read (sfd,buf,bleft)) < bleft) {
-    bleft -= r;
-    buf += r;
-
     if ((r == -1) || ((r == 0) && (bleft > 0))) {
       /* if r is error or if there are no more bytes left on the socket but there _SHOULD_ be */
       if (who == MASTER) {
@@ -333,7 +366,15 @@ void recv_computer_status (int sfd, struct computer_status *status,int who)
 	exit (1);
       }
     }
+    bleft -= r;
+    buf += r;
+#ifdef COMM_REPORT
+    brecv += r;
+#endif
   }
+#ifdef COMM_REPORT
+  brecv += r;
+#endif
   /* Now we should have the computer hardware info with the values in */
   /* network byte order, so we put them in host byte order */
   for (i=0;i<3;i++)
@@ -358,9 +399,6 @@ void recv_job (int sfd, struct job *job,int who)
   buf = job;			/* So when copying to buf we're really copying into job */
   bleft = sizeof (struct job);
   while ((r = read (sfd,buf,bleft)) < bleft) {
-    bleft -= r;
-    buf += r;
-
     if ((r == -1) || ((r == 0) && (bleft > 0))) {
       /* if r is error or if there are no more bytes left on the socket but there _SHOULD_ be */
       switch (who) {
@@ -378,7 +416,15 @@ void recv_job (int sfd, struct job *job,int who)
 	exit (1);
       }
     }
+    bleft -= r;
+    buf += r;
+#ifdef COMM_REPORT
+    brecv += r;
+#endif
   }
+#ifdef COMM_REPORT
+  brecv += r;
+#endif
   /* Now we should have the computer hardware info with the values in */
   /* network byte order, so we put them in host byte order */
   job->id = ntohl (job->id);
@@ -463,7 +509,13 @@ void send_job (int sfd, struct job *job,int who)
 	kill(0,SIGINT);
       }
     }
+#ifdef COMM_REPORT
+    bsent += w;
+#endif
   }
+#ifdef COMM_REPORT
+  bsent += w;
+#endif
 }
 
 int recv_task (int sfd, struct task *task)
@@ -483,7 +535,15 @@ int recv_task (int sfd, struct task *task)
       drerrno = DRE_ERRORRECEIVING;
       return 0;
     }
+    bleft -= r;
+    buf += r;
+#ifdef COMM_REPORT
+    brecv += r;
+#endif
   }
+#ifdef COMM_REPORT
+  brecv += r;
+#endif
   /* Now we should have the task info with the values in */
   /* network byte order, so we put them in host byte order */
   task->ijob = ntohl (task->ijob);
@@ -518,7 +578,13 @@ int send_task (int sfd, struct task *task)
       drerrno = DRE_ERRORSENDING;
       return 0;
     }
+#ifdef COMM_REPORT
+    bsent += w;
+#endif
   }
+#ifdef COMM_REPORT
+  bsent += w;
+#endif
 
   return 1;
 }
@@ -552,19 +618,23 @@ int recv_frame_info (int sfd, struct frame_info *fi)
   buf = fi;
   bleft = sizeof (struct frame_info);
   while ((r = read (sfd,buf,bleft)) < bleft) {
-    bleft -= r;
-    buf += r;
-
     if ((r == -1) || ((r == 0) && (bleft > 0))) {
       /* if w is error or if no more bytes are read but they _SHOULD_ be */
       drerrno = DRE_ERRORRECEIVING;
       return 0;
     }
-  }
+    bleft -= r;
+    buf += r;
+#ifdef COMM_REPORT
+    brecv += r;
+#endif
+ }
+#ifdef COMM_REPORT
+  brecv += r;
+#endif
   fi->start_time = ntohl (fi->start_time);
   fi->end_time = ntohl (fi->end_time);
-  fi->icomp = ntohl
- (fi->icomp);
+  fi->icomp = ntohl (fi->icomp);
   fi->itask = ntohs (fi->itask);
 
   return 1;
@@ -594,7 +664,13 @@ int send_frame_info (int sfd, struct frame_info *fi)
       drerrno = DRE_ERRORSENDING;
       return 0;
     }
+#ifdef COMM_REPORT
+    bsent += w;
+#endif
   }
+#ifdef COMM_REPORT
+  bsent += w;
+#endif
 
   return 1;
 }
@@ -608,15 +684,20 @@ int recv_computer_limits (int sfd, struct computer_limits *cl)
   buf = cl;
   bleft = sizeof (struct computer_limits);
   while ((r = read (sfd,buf,bleft)) < bleft) {
-    bleft -= r;
-    buf += r;
-
     if ((r == -1) || ((r == 0) && (bleft > 0))) {
       /* if w is error or if no more bytes are read but they _SHOULD_ be */
       drerrno = DRE_ERRORRECEIVING;
       return 0;
     }
+    bleft -= r;
+    buf += r;
+#ifdef COMM_REPORT
+    brecv += r;
+#endif
   }
+#ifdef COMM_REPORT
+  brecv += r;
+#endif
   cl->nmaxcpus = ntohs (cl->nmaxcpus);
   cl->maxfreeloadcpu = ntohs (cl->maxfreeloadcpu);
 
@@ -645,7 +726,13 @@ int send_computer_limits (int sfd, struct computer_limits *cl)
       drerrno = DRE_ERRORSENDING;
       return 0;
     }
+#ifdef COMM_REPORT
+    bsent += w;
+#endif
   }
+#ifdef COMM_REPORT
+  bsent += w;
+#endif
 
   return 1;
 }

@@ -1,4 +1,4 @@
-/* $Id: database.h,v 1.4 2001/06/05 12:19:45 jorge Exp $ */
+/* $Id: database.h,v 1.5 2001/09/20 10:51:33 jorge Exp $ */
 
 #ifndef _DATABASE_H_
 #define _DATABASE_H_
@@ -12,6 +12,10 @@ struct database {
   struct job job[MAXJOBS];	/* jobs */
   int semid;			/* semaphores id */
   int shmid;			/* shared memory id */
+#ifdef COMM_REPORT
+  long int bsent;
+  long int brecv;
+#endif
 };
 
 void database_init (struct database *wdb);
