@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_computers.c,v 1.12 2001/09/07 09:16:51 jorge Exp $
+ * $Id: drqm_computers.c,v 1.13 2001/09/08 15:34:25 jorge Exp $
  */
 
 #include <stdlib.h>
@@ -129,7 +129,7 @@ void drqm_update_computerlist (struct drqm_computers_info *info)
     snprintf (buff[1],BUFFERLEN,"%i",info->computers[i].status.ntasks);
     strncpy(buff[2],info->computers[i].hwinfo.name,BUFFERLEN);
     snprintf (buff[3],BUFFERLEN,osstring(info->computers[i].hwinfo.os));
-    snprintf (buff[4],BUFFERLEN,"%i",info->computers[i].hwinfo.numproc);
+    snprintf (buff[4],BUFFERLEN,"%i",info->computers[i].hwinfo.ncpus);
     snprintf (buff[5],BUFFERLEN,"%i,%i,%i",
 	      info->computers[i].status.loadavg[0],
 	      info->computers[i].status.loadavg[1],
@@ -192,8 +192,8 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
 {
   GtkWidget *window;
   GtkWidget *frame;
-  GtkWidget *vbox;
-  GtkWidget *hbox;
+  GtkWidget *vbox,*vbox2;
+  GtkWidget *hbox,*hbox2;
   GtkWidget *label;
   GtkWidget *clist;
   GtkWidget *swin;
@@ -279,6 +279,40 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
   info->cdd.lntasks = label;
 
+  /* Limits stuff */
+  frame = gtk_frame_new ("Limits information");
+  gtk_box_pack_start(GTK_BOX(vbox),frame,FALSE,FALSE,2);
+  vbox2 = gtk_vbox_new (FALSE,2);
+  gtk_container_add (GTK_CONTAINER(frame),vbox2);
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start(GTK_BOX(vbox2),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Maximum number of cpus:");
+  gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  hbox2 = gtk_hbox_new (FALSE,0);
+  gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
+  gtk_widget_show (hbox2);
+  label = gtk_label_new ("0");
+  info->cdd.limits.lnmaxcpus = label;
+  gtk_box_pack_start (GTK_BOX(hbox2),label,TRUE,TRUE,2);
+  button = gtk_button_new_with_label ("Change");
+  gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
+/*    gtk_signal_connect (GTK_OBJECT(button),"clicked",dnj_psearch,&info->dnj); */
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start(GTK_BOX(vbox2),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Maximum load a cpu can have to be considered free:");
+  gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  hbox2 = gtk_hbox_new (FALSE,0);
+  gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
+  gtk_widget_show (hbox2);
+  label = gtk_label_new ("80");
+  info->cdd.limits.lmaxfreeloadcpu = label;
+  gtk_box_pack_start (GTK_BOX(hbox2),label,TRUE,TRUE,2);
+  button = gtk_button_new_with_label ("Change");
+  gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
+/*    gtk_signal_connect (GTK_OBJECT(button),"clicked",dnj_psearch,&info->dnj); */
+
 
   /* Clist with the task info */
   /* Frame */
@@ -352,7 +386,7 @@ static int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
   gtk_label_set_text (GTK_LABEL(info->cdd.los),osstring(info->computers[info->icomp].hwinfo.os));
 
   snprintf(msg,BUFFERLEN-1,"%i %s %i MHz",
-	   info->computers[info->icomp].hwinfo.numproc,
+	   info->computers[info->icomp].hwinfo.ncpus,
 	   proctypestring(info->computers[info->icomp].hwinfo.proctype),
 	   info->computers[info->icomp].hwinfo.procspeed);
   gtk_label_set_text (GTK_LABEL(info->cdd.lcpuinfo),msg);
@@ -367,6 +401,13 @@ static int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
 	   info->computers[info->icomp].status.ntasks);
   gtk_label_set_text (GTK_LABEL(info->cdd.lntasks),msg);
 
+  /* Limits */
+  snprintf(msg,BUFFERLEN-1,"%i",
+	   info->computers[info->icomp].limits.nmaxcpus);
+  gtk_label_set_text (GTK_LABEL(info->cdd.limits.lnmaxcpus),msg);
+  snprintf(msg,BUFFERLEN-1,"%i",
+	   info->computers[info->icomp].limits.maxfreeloadcpu);
+  gtk_label_set_text (GTK_LABEL(info->cdd.limits.lmaxfreeloadcpu),msg);
 
   /* Tasks clist */
   buff = (char**) g_malloc((ncols + 1) * sizeof(char*));
@@ -399,5 +440,4 @@ static int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
 
   return 1;
 }
-
 
