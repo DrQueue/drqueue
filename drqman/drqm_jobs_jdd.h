@@ -60,6 +60,11 @@ struct drqmj_jddi {							/* job details dialog info*/
 	struct drqm_jobs_info *oldinfo; // Pointer to the previous info, so we can update the joblist
 };
 
+struct idle_info {
+	int fd;
+	GtkWidget *text;
+};
+
 void JobDetails(GtkWidget *menu_item, struct drqm_jobs_info *info);
 
 #endif
