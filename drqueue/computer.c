@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.20 2001/09/07 16:42:46 jorge Exp $ */
+/* $Id: computer.c,v 1.21 2001/09/08 15:55:35 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -17,6 +17,8 @@
 int computer_index_addr (void *pwdb,struct in_addr addr)
 {
   /* This function is called by the master */
+  /* This functions resolves the name associated with the ip of the socket and */
+  /* and finds that name in the computer list and returns it's index position */
   int index;
   struct hostent *host;
   char *dot;
@@ -30,19 +32,19 @@ int computer_index_addr (void *pwdb,struct in_addr addr)
     snprintf(msg,BUFFERLEN-1,"Could not resolve name for: %s",inet_ntoa(addr));
     log_master (L_WARNING,msg);
     return -1;
-  } else {
-    if ((dot = strchr (host->h_name,'.')) != NULL) 
+  }
+
+  if ((dot = strchr (host->h_name,'.')) != NULL) 
       *dot = '\0';
-/*      printf ("Name: %s\n",host->h_name); */
-    name = host->h_name;
-    while (host->h_aliases[i] != NULL) {
-/*        printf ("Alias: %s\n",host->h_aliases[i]); */
-      i++;
-    }
-    while (*host->h_aliases != NULL) {
-/*        printf ("Alias: %s\n",*host->h_aliases); */
-      host->h_aliases++;
-    }
+  /*      printf ("Name: %s\n",host->h_name); */
+  name = host->h_name;
+  while (host->h_aliases[i] != NULL) {
+    /*        printf ("Alias: %s\n",host->h_aliases[i]); */
+    i++;
+  }
+  while (*host->h_aliases != NULL) {
+    /*        printf ("Alias: %s\n",*host->h_aliases); */
+    host->h_aliases++;
   }
 
   semaphore_lock(((struct database *)pwdb)->semid);
