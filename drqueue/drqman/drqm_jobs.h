@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.20 2001/09/16 15:40:07 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.21 2001/09/26 10:47:35 jorge Exp $
  */
 
 #ifndef _DRQM_JOBS_H_
@@ -7,6 +7,13 @@
 
 #include <gtk/gtk.h>
 #include "libdrqueue.h"
+
+struct drqmj_limits {
+  GtkWidget *enmaxcpus;		/* Entries */
+  GtkWidget *enmaxcpuscomputer;
+  GtkWidget *lnmaxcpus;		/* Labels*/
+  GtkWidget *lnmaxcpuscomputer;
+};
 
 struct drqmj_koji_maya {
   GtkWidget *escene;
@@ -33,6 +40,7 @@ struct drqmj_dnji {		/* dialog new job */
   GtkWidget *fkoj;		/* frame koj */
   uint16_t koj;			/* koj */
   struct drqmj_koji_maya koji_maya; /* koj info for maya */
+  struct drqmj_limits limits;	/* limits info */
 };
 
 struct drqmj_jddi {		/* job details dialog */
@@ -50,6 +58,7 @@ struct drqmj_jddi {		/* job details dialog */
   GtkWidget *menu;		/* Popup menu */
   gint row,column;		/* selected frame */
   int selected;			/* if a frame is selected */
+  struct drqmj_limits limits;	/* Limits info */
 };
 
 struct drqm_jobs_info {
