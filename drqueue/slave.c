@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.31 2001/08/31 09:19:01 jorge Exp $ */
+/* $Id: slave.c,v 1.32 2001/09/01 16:41:34 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -23,7 +23,6 @@ int main (int argc,char *argv[])
   int force = 0;
   int opt;
 
-/*    printf ("struct request: %i\n",sizeof(struct request)); */
   log_slave_computer (L_INFO,"Starting...");
   set_signal_handlers ();
 
@@ -314,25 +313,31 @@ void launch_task (struct slave_database *sdb)
       /* This child also creates the directory for logging if it doesn't exist */
       /* and prepares the file descriptors so every output will be logged */
       const char *new_argv[64];
+
       int lfd;			/* logger fd */
-      int i,len;
-      const char *targ;
-      char cmd[MAXCMDLEN];
+/*        int i,len; */
+/*        const char *targ; */
+/*        char cmd[MAXCMDLEN]; */
+
+      new_argv[0] = SHELL_NAME;
+      new_argv[1] = "-c";
+      new_argv[2] = sdb->comp->status.task[sdb->itask].jobcmd;
+      new_argv[3] = NULL;
 
       setpgid(0,0);		/* So this process doesn't receive signals from the others */
       set_signal_handlers_task_exec ();
-      strncpy(cmd,sdb->comp->status.task[sdb->itask].jobcmd,MAXCMDLEN);
-      len = strlen (cmd);
-      zerocmd (cmd);
-      for (i=0;i<64;i++) {
-	if ((targ = parse_arg(cmd,i,len)) != NULL) {
-	  new_argv[i] = targ;
-	  printf ("new argv %i: %s\n",i,new_argv[i]);
-	} else {
-	  break;
-	}
-      }
-      new_argv[i] = NULL;
+/*        strncpy(cmd,sdb->comp->status.task[sdb->itask].jobcmd,MAXCMDLEN); */
+/*        len = strlen (cmd); */
+/*        zerocmd (cmd); */
+/*        for (i=0;i<64;i++) { */
+/*  	if ((targ = parse_arg(cmd,i,len)) != NULL) { */
+/*  	  new_argv[i] = targ; */
+/*  	  printf ("new argv %i: %s\n",i,new_argv[i]); */
+/*  	} else { */
+/*  	  break; */
+/*  	} */
+/*        } */
+/*        new_argv[i] = NULL; */
 
       if ((lfd = log_dumptask_open (&sdb->comp->status.task[sdb->itask])) != -1) {
 	dup2 (lfd,STDOUT_FILENO);
@@ -342,8 +347,9 @@ void launch_task (struct slave_database *sdb)
 
       set_environment(sdb);
 
-      execve(new_argv[0],(char*const*)new_argv,environ);
-
+/*        execve(new_argv[0],(char*const*)new_argv,environ); */
+      execve(SHELL_PATH,(char*const*)new_argv,environ);
+      perror("execve");
       exit(errno);		/* If we arrive here, something happened exec'ing */
     }
 
