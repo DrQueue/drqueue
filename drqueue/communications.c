@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.14 2001/07/24 14:50:55 jorge Exp $ */
+/* $Id: communications.c,v 1.15 2001/07/31 13:04:15 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -393,6 +393,8 @@ void recv_job (int sfd, struct job *job,int who)
   job->fleft = ntohl (job->fleft);
   job->fdone = ntohl (job->fdone);
   job->ffailed = ntohl (job->ffailed);
+
+  job->priority = ntohl (job->priority);
 }
 
 void send_job (int sfd, struct job *job,int who)
@@ -412,11 +414,14 @@ void send_job (int sfd, struct job *job,int who)
   bswapped.frame_end = htonl (bswapped.frame_end);
   bswapped.avg_frame_time = htonl (bswapped.avg_frame_time);
   bswapped.est_finish_time = htonl (bswapped.est_finish_time);
+
   bswapped.frame_info = NULL;
 
   bswapped.fleft = htonl (bswapped.fleft);
   bswapped.fdone = htonl (bswapped.fdone);
   bswapped.ffailed = htonl (bswapped.ffailed);
+
+  bswapped.priority = htonl (bswapped.priority);
 
   bleft = sizeof (bswapped);
   while ((w = write(sfd,buf,bleft)) < bleft) {
