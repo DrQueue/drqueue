@@ -1,3 +1,34 @@
+2004-10-12 22:53:34  Rev 743    jorge
+
+	* common.h:
+	  New version number on common.h: 0.50rc7
+
+2004-10-12 22:45:46  Rev 742    jorge
+
+	* drqman/drqm_jobs.c drqman/drqm_request.h drqman/main.c 
+	  drqman/drqm_jobs.h drqman/drqm_request.c:
+	  Major bugfixes. Bug 0000001 fixed.
+
+2004-10-12 14:49:40  Rev 741    jorge
+
+	* TODO:
+	  Bug section on drqman removed, as everything seems to be solved and we have a bug tracker now
+
+2004-10-12 14:48:53  Rev 740    jorge
+
+	* drqman/drqm_jobs.c:
+	  Nicer job details dialog (tabbed)
+
+2004-10-12 08:48:44  Rev 739    jorge
+
+	* Revision:
+	  New Revision commited by build_package.sh
+
+2004-10-12 08:48:26  Rev 737    jorge
+
+	* ChangeLog:
+	  Changelog commited by build_package.sh
+
 2004-10-12 08:48:04  Rev 736    jorge
 
 	* common.h:
