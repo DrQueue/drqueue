@@ -1,11 +1,24 @@
 #
-# $Id: Makefile,v 1.1 2001/07/13 15:23:33 jorge Exp $
+# $Id: Makefile,v 1.2 2001/07/16 09:53:07 jorge Exp $
 #
 
-CFLAGS = `gtk-config --cflags` -Wall -g
-LDFLAGS = `gtk-config --libs`
+OBJS = main.o notebook.o drqm_jobs.o drqm_request.o
 
-OBJS = main.o notebook.o drqm_jobs.o
+ifeq ($(systype),linux)
+	CFLAGS = -Wall -I.. -D__LINUX -g `gtk-config --cflags`
+	LDFLAGS = `gtk-config --libs`
+else 
+ ifeq ($(systype),irix)
+	CFLAGS = -Wall -I.. -D__IRIX -g
+	LDFLAGS = `gtk-config --libs`
+ endif
+endif
+
+.PHONY: clean irix linux tags
+linux: 
+	make systype=linux all
+irix:
+	/usr/freeware/bin/gmake systype=irix all
 
 all: drqman
 

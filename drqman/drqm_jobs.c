@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.1 2001/07/13 15:23:33 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.2 2001/07/16 09:53:07 jorge Exp $
  */
 
 #include "drqm_jobs.h"
@@ -81,6 +81,6 @@ GtkWidget *CreateButtonRefresh (struct info_drqm_jobs *info)
 
 void PressedButtonRefresh (GtkWidget *b, struct info_drqm_jobs *info)
 {
-
+  drqm_request_joblist (info);
 }
 
