@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.31 2002/05/17 16:02:05 jorge Exp $
+# $Id: Makefile,v 1.32 2002/06/20 15:28:48 jorge Exp $
 
 CC = gcc
 OBJS_LIBDRQUEUE = computer_info.o computer_status.o task.o logger.o communications.o \
@@ -40,11 +40,13 @@ linux_install: linux
 	cp ./slave $(INSTROOT)/bin/slave.linux
 	cp ./master $(INSTROOT)/bin/master.linux
 	cp ./drqman/drqman $(INSTROOT)/bin/drqman.linux
-	cp ./bin/slave.sh $(INSTROOT)/bin/slave.sh
-	cp ./bin/master.sh $(INSTROOT)/bin/master.sh
+	cp ./bin/slave $(INSTROOT)/bin/slave
+	cp ./bin/master $(INSTROOT)/bin/master
+	cp ./bin/requeue $(INSTROOT)/bin/requeue
 	cp ./bin/path2unix.pl $(INSTROOT)/bin/path2unix.pl
-	chmod 0777 $(INSTROOT)/bin/*.linux $(INSTROOT)/bin/*.sh $(INSTROOT)/bin/*.pl
-	chown rendusr.103 $(INSTROOT)/bin/*.linux $(INSTROOT)/bin/*.sh $(INSTROOT)/bin/*.pl
+	cp ./requeue $(INSTROOT)/bin/requeue.linux
+	chmod 0777 $(INSTROOT)/bin/*
+	chown rendusr.103 $(INSTROOT)/bin/*
 
 linux_miniinstall: linux
 	install -d -m 0777 ./bin
@@ -57,13 +59,14 @@ irix_miniinstall: irix
 doc:
 	cxref *.[ch] drqman/*.[ch] -all-comments -xref-all -index-all -R/home/jorge/prog/drqueue -O/home/jorge/prog/drqueue/doc -html32 -D__LINUX
 
-all: slave master sendjob
+all: slave master requeue
 
 libdrqueue.a : $(OBJS_LIBDRQUEUE) libdrqueue.h
 	ar sq $@ $(OBJS_LIBDRQUEUE)
 slave: slave.o libdrqueue.a
 master: master.o libdrqueue.a
 sendjob: sendjob.o libdrqueue.a
+requeue: requeue.o libdrqueue.a
 
 libdrqueue.h: computer_info.h computer_status.h task.h logger.h communications.h \
 			computer.h request.h semaphores.h job.h drerrno.h database.h common.h

@@ -22,6 +22,12 @@
 
 Render -s $FRAME -e $FRAME -rd $RD -p $IMAGE $SCENE
 
+# This should requeue the frame if failed
+if ( $! != 0 ) then
+  echo "Requeueing frame..."
+  kill -INT $$
+endif
+
 #
 # Notice that the exit code of the last command is received by DrQueue
 #

@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.56 2002/06/17 16:27:33 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.57 2002/06/20 15:28:48 jorge Exp $
  */
 
 #include <string.h>
@@ -648,6 +648,7 @@ static int dnj_submit (struct drqmj_dnji *info)
   case KOJ_GENERAL:
     break;
   case KOJ_MAYA:
+  case KOJ_MAYABLOCK:
     strncpy(job.koji.maya.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escene)),BUFFERLEN-1);
     strncpy(job.koji.maya.renderdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.erenderdir)),BUFFERLEN-1);
     strncpy(job.koji.maya.image,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eimage)),BUFFERLEN-1);
@@ -832,7 +833,8 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   gtk_signal_connect (GTK_OBJECT(window),"destroy",GTK_SIGNAL_FUNC(jdd_destroy),info);
   gtk_signal_connect_object(GTK_OBJECT(window),"destroy",GTK_SIGNAL_FUNC(gtk_widget_destroy),
 			    (GtkObject*)window);
-  gtk_window_set_default_size(GTK_WINDOW(window),800,800);
+  gtk_window_set_default_size(GTK_WINDOW(window),800,600);
+  gtk_window_set_policy(GTK_WINDOW(window), FALSE, TRUE, FALSE);
   gtk_container_set_border_width (GTK_CONTAINER(window),5);
   info->jdd.dialog = window;
 
@@ -856,6 +858,7 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
   label = gtk_label_new (NULL);
+  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
   info->jdd.lname = label;
 
@@ -866,6 +869,7 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
   label = gtk_label_new (NULL);
+  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
   info->jdd.lowner = label;
 
@@ -877,6 +881,7 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
   label = gtk_label_new (NULL);
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
   info->jdd.lstatus = label;
 
 
@@ -887,6 +892,7 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
   gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
   label = gtk_label_new (NULL);
+  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
   info->jdd.lcmd = label;
 
@@ -898,6 +904,7 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   hbox2 = gtk_hbox_new (FALSE,2);
   gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,2);
   label = gtk_label_new (NULL);
+  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
   gtk_box_pack_start (GTK_BOX(hbox2),label,TRUE,TRUE,2);
   info->jdd.lstartend = label;
   button = gtk_button_new_with_label ("Change");
@@ -913,7 +920,9 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
   hbox2 = gtk_hbox_new (FALSE,2);
   gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,2);
+
   label = gtk_label_new (NULL);
+  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
   gtk_box_pack_start (GTK_BOX(hbox2),label,TRUE,TRUE,2);
   info->jdd.lpri = label;
   button = gtk_button_new_with_label ("Change");
@@ -926,7 +935,9 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   label = gtk_label_new ("Frames running, left, done and failed:");
   gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+
   label = gtk_label_new (NULL);
+  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
   info->jdd.lfrldf = label;
 
@@ -936,7 +947,9 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   label = gtk_label_new ("Average frame time:");
   gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+
   label = gtk_label_new (NULL);
+  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
   info->jdd.lavgt = label;
 
@@ -946,7 +959,9 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   label = gtk_label_new ("Estimated finish time:");
   gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+
   label = gtk_label_new (NULL);
+  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
   info->jdd.lestf = label;
 
@@ -1106,11 +1121,26 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
     info->jobs[info->row].frame_info = fi;
   }
 
+
+
   gtk_label_set_text (GTK_LABEL(info->jdd.lname),info->jobs[info->row].name);
+  gtk_widget_set_usize (GTK_WIDGET(info->jdd.lname), 80, 20);
+  gtk_label_set_line_wrap (GTK_LABEL(info->jdd.lname), TRUE);
+
   gtk_label_set_text (GTK_LABEL(info->jdd.lowner),info->jobs[info->row].owner);
+  gtk_widget_set_usize (GTK_WIDGET(info->jdd.lowner), 80, 20);
+  gtk_label_set_line_wrap (GTK_LABEL(info->jdd.lowner), TRUE);
+
   gtk_label_set_text (GTK_LABEL(info->jdd.lcmd),info->jobs[info->row].cmd);
+  gtk_widget_set_usize (GTK_WIDGET(info->jdd.lcmd), 80, 20);
+  gtk_label_set_line_wrap (GTK_LABEL(info->jdd.lcmd), TRUE);
+
   gtk_label_set_text (GTK_LABEL(info->jdd.lstatus),job_status_string(info->jobs[info->row].status));
+  gtk_widget_set_usize (GTK_WIDGET(info->jdd.lstatus), 80, 20);
+  gtk_label_set_line_wrap (GTK_LABEL(info->jdd.lstatus), TRUE);
   
+
+
   snprintf(msg,BUFFERLEN-1,"From %i to %i every %i",
 	   info->jobs[info->row].frame_start,
 	   info->jobs[info->row].frame_end,
@@ -1278,6 +1308,7 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info)
   case KOJ_GENERAL:
     break;
   case KOJ_MAYA:
+  case KOJ_MAYABLOCK:
     menu_item = gtk_menu_item_new ();
     gtk_menu_append(GTK_MENU(menu),menu_item);
     menu_item = gtk_menu_item_new_with_label("Watch image");
@@ -1561,6 +1592,24 @@ static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_
   } 
 }
 
+static void dnj_koj_frame_mayablock_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info)
+{
+  struct mayasgi mayasgi;	/* Maya script generator info */
+  char *file;
+
+  strncpy (mayasgi.renderdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.erenderdir)),BUFFERLEN-1);
+  strncpy (mayasgi.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escene)),BUFFERLEN-1);
+  strncpy (mayasgi.image,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eimage)),BUFFERLEN-1);
+  strncpy (mayasgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escript)),BUFFERLEN-1);
+
+  if ((file = mayablocksg_create (&mayasgi)) == NULL) {
+    fprintf (stderr,"ERROR: %s\n",drerrno_str());
+    return;
+  } else {
+    gtk_entry_set_text(GTK_ENTRY(info->ecmd),file);
+  } 
+}
+
 static void dnj_koj_frame_maya_script_search (GtkWidget *button, struct drqmj_koji_maya *info)
 {
   GtkWidget *dialog;
@@ -1615,6 +1664,7 @@ static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info)
   gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,2);
   items = g_list_append (items,"General");
   items = g_list_append (items,"Maya");
+  items = g_list_append (items,"Maya Block");
   combo = gtk_combo_new();
   gtk_tooltips_set_tip(tooltips,GTK_COMBO(combo)->entry,"Selector for the kind of job",NULL);
   gtk_combo_set_popdown_strings (GTK_COMBO(combo),items);
@@ -1637,6 +1687,8 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
     new_koj = KOJ_GENERAL;
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Maya") == 0) {
     new_koj = KOJ_MAYA;
+  } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Maya Block") == 0) {
+    new_koj = KOJ_MAYABLOCK;
   } else {
     fprintf (stderr,"dnj_koj_combo_changed: koj not listed!\n");
     return;
@@ -1653,6 +1705,7 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
     case KOJ_GENERAL:
       break;
     case KOJ_MAYA:
+    case KOJ_MAYABLOCK:
       info->dnj.fkoj = dnj_koj_frame_maya (info);
       gtk_box_pack_start(GTK_BOX(info->dnj.vbox),info->dnj.fkoj,TRUE,TRUE,2);
       break;
@@ -1754,7 +1807,6 @@ static GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
   gtk_signal_connect (GTK_OBJECT(button),"clicked",dnj_koj_frame_maya_script_search,&info->dnj.koji_maya);
 
-
   /* Buttons */
   /* Create script */
   bbox = gtk_hbutton_box_new ();
@@ -1763,8 +1815,18 @@ static GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
   button = gtk_button_new_with_label ("Create Script");
   gtk_tooltips_set_tip(tooltips,button,"Create automagically the script based on the given information",NULL);
   gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,TRUE,2);
-  gtk_signal_connect (GTK_OBJECT(button),"clicked",
-		      dnj_koj_frame_maya_bcreate_pressed,&info->dnj);
+  switch (info->dnj.koj) {
+  case KOJ_GENERAL:
+    break;
+  case KOJ_MAYA:
+    gtk_signal_connect (GTK_OBJECT(button),"clicked",
+			dnj_koj_frame_maya_bcreate_pressed,&info->dnj);
+    break;
+  case KOJ_MAYABLOCK:
+    gtk_signal_connect (GTK_OBJECT(button),"clicked",
+			dnj_koj_frame_mayablock_bcreate_pressed,&info->dnj);
+    break;
+  }
 
   gtk_widget_show_all(frame);
 
@@ -2389,12 +2451,14 @@ GtkWidget *jdd_koj_widgets (struct drqm_jobs_info *info)
   label = gtk_label_new ("Kind of job:");
   gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
   label = gtk_label_new (job_koj_string(&info->jobs[info->row]));
+  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
   gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
 
   switch (info->jobs[info->row].koj) {
   case KOJ_GENERAL:
     break;
   case KOJ_MAYA:
+  case KOJ_MAYABLOCK:
     koj_vbox = jdd_koj_maya_widgets (info);
     gtk_box_pack_start (GTK_BOX(vbox),koj_vbox,FALSE,FALSE,2);
     break;
@@ -2411,10 +2475,13 @@ GtkWidget *jdd_koj_maya_widgets (struct drqm_jobs_info *info)
   vbox = gtk_vbox_new (FALSE,2);
 
   hbox = gtk_hbox_new (TRUE,2);
-  gtk_box_pack_start (GTK_BOX(vbox),hbox,TRUE,FALSE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
   label = gtk_label_new ("Scene:");
-  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
   label = gtk_label_new (info->jobs[info->row].koji.maya.scene);
+  gtk_widget_set_usize (GTK_WIDGET(label),100,1);
+  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
+  gtk_label_set_justify (GTK_LABEL(label), GTK_JUSTIFY_CENTER);
   gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
 
   hbox = gtk_hbox_new (TRUE,2);
@@ -2422,6 +2489,7 @@ GtkWidget *jdd_koj_maya_widgets (struct drqm_jobs_info *info)
   label = gtk_label_new ("Render directory:");
   gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
   label = gtk_label_new (info->jobs[info->row].koji.maya.renderdir);
+  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
   gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
 
   hbox = gtk_hbox_new (TRUE,2);
@@ -2429,6 +2497,7 @@ GtkWidget *jdd_koj_maya_widgets (struct drqm_jobs_info *info)
   label = gtk_label_new ("Output image:");
   gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
   label = gtk_label_new (info->jobs[info->row].koji.maya.image);
+  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
   gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
 
   hbox = gtk_hbox_new (TRUE,2);
@@ -2436,6 +2505,7 @@ GtkWidget *jdd_koj_maya_widgets (struct drqm_jobs_info *info)
   label = gtk_label_new ("View command:");
   gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
   label = gtk_label_new (info->jobs[info->row].koji.maya.viewcmd);
+  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
   gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
 
   return vbox;
