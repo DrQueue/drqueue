@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.34 2001/09/02 14:19:45 jorge Exp $ */
+/* $Id: slave.c,v 1.35 2001/09/04 23:24:02 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -94,10 +94,17 @@ void clean_out (int signal, siginfo_t *info, void *data)
   int rc;
   pid_t child_pid;
   int i;
+  struct sigaction ignore;
+
+  /* Ignore new int signals that could arrive during clean up */
+  ignore.sa_handler = SIG_IGN;
+  sigemptyset (&ignore.sa_mask);
+  ignore.sa_flags = 0;
+  sigaction (SIGINT, &ignore, NULL);
 
   for (i=0;i<MAXTASKS;i++) {
     if (sdb.comp->status.task[i].used)
-      kill(sdb.comp->status.task[i].pid,SIGTERM);
+      kill(-sdb.comp->status.task[i].pid,SIGINT);
   }
   kill (0,SIGINT);
   log_slave_computer (L_INFO,"Cleaning...");
