@@ -238,6 +238,7 @@ void config_parse (char *cfg)
 	FILE *f_conf;
 	char buffer[BUFFERLEN];
 	char *token;
+	char *cr;
 	char renv[BUFFERLEN], *penv;
 
 	if ((f_conf = fopen (cfg,"r")) == NULL) {
@@ -249,9 +250,9 @@ void config_parse (char *cfg)
 		if (buffer[0] == '#') {
 			continue;
 		}
-		token = strtok(buffer,"=\n");
+		token = strtok(buffer,"=\n\r");
 		if (strcmp(token,"logs") == 0) {
-			if ((token = strtok (NULL,"=\n")) != NULL) {
+			if ((token = strtok (NULL,"=\n\r")) != NULL) {
 				fprintf (stderr,"Logs on: '%s'\n",token);
 				snprintf (renv,BUFFERLEN,"DRQUEUE_LOGS=%s",token);
 				if ((penv = (char*) malloc (strlen (renv)+1)) == NULL) {
@@ -266,7 +267,7 @@ void config_parse (char *cfg)
 				fprintf (stderr,"Warning parsing config file. No value for logs. Using default.\n");
 			}
 		} else if (strcmp(token,"tmp") == 0) {
-			if ((token = strtok (NULL,"=\n")) != NULL) {
+			if ((token = strtok (NULL,"=\n\r")) != NULL) {
 				fprintf (stderr,"Tmp on: '%s'\n",token);
 				snprintf (renv,BUFFERLEN,"DRQUEUE_TMP=%s",token);
 				if ((penv = (char*) malloc (strlen(renv)+1)) == NULL) {
@@ -281,7 +282,7 @@ void config_parse (char *cfg)
 				fprintf (stderr,"Warning parsing config file. No value for tmp. Using default.\n");
 			}
 		} else if (strcmp(token,"bin") == 0) {
-			if ((token = strtok (NULL,"=\n")) != NULL) {
+			if ((token = strtok (NULL,"=\n\r")) != NULL) {
 				fprintf (stderr,"Bin on: '%s'\n",token);
 				snprintf (renv,BUFFERLEN,"DRQUEUE_BIN=%s",token);
 				if ((penv = (char*) malloc (strlen(renv)+1)) == NULL) {
@@ -296,7 +297,7 @@ void config_parse (char *cfg)
 				fprintf (stderr,"Warning parsing config file. No value for bin. Using default.\n");
 			}
 		} else if (strcmp(token,"etc") == 0) {
-			if ((token = strtok (NULL,"=\n")) != NULL) {
+			if ((token = strtok (NULL,"=\n\r")) != NULL) {
 				fprintf (stderr,"Etc on: '%s'\n",token);
 				snprintf (renv,BUFFERLEN,"DRQUEUE_ETC=%s",token);
 				if ((penv = (char*) malloc (strlen(renv)+1)) == NULL) {
@@ -311,7 +312,7 @@ void config_parse (char *cfg)
 				fprintf (stderr,"Warning parsing config file. No value for etc. Using default.\n");
 			}
 		} else if (strcmp(token,"db") == 0) {
-			if ((token = strtok (NULL,"=\n")) != NULL) {
+			if ((token = strtok (NULL,"=\n\r")) != NULL) {
 				fprintf (stderr,"Db on: '%s'\n",token);
 				snprintf (renv,BUFFERLEN,"DRQUEUE_DB=%s",token);
 				if ((penv = (char*) malloc (strlen(renv)+1)) == NULL) {
@@ -326,7 +327,7 @@ void config_parse (char *cfg)
 				fprintf (stderr,"Warning parsing config file. No value for db. Using default.\n");
 			}
 		} else if (strcmp(token,"pool") == 0) {
-			if ((token = strtok (NULL,"=\n")) != NULL) {
+			if ((token = strtok (NULL,"=\n\r")) != NULL) {
 				fprintf (stderr,"Pools are: '%s'\n",token);
 				snprintf (renv,BUFFERLEN,"DRQUEUE_POOL=%s",token);
 				if ((penv = (char*) malloc (strlen(renv)+1)) == NULL) {
