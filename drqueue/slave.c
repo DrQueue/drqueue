@@ -1,5 +1,6 @@
-/* $Id: slave.c,v 1.17 2001/07/19 10:22:18 jorge Exp $ */
+/* $Id: slave.c,v 1.18 2001/07/20 15:28:36 jorge Exp $ */
 
+#include <stdio.h>
 #include <unistd.h>
 #include <signal.h>
 #include <sys/ipc.h>
@@ -8,6 +9,7 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include <stdlib.h>
+#include <sys/types.h>
 
 #include "slave.h"
 #include "libdrqueue.h"
@@ -274,11 +276,20 @@ void launch_task (struct slave_database *sdb)
     set_signal_handlers_child_launcher ();
     if ((task_pid = fork()) == 0) {
       /* This child execs the command */
+      /* This child also creates the directory for logging if it doesn't exist */
+      /* and prepares the file descriptors so every output will be logged */
       const char *new_argv[4];	/* from libc sources */
+      int lfd;			/* logger fd */
       new_argv[0] = SHELL_NAME;
       new_argv[1] = "-c";
       new_argv[2] = sdb->comp->status.task[sdb->itask].jobcmd;
       new_argv[3] = NULL;
+
+      if ((lfd = log_dumptask_open (&sdb->comp->status.task[sdb->itask])) != -1) {
+	dup2 (lfd,STDOUT_FILENO);
+	dup2 (lfd,STDERR_FILENO);
+	close (lfd);
+      }
 
       set_signal_handlers_task_exec ();
       set_environment(sdb);
