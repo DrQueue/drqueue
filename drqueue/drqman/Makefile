@@ -1,7 +1,8 @@
 #
-# $Id: Makefile,v 1.2 2001/07/16 09:53:07 jorge Exp $
+# $Id: Makefile,v 1.3 2001/07/16 09:57:20 jorge Exp $
 #
 
+CC = gcc
 OBJS = main.o notebook.o drqm_jobs.o drqm_request.o
 
 ifeq ($(systype),linux)
@@ -9,7 +10,7 @@ ifeq ($(systype),linux)
 	LDFLAGS = `gtk-config --libs`
 else 
  ifeq ($(systype),irix)
-	CFLAGS = -Wall -I.. -D__IRIX -g
+	CFLAGS = -Wall -I.. -D__IRIX -g `gtk-config --cflags`
 	LDFLAGS = `gtk-config --libs`
  endif
 endif
