@@ -1,4 +1,4 @@
-/* $Id: task.h,v 1.15 2001/09/16 15:39:40 jorge Exp $ */
+/* $Id: task.h,v 1.16 2001/09/21 14:43:40 jorge Exp $ */
 
 #ifndef _TASK_H_
 #define _TASK_H_
@@ -44,7 +44,8 @@ struct task {
 
 struct slave_database;
 
-void init_tasks (struct task *task);
+void task_init_all (struct task *task);
+void task_init (struct task *task);
 int task_available (struct slave_database *sdb);
 void task_report (struct task *task);
 char *task_status_string (unsigned char status);
