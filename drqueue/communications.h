@@ -1,4 +1,4 @@
-/* $Id: communications.h,v 1.6 2001/08/06 10:29:26 jorge Exp $ */
+/* $Id: communications.h,v 1.7 2001/08/22 09:02:26 jorge Exp $ */
 
 #ifndef _COMMUNICATIONS_H_
 #define _COMMUNICATIONS_H_
@@ -13,7 +13,7 @@ int accept_socket_slave (int sfd);
 int connect_to_master (void);
 int connect_to_slave (char *slave);
 
-void recv_request (int sfd, struct request *request,int who);
+int  recv_request (int sfd, struct request *request);
 int  send_request (int sfd, struct request *request,int who);
 void send_computer (int sfd, struct computer *computer,int who);
 void recv_computer (int sfd, struct computer *computer,int who);
@@ -23,8 +23,8 @@ void recv_computer_status (int sfd, struct computer_status *status,int who);
 void send_computer_status (int sfd, struct computer_status *status,int who);
 void recv_job (int sfd, struct job *job,int who);
 void send_job (int sfd, struct job *job,int who);
-void recv_task (int sfd, struct task *task,int who);
-void send_task (int sfd, struct task *task,int who);
+int  recv_task (int sfd, struct task *task);
+int  send_task (int sfd, struct task *task);
 
 
 #endif /* _COMMUNICATIONS_H_ */
