@@ -1,4 +1,4 @@
-/* $Id: logger.c,v 1.10 2001/08/07 13:00:32 jorge Exp $ */
+/* $Id: logger.c,v 1.11 2001/08/08 10:54:33 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -15,6 +15,8 @@
 #include "task.h"
 #include "job.h"
 #include "computer.h"
+
+int loglevel = L_WARNING;
 
 void log_slave_task (struct task *task,int level,char *msg)
 {
