@@ -51,7 +51,6 @@ extern int phantom[2];
 
 void slave_get_options (int *argc,char ***argv, int *force, struct slave_database *sdb);
 void usage (void);
-void slave_config_parse (struct slave_database *sdb);
 
 void set_signal_handlers (void);
 void set_signal_handlers_child_listening (void); /* For the accepting process */
