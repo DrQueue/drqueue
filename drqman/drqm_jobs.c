@@ -78,6 +78,7 @@ static GtkWidget *dnj_flags_widgets (struct drqm_jobs_info *info);
 static void dnj_flags_cbmailnotify_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info);
 static void dnj_flags_cbdifemail_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info);
 static void dnj_flags_cbjobdepend_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info);
+static void dnj_flags_bjobdepend_clicked (GtkWidget *button, struct drqm_jobs_info *info);
 
 /* JOB ACTIONS */
 static GtkWidget *DeleteJobDialog (struct drqm_jobs_info *info);
@@ -1223,6 +1224,7 @@ GtkWidget *dnj_flags_widgets (struct drqm_jobs_info *info)
   GtkWidget *vbox, *hbox;
   GtkWidget *cbutton,*entry;
   GtkTooltips *tooltips;
+	GtkWidget *button;
   struct passwd *pw;
 
   tooltips = TooltipsNew ();
@@ -1265,7 +1267,9 @@ GtkWidget *dnj_flags_widgets (struct drqm_jobs_info *info)
   gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.flags.cbdifemail),FALSE);
   gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.flags.edifemail),FALSE);
 
-  hbox = gtk_hbox_new (TRUE,2);
+  
+	// Job dependencies
+	hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start (GTK_BOX(vbox),hbox,TRUE,FALSE,2);
 
   cbutton = gtk_check_button_new_with_label ("Job depends on another");
@@ -1279,18 +1283,44 @@ GtkWidget *dnj_flags_widgets (struct drqm_jobs_info *info)
   gtk_tooltips_set_tip(tooltips,entry,"Write here the job index to depend on",NULL);
   info->dnj.flags.ejobdepend = entry;
 
+	button = gtk_button_new_with_label ("List jobs");
+	gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
+	gtk_tooltips_set_tip(tooltips,button,"Show a list of jobs",NULL);
+	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(dnj_flags_bjobdepend_clicked),info);
+	info->dnj.flags.bjobdepend = button;
+
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.flags.cbjobdepend),FALSE);
   gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.flags.ejobdepend),FALSE);
+	gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.flags.bjobdepend),FALSE);
 
   return (frame);
+}
+
+void dnj_flags_bjobdepend_clicked (GtkWidget *button, struct drqm_jobs_info *info)
+{
+	GtkWidget *dialog;
+	GtkWidget *swindow;
+
+	dialog = gtk_dialog_new();
+	gtk_window_set_title (GTK_WINDOW(dialog),"List of jobs");
+
+	swindow = gtk_scrolled_window_new (NULL,NULL);
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(swindow),GTK_POLICY_AUTOMATIC,GTK_POLICY_AUTOMATIC);
+	gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox),swindow);
+
+	gtk_widget_show_all (dialog);
+
+	gtk_grab_add (dialog);
 }
 
 void dnj_flags_cbjobdepend_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info)
 {
   if (GTK_TOGGLE_BUTTON(info->dnj.flags.cbjobdepend)->active) {
     gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.flags.ejobdepend),TRUE);
+		gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.flags.bjobdepend),TRUE);
   } else {
     gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.flags.ejobdepend),FALSE);
+		gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.flags.bjobdepend),FALSE);
   }
 }
 
