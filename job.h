@@ -21,22 +21,16 @@
 #ifndef _JOB_H_
 #define _JOB_H_
 
-#ifdef __LINUX
+#if defined (__LINUX)
+#include <stdint.h>
+#elif defined (__IRIX)
+#include <sys/types.h>
+#elif defined (__OSX)
+#include <stdint.h>
+#elif defined (__FREEBSD)
 #include <stdint.h>
 #else
-# ifdef __IRIX
-#  include <sys/types.h>
-# else
-#  ifdef __OSX
-#   include <stdint.h>
-#  else
-#   ifdef __FREEBSD
-#    include <stdint.h>
-#   else
-#    error You need to define the OS, or OS defined not supported
-#   endif
-#  endif
-# endif
+#error You need to define the OS, or OS defined not supported
 #endif
 
 #include <time.h>
@@ -60,7 +54,12 @@ struct frame_info {
   char exitcode;		/* Exit code of the process */
   uint32_t icomp;		/* Index to computer */
   uint16_t itask;		/* Index to task on computer */
+	uint16_t requeued; // Number of times that this frame has been requeued, starts at 0
+	uint16_t flags;    // Frame flags
 };
+
+// Frame Flags
+#define FF_REQUEUE	(1<<0)	// Frame has to be requeued when finished.
 
 /* LIMITS SECTION */
 struct job_limits {

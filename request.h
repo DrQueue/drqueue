@@ -86,6 +86,8 @@ void handle_r_r_jobsesup (int sfd,struct database *wdb,int icomp,struct request 
 void handle_r_r_joblnmcs (int sfd,struct database *wdb,int icomp,struct request *req);
 void handle_r_r_joblnmccs (int sfd,struct database *wdb,int icomp,struct request *req);
 void handle_r_r_jobpriup (int sfd,struct database *wdb,int icomp,struct request *req);
+void handle_r_r_jobfinfo (int sfd,struct database *wdb,int icomp,struct request *req);
+void handle_r_r_jobfrstrqd (int sfd,struct database *wdb,int icomp,struct request *req);
 
 /* sent TO MASTER */
 void update_computer_status (struct slave_database *database); /* The slave calls this function to update the */
@@ -107,12 +109,14 @@ int request_job_frame_waiting (uint32_t ijob, uint32_t frame, int who);
 int request_job_frame_kill (uint32_t ijob, uint32_t frame, int who);
 int request_job_frame_finish (uint32_t ijob, uint32_t frame, int who);
 int request_job_frame_kill_finish (uint32_t ijob, uint32_t frame, int who);
+int request_job_frame_info (uint32_t ijob, uint32_t frame, struct frame_info *fi, int who);
 int request_slavexit (uint32_t icomp, int who);
 int request_job_sesupdate (uint32_t ijob, uint32_t frame_start,uint32_t frame_end,
 													 uint32_t frame_step, uint32_t block_size, int who);
 int request_job_limits_nmaxcpus_set (uint32_t ijob, uint16_t nmaxcpus, int who);
 int request_job_limits_nmaxcpuscomputer_set (uint32_t ijob, uint16_t nmaxcpuscomputer, int who);
 int request_job_priority_update (uint32_t ijob, uint32_t priority, int who);
+int request_job_frame_reset_requeued (uint32_t ijob, uint32_t frame, int who);
 
 /* sent TO SLAVE */
 int request_slave_killtask (char *slave,uint16_t itask,int who);

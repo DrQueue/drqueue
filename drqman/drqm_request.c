@@ -197,6 +197,11 @@ void drqm_request_job_frame_finish (uint32_t jobid,uint32_t frame)
   request_job_frame_finish (jobid,frame,CLIENT);
 }
 
+void drqm_request_job_frame_reset_requeued (uint32_t jobid,uint32_t frame)
+{
+  request_job_frame_reset_requeued (jobid,frame,CLIENT);
+}
+
 void drqm_request_job_frame_kill_finish (uint32_t jobid,uint32_t frame)
 {
   request_job_frame_kill_finish (jobid,frame,CLIENT);

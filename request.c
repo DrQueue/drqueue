@@ -16,7 +16,9 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-/* $Id$ */
+// $Id$
+//
+
 #include <unistd.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -118,7 +120,7 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
     handle_r_r_compxfer (sfd,wdb,icomp,&request);
     break;
   case R_R_JOBFWAIT:
-    log_master (L_DEBUG,"Request job frame set to waiting");
+    log_master (L_DEBUG,"Request job frame set to waiting"); // Requeue (do we need another function ?)
     handle_r_r_jobfwait (sfd,wdb,icomp,&request);
     break;
   case R_R_JOBFKILL:
@@ -162,6 +164,14 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
     handle_r_r_jobpriup (sfd,wdb,icomp,&request);
 		request_all_slaves_job_available(wdb);
     break;
+	case R_R_JOBFINFO:
+		log_master (L_DEBUG,"Frame info");
+		handle_r_r_jobfinfo (sfd,wdb,icomp,&request);
+		break;
+	case R_R_JOBFRSTRQD:
+		log_master (L_DEBUG,"Frame reset requeued");
+		handle_r_r_jobfrstrqd (sfd,wdb,icomp,&request);
+		break;
   default:
     log_master (L_WARNING,"Unknown request");
   }
@@ -884,9 +894,15 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
     task.frame = job_frame_number_to_index (&wdb->job[task.ijob],task.frame);/* frame converted to index frame */
     /* Now we should check the exit code to act accordingly */
     if (DR_WIFEXITED(task.exitstatus)) {
-      fi[task.frame].status = FS_FINISHED;
-      fi[task.frame].exitcode = DR_WEXITSTATUS(task.exitstatus);
-      time(&fi[task.frame].end_time);
+			if (fi[task.frame].flags & FF_REQUEUE) {
+				fi[task.frame].status = FS_WAITING;
+				fi[task.frame].start_time = 0;
+				fi[task.frame].requeued++;
+			} else {
+      	fi[task.frame].status = FS_FINISHED;
+      	fi[task.frame].exitcode = DR_WEXITSTATUS(task.exitstatus);
+      	time(&fi[task.frame].end_time);
+			}
     } else {
       /* Process exited abnormally either killed by us or by itself (SIGSEGV) */
       if (DR_WIFSIGNALED(task.exitstatus)) {
@@ -901,6 +917,8 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
 						break;
 					case FS_ASSIGNED:
 						fi[task.frame].status = FS_WAITING;
+						fi[task.frame].start_time = 0;
+						fi[task.frame].requeued++;
 						break;
 					case FS_ERROR:
 					case FS_FINISHED:
@@ -1481,6 +1499,55 @@ void handle_r_r_jobxferfi (int sfd,struct database *wdb,int icomp,struct request
   log_master (L_DEBUG,"Exiting handle_r_r_jobxferfi");
 }
 
+void handle_r_r_jobfinfo (int sfd,struct database *wdb,int icomp,struct request *req)
+{
+  /* This function is called unlocked */
+  /* This function is called by the master */
+  uint32_t ijob;
+  struct frame_info fi_copy,*fi;
+	uint32_t iframe, frame;
+
+  log_master (L_DEBUG,"Entering handle_r_r_jobfinfo");
+
+  ijob = req->data;
+
+  semaphore_lock(wdb->semid);
+  if (!job_index_correct_master(wdb,ijob)) {
+    semaphore_release(wdb->semid);
+    log_master (L_INFO,"Job asked to be transfered frame info does not exist");
+    return;
+  }
+  
+	if (!recv_request(sfd,req)) {
+		log_master (L_ERROR,"Receiving request");
+		return;
+	}
+	
+	frame = req->data;
+
+  if ((fi = attach_frame_shared_memory (wdb->job[ijob].fishmid)) == (void*)-1) {
+    job_delete(&wdb->job[ijob]);
+    /* We send a not registered message because we have deleted the problematic job */
+    semaphore_release(wdb->semid);
+    log_master (L_WARNING,"Could not attach frame shared memory in handle_r_r_jobfrinfo. Deleting problematic job.");
+    return;
+  }
+  
+  iframe = job_frame_number_to_index (&wdb->job[ijob],frame);
+  memcpy(&fi_copy,&fi[iframe],sizeof(struct frame_info));
+  detach_frame_shared_memory(fi);
+  semaphore_release(wdb->semid);
+
+  /* We make a copy so we don't have the master locked during a network transfer */
+
+	if (!send_frame_info (sfd,&fi_copy)) {
+		log_master (L_ERROR,"Sending frame info");
+		return;
+	}
+
+  log_master (L_DEBUG,"Exiting handle_r_r_jobfinfo");
+}
+
 int request_comp_xfer (uint32_t icomp, struct computer *comp, int who)
 {
   /* This function can be called by anyone */
@@ -1570,6 +1637,42 @@ void handle_r_r_compxfer (int sfd,struct database *wdb,int icomp,struct request 
   send_computer (sfd,&comp);
 }
 
+int request_job_frame_info (uint32_t ijob, uint32_t frame, struct frame_info *fi, int who)
+{
+	int sfd;
+	struct request req;
+
+	if ((sfd = connect_to_master ()) == -1) {
+		drerrno = DRE_NOCONNECT;
+		return 0;
+	}
+	
+	req.type = R_R_JOBFINFO;
+	req.data = ijob;
+  if (!send_request (sfd,&req,who)) {
+		drerrno = DRE_ERRORWRITING;
+		close (sfd);
+		return 0;
+	}
+
+	req.type = R_R_JOBFINFO;
+	req.data = frame;
+
+	if (!send_request (sfd,&req,who)) {
+		drerrno = DRE_ERRORWRITING;
+		close (sfd);
+		return 0;
+	}
+
+	if (!recv_frame_info(sfd,fi)) {
+		drerrno = DRE_ERRORWRITING;
+		close (sfd);
+		return 0;
+	}
+
+	return 1;
+}
+
 int request_job_frame_waiting (uint32_t ijob, uint32_t frame, int who)
 {
   /* On error returns 0, error otherwise drerrno is set to the error */
@@ -1652,12 +1755,15 @@ void handle_r_r_jobfwait (int sfd,struct database *wdb,int icomp,struct request 
 
   switch (fi[iframe].status) {
   case FS_WAITING:
+		break;
   case FS_ASSIGNED:
+		fi[iframe].flags |= FF_REQUEUE;
     break;
   case FS_ERROR:
   case FS_FINISHED:
     fi[iframe].status = FS_WAITING;
     fi[iframe].start_time = 0;
+		fi[iframe].requeued++;
   }
   detach_frame_shared_memory (fi);
 
@@ -1803,6 +1909,41 @@ int request_job_frame_finish (uint32_t ijob, uint32_t frame, int who)
   return 1;
 }
 
+int request_job_frame_reset_requeued (uint32_t ijob, uint32_t frame, int who)
+{
+  /* On error returns 0, error otherwise drerrno is set to the error */
+  /* This function asks for a frame to be set as finished, it only works */
+  /* on FS_WAITING frames. */
+  int sfd;
+  struct request req;
+
+  if ((sfd = connect_to_master ()) == -1) {
+    drerrno = DRE_NOCONNECT;
+    return 0;
+  }
+
+  req.type = R_R_JOBFRSTRQD;
+  req.data = ijob;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORWRITING;
+    close (sfd);
+    return 0;
+  }
+
+  req.type = R_R_JOBFRSTRQD;
+  req.data = frame;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORWRITING;
+    close (sfd);
+    return 0;
+  }
+
+  close (sfd);
+  return 1;
+}
+
 void handle_r_r_jobffini (int sfd,struct database *wdb,int icomp,struct request *req)
 {
   /* The master handles this type of packages */
@@ -1811,7 +1952,6 @@ void handle_r_r_jobffini (int sfd,struct database *wdb,int icomp,struct request 
   uint32_t ijob;
   uint32_t frame;
   uint32_t iframe;
-  uint32_t nframes;
   struct frame_info *fi;
 
   log_master(L_DEBUG,"Entering handle_r_r_jobffini");
@@ -1831,12 +1971,9 @@ void handle_r_r_jobffini (int sfd,struct database *wdb,int icomp,struct request 
   if (!job_index_correct_master(wdb,ijob))
     return;
 
-  nframes = job_nframes (&wdb->job[ijob]);
-
   if (!job_frame_number_correct(&wdb->job[ijob],frame))
     return;
   
-  nframes = job_nframes (&wdb->job[ijob]);
   iframe = job_frame_number_to_index (&wdb->job[ijob],frame);
   
   if ((fi = attach_frame_shared_memory (wdb->job[ijob].fishmid)) == (void *)-1) {
@@ -1855,6 +1992,55 @@ void handle_r_r_jobffini (int sfd,struct database *wdb,int icomp,struct request 
   case FS_FINISHED:
     break;
   }
+  detach_frame_shared_memory (fi);
+
+  semaphore_release (wdb->semid);
+
+  log_master(L_DEBUG,"Exiting handle_r_r_jobffini");
+}
+
+void handle_r_r_jobfrstrqd (int sfd,struct database *wdb,int icomp,struct request *req)
+{
+  /* The master handles this type of packages */
+  /* This function is called unlocked */
+  /* This function is called by the master */
+  uint32_t ijob;
+  uint32_t frame;
+  uint32_t iframe;
+  struct frame_info *fi;
+
+  log_master(L_DEBUG,"Entering handle_r_r_jobffini");
+
+  ijob = req->data;
+
+  if (!recv_request (sfd,req)) {
+    return;
+  }
+
+  frame = req->data;
+  
+  log_master(L_DEBUG,"Requested job frame finish for Job %i Frame %i ",ijob,frame);
+
+  semaphore_lock(wdb->semid);
+
+  if (!job_index_correct_master(wdb,ijob))
+    return;
+
+
+  if (!job_frame_number_correct(&wdb->job[ijob],frame))
+    return;
+  
+  iframe = job_frame_number_to_index (&wdb->job[ijob],frame);
+  
+  if ((fi = attach_frame_shared_memory (wdb->job[ijob].fishmid)) == (void *)-1) {
+    job_delete(&wdb->job[ijob]);
+    semaphore_release(wdb->semid);
+    log_master (L_WARNING,"Could not attach frame shared memory in handle_r_r_jobffini. Deleting problematic job.");
+    return;
+  }
+
+	fi[iframe].requeued = 0;
+
   detach_frame_shared_memory (fi);
 
   semaphore_release (wdb->semid);
