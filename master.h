@@ -1,4 +1,4 @@
-/* $Id: master.h,v 1.8 2002/08/04 21:30:01 jorge Exp $ */
+/* $Id: master.h,v 1.9 2004/01/07 21:50:21 jorge Exp $ */
 
 #ifndef _MASTER_H_
 #define _MASTER_H_
@@ -6,6 +6,8 @@
 #include "database.h"
 
 #define KEY_MASTER "%s/bin/master"	/* Key for shared memory and semaphores */
+
+extern int phantom[2];
 
 void master_get_options (int *argc,char ***argv, int *force);
 void usage (void);

@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.60 2003/12/18 04:11:07 jorge Exp $ */
+/* $Id: slave.c,v 1.61 2004/01/07 21:50:21 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -16,7 +16,13 @@
 #include "slave.h"
 #include "libdrqueue.h"
 
-struct slave_database sdb;	/* slave database */
+struct slave_database sdb;			/* slave database */
+fd_set read_set;
+
+/* Phantom is declared in libdrqueue.h */
+struct timeval timeout;
+int rs;													/* Result from select */
+char buffer[BUFFERLEN];					/* Buffer to read from phantom */
 
 int main (int argc,char *argv[])
 {
@@ -26,11 +32,6 @@ int main (int argc,char *argv[])
   slave_get_options(&argc,&argv,&force);
 
   log_slave_computer (L_INFO,"Starting...");
-
-/*    if (!common_date_check()) { */
-/*      fprintf (stderr,"Error: license has expired\n"); */
-/*      exit (1); */
-/*    } */
 
   if (!common_environment_check()) {
     fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
@@ -51,9 +52,14 @@ int main (int argc,char *argv[])
 
   register_slave (sdb.comp);
   update_computer_limits(&sdb.comp->limits); /* Does not need to be locked because at this point */
-					     /* because there is only one process running. The rest of the time */
-					     /* either we call it locked or we make a copy of the limits while locked */
-					     /* and then we send that copy */
+																/* because there is only one process running. The rest of the time */
+																/* either we call it locked or we make a copy of the limits while locked */
+																/* and then we send that copy */
+
+	if (pipe(phantom) != 0) {
+		fprintf (stderr,"Phantom pipe could not be created\n");
+		exit (1);
+	}
 
   if (fork() == 0) {
     /* Create the listening process */
@@ -80,16 +86,36 @@ int main (int argc,char *argv[])
     update_computer_status (&sdb); /* sends the computer status to the master */
 				/* Does not need to be locked because we lock inside it */
 		
-    if (launched) {
+		FD_ZERO(&read_set);
+		FD_SET(phantom[0],&read_set);
+		timeout.tv_sec = SLAVEDELAY;
+		timeout.tv_usec = 0;
+		if (launched) {
       /* Just to have good load values on next loop */
       /* if we don't wait more here, the load won't have */
       /* assimilated the new processes */
       /* It takes a while (1 minute) to the load average to reflect the real load */
       /* But we need to connect before MAXTIMENOCONN because if not */
       /* the computer is removed from the queue */
-      sleep (SLAVEDELAY);
+			timeout.tv_sec = SLAVEDELAY*2;
+			timeout.tv_usec = 0;
     }
-    sleep (SLAVEDELAY);
+		rs = select (phantom[0]+1,&read_set,NULL,NULL,&timeout);
+		switch (rs) {
+		case -1:
+			/* Error in select */
+			log_slave_computer(L_ERROR,"Select call failed");
+		case 0:
+			log_slave_computer(L_DEBUG,"Select call timeout");
+			break;
+		default:
+			if (FD_ISSET(phantom[0],&read_set)) {
+				log_slave_computer(L_DEBUG,"Select call, notification came. Available for reading.");
+				read(phantom[0],buffer,BUFFERLEN);
+			} else {
+				log_slave_computer(L_WARNING,"Select call, report this message, please. It should never happen.");
+			}
+		}
   }
 
   exit (0);
@@ -307,7 +333,7 @@ void slave_listening_process (struct slave_database *sdb)
       } else {
 				/* Father */
 				close (csfd);
-				if (csfd > 4)
+				if (csfd > 6)
 					printf ("!! csfd:	 %i\n",csfd);
       }
     }
@@ -353,7 +379,7 @@ void launch_task (struct slave_database *sdb)
 
       setpgid(0,0);		/* So this process doesn't receive signals from the others */
       set_signal_handlers_task_exec ();
-
+			
       if ((lfd = log_dumptask_open (&sdb->comp->status.task[sdb->itask])) != -1) {
 				dup2 (lfd,STDOUT_FILENO);
 				dup2 (lfd,STDERR_FILENO);
@@ -383,29 +409,29 @@ void launch_task (struct slave_database *sdb)
       semaphore_lock(sdb->semid);
       sdb->comp->status.task[sdb->itask].exitstatus = 0;
       if (WIFSIGNALED(rc)) {
-	/* Process exited abnormally either killed by us or by itself (SIGSEGV) */
-/*  	printf ("\n\nSIGNALED with %i\n",WTERMSIG(rc)); */
-	sdb->comp->status.task[sdb->itask].exitstatus |= DR_SIGNALEDFLAG ;
-	sdb->comp->status.task[sdb->itask].exitstatus |= WTERMSIG(rc);
-	log_slave_task(&sdb->comp->status.task[sdb->itask],L_INFO,"Task signaled");
+				/* Process exited abnormally either killed by us or by itself (SIGSEGV) */
+				/*  	printf ("\n\nSIGNALED with %i\n",WTERMSIG(rc)); */
+				sdb->comp->status.task[sdb->itask].exitstatus |= DR_SIGNALEDFLAG ;
+				sdb->comp->status.task[sdb->itask].exitstatus |= WTERMSIG(rc);
+				log_slave_task(&sdb->comp->status.task[sdb->itask],L_INFO,"Task signaled");
       } else {
-	if (WIFEXITED(rc)) {
-/*  	  printf ("\n\nEXITED with %i\n",WEXITSTATUS(rc)); */
-	  sdb->comp->status.task[sdb->itask].exitstatus |= DR_EXITEDFLAG ;
-	  sdb->comp->status.task[sdb->itask].exitstatus |= WEXITSTATUS(rc);
-/*  	  printf ("\n\nEXITED with %i\n",DR_WEXITSTATUS(sdb->comp->status.task[sdb->itask].exitstatus)); */
-	  log_slave_task(&sdb->comp->status.task[sdb->itask],L_INFO,"Task finished");
-	}
+				if (WIFEXITED(rc)) {
+					/*  	  printf ("\n\nEXITED with %i\n",WEXITSTATUS(rc)); */
+					sdb->comp->status.task[sdb->itask].exitstatus |= DR_EXITEDFLAG ;
+					sdb->comp->status.task[sdb->itask].exitstatus |= WEXITSTATUS(rc);
+					/* 	printf ("\n\nEXITED with %i\n",DR_WEXITSTATUS(sdb->comp->status.task[sdb->itask].exitstatus)); */
+					log_slave_task(&sdb->comp->status.task[sdb->itask],L_INFO,"Task finished");
+				}
       }
       semaphore_release(sdb->semid);
 
       request_task_finished (sdb);
-
+			
       semaphore_lock(sdb->semid);
       sdb->comp->status.task[sdb->itask].used = 0; /* We don't need the task anymore */
       semaphore_release(sdb->semid);
     }
-
+		
     exit (0);
   }
 }

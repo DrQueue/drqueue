@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.39 2002/08/04 21:30:01 jorge Exp $ */
+/* $Id: master.c,v 1.40 2004/01/07 21:50:21 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -17,11 +17,11 @@
 #include "master.h"
 #include "libdrqueue.h"
 
-struct database *wdb;		/* whole database */
+struct database *wdb;						/* whole database */
 int icomp;			/* index to accepted computer, local to every child */
 
 #ifdef COMM_REPORT
-time_t tstart;			/* Time at wich the master has started running */
+time_t tstart;			 /* Time at wich the master has started running */
 #endif
 
 int main (int argc, char *argv[])
@@ -75,32 +75,32 @@ int main (int argc, char *argv[])
     if ((csfd = accept_socket (sfd,wdb,&addr)) != -1) {
       if ((child = fork()) == 0) {
 #ifdef COMM_REPORT
-	long int bsentb = bsent; /* Bytes sent before */
-	long int brecvb = brecv; /* Bytes received before */
+				long int bsentb = bsent; /* Bytes sent before */
+				long int brecvb = brecv; /* Bytes received before */
 #endif
-	/* Create a connection handler */
-	fflush(stderr);
-	set_signal_handlers_child_conn_handler ();
-	close (sfd);
-	set_alarm ();
-	icomp = computer_index_addr (wdb,addr.sin_addr);
-	handle_request_master (csfd,wdb,icomp,&addr);
-	close (csfd);
-#ifdef COMM_REPORT
-	semaphore_lock(wdb->semid);
-	wdb->bsent += bsent - bsentb;
-	wdb->brecv += brecv - brecvb;
-	semaphore_release(wdb->semid);
-#endif
-	exit (0);
+				/* Create a connection handler */
+				fflush(stderr);
+				set_signal_handlers_child_conn_handler ();
+				close (sfd);
+				set_alarm ();
+				icomp = computer_index_addr (wdb,addr.sin_addr);
+				handle_request_master (csfd,wdb,icomp,&addr);
+				close (csfd);
+#ifdef COMM_REPORT	
+				semaphore_lock(wdb->semid);
+				wdb->bsent += bsent - bsentb;
+				wdb->brecv += brecv - brecvb;
+				semaphore_release(wdb->semid);
+#endif	
+				exit (0);
       } else if (child != -1) {
-	close (csfd);
-	if (csfd > 4)
-	  printf ("Growing !! csfd: %i\n",csfd);
+				close (csfd);
+				if (csfd > 4)
+					printf ("Growing !! csfd: %i\n",csfd);
       } else {
-	close (csfd);
-	log_master (L_ERROR,"Forking !!\n");
-	sleep (5);
+				close (csfd);
+				log_master (L_ERROR,"Forking !!\n");
+				sleep (5);
       }
     }
   }
@@ -360,8 +360,8 @@ void master_consistency_checks (struct database *wdb)
 
     for (i=0;i<MAXJOBS;i++) {
       if (wdb->job[i].used) {
-	/* In this function will requeue non running frames registered as running */
-	job_update_info (wdb,i);
+				/* In this function will requeue non running frames registered as running */
+				job_update_info (wdb,i);
       }
     }
 
@@ -378,14 +378,14 @@ void check_lastconn_times (struct database *wdb)
   for (i=0;i<MAXCOMPUTERS;i++) {
     if (wdb->computer[i].used) {
       if ((now - wdb->computer[i].lastconn) > MAXTIMENOCONN) {
-	log_master_computer (&wdb->computer[i],L_WARNING,
-			     "Maximum time without connecting exceeded. Deleting. (Time not connected: %i)",
-			     (int) (now - wdb->computer[i].lastconn));
-	semaphore_lock(wdb->semid);
-	/* We only need to remove it this way, without requeueing its frames because */
-	/* the frames will be requeued on the consistency checks (job_update_info) */
-	wdb->computer[i].used = 0;
-	semaphore_release(wdb->semid);
+				log_master_computer (&wdb->computer[i],L_WARNING,
+														 "Maximum time without connecting exceeded. Deleting. (Time not connected: %i)",
+														 (int) (now - wdb->computer[i].lastconn));
+				semaphore_lock(wdb->semid);
+				/* We only need to remove it this	 way, without requeueing its frames because */
+				/* the frames will be requeued on the co	nsistency checks (job_update_info) */
+				wdb->computer[i].used = 0;
+				semaphore_release(wdb->semid);
       }
     }
   }
