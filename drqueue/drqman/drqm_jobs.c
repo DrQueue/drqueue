@@ -648,8 +648,8 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
   button = gtk_button_new_with_label ("Cancel");
   gtk_tooltips_set_tip(tooltips,button,"Close without sending any information",NULL);
   gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,TRUE,2);
-  g_signal_connect (G_OBJECT(button),"clicked",
-										G_CALLBACK(dnj_cleanup),&info->dnj);
+	//  g_signal_connect (G_OBJECT(button),"clicked",
+	//										G_CALLBACK(dnj_cleanup),&info->dnj);
   g_signal_connect_swapped (G_OBJECT(button),"clicked",
 														G_CALLBACK(gtk_widget_destroy),
 														(gpointer) window);
