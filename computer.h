@@ -1,4 +1,4 @@
-/* $Id: computer.h,v 1.8 2001/07/19 09:03:51 jorge Exp $ */
+/* $Id: computer.h,v 1.9 2001/09/01 16:32:28 jorge Exp $ */
 
 #ifndef _COMPUTER_H_
 #define _COMPUTER_H_
@@ -22,6 +22,7 @@ int computer_index_addr (void *pwdb,struct in_addr addr); /* I use pointers to v
 int computer_index_name (void *pwdb,char *name);          /* because if I did I would have to create a dependency loop */
 int computer_index_free (void *pwdb);
 int computer_available (struct computer *computer);
+int computer_ntasks (struct computer *comp);
 void computer_update_assigned (struct database *wdb,uint32_t ijob,int iframe,int icomp,int itask);
 void computer_init (struct computer *computer);
 int computer_ncomputers_masterdb (struct database *wdb);
