@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.54 2002/05/17 16:05:55 jorge Exp $ */
+/* $Id: job.c,v 1.55 2002/06/17 16:27:29 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -605,7 +605,7 @@ void job_environment_set (struct job *job, uint32_t iframe)
   static char padframe[BUFFERLEN];
   static char s_frame[BUFFERLEN];
   static char scene[BUFFERLEN];
-  static char project[BUFFERLEN];
+  static char renderdir[BUFFERLEN];
   static char image[BUFFERLEN];
   static char owner[BUFFERLEN];
 
@@ -634,8 +634,8 @@ void job_environment_set (struct job *job, uint32_t iframe)
   case KOJ_MAYA:
     snprintf (scene,BUFFERLEN-1,"SCENE=%s",job->koji.maya.scene);
     putenv (scene);
-    snprintf (project,BUFFERLEN-1,"PROJECT=%s",job->koji.maya.project);
-    putenv (project);
+    snprintf (renderdir,BUFFERLEN-1,"RD=%s",job->koji.maya.renderdir);
+    putenv (renderdir);
     snprintf (image,BUFFERLEN-1,"IMAGE=%s",job->koji.maya.image);
     putenv (image);
     break;

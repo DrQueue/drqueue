@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.31 2002/05/17 16:05:56 jorge Exp $ */
+/* $Id: job.h,v 1.32 2002/06/17 16:27:30 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -48,7 +48,7 @@ struct job_limits {
 union koj_info {		/* Kind of job information */
   struct koji_maya {
     char scene[BUFFERLEN];
-    char project[BUFFERLEN];
+    char renderdir[BUFFERLEN];	/* Output directory for the images */
     char image[BUFFERLEN];
     char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
   } maya;

@@ -1,4 +1,4 @@
-/* $Id: mayasg.h,v 1.3 2001/09/06 10:43:41 jorge Exp $ */
+/* $Id: mayasg.h,v 1.4 2002/06/17 16:27:32 jorge Exp $ */
 
 #ifndef _MAYASG_H_
 #define _MAYASG_H_
@@ -6,7 +6,7 @@
 #include "constants.h"
 
 struct mayasgi {		/* Maya Script Generator Info */
-  char project[BUFFERLEN];
+  char renderdir[BUFFERLEN];
   char scene[BUFFERLEN];
   char image[BUFFERLEN];
   char scriptdir[BUFFERLEN];
