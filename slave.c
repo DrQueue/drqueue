@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.59 2002/08/04 21:30:01 jorge Exp $ */
+/* $Id: slave.c,v 1.60 2003/12/18 04:11:07 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -70,16 +70,16 @@ int main (int argc,char *argv[])
     launched = 0;
     while (computer_available(sdb.comp)) {
       if (request_job_available(&sdb)) {
-	launch_task(&sdb);
-	launched = 1;
+				launch_task(&sdb);
+				launched = 1;
       } else {
-	break;			/* The while */
+				break;			/* The while */
       }
     } /* WARNING could be in this loop forever if no care is taken !! */
-
+		
     update_computer_status (&sdb); /* sends the computer status to the master */
 				/* Does not need to be locked because we lock inside it */
-
+		
     if (launched) {
       /* Just to have good load values on next loop */
       /* if we don't wait more here, the load won't have */
@@ -297,18 +297,18 @@ void slave_listening_process (struct slave_database *sdb)
   while (1) {
     if ((csfd = accept_socket_slave (sfd)) != -1) {
       if (fork() == 0) {
-	/* Create a connection handler */
-	set_signal_handlers_child_chandler ();
-	close (sfd);
-	alarm (MAXTIMECONNECTION);
-	handle_request_slave (csfd,sdb);
-	close (csfd);
-	exit (0);
+				/* Create a connection handler */
+				set_signal_handlers_child_chandler ();
+				close (sfd);
+				alarm (MAXTIMECONNECTION);
+				handle_request_slave (csfd,sdb);
+				close (csfd);
+				exit (0);
       } else {
-	/* Father */
-	close (csfd);
-	if (csfd > 4)
-	  printf ("!! csfd: %i\n",csfd);
+				/* Father */
+				close (csfd);
+				if (csfd > 4)
+					printf ("!! csfd:	 %i\n",csfd);
       }
     }
   }
@@ -355,24 +355,24 @@ void launch_task (struct slave_database *sdb)
       set_signal_handlers_task_exec ();
 
       if ((lfd = log_dumptask_open (&sdb->comp->status.task[sdb->itask])) != -1) {
-	dup2 (lfd,STDOUT_FILENO);
-	dup2 (lfd,STDERR_FILENO);
-	close (lfd);
+				dup2 (lfd,STDOUT_FILENO);
+				dup2 (lfd,STDERR_FILENO);
+				close (lfd);
       }
-
+			
       task_environment_set(&sdb->comp->status.task[sdb->itask]);
-
+			
       execve(SHELL_PATH,(char*const*)new_argv,environ);
       perror("execve");
       exit(errno);		/* If we arrive here, something happened exec'ing */
     }
-
+		
     /* Then we set the process as running */
     semaphore_lock(sdb->semid);
     sdb->comp->status.task[sdb->itask].status = TASKSTATUS_RUNNING;
     sdb->comp->status.task[sdb->itask].pid = task_pid;
     semaphore_release(sdb->semid);
-
+		
     if (waitpid(task_pid,&rc,0) == -1) {
       /* Some problem exec'ing */
       log_slave_task(&sdb->comp->status.task[sdb->itask],L_ERROR,"Exec'ing cmdline (No child on launcher)");
