@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.13 2001/07/20 08:27:32 jorge Exp $ */
+/* $Id: communications.c,v 1.14 2001/07/24 14:50:55 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -285,6 +285,7 @@ void send_computer_status (int sfd, struct computer_status *status,int who)
       bswapped.task[i].jobindex = htons (bswapped.task[i].jobindex);
       bswapped.task[i].frame = htonl (bswapped.task[i].frame);
       bswapped.task[i].pid = htonl (bswapped.task[i].pid);
+      bswapped.task[i].exitstatus = htonl (bswapped.task[i].exitstatus);
     }
   }
 
@@ -345,6 +346,7 @@ void recv_computer_status (int sfd, struct computer_status *status,int who)
       status->task[i].jobindex = ntohs (status->task[i].jobindex);
       status->task[i].frame = ntohl (status->task[i].frame);
       status->task[i].pid = ntohl (status->task[i].pid);
+      status->task[i].exitstatus = ntohl (status->task[i].exitstatus);
     }
   }
 }
