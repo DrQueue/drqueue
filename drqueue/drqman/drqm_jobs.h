@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.9 2001/08/27 15:16:54 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.10 2001/08/27 22:09:04 jorge Exp $
  */
 
 #ifndef _DRQM_JOBS_H_
@@ -20,6 +20,7 @@ struct info_dnj {		/* dialog new job */
 struct info_djd {		/* dialog job details */
   GtkWidget *dialog;
   GtkWidget *lname;		/* label name */
+  GtkWidget *lstatus;		/* label status */
   GtkWidget *lcmd;		/* label command */
   GtkWidget *lstartend;		/* start and end frames */
   GtkWidget *lpri;		/* priority */
