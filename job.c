@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.34 2001/09/21 14:40:39 jorge Exp $ */
+/* $Id: job.c,v 1.35 2001/09/25 08:23:50 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -595,5 +595,6 @@ void job_copy (struct job *src, struct job *dst)
 
 void job_init_limits (struct job *job)
 {
-
+  job->limits.nmaxcpus = -1;	/* No limit or 65535 */
+  job->limits.nmaxcpuscomputer = -1; /* the same */
 }
