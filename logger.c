@@ -1,4 +1,4 @@
-/* $Id: logger.c,v 1.7 2001/07/20 15:27:33 jorge Exp $ */
+/* $Id: logger.c,v 1.8 2001/07/23 08:56:53 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -42,6 +42,7 @@ FILE *log_slave_open_task (struct task *task)
 {
   FILE *f;
   char filename[BUFFERLEN];
+  char dir[BUFFERLEN];
   char *basedir;
 
   if ((basedir = getenv("DRQUEUE_ROOT")) == NULL) {
@@ -49,13 +50,22 @@ FILE *log_slave_open_task (struct task *task)
     exit (1);
   }
 
-  snprintf(filename,BUFFERLEN-1,"%s/logs/%s.log",basedir,task->jobname);
-  
-  if ((f = fopen (filename,"a")) == NULL) {
-    perror ("log_slave_open_task: Couldn't open file for writing");
-    exit (1);
+  snprintf(dir,BUFFERLEN-1,"%s/logs/%s",basedir,task->jobname);
+  snprintf(filename,BUFFERLEN-1,"%s/%s.log",dir,task->jobname);
+  if ((f = fopen (filename, "a")) == NULL) {
+    if (errno == ENOENT) {
+      /* If its because the directory does not exist we try creating it first */
+      if (mkdir (dir,0775) == -1) {
+	perror ("log_slave_open_task: Couldn't create directory for task logging");
+	exit (1);
+      }
+     if ((f = fopen (filename, "a")) == NULL) {
+	perror ("log_slave_open_task: Couldn't open file for writing");
+	exit (1);
+      }
+    }
   }
-
+  
   return f;
 }
 
