@@ -22,8 +22,13 @@
 #ifndef _CONSTANTS_H_
 #define _CONSTANTS_H_
 
+#if defined (__CYGWIN)
+#define SHELL_NAME "tcsh.exe"
+#define SHELL_PATH ""
+#else
 #define SHELL_NAME "sh"
 #define SHELL_PATH "/bin/sh"
+#endif
 
 // Pools
 #define	DEFAULT_POOL "Default"

@@ -28,7 +28,11 @@
 #include "computer.h"
 #include "job.h"
 
+#if defined (__CYGWIN)
+#define KEY_SLAVE "%s/slave.exe"/* Key file for shared memory and semaphores */
+#else
 #define KEY_SLAVE "%s/slave"	/* Key file for shared memory and semaphores */
+#endif
 
 /* Each slave has a slave_database global variable that is local to each */
 /* process. _Except_ the pointer to the computer struct that is a shared */

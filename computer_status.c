@@ -33,6 +33,8 @@
 # include <stdint.h>
 # include <string.h>
 #elif defined(__FREEBSD)
+# include <stdint.h>
+#elif defined(__CYGWIN)
 #else
 # error You need to define the OS, or OS defined not supported
 #endif
@@ -182,6 +184,23 @@ void get_loadavg (uint16_t *loadavg)
   loadavg[0] = (uint16_t) (fls[0] * 100);
   loadavg[1] = (uint16_t) (fls[1] * 100);
   loadavg[2] = (uint16_t) (fls[2] * 100);
+
+#elif defined(__CYGWIN)			/* __CYGWIN  */
+  FILE *f_loadavg;
+  float a,b,c;
+  
+  if ((f_loadavg = fopen("/proc/loadavg","r")) == NULL) {
+    perror ("get_loadavg: fopen");
+    exit (1);
+  }
+
+  fscanf (f_loadavg,"%f %f %f",&a,&b,&c);
+  
+  loadavg[0] = a * 100;
+  loadavg[1] = b * 100;
+  loadavg[2] = c * 100;
+
+  fclose (f_loadavg);
 
 #else
 # error You need to define the OS, or OS defined not supported

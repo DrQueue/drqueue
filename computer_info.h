@@ -31,6 +31,8 @@
 #include <stdint.h>
 #elif defined (__FREEBSD)
 #include <stdint.h>
+#elif defined (__CYGWIN)
+#include <stdint.h>
 #else
 #error You need to define the OS, or OS defined not supported
 #endif
@@ -48,7 +50,7 @@ typedef enum {
   OS_UNKNOWN,
   OS_IRIX,
   OS_LINUX,
-  OS_WINDOWS,
+  OS_CYGWIN,
   OS_OSX,
   OS_FREEBSD
 } t_os;

@@ -981,6 +981,8 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
   
   log_master (L_DEBUG,"Everything right. Calling job_update_info.");
 
+  detach_frame_shared_memory(fi);
+
   job_update_info(wdb,task.ijob);
 
   log_master (L_DEBUG,"Exiting handle_r_r_taskfini");

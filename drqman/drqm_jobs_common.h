@@ -45,6 +45,7 @@ struct drqmj_limits {
   GtkWidget *cb_linux;
 	GtkWidget *cb_osx;
 	GtkWidget *cb_freebsd;
+	GtkWidget *cb_cygwin;
 };
 
 #endif
