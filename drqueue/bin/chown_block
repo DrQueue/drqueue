@@ -1,10 +1,12 @@
 #!/usr/bin/perl
 #
-# $Id: chown_block,v 1.3 2002/06/25 16:14:54 jorge Exp $
+# $Id: chown_block,v 1.4 2002/06/27 09:47:59 jorge Exp $
 #
 # This script changes the owner and group of a list of files
 # as stated in the command line.
 #
+
+use User::pwent;
 
 if (scalar(@ARGV) != 4) {
   usage ();
@@ -21,7 +23,8 @@ for ($i = $startf; $i <= $endf; $i++) {
   @files = glob($file);
   foreach $a (@files) {
     print "Changing permission (new owner: $user) of: $a\n";
-    chown ((getpwnam($user))[2,3],$a);
+    $pw = getpwnam ("$user") || die "User not existing\n"; 
+    chown ($pw->uid,$pw->gid,$a);
   }
 }
 
