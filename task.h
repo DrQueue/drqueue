@@ -1,4 +1,4 @@
-/* $Id: task.h,v 1.4 2001/05/28 14:21:31 jorge Exp $ */
+/* $Id: task.h,v 1.5 2001/05/30 15:11:47 jorge Exp $ */
 
 #ifndef _TASK_H_
 #define _TASK_H_
@@ -15,7 +15,7 @@ typedef enum {
   TASKSTATUS_KILLFRAME
 } t_taskstatus;
 
-struct t_task {
+struct task {
   uint8_t used;
   char jobname[MAXNAMELEN];	/* jobname */
   uint16_t jobindex;		/* index to the job in the global db */
@@ -26,6 +26,9 @@ struct t_task {
   uint8_t status;		/* status */
 };
 
-void init_tasks (struct t_task *task);
+struct slave_database;
+
+void init_tasks (struct task *task);
+int task_available (struct slave_database *sdb);
 
 #endif /* _TASK_H_ */

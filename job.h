@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.2 2001/05/28 14:21:31 jorge Exp $ */
+/* $Id: job.h,v 1.3 2001/05/30 15:11:47 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -18,8 +18,8 @@ typedef enum {
 
 typedef enum {
   FS_WAITING,			/* Waiting to be assigned */
-  FS_LOADING,			/* Assigned but not running */
-  FS_ASSIGNED,			/* Currently assigned but not finished */
+  FS_LOADING,			/* NOT USED (yet) Assigned but not running */
+  FS_ASSIGNED,			/* Currently assigned but not finished (so RUNNING) */
   FS_ERROR,			/* Finished with error */
   FS_FINISHED			/* Finished with success */
 } t_framestatus;
@@ -42,14 +42,16 @@ struct job {
   struct frame_info *frame_info; /* Status of every frame */
 };
 
-#include "slave.h"
+struct job;
+struct database;
 
 int job_index_free (void *pwdb);
 void job_report (struct job *job);
 void job_init (struct job *job);
 char *job_status_string (char status);
-int job_available (struct slave_database *sdb);
 int job_nframes (struct job *job);
-
+int job_available (struct database *wdb,int ijob, int *iframe);
+int job_first_frame_available (struct database *wdb,int ijob);
+void job_update_assigned (struct database *wdb, int ijob, int iframe, int icomp, int itask);
 
 #endif /* _JOB_H_ */
