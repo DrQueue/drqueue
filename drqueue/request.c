@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.68 2001/11/23 15:28:12 jorge Exp $ */
+/* $Id: request.c,v 1.69 2001/11/23 15:53:38 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -2142,6 +2142,7 @@ void handle_r_r_slavexit (int sfd,struct database *wdb,int icomp,struct request 
   /* This function is called unlocked */
   /* This function is called by the master */
   uint32_t icomp2;
+  char msg[BUFFERLEN];
 
   log_master (L_DEBUG,"Entering handle_r_r_slavexit");
 
@@ -2154,8 +2155,11 @@ void handle_r_r_slavexit (int sfd,struct database *wdb,int icomp,struct request 
     return;
   }
 
-  if (wdb->computer[icomp2].hwinfo.id == icomp2)
+  if (wdb->computer[icomp2].hwinfo.id == icomp) {
+    snprintf (msg,BUFFERLEN-1,"Exiting computer: %i\n", icomp2);
+    log_master (L_DEBUG,msg);
     wdb->computer[icomp2].used = 0;
+  }
 
   semaphore_release (wdb->semid);
 
