@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.79 2004/10/09 04:42:58 jorge Exp $
+ * $Id$
  */
 
 #include <string.h>
@@ -1372,6 +1372,8 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
 				info->jdd.job.limits.os_flags & OSF_LINUX);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->jdd.limits.cb_osx),
 				info->jdd.job.limits.os_flags & OSF_LINUX);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->jdd.limits.cb_freebsd),
+				info->jdd.job.limits.os_flags & OSF_FREEBSD);
 
 
   /* Pixmap stuff */
@@ -2085,14 +2087,25 @@ static GtkWidget *jdd_limits_widgets (struct drqm_jobs_info *info)
   gtk_box_pack_start (GTK_BOX(vbox),frame2,FALSE,FALSE,2);
   hbox = gtk_hbox_new (TRUE,2);
   gtk_container_add (GTK_CONTAINER(frame2),hbox);
+
   cbutton = gtk_check_button_new_with_label ("Irix");
+  gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
   info->jdd.limits.cb_irix = cbutton;
   gtk_widget_set_sensitive (GTK_WIDGET(cbutton),FALSE);
 
-  gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
   cbutton = gtk_check_button_new_with_label ("Linux");
   gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
   info->jdd.limits.cb_linux = cbutton;
+  gtk_widget_set_sensitive (GTK_WIDGET(cbutton),FALSE);
+
+  cbutton = gtk_check_button_new_with_label ("OS X");
+  gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
+  info->jdd.limits.cb_osx = cbutton;
+  gtk_widget_set_sensitive (GTK_WIDGET(cbutton),FALSE);
+
+  cbutton = gtk_check_button_new_with_label ("FreeBSD");
+  gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
+  info->jdd.limits.cb_freebsd = cbutton;
   gtk_widget_set_sensitive (GTK_WIDGET(cbutton),FALSE);
 
   return (frame);
