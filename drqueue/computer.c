@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.13 2001/08/27 15:23:24 jorge Exp $ */
+/* $Id: computer.c,v 1.14 2001/08/29 08:20:35 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -30,21 +30,21 @@ int computer_index_addr (void *pwdb,struct in_addr addr)
   } else {
     if ((dot = strchr (host->h_name,'.')) != NULL) 
       *dot = '\0';
-    printf ("Name: %s\n",host->h_name);
+/*      printf ("Name: %s\n",host->h_name); */
     name = host->h_name;
     while (host->h_aliases[i] != NULL) {
-      printf ("Alias: %s\n",host->h_aliases[i]);
+/*        printf ("Alias: %s\n",host->h_aliases[i]); */
       i++;
     }
     while (*host->h_aliases != NULL) {
-      printf ("Alias: %s\n",*host->h_aliases);
+/*        printf ("Alias: %s\n",*host->h_aliases); */
       host->h_aliases++;
     }
   }
 
   index = computer_index_name (pwdb,name);
 
-  printf ("Index %i\n", index);
+/*    printf ("Index %i\n", index); */
 
   return index;
 }
