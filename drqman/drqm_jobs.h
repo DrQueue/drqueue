@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.24 2001/11/13 09:50:23 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.25 2001/11/16 15:51:57 jorge Exp $
  */
 
 #ifndef _DRQM_JOBS_H_
@@ -23,6 +23,8 @@ struct drqmj_limits {
 
 struct drqmj_flags {
   GtkWidget *cbmailnotify;	/* Check button */
+  GtkWidget *cbdifemail;	/* Specific email for mail notification ? */
+  GtkWidget *edifemail;		/* Entry for the email */
 };
 
 struct drqmj_koji_maya {
@@ -57,6 +59,7 @@ struct drqmj_dnji {		/* dialog new job */
 struct drqmj_jddi {		/* job details dialog */
   GtkWidget *dialog;		/* Main dialog */
   GtkWidget *lname;		/* label name */
+  GtkWidget *lowner;		/* label owner */
   GtkWidget *lstatus;		/* label status */
   GtkWidget *lcmd;		/* label command */
   GtkWidget *lstartend;		/* start and end frames */

@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.48 2001/11/13 15:52:18 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.49 2001/11/16 15:51:56 jorge Exp $
  */
 
 #include <string.h>
@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <pwd.h>
 #include <sys/types.h>
+#include <gtk/gtk.h>
 
 #include "waiting.xpm"
 #include "running.xpm"
@@ -63,6 +64,9 @@ static void jdd_nmccd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info 
 /* Flags */
 static GtkWidget *jdd_flags_widgets (struct drqm_jobs_info *info);
 
+/* KOJ */
+static GtkWidget *jdd_koj_widgets (struct drqm_jobs_info *info);
+
 /* Koj viewers */
 static void jdd_maya_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 
@@ -94,6 +98,8 @@ static GtkWidget *dnj_limits_widgets (struct drqm_jobs_info *info);
 
 /* Flags */
 static GtkWidget *dnj_flags_widgets (struct drqm_jobs_info *info);
+static void dnj_flags_cbmailnotify_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info);
+static void dnj_flags_cbdifemail_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info);
 
 static void DeleteJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
 static GtkWidget *DeleteJobDialog (struct drqm_jobs_info *info);
@@ -621,7 +627,6 @@ static int dnj_submit (struct drqmj_dnji *info)
   } else {
     strncpy (job.owner,pw->pw_name,MAXNAMELEN-1);
   }
-
   job.owner[MAXNAMELEN-1] = 0;
   job.status = JOBSTATUS_WAITING;
   job.frame_info = NULL;
@@ -649,6 +654,12 @@ static int dnj_submit (struct drqmj_dnji *info)
   job.flags = 0;
   if (GTK_TOGGLE_BUTTON(info->flags.cbmailnotify)->active) {
     job.flags = job.flags | (JF_MAILNOTIFY);
+  }
+  if (GTK_TOGGLE_BUTTON(info->flags.cbdifemail)->active) {
+    job.flags = job.flags | (JF_MNDIFEMAIL);
+    strncpy(job.email,gtk_entry_get_text(GTK_ENTRY(info->flags.edifemail)),MAXNAMELEN-1);
+  } else {
+    strncpy(job.email,job.owner,MAXNAMELEN-1);
   }
 
   if (!register_job (&job))
@@ -801,7 +812,7 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   gtk_signal_connect (GTK_OBJECT(window),"destroy",GTK_SIGNAL_FUNC(jdd_destroy),info);
   gtk_signal_connect_object(GTK_OBJECT(window),"destroy",GTK_SIGNAL_FUNC(gtk_widget_destroy),
 			    (GtkObject*)window);
-  gtk_window_set_default_size(GTK_WINDOW(window),800,500);
+  gtk_window_set_default_size(GTK_WINDOW(window),800,800);
   gtk_container_set_border_width (GTK_CONTAINER(window),5);
   info->jdd.dialog = window;
 
@@ -827,6 +838,16 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   label = gtk_label_new (NULL);
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
   info->jdd.lname = label;
+
+  /* Owner */
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Owner:");
+  gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  label = gtk_label_new (NULL);
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  info->jdd.lowner = label;
 
   /* Status */
   hbox = gtk_hbox_new (TRUE,2);
@@ -908,6 +929,10 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   label = gtk_label_new (NULL);
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
   info->jdd.lestf = label;
+
+  /* KOJ */
+  frame = jdd_koj_widgets (info);
+  gtk_box_pack_start (GTK_BOX(vbox),frame,FALSE,FALSE,2);
 
   /* Limits */
   frame = jdd_limits_widgets (info);
@@ -1060,6 +1085,7 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
   }
 
   gtk_label_set_text (GTK_LABEL(info->jdd.lname),info->jobs[info->row].name);
+  gtk_label_set_text (GTK_LABEL(info->jdd.lowner),info->jobs[info->row].owner);
   gtk_label_set_text (GTK_LABEL(info->jdd.lcmd),info->jobs[info->row].cmd);
   gtk_label_set_text (GTK_LABEL(info->jdd.lstatus),job_status_string(info->jobs[info->row].status));
   
@@ -2182,8 +2208,9 @@ GtkWidget *dnj_flags_widgets (struct drqm_jobs_info *info)
 {
   GtkWidget *frame;
   GtkWidget *vbox, *hbox;
-  GtkWidget *cbutton;
+  GtkWidget *cbutton,*entry;
   GtkTooltips *tooltips;
+  struct passwd *pw;
 
   tooltips = TooltipsNew ();
 
@@ -2198,9 +2225,53 @@ GtkWidget *dnj_flags_widgets (struct drqm_jobs_info *info)
   gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
   gtk_tooltips_set_tip(tooltips,cbutton,"When set DrQueue will send emails to the owner of the job to "
 		       "notify about important events.",NULL);
+  gtk_signal_connect (GTK_OBJECT(cbutton),"toggled",GTK_SIGNAL_FUNC(dnj_flags_cbmailnotify_toggled),info);
   info->dnj.flags.cbmailnotify = cbutton;
 
+  cbutton = gtk_check_button_new_with_label ("Specific email");
+  gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
+  gtk_tooltips_set_tip(tooltips,cbutton,"Mail notifications will be sent to this email instead of to "
+		       "the regular user.",NULL);
+  gtk_signal_connect (GTK_OBJECT(cbutton),"toggled",GTK_SIGNAL_FUNC(dnj_flags_cbdifemail_toggled),info);
+  info->dnj.flags.cbdifemail = cbutton;
+
+  entry = gtk_entry_new_with_max_length (MAXNAMELEN-1);
+  gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
+  gtk_tooltips_set_tip(tooltips,entry,"Write here the email where you would like mail notifications "
+		       "to be sent.",NULL);
+  info->dnj.flags.edifemail = entry;
+
+  if (!(pw = getpwuid(geteuid()))) {
+    gtk_entry_set_text(GTK_ENTRY(entry),"ERROR");
+  } else {
+    gtk_entry_set_text(GTK_ENTRY(entry),pw->pw_name);
+  }
+
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.flags.cbmailnotify),FALSE);
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.flags.cbdifemail),FALSE);
+  GTK_WIDGET_UNSET_FLAGS (info->dnj.flags.cbdifemail,GTK_SENSITIVE);
+  GTK_WIDGET_UNSET_FLAGS (info->dnj.flags.edifemail,GTK_SENSITIVE);
+
   return (frame);
+}
+
+void dnj_flags_cbdifemail_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info)
+{
+  if (GTK_TOGGLE_BUTTON(info->dnj.flags.cbdifemail)->active) {
+    GTK_WIDGET_SET_FLAGS (info->dnj.flags.edifemail,GTK_SENSITIVE);
+  } else {
+    GTK_WIDGET_UNSET_FLAGS (info->dnj.flags.edifemail,GTK_SENSITIVE);
+  }
+}
+
+void dnj_flags_cbmailnotify_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info)
+{
+  if (GTK_TOGGLE_BUTTON(info->dnj.flags.cbmailnotify)->active) {
+    GTK_WIDGET_SET_FLAGS (info->dnj.flags.cbdifemail,GTK_SENSITIVE);
+  } else {
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.flags.cbdifemail),FALSE);
+    GTK_WIDGET_UNSET_FLAGS (info->dnj.flags.cbdifemail,GTK_SENSITIVE);
+  }
 }
 
 GtkWidget *jdd_flags_widgets (struct drqm_jobs_info *info)
@@ -2208,9 +2279,7 @@ GtkWidget *jdd_flags_widgets (struct drqm_jobs_info *info)
   GtkWidget *frame;
   GtkWidget *vbox, *hbox;
   GtkWidget *label;
-  GtkTooltips *tooltips;
-
-  tooltips = TooltipsNew ();
+  char msg[BUFFERLEN];
 
   frame = gtk_frame_new ("Flags");
   vbox = gtk_vbox_new (FALSE,2);
@@ -2220,7 +2289,8 @@ GtkWidget *jdd_flags_widgets (struct drqm_jobs_info *info)
   gtk_box_pack_start (GTK_BOX(vbox),hbox,TRUE,FALSE,2);
 
   if (info->jobs[info->row].flags & (JF_MAILNOTIFY)) {
-    label = gtk_label_new ("Mail notifications: ON");
+    snprintf (msg,BUFFERLEN-1,"Mail notifications: ON going to email: %s",info->jobs[info->row].email);
+    label = gtk_label_new (msg);
   } else {
     label = gtk_label_new ("Mail notifications: OFF");
   }
@@ -2230,4 +2300,26 @@ GtkWidget *jdd_flags_widgets (struct drqm_jobs_info *info)
 
   return (frame);
 }
+
+GtkWidget *jdd_koj_widgets (struct drqm_jobs_info *info)
+{
+  GtkWidget *frame;
+  GtkWidget *vbox, *hbox;
+  GtkWidget *label;
+
+  frame = gtk_frame_new ("Kind of job");
+  vbox = gtk_vbox_new (FALSE,2);
+  gtk_container_add (GTK_CONTAINER(frame),vbox);
+
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,TRUE,FALSE,2);
+
+  return frame;
+}
+
+
+
+
+
+
 
