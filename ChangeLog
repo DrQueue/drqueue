@@ -1,3 +1,28 @@
+2004-10-23 11:44:47  Rev 890    jorge
+
+	* common.h:
+	  New version number on common.h: 0.51.7
+
+2004-10-23 11:24:09  Rev 889    jorge
+
+	* drqman/drqm_jobs_jdd.c TODO drqman/drqm_jobs_jdd.h:
+	  Logs now scroll when the log is updated
+
+2004-10-22 21:47:55  Rev 888    jorge
+
+	* CREDITS:
+	  Added Shaw Parr to the credits.
+
+2004-10-22 21:13:33  Rev 887    jorge
+
+	* Revision:
+	  New Revision commited by build_package.sh
+
+2004-10-22 21:13:11  Rev 885    jorge
+
+	* ChangeLog:
+	  Changelog commited by build_package.sh
+
 2004-10-22 21:12:48  Rev 884    jorge
 
 	* common.h:
