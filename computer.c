@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.29 2001/10/05 15:50:01 jorge Exp $ */
+/* $Id: computer.c,v 1.30 2001/10/08 14:57:43 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -165,6 +165,7 @@ void computer_update_assigned (struct database *wdb,uint32_t ijob,int iframe,int
   task->frame = job_frame_index_to_number (&wdb->job[ijob],iframe);
   task->pid = 0;
   task->exitstatus = 0;
+  task->itask = (uint16_t) itask;
 
   /* This updates the number of running tasks */
   /* This is temporary because the computer will send us the correct number later */
