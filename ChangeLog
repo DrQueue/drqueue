@@ -1,3 +1,23 @@
+2004-10-26 09:19:06  Rev 919    jorge
+
+	* common.h:
+	  New version number on common.h: 0.52.0
+
+2004-10-25 06:57:42  Rev 918    jorge
+
+	* slave.h:
+	  All operating systems using limits.h
+
+2004-10-25 06:44:34  Rev 917    jorge
+
+	* Revision:
+	  New Revision commited by build_package.sh
+
+2004-10-25 06:41:51  Rev 915    jorge
+
+	* ChangeLog:
+	  Changelog commited by build_package.sh
+
 2004-10-25 06:41:20  Rev 914    jorge
 
 	* common.h:
