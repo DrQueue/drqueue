@@ -110,6 +110,9 @@ static GtkWidget *CreateMenuBlockedHosts (struct drqm_jobs_info *info);
 static gint PopupMenuBlockedHosts (GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *info);
 static int jdd_update_blocked_hosts (GtkWidget *w, struct drqm_jobs_info *info);
 static void jdd_delete_blocked_host (GtkWidget *w, struct drqm_jobs_info *info);
+static void jdd_add_blocked_host_bp (GtkWidget *button, struct drqm_jobs_info *info);
+static GtkWidget *jdd_add_blocked_host_dialog (struct drqm_jobs_info *info);
+static void jdd_add_blocked_host (GtkWidget *button, struct drqm_jobs_info *info);
 
 /* NEW JOB */
 static void NewJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
@@ -1601,12 +1604,60 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
   return 1;
 }
 
+static void jdd_add_blocked_host (GtkWidget *button, struct drqm_jobs_info *info)
+{
+	request_job_add_blocked_host (info->jdd.job.id, atoi(gtk_entry_get_text(GTK_ENTRY(info->jdd.entry_bh))), CLIENT);
+}
+
+static GtkWidget *jdd_add_blocked_host_dialog (struct drqm_jobs_info *info)
+{
+	GtkWidget *window;
+	GtkWidget *vbox,*hbox;
+	GtkWidget *label;
+	GtkWidget *entry;
+	GtkWidget *button;
+	
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title (GTK_WINDOW(window),"Add host to block list");
+  gtk_window_set_policy(GTK_WINDOW(window),FALSE,FALSE,TRUE);
+  vbox = gtk_vbox_new (FALSE,2);
+  gtk_container_add(GTK_CONTAINER(window),vbox);
+
+	hbox = gtk_hbox_new (FALSE,2);
+	gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+	label = gtk_label_new ("Computer Id :");
+	gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+	entry = gtk_entry_new_with_max_length (BUFFERLEN);
+	gtk_box_pack_start (GTK_BOX(hbox),entry,FALSE,FALSE,2);
+	info->jdd.entry_bh = entry;
+
+	hbox = gtk_hbox_new (FALSE,2);
+	gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+	button = gtk_button_new_with_label ("OK");
+	gtk_box_pack_start (GTK_BOX(hbox),button, TRUE, TRUE, 2);
+	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(jdd_add_blocked_host),info);
+	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(jdd_update),info);
+	g_signal_connect_swapped (G_OBJECT(button),"clicked",G_CALLBACK(gtk_widget_destroy),window);
+	button = gtk_button_new_with_label ("Cancel");
+	gtk_box_pack_start (GTK_BOX(hbox),button, TRUE, TRUE, 2);
+	g_signal_connect_swapped (G_OBJECT(button),"clicked",G_CALLBACK(gtk_widget_destroy),window);
+
+	gtk_widget_show_all (window);
+
+	return window;	
+}
+
 static GtkWidget *CreateMenuBlockedHosts (struct drqm_jobs_info *info)
 {
 	GtkWidget *menu;
 	GtkWidget *menu_item;
 
 	menu = gtk_menu_new();
+	menu_item = gtk_menu_item_new_with_label("Add");
+	gtk_menu_append(GTK_MENU(menu),menu_item);
+	g_signal_connect(G_OBJECT(menu_item),"activate",G_CALLBACK(jdd_add_blocked_host_bp),info);
+	g_signal_connect(G_OBJECT(menu_item),"activate",G_CALLBACK(jdd_update),info);
+
 	menu_item = gtk_menu_item_new_with_label("Delete");
 	gtk_menu_append(GTK_MENU(menu),menu_item);
 	g_signal_connect(G_OBJECT(menu_item),"activate",G_CALLBACK(jdd_delete_blocked_host),info);
@@ -1879,14 +1930,17 @@ static gint PopupMenuBlockedHosts (GtkWidget *clist, GdkEvent *event, struct drq
 {
 	if (event->type == GDK_BUTTON_PRESS) {
 		GdkEventButton *bevent = (GdkEventButton *) event;
-		if (bevent->button != 3)
+		if (bevent->button != 3) {
 			return FALSE;
+		}
     info->jdd.selected = gtk_clist_get_selection_info(GTK_CLIST(info->jdd.clist),
 						      (int)bevent->x,(int)bevent->y,
 						      &info->jdd.row,&info->jdd.column);
-		gtk_menu_popup (GTK_MENU(info->jdd.menu_bh), NULL, NULL, NULL, NULL,
-										bevent->button, bevent->time);
-		return TRUE;
+		if (info->selected) {
+			gtk_menu_popup (GTK_MENU(info->jdd.menu_bh), NULL, NULL, NULL, NULL,
+											bevent->button, bevent->time);
+			return TRUE;
+		}
 	}
 
 	return FALSE;
@@ -2344,6 +2398,16 @@ static void jdd_sesframes_bcp (GtkWidget *button, struct drqm_jobs_info *info)
   dialog = jdd_sesframes_change_dialog (info);
   if (dialog)
     gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
+}
+
+static void jdd_add_blocked_host_bp (GtkWidget *button, struct drqm_jobs_info *info)
+{
+	GtkWidget *dialog;
+
+	dialog = jdd_add_blocked_host_dialog (info);
+	if (dialog) {
+		gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
+	}
 }
 
 static GtkWidget *jdd_sesframes_change_dialog (struct drqm_jobs_info *info)
