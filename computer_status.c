@@ -1,4 +1,4 @@
-/* $Id: computer_status.c,v 1.14 2002/02/15 11:51:00 jorge Exp $ */
+/* $Id: computer_status.c,v 1.15 2002/03/01 11:38:06 jorge Exp $ */
 
 #include <stdio.h>
 #include <signal.h>
@@ -20,14 +20,15 @@
 #include "computer_status.h"
 #include "task.h"
 #include "logger.h"
+#include "semaphores.h"
 
-void get_computer_status (struct computer_status *cstatus)
+void get_computer_status (struct computer_status *cstatus, int semid)
 {
   /* Get status not only gets the load average but also */
   /* checks that every task is running and in case they're not */
   /* it sets the task record to unused (used = 0) */
   get_loadavg (cstatus->loadavg);
-  check_tasks (cstatus);
+  check_tasks (cstatus,semid);
 }
 
 void computer_status_init (struct computer_status *cstatus)
@@ -37,10 +38,11 @@ void computer_status_init (struct computer_status *cstatus)
   task_init_all (cstatus->task);
 }
 
-void check_tasks (struct computer_status *cstatus)
+void check_tasks (struct computer_status *cstatus, int semid)
 {
-  /* CHECKME: Could this create a race condition ? */
   int i;
+
+  semaphore_lock (semid);
 
   cstatus->ntasks = 0;
   for (i=0;i<MAXTASKS;i++) {
@@ -51,6 +53,7 @@ void check_tasks (struct computer_status *cstatus)
 	  cstatus->ntasks++;
 	} else {
 	  /* task is registered but not running */
+	  /* FIXME: this should be logged, because it should never happen */
 	  cstatus->task[i].used = 0;
 	}
       } else {
@@ -58,6 +61,8 @@ void check_tasks (struct computer_status *cstatus)
       }
     }
   }
+
+  semaphore_release (semid);
 }
 
 #ifdef __LINUX			/* __LINUX  */
