@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.29 2001/09/07 16:39:21 jorge Exp $ */
+/* $Id: communications.c,v 1.30 2001/09/08 13:47:37 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -177,7 +177,7 @@ void recv_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo,int who)
   /* network byte order, so we put them in host byte order */
   hwinfo->id = ntohl (hwinfo->id);
   hwinfo->procspeed = ntohl (hwinfo->procspeed);
-  hwinfo->numproc = ntohs (hwinfo->numproc);
+  hwinfo->ncpus = ntohs (hwinfo->ncpus);
   hwinfo->speedindex = ntohl (hwinfo->speedindex);
 }
 
@@ -193,7 +193,7 @@ void send_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo,int who)
   /* Prepare for sending */
   bswapped.id = htonl (bswapped.id);
   bswapped.procspeed = htonl (bswapped.procspeed);
-  bswapped.numproc = htons (bswapped.numproc);
+  bswapped.ncpus = htons (bswapped.ncpus);
   bswapped.speedindex = htonl (bswapped.speedindex);
 
   bleft = sizeof (bswapped);
@@ -511,18 +511,20 @@ int send_computer (int sfd, struct computer *computer,int who)
 {
   send_computer_status (sfd,&computer->status,who);
   send_computer_hwinfo (sfd,&computer->hwinfo,who);
-  if (!send_computer_limits (sfd,&computer->limits,who)) {
+  if (!send_computer_limits (sfd,&computer->limits)) {
     return 0;
   }
+  return 1;
 }
 
 int recv_computer (int sfd, struct computer *computer,int who)
 {
   recv_computer_status (sfd,&computer->status,who);
   recv_computer_hwinfo (sfd,&computer->hwinfo,who);
-  if (!recv_computer_limits (sfd,&computer->limits,who)) {
+  if (!recv_computer_limits (sfd,&computer->limits)) {
     return 0;
   }
+  return 1;
 }
 
 int recv_frame_info (int sfd, struct frame_info *fi)
@@ -598,8 +600,8 @@ int recv_computer_limits (int sfd, struct computer_limits *cl)
       return 0;
     }
   }
-  fi->nmaxcpus = ntohs (fi->nmaxcpus);
-  fi->maxfreeloadcpu = ntohs (fi->maxfreeloadcpu);
+  cl->nmaxcpus = ntohs (cl->nmaxcpus);
+  cl->maxfreeloadcpu = ntohs (cl->maxfreeloadcpu);
 
   return 1;
 }
@@ -612,7 +614,7 @@ int send_computer_limits (int sfd, struct computer_limits *cl)
   void *buf = &bswapped;
   
   /* We make a copy coz we need to modify the values */
-  memcpy (buf,fi,sizeof(bswapped));
+  memcpy (buf,cl,sizeof(bswapped));
   /* Prepare for sending */
   bswapped.nmaxcpus = htons (bswapped.nmaxcpus);
   bswapped.maxfreeloadcpu = htons (bswapped.maxfreeloadcpu);
