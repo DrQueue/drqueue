@@ -1,4 +1,4 @@
-/* $Id: request_codes.h,v 1.12 2001/09/06 10:18:55 jorge Exp $ */
+/* $Id: request_codes.h,v 1.13 2001/09/06 14:00:25 jorge Exp $ */
 
 #ifndef _REQUEST_CODES_H_
 #define _REQUEST_CODES_H_
@@ -35,6 +35,8 @@
 #define R_A_JOBFWAIT   30
 #define R_R_JOBFKILL   31	/* Job frame kill */
 #define R_A_JOBFKILL   32
+#define R_R_JOBFFINI   33	/* Job frame finished (only waiting frames) */
+#define R_A_JOBFFINI   34
 
 /* Requests to the slave */
 #define RS_R_KILLTASK 1		/* Request to slave to kill a task */
