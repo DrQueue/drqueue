@@ -49,7 +49,7 @@ if [ "$CHLG" != "n" ]; then
 	svn log -v | ./svn-scripts/svn2cl.pl > ChangeLog # Dump log to ChangeLog
 	echo "Created !"
 	echo "Commiting ChangeLog"
-	svn ci -m "Changelog commited by build_package.sh" ChangeLog
+	svn ci -m "ChangeLog commited by build_package.sh" ChangeLog
 fi
 
 # Creating tag
