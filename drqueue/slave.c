@@ -382,7 +382,9 @@ void slave_consistency_process (struct slave_database *sdb)
 
 	while (1) {
 		for (i=0;i<MAXTASKS;i++) {
-			if ((sdb->comp->status.task[i].used) && (kill(sdb->comp->status.task[i].pid,0) == -1)) {
+			if ((sdb->comp->status.task[i].used) 
+					&& (sdb->comp->status.task[i].status != TASKSTATUS_LOADING)
+					&& (kill(sdb->comp->status.task[i].pid,0) == -1)) {
 				// There is process registered as running, but not running.
 				semaphore_lock(sdb->semid);
 				sdb->comp->status.task[i].used = 0;
