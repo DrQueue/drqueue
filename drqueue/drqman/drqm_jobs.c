@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.9 2001/08/02 10:20:23 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.10 2001/08/06 12:35:03 jorge Exp $
  */
 
 #include <string.h>
@@ -19,14 +19,21 @@ static void PressedButtonRefresh (GtkWidget *b, struct info_drqm_jobs *info);
 static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct info_drqm_jobs *info);
 static GtkWidget *CreateMenu (struct info_drqm_jobs *info);
 static void JobDetails(GtkWidget *menu_item, struct info_drqm_jobs *info);
+static int pri_cmp_clist (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+
 static void NewJob (GtkWidget *menu_item, struct info_drqm_jobs *info);
 static GtkWidget *NewJobDialog (struct info_drqm_jobs *info);
-
 static void dnj_psearch (GtkWidget *button, struct info_dnj *info);
 static void dnj_set_cmd (GtkWidget *button, struct info_dnj *info);
 static void dnj_cpri_changed (GtkWidget *entry, struct info_dnj *info);
 static void dnj_bsubmit_pressed (GtkWidget *button, struct info_dnj *info);
 static int dnj_submit (struct info_dnj *info);
+static void dnj_destroyed (GtkWidget *dialog, struct info_drqm_jobs *info);
+
+static void DeleteJob (GtkWidget *menu_item, struct info_drqm_jobs *info);
+static GtkWidget *DeleteJobDialog (struct info_drqm_jobs *info);
+static void djd_bok_pressed (GtkWidget *button, struct info_drqm_jobs *info);
+
 
 void CreateJobsPage (GtkWidget *notebook)
 {
@@ -95,6 +102,11 @@ static GtkWidget *CreateClist (GtkWidget *window)
   gtk_clist_set_column_width (GTK_CLIST(clist),5,45);
   gtk_clist_set_column_width (GTK_CLIST(clist),6,45);
   gtk_clist_set_column_width (GTK_CLIST(clist),7,45);
+
+  gtk_clist_set_sort_column (GTK_CLIST(clist),8);
+  gtk_clist_set_sort_type (GTK_CLIST(clist),GTK_SORT_ASCENDING);
+/*    gtk_clist_set_compare_func (GTK_CLIST(clist),pri_cmp_clist); */
+
   gtk_widget_show(clist);
 
   return (clist);
@@ -144,6 +156,8 @@ void drqm_update_joblist (struct info_drqm_jobs *info)
     snprintf (buff[8],BUFFERLEN,"%i",info->jobs[i].priority);
     gtk_clist_append(GTK_CLIST(info->clist),buff);
   }
+
+  gtk_clist_sort (GTK_CLIST(info->clist));
   gtk_clist_thaw(GTK_CLIST(info->clist));
 
   for(i=0;i<ncols;i++)
@@ -156,9 +170,9 @@ static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct info_drqm_jobs *
     GdkEventButton *bevent = (GdkEventButton *) event;
     if (bevent->button != 3)
       return FALSE;
-    gtk_clist_get_selection_info(GTK_CLIST(info->clist),
-				 (int)bevent->x,(int)bevent->y,
-				 &info->row,&info->column);
+    info->selected = gtk_clist_get_selection_info(GTK_CLIST(info->clist),
+						  (int)bevent->x,(int)bevent->y,
+						  &info->row,&info->column);
     gtk_menu_popup (GTK_MENU(info->menu), NULL, NULL, NULL, NULL,
 		    bevent->button, bevent->time);
     return TRUE;
@@ -182,6 +196,11 @@ static GtkWidget *CreateMenu (struct info_drqm_jobs *info)
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(NewJob),info);
   gtk_widget_show(menu_item);
 
+  menu_item = gtk_menu_item_new_with_label("Delete");
+  gtk_menu_append(GTK_MENU(menu),menu_item);
+  gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(DeleteJob),info);
+  gtk_widget_show(menu_item);
+
   gtk_signal_connect(GTK_OBJECT((info->clist)),"event",GTK_SIGNAL_FUNC(PopupMenu),info);
 
   gtk_widget_show(menu);
@@ -201,6 +220,8 @@ static void NewJob (GtkWidget *menu_item, struct info_drqm_jobs *info)
   GtkWidget *dialog;
   dialog = NewJobDialog(info);
   gtk_grab_add(dialog);
+  gtk_signal_connect (GTK_OBJECT(dialog),"destroy",
+		      dnj_destroyed,info);
 }
 
 static GtkWidget *NewJobDialog (struct info_drqm_jobs *info)
@@ -414,7 +435,8 @@ static void dnj_bsubmit_pressed (GtkWidget *button, struct info_dnj *info)
   if (!dnj_submit(info)) {
     dialog = gtk_dialog_new();
     gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-    label = gtk_label_new ("The information is not correct or master not available.\n Check it, please.");
+    label = gtk_label_new ("The information is not correct or master not available.\nCheck it and try again, please.");
+    gtk_misc_set_padding (GTK_MISC(label),10,10);
     okay_button = gtk_button_new_with_label("Ok");
 
     gtk_signal_connect_object (GTK_OBJECT (okay_button), "clicked",
@@ -459,5 +481,82 @@ static int dnj_submit (struct info_dnj *info)
   return 1;
 }
 
+static void dnj_destroyed (GtkWidget *dialog, struct info_drqm_jobs *info)
+{
+  drqm_request_joblist (info);
+  drqm_update_joblist (info);
+}
 
+static int pri_cmp_clist (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+  uint32_t a,b;
+
+  sscanf(ptr1,"%u",&a);
+  sscanf(ptr2,"%u",&b);
+  fprintf (stderr,"%u %u\n",a,b);
+  fprintf (stderr,"%u %u\n",(int)ptr1,(int)ptr2);
+  fprintf (stderr,"%u %u\n",*((int*)ptr1),*((int*)ptr2));
+  
+  if (a > b) {
+    return 1;
+  } else if (a == b) {
+    return 0;
+  } else {
+    return -1;
+  }
+
+  return 0;
+}
+
+static void DeleteJob (GtkWidget *menu_item, struct info_drqm_jobs *info)
+{
+  GtkWidget *dialog;
+
+  if (!info->selected)
+    return;
+
+  dialog = DeleteJobDialog(info);
+  gtk_grab_add(dialog);
+}
+
+static GtkWidget *DeleteJobDialog (struct info_drqm_jobs *info)
+{
+  GtkWidget *dialog;
+  GtkWidget *label;
+  GtkWidget *button;
+
+  /* Dialog */
+  dialog = gtk_dialog_new ();
+  gtk_window_set_title (GTK_WINDOW(dialog),"You Sure?");
+
+  /* Label */
+  label = gtk_label_new ("Do you really want to delete the job?");
+  gtk_misc_set_padding (GTK_MISC(label), 10, 10);
+  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox),label,TRUE,TRUE,5);
+  gtk_widget_show(GTK_WIDGET(label));
+ 
+  /* Buttons */
+  button = gtk_button_new_with_label ("Yes");
+  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->action_area),button, TRUE, TRUE, 5);
+  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(djd_bok_pressed),info);
+  gtk_signal_connect_object(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(gtk_widget_destroy),
+			    (GtkObject*)dialog);
+  gtk_widget_show (button);
+  button = gtk_button_new_with_label ("No");
+  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->action_area),button, TRUE, TRUE, 5);
+  gtk_signal_connect_object(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(gtk_widget_destroy),
+			    (GtkObject*)dialog);
+  GTK_WIDGET_SET_FLAGS(button,GTK_CAN_DEFAULT);
+  gtk_widget_grab_default(button);
+  gtk_widget_show (button);
+
+  gtk_widget_show (dialog);
+
+  return dialog;
+}
+
+static void djd_bok_pressed (GtkWidget *button, struct info_drqm_jobs *info)
+{
+  drqm_request_job_delete (info);
+}
 
