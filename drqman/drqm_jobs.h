@@ -92,10 +92,15 @@ struct drqmj_jddi {							/* job details dialog info*/
 	GtkWidget *lbs;								/* block size */
   GtkWidget *lavgt;							/* average time per frame */
   GtkWidget *lestf;							/* estimated finish time */
+
+	// Frames
   GtkWidget *clist;							/* frame info clist */
+  GtkWidget *menu;							/* Popup menu */
+
+	// 
+	GtkWidget *menu_bh;						// Blocked hosts menu
 	GtkWidget *clist_bh;					// Blocked hosts clist
 
-  GtkWidget *menu;							/* Popup menu */
   gint row,column;							/* selected frame */
   int selected;									/* if a frame is selected */
   struct job job;								/* The struct of the selected job */
