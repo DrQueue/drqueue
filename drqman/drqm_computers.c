@@ -28,6 +28,8 @@
 #include "drqm_computers.h"
 #include "drqm_common.h"
 
+#include "slave_icon.h"
+
 /* Static functions declaration */
 static GtkWidget *CreateComputersList(struct drqm_computers_info *info);
 static GtkWidget *CreateClist (GtkWidget *window);
@@ -72,6 +74,9 @@ void CreateComputersPage (GtkWidget *notebook,struct info_drqm *info)
   GtkWidget *clist;
   GtkWidget *buttonRefresh;	/* Button to refresh the computer list */
   GtkWidget *vbox;
+	GtkWidget *hbox;
+	GtkWidget *image;
+	GdkPixbuf *slave_icon_pb;
 
   /* Label */
   label = gtk_label_new ("Computers");
@@ -79,6 +84,14 @@ void CreateComputersPage (GtkWidget *notebook,struct info_drqm *info)
   gtk_container_border_width (GTK_CONTAINER(container),2);
   vbox = gtk_vbox_new(FALSE,2);
   gtk_container_add(GTK_CONTAINER(container),vbox);
+
+	// Image
+	slave_icon_pb = gdk_pixbuf_new_from_inline (2028,slave_icon,0,NULL);
+	image = gtk_image_new_from_pixbuf (slave_icon_pb);
+	gtk_widget_show(image);
+	hbox = gtk_hbox_new (FALSE,0);
+	gtk_box_pack_start(GTK_BOX(hbox),image,TRUE,TRUE,2);
+	gtk_box_pack_start(GTK_BOX(hbox),label,TRUE,TRUE,2);
 
   /* Clist */
   clist = CreateComputersList (&info->idc);
@@ -89,7 +102,7 @@ void CreateComputersPage (GtkWidget *notebook,struct info_drqm *info)
   gtk_box_pack_end(GTK_BOX(vbox),buttonRefresh,FALSE,FALSE,2);
 
   /* Append the page */
-  gtk_notebook_append_page (GTK_NOTEBOOK(notebook), container, label);
+  gtk_notebook_append_page (GTK_NOTEBOOK(notebook), container, hbox);
 
   /* Put the computers on the list */
   drqm_request_computerlist (&info->idc);

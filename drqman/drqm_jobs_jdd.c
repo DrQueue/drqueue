@@ -463,11 +463,20 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
     } else {
       strncpy(buff[3],"Not started",BUFFERLEN); 
       strncpy(buff[4],"Not started",BUFFERLEN);
-    }      
+    }
+		// Depending on the exitcode we set the background
     snprintf (buff[5],BUFFERLEN,"%i",info->jdd.job.frame_info[i].exitcode);
     snprintf (buff[6],BUFFERLEN,"%i",info->jdd.job.frame_info[i].icomp);
     snprintf (buff[7],BUFFERLEN,"%i",info->jdd.job.frame_info[i].itask);
     gtk_clist_append(GTK_CLIST(info->jdd.clist),buff);
+		if (info->jdd.job.frame_info[i].exitcode != 0) {
+			GdkColor color;
+			color.pixel = 0;
+			color.red = 0xffff;
+			color.green = 0x8000;
+			color.blue = 0x8000;
+			gtk_clist_set_background (GTK_CLIST(info->jdd.clist),i,&color);
+		}
     switch (info->jdd.job.frame_info[i].status) {
     case FS_WAITING:
       gtk_clist_set_pixtext (GTK_CLIST(info->jdd.clist),i,1,
