@@ -1,3 +1,91 @@
+2004-10-17 14:07:45  Rev 829    jorge
+
+	* common.h:
+	  New version number on common.h: 0.51.2
+
+2004-10-17 14:07:20  Rev 828    jorge
+
+	* blockhost.c:
+	  Minor changes
+
+2004-10-17 14:05:31  Rev 827    jorge
+
+	* blockhost.c:
+	  Minor changes.
+
+2004-10-17 13:51:41  Rev 826    jorge
+
+	* drqman/drqm_jobs.c drqman/drqm_jobs.h communications.c job.c job.h:
+	  Blocked hosts list integrated in drqman.
+
+2004-10-17 12:49:53  Rev 825    jorge
+
+	* task.c task.h blockhost.c communications.c request.c listjobs.c 
+	  job.c Makefile computer.c:
+	  Host blocking can be controlled from the command line
+
+2004-10-17 05:18:17  Rev 824    jorge
+
+	* database.c:
+	  indent -br -ut -ts2 database.c
+
+2004-10-17 05:00:28  Rev 823    jorge
+
+	* request.c listjobs.c:
+	  Host blocking seems to work. It still needs to be integrated in drqman.
+
+2004-10-17 04:12:43  Rev 822    jorge
+
+	* request.c Makefile job.h:
+	  Basic support for block lists.
+
+2004-10-17 04:11:35  Rev 821    jorge
+
+	* listjobs.c:
+	  Test tool for hosts block lists
+
+2004-10-17 02:39:36  Rev 820    jorge
+
+	* request.c request_codes.h request.h:
+	  Added request list of blocked hosts
+
+2004-10-17 02:16:09  Rev 819    jorge
+
+	* request.c request_codes.h request.h:
+	  Added support for removal of blocked hosts
+
+2004-10-17 01:28:29  Rev 818    jorge
+
+	* TODO database.c communications.c request.c database.h job.c 
+	  request_codes.h communications.h request.h job.h:
+	  Working on block host feature
+
+2004-10-16 21:23:39  Rev 817    jorge
+
+	* TODO:
+	  Updated TODO
+
+2004-10-16 21:16:51  Rev 816    jorge
+
+	* slave.c slave.h:
+	  Maximum number of CPUs can be set in the slave through the command line
+
+2004-10-16 20:05:51  Rev 815    jorge
+
+	* slave.c slave.h:
+	  Support for autoenable time on command line.
+
+
+2004-10-16 11:04:35  Rev 814    jorge
+
+	* Revision:
+	  New Revision commited by build_package.sh
+
+2004-10-16 11:04:11  Rev 812    jorge
+
+	* ChangeLog:
+	  Changelog commited by build_package.sh
+
 2004-10-16 11:03:43  Rev 811    jorge
 
 	* common.h:
