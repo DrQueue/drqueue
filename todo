@@ -3,7 +3,7 @@ TO DO:
 
 * Frame_info memory allocation and deallocation		[DONE]
 * Priority support for jobs
-* Process output logging
+* Process output logging				[DONE]
 * file locking on logging functions
 * limit structures for jobs and computers
 * Negative and backwards frame numbers
@@ -20,4 +20,4 @@ BUGS:
 NOTES:
 -----
 
-* The frame number in the task struct is _different_ from iframe in the job struct
+* The frame number in the task struct is _different_ from iframe in the job handling stuff
