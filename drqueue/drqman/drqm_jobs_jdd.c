@@ -510,6 +510,10 @@ static void jdd_add_blocked_host (GtkWidget *button, struct drqm_jobs_info *info
     return;
   }
 
+	// We need to remove hosts in reverse order
+	sel = g_list_reverse (sel);	// Because we are removing indexes if remove 0 and then 1, after removing 0, 1 would be 0 again.
+	
+
   for (;sel;sel = sel->next) {
     icomp = (uint32_t) gtk_clist_get_row_data(GTK_CLIST(info->jdd.bhdi_computers_info.clist), (gint)sel->data);
 		request_job_add_blocked_host (info->jdd.job.id,icomp, CLIENT);
