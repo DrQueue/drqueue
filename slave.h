@@ -16,7 +16,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-/* $Id$ */
+// $Id$
+//
 
 #ifndef _SLAVE_H_
 #define _SLAVE_H_
@@ -37,6 +38,7 @@ struct slave_database {
   int shmid;
   int semid;
   int itask;			/* Index to current process task */
+	struct computer_limits limits;
 };				/* slave database */
 
 extern int phantom[2];
@@ -50,6 +52,10 @@ void set_signal_handlers_child_chandler (void);	/* Once accepted the connection 
 void set_signal_handlers_child_launcher (void); /* For the child that forks and then keeps waiting */
 void set_signal_handlers_task_exec (void); /* For the child of the previous that actually execs (and get substituted) */
 
+// Limits
+void slave_set_limits (struct slave_database *sdb);
+
+// Signal stuff
 void clean_out (int signal, siginfo_t *info, void *data);
 void sigalarm_handler (int signal, siginfo_t *info, void *data);
 void sigpipe_handler (int signal, siginfo_t *info, void *data);
