@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.22 2001/07/24 14:15:30 jorge Exp $ */
+/* $Id: slave.c,v 1.23 2001/07/24 14:49:36 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -282,18 +282,21 @@ void launch_task (struct slave_database *sdb)
       /* and prepares the file descriptors so every output will be logged */
       const char *new_argv[64];
       int lfd;			/* logger fd */
-      int i;
+      int i,len;
       const char *targ;
       char cmd[MAXCMDLEN];
       
       set_signal_handlers_task_exec ();
       strncpy(cmd,sdb->comp->status.task[sdb->itask].jobcmd,MAXCMDLEN);
+      len = strlen (cmd);
       zerocmd (cmd);
       for (i=0;i<64;i++) {
-	if ((targ = parse_arg(cmd,i)) != NULL)
+	if ((targ = parse_arg(cmd,i,len)) != NULL) {
 	  new_argv[i] = targ;
-	else
+	  printf ("new argv %i: %s\n",i,new_argv[i]);
+	} else {
 	  break;
+	}
       }
       new_argv[i] = NULL;
 
@@ -371,21 +374,23 @@ void zerocmd (char *cmd)
 {
   /* this functions zeros all the spaces of a cmd so it can be later parsed */
   while (*cmd != 0) {
-    if (isspace (*cmd))
+    if (isspace ((int)*cmd))
       *cmd = 0;
     cmd++;
   }
 }
 
-char *parse_arg (const char *cmd,int pos)
+char *parse_arg (char *cmd,int pos,int len)
 {
   int c = 0; 
-  const char *a = cmd;			/* argument to be returned */
+  char *a = cmd;			/* argument to be returned */
 
   while (c < pos) {
     while (*a) a++;		/* jumps a word */
     while (!*a) a++;		/* jumps the zeroes */
     c++;
+    if (((int)a-(int)cmd) >= len)
+      return NULL;
   }
 
   return a;
