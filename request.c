@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.59 2001/10/08 12:43:07 jorge Exp $ */
+/* $Id: request.c,v 1.60 2001/10/16 15:38:03 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -117,6 +117,14 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
   case R_R_JOBSESUP:
     log_master (L_DEBUG,"Update job SES");
     handle_r_r_jobsesup (sfd,wdb,icomp,&request);
+    break;
+  case R_R_JOBLNMCS:
+    log_master (L_DEBUG,"Set job limits nmaxcpus");
+    handle_r_r_joblnmcs (sfd,wdb,icomp,&request);
+    break;
+  case R_R_JOBLNMCCS:
+    log_master (L_DEBUG,"Set job limits nmaxcpuscomputer");
+    handle_r_r_joblnmccs (sfd,wdb,icomp,&request);
     break;
   default:
     log_master (L_WARNING,"Unknown request");
@@ -2265,3 +2273,140 @@ void handle_r_r_jobsesup (int sfd,struct database *wdb,int icomp,struct request 
   log_master (L_DEBUG,"Exiting handle_r_r_jobsesup");
 }
 
+int request_job_limits_nmaxcpus_set (uint32_t ijob, uint16_t nmaxcpus, int who)
+{
+  /* On error returns 0, error otherwise drerrno is set to the error */
+  /* This function request the master to set a new limit for job's nmaxcpus */
+  int sfd;
+  struct request req;
+
+  if ((sfd = connect_to_master ()) == -1) {
+    drerrno = DRE_NOCONNECT;
+    return 0;
+  }
+
+  req.type = R_R_JOBLNMCS;
+  req.data = ijob;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORSENDING;
+    close (sfd);
+    return 0;
+  }
+
+  req.type = R_R_JOBLNMCS;
+  req.data = nmaxcpus;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORSENDING;
+    close (sfd);
+    return 0;
+  }
+
+  close (sfd);
+  return 1;
+}
+
+void handle_r_r_joblnmcs (int sfd,struct database *wdb,int icomp,struct request *req)
+{
+  /* The master handles this type of packages */
+  /* This function is called unlocked */
+  /* This function is called by the master */
+  uint32_t ijob;
+  uint16_t nmaxcpus;
+  char msg[BUFFERLEN];
+
+  log_master(L_DEBUG,"Entering handle_r_r_joblnmcs");
+
+  ijob = req->data;
+
+  /* Second packet */
+  if (!recv_request (sfd,req)) {
+    return;
+  }
+
+  nmaxcpus = (uint16_t) req->data;
+  
+  snprintf(msg,BUFFERLEN-1,"Requested job (ijob:%u) limits nmaxcpus set to: %u",ijob,nmaxcpus);
+  log_master(L_DEBUG,msg);
+
+  semaphore_lock(wdb->semid);
+
+  if (!job_index_correct_master(wdb,ijob))
+    return;
+
+  wdb->job[ijob].limits.nmaxcpus = nmaxcpus;
+
+  semaphore_release (wdb->semid);
+
+  log_master(L_DEBUG,"Exiting handle_r_r_joblnmcs");
+}
+
+int request_job_limits_nmaxcpuscomputer_set (uint32_t ijob, uint16_t nmaxcpuscomputer, int who)
+{
+  /* On error returns 0, error otherwise drerrno is set to the error */
+  /* This function request the master to set a new limit for job's nmaxcpus */
+  int sfd;
+  struct request req;
+
+  if ((sfd = connect_to_master ()) == -1) {
+    drerrno = DRE_NOCONNECT;
+    return 0;
+  }
+
+  req.type = R_R_JOBLNMCCS;
+  req.data = ijob;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORSENDING;
+    close (sfd);
+    return 0;
+  }
+
+  req.type = R_R_JOBLNMCCS;
+  req.data = nmaxcpuscomputer;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORSENDING;
+    close (sfd);
+    return 0;
+  }
+
+  close (sfd);
+  return 1;
+}
+
+void handle_r_r_joblnmccs (int sfd,struct database *wdb,int icomp,struct request *req)
+{
+  /* The master handles this type of packages */
+  /* This function is called unlocked */
+  /* This function is called by the master */
+  uint32_t ijob;
+  uint16_t nmaxcpuscomputer;
+  char msg[BUFFERLEN];
+
+  log_master(L_DEBUG,"Entering handle_r_r_joblnmccs");
+
+  ijob = req->data;
+
+  /* Second packet */
+  if (!recv_request (sfd,req)) {
+    return;
+  }
+
+  nmaxcpuscomputer = (uint16_t) req->data;
+  
+  snprintf(msg,BUFFERLEN-1,"Requested job (ijob:%u) limits nmaxcpuscomputer set to: %u",ijob,nmaxcpuscomputer);
+  log_master(L_DEBUG,msg);
+
+  semaphore_lock(wdb->semid);
+
+  if (!job_index_correct_master(wdb,ijob))
+    return;
+
+  wdb->job[ijob].limits.nmaxcpuscomputer = nmaxcpuscomputer;
+
+  semaphore_release (wdb->semid);
+
+  log_master(L_DEBUG,"Exiting handle_r_r_joblnmccs");
+}
