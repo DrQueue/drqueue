@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.19 2001/07/24 10:31:01 jorge Exp $ */
+/* $Id: slave.c,v 1.20 2001/07/24 10:42:34 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -316,6 +316,7 @@ void launch_task (struct slave_database *sdb)
       semaphore_lock(sdb->semid);
       sdb->comp->status.task[sdb->itask].exitstatus = 0;
       if (WIFEXITED(rc)) {
+	printf ("\n\nEXITED with %i\n",WEXITSTATUS(rc));
 	sdb->comp->status.task[sdb->itask].exitstatus |= DR_EXITEDFLAG ;
 	sdb->comp->status.task[sdb->itask].exitstatus |= (WEXITSTATUS(rc)&&0xff);
       } else {
