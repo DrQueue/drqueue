@@ -1,9 +1,8 @@
 TO DO:
 -----
 
-* Checks at the beginning of every program for the 
-  environment variables and directories.
-* limit structures for jobs and computers.
+* Checks at the beginning of every program for the directories.
+* limit structures for jobs.
 * Master database saved and reloaded from disk.
 * The slave must check that the requests come from the
   master.
