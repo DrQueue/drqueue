@@ -303,13 +303,6 @@ static void dnj_koj_frame_mentalray_bcreate_pressed (GtkWidget *button, struct d
   mentalraysgi.res_x = mentalraysgi.res_y = -1;
   strncpy (mentalraysgi.format,"",BUFFERLEN-1);
 
-#ifdef __CYGWIN
-  strncpy(mentalraysgi.scene, conv_to_posix_path(mentalraysgi.scene), BUFFERLEN-1);
-  strncpy(mentalraysgi.renderdir, conv_to_posix_path(mentalraysgi.renderdir), BUFFERLEN-1);
-  strncpy(mentalraysgi.image, conv_to_posix_path(mentalraysgi.image), BUFFERLEN-1);
-  strncpy(mentalraysgi.scriptdir, conv_to_posix_path(mentalraysgi.scriptdir), BUFFERLEN-1);
-#endif
-
   if ((file = mentalraysg_create (&mentalraysgi)) == NULL) {
     fprintf (stderr,"ERROR: %s\n",drerrno_str());
     return;
