@@ -1,4 +1,4 @@
-/* $Id: communications.h,v 1.16 2002/02/15 11:51:00 jorge Exp $ */
+/* $Id: communications.h,v 1.17 2002/06/26 13:33:55 jorge Exp $ */
 
 #ifndef _COMMUNICATIONS_H_
 #define _COMMUNICATIONS_H_
@@ -42,6 +42,9 @@ int write_32b (int sfd, void *data);
 int write_16b (int sfd, void *data);
 int read_32b (int sfd, void *data);
 int read_16b (int sfd, void *data);
+
+int dr_read (int fd, void *buf, uint32_t len);
+int dr_write (int fd, void *buf, uint32_t len);
 
 
 #endif /* _COMMUNICATIONS_H_ */
