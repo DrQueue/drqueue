@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.12 2001/07/13 15:44:00 jorge Exp $ */
+/* $Id: master.c,v 1.13 2001/07/17 15:07:29 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -266,9 +266,17 @@ void sigsegv_handler (int signal, siginfo_t *info, void *data)
 
 void master_consistency_checks (struct database *wdb)
 {
+  uint32_t i;
+
   while (1) {
     check_lastconn_times (wdb);
-    
+
+    for (i=0;i<MAXJOBS;i++) {
+      if (wdb->job[i].used) {
+	job_update_info (wdb,i);
+      }
+    }
+
     sleep (MASTERCCHECKSDELAY);
   }
 }
