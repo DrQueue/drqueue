@@ -464,7 +464,9 @@ void launch_task (struct slave_database *sdb)
       task_environment_set(&sdb->comp->status.task[sdb->itask]);
 
 #ifdef __CYGWIN
-      snprintf (exec_path,BUFFERLEN-1,"/tcsh.exe",getenv("DRQUEUE_BIN"));
+			exec_path = malloc(MAXCMDLEN);
+			snprintf (exec_path,BUFFERLEN-1,"%s/tcsh.exe",getenv("DRQUEUE_BIN"));
+			//printf("run %s\n", exec_path);
 #else
       exec_path = SHELL_PATH;
 #endif
