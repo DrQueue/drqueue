@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.15 2001/08/29 13:16:09 jorge Exp $ */
+/* $Id: computer.c,v 1.16 2001/08/31 08:48:49 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -84,7 +84,7 @@ int computer_index_free (void *pwdb)
 int computer_available (struct computer *computer)
 {
   /* Returns 1 or 0 if the computer is or not available for rendering */
-  if (computer->status.ntasks >= (computer->hwinfo.numproc*10)) {
+  if (computer->status.ntasks >= (computer->hwinfo.numproc)) {
     /* If we already have all the processors running... */
     return 0;
   }
