@@ -128,6 +128,7 @@ ifeq ($(systype),IRIX)
 	install -root $(PWD) -m 0755 -f /bin -src master master.$(systype)
 	install -root $(PWD) -m 0755 -f /bin -src requeue requeue.$(systype)
 	install -root $(PWD) -m 0755 -f /bin -src jobfinfo jobfinfo.$(systype)
+	install -root $(PWD) -m 0755 -f /bin -src blockhost blockhost.$(systype)
 	test -x ./drqman/drqman && install -root $(PWD) -m 0755 -f /bin -src drqman/drqman drqman.$(systype) || test 1
 else
 	install -d -m 0755 bin
@@ -135,6 +136,7 @@ else
 	install -m 0755 -p ./master bin/master.$(systype)
 	install -m 0755 -p ./requeue bin/requeue.$(systype)
 	install -m 0755 -p ./jobfinfo bin/jobfinfo.$(systype)
+	install -m 0755 -p ./blockhost bin/blockhost.$(systype)
 	test -x ./drqman/drqman && install -m 0755 -p ./drqman/drqman bin/drqman.$(systype) || exit 0
 endif
 
