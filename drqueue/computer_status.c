@@ -1,4 +1,4 @@
-/* $Id: computer_status.c,v 1.1 2001/05/28 14:21:31 jorge Exp $ */
+/* $Id: computer_status.c,v 1.2 2001/05/30 15:11:47 jorge Exp $ */
 
 #include <stdio.h>
 #include <signal.h>
@@ -29,11 +29,14 @@ void check_tasks (struct computer_status *cstatus)
   cstatus->numtasks = 0;
   for (i=0;i<MAXTASKS;i++) {
     if (cstatus->task[i].used) {
-      if (kill(cstatus->task[i].pid,0) == 0) { /* check if task is running */
-	cstatus->numtasks++;
-      } else {
-	/* task is registered but not running */
-	cstatus->task[i].used = 0;
+      if (cstatus->task[i].status != TASKSTATUS_LOADING) {
+	/* If the task is LOADING then there is no process running yet */
+	if (kill(cstatus->task[i].pid,0) == 0) { /* check if task is running */
+	  cstatus->numtasks++;
+	} else {
+	  /* task is registered but not running */
+	  cstatus->task[i].used = 0;
+	}
       }
     }
   }

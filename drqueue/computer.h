@@ -1,4 +1,4 @@
-/* $Id: computer.h,v 1.4 2001/05/09 10:53:08 jorge Exp $ */
+/* $Id: computer.h,v 1.5 2001/05/30 15:11:47 jorge Exp $ */
 
 #ifndef _COMPUTER_H_
 #define _COMPUTER_H_
@@ -6,8 +6,8 @@
 #include <netinet/in.h>
 #include <time.h>
 
-#include "arch/computer_info.h"
-#include "arch/computer_status.h"
+#include "computer_info.h"
+#include "computer_status.h"
 
 struct computer {
   struct computer_hwinfo hwinfo;

@@ -1,4 +1,4 @@
-/* $Id: slave.h,v 1.4 2001/05/28 14:21:31 jorge Exp $ */
+/* $Id: slave.h,v 1.5 2001/05/30 15:11:47 jorge Exp $ */
 
 #ifndef _SLAVE_H_
 #define _SLAVE_H_
@@ -14,11 +14,11 @@
 
 struct slave_database {
   struct computer *comp;
-  struct job job;		/* Current process job */
   int shmid;
   int semid;
   int itask;			/* Index to current process task */
 };				/* slave database */
+
 
 void set_signal_handlers (void);
 void set_signal_handlers_child_listening (void); /* For the accepting process */

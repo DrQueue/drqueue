@@ -1,9 +1,10 @@
-/* $Id: logger.h,v 1.4 2001/05/07 15:35:04 jorge Exp $ */
+/* $Id: logger.h,v 1.5 2001/05/30 15:11:47 jorge Exp $ */
 
 #ifndef _LOGGER_H_
 #define _LOGGER_H_
 
 #include <stdio.h>
+
 #include "task.h"
 #include "job.h"
 #include "computer.h"
@@ -15,8 +16,8 @@
 #define L_INFO 2
 #define L_DEBUG 3
 
-void log_slave_task (struct t_task *task,char *msg);
-FILE *log_slave_open_task (struct t_task *task);
+void log_slave_task (struct task *task,char *msg);
+FILE *log_slave_open_task (struct task *task);
 void log_slave_computer (char *msg);
 FILE *log_slave_open_computer (char *name);
 

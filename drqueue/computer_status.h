@@ -1,4 +1,4 @@
-/* $Id: computer_status.h,v 1.1 2001/05/28 14:21:31 jorge Exp $ */
+/* $Id: computer_status.h,v 1.2 2001/05/30 15:11:47 jorge Exp $ */
 
 #ifndef _COMPUTER_STATUS_H_
 #define _COMPUTER_STATUS_H_
@@ -11,7 +11,7 @@
 struct computer_status {
   uint16_t loadavg[3];		/* load average last minute, last 5, and last 15 */
   uint16_t numtasks;			/* number of tasks (processes) being run at this time */
-  struct t_task task[MAXTASKS];
+  struct task task[MAXTASKS];
 };
 
 void get_computer_status (struct computer_status *cstatus);

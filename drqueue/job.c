@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.1 2001/05/28 14:21:31 jorge Exp $ */
+/* $Id: job.c,v 1.2 2001/05/30 15:11:47 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -9,6 +9,7 @@
 #include "constants.h"
 #include "slave.h"
 #include "logger.h"
+#include "semaphores.h"
 
 int job_index_free (void *pwdb)
 {
@@ -38,11 +39,24 @@ void job_report (struct job *job)
   printf ("Frame start,end:\t%i,%i\n",job->frame_start,job->frame_end);
 }
 
-void job_init (struct job *job)
+void job_init_assigned (struct database *wdb,int ijob)
 {
   int i;
+  int nframes;
+  
+  semaphore_lock(wdb->semid);
+  wdb->job[ijob].used = 1;
+  wdb->job[ijob].status = JOBSTATUS_WAITING;
 
-  job->status = JOBSTATUS_WAITING;
+  /* We allocate the memory for the frame_info */
+  nframes = job_nframes (&wdb->job[index]);
+  job[index].frame_info = (struct frame_info *) malloc (sizeof (struct frame_info) * nframes);
+  if (wdb->job[index].frame_info == NULL) {
+    log_master ("Warning: Could not allocate memory for frame info");
+    wdb->job[index].used = 0;
+  } else {
+    job_init_assigned (&wdb->job[index]);
+  }
 
   /* Set done frames to NONE */
   for (i=0;i<job_nframes(job);i++) {
@@ -54,7 +68,9 @@ void job_delete (struct job *job)
 {
   job->used = 0;
 
-  free (job->frame_info);
+  if (job->frame_info)
+    free (job->frame_info);
+
   job->frame_info = NULL;
 }
 
@@ -87,6 +103,7 @@ char *job_status_string (char status)
 
   return sstring;
 }
+
 int job_nframes (struct job *job)
 {
   int n;
@@ -97,3 +114,49 @@ int job_nframes (struct job *job)
 
   return n;
 }
+
+
+int job_available (struct database *wdb,int ijob, int *iframe)
+{
+  if (wdb->job[ijob].used == 0)
+    return 0;
+
+  if (wdb->job[ijob].status != JOBSTATUS_WAITING)
+    return 0;
+
+  if ((*iframe = job_first_frame_available (wdb,ijob)) == -1)
+    return 0;
+
+  return 1;
+}
+
+int job_first_frame_available (struct database *wdb,int ijob)
+{
+  /* This fuction not only returns the first frame */
+  /* available but also updates the job structure when found */
+  /* so the frame status goes to assigned (we still have to */
+  /* set the info about the icomp,start,itask */
+  int i;
+  int nframes = job_nframes (&wdb->job[ijob]);
+  int r = -1;
+
+  semaphore_lock(wdb->semid);
+  for (i=0;i<nframes;i++) {
+    if (wdb->job[ijob].frame_info[i].status == FS_WAITING) {
+      r = i;			/* return = current */
+      wdb->job[ijob].frame_info[i].status = FS_ASSIGNED; /* Change the status to assigned */
+      break;
+    }
+  }
+  semaphore_release(wdb->semid);
+
+  return r;
+}
+
+void job_update_assigned (struct database *wdb, int ijob, int iframe, int icomp, int itask)
+{
+  semaphore_lock(wdb->semid);
+  wdb->job[ijob].frame_info[i].icomp = icomp;
+  wdb->job[ijob].frame_info[i].itask = itask;
+}
+
