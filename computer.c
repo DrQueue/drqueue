@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.1 2001/05/07 15:35:04 jorge Exp $ */
+/* $Id: computer.c,v 1.2 2001/05/09 10:53:08 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -43,7 +43,7 @@ int computer_index_name (void *pwdb,char *name)
   int i;
   
   for (i=0;((i<MAXCOMPUTERS)&&(index==-1)); i++) {
-    if (strcmp(name,wdb->computer[i].hwinfo.name) == 0)
+    if ((strcmp(name,wdb->computer[i].hwinfo.name) == 0) && (wdb->computer[i].used))
       index = i;
   }
 
@@ -68,5 +68,17 @@ int computer_index_free (void *pwdb)
   return index;
 }
 
+int computer_available (struct computer *computer)
+{
+  /* Returns 1 or 0 if the computer is or not available for rendering */
+  if (computer->status.numtasks >= computer->hwinfo.numproc) {
+    /* If we already have all the processors running... */
+    return 0;
+  }
 
+  if (computer->status.loadavg[0] >= (computer->hwinfo.numproc * MAXLOADAVG)) {
+    return 0;
+  }
 
+  return 1;
+}

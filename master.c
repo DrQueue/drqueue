@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.2 2001/05/07 15:35:04 jorge Exp $ */
+/* $Id: master.c,v 1.3 2001/05/09 10:53:08 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -8,16 +8,19 @@
 #include <sys/sem.h>
 #include <signal.h>
 #include <wait.h>
+#include <time.h>
 
 #include "master.h"
 #include "database.h"
 #include "logger.h"
 #include "communications.h"
 #include "request.h"
+#include "semaphores.h"
 
 struct database *wdb;		/* whole database */
 int sfd;			/* socket file descriptor */
 int icomp;			/* index to accepted computer, local to every child */
+
 
 int main (int argc, char *argv[])
 {
@@ -32,6 +35,14 @@ int main (int argc, char *argv[])
   wdb = attach_shared_memory (shmid);
   wdb->shmid = shmid;
   wdb->semid = get_semaphores ();
+  
+  if (fork() == 0) {
+    /* Create the consistency checks process */
+    strcpy (argv[0],"DrQueue - Consistency checks");
+    set_signal_handlers_child_cchecks ();
+    master_consistency_checks (wdb);
+    exit (0);
+  }
 
   sfd = get_socket(MASTERPORT);
 
@@ -39,13 +50,15 @@ int main (int argc, char *argv[])
   printf ("%i %i\n",sizeof(*wdb),sizeof(struct database));
   printf ("%i %i\n",sizeof(int),sizeof(long int));
   printf ("%i %i\n",sizeof(struct job),sizeof(struct computer));
+  printf ("%i \n",sizeof(struct computer_status));
 
   while (1) {
     printf ("Waiting for connections...\n");
     if ((csfd = accept_socket (sfd,wdb,&icomp)) != -1) {
       if (fork() == 0) {
-	strcpy (argv[0],"Connection handler");
-	set_signal_handlers_child ();
+	/* Create a connection handler */
+	strcpy (argv[0],"DrQueue - Connection handler");
+	set_signal_handlers_child_conn_handler ();
 	close (sfd);
 	set_alarm ();
 	handle_request_master (csfd,wdb,icomp);
@@ -68,7 +81,7 @@ int get_shared_memory (void)
     exit (1);
   }
   
-  if ((shmid = shmget (key,sizeof (struct database), IPC_CREAT | 0600)) == -1) {
+  if ((shmid = shmget (key,sizeof (struct database), IPC_EXCL|IPC_CREAT|0600)) == -1) {
     perror ("shmget");
     exit (1);
   }
@@ -83,14 +96,17 @@ int get_semaphores (void)
 
   if ((key = ftok ("master",'Z')) == -1) {
     perror ("ftok");
-    exit (1);
+    kill (0,SIGINT);
   }
 
-  if ((semid = semget (key,1, IPC_CREAT | 0600)) == -1) {
+  if ((semid = semget (key,1, IPC_EXCL|IPC_CREAT|0600)) == -1) {
     perror ("semget");
-    exit (1);
+    kill (0,SIGINT);
   }
-  semctl (semid,0,SETVAL,1);
+  if (semctl (semid,0,SETVAL,1) == -1) {
+    perror ("semctl SETVAL -> 1");
+    kill (0,SIGINT);
+  }
 
   return semid;
 }
@@ -116,6 +132,7 @@ void set_signal_handlers (void)
   sigemptyset (&clean.sa_mask);
   clean.sa_flags = SA_SIGINFO;
   sigaction (SIGINT, &clean, NULL);
+  sigaction (SIGTERM, &clean, NULL);
 
   ignore.sa_handler = SIG_IGN;
   sigemptyset (&ignore.sa_mask);
@@ -125,7 +142,7 @@ void set_signal_handlers (void)
 }
 
 
-void set_signal_handlers_child (void)
+void set_signal_handlers_child_conn_handler (void)
 {
   struct sigaction action_dfl;
   struct sigaction action_alarm;
@@ -135,6 +152,8 @@ void set_signal_handlers_child (void)
   sigemptyset (&action_dfl.sa_mask);
   action_dfl.sa_flags = SA_SIGINFO;
   sigaction (SIGINT, &action_dfl, NULL);
+  sigaction (SIGTERM, &action_dfl, NULL);
+
   action_alarm.sa_sigaction = sigalarm_handler;
   sigemptyset (&action_alarm.sa_mask);
   action_alarm.sa_flags = SA_SIGINFO;
@@ -145,20 +164,35 @@ void set_signal_handlers_child (void)
   sigaction (SIGPIPE, &action_pipe, NULL);
 }
 
+void set_signal_handlers_child_cchecks (void)
+{
+  struct sigaction action_dfl;
+
+  action_dfl.sa_sigaction = (void *)SIG_DFL;
+  sigemptyset (&action_dfl.sa_mask);
+  action_dfl.sa_flags = SA_SIGINFO;
+  sigaction (SIGINT, &action_dfl, NULL);
+  sigaction (SIGTERM, &action_dfl, NULL);
+}
+
 void clean_out (int signal, siginfo_t *info, void *data)
 {
   int rc;
   pid_t child_pid;
 
-  kill(0,SIGINT);
+  kill(0,SIGINT);		/* Kill all the children (Wow, I don't really want to do that...) */
   while ((child_pid = wait (&rc)) != -1) {
     printf ("Child arrived ! %i\n",child_pid); 
   }
   log_master ("Cleaning...");
 
   close (sfd);
-  shmctl (wdb->shmid,IPC_RMID,NULL);
-  shmctl (wdb->semid,IPC_RMID,NULL);
+  if (semctl (wdb->semid,0,IPC_RMID,NULL) == -1) {
+    perror ("wdb->semid");
+  }
+  if (shmctl (wdb->shmid,IPC_RMID,NULL) == -1) {
+    perror ("wdb->shmid");
+  }
 
   exit (1);
 }
@@ -186,9 +220,32 @@ void sigpipe_handler (int signal, siginfo_t *info, void *data)
   exit (1);
 }
 
+void master_consistency_checks (struct database *wdb)
+{
+  while (1) {
+    check_lastconn_times (wdb);
+    
+    sleep (MASTERCCHECKSDELAY);
+  }
+}
 
+void check_lastconn_times (struct database *wdb)
+{
+  int i;
+  time_t now;
 
-
+  time(&now);
+  for (i=0;i<MAXCOMPUTERS;i++) {
+    if (wdb->computer[i].used) {
+      if ((now - wdb->computer[i].lastconn) > MAXTIMENOCONN) {
+	log_master_computer (&wdb->computer[i],"Info: Maximum time without connecting exceeded. Deleting");
+	semaphore_lock(wdb->semid);
+	wdb->computer[i].used = 0;
+	semaphore_release(wdb->semid);
+      }
+    }
+  }
+}
 
 
 
