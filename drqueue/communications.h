@@ -1,4 +1,4 @@
-/* $Id: communications.h,v 1.7 2001/08/22 09:02:26 jorge Exp $ */
+/* $Id: communications.h,v 1.8 2001/08/27 08:13:48 jorge Exp $ */
 
 #ifndef _COMMUNICATIONS_H_
 #define _COMMUNICATIONS_H_
@@ -25,6 +25,8 @@ void recv_job (int sfd, struct job *job,int who);
 void send_job (int sfd, struct job *job,int who);
 int  recv_task (int sfd, struct task *task);
 int  send_task (int sfd, struct task *task);
+int recv_frame_info (int sfd, struct frame_info *fi);
+int send_frame_info (int sfd, struct frame_info *fi);
 
 
 #endif /* _COMMUNICATIONS_H_ */
