@@ -1,3 +1,164 @@
+2004-11-03 00:09:28  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/CREDITS
+
+	* Added Gary Gegan to the credits because he's the logo's author.
+
+2004-11-02 20:25:58  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/database.h
+	   M /trunk/drqueue/request.c
+
+	* I forgot to update the db version. O:)
+
+2004-11-02 10:35:04  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/drqman/drqm_request.c
+
+	* Fixed typo.
+
+2004-11-02 08:10:35  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   D /trunk/drqueue/weasel.ico
+	   D /trunk/drqueue/weasel_16x16.png
+	   D /trunk/drqueue/weasel_32x32.png
+
+	* weasel.ico stuff removed from tree. Now it's located in the site tree.
+
+2004-11-02 01:24:41  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/weasel.ico
+
+	* Same icon again.
+
+2004-11-01 23:24:26  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/drqman/drqm_info.c
+
+	* The logo it deserves.
+
+2004-11-01 19:55:49  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   R /trunk/drqueue/drqman/weasel.xpm
+
+	* I like it more without transparency
+
+2004-11-01 19:52:00  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   R /trunk/drqueue/drqman/weasel.xpm
+
+	* Smaller xpm. I'll keep original out of the repo.
+
+2004-11-01 19:25:16  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   A /trunk/drqueue/weasel.ico
+	   A /trunk/drqueue/weasel_16x16.png
+	   A /trunk/drqueue/weasel_32x32.png
+
+	* Added icon and images.
+
+2004-11-01 18:02:10  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/drqman/main.c
+
+	* Mac OS X default icon bugfix.
+
+2004-11-01 17:28:11  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/Revision
+
+	* New Revision commited by build_package.sh
+
+2004-11-01 17:27:44  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/ChangeLog
+
+	* ChangeLog commited by build_package.sh
+
+2004-11-01 17:27:13  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/common.h
+
+	* New version number on common.h: 0.53.3
+
+2004-11-01 17:12:02  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/drqman/drqm_jobs_jdd.c
+	   M /trunk/drqueue/drqman/main.c
+	   A /trunk/drqueue/drqman/weasel.xpm
+	   M /trunk/drqueue/request.c
+	   M /trunk/drqueue/request.h
+	   M /trunk/drqueue/request_codes.h
+
+	* Weasel logo. Job limits change memory button now works.
+
+2004-11-01 01:23:19  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/TODO
+	   M /trunk/drqueue/drqman/drqm_jobs.c
+
+	* TODO updated
+
+2004-11-01 00:42:35  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/drqman/drqm_jobs.c
+
+	* Problem on refresh job list for dependencies.
+
+2004-11-01 00:09:44  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/drqman/drqm_jobs.c
+	   M /trunk/drqueue/drqman/drqm_jobs.h
+
+	* Job list for job dependencies working.
+
+2004-10-31 22:07:18  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/drqman/drqm_jobs.c
+	   M /trunk/drqueue/drqman/drqm_jobs.h
+
+	* Working on the job list for dependencies
+
+2004-10-31 20:57:15  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/TODO
+
+	* TODO updated
+
+2004-10-31 11:40:13  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/TODO
+	   M /trunk/drqueue/svn-scripts/build_release.sh
+
+	* Updated TODO
+
+2004-10-31 11:21:51  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/Revision
+
+	* New Revision commited by build_package.sh
+
 2004-10-31 11:21:24  Jorge Daza <jorge@drqueue.org>
 
 	* Changed paths:
