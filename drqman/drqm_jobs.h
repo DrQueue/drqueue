@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.11 2001/08/28 09:56:47 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.12 2001/08/28 15:35:56 jorge Exp $
  */
 
 #ifndef _DRQM_JOBS_H_
@@ -28,6 +28,10 @@ struct info_jdd {		/* job details dialog */
   GtkWidget *lavgt;		/* average time per frame */
   GtkWidget *lestf;		/* estimated finish time */
   GtkWidget *clist;		/* frame info clist */
+  
+  GtkWidget *menu;		/* Popup menu */
+  gint row,column;		/* selected frame */
+  int selected;			/* if a frame is selected */
 };
 
 struct info_drqm_jobs {
