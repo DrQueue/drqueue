@@ -35,14 +35,21 @@
 
 void usage (void);
 
+enum operation {
+	OP_NONE,
+	OP_REQUEUED,
+	OP_STATUS
+};
+
 int main (int argc,char *argv[])
 {
   int opt;
   uint32_t frame = -1;
   uint32_t ijob = -1;
 	struct frame_info fi;
+	enum operation op = OP_NONE;
 
-  while ((opt = getopt (argc,argv,"j:f:vh")) != -1) {
+  while ((opt = getopt (argc,argv,"rsj:f:vh")) != -1) {
     switch (opt) {
     case 'f':
       frame = atoi (optarg);
@@ -53,6 +60,12 @@ int main (int argc,char *argv[])
     case 'v':
       show_version (argv);
       exit (0);
+		case 'r':
+			op = OP_REQUEUED;
+			break;
+		case 's':
+			op = OP_STATUS;
+			break;
     case '?':
     case 'h':
       usage();
@@ -60,7 +73,7 @@ int main (int argc,char *argv[])
     }
   }
 
-  if ((frame == -1) || (ijob == -1)) {
+  if ((frame == -1) || (ijob == -1) || (op == OP_NONE)) {
     usage ();
     exit (1);
   }
@@ -77,17 +90,29 @@ int main (int argc,char *argv[])
     exit (1);
   }
 
-  printf ("%i\n",fi.requeued);
+	switch (op) {
+	case OP_NONE:
+		printf ("OP_NONE\n");
+		break;
+	case OP_REQUEUED:
+		printf ("%i\n",fi.requeued);
+		break;
+	case OP_STATUS:
+		printf ("%s\n",job_frame_status_string(fi.status));
+		break;
+	}
 
   exit (0);
 }
 
 void usage (void)
 {
-    fprintf (stderr,"Usage: jobfinfo [-vh] -f <frame_number> -j <job_id>\n"
-	     "Valid options:\n"
-	     "\t-f <frame_number>\n"
-	     "\t-j <job_id>\n"
-	     "\t-v print version\n"
-	     "\t-h print this help\n");
+    fprintf (stderr,"Usage: jobfinfo [-vh] -r|-s -f <frame_number> -j <job_id>\n"
+						 "Valid options:\n"
+						 "\t-r Returns the number of times a frame has been requeued\n"
+						 "\t-s Returns the status of the frame as a string\n"
+						 "\t-f <frame_number>\n"
+						 "\t-j <job_id>\n"
+						 "\t-v print version\n"
+						 "\t-h print this help\n");
 }
