@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.17 2001/08/27 08:15:20 jorge Exp $ */
+/* $Id: master.c,v 1.18 2001/08/29 08:20:57 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -70,14 +70,12 @@ int main (int argc, char *argv[])
     kill(0,SIGINT);
   }
 
+  printf ("Waiting for connections...\n");
   while (1) {
-    printf ("Waiting for connections...\n");
     if ((csfd = accept_socket (sfd,wdb,&icomp)) != -1) {
       if (fork() == 0) {
-	fprintf (stderr,"Child at: %i\n",(int)getpid());
-	fflush(stderr);
 	/* Create a connection handler */
-/*  	strcpy (argv[0],"DrQueue - Connection handler"); */
+	fflush(stderr);
 	set_signal_handlers_child_conn_handler ();
 	close (sfd);
 	set_alarm ();
@@ -86,7 +84,8 @@ int main (int argc, char *argv[])
 	exit (0);
       } else {
 	close (csfd);
-	printf ("csfd: %i\n",csfd);
+	if (csfd > 4)
+	  printf ("Growing !! csfd: %i\n",csfd);
       }
     }
   }
