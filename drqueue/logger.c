@@ -1,4 +1,4 @@
-/* $Id: logger.c,v 1.16 2001/08/31 14:06:23 jorge Exp $ */
+/* $Id: logger.c,v 1.17 2001/09/01 16:35:48 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -45,8 +45,13 @@ void log_slave_task (struct task *task,int level,char *msg)
   } else {
     f_log = stdout;
   }
-  fprintf (f_log,"%8s : %8s -> Job: %8s || Owner: %8s || Frame: %4i || %s: %s\n",buf,name,
-	   task->jobname,task->owner,task->frame,log_level_str(level),msg);
+  
+  if (loglevel < L_DEBUG)
+    fprintf (f_log,"%8s : %8s -> Job: %8s || Owner: %8s || Frame: %4i || %s: %s\n",buf,name,
+	     task->jobname,task->owner,task->frame,log_level_str(level),msg);
+  else
+    fprintf (f_log,"%8s : %8s -> Job: %8s || Owner: %8s || Frame: %4i || (%i) %s: %s\n",buf,name,
+	     task->jobname,task->owner,task->frame,(int)getpid(),log_level_str(level),msg);
 
   if (!logonscreen)
     fclose (f_log);
@@ -113,7 +118,10 @@ void log_slave_computer (int level, char *msg)
     f_log = stdout;
   }
 
-  fprintf (f_log,"%8s : %8s -> %s: %s\n",buf,name,log_level_str(level),msg);
+  if (loglevel < L_DEBUG)
+    fprintf (f_log,"%8s : %8s -> %s: %s\n",buf,name,log_level_str(level),msg);
+  else 
+    fprintf (f_log,"%8s : %8s -> (%i) %s: %s\n",buf,name,(int) getpid(), log_level_str(level),msg);
 
   if (!logonscreen)
     fclose (f_log);
@@ -161,7 +169,12 @@ void log_master_job (struct job *job, int level, char *msg)
   } else {
     f_log = stdout;
   }
-  fprintf (f_log,"%8s : Job: %8s || Owner: %8s || %s: %s\n",buf,job->name,job->owner,log_level_str(level),msg);
+  
+  if (loglevel < L_DEBUG)
+    fprintf (f_log,"%8s : Job: %8s || Owner: %8s || %s: %s\n",buf,job->name,job->owner,log_level_str(level),msg);
+  else
+    fprintf (f_log,"%8s : Job: %8s || Owner: %8s || (%i) %s: %s\n",buf,job->name,job->owner,(int)getpid(),
+	     log_level_str(level),msg);
   if (!logonscreen)
     fclose (f_log);
 }
@@ -187,7 +200,7 @@ void log_master_computer (struct computer *computer, int level, char *msg)
     f_log = stdout;
   }
 
-  if (loglevel != L_DEBUG)
+  if (loglevel < L_DEBUG)
     fprintf (f_log,"%8s : Computer: %8s || %s: %s\n",buf,computer->hwinfo.name,log_level_str(level),msg);
   else
     fprintf (f_log,"%8s : Computer: %8s || (%i) %s: %s\n",buf,computer->hwinfo.name,(int) getpid(),log_level_str(level),msg);
@@ -217,7 +230,7 @@ void log_master (int level,char *msg)
     f_log = stdout;
   }
   
-  if (loglevel != L_DEBUG)
+  if (loglevel < L_DEBUG)
     fprintf (f_log,"%8s : %s: %s\n",buf,log_level_str(level),msg);
   else
     fprintf (f_log,"%8s : (%i) %s: %s\n",buf,(int)getpid(),log_level_str(level),msg);
