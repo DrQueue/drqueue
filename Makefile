@@ -31,14 +31,17 @@ ifeq ($(systype),Linux)
 else 
  ifeq ($(systype),IRIX)
 	CFLAGS = -DCOMM_REPORT -Wall -I. -D__IRIX -g -O2
+  CPPFLAGS = -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__IRIX -g -O2
 	MAKE = /usr/freeware/bin/gmake
  else
 	ifeq ($(systype),Darwin)
 	 CFLAGS = -DCOMM_REPORT -Wall -I. -D__OSX -g -O2
+   CPPFLAGS = -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__OSX -g -O2
 	 MAKE = make
 	else
 	 ifeq ($(systype),FreeBSD)
 	  CFLAGS = -DCOMM_REPORT -Wall -I. -D__FREEBSD -g -O2
+    CPPFLAGS = -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__FREEBSD -g -O2
 	  MAKE = gmake
 	 else
 $(error Cannot make DrQueue -- systype "$(systype)" is unknown)
