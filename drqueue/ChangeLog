@@ -1,3 +1,69 @@
+2004-10-13 20:07:56  Rev 763    jorge
+
+	* bin/drqman:
+	  Added drqman script to the repository
+
+2004-10-13 19:55:26  Rev 762    jorge
+
+	* job.c:
+	  Solved bug 0000003. Job's OS limits not working now works.
+
+2004-10-13 19:52:58  Rev 761    jorge
+
+	* job.c:
+	  Trying to resolve bug 0000003. OS limits not working. Again.
+
+2004-10-13 19:49:10  Rev 760    jorge
+
+	* job.c:
+	  Trying to resolve bug 0000003. OS limits not working.
+
+2004-10-13 19:04:22  Rev 759    jorge
+
+	* drqman/drqm_jobs.c:
+	  Bug 0000003 resolved. Problem showing OS flags on job's detail dialog.
+
+2004-10-13 18:42:33  Rev 758    jorge
+
+	* computer_info.c:
+	  Bug 0000002 resolved
+
+2004-10-13 18:12:42  Rev 757    jorge
+
+	* computer_info.c:
+	  Changed Opteron detection string
+
+2004-10-13 12:45:57  Rev 756    jorge
+
+	* request.c:
+	  Solved small memory leak
+
+2004-10-13 09:59:53  Rev 755    jorge
+
+	* TODO:
+	  Updated
+
+2004-10-13 09:54:23  Rev 754    jorge
+
+	* TODO:
+	  Updated
+
+2004-10-13 09:53:44  Rev 753    jorge
+
+	* computer_info.h:
+	  "#ifdef...#else..." changed for "#if defined..."
+
+
+2004-10-13 08:35:15  Rev 752    jorge
+
+	* Revision:
+	  New Revision commited by build_package.sh
+
+2004-10-13 08:34:57  Rev 750    jorge
+
+	* ChangeLog:
+	  Changelog commited by build_package.sh
+
 2004-10-13 08:34:34  Rev 749    jorge
 
 	* common.h:
