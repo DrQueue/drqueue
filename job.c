@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.50 2001/11/23 15:52:05 jorge Exp $ */
+/* $Id: job.c,v 1.51 2002/02/27 10:41:45 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -112,7 +112,9 @@ void job_init (struct job *job)
 void job_delete (struct job *job)
 {
   /* This function is called by the master locked. */
-  /* This functions sets for removal the frame info structure of the job */
+  /* This functions marks for removal the frame info structure of the job */
+  /* So the shared memory block is finally removed when no processes are attached to it */
+
   if (job->fishmid != -1) {
     if (shmctl (job->fishmid,IPC_RMID,NULL) == -1) {
       log_master_job(job,L_ERROR,"job_delete: shmctl (job->fishmid,IPC_RMID,NULL) [Removing frame shared memory]");
