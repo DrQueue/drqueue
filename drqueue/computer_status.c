@@ -1,8 +1,10 @@
-/* $Id: computer_status.c,v 1.10 2001/09/05 09:48:40 jorge Exp $ */
+/* $Id: computer_status.c,v 1.11 2001/09/20 10:51:09 jorge Exp $ */
 
 #include <stdio.h>
 #include <signal.h>
 #include <ctype.h>
+#include <unistd.h>
+#include <stdlib.h>
 
 #ifdef __LINUX
 #include <stdint.h>
