@@ -70,7 +70,7 @@ echo "Building package"
 make clean > /dev/null
 (
 cd ..
-mv drqueue drqueue.$VERSION
+mv drqueue drqueue-$VERSION
 tar zcvf drqueue.$VERSION.tgz --exclude="*/.svn/*" drqueue.$VERSION
 mv drqueue.$VERSION drqueue
 ) > /dev/null
