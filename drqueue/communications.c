@@ -367,7 +367,11 @@ int recv_job (int sfd, struct job *job)
   job->nprocs = ntohs (job->nprocs);
   job->status = ntohs (job->status);
 
+	// Frame info
 	job->fishmid = -1;
+
+	// Blocked hosts
+	job->blocked_host = NULL;
 	job->bhshmid = -1;
 
   /* Koj Stuff */
