@@ -11,6 +11,9 @@ TO DO:
 * Master database saved and reloaded from disk
 * Update the r_r_taskfini protocol
 * -f to force if shared memory or semaphores exist	[DONE]
+* The slave must check that the requests come from the
+  master
+
 
 BUGS:
 ----
@@ -32,3 +35,5 @@ BUGS:
 ----
 
 * In the new job dialog I cannot justify the labels to the left
+* When there is no job selected and you click on remove it removes row 0		[SOLVED]
+
