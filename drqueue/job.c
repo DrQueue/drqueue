@@ -781,6 +781,10 @@ int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp)
   if ((wdb->computer[icomp].hwinfo.os == OS_FREEBSD) && !(wdb->job[ijob].limits.os_flags & OSF_FREEBSD))
 		return 0;
 
+	// Memory
+	if (wdb->computer[icomp].hwinfo.memory < wdb->job[ijob].limits.memory)
+		return 0;
+
 	if (wdb->job[ijob].nblocked
 									&& ((bh = attach_blocked_host_shared_memory (wdb->job[ijob].bhshmid)) != (void *)-1))
 	{
