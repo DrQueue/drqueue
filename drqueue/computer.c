@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.28 2001/10/02 12:37:59 jorge Exp $ */
+/* $Id: computer.c,v 1.29 2001/10/05 15:50:01 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -179,6 +179,7 @@ void computer_init (struct computer *computer)
 {
   computer->used = 0;
   computer_status_init(&computer->status);
+/*    computer_init_limits(&computer); */
 }
 
 int computer_ncomputers_masterdb (struct database *wdb)
