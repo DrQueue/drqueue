@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.5 2001/06/05 12:19:45 jorge Exp $ */
+/* $Id: master.c,v 1.6 2001/07/05 10:53:24 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -31,7 +31,7 @@ int main (int argc, char *argv[])
 
   fprintf (stderr,"Master at: %i\n",getpid());
 
-  log_master ("Starting...");
+  log_master (L_INFO,"Starting...");
   set_signal_handlers ();
 
   shmid = get_shared_memory ();
@@ -201,7 +201,7 @@ void clean_out (int signal, siginfo_t *info, void *data)
   while ((child_pid = wait (&rc)) != -1) {
     printf ("Child arrived ! %i\n",child_pid); 
   }
-  log_master ("Cleaning...");
+  log_master (L_INFO,"Cleaning...");
 
   close (sfd);
 
@@ -223,33 +223,37 @@ void clean_out (int signal, siginfo_t *info, void *data)
 
 void set_alarm (void)
 {
-/*    alarm (MAXTIMECONNECTION); */
+  alarm (MAXTIMECONNECTION);
 }
 
 void sigalarm_handler (int signal, siginfo_t *info, void *data)
 {
   if (icomp != -1)
-    log_master_computer (&wdb->computer[icomp],"Connection time exceeded");
+    log_master_computer (&wdb->computer[icomp],L_WARNING,"Connection time exceeded");
   else
-    log_master ("Connection time exceeded");
+    log_master (L_WARNING,"Connection time exceeded");
   exit (1);
 }
 
 void sigpipe_handler (int signal, siginfo_t *info, void *data)
 {
+  char *msg = "Broken connection while reading or writing";
+
   if (icomp != -1)
-    log_master_computer (&wdb->computer[icomp],"Broken connection while reading or writing");
+    log_master_computer (&wdb->computer[icomp],L_WARNING,msg);
   else
-    log_master ("Broken connection while reading or writing");
+    log_master (L_WARNING,msg);
   exit (1);
 }
 
 void sigsegv_handler (int signal, siginfo_t *info, void *data)
 {
+  char *msg = "Segmentation fault... too bad";
+
   if (icomp != -1)
-    log_master_computer (&wdb->computer[icomp],"Segmentation fault... too bad");
+    log_master_computer (&wdb->computer[icomp],L_ERROR,msg);
   else
-    log_master ("Segmentation fault... too bad");
+    log_master (L_ERROR,msg);
   exit (1);
 }
 
@@ -271,7 +275,7 @@ void check_lastconn_times (struct database *wdb)
   for (i=0;i<MAXCOMPUTERS;i++) {
     if (wdb->computer[i].used) {
       if ((now - wdb->computer[i].lastconn) > MAXTIMENOCONN) {
-	log_master_computer (&wdb->computer[i],"Info: Maximum time without connecting exceeded. Deleting");
+	log_master_computer (&wdb->computer[i],L_INFO,"Maximum time without connecting exceeded. Deleting");
 	semaphore_lock(wdb->semid);
 	wdb->computer[i].used = 0;
 	semaphore_release(wdb->semid);
