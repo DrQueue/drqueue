@@ -1,4 +1,4 @@
-/* $Id: mayasg.c,v 1.3 2001/09/05 09:54:03 jorge Exp $ */
+/* $Id: mayasg.c,v 1.4 2001/09/06 10:43:40 jorge Exp $ */
 
 #include <stdio.h>
 #include <time.h>
@@ -17,28 +17,20 @@ char *mayasg_create (struct mayasgi *info)
   /* Returns NULL on failure and sets drerrno */
   FILE *f;
   static char filename[BUFFERLEN];
-  char dir[BUFFERLEN];
   char image_arg[BUFFERLEN];
-  char *root;
-  
+   
   /* Check the parameters */
   if ((!strlen(info->project)) || (!strlen(info->scene))) {
     drerrno = DRE_NOTCOMPLETE;
     return NULL;
   }
 
-  if ((root = getenv ("DRQUEUE_ROOT")) == NULL) {
-    drerrno = DRE_NOENVROOT;
-    return NULL;
-  }
-
-  snprintf(dir,BUFFERLEN-1,"%s/tmp",root);
-  snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",dir,info->scene,time(NULL));
+  snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,info->scene,time(NULL));
 
   if ((f = fopen (filename, "a")) == NULL) {
     if (errno == ENOENT) {
       /* If its because the directory does not exist we try creating it first */
-      if (mkdir (dir,0775) == -1) {
+      if (mkdir (info->scriptdir,0775) == -1) {
 	drerrno = DRE_COULDNOTCREATE;
 	return NULL;
       } else if ((f = fopen (filename, "a")) == NULL) {
@@ -72,5 +64,21 @@ char *mayasg_create (struct mayasgi *info)
 }
 
 
+char *mayasg_default_script_path (void)
+{
+  static char buf[BUFFERLEN];
+  char *p;
+
+  if (!(p = getenv("DRQUEUE_ROOT"))) {
+    return ("/drqueue_root/not/set/");
+  }
+  
+  if (p[strlen(p)-1] == '/')
+    p[strlen(p)-1] = 0;		/* ATENTION this modifies the environment */
+
+  snprintf (buf,BUFFERLEN-1,"%s/tmp/",p);
+
+  return buf;
+}
 
 
