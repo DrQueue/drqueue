@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.64 2002/08/04 21:20:23 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.65 2002/09/22 19:10:24 jorge Exp $
  */
 
 #include <string.h>
@@ -1562,6 +1562,9 @@ static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_
   strncpy (mayasgi.image,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eimage)),BUFFERLEN-1);
   strncpy (mayasgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escript)),BUFFERLEN-1);
   strncpy (mayasgi.file_owner,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.efile_owner)),BUFFERLEN-1);
+  strncpy (mayasgi.camera,"",BUFFERLEN-1);
+  mayasgi.res_x = mayasgi.res_y = -1;
+  strncpy (mayasgi.format,"",BUFFERLEN-1);
 
   if ((file = mayasg_create (&mayasgi)) == NULL) {
     fprintf (stderr,"ERROR: %s\n",drerrno_str());
