@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.5 2001/07/05 10:53:24 jorge Exp $ */
+/* $Id: job.c,v 1.6 2001/07/05 15:19:39 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -155,7 +155,8 @@ int job_available (struct database *wdb,int ijob, int *iframe)
 
 int job_first_frame_available (struct database *wdb,int ijob)
 {
-  /* This fuction not only returns the first frame */
+  /* This function not only returns the first frame */
+  /* This function is called non blocked */
   /* available but also updates the job structure when found */
   /* so the frame status goes to assigned (we still have to */
   /* set the info about the icomp,start,itask */
@@ -184,6 +185,7 @@ void job_update_assigned (struct database *wdb, int ijob, int iframe, int icomp,
   /* LOCK BEFORE CALLING THIS FUNCTION */
   /* Here we should set all the information inside the task structure (slave) */
   /* about the assigned job (master) into the remote computer */
+  /* This function is called by the master, locked */
   wdb->job[ijob].frame_info = attach_frame_shared_memory (wdb->job[ijob].fishmid);
 
   /* The status should already be FS_ASSIGNED */
