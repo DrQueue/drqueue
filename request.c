@@ -2307,7 +2307,7 @@ void handle_r_r_jobblkhost (int sfd, struct database *wdb, int icomp, struct req
 	}
 
 	wdb->job[ijob].bhshmid = nbhshmid;
-	// Add to the end of the block list
+	// Add to the end of the block list, we use the old nblocked value
 	memcpy (nbh[wdb->job[ijob].nblocked].name,wdb->computer[ihost].hwinfo.name,MAXNAMELEN);
 	wdb->job[ijob].nblocked++;
 

@@ -219,6 +219,8 @@ void clean_out (int signal, siginfo_t *info, void *data)
 
   request_slavexit (sdb.comp->hwinfo.id,SLAVE);
 
+	computer_free (sdb.comp);
+
   if (semctl (sdb.semid,0,IPC_RMID,NULL) == -1) {
     perror ("semid");
   }

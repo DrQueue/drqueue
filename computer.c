@@ -29,6 +29,8 @@
 #include <string.h>
 #include <sys/types.h>
 #include <signal.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
 
 #include "libdrqueue.h"
 
@@ -202,106 +204,156 @@ void computer_init (struct computer *computer)
 	// This function is called by the master when a computer is not longer on the list
   computer->used = 0;
   computer_status_init(&computer->status);
+	computer_pool_init (&computer->limits);
+}
+
+int computer_free (struct computer *computer)
+{
+	computer->used = 0;
+	computer_status_init(&computer->status);
+	if (!computer_pool_free (&computer->limits))
+		return 0;
+
+	return 1;
 }
 
 void computer_pool_init (struct computer_limits *cl)
 {
-	cl->pool = (char **) malloc (sizeof (char*));
-	cl->pool[0] = NULL;
+	cl->poolshmid = -1;
+	cl->npools = 0;
 }
 
-int computer_npools (struct computer_limits *cl)
+int computer_pool_get_shared_memory (int npools)
 {
-	int i;
-	int npools = 1;
-
-	if (cl->pool) {
-		for (i=0;cl->pool[i] != NULL;i++) 
-			npools++;
-	} else {
-		computer_pool_init (cl);
+	int shmid;
+					  
+	if ((shmid = shmget (IPC_PRIVATE,sizeof(struct pool)*npools, IPC_EXCL|IPC_CREAT|0600)) == -1) {
+		drerrno = DRE_GETSHMEM;
+		return shmid;
 	}
 
-	return npools;
+	drerrno = DRE_NOERROR;
+	return shmid;
 }
 
-void computer_pool_add (struct computer_limits *cl, char *pool)
+void *computer_pool_attach_shared_memory (int shmid)
 {
-	int npools;
-	char **new_pool;
+  void *rv;			/* return value */
 
-	if (computer_pool_exists(cl,pool))
-		return;
+  if ((rv = shmat (shmid,0,0)) == (void *)-1) {
+		drerrno = DRE_ATTACHSHMEM;
+		return rv;
+  }
 
-	npools = computer_npools (cl);
+	drerrno = DRE_NOERROR;
+  return rv;
+}
 
-	new_pool = (char **) realloc (cl->pool,sizeof (char*) * (npools+1));
-	new_pool[npools] = NULL;
-	new_pool[npools-1] = (char *) malloc (strlen(pool)+1);
-	strncpy (new_pool[npools-1],pool,strlen(pool)+1);
-	cl->pool = new_pool;
+void computer_pool_detach_shared_memory (struct pool *cpshp)
+{
+  if (shmdt((char*)cpshp) == -1) {
+		// FIXME what to do then ?
+  }
+}
+
+int computer_pool_add (struct computer_limits *cl, char *pool)
+{
+	struct pool *opool = (void*)-1;
+	struct pool *npool;
+	int npoolshmid;
+
+	if (computer_pool_exists (cl,pool)) {
+		// It is already on the list
+		return 1;
+	}
+
+	
+	if (cl->npools && 
+			((opool = computer_pool_attach_shared_memory(cl->poolshmid)) == (void *) -1))
+	{
+		drerrno = DRE_ATTACHSHMEM;
+		return 0;
+	}
+	
+	if ((npoolshmid = computer_pool_get_shared_memory(sizeof(struct pool)*(cl->npools+1))) == -1) {
+		drerrno = DRE_GETSHMEM;
+		return 0;
+	}
+
+	if ((npool = computer_pool_attach_shared_memory(npoolshmid)) == (void *) -1) {
+		drerrno = DRE_ATTACHSHMEM;
+		return 0;
+	}
+	
+	if (cl->npools) {
+		memcpy (npool,opool,sizeof (struct pool) * cl->npools);
+		computer_pool_detach_shared_memory (opool);
+		if (shmctl (cl->poolshmid,IPC_RMID,NULL) == -1) {
+			drerrno = DRE_RMSHMEM;
+			return 0;
+		}
+	}
+
+	cl->poolshmid = npoolshmid;
+	strncpy (npool[cl->npools].name,pool,MAXNAMELEN-1);
+	cl->npools++;
+
+	return 1;
 }
 
 void computer_pool_remove (struct computer_limits *cl, char *pool)
 {
-	int i,j;
-	int npools;
-	char **new_pool;
-
-	npools = computer_npools (cl);
-
-	new_pool = (char **) realloc (cl->pool,sizeof (char*) * (npools-1));
-	for (i=0,j=0;cl->pool[i] != NULL; i++) {
-		if (strncmp(cl->pool[i],pool,strlen(pool)+1) == 0) {
-			continue;
-		} else {
-			new_pool[j] = cl->pool[i];
-			j++;
-		}
-	}
-
-	new_pool[j] = NULL;
 }
 
 void computer_pool_list (struct computer_limits *cl)
 {
 	int i;
+	
+	if (cl->poolshmid != -1) {
+		cl->pool = computer_pool_attach_shared_memory (cl->poolshmid);
 
-	fprintf (stderr,"Pools:\n");
-	if (cl->pool) 
-		for (i=0;cl->pool[i] != NULL; i++)
-			fprintf (stderr,"\t* %s\n",cl->pool[i]);
-	else
-		computer_pool_init (cl);
+		printf ("Pools:	\n");
+		for (i = 0; i < cl->npools; i++) {
+			printf ("	\t%i - %s\n",i,cl->pool[i].name);
+		}
+
+		computer_pool_detach_shared_memory (cl->pool);
+	}
 }
 
 int computer_pool_exists (struct computer_limits *cl,char *pool)
 {
 	int i;
+	struct pool *npool;
 
-	if (cl->pool) {
-		for (i=0;cl->pool[i] != NULL; i++) {
-			if (strncmp(cl->pool[i],pool,strlen(pool)+1) == 0) {
-				return 1;
-			}
-		}
-	} else {
-		computer_pool_init (cl);
+	if (!cl->npools)
+		return 0;
+
+	if ((npool = computer_pool_attach_shared_memory (cl->poolshmid)) == (void *)-1) {
+		return 0;
 	}
+
+	for (i=0;i<cl->npools;i++) {
+		if (strncmp (npool[i].name,pool,strlen(npool[i].name)+1) == 0)
+			return 1;
+	}
+
+	computer_pool_detach_shared_memory (npool);
 
 	return 0;
 }
 
-void computer_pool_free (struct computer_limits *cl)
+int computer_pool_free (struct computer_limits *cl)
 {
-	int i;
-
-	if (cl->pool) {
-		for (i=0;cl->pool[i]!=NULL;i++)
-			free (cl->pool[i]);
-		free (cl->pool);
-		cl->pool = NULL;
+	if (cl->poolshmid != -1) {
+    if (shmctl (cl->poolshmid,IPC_RMID,NULL) == -1) {
+			drerrno = DRE_RMSHMEM;
+			return 0;
+    }
 	}
+	computer_pool_init (cl);
+
+	return 1;
 }
 
 int computer_ncomputers_masterdb (struct database *wdb)
@@ -341,6 +393,7 @@ void computer_init_limits (struct computer *comp)
   comp->limits.autoenable.m = AE_MIN;
   comp->limits.autoenable.last = 0; /* Last autoenable on Epoch */
 	comp->limits.autoenable.flags = 0; // No flags set, autoenable disabled
+	computer_pool_init (&comp->limits);
 }
 
 int computer_index_correct_master (struct database *wdb, uint32_t icomp)

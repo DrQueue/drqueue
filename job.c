@@ -136,7 +136,7 @@ void job_delete (struct job *job)
   /* This function is called by the master locked. */
   /* This functions marks for removal the frame info structure of the job */
   /* So the shared memory block is finally removed when no processes are attached to it */
-
+	// Does the same also with the blocked hosts structure
   if (job->fishmid != -1) {
     if (shmctl (job->fishmid,IPC_RMID,NULL) == -1) {
       log_master_job(job,L_ERROR,"job_delete: shmctl (job->fishmid,IPC_RMID,NULL) [Removing frame shared memory]");
@@ -793,6 +793,10 @@ int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp)
 				return 0;
 			}
 		}
+	}
+
+	if (bh != (void *)-1) {
+		detach_blocked_host_shared_memory (bh);
 	}
 
   return 1;

@@ -657,28 +657,38 @@ int recv_string (int sfd, char **str)
 
 int send_computer_pools (int sfd, struct computer_limits *cl)
 {
-	uint16_t npools;
 	int i;
+	uint16_t npools;
+	struct pool *pool;
 
-	npools = computer_npools (cl);
-	fprintf (stderr,"Send npools: %u\n",npools);
-	npools = htons (npools);
+	fprintf (stderr,"Send npools: %u\n",cl->npools);
+	npools = htons (cl->npools);
 	if (!dr_write (sfd,&npools,sizeof(npools))) {
 		return 0;
 	}
-
-	for (i=0;cl->pool[i] != NULL; i++) 
-		if (!send_string (sfd,cl->pool[i]))
+	
+	if (cl->npools) {
+		if ((pool = computer_pool_attach_shared_memory(cl->poolshmid)) == (void*)-1) {
 			return 0;
+		}
+
+		for (i=0;i<cl->npools;i++) {
+			if (!dr_write(sfd,&pool[i],sizeof(struct pool))) {
+				return 0;
+			}
+		}
+
+		computer_pool_detach_shared_memory (pool);
+	}
 
 	return 1;
 }
 
 int recv_computer_pools (int sfd, struct computer_limits *cl)
 {
-	uint16_t npools;
 	int i;
-	char *str;
+	uint16_t npools;
+	struct pool pool;
 
 	if (!dr_read (sfd,&npools,sizeof(npools))) {
 		return 0;
@@ -686,10 +696,12 @@ int recv_computer_pools (int sfd, struct computer_limits *cl)
 	npools = ntohs (npools);
 	fprintf (stderr,"Recv npools: %u\n",npools);
 
-	for (i = 0; i < (npools-1); i++) {
-		recv_string (sfd,&str);
-		computer_pool_add (cl,str);
-		fprintf (stderr,"Added :%s\n",str);
+	computer_pool_free (cl);
+	for (i=0;i<npools;i++) {
+		if (!dr_read(sfd,&pool,sizeof(pool))) {
+			return 0;
+		}
+		computer_pool_add (cl,pool.name);
 	}
 
 	computer_pool_list (cl);
@@ -713,6 +725,8 @@ int recv_computer_limits (int sfd, struct computer_limits *cl)
   /* Autoenable stuff */
   cl->autoenable.last = ntohl (cl->autoenable.last);
 
+	cl->npools = ntohs (cl->npools);
+
 	if (!recv_computer_pools (sfd,cl)) {
 		return 0;
 	}
@@ -732,6 +746,9 @@ int send_computer_limits (int sfd, struct computer_limits *cl)
   bswapped.maxfreeloadcpu = htons (bswapped.maxfreeloadcpu);
   /* Autoenable stuff */
   bswapped.autoenable.last = htonl (bswapped.autoenable.last);
+
+	// Pools
+	bswapped.npools = htons (bswapped.npools);
 
   if (!dr_write(sfd,buf,sizeof(struct computer_limits))) {
     return 0;
