@@ -39,6 +39,12 @@ void get_hwinfo (struct computer_hwinfo *hwinfo)
 	len = 8; // Hardcoded (?)
 	sysctlbyname ("hw.cpufrequency",&freq,&len,NULL,0);
   hwinfo->procspeed = freq / 10e5;
+	hwinfo->memory = get_memory ();
+}
+
+uint32_t get_memory (void)
+{
+	return 0;
 }
 
 int get_numproc (void)

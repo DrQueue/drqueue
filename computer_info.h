@@ -16,7 +16,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-/* $Id$ */
+// $Id$
+//
 
 #ifndef _COMPUTER_INFO_H_
 #define _COMPUTER_INFO_H_
@@ -66,14 +67,15 @@ typedef enum {
 } t_proctype;
 
 struct computer_hwinfo {
-  char name[MAXNAMELEN];	/* Name of the computer */
-  uint32_t id;			/* Identification number */
-  unsigned char arch;		/* type of architecture */
-  unsigned char os;		/* type of operating system */
-  unsigned char proctype;	/* type of processors */
-  uint32_t procspeed;		/* speed of the processors */
-  uint16_t ncpus;		/* number of processors that the computer has */
-  uint32_t speedindex;		/* global speed index for making comparisons between different computers */
+  char name[MAXNAMELEN];				/* Name of the computer */
+  uint32_t id;									/* Identification number */
+  unsigned char arch;						/* type of architecture */
+  unsigned char os;							/* type of operating system */
+  unsigned char proctype;				/* type of processors */
+  uint32_t procspeed;						/* speed of the processors */
+  uint16_t ncpus;			/* number of processors that the computer has */
+  uint32_t speedindex; /* global speed index for making comparisons between different computers */
+	uint32_t memory;							/* Memory in Mbytes */
 };
 
 void get_hwinfo (struct computer_hwinfo *hwinfo);
@@ -81,6 +83,7 @@ t_proctype get_proctype (void);
 int get_procspeed (void);
 int get_numproc (void);
 int get_speedindex (struct computer_hwinfo *hwinfo);
+uint32_t get_memory (void);
 
 void report_hwinfo (struct computer_hwinfo *hwinfo);
 
