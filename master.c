@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.30 2001/09/28 10:40:02 jorge Exp $ */
+/* $Id: master.c,v 1.31 2001/11/02 10:53:00 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -290,8 +290,11 @@ void clean_out (int signal, siginfo_t *info, void *data)
   while ((child_pid = wait (&rc)) != -1) {
     printf ("Child arrived ! %i\n",(int)child_pid); 
   }
-  log_master (L_INFO,"Cleaning...");
 
+  log_master (L_INFO,"Saving...");
+  database_save(wdb);
+
+  log_master (L_INFO,"Cleaning...");
   for (i=0;i<MAXJOBS;i++) {
     job_delete(&wdb->job[i]);
   }
