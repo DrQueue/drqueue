@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.62 2001/10/24 14:52:28 jorge Exp $ */
+/* $Id: request.c,v 1.63 2001/11/07 10:21:45 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -230,7 +230,11 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
   }
   
   
-  recv_computer_hwinfo (sfd, &hwinfo, MASTER);
+  if (!recv_computer_hwinfo (sfd, &hwinfo)) {
+    log_master (L_ERROR,"Receiving computer hardware info (handle_r_r_register)");
+    wdb->computer[index].used = 0;
+    return -1;
+  }
 
   memcpy (&wdb->computer[index].hwinfo, &hwinfo, sizeof(hwinfo));
   strncpy(wdb->computer[index].hwinfo.name,name,MAXNAMELEN); /* We substitute the name that the computer sent */
@@ -307,18 +311,21 @@ void register_slave (struct computer *computer)
   req.type = R_R_REGISTER;
 
   if (!send_request (sfd,&req,SLAVE)) {
-    log_slave_computer (L_WARNING,"Error sending request (register_slave)");
+    log_slave_computer (L_ERROR,"Sending request (register_slave)");
     kill (0,SIGINT);
   }
   if (!recv_request (sfd,&req)) {
-    log_slave_computer (L_WARNING,"Error receiving request (register_slave)");
+    log_slave_computer (L_ERROR,"Receiving request (register_slave)");
     kill (0,SIGINT);
   }
 
   if (req.type == R_R_REGISTER) {
     switch (req.data) {
     case RERR_NOERROR:
-      send_computer_hwinfo (sfd,&computer->hwinfo,SLAVE);
+      if (!send_computer_hwinfo (sfd,&computer->hwinfo)) {
+	log_slave_computer (L_ERROR,"Sending computer hardware info (register_slave)");
+	kill (0,SIGINT);
+      }
       break;
     case RERR_ALREADY:
       log_slave_computer (L_ERROR,"Already registered");
@@ -398,7 +405,10 @@ int register_job (struct job *job)
   if (req.type == R_R_REGISJOB) {
     switch (req.data) {
     case RERR_NOERROR:
-      send_job (sfd,job,CLIENT);
+      if (!send_job (sfd,job)) {
+	close (sfd);
+	return 0;
+      }
       break;
     case RERR_ALREADY:
       fprintf (stderr,"ERROR: Already registered\n");
@@ -455,7 +465,12 @@ void handle_r_r_regisjob (int sfd,struct database *wdb)
   answer.type = R_R_REGISJOB;
   answer.data = RERR_NOERROR;
   send_request (sfd,&answer,MASTER);
-  recv_job (sfd, &job, MASTER);
+  if (!recv_job (sfd, &job)) {
+    log_master (L_ERROR,"Receiving job (handle_r_r_regisjob)");
+    semaphore_lock(wdb->semid);
+    job_init (&wdb->job[index]); /* We unassign the reserved space for that job */
+    semaphore_release(wdb->semid);
+  }
 
   job_init_registered (wdb,index,&job);
 
@@ -880,6 +895,8 @@ void handle_r_r_listjobs (int sfd,struct database *wdb,int icomp)
   struct request answer;
   int i;
 
+  /* FIXME : This function does not use semaphores */
+
   log_master (L_DEBUG,"Entering handle_r_r_listjobs");
 
   /* We send the number of active jobs */
@@ -893,7 +910,10 @@ void handle_r_r_listjobs (int sfd,struct database *wdb,int icomp)
 
   for (i=0;i<MAXJOBS;i++) {
     if (wdb->job[i].used) {
-      send_job (sfd,&wdb->job[i],MASTER);
+      if (!send_job (sfd,&wdb->job[i])) {
+	log_master (L_WARNING,"Error sending job on handling r_r_listjobs");
+	return;
+      }
     }
   }
 
@@ -914,14 +934,16 @@ void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp)
   answer.data = computer_ncomputers_masterdb (wdb);
   
   if (!send_request (sfd,&answer,MASTER)) {
-    log_master (L_ERROR,"Error receiving request (handle_r_r_listcomp)");
+    log_master (L_ERROR,"Receiving request (handle_r_r_listcomp)");
     return;
   }
 
   for (i=0;i<MAXCOMPUTERS;i++) {
     if (wdb->computer[i].used) {
-      if (!send_computer (sfd,&wdb->computer[i],MASTER))
-	log_master (L_ERROR,"Sending computer info\n");
+      if (!send_computer (sfd,&wdb->computer[i])) {
+	log_master (L_ERROR,"Sending computer (handle_r_r_listcomp)");
+	break;
+      }
     }
   }
 
@@ -1230,8 +1252,13 @@ int request_job_xfer (uint32_t ijob, struct job *job, int who)
     return 0;
   }
   
-  recv_job (sfd,job,who);
+  if (!recv_job (sfd,job)) {
+    drerrno = DRE_ERRORRECEIVING;
+    close (sfd);
+    return 0;
+  }
 
+  drerrno = DRE_NOERROR;
   close (sfd);
   return 1;
 }
@@ -1268,10 +1295,12 @@ void handle_r_r_jobxfer (int sfd,struct database *wdb,int icomp,struct request *
   if (!send_request(sfd,req,MASTER))
     return;
 
-  log_master (L_DEBUG,"Sending job");
-  send_job (sfd,&job,MASTER);	/* I send a copy because if I would send instead the original */
-				/* I would need to block the execution during a network transfer */
-				/* and that's too expensive */
+  /* I send a copy because if I would send instead the original */
+  /* I would need to block the execution during a network transfer */
+  /* and that's too expensive */
+  if (!send_job (sfd,&job)) {
+    log_master (L_ERROR,"Sending job (handle_r_r_jobxfer)");
+  }
 
   log_master (L_DEBUG,"Exiting handle_r_r_jobxfer");
 }
@@ -1443,7 +1472,10 @@ int request_comp_xfer (uint32_t icomp, struct computer *comp, int who)
     return 0;
   }
   
-  recv_computer (sfd,comp,who);
+  if (!recv_computer (sfd,comp)) {
+    close (sfd);
+    return 0;
+  }
 
   close (sfd);
   return 1;
@@ -1455,12 +1487,16 @@ void handle_r_r_compxfer (int sfd,struct database *wdb,int icomp,struct request 
   /* This function is called unlocked */
   /* This function is called by the master */
   uint32_t icomp2;		/* The id of the computer asked to be transfered */
+  struct computer comp;
 
   log_master (L_DEBUG,"Entering handle_r_r_compxfer");
 
   icomp2 = (uint32_t) req->data;
   
-  if ((icomp2 >= MAXCOMPUTERS) || !wdb->computer[icomp2].used) {
+  semaphore_lock(wdb->semid);
+
+  if (!computer_index_correct_master(wdb,icomp2)) {
+    semaphore_release (wdb->semid);
     log_master (L_INFO,"Computer asked to be transfered is not registered");
     req->type = R_R_COMPXFER;
     req->data = RERR_NOREGIS;
@@ -1468,13 +1504,17 @@ void handle_r_r_compxfer (int sfd,struct database *wdb,int icomp,struct request 
     return;
   }
 
+  memcpy(&comp,&wdb->computer[icomp2],sizeof(struct computer));
+
+  semaphore_release(wdb->semid);
+
   req->type = R_R_COMPXFER;
   req->data = RERR_NOERROR;
   if (!send_request(sfd,req,MASTER))
     return;
 
   log_master (L_DEBUG,"Sending computer");
-  send_computer (sfd,&wdb->computer[icomp2],MASTER);
+  send_computer (sfd,&comp);
 }
 
 int request_job_frame_waiting (uint32_t ijob, uint32_t frame, int who)
