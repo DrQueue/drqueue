@@ -1,3 +1,31 @@
+2004-10-15 09:48:46  Rev 802    jorge
+
+	* common.h:
+	  New version number on common.h: 0.51.0
+
+2004-10-15 09:48:09  Rev 801    jorge
+
+	* Makefile:
+	  Corrected to jobfinfo
+
+2004-10-15 09:40:39  Rev 800    jorge
+
+	* drqman/drqm_request.h drqman/drqm_jobs.c database.c request_codes.
+	  h job.c job.h bin/jobfinfo TODO request.c communications.c 
+	  request_errors.h Makefile jobfinfo.c request.h drqman/drqm_request.
+	  c common.h:
+	  Merged branch pre0.51 on trunk
+
+2004-10-15 09:27:36  Rev 799    jorge
+
+	* Revision:
+	  New Revision commited by build_package.sh
+
+2004-10-15 09:27:15  Rev 797    jorge
+
+	* ChangeLog:
+	  Changelog commited by build_package.sh
+
 2004-10-15 09:26:54  Rev 796    jorge
 
 	* common.h:
