@@ -24,6 +24,7 @@
 #define _DRQM_JOBS_JDD_H_
 
 #include "drqm_jobs_common.h"
+#include "drqm_computers.h"
 
 struct drqmj_jddi {							/* job details dialog info*/
   GtkWidget *dialog;						/* Main dialog */
@@ -50,6 +51,7 @@ struct drqmj_jddi {							/* job details dialog info*/
 	GtkWidget *menu_bh;						// Blocked hosts menu
 	GtkWidget *clist_bh;					// Blocked hosts clist
 	GtkWidget *entry_bh;					// Entry to add a blocked host
+	struct drqm_computers_info bhdi_computers_info;
 
   gint row,column;							/* selected frame */
   int selected;									/* if a frame is selected */
