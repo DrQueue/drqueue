@@ -1,4 +1,4 @@
-// 
+//
 // Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -39,8 +39,8 @@
 int main (int argc,char *argv[])
 {
   int opt;
-	int toj = 0;
-    
+  int toj = 0;
+
   presentation();
 
   while ((opt = getopt (argc,argv,"hvt:")) != -1) {
@@ -58,7 +58,7 @@ int main (int argc,char *argv[])
     }
   }
 
-  if ((argc < 2) || (toj == TOJ_NONE)) {
+  if ((argc < 3) || (toj == TOJ_NONE)) {
     usage ();
     exit (1);
   }
@@ -69,18 +69,18 @@ int main (int argc,char *argv[])
     std::cerr << "Error checking the environment: " << drerrno_str() << std::endl;
     exit (1);
   }
-  
-  std::ifstream infile(argv[1]);
+
+  std::ifstream infile(argv[argc-1]);
 	switch (toj) {
 		case TOJ_MAYA:
   		if (RegisterMayaJobFromFile (infile)) {
-				std::cerr << "Error registering MAYA job from file: " << argv[1] << std::endl;
+				std::cerr << "Error registering MAYA job from file: " << argv[argc-1] << std::endl;
     		exit (1);
   		}
 			break;
 		case TOJ_BLENDER:
   		if (RegisterBlenderJobFromFile (infile)) {
-				std::cerr << "Error registering BLENDER job from file: " << argv[1] << std::endl;
+				std::cerr << "Error registering BLENDER job from file: " << argv[argc-1] << std::endl;
     		exit (1);
   		}
 			break;
@@ -135,7 +135,7 @@ int RegisterMayaJobFromFile (std::ifstream &infile)
   infile >> frameStep;
   infile >> resX;
   infile >> resY;
-  getline(infile,scenePath);	// 
+  getline(infile,scenePath);	//
   getline(infile,scenePath);	// Get two times because '>>' leaves the pointer before \n 
   getline(infile,renderDir);
   getline(infile,fileFormat);
@@ -198,7 +198,7 @@ int RegisterBlenderJobFromFile (std::ifstream &infile)
   infile >> frameStart;
   infile >> frameEnd;
   infile >> frameStep;
-  getline(infile,scenePath);	// 
+  getline(infile,scenePath);	//
   getline(infile,scenePath);	// Get two times because '>>' leaves the pointer before \n 
 
   strncpy(blenderSgi.scene,scenePath.c_str(),BUFFERLEN-1);
