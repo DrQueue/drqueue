@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.13 2001/07/06 13:13:21 jorge Exp $ */
+/* $Id: slave.c,v 1.14 2001/07/06 14:10:47 jorge Exp $ */
 
 #include <unistd.h>
 #include <signal.h>
@@ -20,8 +20,7 @@ struct slave_database sdb;	/* slave database */
 
 int main (int argc,char *argv[])
 {
-
-  printf ("struct request: %i\n",sizeof(struct request));
+/*    printf ("struct request: %i\n",sizeof(struct request)); */
   log_slave_computer (L_INFO,"Starting...");
   set_signal_handlers ();
 
@@ -129,19 +128,32 @@ int get_semaphores_slave (void)
 {
   key_t key;
   int semid;
+  union semun arg;
+  struct sembuf op;
 
   if ((key = ftok ("slave",'A')) == -1) {
     perror ("ftok");
     kill (0,SIGINT);
   }
 
-  if ((semid = semget (key,1, IPC_EXCL|IPC_CREAT|0600)) == -1) {
+  if ((semid = semget (key,1, IPC_CREAT|0600)) == -1) {
     perror ("semget");
     kill (0,SIGINT);
   }
-  if (semctl (semid,0,SETVAL,1) == -1) {
+
+  arg.val = 1;
+  if (semctl (semid,0,SETVAL,arg) == -1) {
     perror ("semctl SETVAL -> 1");
     kill (0,SIGINT);
+  }
+  if (semctl (semid,0,GETVAL) == 0) {
+    op.sem_num = 0;
+    op.sem_op = 1;
+    op.sem_flg = 0;
+    if (semop(semid,&op,1) == -1) {
+      perror ("semaphore_release");
+      kill(0,SIGINT);
+    }
   }
 
   return semid;
