@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.47 2001/11/16 15:49:41 jorge Exp $ */
+/* $Id: job.c,v 1.48 2001/11/19 11:44:28 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -374,7 +374,7 @@ void job_update_info (struct database *wdb,uint32_t ijob)
   }
   if (fdone) {
     avg_frame_time /= fdone;
-    avg_frame_time += SLAVEDELAY - (avg_frame_time % SLAVEDELAY);
+/*      avg_frame_time += SLAVEDELAY - (avg_frame_time % SLAVEDELAY); */
   }
   detach_frame_shared_memory(fi);
 
