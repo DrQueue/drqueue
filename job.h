@@ -132,7 +132,7 @@ typedef enum {
 /* JOB FLAGS */
 #define JF_MAILNOTIFY     (1<<0) /* Mail notifications on events */
 #define JF_MNDIFEMAIL	    (1<<1) /* Email address for notifications specified on "email" field */
-#define JF_DEPEND					(1<<2) // This job depends on another to start
+#define JF_JOBDEPEND		 	(1<<2) // This job depends on another to start
 
 /* OS FLAGS */
 #define OSF_IRIX          (1<<0) /* If set will run on Irix */
