@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.51 2002/02/27 10:41:45 jorge Exp $ */
+/* $Id: job.c,v 1.52 2002/02/27 16:36:35 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -47,7 +47,6 @@ void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job)
   /* Called when we have just received a job to be registered */
   int i;
   int nframes;
-  char msg[BUFFERLEN];
   
   semaphore_lock(wdb->semid);
 
@@ -96,8 +95,7 @@ void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job)
 
   semaphore_release(wdb->semid);
 
-  snprintf(msg,BUFFERLEN,"Registered on position %i",ijob);
-  log_master_job (&wdb->job[ijob],L_INFO,msg);
+  log_master_job (&wdb->job[ijob],L_INFO,"Registered on position %i",ijob);
 }
 
 void job_init (struct job *job)
@@ -248,7 +246,6 @@ void job_update_assigned (struct database *wdb, uint32_t ijob, int iframe, int i
   /* Here we should set all the information inside the task structure (slave) */
   /* about the assigned job (master) into the remote computer */
   /* This function is called by the master, locked */
-  char msg[BUFFERLEN];
 
   if (!job_index_correct_master (wdb,ijob)) {
     /* Somebody could have deleted the job meanwhile */
@@ -265,8 +262,7 @@ void job_update_assigned (struct database *wdb, uint32_t ijob, int iframe, int i
 
   /* The status should already be FS_ASSIGNED */
   if (wdb->job[ijob].frame_info[iframe].status != FS_ASSIGNED) {
-    snprintf (msg,BUFFERLEN-1,"(wdb->job[%i].frame_info[%i].status != FS_ASSIGNED)\n",ijob,iframe);
-    log_master (L_ERROR,msg);
+    log_master (L_ERROR,"(wdb->job[%i].frame_info[%i].status != FS_ASSIGNED)\n",ijob,iframe);
     wdb->job[ijob].frame_info[iframe].status = FS_ASSIGNED;
   }
 
@@ -471,11 +467,8 @@ void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe
   }
 
   if (!running) {
-    char msg[BUFFERLEN];
-
-    snprintf (msg,BUFFERLEN-1,"Checking iframe %i of ijob %i. icomp: %i itask: %i",
-	      iframe,ijob,icomp,itask);
-    log_master (L_DEBUG,msg);
+    log_master (L_DEBUG,"Checking iframe %i of ijob %i. icomp: %i itask: %i",
+		iframe,ijob,icomp,itask);
 
     log_master_job (&wdb->job[ijob],L_WARNING,"Task registered as running not running. Requeued");
     wdb->job[ijob].frame_info[iframe].status = FS_WAITING;
