@@ -1,3 +1,71 @@
+2004-12-12 20:02:16  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/sendjob.cpp
+
+	* Merged 1098:1099 from branches/0.56.x
+
+2004-12-12 16:21:00  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/sendjob.cpp
+
+	* Bug 0000005 fixed.
+
+2004-12-07 18:31:21  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/Revision
+
+	* New Revision commited by build_package.sh
+
+2004-12-07 18:30:51  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/ChangeLog
+
+	* ChangeLog commited by build_package.sh
+
+2004-12-07 18:30:45  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/common.h
+
+	* New version number on common.h: 0.56.0
+
+2004-12-05 03:01:43  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/SConstruct
+	   M /trunk/drqueue/drqman/drqm_request.c
+	   M /trunk/drqueue/job.c
+	   M /trunk/drqueue/request.c
+
+	* More verbose log messages
+
+2004-12-05 02:22:04  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/slave.c
+
+	* Launched variable removed
+
+2004-12-04 21:11:36  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/communications.c
+	   M /trunk/drqueue/drqman/drqm_computers.c
+	   M /trunk/drqueue/request.c
+
+	* Working of the problem of Mac OS X
+
+2004-12-04 19:49:17  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/Revision
+
+	* New Revision commited by build_package.sh
+
 2004-12-04 19:49:07  Jorge Daza <jorge@drqueue.org>
 
 	* Changed paths:
