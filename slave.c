@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.35 2001/09/04 23:24:02 jorge Exp $ */
+/* $Id: slave.c,v 1.36 2001/09/05 12:52:12 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -278,7 +278,8 @@ void slave_listening_process (struct slave_database *sdb)
       } else {
 	/* Father */
 	close (csfd);
-	printf ("csfd: %i\n",csfd);
+	if (csfd > 4)
+	  printf ("!! csfd: %i\n",csfd);
       }
     }
   }
