@@ -1,4 +1,4 @@
-/* $Id: drqm_request.c,v 1.19 2001/10/02 12:41:22 jorge Exp $ */
+/* $Id: drqm_request.c,v 1.20 2001/10/05 15:52:36 jorge Exp $ */
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -34,7 +34,7 @@ void drqm_request_joblist (struct drqm_jobs_info *info)
   if (req.type == R_A_LISTJOBS) {
     info->njobs = req.data;
   } else {
-    fprintf (stderr,"ERROR: Not appropiate answer to request R_R_TASKFINI\n");
+    fprintf (stderr,"ERROR: Not appropiate answer to request R_R_LISTJOBS\n");
     goto end;			/* Should I use gotos ? It seems like a reasonable option for this case */
   }
 
@@ -185,5 +185,10 @@ void drqm_request_slave_limits_maxfreeloadcpu_set (char *slave,uint32_t maxfreel
 void drqm_request_slave_task_kill (char *slave,uint16_t itask)
 {
   request_slave_killtask (slave,itask,CLIENT);
+}
+
+void drqm_request_job_sesupdate (uint32_t jobid,uint32_t frame_start,uint32_t frame_end, uint32_t frame_step)
+{
+  request_job_sesupdate (jobid,frame_start,frame_end,frame_step,CLIENT);
 }
 
