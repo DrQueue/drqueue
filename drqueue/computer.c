@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.10 2001/07/19 09:03:50 jorge Exp $ */
+/* $Id: computer.c,v 1.11 2001/08/08 10:52:11 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -86,6 +86,17 @@ int computer_available (struct computer *computer)
     /* If we already have all the processors running... */
     return 0;
   }
+
+  if (computer->status.ntasks >= MAXTASKS) {
+    /* We have all task structures full */
+    if (computer->status.ntasks > MAXTASKS) {
+      /* This should never happen, btw */
+      fprintf (stderr,"CRITICAL ERROR: the computer has exceeded the MAXTASKS limit\n");
+      kill (0,SIGINT);
+    }
+    return 0;
+  } 
+    
 
 /*    if (computer->status.loadavg[0] >= (computer->hwinfo.numproc * MAXLOADAVG)) { */
 /*      return 0; */
