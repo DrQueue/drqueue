@@ -46,6 +46,8 @@ if [ "$CHLG" != "n" ]; then
 	echo "Creating ChangeLog"
 	svn2cl ChangeLog 0
 	echo "Created !"
+	echo "Commiting ChangeLog"
+	svn ci -m "Changelog commited by build_package.sh" ChangeLog
 fi
 
 # Creating tag
