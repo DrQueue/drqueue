@@ -1045,6 +1045,7 @@ void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp)
 
   for (i=0;i<MAXCOMPUTERS;i++) {
     if (computer[i].used) {
+	log_master(L_DEBUG,"Send computer");
       if (!send_computer (sfd,&computer[i])) {
 				log_master (L_ERROR,"Sending computer (handle_r_r_listcomp)");
 				break;
