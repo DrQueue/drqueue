@@ -100,7 +100,7 @@ void usage (void)
 										"       blockhost [-vh] -d <computer_id> -j <job_id>\n"
 	     "Valid options:\n"
 	     "\t-a <computer_id> adds computer to the list of blocked hosts\n"
-			 "\t-d <computer_id> deletes computer from the list of blocked hosts\n"
+			 "\t-d <computer_pos> deletes computer on position computer_pos from the list of blocked hosts\n"
 	     "\t-j <job_id>\n"
 	     "\t-v print version\n"
 	     "\t-h print this help\n");
