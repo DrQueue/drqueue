@@ -1,4 +1,4 @@
-/* $Id: drqm_request.h,v 1.13 2001/09/11 12:52:55 jorge Exp $ */
+/* $Id: drqm_request.h,v 1.14 2001/10/05 15:52:37 jorge Exp $ */
 
 #ifndef _DRQM_REQUEST_H_
 #define _DRQM_REQUEST_H_
@@ -18,6 +18,7 @@ void drqm_request_job_frame_waiting (uint32_t jobid,uint32_t frame);
 void drqm_request_job_frame_kill (uint32_t jobid,uint32_t frame);
 void drqm_request_job_frame_finish (uint32_t jobid,uint32_t frame);
 void drqm_request_job_frame_kill_finish (uint32_t jobid,uint32_t frame);
+void drqm_request_job_sesupdate (uint32_t jobid,uint32_t frame_start,uint32_t frame_end, uint32_t frame_step);
 
 /* Computer related functions */
 void drqm_request_computerlist (struct drqm_computers_info *info);
