@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.56 2002/06/20 15:28:48 jorge Exp $ */
+/* $Id: job.c,v 1.57 2002/12/02 22:24:08 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -615,6 +615,7 @@ void job_environment_set (struct job *job, uint32_t iframe)
   frame = job_frame_index_to_number (job,iframe);
 
   /* Padded frame number */
+  /* TODO: make padding length user defined */
   snprintf (padframe,BUFFERLEN-1,"PADFRAME=%04i",frame);
   putenv (padframe);
   /* Frame number */

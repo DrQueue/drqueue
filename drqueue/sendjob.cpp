@@ -1,5 +1,5 @@
 //
-// $Id: sendjob.cpp,v 1.1 2002/09/22 19:12:02 jorge Exp $
+// $Id: sendjob.cpp,v 1.2 2002/12/02 22:24:08 jorge Exp $
 // 
 // To set up a maya job from a file and send it to the master
 //
@@ -102,8 +102,8 @@ int RegisterJobFromFile (ifstream &infile)
   infile >> frameStep;
   infile >> resX;
   infile >> resY;
-  getline(infile,scenePath);
-  getline(infile,scenePath);
+  getline(infile,scenePath);	// 
+  getline(infile,scenePath);	// Get two times because '>>' leaves the pointer before \n 
   getline(infile,renderDir);
   getline(infile,fileFormat);
   getline(infile,image);
