@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.20 2001/08/29 13:16:10 jorge Exp $ */
+/* $Id: job.c,v 1.21 2001/08/31 14:06:23 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -297,6 +297,8 @@ void job_update_info (struct database *wdb,uint32_t ijob)
   if (ijob > MAXJOBS)
     return;
 
+  log_master (L_DEBUG,"Entering job_update_info.");
+
   total = job_nframes(&wdb->job[ijob]);
 
   fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
@@ -364,11 +366,22 @@ void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe
   uint16_t icomp,itask;
   t_taskstatus tstatus;
 
+/*    char msg[BUFFERLEN]; */
+
+/*    log_master (L_DEBUG,"Entering job_check_frame_status."); */
+
+/*    snprintf (msg,BUFFERLEN-1,"Checking iframe %i of ijob %i",iframe,ijob); */
+/*    log_master (L_DEBUG,msg); */
+
   semaphore_lock(wdb->semid);
 
   fistatus = wdb->job[ijob].frame_info[iframe].status;
   icomp = wdb->job[ijob].frame_info[iframe].icomp;
   itask = wdb->job[ijob].frame_info[iframe].itask;
+
+/*    snprintf (msg,BUFFERLEN-1,"Checking iframe %i of ijob %i. icomp: %i itask: %i", */
+/*  	    iframe,ijob,icomp,itask); */
+/*    log_master (L_DEBUG,msg); */
 
   if (fistatus == FS_ASSIGNED) {
     if (wdb->computer[icomp].used == 0) {
@@ -396,6 +409,8 @@ void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe
   }
 
   semaphore_release(wdb->semid);
+
+/*    log_master (L_DEBUG,"Exiting job_check_frame_status."); */
 }
 
 int priority_job_compare (const void *a,const void *b)
