@@ -255,9 +255,7 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
 
   if ((host = gethostbyaddr ((const void *)&addr->sin_addr.s_addr,sizeof (struct in_addr),AF_INET)) == NULL) {
     log_master (L_WARNING,"Could not resolve name for: %s",inet_ntoa(addr->sin_addr));
-    //return -1;
     name=inet_ntoa(addr->sin_addr);
-
   } else {
     if ((dot = strchr (host->h_name,'.')) != NULL) 
       *dot = '\0';
@@ -268,11 +266,11 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
 
   if (icomp != -1) {
     semaphore_release(wdb->semid);
-    log_master (L_INFO,"Already registered computer requesting registration");
+    log_master (L_INFO,"Already registered computer requesting registration (%s)",name);
     answer.type = R_R_REGISTER;
     answer.data = RERR_ALREADY;
     if (!send_request (sfd,&answer,MASTER)) {
-      log_master (L_ERROR,"Sending request (handle_r_r_register)");
+      log_master (L_ERROR,"Sending request handle_r_r_register.RERR_ALREADY to host : '%s'",name);
     }
     return -1;
   }
@@ -280,11 +278,11 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
   if ((index = computer_index_free(wdb)) == -1) {
     semaphore_release(wdb->semid);
     /* No space left on database */
-    log_master (L_WARNING,"No space left for computer");
+    log_master (L_WARNING,"No space left for computer: '%s'",name);
     answer.type = R_R_REGISTER;
     answer.data = RERR_NOSPACE;
     if (!send_request (sfd,&answer,MASTER)) {
-      log_master (L_ERROR,"Sending request (handle_r_r_register)");
+      log_master (L_ERROR,"Sending request handle_r_r_register.RERR_NOSPACE to host : '%s'",name);
     }
     return -1;
   }
@@ -300,7 +298,7 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
   if (!send_request (sfd,&answer,MASTER)) {
     computer_free(&wdb->computer[index]);
     semaphore_release(wdb->semid);
-    log_master (L_ERROR,"Sending request (handle_r_r_register)");
+    log_master (L_ERROR,"Sending request (handle_r_r_register) to host : '%s'",name);
     return -1;
   }
 
@@ -850,7 +848,7 @@ void request_task_finished (struct slave_database *sdb)
       close (sfd);
       return;
     default:
-      log_slave_computer(L_ERROR,"Error code not listed on answer to R_R_TASKFINI");
+      log_slave_computer(L_ERROR,"Error code not listed on answer to R_R_TASKFINI (%i)",req.data);
       close (sfd);
       return;
     }
@@ -945,7 +943,7 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
 				int sig = DR_WTERMSIG(task.exitstatus);
 				log_master_job (&wdb->job[task.ijob],L_DEBUG,"Signaled with %i",sig);
 				if ((sig == SIGTERM) || (sig == SIGINT) || (sig == SIGKILL)) {
-					/* Somebody killed the process, s	o it should be retried */
+					/* Somebody killed the process, so it should be retried */
 					log_master_job (&wdb->job[task.ijob],L_INFO,"Retrying frame %i",
 													job_frame_index_to_number (&wdb->job[task.ijob],task.frame));
 					switch (fi[task.frame].status) {
