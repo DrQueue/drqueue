@@ -1,3 +1,34 @@
+2004-12-04 19:49:07  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/ChangeLog
+
+	* ChangeLog commited by build_package.sh
+
+2004-12-04 19:49:02  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/common.h
+
+	* New version number on common.h: 0.56.0rc2
+
+2004-12-04 16:55:38  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/drqman/drqm_computers.c
+
+	* Segmentation fault
+
+2004-12-04 16:38:51  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/communications.c
+	   M /trunk/drqueue/computer.c
+	   M /trunk/drqueue/drqman/main.c
+	   M /trunk/drqueue/slave.c
+
+	* Working on shared memory leaks
+
 2004-12-04 15:31:38  Jorge Daza <jorge@drqueue.org>
 
 	* Changed paths:
