@@ -39,10 +39,6 @@
 # define SIGCLD SIGCHLD
 #endif
 
-#ifdef __CYGWIN
-//  void cygwin_conv_to_posix_path(const char *path, char *posix_path);
-#endif
-
 #include "slave.h"
 #include "libdrqueue.h"
 
@@ -390,55 +386,6 @@ void slave_listening_process (struct slave_database *sdb)
 	pid_t child_pid;
   int sfd,csfd;
 
-#ifdef __CYGWIN
-//there is a bug some post SP1 updates with fork after get_socket, handle
-//this another way for the moment. 
-  int rc;
-  int n_children = 0;
- 
-  #define SLAVENCHILDREN 20 
-  
-  printf ("Waiting for connections...\n");
-  signal(SIGCHLD,SIG_IGN); // FIXME: sigaction
-  while (1)
-  {
-    if (n_children < SLAVENCHILDREN)
-    {
-      if ((child_pid = fork()) == 0)
-      {
-        /* Create a connection handler */
-        set_signal_handlers_child_chandler ();
-        if ((sfd = get_socket(SLAVEPORT)) == -1)
-        {
-          log_slave_computer (L_ERROR,"Unable to open socket");
-          kill(0,SIGINT);
-        }
-        if ((csfd = accept_socket_slave (sfd)) != -1)
-        {
-          close (sfd);
-          alarm (MAXTIMECONNECTION);
-          handle_request_slave (csfd,sdb);
-          close (csfd);
-          exit (0);
-        }
-        else
-	{
-	  close (sfd);
-	  exit (0);
-	}
-      }
-      else if (child_pid != -1)
-	n_children++;
-      else
-        log_slave_computer (L_WARNING,"Failed to fork on slave_listening_process");
-    }
-    else
-    {
-      if (wait(&rc) != -1)
-        n_children--;
-    } 
-  }
-#else
   if ((sfd = get_socket(SLAVEPORT)) == -1) {
     log_slave_computer (L_ERROR,"Unable to open socket");
     kill(0,SIGINT);
@@ -466,7 +413,6 @@ void slave_listening_process (struct slave_database *sdb)
 				printf ("!! csfd:	 %i\n",csfd);
     }
   }
-#endif
 }
 
 void sigalarm_handler (int signal, siginfo_t *info, void *data)

@@ -30,7 +30,7 @@
 
 ; Welcome page
 !define MUI_WELCOMEPAGE_TITLE "Welcome to drqueue installation"
-!define MUI_WELCOMEPAGE_TEXT "Drqueue uses GTK+2, please download and install it from this website before you use drqueue : \r\nhttp://prdownloads.sourceforge.net/gladewin32/\ngtk-win32-2.4.14-rc3.exe\r\n\r\nYou also need DOTNET runtime, please download and install it from this website : \r\nhttp://www.microsoft.com/downloads/details.aspx?FamilyID\r\n=262d25e3-f589-4842-8157-034d1e7cf3a3&displaylang=en\r\n"
+!define MUI_WELCOMEPAGE_TEXT "Drqueue uses GTK+2, please download and install it from this website before you use drqueue : \r\nhttp://gimp-win.sourceforge.net/stable.html\r\n\r\nYou also need DOTNET runtime, please download and install it from this website : \r\nhttp://www.microsoft.com/downloads/details.aspx?FamilyID\r\n=262d25e3-f589-4842-8157-034d1e7cf3a3&displaylang=en\r\n"
 !insertmacro MUI_PAGE_WELCOME
 ; License page
 !insertmacro MUI_PAGE_LICENSE "..\..\..\COPYING"
@@ -178,6 +178,7 @@ Section "SectionPrincipale" SEC01
   File "..\..\..\etc\maya.sg"
   File "..\..\..\etc\mentalray.sg"
   File "..\..\..\etc\pixie.sg"
+  File "..\..\..\etc\lightwave.sg"
   File "..\..\..\etc\slave.conf"
   CreateShortCut "$SMPROGRAMS\drqueue\slave.conf.lnk" "$INSTDIR\etc\slave.conf"
   CreateDirectory "$INSTDIR\db"
@@ -272,6 +273,7 @@ Section Uninstall
   Delete "$INSTDIR\etc\slave.conf"
   Delete "$INSTDIR\etc\pixie.sg"
   Delete "$INSTDIR\etc\mentalray.sg"
+  Delete "$INSTDIR\etc\lightwave.sg"
   Delete "$INSTDIR\etc\maya.sg"
   Delete "$INSTDIR\etc\master.conf"
   Delete "$INSTDIR\etc\drqman.rc"
@@ -280,7 +282,6 @@ Section Uninstall
   Delete "$INSTDIR\etc\bmrt.sg"
   Delete "$INSTDIR\etc\blender.sg"
   Delete "$INSTDIR\etc\aqsis.sg"
-  Delete "$INSTDIR\etc\3delight.sg~"
   Delete "$INSTDIR\etc\3delight.sg"
   Delete "$INSTDIR\contrib\sendjob.blender.py"
   Delete "$INSTDIR\contrib\service-ipc.exe"

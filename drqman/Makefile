@@ -9,7 +9,7 @@ endif
 CC = gcc
 OBJS = main.o notebook.o drqm_jobs.o drqm_request.o drqm_computers.o drqm_common.o drqm_info.o \
 				drqm_jobs_maya.o drqm_jobs_mentalray.o drqm_jobs_blender.o drqm_jobs_bmrt.o \
-				drqm_jobs_pixie.o drqm_jobs_jdd.o drqm_jobs_3delight.o drqm_cygwin.o
+				drqm_jobs_pixie.o drqm_jobs_jdd.o drqm_jobs_3delight.o drqm_jobs_lightwave.o drqm_cygwin.o
 
 #Figure out OS-specific Configuration parameters
 ifeq ($(origin systype),undefined)
