@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.18 2001/08/29 08:20:57 jorge Exp $ */
+/* $Id: master.c,v 1.19 2001/09/01 16:36:44 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -26,7 +26,6 @@ int main (int argc, char *argv[])
   int force = 0;		/* force even if shmem already exists */
   int opt;
 
-  fprintf (stderr,"Master at: %i\n",(int)getpid());
   log_master (L_INFO,"Starting...");
   set_signal_handlers ();
 
@@ -323,12 +322,15 @@ void check_lastconn_times (struct database *wdb)
 {
   int i;
   time_t now;
+  char msg [BUFFERLEN];
 
   time(&now);
   for (i=0;i<MAXCOMPUTERS;i++) {
     if (wdb->computer[i].used) {
       if ((now - wdb->computer[i].lastconn) > MAXTIMENOCONN) {
-	log_master_computer (&wdb->computer[i],L_INFO,"Maximum time without connecting exceeded. Deleting");
+	snprintf (msg,BUFFERLEN-1,"Maximum time without connecting exceeded. Deleting. (Time not connected: %i)",
+		  (int) (now - wdb->computer[i].lastconn));
+	log_master_computer (&wdb->computer[i],L_INFO,msg);
 	semaphore_lock(wdb->semid);
 	wdb->computer[i].used = 0;
 	semaphore_release(wdb->semid);
