@@ -1,4 +1,4 @@
-/* $Id: drqm_request.h,v 1.12 2001/09/09 22:04:34 jorge Exp $ */
+/* $Id: drqm_request.h,v 1.13 2001/09/11 12:52:55 jorge Exp $ */
 
 #ifndef _DRQM_REQUEST_H_
 #define _DRQM_REQUEST_H_
@@ -25,5 +25,6 @@ void drqm_clean_computerlist (struct drqm_computers_info *info);
 
 void drqm_request_slave_limits_nmaxcpus_set (char *slave,uint32_t nmaxcpus);
 void drqm_request_slave_limits_maxfreeloadcpu_set (char *slave,uint32_t maxfreeloadcpu);
+void drqm_request_slave_task_kill (char *slave,uint16_t itask);
 
 #endif /* _DRQM_REQUEST_H_ */
