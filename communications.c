@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.27 2001/09/06 13:06:58 jorge Exp $ */
+/* $Id: communications.c,v 1.28 2001/09/06 13:59:13 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -437,7 +437,7 @@ void send_job (int sfd, struct job *job,int who)
 	log_master (L_ERROR,"Sending job");
 	exit (1);
       case SLAVE:
-	log_slave_computer (L_ERROR,"Sqending job");
+	log_slave_computer (L_ERROR,"Sending job");
 	kill(0,SIGINT);
       case CLIENT:
 	fprintf (stderr,"ERROR: sending job\n");
