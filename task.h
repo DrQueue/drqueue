@@ -62,7 +62,7 @@ struct task {
   uint16_t itask;		/* index to the task in the computer !not in the global db! */
   char jobcmd[MAXCMDLEN];	/* string that will be executed */
   char owner[MAXNAMELEN];	/* owner of the job */
-  uint32_t frame;		/* current _real_ frame number (!!not index!!) */
+  uint32_t frame;		/* current _real_ frame number (!!not index!!) -1 if cmd_on_finished */
   uint32_t frame_start,frame_end;
   uint32_t frame_step;
 	uint32_t block_size;

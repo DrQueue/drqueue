@@ -175,11 +175,16 @@ void computer_update_assigned (struct database *wdb,uint32_t ijob,int iframe,int
   task->used = 1;
   task->status = TASKSTATUS_LOADING; /* Not yet running */
   strncpy(task->jobname,job->name,MAXNAMELEN-1);
-  task->ijob = ijob;
+	task->ijob = ijob;
 	task->icomp = icomp;
-  strncpy(task->jobcmd,job->cmd,MAXCMDLEN-1);
+	if (iframe == -1) {
+		strncpy(task->jobcmd,job->cmdonfinish,MAXCMDLEN-1);
+		task->frame = (uint32_t) iframe;
+	} else {
+		strncpy(task->jobcmd,job->cmd,MAXCMDLEN-1);
+		task->frame = job_frame_index_to_number (&wdb->job[ijob],iframe);
+	}
   strncpy(task->owner,job->owner,MAXNAMELEN-1);
-  task->frame = job_frame_index_to_number (&wdb->job[ijob],iframe);
   task->frame_start = wdb->job[ijob].frame_start;
   task->frame_end = wdb->job[ijob].frame_end;
   task->frame_step = wdb->job[ijob].frame_step;
@@ -194,7 +199,6 @@ void computer_update_assigned (struct database *wdb,uint32_t ijob,int iframe,int
   /* until it has exited the launching loop. And we need this information for the limits */
   /* tests */
   wdb->computer[icomp].status.ntasks++;
-
 }
 
 void computer_init (struct computer *computer)

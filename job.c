@@ -223,10 +223,20 @@ int job_available (struct database *wdb,uint32_t ijob, int *iframe, uint32_t ico
   }
 
   if (!((wdb->job[ijob].status == JOBSTATUS_WAITING) || (wdb->job[ijob].status == JOBSTATUS_ACTIVE))) {
-    semaphore_release(wdb->semid);
-    return 0;
+		// Job is neither waiting nor active (finished ?)
+		if (wdb->job[ijob].status == JOBSTATUS_FINISHED) {
+			// Job if finished (has a command not done yet ?)
+			if ((wdb->job[ijob].flags &= JF_CMDONFINISH) && !(wdb->job[ijob].flags &= JF_COFDONE)) {
+				// COF not done
+				*iframe = -1;
+				semaphore_release(wdb->semid);
+				return 1;
+			}
+		}
+		semaphore_release(wdb->semid);
+		return 0;
   }
-  
+
   if (!job_limits_passed(wdb,ijob,icomp)) {
     semaphore_release(wdb->semid);
     return 0;
@@ -289,10 +299,12 @@ void job_update_assigned (struct database *wdb, uint32_t ijob, int iframe, int i
   }
 
   if (!job_frame_number_correct (&wdb->job[ijob],
-				 job_frame_index_to_number(&wdb->job[ijob],iframe))) {
-    /* Or the data could be malicious... */
-    return;
-  }
+																 job_frame_index_to_number(&wdb->job[ijob],iframe)))
+		{
+			// The data could be malicious...
+			// Or -1, in that case we have to execute command_on_finish
+			return;
+		}
 
   wdb->job[ijob].frame_info = attach_frame_shared_memory (wdb->job[ijob].fishmid);
 
@@ -416,7 +428,7 @@ void job_update_info (struct database *wdb,uint32_t ijob)
   if (!job_index_correct_master (wdb,ijob)) {
     /* Somebody could have deleted the job meanwhile */
     semaphore_release(wdb->semid);
-    return;
+		return;
   }
 
   total = job_nframes(&wdb->job[ijob]);
