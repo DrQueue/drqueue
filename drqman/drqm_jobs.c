@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.53 2001/11/23 11:51:40 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.54 2002/02/21 15:49:23 jorge Exp $
  */
 
 #include <string.h>
@@ -81,6 +81,7 @@ static void dnj_cpri_changed (GtkWidget *entry, struct drqmj_dnji *info);
 static void dnj_bsubmit_pressed (GtkWidget *button, struct drqmj_dnji *info);
 static int dnj_submit (struct drqmj_dnji *info);
 static void dnj_destroyed (GtkWidget *dialog, struct drqm_jobs_info *info);
+static void dnj_cleanup (GtkWidget *button, struct drqmj_dnji *info);
 /* Basic koj handling */
 static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info);
 static void dnj_koj_combo_changed (GtkWidget *combo, struct drqm_jobs_info *info);
@@ -523,6 +524,8 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
   button = gtk_button_new_with_label ("Cancel");
   gtk_tooltips_set_tip(tooltips,button,"Close without sending any information",NULL);
   gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,TRUE,2);
+  gtk_signal_connect (GTK_OBJECT(button),"clicked",
+		      GTK_SIGNAL_FUNC(dnj_cleanup),&info->dnj);
   gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
 			     GTK_SIGNAL_FUNC(gtk_widget_destroy),
 			     (gpointer) window);
@@ -530,6 +533,11 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
   gtk_widget_show_all(window);
 
   return window;
+}
+
+static void dnj_cleanup (GtkWidget *button, struct drqmj_dnji *info)
+{
+  info->fkoj = NULL;
 }
 
 static void dnj_psearch (GtkWidget *button, struct drqmj_dnji *info)
@@ -1634,7 +1642,8 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
 
   if (new_koj != info->dnj.koj) {
     if (info->dnj.fkoj) {
-      gtk_object_destroy (GTK_OBJECT(info->dnj.fkoj));
+/*        gtk_object_destroy (GTK_OBJECT(info->dnj.fkoj)); */
+      gtk_widget_destroy (info->dnj.fkoj);
       info->dnj.fkoj = NULL;
     }
     info->dnj.koj = (uint16_t) new_koj;
@@ -2365,6 +2374,7 @@ GtkWidget *jdd_koj_widgets (struct drqm_jobs_info *info)
   GtkWidget *frame;
   GtkWidget *vbox, *hbox;
   GtkWidget *label;
+  GtkWidget *koj_vbox = NULL;
   
 
   frame = gtk_frame_new ("Kind of job");
@@ -2383,8 +2393,8 @@ GtkWidget *jdd_koj_widgets (struct drqm_jobs_info *info)
   case KOJ_GENERAL:
     break;
   case KOJ_MAYA:
-    label = jdd_koj_maya_widgets (info);
-    gtk_box_pack_start (GTK_BOX(vbox),label,FALSE,FALSE,2);
+    koj_vbox = jdd_koj_maya_widgets (info);
+    gtk_box_pack_start (GTK_BOX(vbox),koj_vbox,FALSE,FALSE,2);
     break;
   }
 
