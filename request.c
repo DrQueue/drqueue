@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.61 2001/10/22 14:16:11 jorge Exp $ */
+/* $Id: request.c,v 1.62 2001/10/24 14:52:28 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -126,6 +126,10 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
     log_master (L_DEBUG,"Set job limits nmaxcpuscomputer");
     handle_r_r_joblnmccs (sfd,wdb,icomp,&request);
     break;
+  case R_R_JOBPRIUP:
+    log_master (L_DEBUG,"Update priority");
+    handle_r_r_jobpriup (sfd,wdb,icomp,&request);
+    break;
   default:
     log_master (L_WARNING,"Unknown request");
   }
@@ -192,7 +196,7 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
 
   if (icomp != -1) {
     log_master (L_INFO,"Already registered computer requesting registration");
-    answer.type = R_A_REGISTER;
+    answer.type = R_R_REGISTER;
     answer.data = RERR_ALREADY;
     if (!send_request (sfd,&answer,MASTER)) {
       log_master (L_ERROR,"Sending request (handle_r_r_register)");
@@ -203,7 +207,7 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
   if ((index = computer_index_free(wdb)) == -1) {
     /* No space left on database */
     log_master (L_WARNING,"No space left for computer");
-    answer.type = R_A_REGISTER;
+    answer.type = R_R_REGISTER;
     answer.data = RERR_NOSPACE;
     if (!send_request (sfd,&answer,MASTER)) {
       log_master (L_ERROR,"Sending request (handle_r_r_register)");
@@ -217,7 +221,7 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
 
   /* No errors, we (master) can receive the hwinfo from the remote */
   /* computer to be registered */
-  answer.type = R_A_REGISTER;
+  answer.type = R_R_REGISTER;
   answer.data = RERR_NOERROR;
   if (!send_request (sfd,&answer,MASTER)) {
     log_master (L_ERROR,"Sending request (handle_r_r_register)");
@@ -265,7 +269,7 @@ void update_computer_status (struct slave_database *sdb)
     kill(0,SIGINT);
   }
 
-  if (req.type == R_A_UCSTATUS) {
+  if (req.type == R_R_UCSTATUS) {
     switch (req.data) {
     case RERR_NOERROR:
       semaphore_lock(sdb->semid);
@@ -311,7 +315,7 @@ void register_slave (struct computer *computer)
     kill (0,SIGINT);
   }
 
-  if (req.type == R_A_REGISTER) {
+  if (req.type == R_R_REGISTER) {
     switch (req.data) {
     case RERR_NOERROR:
       send_computer_hwinfo (sfd,&computer->hwinfo,SLAVE);
@@ -342,7 +346,7 @@ void handle_r_r_ucstatus (int sfd,struct database *wdb,int icomp)
 
   if (icomp == -1) {
     log_master (L_WARNING,"Not registered computer requesting update of computer status");
-    answer.type = R_A_UCSTATUS;
+    answer.type = R_R_UCSTATUS;
     answer.data = RERR_NOREGIS;
     if (!send_request (sfd,&answer,MASTER)) {
       log_master (L_WARNING,"Error receiving request (handle_r_r_ucstatus)");
@@ -352,7 +356,7 @@ void handle_r_r_ucstatus (int sfd,struct database *wdb,int icomp)
 
   /* No errors, we (master) can receive the status from the remote */
   /* computer already registered */
-  answer.type = R_A_UCSTATUS;
+  answer.type = R_R_UCSTATUS;
   answer.data = RERR_NOERROR;
   send_request (sfd,&answer,MASTER);
   
@@ -391,7 +395,7 @@ int register_job (struct job *job)
     return 0;
   }
 
-  if (req.type == R_A_REGISJOB) {
+  if (req.type == R_R_REGISJOB) {
     switch (req.data) {
     case RERR_NOERROR:
       send_job (sfd,job,CLIENT);
@@ -434,7 +438,7 @@ void handle_r_r_regisjob (int sfd,struct database *wdb)
     /* No space left on database */
     semaphore_release(wdb->semid);
     log_master (L_WARNING,"No space left for job");
-    answer.type = R_A_REGISJOB;
+    answer.type = R_R_REGISJOB;
     answer.data = RERR_NOSPACE;
     send_request (sfd,&answer,MASTER);
     exit (0);
@@ -448,7 +452,7 @@ void handle_r_r_regisjob (int sfd,struct database *wdb)
 
   /* No errors, we (master) can receive the job from the remote */
   /* computer to be registered */
-  answer.type = R_A_REGISJOB;
+  answer.type = R_R_REGISJOB;
   answer.data = RERR_NOERROR;
   send_request (sfd,&answer,MASTER);
   recv_job (sfd, &job, MASTER);
@@ -473,7 +477,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
 
   if (icomp == -1) {
     log_master (L_WARNING,"Not registered computer requesting available job");
-    answer.type = R_A_AVAILJOB;
+    answer.type = R_R_AVAILJOB;
     answer.data = RERR_NOREGIS;
     if (!send_request (sfd,&answer,MASTER)) {
       log_master (L_WARNING,"Error sending request (handle_r_r_availjob)");
@@ -503,7 +507,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
 
   if (i==MAXJOBS) {
     log_master_computer(&wdb->computer[icomp],L_DEBUG,"No available job");
-    answer.type = R_A_AVAILJOB;
+    answer.type = R_R_AVAILJOB;
     answer.data = RERR_NOAVJOB;
     if (!send_request (sfd,&answer,MASTER)) {
       log_master(L_WARNING,"Error sending request (handle_r_r_availjob)");
@@ -515,7 +519,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
   log_master (L_DEBUG,msg);
 
   /* ijob is now the index to the first available job */
-  answer.type = R_A_AVAILJOB;
+  answer.type = R_R_AVAILJOB;
   answer.data = RERR_NOERROR;
   if (!send_request (sfd,&answer,MASTER)) {
     log_master(L_WARNING,"Error sending request (handle_r_r_availjob)");
@@ -531,7 +535,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
     exit (0);
   }
 
-  if (answer.type == R_A_AVAILJOB) {
+  if (answer.type == R_R_AVAILJOB) {
     switch (answer.data) {
     case RERR_NOERROR:
       /* We continue processing the matter */
@@ -557,7 +561,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
     job_frame_waiting (wdb,ijob,iframe);
     exit (0);
   }
-  if (answer.type == R_A_AVAILJOB) {
+  if (answer.type == R_R_AVAILJOB) {
     itask = (uint16_t) answer.data;
     snprintf(msg,BUFFERLEN,"Task index %i on computer %i",itask,icomp);
     log_master_computer(&wdb->computer[icomp],L_DEBUG,msg);
@@ -616,7 +620,7 @@ int request_job_available (struct slave_database *sdb)
     kill (0,SIGINT);
   }
 
-  if (req.type == R_A_AVAILJOB) {
+  if (req.type == R_R_AVAILJOB) {
     switch (req.data) {
     case RERR_NOERROR: 
       /* We continue processing the matter */
@@ -642,7 +646,7 @@ int request_job_available (struct slave_database *sdb)
   if ((sdb->itask = task_available (sdb)) == -1) {
     /* No task structure available */
     log_slave_computer(L_WARNING,"No task available for job");
-    req.type = R_A_AVAILJOB;
+    req.type = R_R_AVAILJOB;
     req.data = RERR_NOSPACE;
     if (!send_request(sfd,&req,SLAVE)) {
       log_slave_computer (L_ERROR,drerrno_str());
@@ -654,7 +658,7 @@ int request_job_available (struct slave_database *sdb)
 
   log_slave_computer (L_DEBUG,"There is an available task. Sending RERR_NOERROR");
   /* We've got an available task */
-  req.type = R_A_AVAILJOB;
+  req.type = R_R_AVAILJOB;
   req.data = RERR_NOERROR;
   if (!send_request(sfd,&req,SLAVE)) {
     log_slave_computer (L_ERROR,drerrno_str());
@@ -720,7 +724,7 @@ void request_task_finished (struct slave_database *sdb)
     kill(0,SIGINT);
   }
     
-  if (req.type == R_A_TASKFINI) {
+  if (req.type == R_R_TASKFINI) {
     switch (req.data) {
     case RERR_NOERROR: 
       /* We continue processing the matter */
@@ -772,7 +776,7 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
   }
 
   /* Alway send RERR_NOERR */
-  answer.type = R_A_TASKFINI;
+  answer.type = R_R_TASKFINI;
   answer.data = RERR_NOERROR;
   if (!send_request (sfd,&answer,MASTER)) {
     log_master (L_ERROR,"Receiving request (handle_r_r_taskfini)");
@@ -879,7 +883,7 @@ void handle_r_r_listjobs (int sfd,struct database *wdb,int icomp)
   log_master (L_DEBUG,"Entering handle_r_r_listjobs");
 
   /* We send the number of active jobs */
-  answer.type = R_A_LISTJOBS;
+  answer.type = R_R_LISTJOBS;
   answer.data = job_njobs_masterdb (wdb);
   
   if (!send_request (sfd,&answer,MASTER)) {
@@ -906,7 +910,7 @@ void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp)
 
   log_master (L_DEBUG,"Entering handle_r_r_listcomp");
 
-  answer.type = R_A_LISTCOMP;
+  answer.type = R_R_LISTCOMP;
   answer.data = computer_ncomputers_masterdb (wdb);
   
   if (!send_request (sfd,&answer,MASTER)) {
@@ -956,6 +960,7 @@ void handle_r_r_deletjob (int sfd,struct database *wdb,int icomp,struct request 
   int i;
   uint32_t ijob;
   struct frame_info *fi;
+  struct job job;		/* Temporary job for log removal */
   int nframes;
 
   ijob = req->data;
@@ -969,11 +974,14 @@ void handle_r_r_deletjob (int sfd,struct database *wdb,int icomp,struct request 
     return;
   }
 
+  memcpy (&job,&wdb->job[ijob],sizeof(job));
+
   fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
   if (fi != (struct frame_info *)-1) {
     nframes = job_nframes (&wdb->job[ijob]);
     for (i=0;i<nframes;i++) {
       if (fi[i].status == FS_ASSIGNED) {
+	/* FIXME: We use fi[i].icomp without checking it's value */
 	request_slave_killtask (wdb->computer[fi[i].icomp].hwinfo.name,fi[i].itask,MASTER);
       }
     }
@@ -985,6 +993,9 @@ void handle_r_r_deletjob (int sfd,struct database *wdb,int icomp,struct request 
   job_delete (&wdb->job[ijob]);
 
   semaphore_release (wdb->semid);
+
+  /* Now we remove the logs directory */
+  job_logs_remove (&job);
 
   log_master (L_DEBUG,"Exiting handle_r_r_deletjob");
 }
@@ -1199,7 +1210,7 @@ int request_job_xfer (uint32_t ijob, struct job *job, int who)
     return 0;
   }
 
-  if (req.type == R_A_JOBXFER) {
+  if (req.type == R_R_JOBXFER) {
     switch (req.data) {
     case RERR_NOERROR: 
       /* We continue processing the matter */
@@ -1241,7 +1252,7 @@ void handle_r_r_jobxfer (int sfd,struct database *wdb,int icomp,struct request *
   if (!job_index_correct_master(wdb,ijob)) {
     semaphore_release(wdb->semid);
     log_master (L_INFO,"Job asked to be transfered does not exist");
-    req->type = R_A_JOBXFER;
+    req->type = R_R_JOBXFER;
     req->data = RERR_NOREGIS;
     send_request(sfd,req,MASTER);
     return;
@@ -1252,7 +1263,7 @@ void handle_r_r_jobxfer (int sfd,struct database *wdb,int icomp,struct request *
   }
   semaphore_release(wdb->semid);
 
-  req->type = R_A_JOBXFER;
+  req->type = R_R_JOBXFER;
   req->data = RERR_NOERROR;
   if (!send_request(sfd,req,MASTER))
     return;
@@ -1291,7 +1302,7 @@ int request_job_xferfi (uint32_t ijob, struct frame_info *fi, int nframes, int w
     return 0;
   }
 
-  if (req.type == R_A_JOBXFERFI) {
+  if (req.type == R_R_JOBXFERFI) {
     switch (req.data) {
     case RERR_NOERROR: 
       /* We continue processing the matter */
@@ -1339,7 +1350,7 @@ void handle_r_r_jobxferfi (int sfd,struct database *wdb,int icomp,struct request
 
   semaphore_lock(wdb->semid);
   if (!job_index_correct_master(wdb,ijob)) {
-    req->type = R_A_JOBXFERFI;
+    req->type = R_R_JOBXFERFI;
     req->data = RERR_NOREGIS;
     send_request(sfd,req,MASTER);
     semaphore_release(wdb->semid);
@@ -1350,7 +1361,7 @@ void handle_r_r_jobxferfi (int sfd,struct database *wdb,int icomp,struct request
   if ((fi = attach_frame_shared_memory (wdb->job[ijob].fishmid)) == (void*)-1) {
     job_delete(&wdb->job[ijob]);
     /* We send a not registered message because we have deleted the problematic job */
-    req->type = R_A_JOBXFERFI;
+    req->type = R_R_JOBXFERFI;
     req->data = RERR_NOREGIS;
     send_request(sfd,req,MASTER);
     semaphore_release(wdb->semid);
@@ -1371,7 +1382,7 @@ void handle_r_r_jobxferfi (int sfd,struct database *wdb,int icomp,struct request
 
   /* We make a copy so we don't have the master locked during a network transfer */
 
-  req->type = R_A_JOBXFERFI;
+  req->type = R_R_JOBXFERFI;
   req->data = RERR_NOERROR;
   if (!send_request(sfd,req,MASTER))
     return;
@@ -1412,7 +1423,7 @@ int request_comp_xfer (uint32_t icomp, struct computer *comp, int who)
     return 0;
   }
 
-  if (req.type == R_A_COMPXFER) {
+  if (req.type == R_R_COMPXFER) {
     switch (req.data) {
     case RERR_NOERROR: 
       /* We continue processing the matter */
@@ -1451,13 +1462,13 @@ void handle_r_r_compxfer (int sfd,struct database *wdb,int icomp,struct request 
   
   if ((icomp2 >= MAXCOMPUTERS) || !wdb->computer[icomp2].used) {
     log_master (L_INFO,"Computer asked to be transfered is not registered");
-    req->type = R_A_COMPXFER;
+    req->type = R_R_COMPXFER;
     req->data = RERR_NOREGIS;
     send_request(sfd,req,MASTER);
     return;
   }
 
-  req->type = R_A_COMPXFER;
+  req->type = R_R_COMPXFER;
   req->data = RERR_NOERROR;
   if (!send_request(sfd,req,MASTER))
     return;
@@ -1934,7 +1945,7 @@ void update_computer_limits (struct computer_limits *limits)
     kill(0,SIGINT);
   }
 
-  if (req.type == R_A_UCLIMITS) {
+  if (req.type == R_R_UCLIMITS) {
     switch (req.data) {
     case RERR_NOERROR:
       if (!send_computer_limits (sfd,limits)) {
@@ -1965,7 +1976,7 @@ void handle_r_r_uclimits (int sfd,struct database *wdb,int icomp, struct request
 
   if (icomp == -1) {
     log_master (L_WARNING,"Not registered computer requesting update of computer limits");
-    req->type = R_A_UCLIMITS;
+    req->type = R_R_UCLIMITS;
     req->data = RERR_NOREGIS;
     if (!send_request (sfd,req,MASTER)) {
       log_master (L_ERROR,"Receiving request (handle_r_r_uclimits)");
@@ -1975,7 +1986,7 @@ void handle_r_r_uclimits (int sfd,struct database *wdb,int icomp, struct request
 
   /* No errors, we (master) can receive the status from the remote */
   /* computer already registered */
-  req->type = R_A_UCLIMITS;
+  req->type = R_R_UCLIMITS;
   req->data = RERR_NOERROR;
   if (!send_request (sfd,req,MASTER)) {
     log_master (L_ERROR,"Receiving request (handle_r_r_uclimits)");
@@ -2414,4 +2425,72 @@ void handle_r_r_joblnmccs (int sfd,struct database *wdb,int icomp,struct request
   semaphore_release (wdb->semid);
 
   log_master(L_DEBUG,"Exiting handle_r_r_joblnmccs");
+}
+
+int request_job_priority_update (uint32_t ijob, uint32_t priority, int who)
+{
+  /* On error returns 0, error otherwise drerrno is set to the error */
+  /* This function request the master to set a priority for a job (identified by ijob) */
+  int sfd;
+  struct request req;
+
+  if ((sfd = connect_to_master ()) == -1) {
+    drerrno = DRE_NOCONNECT;
+    return 0;
+  }
+
+  req.type = R_R_JOBPRIUP;
+  req.data = ijob;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORSENDING;
+    close (sfd);
+    return 0;
+  }
+
+  req.type = R_R_JOBPRIUP;
+  req.data = priority;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORSENDING;
+    close (sfd);
+    return 0;
+  }
+
+  close (sfd);
+  return 1;
+}
+
+void handle_r_r_jobpriup (int sfd,struct database *wdb,int icomp,struct request *req)
+{
+  /* The master handles this type of packages */
+  /* This function is called unlocked */
+  uint32_t ijob;
+  uint32_t priority;
+  char msg[BUFFERLEN];
+
+  log_master(L_DEBUG,"Entering handle_r_r_jobpriup");
+
+  ijob = req->data;
+
+  /* Second packet */
+  if (!recv_request (sfd,req)) {
+    return;
+  }
+
+  priority = req->data;
+  
+  snprintf(msg,BUFFERLEN-1,"Requested job (ijob:%u) priority set to: %u",ijob,priority);
+  log_master(L_DEBUG,msg);
+
+  semaphore_lock(wdb->semid);
+
+  if (!job_index_correct_master(wdb,ijob))
+    return;
+
+  wdb->job[ijob].priority = priority;
+
+  semaphore_release (wdb->semid);
+
+  log_master(L_DEBUG,"Exiting handle_r_r_jobpriup");
 }
