@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.18 2001/09/08 15:36:27 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.19 2001/09/14 16:32:01 jorge Exp $
  */
 
 #ifndef _DRQM_JOBS_H_
@@ -8,6 +8,13 @@
 #include <gtk/gtk.h>
 #include "libdrqueue.h"
 
+struct drqmj_kojid_maya {
+  GtkWidget *escene;
+  GtkWidget *eproject;
+  GtkWidget *eimage;
+  GtkWidget *eviewcmd;
+};
+
 struct drqmj_dnji {		/* dialog new job */
   GtkWidget *dialog;
   GtkWidget *ename;
@@ -15,6 +22,11 @@ struct drqmj_dnji {		/* dialog new job */
   GtkWidget *esf,*eef,*estf;	/* entry start frame, entry end frame, entry step frames */
   GtkWidget *cpri,*epri;	/* combo priority, entry priority */
   GtkWidget *fs;		/* File selector */
+
+  /* koj */
+  GtkWidget *ckoj;		/* combo koj */
+  uint16_t koj;			/* koj */
+  union koj_info koji;		/* koj info */
 };
 
 struct drqmj_jddi {		/* job details dialog */
