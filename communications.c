@@ -302,14 +302,14 @@ int send_computer_status (int sfd, struct computer_status *status)
   /* Count the tasks. (Shouldn't be necessary) */
 	// FIXME: Remove this ?
   bswapped.ntasks = 0;
-  for (i=0;i<MAXTASKS;i++) {
+	for (i=0;i<MAXTASKS;i++) {
 		if (bswapped.task[i].used)
       bswapped.ntasks++;
   }
 
   bswapped.ntasks = htons (bswapped.ntasks);
 
-  if (!dr_write(sfd,buf,sizeof(struct computer_status))) {
+  if (!dr_write(sfd,buf,sizeof(uint16_t) * 4)) { // Send the first 4 uint16_t that are loadavg and ntasks
     return 0;
   }
   

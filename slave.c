@@ -80,7 +80,6 @@ int main (int argc,char *argv[])
   sdb.comp = attach_shared_memory_slave (sdb.shmid);
   sdb.semid = get_semaphores_slave ();
 
-	computer_pool_init(sdb.comp);
   computer_status_init (&sdb.comp->status);
   get_hwinfo (&sdb.comp->hwinfo);
   computer_init_limits (sdb.comp); /* computer_init_limits depends on the hardware information */

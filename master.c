@@ -332,7 +332,7 @@ void clean_out (int signal, siginfo_t *info, void *data)
 
   kill(0,SIGINT);		/* Kill all the children (Wow, I don't really want to do that...) */
   while ((child_pid = wait (&rc)) != -1) {
-    printf ("Child arrived ! %i\n",(int)child_pid); 
+		//    printf ("Child arrived ! %i\n",(int)child_pid); 
   }
 
   log_master (L_INFO,"Saving...");

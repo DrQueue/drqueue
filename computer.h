@@ -40,13 +40,13 @@ struct computer_limits {
     unsigned char h,m;		/* Hour and minute of wished autoenable */
 		unsigned char flags;	// Autoenable flag
   } autoenable;
+	char **pool;
 };
 
 struct computer {
   struct computer_hwinfo hwinfo;
   struct computer_status status;
   struct computer_limits limits;
-	char **pool;
   time_t lastconn;		/* Time of last connection to the master */
   unsigned char used;		/* If the record is being used or not */
 };
@@ -65,11 +65,13 @@ int computer_ncomputers_masterdb (struct database *wdb);
 void computer_init_limits (struct computer *comp);
 int computer_index_correct_master (struct database *wdb, uint32_t icomp);
 void computer_autoenable_check (struct slave_database *sdb);
-void computer_pool_init (struct computer *computer);
-int computer_npools (struct computer *computer);
-void computer_pool_add (struct computer *computer, char *pool);
-void computer_pool_remove (struct computer *computer, char *pool);
-void computer_pool_list (struct computer *computer);
-int computer_pool_exists (struct computer *computer,char *pool);
+
+// Pools
+void computer_pool_init (struct computer_limits *cl);
+int computer_npools (struct computer_limits *cl);
+void computer_pool_add (struct computer_limits *cl, char *pool);
+void computer_pool_remove (struct computer_limits *cl, char *pool);
+void computer_pool_list (struct computer_limits *cl);
+int computer_pool_exists (struct computer_limits *cl,char *pool);
 
 #endif /* _COMPUTER_H_ */

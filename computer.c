@@ -204,54 +204,58 @@ void computer_init (struct computer *computer)
   computer_status_init(&computer->status);
 }
 
-void computer_pool_init (struct computer *computer)
+void computer_pool_init (struct computer_limits *cl)
 {
-	computer->pool = (char **) malloc (sizeof (char*));
-	computer->pool[0] = NULL;
+	cl->pool = (char **) malloc (sizeof (char*));
+	cl->pool[0] = NULL;
 }
 
-int computer_npools (struct computer *computer)
+int computer_npools (struct computer_limits *cl)
 {
 	int i;
 	int npools = 1;
 
-	for (i=0;computer->pool[i] != NULL;i++) 
-		npools++;
+	if (cl->pool) {
+		for (i=0;cl->pool[i] != NULL;i++) 
+			npools++;
+	} else {
+		computer_pool_init (cl);
+	}
 
 	return npools;
 }
 
-void computer_pool_add (struct computer *computer, char *pool)
+void computer_pool_add (struct computer_limits *cl, char *pool)
 {
 	int npools;
 	char **new_pool;
 
-	if (computer_pool_exists(computer,pool))
+	if (computer_pool_exists(cl,pool))
 		return;
 
-	npools = computer_npools (computer);
+	npools = computer_npools (cl);
 
-	new_pool = (char **) realloc (computer->pool,sizeof (char*) * (npools+1));
+	new_pool = (char **) realloc (cl->pool,sizeof (char*) * (npools+1));
 	new_pool[npools] = NULL;
 	new_pool[npools-1] = (char *) malloc (strlen(pool)+1);
 	strncpy (new_pool[npools-1],pool,strlen(pool)+1);
-	computer->pool = new_pool;
+	cl->pool = new_pool;
 }
 
-void computer_pool_remove (struct computer *computer, char *pool)
+void computer_pool_remove (struct computer_limits *cl, char *pool)
 {
 	int i,j;
 	int npools;
 	char **new_pool;
 
-	npools = computer_npools (computer);
+	npools = computer_npools (cl);
 
-	new_pool = (char **) realloc (computer->pool,sizeof (char*) * (npools-1));
-	for (i=0,j=0;computer->pool[i] != NULL; i++) {
-		if (strncmp(computer->pool[i],pool,strlen(pool)+1) == 0) {
+	new_pool = (char **) realloc (cl->pool,sizeof (char*) * (npools-1));
+	for (i=0,j=0;cl->pool[i] != NULL; i++) {
+		if (strncmp(cl->pool[i],pool,strlen(pool)+1) == 0) {
 			continue;
 		} else {
-			new_pool[j] = computer->pool[i];
+			new_pool[j] = cl->pool[i];
 			j++;
 		}
 	}
@@ -259,21 +263,21 @@ void computer_pool_remove (struct computer *computer, char *pool)
 	new_pool[j] = NULL;
 }
 
-void computer_pool_list (struct computer *computer)
+void computer_pool_list (struct computer_limits *cl)
 {
 	int i;
 
 	fprintf (stderr,"Pools:\n");
-	for (i=0;computer->pool[i] != NULL; i++)
-		fprintf (stderr,"\t* %s\n",computer->pool[i]);
+	for (i=0;cl->pool[i] != NULL; i++)
+		fprintf (stderr,"\t* %s\n",cl->pool[i]);
 }
 
-int computer_pool_exists (struct computer *computer,char *pool)
+int computer_pool_exists (struct computer_limits *cl,char *pool)
 {
 	int i;
 
-	for (i=0;computer->pool[i] != NULL; i++) {
-		if (strncmp(computer->pool[i],pool,strlen(pool)+1) == 0) {
+	for (i=0;cl->pool[i] != NULL; i++) {
+		if (strncmp(cl->pool[i],pool,strlen(pool)+1) == 0) {
 			return 1;
 		}
 	}
