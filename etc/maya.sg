@@ -22,6 +22,11 @@
 #
 #
 
+set BLOCK=`expr $FRAME + $BLOCKSIZE - 1`
+if ($BLOCK > $ENDFRAME) then
+	BLOCK = $ENDFRAME;
+endif
+
 if ($?IMAGE) then
   set CIMAGE = "-p $IMAGE"
 else
@@ -54,7 +59,7 @@ endif
 
 echo Render -s $FRAME -e $FRAME $RESX $RESY $FFORMAT -rd $RD $CIMAGE $CAMERA $SCENE
 
-Render -s $FRAME -e $FRAME $RESX $RESY $FFORMAT -rd $RD $CIMAGE $CAMERA $SCENE
+Render -s $FRAME -e $BLOCK $RESX $RESY $FFORMAT -rd $RD $CIMAGE $CAMERA $SCENE
 
 # This should requeue the frame if failed
 if ( $? != 0 ) then
@@ -62,7 +67,7 @@ if ( $? != 0 ) then
   kill -INT $$
 else
   # The frame was rendered properly
-  chown_block $RF_OWNER $RD/$IMAGE $FRAME $FRAME 
+  chown_block $RF_OWNER $RD/$IMAGE $FRAME $BLOCK 
 endif
 
 #

@@ -22,9 +22,14 @@
 #
 #
 
-echo blender -b $SCENE -f $FRAME
+set BLOCK=`expr $FRAME + $BLOCKSIZE - 1`
+if ($BLOCK > $ENDFRAME) then
+	BLOCK = $ENDFRAME;
+endif
 
-blender -b $SCENE -f $FRAME
+echo blender -b $SCENE -s $FRAME -e $BLOCK -a
+
+blender -b $SCENE -s $FRAME -e $BLOCK -a
 
 # This should requeue the frame if failed
 if ( $? != 0 ) then
@@ -33,7 +38,7 @@ if ( $? != 0 ) then
 else
   # The frame was rendered properly
 	# We don't know the output image name. If we knew we could set this correctly
-  # chown_block $RF_OWNER $RD/$IMAGE $FRAME $FRAME 
+  # chown_block $RF_OWNER $RD/$IMAGE $FRAME $BLOCK 
 endif
 
 #

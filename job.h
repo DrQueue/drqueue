@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.35 2003/12/15 22:18:32 jorge Exp $ */
+/* $Id: job.h,v 1.36 2003/12/18 04:11:07 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -61,9 +61,10 @@ union koj_info {		/* Kind of job information */
 /* Koj types */
 #define KOJ_GENERAL     			0	/* Not specific koj */
 #define KOJ_MAYA        			1	/* Maya koj */
-#define KOJ_MAYABLOCK   			2	/* Maya block koj */
-#define KOJ_BLENDER						3 /* Blender koj */
-#define KOJ_BLENDERBLOCK			4 /* Blender block koj */
+#define KOJ_BLENDER						2 /* Blender koj */
+#define KOJ_BMRT							3	/* BMRT koj */
+#define KOJ_3DELIGHT					4	/* 3delight koj */
+#define KOJ_PIXIE							5	/* Pixie koj */
 
 /* koj constants */
 #define KOJ_MAYA_DFLT_VIEWCMD "fcheck $RD/$IMAGE.$PADFRAME.sgi"
@@ -104,6 +105,7 @@ struct job {
   uint32_t frame_start,frame_end;
   uint32_t frame_step;
   uint32_t fleft,fdone,ffailed;	/* Frames left,done and failed */
+	uint32_t block_size;
   time_t avg_frame_time;	/* Average frame time */
   time_t est_finish_time;	/* Estimated finish time */
   struct frame_info *frame_info; /* Status of every frame */
