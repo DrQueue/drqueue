@@ -32,7 +32,6 @@
 static GtkWidget *CreateComputersList(struct drqm_computers_info *info);
 static GtkWidget *CreateClist (GtkWidget *window);
 static GtkWidget *CreateButtonRefresh (struct drqm_computers_info *info);
-static void PressedButtonRefresh (GtkWidget *b, struct drqm_computers_info *info);
 static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_computers_info *info);
 static GtkWidget *CreateMenu (struct drqm_computers_info *info);
 
@@ -134,20 +133,15 @@ static GtkWidget *CreateClist (GtkWidget *window)
 
 static GtkWidget *CreateButtonRefresh (struct drqm_computers_info *info)
 {
-  GtkWidget *b;
+	GtkWidget *b;
   
-  b = gtk_button_new_with_label ("Refresh");
-  gtk_container_border_width (GTK_CONTAINER(b),5);
-  gtk_widget_show (GTK_WIDGET(b));
-  gtk_signal_connect(GTK_OBJECT(b),"clicked",GTK_SIGNAL_FUNC(PressedButtonRefresh),info);
+	b = gtk_button_new_with_label ("Refresh");
+	gtk_container_border_width (GTK_CONTAINER(b),5);
+	gtk_widget_show (GTK_WIDGET(b));
+	g_signal_connect_swapped(G_OBJECT(b),"clicked",G_CALLBACK(drqm_request_computerlist),info);
+	g_signal_connect_swapped(G_OBJECT(b),"clicked",G_CALLBACK(drqm_update_computerlist),info);
 
-  return b;
-}
-
-static void PressedButtonRefresh (GtkWidget *b, struct drqm_computers_info *info)
-{
-  drqm_request_computerlist (info);
-  drqm_update_computerlist (info);
+	return b;
 }
 
 void drqm_update_computerlist (struct drqm_computers_info *info)
