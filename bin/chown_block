@@ -12,7 +12,11 @@ $endf = $ARGV[3];
 
 for ($i = $startf; $i <= $endf; $i++) {
   $file = sprintf ("%s.%04i.*",$file_prefix,$i);
-  chown ((getpwnam($user))[2,3],$file);
+  @files = glob($file);
+  foreach $a (@files) {
+    print "Changing permission (new owner: $user) of: $a\n";
+    chown ((getpwnam($user))[2,3],$a);
+  }
 }
 
 sub usage ()
