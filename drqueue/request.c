@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.38 2001/09/04 23:25:32 jorge Exp $ */
+/* $Id: request.c,v 1.39 2001/09/05 12:49:37 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -404,7 +404,7 @@ void handle_r_r_regisjob (int sfd,struct database *wdb)
 
   job_init_registered (wdb,index,&job);
 
-  job_report(&wdb->job[index]);
+/*    job_report(&wdb->job[index]); */
 }
 
 
@@ -874,27 +874,29 @@ void handle_r_r_deletjob (int sfd,struct database *wdb,int icomp,struct request 
 
   ijob = req->data;
 
-  if (ijob >= MAXJOBS)
-    return;
+  log_master (L_DEBUG,"Entering handle_r_r_deletjob");
 
   semaphore_lock (wdb->semid);
 
-  if (wdb->job[ijob].used) {
-    fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
-    nframes = job_nframes (&wdb->job[ijob]);
-    for (i=0;i<nframes;i++) {
-      if (fi[i].status == FS_ASSIGNED) {
-	request_slave_killtask (wdb->computer[fi[i].icomp].hwinfo.name,fi[i].itask);
-      }
-    }
-    detach_frame_shared_memory (fi);
-
-    job_delete (&wdb->job[ijob]);
-  } else {
+  if (!job_index_correct_master(wdb,ijob)) {
     log_master (L_INFO,"Request for deletion of an unused job");
+    return;
   }
 
+  fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
+  nframes = job_nframes (&wdb->job[ijob]);
+  for (i=0;i<nframes;i++) {
+    if (fi[i].status == FS_ASSIGNED) {
+      request_slave_killtask (wdb->computer[fi[i].icomp].hwinfo.name,fi[i].itask);
+    }
+  }
+  detach_frame_shared_memory (fi);
+
+  job_delete (&wdb->job[ijob]);
+
   semaphore_release (wdb->semid);
+
+  log_master (L_DEBUG,"Exiting handle_r_r_deletjob");
 }
 
 int request_slave_killtask (char *slave,uint16_t itask)
@@ -1028,26 +1030,30 @@ void handle_r_r_hstopjob (int sfd,struct database *wdb,int icomp,struct request 
   int nframes;
 
   ijob = req->data;
-  
-  if (ijob >= MAXJOBS)
-    return;
+
+  log_master (L_DEBUG,"Entering handle_r_r_hstopjob");
 
   semaphore_lock (wdb->semid);
-
-  if (wdb->job[ijob].used) {
-    fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
-    nframes = job_nframes (&wdb->job[ijob]);
-    for (i=0;i<nframes;i++) {
-      if (fi[i].status == FS_ASSIGNED) {
-	request_slave_killtask (wdb->computer[fi[i].icomp].hwinfo.name,fi[i].itask);
-      }
-    }
-    detach_frame_shared_memory (fi);
-
-    job_stop (&wdb->job[ijob]);
+  
+  if (!job_index_correct_master(wdb,ijob)) {
+    log_master (L_INFO,"Request for hard stopping of an unused job");
+    return;
   }
 
+  fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
+  nframes = job_nframes (&wdb->job[ijob]);
+  for (i=0;i<nframes;i++) {
+    if (fi[i].status == FS_ASSIGNED) {
+      request_slave_killtask (wdb->computer[fi[i].icomp].hwinfo.name,fi[i].itask);
+    }
+  }
+  detach_frame_shared_memory (fi);
+  
+  job_stop (&wdb->job[ijob]);
+
   semaphore_release (wdb->semid);
+
+  log_master (L_DEBUG,"Exiting handle_r_r_hstopjob");
 }
 
 int request_job_hstop (uint32_t ijob, int who)
@@ -1130,19 +1136,26 @@ void handle_r_r_jobxfer (int sfd,struct database *wdb,int icomp,struct request *
   /* This function is called unlocked */
   /* This function is called by the master */
   uint32_t ijob;
+  struct job job;
 
   log_master (L_DEBUG,"Entering handle_r_r_jobxfer");
 
   ijob = req->data;
   
-  if ((ijob >= MAXJOBS) || !wdb->job[ijob].used) {
+  semaphore_lock(wdb->semid);
+  if (!job_index_correct_master(wdb,ijob)) {
+    semaphore_release(wdb->semid);
     log_master (L_INFO,"Job asked to be transfered does not exist");
     req->type = R_A_JOBXFER;
     req->data = RERR_NOREGIS;
-    if (!send_request(sfd,req,MASTER))
-      return;
+    send_request(sfd,req,MASTER);
     return;
+  } else {
+    /* The semaphore is still locked and the job index is right */
+    /* We take a copy of the locked object and we send that */
+    memcpy (&job,&wdb->job[ijob],sizeof (struct job));
   }
+  semaphore_release(wdb->semid);
 
   req->type = R_A_JOBXFER;
   req->data = RERR_NOERROR;
@@ -1150,7 +1163,11 @@ void handle_r_r_jobxfer (int sfd,struct database *wdb,int icomp,struct request *
     return;
 
   log_master (L_DEBUG,"Sending job");
-  send_job (sfd,&wdb->job[ijob],MASTER);
+  send_job (sfd,&job,MASTER);	/* I send a copy because if I would send instead the original */
+				/* I would need to block the execution during a network transfer */
+				/* and that's too expensive */
+
+  log_master (L_DEBUG,"Exiting handle_r_r_jobxfer");
 }
 
 int request_job_xferfi (uint32_t ijob, struct frame_info *fi, int nframes, int who)
@@ -1217,40 +1234,50 @@ void handle_r_r_jobxferfi (int sfd,struct database *wdb,int icomp,struct request
   /* This function is called unlocked */
   /* This function is called by the master */
   uint32_t ijob;
-  struct frame_info *fi;
+  struct frame_info *fi,*fi_copy;
   int nframes;
   int i;
 
   log_master (L_DEBUG,"Entering handle_r_r_jobxferfi");
 
   ijob = req->data;
-  
-  if ((ijob >= MAXJOBS) || !wdb->job[ijob].used) {
+
+  semaphore_lock(wdb->semid);
+  if (!job_index_correct_master(wdb,ijob)) {
     log_master (L_INFO,"Job asked to be transfered frame info does not exist");
     req->type = R_A_JOBXFERFI;
     req->data = RERR_NOREGIS;
-    if (!send_request(sfd,req,MASTER))
-      return;
+    send_request(sfd,req,MASTER);
+    return;
   }
+  fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
+  nframes = job_nframes (&wdb->job[ijob]);
+  fi_copy = (struct frame_info *) malloc (sizeof(struct frame_info) * nframes);
+  if (!fi_copy) {
+    log_master (L_ERROR,"Allocating memory on handle_r_r_jobxferfi");
+    return;			/* The lock is released automatically and the end of the process */
+  }
+  memcpy(fi_copy,fi,sizeof(struct frame_info) * nframes);
+  detach_frame_shared_memory(fi);
+  semaphore_release(wdb->semid);
+
+  /* We make a copy so we don't have the master locked during a network transfer */
 
   req->type = R_A_JOBXFERFI;
   req->data = RERR_NOERROR;
   if (!send_request(sfd,req,MASTER))
     return;
 
-  fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
-  nframes = job_nframes (&wdb->job[ijob]);
-
   log_master (L_DEBUG,"Sending frame info");
   for (i=0;i<nframes;i++) {
-    if (!send_frame_info (sfd,fi)) {
+    if (!send_frame_info (sfd,fi_copy)) {
       log_master (L_ERROR,"Sending frame info");
       return;
     }
-    fi++;
+    fi_copy++;
   }
 
-  detach_frame_shared_memory(fi);
+  log_master (L_DEBUG,"Exiting handle_r_r_jobxferfi");
 }
 
 int request_comp_xfer (uint32_t icomp, struct computer *comp, int who)
@@ -1389,25 +1416,31 @@ void handle_r_r_jobfwait (int sfd,struct database *wdb,int icomp,struct request 
   snprintf(msg,BUFFERLEN-1,"Requested job frame waiting for Job %i Frame %i ",ijob,frame);
   log_master(L_DEBUG,msg);
 
-  if (ijob >= MAXJOBS)
+  semaphore_lock(wdb->semid);
+
+  if (!job_index_correct_master(wdb,ijob))
     return;
 
   nframes = job_nframes (&wdb->job[ijob]);
 
-  if (job_frame_number_correct(&wdb->job[ijob],frame)) {
-    nframes = job_nframes (&wdb->job[ijob]);
-    iframe = job_frame_number_to_index (&wdb->job[ijob],frame);
-
-    semaphore_lock (wdb->semid);
-
-    if (wdb->job[ijob].used) {
-      fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
-      fi[iframe].status = FS_WAITING;
-      detach_frame_shared_memory (fi);
-    }
-    
-    semaphore_release (wdb->semid);
+  if (!job_frame_number_correct(&wdb->job[ijob],frame))
+    return;
+  
+  nframes = job_nframes (&wdb->job[ijob]);
+  iframe = job_frame_number_to_index (&wdb->job[ijob],frame);
+  
+  fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
+  switch (fi[iframe].status) {
+  case FS_WAITING:
+  case FS_ASSIGNED:
+    break;
+  case FS_ERROR:
+  case FS_FINISHED:
+    fi[iframe].status = FS_WAITING;
   }
+  detach_frame_shared_memory (fi);
+
+  semaphore_release (wdb->semid);
 
   log_master(L_DEBUG,"Exiting handle_r_r_jobfwait");
 }

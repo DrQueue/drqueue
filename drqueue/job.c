@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.25 2001/09/05 09:53:21 jorge Exp $ */
+/* $Id: job.c,v 1.26 2001/09/05 12:49:36 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -50,13 +50,17 @@ void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job)
   
   semaphore_lock(wdb->semid);
 
+  if (!job_index_correct_master(wdb,ijob)) {
+    log_master (L_ERROR,"Job index should be valid when registering and it is not");
+    return;
+  }
+
   memcpy (&wdb->job[ijob], job, sizeof(struct job));
   wdb->job[ijob].used = 1;
-  wdb->job[ijob].id = ijob;	/* Check ranges !!! */
+  wdb->job[ijob].id = ijob;
   wdb->job[ijob].status = JOBSTATUS_WAITING;
   /* We allocate the memory for the frame_info */
   nframes = job_nframes (&wdb->job[ijob]);
-  fprintf (stderr,"nframes: %i\n",nframes);
 
   wdb->job[ijob].fishmid = get_frame_shared_memory (nframes);
   wdb->job[ijob].frame_info = attach_frame_shared_memory (wdb->job[ijob].fishmid);
@@ -190,10 +194,15 @@ int job_first_frame_available (struct database *wdb,uint32_t ijob)
   /* This function is called unlocked */
   int i;
   int r = -1;
-  int nframes = job_nframes (&wdb->job[ijob]);
+  int nframes; = job_nframes (&wdb->job[ijob]);
   struct frame_info *fi;
 
   semaphore_lock(wdb->semid);
+  if (!job_index_correct_master(wdb,ijob)) {
+    semaphore_release(wdb->semid);
+    return -1;
+  }
+  nframes = job_nframes (&wdb->job[ijob]);
   fi = attach_frame_shared_memory(wdb->job[ijob].fishmid);
   for (i=0;i<nframes;i++) {
     if (fi[i].status == FS_WAITING) {
@@ -488,6 +497,13 @@ void job_frame_waiting (struct database *wdb,uint32_t ijob, int iframe)
   struct frame_info *fi;
 
   semaphore_lock(wdb->semid);
+  
+  if (!job_index_correct_master(wdb,ijob))
+    return;
+
+  if (!job_frame_number_correct(&wdb->job[ijob],job_frame_index_to_number(&wdb->job[ijob],iframe)))
+    return
+
   fi = attach_frame_shared_memory(wdb->job[ijob].fishmid);
   fi[iframe].status = FS_WAITING;
   detach_frame_shared_memory(fi);
