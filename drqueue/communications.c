@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.15 2001/07/31 13:04:15 jorge Exp $ */
+/* $Id: communications.c,v 1.16 2001/08/06 10:29:25 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -95,7 +95,37 @@ int connect_to_master (void)
   addr.sin_port = htons(MASTERPORT);		/* Whatever */
   hostinfo = gethostbyname (master);
   if (hostinfo == NULL) {
-    drerrno = DRE_DRMANONVA;
+    drerrno = DRE_NOTRESOLV;
+    return -1;
+  }
+  addr.sin_addr = *(struct in_addr *) hostinfo->h_addr;
+
+  sfd = socket (PF_INET,SOCK_STREAM,0);
+  if (sfd == -1) {
+    drerrno = DRE_NOSOCKET;
+    return -1;
+  }
+
+  if (connect (sfd,(struct sockaddr *)&addr,sizeof (addr)) == -1) {
+    drerrno = DRE_NOCONNECT;
+    return -1;
+  }
+
+  return sfd;
+}
+
+int connect_to_slave (char *slave)
+{
+  /* Connects to the slave and returns the socket fd */
+  int sfd;
+  struct sockaddr_in addr;
+  struct hostent *hostinfo;
+
+  addr.sin_family = AF_INET;
+  addr.sin_port = htons(SLAVEPORT); /* Whatever */
+  hostinfo = gethostbyname (slave);
+  if (hostinfo == NULL) {
+    drerrno = DRE_NOTRESOLV;
     return -1;
   }
   addr.sin_addr = *(struct in_addr *) hostinfo->h_addr;
@@ -223,18 +253,14 @@ void recv_request (int sfd, struct request *request,int who)
   request->data_s = ntohs (request->data_s);
 }
 
-void send_request (int sfd, struct request *request,int who)
+int send_request (int sfd, struct request *request,int who)
 {
   int w;
   int bleft;
   void *buf = request;
 
   request->data_s = htons (request->data_s);
-
-  if ((who == SLAVE) || (who == SLAVE_CHANDLER) || (who || SLAVE_LAUNCHER))
-    request->slave = 1;
-  else
-    request->slave = 0;
+  request->who = who;
 
   bleft = sizeof (struct request);
   while ((w = write(sfd,buf,bleft)) < bleft) {
@@ -245,7 +271,7 @@ void send_request (int sfd, struct request *request,int who)
       switch (who) {
       case MASTER:
 	log_master (L_ERROR,"Sending request");
-	exit (1);
+	return 0;
       case SLAVE:
 	log_slave_computer (L_ERROR,"Sending request");
 	kill(0,SIGINT);
@@ -264,6 +290,8 @@ void send_request (int sfd, struct request *request,int who)
       }
     }
   }
+
+  return 1;
 }
 
 void send_computer_status (int sfd, struct computer_status *status,int who)
