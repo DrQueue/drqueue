@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.22 2001/08/31 15:07:14 jorge Exp $ */
+/* $Id: job.c,v 1.23 2001/08/31 15:28:13 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -342,7 +342,7 @@ void job_update_info (struct database *wdb,uint32_t ijob)
   /* finished or when the number of running processors change */
   if ((nprocs) && ((fdone != old_fdone) || (nprocs != old_nprocs))) {
     wdb->job[ijob].est_finish_time = time(NULL) + ((avg_frame_time * (fleft+nprocs)) / nprocs);
-    old_fdone = fone;
+    old_fdone = fdone;
     old_nprocs = nprocs;
   }
 
