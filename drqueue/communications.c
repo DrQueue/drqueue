@@ -418,6 +418,7 @@ int recv_job (int sfd, struct job *job)
   job->limits.nmaxcpus = ntohs (job->limits.nmaxcpus);
   job->limits.nmaxcpuscomputer = ntohs (job->limits.nmaxcpuscomputer);
   job->limits.os_flags = ntohs (job->limits.os_flags);
+	job->limits.memory = ntohl (job->limits.memory);
 
   drerrno = DRE_NOERROR;
   return 1;
@@ -477,6 +478,7 @@ int send_job (int sfd, struct job *job)
   bswapped.limits.nmaxcpus = htons (bswapped.limits.nmaxcpus);
   bswapped.limits.nmaxcpuscomputer = htons (bswapped.limits.nmaxcpuscomputer);
   bswapped.limits.os_flags = htons (bswapped.limits.os_flags);
+	bswapped.limits.memory = htonl (bswapped.limits.memory);
 
   if (!dr_write (sfd,buf,sizeof(bswapped))) {
 		return 0;

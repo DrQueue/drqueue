@@ -390,6 +390,13 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
   else
     snprintf(msg,BUFFERLEN-1,"%u",info->jdd.job.limits.nmaxcpuscomputer);
   gtk_label_set_text(GTK_LABEL(info->jdd.limits.lnmaxcpuscomputer),msg);
+	
+	// Limits Memory
+	if (info->jdd.job.limits.memory == 0)
+		snprintf(msg,BUFFERLEN,"No limit");
+	else
+		snprintf(msg,BUFFERLEN,"%u",info->jdd.job.limits.memory);
+	gtk_label_set_text(GTK_LABEL(info->jdd.limits.lmemory),msg);
 
   /* Limits OS Flags */
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->jdd.limits.cb_irix),
@@ -1310,6 +1317,22 @@ static GtkWidget *jdd_limits_widgets (struct drqm_jobs_info *info)
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
   g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(jdd_limits_nmaxcpuscomputer_bcp),info);
 
+
+	// Memory
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Minimum ammount of memory:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  hbox2 = gtk_hbox_new (FALSE,2);
+  gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,2);
+  label = gtk_label_new ("0");
+  gtk_box_pack_start (GTK_BOX(hbox2),label,TRUE,TRUE,2);
+  info->jdd.limits.lmemory = label;
+  button = gtk_button_new_with_label ("Change");
+  gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
+	//  g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(jdd_limits_nmaxcpuscomputer_bcp),info);
+
+	// OS stuff
   frame2 = gtk_frame_new ("Operating Systems");
   gtk_box_pack_start (GTK_BOX(vbox),frame2,FALSE,FALSE,2);
   hbox = gtk_hbox_new (TRUE,2);
