@@ -1,8 +1,10 @@
-/* $Id: job.c,v 1.2 2001/05/30 15:11:47 jorge Exp $ */
+/* $Id: job.c,v 1.3 2001/06/05 12:19:45 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
 
 #include "job.h"
 #include "database.h"
@@ -39,37 +41,58 @@ void job_report (struct job *job)
   printf ("Frame start,end:\t%i,%i\n",job->frame_start,job->frame_end);
 }
 
-void job_init_assigned (struct database *wdb,int ijob)
+void job_init_registered (struct database *wdb,int ijob,struct job *job)
 {
+  /* Called we we have just received a job to be registered */
   int i;
   int nframes;
+  char msg[BUFFERLEN];
   
   semaphore_lock(wdb->semid);
+
+  memcpy (&wdb->job[ijob], job, sizeof(struct job));
   wdb->job[ijob].used = 1;
   wdb->job[ijob].status = JOBSTATUS_WAITING;
-
   /* We allocate the memory for the frame_info */
-  nframes = job_nframes (&wdb->job[index]);
-  job[index].frame_info = (struct frame_info *) malloc (sizeof (struct frame_info) * nframes);
-  if (wdb->job[index].frame_info == NULL) {
-    log_master ("Warning: Could not allocate memory for frame info");
-    wdb->job[index].used = 0;
-  } else {
-    job_init_assigned (&wdb->job[index]);
-  }
+  nframes = job_nframes (&wdb->job[ijob]);
+  fprintf (stderr,"nframes: %i\n",nframes);
+
+  wdb->job[ijob].fishmid = get_frame_shared_memory (nframes);
+  wdb->job[ijob].frame_info = attach_frame_shared_memory (wdb->job[ijob].fishmid);
 
   /* Set done frames to NONE */
-  for (i=0;i<job_nframes(job);i++) {
-    job->frame_info[i].status = FS_WAITING;
+  for (i=0;i<nframes;i++) {
+    wdb->job[ijob].frame_info[i].status = FS_WAITING;
   }
+
+  wdb->job[ijob].avg_frame_time = DFLTAVGFTIME;
+  wdb->job[ijob].est_finish_time = time (NULL) + (DFLTAVGFTIME * nframes);
+
+  detach_frame_shared_memory(wdb->job[ijob].frame_info);
+
+  semaphore_release(wdb->semid);
+
+  snprintf(msg,BUFFERLEN,"Registered on position %i",ijob);
+  log_master_job (&wdb->job[ijob],msg);
+}
+
+void job_init (struct job *job)
+{
+  job->used = 0;
+  job->frame_info = NULL;
+  job->fishmid = -1;		/* -1 when not reserved */
 }
 
 void job_delete (struct job *job)
 {
   job->used = 0;
 
-  if (job->frame_info)
-    free (job->frame_info);
+  if (job->fishmid != -1) {
+    if (shmctl (job->fishmid,IPC_RMID,NULL) == -1) {
+      log_master_job(job,"ERROR: shmctl (job->fishmid,IPC_RMID,NULL)");
+    }
+    job->fishmid = -1;
+  }
 
   job->frame_info = NULL;
 }
@@ -137,17 +160,20 @@ int job_first_frame_available (struct database *wdb,int ijob)
   /* so the frame status goes to assigned (we still have to */
   /* set the info about the icomp,start,itask */
   int i;
-  int nframes = job_nframes (&wdb->job[ijob]);
   int r = -1;
+  int nframes = job_nframes (&wdb->job[ijob]);
+  struct frame_info *fi;
 
   semaphore_lock(wdb->semid);
+  fi = attach_frame_shared_memory(wdb->job[ijob].fishmid);
   for (i=0;i<nframes;i++) {
-    if (wdb->job[ijob].frame_info[i].status == FS_WAITING) {
+    if (fi[i].status == FS_WAITING) {
       r = i;			/* return = current */
-      wdb->job[ijob].frame_info[i].status = FS_ASSIGNED; /* Change the status to assigned */
+      fi[i].status = FS_ASSIGNED; /* Change the status to assigned */
       break;
     }
   }
+  detach_frame_shared_memory(fi);
   semaphore_release(wdb->semid);
 
   return r;
@@ -155,8 +181,62 @@ int job_first_frame_available (struct database *wdb,int ijob)
 
 void job_update_assigned (struct database *wdb, int ijob, int iframe, int icomp, int itask)
 {
-  semaphore_lock(wdb->semid);
-  wdb->job[ijob].frame_info[i].icomp = icomp;
-  wdb->job[ijob].frame_info[i].itask = itask;
+  /* LOCK BEFORE CALLING THIS FUNCTION */
+  /* Here we should set all the information inside the task structure */
+  /* about the assigned job into the remote computer */
+  wdb->job[ijob].frame_info = attach_frame_shared_memory (wdb->job[ijob].fishmid);
+
+  fprintf(stderr,"Assigned: jua job:%i frame:%i status:%i\n",ijob,iframe,wdb->job[ijob].frame_info[iframe].status);
+
+  /* The status should already be FS_ASSIGNED */
+  if (wdb->job[ijob].frame_info[iframe].status != FS_ASSIGNED) {
+    fprintf (stderr,"(wdb->job[ijob].frame_info[iframe].status != FS_ASSIGNED)\n");
+    fprintf (stderr,"%s:%i\n",__FILE__,__LINE__);
+    wdb->job[ijob].frame_info[iframe].status = FS_ASSIGNED;
+  }
+
+  wdb->job[ijob].frame_info[iframe].icomp = icomp;
+  wdb->job[ijob].frame_info[iframe].itask = itask;
+
+  /* Time stuff */
+  time (&wdb->job[ijob].frame_info[iframe].start_time);
+  wdb->job[ijob].frame_info[iframe].end_time = wdb->job[ijob].frame_info[iframe].start_time
+    + wdb->job[ijob].avg_frame_time;
+
+  /* Exit code */
+  wdb->job[ijob].frame_info[iframe].exitcode = 0;
+
+  detach_frame_shared_memory(wdb->job[ijob].frame_info);
+}
+
+int get_frame_shared_memory (int nframes)
+{
+  int shmid;
+
+  if ((shmid = shmget (IPC_PRIVATE,sizeof(struct frame_info)*nframes, IPC_EXCL|IPC_CREAT|0600)) == -1) {
+    log_master ("ERROR: get_frame_shared_memory: shmget");
+    exit (1);
+  }
+
+  return shmid;
+}
+
+void *attach_frame_shared_memory (int shmid)
+{
+  void *rv;			/* return value */
+
+  if ((rv = shmat (shmid,0,0)) == (void *)-1) {
+    log_master ("ERROR: attach_frame_shared_memory: shmat");
+    exit (1);
+  }
+
+  return rv;
+}
+
+void detach_frame_shared_memory (struct frame_info *fishp)
+{
+  if (shmdt((char*)fishp) == -1) {
+    log_master ("Warning: Call to shmdt failed");
+  }
 }
 
