@@ -1,4 +1,4 @@
-/* $Id: mayasg.c,v 1.4 2001/09/06 10:43:40 jorge Exp $ */
+/* $Id: mayasg.c,v 1.5 2001/09/20 10:52:02 jorge Exp $ */
 
 #include <stdio.h>
 #include <time.h>
@@ -6,6 +6,8 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <string.h>
+#include <unistd.h>
 
 #include "mayasg.h"
 #include "libdrqueue.h"
