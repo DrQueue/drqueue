@@ -310,7 +310,7 @@ int computer_pool_add (struct computer_limits *cl, char *pool)
 		return 0;
 	}
 	
-	if (cl->npools) {
+	if ((cl->npools) && (opool != (void*) -1)) {
 		memcpy (npool,opool,sizeof (struct pool) * cl->npools);
 		computer_pool_detach_shared_memory (opool);
 		if (shmctl (cl->poolshmid,IPC_RMID,NULL) == -1) {
@@ -375,6 +375,7 @@ int computer_pool_free (struct computer_limits *cl)
 			drerrno = DRE_RMSHMEM;
 			return 0;
     }
+		cl->poolshmid = -1;
 	}
 	
 	computer_pool_init (cl);

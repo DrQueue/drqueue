@@ -676,6 +676,8 @@ int send_computer_pools (int sfd, struct computer_limits *cl)
 		computer_pool_detach_shared_memory (pool);
 	}
 
+	computer_pool_list (cl);
+
 	return 1;
 }
 
@@ -691,9 +693,7 @@ int recv_computer_pools (int sfd, struct computer_limits *cl)
 	npools = ntohs (npools);
 	fprintf (stderr,"Recv npools: %u\n",npools);
 
-	// WHY ?
-	// but if I use it the master fails to attach shmem
-	//computer_pool_free (cl);
+	computer_pool_free (cl);
 	for (i=0;i<npools;i++) {
 		if (!dr_read(sfd,&pool,sizeof(pool))) {
 			return 0;
@@ -723,7 +723,9 @@ int recv_computer_limits (int sfd, struct computer_limits *cl)
   cl->autoenable.last = ntohl (cl->autoenable.last);
 
 	// Pools
-	cl->npools = ntohs (cl->npools);
+	cl->npools = 0;
+	cl->poolshmid = -1;
+
 	if (!recv_computer_pools (sfd,cl)) {
 		return 0;
 	}
