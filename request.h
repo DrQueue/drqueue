@@ -1,4 +1,4 @@
-/* $Id: request.h,v 1.11 2001/08/06 12:31:38 jorge Exp $ */
+/* $Id: request.h,v 1.12 2001/08/06 12:40:26 jorge Exp $ */
 /* The request structure is not just used for the requests themselves */
 /* but also for the answers to the requests */
 
@@ -23,7 +23,7 @@
 
 struct request {
   unsigned char type;		/* Kind of request */
-  unsigned char who;		/* who sends this request, a master, a client, a slave... (constants.h) *
+  unsigned char who;		/* who sends this request, a master, a client, a slave... (constants.h) */
   uint16_t data_s;		/* Data number that might be needed for the request */
 };
 
