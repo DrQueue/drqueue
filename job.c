@@ -785,9 +785,12 @@ int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp)
 	if (wdb->computer[icomp].hwinfo.memory < wdb->job[ijob].limits.memory)
 		return 0;
 
+	// Blocked hosts
 	if (wdb->job[ijob].nblocked) {
-		if ((bh = attach_blocked_host_shared_memory (wdb->job[ijob].bhshmid)) == (void *)-1)
+		if ((bh = attach_blocked_host_shared_memory (wdb->job[ijob].bhshmid)) == (void *)-1) {
+			// This should never happen though...
 			return 0;
+		}
 		
 		for (i=0;i<wdb->job[ijob].nblocked;i++) {
 			if (strcmp(wdb->computer[icomp].hwinfo.name,bh[i].name) == 0) {
@@ -799,6 +802,10 @@ int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp)
 			detach_blocked_host_shared_memory (bh);
 		}
 	}
+
+	// Pools
+	if (!computer_pool_exists(&wdb->computer[icomp].limits,wdb->job[ijob].limits.pool))
+		return 0;
 
   return 1;
 }

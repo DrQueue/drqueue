@@ -88,7 +88,8 @@ int main (int argc,char *argv[])
   report_hwinfo (&sdb.comp->hwinfo);
 
   register_slave (sdb.comp);
-	computer_pool_add (&sdb.comp->limits,"Pool 1");
+	// Before sending the limits we have to set the pools
+	computer_pool_set_from_environment (&sdb.comp->limits);
   update_computer_limits(&sdb.comp->limits); /* Does not need to be locked because at this point */
 																/* because there is only one process running. The rest of the time */
 																/* either we call it locked or we make a copy of the limits while locked */

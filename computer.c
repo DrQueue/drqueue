@@ -217,6 +217,29 @@ int computer_free (struct computer *computer)
 	return 1;
 }
 
+void computer_pool_set_from_environment (struct computer_limits *cl)
+{
+	char *buf;
+	char *pool;
+
+	if ((buf = getenv ("DRQUEUE_POOL")) == NULL) {
+		log_slave_computer (L_WARNING,"DRQUEUE_POOL not set, joining \"Default\"");
+		computer_pool_add (cl,DEFAULT_POOL);
+	} else {
+		if ((pool = strtok (buf,": ,=\n")) != NULL) {
+			computer_pool_add (cl,pool);
+			log_slave_computer (L_INFO,"Joining pool: \"%s\"",pool);
+			while ((pool = strtok (NULL,": ,=\n")) != NULL) {
+				computer_pool_add (cl,pool);
+				log_slave_computer (L_INFO,"Joining pool: \"%s\"",pool);
+			}
+		} else {
+			log_slave_computer (L_WARNING,"DRQUEUE_POOL in not properly set, joining \"Default\"");
+			computer_pool_add (cl,DEFAULT_POOL);
+		}
+	}
+}
+
 void computer_pool_init (struct computer_limits *cl)
 {
 	cl->poolshmid = -1;

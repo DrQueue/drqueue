@@ -25,6 +25,9 @@
 #define SHELL_NAME "sh"
 #define SHELL_PATH "/bin/sh"
 
+// Pools
+#define	DEFAULT_POOL "Default"
+
 /* Possible who values */
 #define MASTER 0
 #define SLAVE 10

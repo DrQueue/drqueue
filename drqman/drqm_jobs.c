@@ -850,6 +850,9 @@ static int dnj_submit (struct drqmj_dnji *info)
     return 0;
   if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->limits.ememory)),"%u",&job.limits.memory) != 1)
     return 0;
+	// Pool
+	strncpy(job.limits.pool,gtk_entry_get_text(GTK_ENTRY(info->limits.epool)),MAXNAMELEN-1);
+
 
   /* Limits OS Flags */
   job.limits.os_flags = 0;
@@ -1182,6 +1185,17 @@ static GtkWidget *dnj_limits_widgets (struct drqm_jobs_info *info)
   gtk_tooltips_set_tip (tooltips,entry,"Minimum ammount of memory that this jobs requires."
 												"To cancel this limit use 0.",NULL);
   info->dnj.limits.ememory = entry;
+
+	// Pools
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Render in pool:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  entry = gtk_entry_new ();
+  gtk_entry_set_text (GTK_ENTRY(entry),DEFAULT_POOL);
+  gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
+  gtk_tooltips_set_tip (tooltips,entry,"Computer pool in which the job will be rendered.",NULL);
+  info->dnj.limits.epool = entry;
 
 	// OS Stuff
   frame2 = gtk_frame_new ("Operating Systems");

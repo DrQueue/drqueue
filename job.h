@@ -72,6 +72,7 @@ struct job_limits {
   uint16_t nmaxcpuscomputer;	/* Maximum number of cpus running the job on one single computer */
   uint16_t os_flags;		/* In which OS will it run */
 	uint32_t memory;
+	char pool[MAXNAMELEN];
 };
 
 /* KOJ SECTION */
