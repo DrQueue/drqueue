@@ -1,0 +1,11 @@
+#!/bin/sh
+#
+# $Id: requeue,v 1.1 2002/06/18 12:16:50 jorge Exp $
+#
+
+if [ `uname -s` == "Linux" ]; then
+	$DRQUEUE_ROOT/bin/$0.linux
+else
+	echo "Irix"
+	$DRQUEUE_ROOT/bin/$0.irix
+fi
