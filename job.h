@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.21 2001/09/21 14:40:40 jorge Exp $ */
+/* $Id: job.h,v 1.22 2001/09/24 08:23:23 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -120,6 +120,8 @@ void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe
 void job_stop (struct job *job);
 void job_continue (struct job *job);
 int job_index_correct_master (struct database *wdb,uint32_t ijob);
+
+void job_init_limits (struct job *job);
 
 void job_environment_set (struct job *job, uint32_t iframe);
 
