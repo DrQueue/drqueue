@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.63 2004/02/20 23:24:23 jorge Exp $ */
+/* $Id: slave.c,v 1.64 2004/02/24 10:39:28 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -329,6 +329,7 @@ void set_signal_handlers_task_exec (void)
 
 void slave_listening_process (struct slave_database *sdb)
 {
+	pid_t child_pid;
   int sfd,csfd;
 
   if ((sfd = get_socket(SLAVEPORT)) == -1) {
@@ -338,7 +339,8 @@ void slave_listening_process (struct slave_database *sdb)
   printf ("Waiting for connections...\n");
   while (1) {
     if ((csfd = accept_socket_slave (sfd)) != -1) {
-      if (fork() == 0) {
+			signal(SIGCHLD,SIG_IGN); // FIXME: sigaction
+			if ((child_pid = fork()) == 0) {
 				/* Create a connection handler */
 				set_signal_handlers_child_chandler ();
 				close (sfd);
@@ -346,12 +348,14 @@ void slave_listening_process (struct slave_database *sdb)
 				handle_request_slave (csfd,sdb);
 				close (csfd);
 				exit (0);
-      } else {
-				/* Father */
-				close (csfd);
-				if (csfd > 6)
-					printf ("!! csfd:	 %i\n",csfd);
-      }
+      } else if (child_pid == -1) {
+				log_slave_computer (L_WARNING,"Failed to fork on slave_listening_process");
+			}
+
+			/* Father */
+			close (csfd);
+			if (csfd > 6)
+				printf ("!! csfd:	 %i\n",csfd);
     }
   }
 }
@@ -412,18 +416,21 @@ void launch_task (struct slave_database *sdb)
 			semaphore_lock(sdb->semid);
 			sdb->comp->status.task[sdb->itask].used = 0; /* We don't need the task anymore */
 			semaphore_release(sdb->semid);
-			exit (1);
+			exit (2);
 		}
-		
+
     /* Then we set the process as running */
     semaphore_lock(sdb->semid);
     sdb->comp->status.task[sdb->itask].status = TASKSTATUS_RUNNING;
     sdb->comp->status.task[sdb->itask].pid = task_pid;
     semaphore_release(sdb->semid);
-		
+
     if (waitpid(task_pid,&rc,0) == -1) {
-      /* Some problem exec'ing */
+			/* Some problem exec'ing */
       log_slave_task(&sdb->comp->status.task[sdb->itask],L_ERROR,"Exec'ing cmdline (No child on launcher)");
+			semaphore_lock(sdb->semid);
+			sdb->comp->status.task[sdb->itask].used = 0; /* We don't need the task anymore */
+			semaphore_release(sdb->semid);
     } else {
       /* We have to clean the task and send the info to the master */
       /* consider WIFSIGNALED(status), WTERMSIG(status), WEXITSTATUS(status) */
