@@ -763,7 +763,7 @@ int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp)
 {
   /* This function should return 0 in case the limits are not met for the computer */
 	int i;
-	struct blocked_host *bh;
+	struct blocked_host *bh ;
   
   if (wdb->job[ijob].nprocs >= wdb->job[ijob].limits.nmaxcpus)
     return 0;
@@ -785,18 +785,19 @@ int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp)
 	if (wdb->computer[icomp].hwinfo.memory < wdb->job[ijob].limits.memory)
 		return 0;
 
-	if (wdb->job[ijob].nblocked
-									&& ((bh = attach_blocked_host_shared_memory (wdb->job[ijob].bhshmid)) != (void *)-1))
-	{
+	if (wdb->job[ijob].nblocked) {
+		if ((bh = attach_blocked_host_shared_memory (wdb->job[ijob].bhshmid)) == (void *)-1)
+			return 0;
+		
 		for (i=0;i<wdb->job[ijob].nblocked;i++) {
 			if (strcmp(wdb->computer[icomp].hwinfo.name,bh[i].name) == 0) {
 				return 0;
 			}
 		}
-	}
-
-	if (bh != (void *)-1) {
-		detach_blocked_host_shared_memory (bh);
+		
+		if (bh != (void *)-1) {
+			detach_blocked_host_shared_memory (bh);
+		}
 	}
 
   return 1;

@@ -342,6 +342,9 @@ void clean_out (int signal, siginfo_t *info, void *data)
   for (i=0;i<MAXJOBS;i++) {
     job_delete(&wdb->job[i]);
   }
+	for (i=0;i<MAXCOMPUTERS;i++) {
+		computer_free (&wdb->computer[i]);
+	}
 
   if (semctl (wdb->semid,0,IPC_RMID,NULL) == -1) {
     perror ("wdb->semid");

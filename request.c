@@ -286,7 +286,7 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
   answer.type = R_R_REGISTER;
   answer.data = RERR_NOERROR;
   if (!send_request (sfd,&answer,MASTER)) {
-    wdb->computer[index].used = 0;
+    computer_free(&wdb->computer[index]);
     semaphore_release(wdb->semid);
     log_master (L_ERROR,"Sending request (handle_r_r_register)");
     return -1;
@@ -295,14 +295,14 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
   /* Now send to the computer it's id, it's position on the master */
   answer.data = (uint32_t) index;
   if (!send_request (sfd,&answer,MASTER)) {
-    wdb->computer[index].used = 0;
+    computer_free (&wdb->computer[index]);
     semaphore_release(wdb->semid);
     log_master (L_ERROR,"Sending request (handle_r_r_register)");
     return -1;
   }
   
   if (!recv_computer_hwinfo (sfd, &hwinfo)) {
-    wdb->computer[index].used = 0;
+    computer_free (&wdb->computer[index]);
     semaphore_release(wdb->semid);
     log_master (L_ERROR,"Receiving computer hardware info (handle_r_r_register)");
     return -1;
@@ -2760,7 +2760,7 @@ void handle_r_r_slavexit (int sfd,struct database *wdb,int icomp,struct request 
   }
   if (wdb->computer[icomp2].hwinfo.id == icomp) {
     log_master (L_DEBUG,"Exiting computer: %i", icomp2);
-    wdb->computer[icomp2].used = 0;
+    computer_free (&wdb->computer[icomp2]);
   }
 
   semaphore_release (wdb->semid);
