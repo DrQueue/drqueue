@@ -1,10 +1,11 @@
-/* $Id: master.h,v 1.5 2001/07/30 12:49:10 jorge Exp $ */
+/* $Id: master.h,v 1.6 2001/09/02 14:19:12 jorge Exp $ */
 
 #ifndef _MASTER_H_
 #define _MASTER_H_
 
 #include "database.h"
 
+void master_get_options (int *argc,char ***argv, int *force);
 void usage (void);
 
 int get_shared_memory (int force);
