@@ -713,7 +713,7 @@ int recv_computer_limits (int sfd, struct computer_limits *cl)
 {
   void *buf;
 
-	// Pool before receiving must be freed
+	// Pool must be freed before receiving
 	// computer_pool_free(cl);
 
   buf = cl;

@@ -187,6 +187,8 @@ void drqm_update_computerlist (struct drqm_computers_info *info)
 	      info->computers[i].status.loadavg[2]);
     gtk_clist_append(GTK_CLIST(info->clist),buff);
 		gtk_clist_set_row_data (GTK_CLIST(info->clist),i,(gpointer)info->computers[i].hwinfo.id);
+		
+		// We don't need the pool any more
 		computer_pool_free(&info->computers[i].limits);
 	}
   gtk_clist_thaw(GTK_CLIST(info->clist));
