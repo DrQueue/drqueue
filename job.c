@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.15 2001/08/07 12:59:23 jorge Exp $ */
+/* $Id: job.c,v 1.16 2001/08/22 09:04:32 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -162,10 +162,10 @@ int job_available (struct database *wdb,uint32_t ijob, int *iframe)
 int job_first_frame_available (struct database *wdb,uint32_t ijob)
 {
   /* This function not only returns the first frame */
-  /* This function is called non blocked */
   /* available but also updates the job structure when found */
   /* so the frame status goes to assigned (we still have to */
   /* set the info about the icomp,start,itask */
+  /* This function is called unlocked */
   int i;
   int r = -1;
   int nframes = job_nframes (&wdb->job[ijob]);
@@ -334,23 +334,30 @@ void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe
   fistatus = wdb->job[ijob].frame_info[iframe].status;
   icomp = wdb->job[ijob].frame_info[iframe].icomp;
   itask = wdb->job[ijob].frame_info[iframe].itask;
-    
-  tstatus = wdb->computer[icomp].status.task[itask].status;
-    
+
   if (fistatus == FS_ASSIGNED) {
-    /* check if the task status is running */
-    if ((tstatus != TASKSTATUS_RUNNING) && (tstatus != TASKSTATUS_LOADING))
+    if (wdb->computer[icomp].used == 0) {
       running = 0;
-    /* check if the job is the same in index */
-    if (wdb->computer[icomp].status.task[itask].jobindex != ijob)
+    } else if (wdb->computer[icomp].status.task[itask].used == 0) {
       running = 0;
-    /* check if the job is the same in name */
-    if (strcmp (wdb->computer[icomp].status.task[itask].jobname,wdb->job[ijob].name) != 0)
-      running = 0;
-    if (!running) {
-      log_master_job (&wdb->job[ijob],L_WARNING,"Task registered as running not running. Requeued");
-      wdb->job[ijob].frame_info[iframe].status = FS_WAITING;
+    } else {
+      tstatus = wdb->computer[icomp].status.task[itask].status;
+      
+      /* check if the task status is running */
+      if ((tstatus != TASKSTATUS_RUNNING) && (tstatus != TASKSTATUS_LOADING))
+	running = 0;
+      /* check if the job is the same in index */
+      if (wdb->computer[icomp].status.task[itask].jobindex != ijob)
+	running = 0;
+      /* check if the job is the same in name */
+      if (strcmp (wdb->computer[icomp].status.task[itask].jobname,wdb->job[ijob].name) != 0)
+	running = 0;
     }
+  }
+
+  if (!running) {
+    log_master_job (&wdb->job[ijob],L_WARNING,"Task registered as running not running. Requeued");
+    wdb->job[ijob].frame_info[iframe].status = FS_WAITING;
   }
 
   semaphore_release(wdb->semid);
@@ -400,4 +407,17 @@ void job_continue (struct job *job)
     break;
   case JOBSTATUS_FINISHED:
   }
+}
+
+void job_frame_waiting (struct database *wdb,uint32_t ijob, int iframe)
+{
+  /* This function is called unlocked, it's called by the master */
+  /* This function sets a frame status to FS_WAITING */
+  struct frame_info *fi;
+
+  semaphore_lock(wdb->semid);
+  fi = attach_frame_shared_memory(wdb->job[ijob].fishmid);
+  fi[iframe].status = FS_WAITING;
+  detach_frame_shared_memory(fi);
+  semaphore_release(wdb->semid);
 }
