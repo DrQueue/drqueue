@@ -303,7 +303,7 @@ static void dnj_koj_frame_mentalray_bcreate_pressed (GtkWidget *button, struct d
   mentalraysgi.res_x = mentalraysgi.res_y = -1;
   strncpy (mentalraysgi.format,"",BUFFERLEN-1);
 
-#ifdef CYGWIN
+#ifdef __CYGWIN
   strncpy(mentalraysgi.scene, conv_to_posix_path(mentalraysgi.scene), BUFFERLEN-1);
   strncpy(mentalraysgi.renderdir, conv_to_posix_path(mentalraysgi.renderdir), BUFFERLEN-1);
   strncpy(mentalraysgi.image, conv_to_posix_path(mentalraysgi.image), BUFFERLEN-1);
