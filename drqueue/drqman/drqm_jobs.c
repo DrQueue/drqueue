@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.78 2004/10/06 16:16:57 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.79 2004/10/09 04:42:58 jorge Exp $
  */
 
 #include <string.h>
@@ -2012,31 +2012,28 @@ static GtkWidget *dnj_limits_widgets (struct drqm_jobs_info *info)
   hbox = gtk_hbox_new (TRUE,2);
   gtk_container_add (GTK_CONTAINER(frame2),hbox);
   cbutton = gtk_check_button_new_with_label ("Irix");
+  gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
   info->dnj.limits.cb_irix = cbutton;
   gtk_tooltips_set_tip (tooltips,cbutton,"If set this job will try to be executed on Irix "
 			"computers. If not set it won't.", NULL);
 
-  gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
   cbutton = gtk_check_button_new_with_label ("Linux");
   gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
   info->dnj.limits.cb_linux = cbutton;
   gtk_tooltips_set_tip (tooltips,cbutton,"If set this job will try to be executed on Linux "
 			"computers. If not set it won't.", NULL);
-
-  gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
-  cbutton = gtk_check_button_new_with_label ("OS X");
+  
+	cbutton = gtk_check_button_new_with_label ("OS X");
   gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
   info->dnj.limits.cb_osx = cbutton;
   gtk_tooltips_set_tip (tooltips,cbutton,"If set this job will try to be executed on OS X "
 			"computers. If not set it won't.", NULL);
-
-  gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
+	
   cbutton = gtk_check_button_new_with_label ("FreeBSD");
   gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
   info->dnj.limits.cb_freebsd = cbutton;
   gtk_tooltips_set_tip (tooltips,cbutton,"If set this job will try to be executed on FreeBSD "
 			"computers. If not set it won't.", NULL);
-
 
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.limits.cb_irix),TRUE);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.limits.cb_linux),TRUE);
