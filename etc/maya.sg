@@ -27,8 +27,8 @@ if ($BLOCK > $DRQUEUE_ENDFRAME) then
   set BLOCK = $DRQUEUE_ENDFRAME;
 endif
 
-if ($?IMAGE) then
-  set CIMAGE = "-im $IMAGE"
+if ($?DRQUEUE_IMAGE) then
+  set CIMAGE = "-im $DRQUEUE_IMAGE"
 else
   set CIMAGE = ""
 endif
@@ -57,9 +57,15 @@ else
   set FFORMAT = ""
 endif
 
-echo Render -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT -rd $DRQUEUE_RD $CIMAGE $CAMERA $DRQUEUE_SCENE
+if ($?MENTALRAY) then
+	set MENTALRAY = "-r mr"
+else
+	set MENTALRAY = ""
+endif
 
-Render -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT -rd $DRQUEUE_RD $CIMAGE $CAMERA $DRQUEUE_SCENE
+echo Render -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT -rd $DRQUEUE_RD $MENTALRAY $CIMAGE $CAMERA $DRQUEUE_SCENE
+
+Render -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT -rd $DRQUEUE_RD $MENTALRAY $CIMAGE $CAMERA $DRQUEUE_SCENE
 
 # This should requeue the frame if failed
 if ( $? != 0 ) then
@@ -67,7 +73,7 @@ if ( $? != 0 ) then
   kill -INT $$
 else
   # The frame was rendered properly
-  chown_block $RF_OWNER $RD/$MAGE $DRQUEUE_FRAME $BLOCK 
+  $DRQUEUE_BIN/chown_block $RF_OWNER $DRQUEUE_RD/$DRQUEUE_IMAGE $DRQUEUE_FRAME $BLOCK 
 endif
 
 #

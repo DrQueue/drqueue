@@ -138,11 +138,11 @@ void drqm_request_computerlist (struct drqm_computers_info *info)
 
 		tcomputer = info->computers;
 		for (i=0;i<info->ncomputers;i++) {
-			computer_init(tcomputer);
 			if (!recv_computer (sfd,tcomputer)) {
 				fprintf (stderr,"ERROR: Receiving computer structure (drqm_request_computerlist) [%i]\n",i);
-				exit (1);
+				exit (1);  // FIXME: should free pool shared memory from other received computers
 			}
+			computer_pool_init(&tcomputer->limits);
 			tcomputer++;
 		}
 	}
@@ -152,7 +152,11 @@ void drqm_request_computerlist (struct drqm_computers_info *info)
 
 void drqm_clean_computerlist (struct drqm_computers_info *info)
 {
+	int i;
+
   if (info->computers) {
+		for (i=0;i<info->ncomputers;i++)
+			computer_free(&info->computers[i]);
     free (info->computers);
     info->computers = NULL;
   }
@@ -246,4 +250,14 @@ void drqm_request_job_limits_nmaxcpuscomputer_set (uint32_t jobid, uint16_t nmax
 void drqm_request_job_priority_update (uint32_t jobid, uint32_t priority)
 {
   request_job_priority_update (jobid,priority,CLIENT);
+}
+
+void drqm_request_slave_limits_pool_add (char *slave,char *pool)
+{
+	request_slave_limits_pool_add (slave,pool,CLIENT);
+}
+
+void drqm_request_slave_limits_pool_remove (char *slave,char *pool)
+{
+	request_slave_limits_pool_remove (slave,pool,CLIENT);
 }

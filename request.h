@@ -88,6 +88,7 @@ void handle_r_r_jobblkhost (int sfd,struct database *wdb,int icomp,struct reques
 void handle_r_r_jobdelblkhost (int sfd,struct database *wdb,int icomp,struct request *req);
 void handle_r_r_joblstblkhost (int sfd,struct database *wdb,int icomp,struct request *req);
 void handle_r_r_joblms (int sfd,struct database *wdb,int icomp,struct request *req);
+void handle_r_r_joblps (int sfd,struct database *wdb,int icomp,struct request *req);
 
 /* sent TO MASTER */
 void update_computer_status (struct slave_database *database); /* The slave calls this function to update the */
@@ -116,6 +117,7 @@ int request_job_sesupdate (uint32_t ijob, uint32_t frame_start,uint32_t frame_en
 int request_job_limits_nmaxcpus_set (uint32_t ijob, uint16_t nmaxcpus, int who);
 int request_job_limits_nmaxcpuscomputer_set (uint32_t ijob, uint16_t nmaxcpuscomputer, int who);
 int request_job_limits_memory_set (uint32_t ijob, uint32_t memory, int who);
+int request_job_limits_pool_set (uint32_t ijob, char *pool, int who);
 int request_job_priority_update (uint32_t ijob, uint32_t priority, int who);
 int request_job_frame_reset_requeued (uint32_t ijob, uint32_t frame, int who);
 int request_job_add_blocked_host (uint32_t ijob, uint32_t icomp, int who);
@@ -127,6 +129,8 @@ int request_slave_killtask (char *slave,uint16_t itask,int who);
 int request_slave_limits_nmaxcpus_set (char *slave, uint32_t nmaxcpus, int who);
 int request_slave_limits_maxfreeloadcpu_set (char *slave, uint32_t maxfreeloadcpu, int who);
 int request_slave_limits_autoenable_set (char *slave, uint32_t h, uint32_t m, unsigned char flags, int who);
+int request_slave_limits_pool_add (char *slave, char *pool, int who);
+int request_slave_limits_pool_remove (char *slave, char *pool, int who);
 int request_slave_job_available (char *slave, int who);
 void request_all_slaves_job_available (struct database *wdb);
 
@@ -135,6 +139,8 @@ void handle_rs_r_killtask (int sfd,struct slave_database *sdb,struct request *re
 void handle_rs_r_setnmaxcpus (int sfd,struct slave_database *sdb,struct request *req);
 void handle_rs_r_setmaxfreeloadcpu (int sfd,struct slave_database *sdb,struct request *req);
 void handle_rs_r_setautoenable (int sfd,struct slave_database *sdb,struct request *req);
+void handle_rs_r_limitspooladd (int sfd,struct slave_database *sdb,struct request *req);
+void handle_rs_r_limitspoolremove (int sfd,struct slave_database *sdb,struct request *req);
 
 #ifdef __CPLUSPLUS
 }

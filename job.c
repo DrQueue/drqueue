@@ -136,7 +136,7 @@ void job_delete (struct job *job)
   /* This function is called by the master locked. */
   /* This functions marks for removal the frame info structure of the job */
   /* So the shared memory block is finally removed when no processes are attached to it */
-
+	// Does the same also with the blocked hosts structure
   if (job->fishmid != -1) {
     if (shmctl (job->fishmid,IPC_RMID,NULL) == -1) {
       log_master_job(job,L_ERROR,"job_delete: shmctl (job->fishmid,IPC_RMID,NULL) [Removing frame shared memory]");
@@ -763,7 +763,7 @@ int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp)
 {
   /* This function should return 0 in case the limits are not met for the computer */
 	int i;
-	struct blocked_host *bh;
+	struct blocked_host *bh ;
   
   if (wdb->job[ijob].nprocs >= wdb->job[ijob].limits.nmaxcpus)
     return 0;
@@ -785,15 +785,27 @@ int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp)
 	if (wdb->computer[icomp].hwinfo.memory < wdb->job[ijob].limits.memory)
 		return 0;
 
-	if (wdb->job[ijob].nblocked
-									&& ((bh = attach_blocked_host_shared_memory (wdb->job[ijob].bhshmid)) != (void *)-1))
-	{
+	// Blocked hosts
+	if (wdb->job[ijob].nblocked) {
+		if ((bh = attach_blocked_host_shared_memory (wdb->job[ijob].bhshmid)) == (void *)-1) {
+			// This should never happen though...
+			return 0;
+		}
+		
 		for (i=0;i<wdb->job[ijob].nblocked;i++) {
 			if (strcmp(wdb->computer[icomp].hwinfo.name,bh[i].name) == 0) {
 				return 0;
 			}
 		}
+		
+		if (bh != (void *)-1) {
+			detach_blocked_host_shared_memory (bh);
+		}
 	}
+
+	// Pools
+	if (!computer_pool_exists(&wdb->computer[icomp].limits,wdb->job[ijob].limits.pool))
+		return 0;
 
   return 1;
 }

@@ -16,13 +16,16 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-/* 
- * $Id$
- */
+// 
+// $Id$
+//
+
 #ifndef _DRQM_JOBS_PIXIE_H_
 #define _DRQM_JOBS_PIXIE_H_
 
 #include <gtk/gtk.h>
+
+#define KOJ_PIXIE_DFLT_VIEWCMD "display image.$DRQUEUE_FRAME.jpg"
 
 struct drqmj_koji_pixie {
   GtkWidget *escene;

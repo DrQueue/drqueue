@@ -24,6 +24,8 @@
 
 #include <gtk/gtk.h>
 
+#define KOJ_BLENDER_DFLT_VIEWCMD "display image.$DRQUEUE_FRAME.jpg"
+
 struct drqmj_koji_blender {
   GtkWidget *escene;
   GtkWidget *fsscene;						/* File selector for the scene */
