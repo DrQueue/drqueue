@@ -42,6 +42,7 @@ void show_version (char **argv);
 int rmdir_check_str (char *path);
 int remove_dir (char *dir);
 char *time_str (uint32_t nseconds);
+void set_default_env(void);
 
 int common_date_check (void);
 

@@ -35,6 +35,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <string.h>
 #ifdef __FREEBSD
 # define SIGCLD SIGCHLD
 #endif
@@ -44,6 +45,7 @@
 
 struct database *wdb;						/* whole database */
 int icomp;			/* index to accepted computer, local to every child */
+char conf[PATH_MAX];
 
 #ifdef COMM_REPORT
 time_t tstart;			 /* Time at wich the master has started running */
@@ -64,6 +66,11 @@ int main (int argc, char *argv[])
 #endif
 
   master_get_options (&argc,&argv,&force);
+
+	// Read the config file after reading the arguments, as those may change
+	// the path to the config file
+	master_config_parse(conf);
+	set_default_env();  // Config files overrides environment CHANGE (?)
 
   log_master (L_INFO,"Starting...");
 
@@ -141,7 +148,7 @@ int get_shared_memory (int force)
   char file[BUFFERLEN];
   char *root;
 
-  root = getenv("DRQUEUE_ROOT");
+  root = getenv("DRQUEUE_BIN");
   snprintf (file,BUFFERLEN-1,KEY_MASTER,root);
 
   if ((key = ftok (file,'Z')) == -1) {
@@ -174,7 +181,7 @@ int get_semaphores (int force)
   char file[BUFFERLEN];
   char *root;
 
-  root = getenv("DRQUEUE_ROOT");
+  root = getenv("DRQUEUE_BIN");
   snprintf (file,BUFFERLEN-1,KEY_MASTER,root);
 
   if ((key = ftok (file,'Z')) == -1) {
@@ -434,7 +441,7 @@ void master_get_options (int *argc,char ***argv, int *force)
 {
   int opt;
 
-  while ((opt = getopt (*argc,*argv,"fl:ohv")) != -1) {
+  while ((opt = getopt (*argc,*argv,"c:fl:ohv")) != -1) {
     switch (opt) {
     case 'f':
       *force = 1;
@@ -443,6 +450,9 @@ void master_get_options (int *argc,char ***argv, int *force)
       loglevel = atoi (optarg);
       printf ("Logging level set to: %i\n",loglevel);
       break;
+		case 'c':
+			strncpy(conf,optarg,PATH_MAX-1);
+			break;
     case 'o':
       logonscreen = 1;
       printf ("Logging on screen.\n");
@@ -457,4 +467,58 @@ void master_get_options (int *argc,char ***argv, int *force)
       exit (1);
     }
   }
+}
+
+void master_config_parse (char *cfg)
+{
+	FILE *f_conf;
+	char buffer[BUFFERLEN];
+	char *token;
+	char renv[BUFFERLEN], *penv;
+
+	if ((f_conf = fopen (cfg,"r")) == NULL) {
+		fprintf (stderr,"Could not open config file using defaults\n");
+		return;
+	}
+
+	while ((fgets (buffer,BUFFERLEN-1,f_conf)) != NULL) {
+		if (buffer[0] == '#') {
+			continue;
+		}
+		token = strtok(buffer,"=\n");
+		if (strcmp(token,"logs") == 0) {
+			if ((token = strtok (NULL,"=\n")) != NULL) {
+				fprintf (stderr,"Logs on: '%s'\n",token);
+				snprintf (renv,BUFFERLEN,"DRQUEUE_LOGS=%s",token);
+				if ((penv = (char*) malloc (strlen (renv)+1)) == NULL) {
+					fprintf (stderr,"ERROR allocating memory for DRQUEUE_LOGS.\n");
+					exit (1);
+				}
+				strncpy(penv,renv,strlen(renv)+1);
+				if (putenv (penv) != 0) {
+					fprintf (stderr,"ERROR seting the environment: '%s'\n",penv);
+				}
+			} else {
+				fprintf (stderr,"Warning parsing config file. No value for logs. Using default.\n");
+			}
+		} else if (strcmp(token,"tmp") == 0) {
+			if ((token = strtok (NULL,"=\n")) != NULL) {
+				fprintf (stderr,"Tmp on: '%s'\n",token);
+				snprintf (renv,BUFFERLEN,"DRQUEUE_TMP=%s",token);
+				if ((penv = (char*) malloc (strlen(renv)+1)) == NULL) {
+					fprintf (stderr,"ERROR allocating memory for DRQUEUE_TMP.\n");
+					exit (1);
+				}
+				strncpy(penv,renv,strlen(renv)+1);
+				if (putenv (penv) != 0) {
+					fprintf (stderr,"ERROR seting the environment: '%s'\n",penv);
+				}
+			} else {
+				fprintf (stderr,"Warning parsing config file. No value for tmp. Using default.\n");
+			}
+		} else {
+			fprintf (stderr,"ERROR parsing config file. Unknown token: '%s'\n",token);
+			exit (1);
+		}
+	}
 }

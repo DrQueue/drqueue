@@ -798,12 +798,12 @@ void job_logs_remove (struct job *job)
   char dir[BUFFERLEN];
   char *basedir;
 
-  if ((basedir = getenv("DRQUEUE_ROOT")) == NULL) {
+  if ((basedir = getenv("DRQUEUE_LOGS")) == NULL) {
     /* This should never happen because we check at the begining of every program */
     return;
   }
 
-  snprintf(dir,BUFFERLEN-1,"%s/logs/%s",basedir,job->name);
+  snprintf(dir,BUFFERLEN-1,"%s/%s",basedir,job->name);
 
   remove_dir(dir);
 }

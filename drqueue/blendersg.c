@@ -39,7 +39,7 @@ char *blendersg_create (struct blendersgi *info)
   FILE *etc_blender_sg; 		/* The blender script generator configuration file */
   int fd_etc_blender_sg,fd_f;
   static char filename[BUFFERLEN];
-  char fn_etc_blender_sg[BUFFERLEN]; /* File name pointing to DRQUEUE_ROOT/etc/blender.sg */
+  char fn_etc_blender_sg[BUFFERLEN]; /* File name pointing to DRQUEUE_ETC/blender.sg */
   char buf[BUFFERLEN];
 	int size;
   char *p;			/* Scene filename without path */
@@ -76,7 +76,7 @@ char *blendersg_create (struct blendersgi *info)
   fprintf(f,"#!/bin/tcsh\n\n");
   fprintf(f,"set SCENE=%s\n",info->scene);
 
-  snprintf(fn_etc_blender_sg,BUFFERLEN-1,"%s/etc/blender.sg",getenv("DRQUEUE_ROOT"));
+  snprintf(fn_etc_blender_sg,BUFFERLEN-1,"%s/blender.sg",getenv("DRQUEUE_ETC"));
 
   fflush (f);
 
@@ -107,14 +107,14 @@ char *blendersg_default_script_path (void)
   static char buf[BUFFERLEN];
   char *p;
 
-  if (!(p = getenv("DRQUEUE_ROOT"))) {
-    return ("/drqueue_root/not/set/report/bug/please");
+  if (!(p = getenv("DRQUEUE_TMP"))) {
+    return ("/drqueue_tmp/not/set/report/bug/please/");
   }
-  
-  if (p[strlen(p)-1] == '/')
-    p[strlen(p)-1] = 0;		/* ATENTION this modifies the environment */
 
-  snprintf (buf,BUFFERLEN-1,"%s/tmp/",p);
+  if (p[strlen(p)-1] == '/')
+		snprintf (buf,BUFFERLEN-1,"%s",p);
+	else
+		snprintf (buf,BUFFERLEN-1,"%s/",p);
 
   return buf;
 }
@@ -165,7 +165,7 @@ char *blenderblocksg_create (struct blendersgi *info)
   fprintf(f,"#!/bin/tcsh\n\n");
   fprintf(f,"set SCENE=%s\n",info->scene);
 
-  snprintf(fn_etc_blenderblock_sg,BUFFERLEN-1,"%s/etc/blenderblock.sg",getenv("DRQUEUE_ROOT"));
+  snprintf(fn_etc_blenderblock_sg,BUFFERLEN-1,"%s/blenderblock.sg",getenv("DRQUEUE_ETC"));
 
   fflush (f);
 
