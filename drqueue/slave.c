@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.42 2001/09/08 20:47:15 jorge Exp $ */
+/* $Id: slave.c,v 1.43 2001/09/16 15:38:12 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -350,7 +350,7 @@ void launch_task (struct slave_database *sdb)
 	close (lfd);
       }
 
-      set_environment(sdb);
+      task_environment_set(&sdb->comp->status.task[sdb->itask]);
 
 /*        execve(new_argv[0],(char*const*)new_argv,environ); */
       execve(SHELL_PATH,(char*const*)new_argv,environ);
@@ -401,39 +401,6 @@ void launch_task (struct slave_database *sdb)
   }
 }
 
-void set_environment (struct slave_database *sdb)
-{
-  char msg[BUFFERLEN];
-
-#ifdef __LINUX
-  /* Padded frame number */
-  snprintf (msg,BUFFERLEN,"%04i",sdb->comp->status.task[sdb->itask].frame);
-  if (setenv("PADFRAME",msg,1) == -1) {
-    printf ("ERROR\n");
-    kill(0,SIGINT);
-  }
-  /* Frame number */
-  snprintf (msg,BUFFERLEN,"%i",sdb->comp->status.task[sdb->itask].frame);
-  if (setenv("FRAME",msg,1) == -1) {
-    printf ("ERROR\n");
-    kill(0,SIGINT);
-  }
-  /* OS */
-  if (setenv("DRQUEUE_OS","LINUX",1) == -1) {
-    printf ("ERROR\n");
-    kill(0,SIGINT);
-  }
-#else
-  /* Padded frame number */
-  snprintf (msg,BUFFERLEN,"PADFRAME=%04i",sdb->comp->status.task[sdb->itask].frame);
-  putenv (msg);
-  /* Frame number */
-  snprintf (msg,BUFFERLEN,"FRAME=%i",sdb->comp->status.task[sdb->itask].frame);
-  putenv (msg);
-  /* OS */
-  putenv ("DRQUEUE_OS=IRIX");
-#endif
-}
 
 void zerocmd (char *cmd)
 {
