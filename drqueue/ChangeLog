@@ -1,3 +1,33 @@
+2004-10-25 06:41:20  Rev 914    jorge
+
+	* common.h:
+	  New version number on common.h: 0.52.0rc1
+
+2004-10-25 06:33:10  Rev 913    jorge
+
+	* Makefile:
+	  Irix installation problem
+
+2004-10-25 06:25:07  Rev 912    jorge
+
+	* svn-scripts/svnmerge:
+	  Added svnmerge
+
+2004-10-25 06:24:30  Rev 911    jorge
+
+	* svn-scripts slave.h:
+	  Irix compilation bugfix
+
+2004-10-24 10:36:53  Rev 910    jorge
+
+	* Revision:
+	  New Revision commited by build_package.sh
+
+2004-10-24 10:36:26  Rev 908    jorge
+
+	* ChangeLog:
+	  Changelog commited by build_package.sh
+
 2004-10-24 10:34:47  Rev 907    jorge
 
 	* common.h:
@@ -81,7 +111,8 @@
 2004-10-22 21:47:55  Rev 888    jorge
 
 	* CREDITS:
-	  Added Shaw Parr to the credits.
+	  Added Shawn Parr to the CREDITS file
+
 
 2004-10-22 21:13:33  Rev 887    jorge
 
