@@ -20,6 +20,7 @@
 // $Id: drqm_cygwin.c 1141 2005-01-31 06:14:26Z kraken $
 //
 
+#ifdef __CYGWIN
 
 #include <windows.h>
 #include <commdlg.h>
@@ -79,3 +80,4 @@ char *cygwin_file_dialog(char *fname, char *pat, char *message, char save)
   return (NULL);
 }
 
+#endif // __CYGWIN
