@@ -1,4 +1,4 @@
-/* $Id: database.c,v 1.9 2001/11/08 09:13:58 jorge Exp $ */
+/* $Id: database.c,v 1.10 2001/11/21 16:07:37 jorge Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -60,16 +60,19 @@ int database_load (struct database *wdb)
   read_32b (fd,&hdr.magic);
   if (hdr.magic != DB_MAGIC) {
     drerrno = DRE_DIFFILEFORMAT;
+    close (fd);
     return 0;
   }
   read_32b (fd,&hdr.version);
   if (hdr.version != DB_VERSION) {
     drerrno = DRE_DIFVERSION;
+    close (fd);
     return 0;
   }
   read_16b (fd,&hdr.job_size);
   if (hdr.job_size != MAXJOBS) {
     drerrno = DRE_DIFJOBSIZE;
+    close (fd);
     return 0;
   }
 
@@ -79,16 +82,19 @@ int database_load (struct database *wdb)
       nframes = job_nframes (&wdb->job[c]);
       if ((wdb->job[c].fishmid = get_frame_shared_memory (nframes)) == -1) {
 	drerrno = DRE_GETSHMEM;
+	close (fd);
 	return 0;
       }
       if ((fi = attach_frame_shared_memory(wdb->job[c].fishmid)) == (void *)-1) {
 	drerrno = DRE_ATTACHSHMEM;
+	close (fd);
 	return 0;
       }
       for (d=0;d<nframes;d++) {
 	if (!recv_frame_info (fd,&fi[d])) {
 	  /* FIXME : If there is an error we should FREE the allocated shared memory */
 	  drerrno = DRE_ERRORREADING;
+	  close (fd);
 	  return 0;
 	}
       }
