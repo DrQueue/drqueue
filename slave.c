@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.14 2001/07/06 14:10:47 jorge Exp $ */
+/* $Id: slave.c,v 1.15 2001/07/06 14:17:55 jorge Exp $ */
 
 #include <unistd.h>
 #include <signal.h>
@@ -128,7 +128,6 @@ int get_semaphores_slave (void)
 {
   key_t key;
   int semid;
-  union semun arg;
   struct sembuf op;
 
   if ((key = ftok ("slave",'A')) == -1) {
@@ -141,8 +140,7 @@ int get_semaphores_slave (void)
     kill (0,SIGINT);
   }
 
-  arg.val = 1;
-  if (semctl (semid,0,SETVAL,arg) == -1) {
+  if (semctl (semid,0,SETVAL,1) == -1) {
     perror ("semctl SETVAL -> 1");
     kill (0,SIGINT);
   }
