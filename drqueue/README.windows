@@ -16,7 +16,7 @@ and tcsh (used by drqueue)
 .run again cygwin setup with default settings to be sure verything is installed
 
 .get win32 gtk development environment at 
-http://prdownloads.sourceforge.net/gladewin32/gtk-win32-devel-2.6-rc5.exe?download
+http://prdownloads.sourceforge.net/gladewin32/gtk-win32-devel-2.4-rc26.exe
 Install it in c:\cygwin\usr\local\gtk (uncheck register environment..)
 
 .Add /usr/local/gtk/bin to PATH environment variable in cygwin with command 
