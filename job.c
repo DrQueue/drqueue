@@ -587,7 +587,7 @@ int job_frame_number_correct (struct job *job,uint32_t number)
     return 0;
   if (number < job->frame_start)
     return 0;
-  if (((number - job->frame_start) % job->block_size) != 0)
+  if (((number - job->frame_start) % job->frame_step) != 0)
     return 0;
 
   return 1;

@@ -16,6 +16,7 @@ struct drqmj_sesframes {
   GtkWidget *eframe_start;
   GtkWidget *eframe_end;
   GtkWidget *eframe_step;
+	GtkWidget *eblock_size;
 };
 
 struct drqmj_limits {
