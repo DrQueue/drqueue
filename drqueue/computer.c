@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.17 2001/09/01 16:32:27 jorge Exp $ */
+/* $Id: computer.c,v 1.18 2001/09/01 17:14:59 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -12,6 +12,7 @@
 #include "computer.h"
 #include "database.h"
 #include "logger.h"
+#include "semaphores.h"
 
 int computer_index_addr (void *pwdb,struct in_addr addr)
 {
@@ -44,7 +45,9 @@ int computer_index_addr (void *pwdb,struct in_addr addr)
     }
   }
 
+  semaphore_lock(((struct database *)pwdb)->semid);
   index = computer_index_name (pwdb,name);
+  semaphore_release(((struct database *)pwdb)->semid);
 
   snprintf (msg,BUFFERLEN-1,"Exiting computer_index_addr. Index of computer %s is %i.",name,index);
   log_master (L_DEBUG,msg);
