@@ -97,7 +97,7 @@ int main (int argc,char *argv[])
 void usage (void)
 {
     fprintf (stderr,"Usage: blockhost [-vh] -c <computer_id> -j <job_id>\n"
-										"       blockhost [-vh] -d <computer_id> -j <job_id>\n"
+										"       blockhost [-vh] -d <computer_pos> -j <job_id>\n"
 	     "Valid options:\n"
 	     "\t-a <computer_id> adds computer to the list of blocked hosts\n"
 			 "\t-d <computer_pos> deletes computer on position computer_pos from the list of blocked hosts\n"
