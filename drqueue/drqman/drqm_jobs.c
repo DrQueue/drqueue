@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.51 2001/11/21 10:16:44 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.52 2001/11/22 14:44:28 jorge Exp $
  */
 
 #include <string.h>
@@ -652,6 +652,15 @@ static int dnj_submit (struct drqmj_dnji *info)
   if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->limits.enmaxcpuscomputer)),"%hu",&job.limits.nmaxcpuscomputer) != 1)
     return 0;
 
+  /* Limits OS Flags */
+  job.limits.os_flags = 0;
+  if (GTK_TOGGLE_BUTTON(info->limits.cb_irix)->active) {
+    job.limits.os_flags |= (OSF_IRIX);
+  }
+  if (GTK_TOGGLE_BUTTON(info->limits.cb_linux)->active) {
+    job.limits.os_flags |= (OSF_LINUX);
+  }
+
   /* Flags */
   job.flags = 0;
   if (GTK_TOGGLE_BUTTON(info->flags.cbmailnotify)->active) {
@@ -1126,6 +1135,13 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
   else
     snprintf(msg,BUFFERLEN-1,"%u",info->jobs[info->row].limits.nmaxcpuscomputer);
   gtk_label_set_text(GTK_LABEL(info->jdd.limits.lnmaxcpuscomputer),msg);
+
+  /* Limits OS Flags */
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->jdd.limits.cb_irix),
+				info->jobs[info->row].limits.os_flags & OSF_IRIX);
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->jdd.limits.cb_linux),
+				info->jobs[info->row].limits.os_flags & OSF_LINUX);
+
 
   /* Pixmap stuff */
   if (!w_mask) {
@@ -1773,6 +1789,7 @@ static GtkWidget *dnj_limits_widgets (struct drqm_jobs_info *info)
   GtkWidget *frame;
   GtkWidget *vbox, *hbox;
   GtkWidget *label, *entry;
+  GtkWidget *frame2, *cbutton;
   GtkTooltips *tooltips;
 
   tooltips = TooltipsNew ();
@@ -1805,15 +1822,31 @@ static GtkWidget *dnj_limits_widgets (struct drqm_jobs_info *info)
 			"For the maximum type -1",NULL);
   info->dnj.limits.enmaxcpuscomputer = entry;
 
+  frame2 = gtk_frame_new ("Operating Systems");
+  gtk_box_pack_start (GTK_BOX(vbox),frame2,FALSE,FALSE,2);
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_container_add (GTK_CONTAINER(frame2),hbox);
+  cbutton = gtk_check_button_new_with_label ("Irix");
+  info->dnj.limits.cb_irix = cbutton;
+
+  gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
+  cbutton = gtk_check_button_new_with_label ("Linux");
+  gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
+  info->dnj.limits.cb_linux = cbutton;
+
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.limits.cb_irix),TRUE);
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.limits.cb_linux),TRUE);
+
   return (frame);
 }
 
 static GtkWidget *jdd_limits_widgets (struct drqm_jobs_info *info)
 {
-  GtkWidget *frame;
+  GtkWidget *frame,*frame2;
   GtkWidget *vbox, *hbox, *hbox2;
   GtkWidget *label;
   GtkWidget *button;
+  GtkWidget *cbutton;
 
   frame = gtk_frame_new ("Limits");
   vbox = gtk_vbox_new (FALSE,2);
@@ -1844,6 +1877,20 @@ static GtkWidget *jdd_limits_widgets (struct drqm_jobs_info *info)
   button = gtk_button_new_with_label ("Change");
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
   gtk_signal_connect(GTK_OBJECT(button),"clicked",jdd_limits_nmaxcpuscomputer_bcp,info);
+
+  frame2 = gtk_frame_new ("Operating Systems");
+  gtk_box_pack_start (GTK_BOX(vbox),frame2,FALSE,FALSE,2);
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_container_add (GTK_CONTAINER(frame2),hbox);
+  cbutton = gtk_check_button_new_with_label ("Irix");
+  info->jdd.limits.cb_irix = cbutton;
+  gtk_widget_set_sensitive (GTK_WIDGET(cbutton),FALSE);
+
+  gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
+  cbutton = gtk_check_button_new_with_label ("Linux");
+  gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
+  info->jdd.limits.cb_linux = cbutton;
+  gtk_widget_set_sensitive (GTK_WIDGET(cbutton),FALSE);
 
   return (frame);
 }
