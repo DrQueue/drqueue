@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.6 2001/07/06 13:13:21 jorge Exp $ */
+/* $Id: job.h,v 1.7 2001/07/17 10:19:02 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -57,6 +57,7 @@ struct job {
 struct job;
 struct database;
 
+
 int job_index_free (void *pwdb);
 void job_report (struct job *job);
 char *job_status_string (char status);
@@ -67,6 +68,8 @@ void job_update_assigned (struct database *wdb, int ijob, int iframe, int icomp,
 void job_init_registered (struct database *wdb,int ijob,struct job *job);
 void job_init (struct job *job);
 void job_delete (struct job *job);
+int job_njobs_masterdb (struct database *wdb);
+
 
 int get_frame_shared_memory (int nframes); /* ipc shared memory */
 void *attach_frame_shared_memory (int shmid);
