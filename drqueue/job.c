@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.53 2002/03/01 09:36:50 jorge Exp $ */
+/* $Id: job.c,v 1.54 2002/05/17 16:05:55 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -201,19 +201,23 @@ int job_available (struct database *wdb,uint32_t ijob, int *iframe, uint32_t ico
     return 0;
   }
 
-  if ((*iframe = job_first_frame_available (wdb,ijob)) == -1) { /* This must be the last test because it actually */
-				                                /* reserves one frame (sets it to assigned) */
+  if ((*iframe = job_first_frame_available (wdb,ijob,icomp)) == -1) {
+    /* This must be the last test because it actually */
+    /* reserves one frame (sets it to assigned) */
+    /* Also point to icomp in the frame_info BUT sets itask to -1 */
+    /* until it is later set properly */
     semaphore_release(wdb->semid);
     return 0;
   }
-
+  
   semaphore_release(wdb->semid);
   return 1;
 
 }
 
-int job_first_frame_available (struct database *wdb,uint32_t ijob)
+int job_first_frame_available (struct database *wdb,uint32_t ijob,uint32_t icomp)
 {
+  /* To be called LOCKED */
   /* This function not only returns the first frame */
   /* available but also updates the job structure when found */
   /* so the frame status goes to assigned (we still have to */
@@ -229,7 +233,8 @@ int job_first_frame_available (struct database *wdb,uint32_t ijob)
     if (fi[i].status == FS_WAITING) {
       r = i;			/* return = current */
       fi[i].status = FS_ASSIGNED; /* Change the status to assigned */
-
+      fi[i].icomp = icomp;	/* Assign the computer */
+      fi[i].itask = -1;		/* Doesn't have a task yet */
       /* This is temporary and will be set correctly in job_update_info */
       wdb->job[ijob].nprocs++;	/* Add 1 to the number of running processes */
       break;
@@ -262,7 +267,7 @@ void job_update_assigned (struct database *wdb, uint32_t ijob, int iframe, int i
 
   /* The status should already be FS_ASSIGNED */
   if (wdb->job[ijob].frame_info[iframe].status != FS_ASSIGNED) {
-    log_master (L_ERROR,"(wdb->job[%i].frame_info[%i].status != FS_ASSIGNED)\n",ijob,iframe);
+    log_master (L_ERROR,"(wdb->job[%i].frame_info[%i].status != FS_ASSIGNED)",ijob,iframe);
     wdb->job[ijob].frame_info[iframe].status = FS_ASSIGNED;
   }
 
@@ -330,6 +335,8 @@ void job_update_info (struct database *wdb,uint32_t ijob)
   /* This function is called by the master */
   /* It updates the number of process running */
   /* This function is called unlocked */
+  /* This function set the information about running, waiting processes... */
+  /* Locks, and for every frame in the job checks it's status */
   int i,nprocs=0;
   struct frame_info *fi;
   int fleft=0,fdone=0,ffailed=0;
@@ -339,12 +346,13 @@ void job_update_info (struct database *wdb,uint32_t ijob)
   static int old_nprocs = 0;	/* Same that old_fdone */
 
 
-/*    log_master (L_DEBUG,"Entering job_update_info."); */
+  log_master (L_DEBUG,"Entering job_update_info.");
 
   semaphore_lock(wdb->semid);
 
   if (!job_index_correct_master (wdb,ijob)) {
     /* Somebody could have deleted the job meanwhile */
+    semaphore_release(wdb->semid);
     return;
   }
 
@@ -352,7 +360,9 @@ void job_update_info (struct database *wdb,uint32_t ijob)
 
   fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
   wdb->job[ijob].frame_info = fi;
+/*    log_master (L_DEBUG,"job_update_info: Before checking frame status"); */
   for (i=0;i<total;i++) {
+/*      log_master (L_DEBUG,"job_update_info: Before checking frame %i",i); */
     job_check_frame_status (wdb,ijob,i);
     switch (fi[i].status) {
     case FS_ASSIGNED:
@@ -375,6 +385,7 @@ void job_update_info (struct database *wdb,uint32_t ijob)
 /*      avg_frame_time += SLAVEDELAY - (avg_frame_time % SLAVEDELAY); */
   }
   detach_frame_shared_memory(fi);
+/*    log_master (L_DEBUG,"job_update_info: After checking frame status"); */
 
   wdb->job[ijob].nprocs = nprocs;
   wdb->job[ijob].fleft = fleft;
@@ -396,7 +407,7 @@ void job_update_info (struct database *wdb,uint32_t ijob)
   case JOBSTATUS_WAITING:
   case JOBSTATUS_ACTIVE:
     if (nprocs > 0) {
-      wdb->job[ijob].status = JOBSTATUS_ACTIVE;
+      wdb->job[ijob].status = JOBSTATUS_ACTIVE;	/* Leave it active */
     } else {
       if (fleft == 0) {
 	wdb->job[ijob].status = JOBSTATUS_FINISHED;
@@ -416,11 +427,13 @@ void job_update_info (struct database *wdb,uint32_t ijob)
     }
   }
   semaphore_release(wdb->semid);
+
+  log_master (L_DEBUG,"Exiting job_update_info.");
 }
 
 void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe)
 {
-  /* This function is called by the master, locked */
+  /* This function is called by the master, LOCKED */
   /* This function check if the running or loading (in frame_info at job) process is actually */
   /* runnning or not (in task at computer) */
   /* This function is called with the frame info memory ATTACHED <------- */
@@ -436,39 +449,43 @@ void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe
 
   if (fistatus == FS_ASSIGNED) {
     if (!computer_index_correct_master(wdb,icomp)) {
-      log_master (L_DEBUG,"Index not correct");
+      log_master (L_WARNING,"Index not correct.");
       running = 0;
-    } else if (wdb->computer[icomp].status.task[itask].used == 0) {
-      log_master (L_DEBUG,"Task in the computer is not being used");
-      running = 0;
+    } else if (itask != (uint16_t)-1) {
+      if (wdb->computer[icomp].status.task[itask].used == 0) {
+	/* If it has a task assigned and that's not beign used */
+	log_master (L_WARNING,"Task in the computer is not being used");
+	running = 0;
+      } else {
+	tstatus = wdb->computer[icomp].status.task[itask].status;
+	
+	/* check if the task status is running */
+	if ((tstatus != TASKSTATUS_RUNNING) && (tstatus != TASKSTATUS_LOADING)) {
+	  log_master (L_WARNING,"Task status is not running or loading");
+	  running = 0;
+	}
+	
+	/* check if the job is the same in index */
+	if (wdb->computer[icomp].status.task[itask].ijob != ijob) {
+	  log_master (L_WARNING,"Job indices between task and frame info differ");
+	  running = 0;
+	}
+	/* check if the job is the same in name */
+	if (!job_index_correct_master (wdb,ijob)) {
+	  log_master (L_WARNING,"Job index is not correct");
+	  running = 0;
+	} else if (strcmp (wdb->computer[icomp].status.task[itask].jobname,wdb->job[ijob].name) != 0) {
+	  log_master (L_WARNING,"Job names are different between task and job");
+	  running = 0;
+	}
+      }
     } else {
-      tstatus = wdb->computer[icomp].status.task[itask].status;
-      
-      /* check if the task status is running */
-      if ((tstatus != TASKSTATUS_RUNNING) && (tstatus != TASKSTATUS_LOADING)) {
-	log_master (L_DEBUG,"Task status is not running or loading");
-	running = 0;
-      }
-
-      /* check if the job is the same in index */
-      if (wdb->computer[icomp].status.task[itask].ijob != ijob) {
-	log_master (L_DEBUG,"Job indices between task and frame info differ");
-	running = 0;
-      }
-      /* check if the job is the same in name */
-      if (!job_index_correct_master (wdb,ijob)) {
-	log_master (L_DEBUG,"Job index is not correct");
-	running = 0;
-      } else if (strcmp (wdb->computer[icomp].status.task[itask].jobname,wdb->job[ijob].name) != 0) {
-	log_master (L_DEBUG,"Job names are different between task and job");
-	running = 0;
-      }
+      /* The task is being loaded, so it hasn't yet a itask assigned  */
     }
   }
 
   if (!running) {
-    log_master (L_DEBUG,"Checking iframe %i of ijob %i. icomp: %i itask: %i",
-		iframe,ijob,icomp,itask);
+    log_master (L_DEBUG,"Checking iframe %i of ijob %i. icomp: %i itask: %i", iframe,ijob,icomp,itask);
 
     log_master_job (&wdb->job[ijob],L_WARNING,"Task registered as running not running. Requeued");
     wdb->job[ijob].frame_info[iframe].status = FS_WAITING;

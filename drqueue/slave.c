@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.56 2002/03/01 14:14:15 jorge Exp $ */
+/* $Id: slave.c,v 1.57 2002/05/17 16:05:59 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -27,10 +27,10 @@ int main (int argc,char *argv[])
 
   log_slave_computer (L_INFO,"Starting...");
 
-  if (!common_date_check()) {
-    fprintf (stderr,"Error: license has expired\n");
-    exit (1);
-  }
+/*    if (!common_date_check()) { */
+/*      fprintf (stderr,"Error: license has expired\n"); */
+/*      exit (1); */
+/*    } */
 
   if (!common_environment_check()) {
     fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
