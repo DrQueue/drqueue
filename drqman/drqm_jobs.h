@@ -97,9 +97,10 @@ struct drqmj_jddi {							/* job details dialog info*/
   GtkWidget *clist;							/* frame info clist */
   GtkWidget *menu;							/* Popup menu */
 
-	// 
+	// Blocked hosts
 	GtkWidget *menu_bh;						// Blocked hosts menu
 	GtkWidget *clist_bh;					// Blocked hosts clist
+	GtkWidget *entry_bh;					// Entry to add a blocked host
 
   gint row,column;							/* selected frame */
   int selected;									/* if a frame is selected */
