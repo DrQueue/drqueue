@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.1 2001/05/02 16:12:33 jorge Exp $ */
+/* $Id: master.c,v 1.2 2001/05/07 15:35:04 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -8,56 +8,51 @@
 #include <sys/sem.h>
 #include <signal.h>
 #include <wait.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
 
 #include "master.h"
 #include "database.h"
 #include "logger.h"
-
-#include "computer.h"
-#include "job.h"
+#include "communications.h"
+#include "request.h"
 
 struct database *wdb;		/* whole database */
-int shmid;			/* shared memory id */
-int semid;			/* semaphore id */
 int sfd;			/* socket file descriptor */
+int icomp;			/* index to accepted computer, local to every child */
 
 int main (int argc, char *argv[])
 {
-  struct sembuf op;
+  int csfd;			/* child sfd, the socket once accepted the connection */
+  int shmid;			/* shared memory id */
+
+  log_master ("Starting...");
 
   set_signal_handlers ();
 
   shmid = get_shared_memory ();
-  semid = get_semaphores ();
   wdb = attach_shared_memory (shmid);
+  wdb->shmid = shmid;
+  wdb->semid = get_semaphores ();
 
-  sfd = get_socket();
+  sfd = get_socket(MASTERPORT);
 
   printf ("Pid: %i Gid: %i\n",getpid(),getpgid(0));
   printf ("%i %i\n",sizeof(*wdb),sizeof(struct database));
   printf ("%i %i\n",sizeof(int),sizeof(long int));
   printf ("%i %i\n",sizeof(struct job),sizeof(struct computer));
-  if (fork() == 0) {
-    set_signal_handlers_child ();
-
-    while (1) {
-      printf ("Pid: %i Gid: %i\n",getpid(),getpgid(0));
-      op.sem_num = 0;
-      op.sem_op = -1;
-      op.sem_flg = 0;
-      semop(semid,&op,1);
-      sleep (1);
-      op.sem_num = 0;
-      op.sem_op = 1;
-      op.sem_flg = 0;
-      semop(semid,&op,1);
-    }
-  }
 
   while (1) {
-    sleep (1);
+    printf ("Waiting for connections...\n");
+    if ((csfd = accept_socket (sfd,wdb,&icomp)) != -1) {
+      if (fork() == 0) {
+	strcpy (argv[0],"Connection handler");
+	set_signal_handlers_child ();
+	close (sfd);
+	set_alarm ();
+	handle_request_master (csfd,wdb,icomp);
+	close (csfd);
+	exit (0);
+      }
+    }
   }
 
   exit (0);
@@ -126,17 +121,28 @@ void set_signal_handlers (void)
   sigemptyset (&ignore.sa_mask);
   ignore.sa_flags = 0;
   sigaction (SIGHUP, &ignore, NULL);
+  sigaction (SIGCLD, &ignore, NULL);
 }
 
 
 void set_signal_handlers_child (void)
 {
   struct sigaction action_dfl;
+  struct sigaction action_alarm;
+  struct sigaction action_pipe;
 
   action_dfl.sa_sigaction = (void *)SIG_DFL;
   sigemptyset (&action_dfl.sa_mask);
   action_dfl.sa_flags = SA_SIGINFO;
   sigaction (SIGINT, &action_dfl, NULL);
+  action_alarm.sa_sigaction = sigalarm_handler;
+  sigemptyset (&action_alarm.sa_mask);
+  action_alarm.sa_flags = SA_SIGINFO;
+  sigaction (SIGALRM, &action_alarm, NULL);
+  action_pipe.sa_sigaction = sigpipe_handler;
+  sigemptyset (&action_pipe.sa_mask);
+  action_pipe.sa_flags = SA_SIGINFO;
+  sigaction (SIGPIPE, &action_pipe, NULL);
 }
 
 void clean_out (int signal, siginfo_t *info, void *data)
@@ -145,34 +151,44 @@ void clean_out (int signal, siginfo_t *info, void *data)
   pid_t child_pid;
 
   kill(0,SIGINT);
-  child_pid = wait (&rc);
-  printf ("Child arrived ! %i\n",child_pid); 
+  while ((child_pid = wait (&rc)) != -1) {
+    printf ("Child arrived ! %i\n",child_pid); 
+  }
   log_master ("Cleaning...");
 
-  shmctl (shmid,IPC_RMID,NULL);
-  shmctl (semid,IPC_RMID,NULL);
+  close (sfd);
+  shmctl (wdb->shmid,IPC_RMID,NULL);
+  shmctl (wdb->semid,IPC_RMID,NULL);
 
   exit (1);
 }
 
-int get_socket (void)
+void set_alarm (void)
 {
-  int sfd;
-  struct sockaddr_in addr;
-
-  sfd = socket (PF_INET,SOCK_STREAM,0);
-  if (sfd == -1) {
-    perror ("socket");
-    exit (1);
-  }
-  addr.sin_family = AF_INET;
-  addr.sin_port = htons(MASTERPORT);
-  addr.sin_addr.s_addr = htonl(INADDR_ANY);
-  if (bind (sfd,(struct sockaddr *)&addr,sizeof (addr)) == -1) {
-    perror ("bind");
-    exit (1);
-  }
-  listen (sfd,MAXLISTEN);
-
-  return sfd;
+  alarm (MAXTIMECONNECTION);
 }
+
+void sigalarm_handler (int signal, siginfo_t *info, void *data)
+{
+  if (icomp != -1)
+    log_master_computer (&wdb->computer[icomp],"Connection time exceeded");
+  else
+    log_master ("Connection time exceeded");
+  exit (1);
+}
+
+void sigpipe_handler (int signal, siginfo_t *info, void *data)
+{
+  if (icomp != -1)
+    log_master_computer (&wdb->computer[icomp],"Broken connection while reading or writing");
+  else
+    log_master ("Broken connection while reading or writing");
+  exit (1);
+}
+
+
+
+
+
+
+

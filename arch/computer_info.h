@@ -1,7 +1,9 @@
-/* $Id: computer_info.h,v 1.3 2001/04/26 14:20:55 jorge Exp $ */
+/* $Id: computer_info.h,v 1.4 2001/05/07 15:35:04 jorge Exp $ */
 
 #ifndef _COMPUTER_INFO_H_
 #define _COMPUTER_INFO_H_
+
+#include <stdint.h>
 
 #include "constants.h"
 
@@ -29,12 +31,12 @@ typedef enum {
 
 struct computer_hwinfo {
   char name[MAXNAMELEN];	/* Name of the computer */
-  t_arch arch;			/* type of architecture */
-  t_os os;			/* type of operating system */
-  t_proctype proctype;		/* type of processors */
-  int procspeed;		/* speed of the processors */
-  int numproc;			/* number of processors that the computer has */
-  int speedindex;		/* global speed index for making comparisons between different computers */
+  unsigned char arch;		/* type of architecture */
+  unsigned char os;		/* type of operating system */
+  unsigned char proctype;	/* type of processors */
+  uint32_t procspeed;		/* speed of the processors */
+  uint16_t numproc;		/* number of processors that the computer has */
+  uint32_t speedindex;		/* global speed index for making comparisons between different computers */
 };
 
 void get_hwinfo (struct computer_hwinfo *hwinfo);
