@@ -1,7 +1,8 @@
 TO DO:
 -----
 
-* Checks at the beginning of every program for the directories.
+* Specific email on mail notifications
+* If any directory does not exist at the beginning create them if there is an apropiate flag
 * The slave must check that the requests come from the
   master.
 * job permissions.
