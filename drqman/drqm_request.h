@@ -1,4 +1,4 @@
-/* $Id: drqm_request.h,v 1.18 2002/02/26 15:52:05 jorge Exp $ */
+/* $Id$ */
 
 #ifndef _DRQM_REQUEST_H_
 #define _DRQM_REQUEST_H_
@@ -10,10 +10,10 @@
 /* Jobs related functions */
 void drqm_clean_joblist (struct drqm_jobs_info *info);
 void drqm_request_joblist (struct drqm_jobs_info *info);
-void drqm_request_job_delete (struct drqm_jobs_info *info);
-void drqm_request_job_stop (struct drqm_jobs_info *info);
-void drqm_request_job_hstop (struct drqm_jobs_info *info);
-void drqm_request_job_continue (struct drqm_jobs_info *info);
+void drqm_request_job_delete (uint32_t jobid);
+void drqm_request_job_stop (uint32_t jobid);
+void drqm_request_job_hstop (uint32_t jobid);
+void drqm_request_job_continue (uint32_t jobid);
 void drqm_request_job_frame_waiting (uint32_t jobid,uint32_t frame);
 void drqm_request_job_frame_kill (uint32_t jobid,uint32_t frame);
 void drqm_request_job_frame_finish (uint32_t jobid,uint32_t frame);
