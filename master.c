@@ -58,6 +58,7 @@ int main (int argc, char *argv[])
   pid_t child,child_wait;
 	int n_children = 0;
 	int rc; // Return code
+	int i; // For loops
 
 #ifdef COMM_REPORT
   bsent = brecv = 0;
@@ -91,6 +92,10 @@ int main (int argc, char *argv[])
     fprintf (stderr,"Could not load database: %s. Initializing.\n",drerrno_str());
     database_init(wdb);
   }
+
+	for (i=0;i<MAXCOMPUTERS;i++) {
+		computer_init (&wdb->computer[i]);
+	}
 
   if (fork() == 0) {
     /* Create the consistency checks process */

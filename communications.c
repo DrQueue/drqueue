@@ -664,8 +664,8 @@ int send_computer_pools (int sfd, struct computer_limits *cl)
 	
 	if (cl->npools) {
 		if ((pool = computer_pool_attach_shared_memory(cl->poolshmid)) == (void*)-1) {
-			//perror ("Attaching");
-			//fprintf (stderr,"ERROR ataching memory\n");
+			perror ("Attaching");
+			fprintf (stderr,"ERROR ataching memory\n");
 			return 0;
 		}
 
@@ -678,7 +678,8 @@ int send_computer_pools (int sfd, struct computer_limits *cl)
 		computer_pool_detach_shared_memory (pool);
 	}
 
-	//	computer_pool_list (cl);
+	fprintf (stderr,"communications.c\n");
+	computer_pool_list (cl);
 
 	return 1;
 }
@@ -693,7 +694,7 @@ int recv_computer_pools (int sfd, struct computer_limits *cl)
 		return 0;
 	}
 	npools = ntohs (npools);
-	// fprintf (stderr,"Recv npools: %u\n",npools);
+	fprintf (stderr,"Recv npools: %u\n",npools);
 
 	computer_pool_free (cl);
 	for (i=0;i<npools;i++) {
@@ -711,6 +712,9 @@ int recv_computer_pools (int sfd, struct computer_limits *cl)
 int recv_computer_limits (int sfd, struct computer_limits *cl)
 {
   void *buf;
+
+	// Pool before receiving must be freed
+	computer_pool_free(cl);
 
   buf = cl;
   if (!dr_read (sfd,buf,sizeof(struct computer_limits))) {
