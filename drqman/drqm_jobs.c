@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.25 2001/09/06 10:19:41 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.26 2001/09/06 10:42:40 jorge Exp $
  */
 
 #include <string.h>
@@ -67,7 +67,8 @@ static void msgd_set_scene (GtkWidget *button, struct drqmj_msgdi *info);
 static void msgd_project_search (GtkWidget *button, struct drqmj_msgdi *info);
 static void msgd_set_project (GtkWidget *button, struct drqmj_msgdi *info);
 static void msgd_bcreate_pressed (GtkWidget *button, struct drqm_jobs_info *info);
-char *default_script_path (void);
+static void msgd_script_search (GtkWidget *button, struct drqmj_msgdi *info);
+static void msgd_set_script (GtkWidget *button, struct drqmj_msgdi *info);
 
 void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info)
 {
@@ -1298,15 +1299,21 @@ static GtkWidget *MayaScriptGeneratorDialog (struct drqm_jobs_info *info_dj)
   info_dj->msgd.eimage = entry;
   gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
 
-  /* Script location */
+  /* Script directory */
   hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
-  label = gtk_label_new ("Script location:");
-  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  label = gtk_label_new ("Script directory:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  hbox2 = gtk_hbox_new (FALSE,0);
+  gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
   entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
   info_dj->msgd.escript = entry;
-  gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
-  gtk_entry_set_text (GTK_ENTRY(entry),default_script_path());
+  gtk_entry_set_text (GTK_ENTRY(entry),mayasg_default_script_path());
+  gtk_box_pack_start (GTK_BOX(hbox2),entry,TRUE,TRUE,2);
+  button = gtk_button_new_with_label ("Search");
+  gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
+  gtk_signal_connect (GTK_OBJECT(button),"clicked",msgd_script_search,&info_dj->msgd);
+
 
   /* Buttons */
   /* Create */
@@ -1401,6 +1408,7 @@ static void msgd_bcreate_pressed (GtkWidget *button, struct drqm_jobs_info *info
   strncpy (mayasgi.project,gtk_entry_get_text(GTK_ENTRY(info->msgd.eproject)),BUFFERLEN-1);
   strncpy (mayasgi.scene,gtk_entry_get_text(GTK_ENTRY(info->msgd.escene)),BUFFERLEN-1);
   strncpy (mayasgi.image,gtk_entry_get_text(GTK_ENTRY(info->msgd.eimage)),BUFFERLEN-1);
+  strncpy (mayasgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->msgd.escript)),BUFFERLEN-1);
 
   if ((file = mayasg_create (&mayasgi)) == NULL) {
     fprintf (stderr,"ERROR: %s\n",drerrno_str());
@@ -1410,20 +1418,34 @@ static void msgd_bcreate_pressed (GtkWidget *button, struct drqm_jobs_info *info
   } 
 }
 
-char *default_script_path (void)
+static void msgd_script_search (GtkWidget *button, struct drqmj_msgdi *info)
 {
-  static char buf[BUFFERLEN];
+  GtkWidget *dialog;
+
+  dialog = gtk_file_selection_new ("Please select a script directory");
+  info->fsscript = dialog;
+
+  gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
+		      "clicked", GTK_SIGNAL_FUNC (msgd_set_script), info);
+  gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
+			     "clicked", GTK_SIGNAL_FUNC (gtk_widget_destroy),
+			     (gpointer) dialog);
+  gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->cancel_button),
+			     "clicked", GTK_SIGNAL_FUNC (gtk_widget_destroy),
+			     (gpointer) dialog);
+  gtk_widget_show (dialog);
+  gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
+}
+
+static void msgd_set_script (GtkWidget *button, struct drqmj_msgdi *info)
+{
+  char buf[BUFFERLEN];
   char *p;
-
-  if (!(p = getenv("DRQUEUE_ROOT"))) {
-    return ("/drqueue_root/not/set/");
-  }
   
-  if (p[strlen(p)-1] == '/')
-    p[strlen(p)-1] = 0;		/* ATENTION this modifies the environment */
-
-  snprintf (buf,BUFFERLEN-1,"%s/tmp/",p);
-
-  return buf;
+  strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscript)),BUFFERLEN-1);
+  p = strrchr(buf,'/');
+  if (p)
+    *p = 0;
+  gtk_entry_set_text (GTK_ENTRY(info->escript),buf);
 }
 
