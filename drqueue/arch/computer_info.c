@@ -1,8 +1,9 @@
-/* $Id: computer_info.c,v 1.2 2001/04/25 15:55:23 jorge Exp $ */
+/* $Id: computer_info.c,v 1.3 2001/04/26 14:20:55 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "constants.h"
 #include "arch/computer_info.h"
@@ -16,6 +17,9 @@ void get_hwinfo (struct computer_hwinfo *hwinfo)
   hwinfo->arch = ARCH_INTEL;
   hwinfo->os = OS_LINUX;
   hwinfo->proctype = get_proctype();
+  hwinfo->procspeed = get_procspeed();
+  hwinfo->numproc = get_numproc();
+  hwinfo->speedindex = get_speedindex (hwinfo);
 }
 
 t_proctype get_proctype (void)
@@ -24,7 +28,7 @@ t_proctype get_proctype (void)
   FILE *cpuinfo;
   char buf[BUFFERLEN];
   int found = 0;
-  
+
   if ((cpuinfo = fopen("/proc/cpuinfo","r")) == NULL) {
     perror ("get_proctype: fopen");
     exit (1);
@@ -40,6 +44,7 @@ t_proctype get_proctype (void)
       } else if (strstr(buf,"Pentium ") != NULL) {
 	proctype = PROCTYPE_PENTIUM;
       }
+      found = 1;
     }
   }
 
@@ -48,12 +53,84 @@ t_proctype get_proctype (void)
   return proctype;
 }
 
+int get_procspeed (void)
+{
+  FILE *cpuinfo;
+  int procspeed = 0;
+  char buf[BUFFERLEN];
+  float st;			/* speed temp */
+  int found = 0;
+  int index = 0;
+  
+  if ((cpuinfo = fopen("/proc/cpuinfo","r")) == NULL) {
+    perror ("get_procspeed: fopen");
+    exit (1);
+  }
+
+  while (!(found || feof (cpuinfo))) {
+    fgets (buf,BUFFERLEN-1,cpuinfo);
+    if (strstr(buf,"cpu MHz") != NULL) {
+      while (!isdigit(buf[index]))
+	index++;
+      sscanf (&buf[index],"%f\n",&st);
+      procspeed = (int) st;
+      found = 1;
+    }
+  }
+
+  if (!found) {
+    fprintf (stderr,"ERROR: Proc speed not found on /proc/cpuinfo\n");
+    exit (1);
+  }
+
+  fclose (cpuinfo);
+
+  return procspeed;
+}
+
+int get_numproc (void)
+{
+  FILE *cpuinfo;
+  int numproc = 0;
+  char buf[BUFFERLEN];
+  
+  if ((cpuinfo = fopen("/proc/cpuinfo","r")) == NULL) {
+    perror ("get_numproc: fopen");
+    exit (1);
+  }
+
+  while (!feof (cpuinfo)) {
+    fgets (buf,BUFFERLEN-1,cpuinfo);
+    if (strstr(buf,"processor") != NULL) {
+      numproc++;
+    }
+  }
+
+  fclose (cpuinfo);
+
+  return numproc;
+}
+
+int get_speedindex (struct computer_hwinfo *hwinfo)
+{
+  int speedindex;
+
+  speedindex = (hwinfo->proctype + 1) * hwinfo->procspeed;
+
+  return speedindex;
+}
+
+
 void report_hwinfo (struct computer_hwinfo *hwinfo)
 {
-  printf ("Name:\t\t%s\n",hwinfo->name);
-  printf ("Architecture:\t%s\n",archstring(hwinfo->arch));
-  printf ("OS:\t\t%s\n",osstring(hwinfo->os));
-  printf ("Processor type:\t%s\n",proctypestring(hwinfo->proctype));
+  printf ("HWINFO Report\n");
+  printf ("Name:\t\t\t%s\n",hwinfo->name);
+  printf ("Architecture:\t\t%s\n",archstring(hwinfo->arch));
+  printf ("OS:\t\t\t%s\n",osstring(hwinfo->os));
+  printf ("Processor type:\t\t%s\n",proctypestring(hwinfo->proctype));
+  printf ("Processor speed:\t%i MHz\n",hwinfo->procspeed);
+  printf ("Number of processors:\t%i\n",hwinfo->numproc);
+  printf ("Speed index:\t\t%i\n",hwinfo->speedindex);
 }
 
 char *osstring (t_os os)
