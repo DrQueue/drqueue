@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.28 2001/08/08 10:53:51 jorge Exp $ */
+/* $Id: slave.c,v 1.29 2001/08/22 09:05:20 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -69,7 +69,6 @@ int main (int argc,char *argv[])
     report_computer_status (&sdb.comp->status);
 
     while (computer_available(sdb.comp)) {
-      printf ("Computer available !\n");
       if (request_job_available(&sdb)) {
 	launch_task(&sdb);
       } else {
