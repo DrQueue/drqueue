@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.68 2004/10/06 16:16:57 jorge Exp $ */
+/* $Id$ */
 
 #ifdef __FREEBSD
 # include <sys/types.h>
@@ -705,7 +705,8 @@ int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp)
   if (!(wdb->job[ijob].limits.os_flags & OSF_OSX))
     return 0;
 #elif defined (__FREEBSD)
-	if (!(wdb->job[ijob].limits.os_flags & OSF_FREEBSD)
+	if (!(wdb->job[ijob].limits.os_flags & OSF_FREEBSD))
+		return 0;
 #endif
 
   return 1;
