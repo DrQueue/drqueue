@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.9 2001/07/06 13:13:21 jorge Exp $ */
+/* $Id: request.c,v 1.10 2001/07/13 14:04:21 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -408,7 +408,6 @@ int request_job_available (struct slave_database *sdb)
       log_slave_computer(L_INFO,"No available job");
       close (sfd);
       return 0;
-      break;
     case RERR_NOREGIS:
       log_slave_computer(L_ERROR,"Computer not registered");
       kill (0,SIGINT);
@@ -534,7 +533,7 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
   /* Once we have the task struct we need to update the information */
   /* on the job struct */
   semaphore_lock(wdb->semid);
-  if ((task.jobindex >= 0) && (task.jobindex < ((uint16_t) MAXJOBS))) {
+  if (task.jobindex < MAXJOBS) { /* jobindex is always > 0 */
     fi = attach_frame_shared_memory(wdb->job[task.jobindex].fishmid);
     if ((task.frame >= wdb->job[task.jobindex].frame_start)
 	|| (task.frame <= wdb->job[task.jobindex].frame_end)) {
