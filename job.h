@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.17 2001/09/12 15:05:09 jorge Exp $ */
+/* $Id: job.h,v 1.18 2001/09/13 15:55:39 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -17,13 +17,7 @@
 
 #include "constants.h"
 
-typedef enum {
-  JOBSTATUS_WAITING,		/* Waiting to be dispatched */
-  JOBSTATUS_ACTIVE,		/* Already dispatched */
-  JOBSTATUS_STOPPED,		/* Stopped, waiting for current frames to finish */
-  JOBSTATUS_FINISHED
-} t_jobstatus;
-
+/* FRAME SECTION */
 typedef enum {
   FS_WAITING,			/* Waiting to be assigned */
   FS_ASSIGNED,			/* Currently assigned but not finished (so RUNNING) */
@@ -40,14 +34,44 @@ struct frame_info {
   uint16_t itask;		/* Index to task on computer */
 };
 
+
+/* KOJ SECTION */
+/* this union must have the appropiate information for every kind of job */
+union koj_info {		/* Kind of job information */
+  struct koji_maya {
+    char scene[BUFFERLEN];
+    char project[BUFFERLEN];
+    char image[BUFFERLEN];
+    char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
+  } maya;
+};
+
+/* Koj types */
+#define KOJ_DEFAULT 0		/* Default koj */
+#define KOJ_MAYA    1		/* Maya koj */
+
+/* JOB SECTION */
+typedef enum {
+  JOBSTATUS_WAITING,		/* Waiting to be dispatched */
+  JOBSTATUS_ACTIVE,		/* Already dispatched */
+  JOBSTATUS_STOPPED,		/* Stopped, waiting for current frames to finish */
+  JOBSTATUS_FINISHED
+} t_jobstatus;
+
 struct job {
   char used;
   uint32_t id;			/* Id number for the job */
   uint16_t nprocs;		/* Number of procs currently assigned */
   uint16_t status;		/* Status of the job */
+  uint32_t priority;		/* Priority */
+
   char name[MAXNAMELEN];
   char cmd[MAXCMDLEN];
   char owner[MAXNAMELEN];
+
+  uint16_t koj;			/* Kind of job */
+  union koj_info koji;		/* koj info */
+  
   uint32_t frame_start,frame_end; /* first and last frames */
   uint32_t frame_step;		/* step */
   uint32_t fleft,fdone,ffailed;	/* Frames left,done and failed */
@@ -55,7 +79,6 @@ struct job {
   time_t est_finish_time;	/* Estimated finish time */
   struct frame_info *frame_info; /* Status of every frame */
   int fishmid;			/* Shared memory id for the frame_info structure */
-  uint32_t priority;		/* Priority */
 };
 
 struct database;
