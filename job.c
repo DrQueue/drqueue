@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.17 2001/08/23 13:23:11 jorge Exp $ */
+/* $Id: job.c,v 1.18 2001/08/27 08:15:04 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -296,8 +296,10 @@ void job_update_info (struct database *wdb,uint32_t ijob)
       break;
     }
   }
-  if (fdone)
+  if (fdone) {
     avg_frame_time /= fdone;
+    avg_frame_time += SLAVEDELAY - (avg_frame_time % SLAVEDELAY);
+  }
   detach_frame_shared_memory(fi);
 
   semaphore_lock(wdb->semid);
