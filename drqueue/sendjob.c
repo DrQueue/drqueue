@@ -1,11 +1,20 @@
-/* $Id: sendjob.c,v 1.3 2001/07/04 10:13:59 jorge Exp $ */
+/* $Id: sendjob.c,v 1.4 2001/07/06 13:13:21 jorge Exp $ */
 /* To set up a job from a terminal and send it to the master */
 /* I'd like it to be curses based */
 
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+
+#ifdef __LINUX
 #include <stdint.h>
+#else
+# ifdef __IRIX
+#include <sys/types.h>
+# else
+#  error You need to define the OS, or OS defined not supported
+# endif
+#endif
 
 #include "sendjob.h"
 #include "request.h"

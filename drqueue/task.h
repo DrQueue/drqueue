@@ -1,9 +1,17 @@
-/* $Id: task.h,v 1.8 2001/07/05 15:19:39 jorge Exp $ */
+/* $Id: task.h,v 1.9 2001/07/06 13:13:21 jorge Exp $ */
 
 #ifndef _TASK_H_
 #define _TASK_H_
 
+#ifdef __LINUX
 #include <stdint.h>
+#else
+# ifdef __IRIX
+#include <sys/types.h>
+# else
+#  error You need to define the OS, or OS defined not supported
+# endif
+#endif
 
 #include "constants.h"
 

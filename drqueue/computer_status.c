@@ -1,8 +1,17 @@
-/* $Id: computer_status.c,v 1.4 2001/06/05 12:45:36 jorge Exp $ */
+/* $Id: computer_status.c,v 1.5 2001/07/06 13:13:21 jorge Exp $ */
 
 #include <stdio.h>
 #include <signal.h>
+
+#ifdef __LINUX
 #include <stdint.h>
+#else
+# ifdef __IRIX
+#include <sys/types.h>
+# else
+#  error You need to define the OS, or OS defined not supported
+# endif
+#endif
 
 #include "computer_status.h"
 #include "task.h"
@@ -45,7 +54,6 @@ void check_tasks (struct computer_status *cstatus)
 }
 
 #ifdef __LINUX			/* __LINUX  */
-
 void get_loadavg (uint16_t *loadavg)
 {
   FILE *f_loadavg;
@@ -64,9 +72,21 @@ void get_loadavg (uint16_t *loadavg)
 
   fclose (f_loadavg);
 }
-
 #else
-#error You need to define the OS, or OS defined not supported
+# ifdef __IRIX
+void get_loadavg (uint16_t *loadavg)
+{
+  float a,b,c;
+  
+  a = b = c = 0;
+
+  loadavg[0] = a * 100;
+  loadavg[1] = b * 100;
+  loadavg[2] = c * 100;
+}
+# else
+#  error You need to define the OS, or OS defined not supported
+# endif
 #endif 
 
 void report_computer_status (struct computer_status *status)
