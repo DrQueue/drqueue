@@ -7,6 +7,8 @@ env = Environment (CC = 'gcc',
 print "Platform is: ",sys.platform
 if sys.platform == "linux2":
 	env.Append (CCFLAGS = '-D__LINUX')
+elif sys.platform == "darwin":
+	env.Append (CCFLAGS = '-D__OSX')
 
 env_c = env.Copy ()
 env_cpp = env.Copy ()
@@ -17,7 +19,12 @@ libdrqueue = Split ("""computer_info.c computer_status.c task.c logger.c communi
       mayasg.c blendersg.c bmrtsg.c pixiesg.c""")
 env_c.Library ('libdrqueue.a', libdrqueue)
 
+
 env_c.Program ('master.c', LIBS=['libdrqueue.a'], LIBPATH=['.'])
 env_c.Program ('slave.c', LIBS=['libdrqueue.a'], LIBPATH=['.'])
+env_c.Program ('jobfinfo.c', LIBS=['libdrqueue.a'], LIBPATH=['.'])
+env_c.Program ('requeue.c', LIBS=['libdrqueue.a'], LIBPATH=['.'])
+env_c.Program ('cjob.c', LIBS=['libdrqueue.a'], LIBPATH=['.'])
+env_c.Program ('blockhost.c', LIBS=['libdrqueue.a'], LIBPATH=['.'])
 
 env_cpp.Program ('sendjob.cpp', LIBS=['libdrqueue.a'], LIBPATH=['.'])
