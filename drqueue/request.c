@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.58 2001/10/08 12:32:55 jorge Exp $ */
+/* $Id: request.c,v 1.59 2001/10/08 12:43:07 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -227,8 +227,6 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
 
   semaphore_release(wdb->semid);
 
-  report_hwinfo(&wdb->computer[index].hwinfo);
-  
   snprintf(msg,BUFFERLEN-1,"Exiting handle_r_r_register. Computer %s registered with id %i.",
 	   wdb->computer[index].hwinfo.name,index);
   log_master (L_DEBUG,msg);
@@ -2226,8 +2224,6 @@ void handle_r_r_jobsesup (int sfd,struct database *wdb,int icomp,struct request 
   
   ofishmid = wdb->job[ijob].fishmid;
   wdb->job[ijob].fishmid = nfishmid;
-
-  printf ("Nes fishmid: %i\n",wdb->job[ijob].fishmid);
 
   detach_frame_shared_memory(nfi);
 
