@@ -1,7 +1,17 @@
-/* $Id: database.c,v 1.6 2001/10/31 15:58:37 jorge Exp $ */
+/* $Id: database.c,v 1.7 2001/11/02 10:52:58 jorge Exp $ */
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <errno.h>
 
 #include "database.h"
 #include "computer.h"
+#include "communications.h"
+#include "drerrno.h"
+#include "logger.h"
 
 void database_init (struct database *wdb)
 {
@@ -34,7 +44,7 @@ int database_save (struct database *wdb)
   char *basedir;
   char dir[BUFFERLEN];
   char filename[BUFFERLEN];
-
+  int fd;
 
   if ((basedir = getenv("DRQUEUE_ROOT")) == NULL) {
     /* This should never happen because we check it at the beginning of the program */
@@ -70,5 +80,9 @@ int database_save (struct database *wdb)
   hdr.job_size = MAXJOBS;
   hdr.computer_size = MAXCOMPUTERS;
 
+  write_32b (fd,&hdr.magic);
+  write_32b (fd,&hdr.version);
+  write_16b (fd,&hdr.job_size);
+  write_16b (fd,&hdr.computer_size);
   
 }
