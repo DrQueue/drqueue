@@ -30,7 +30,7 @@
 
 ; Welcome page
 !define MUI_WELCOMEPAGE_TITLE "Welcome to drqueue installation"
-!define MUI_WELCOMEPAGE_TEXT "Drqueue uses GTK+2, please download and install it from this website before you use drqueue : \r\nhttp://gimp-win.sourceforge.net/stable.html\r\n\r\nYou also need DOTNET runtime, please download and install it from this website : \r\nhttp://www.microsoft.com/downloads/details.aspx?FamilyID\r\n=262d25e3-f589-4842-8157-034d1e7cf3a3&displaylang=en\r\n"
+!define MUI_WELCOMEPAGE_TEXT "Drqueue uses GTK+2, please download and install it from this website before you use drqueue : \r\nhttp://prdownloads.sourceforge.net/gladewin32/gtk-win32-2.4.14-rc3.exe\r\n\r\nYou also need DOTNET runtime, please download and install it from this website : \r\nhttp://www.microsoft.com/downloads/details.aspx?FamilyID\r\n=262d25e3-f589-4842-8157-034d1e7cf3a3&displaylang=en\r\n"
 !insertmacro MUI_PAGE_WELCOME
 ; License page
 !insertmacro MUI_PAGE_LICENSE "..\..\..\COPYING"
