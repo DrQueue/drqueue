@@ -120,6 +120,12 @@ union koj_info {		/* Kind of job information */
     char scene[BUFFERLEN];
     char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
 	} threedelight;
+  struct koji_lightwave {
+    char scene[BUFFERLEN];
+    char renderdir[BUFFERLEN];	/* Project directory for the images */
+    char image[BUFFERLEN];
+    char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
+  } lightwave;
 };
 
 /* Koj types */
@@ -130,6 +136,7 @@ union koj_info {		/* Kind of job information */
 #define KOJ_3DELIGHT    4	/* 3delight koj */
 #define KOJ_PIXIE       5	/* Pixie koj */
 #define KOJ_MENTALRAY   6	/* Mental Ray koj */
+#define KOJ_LIGHTWAVE	7
 
 /* JOB SECTION */
 typedef enum {

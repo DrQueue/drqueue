@@ -44,6 +44,7 @@ extern "C" {
 #include "bmrtsg.h"
 #include "pixiesg.h"
 #include "3delightsg.h"
+#include "lightwavesg.h"
 
 int phantom[2];									/* FIXME: This should be local to the slave */
 
