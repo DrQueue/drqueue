@@ -1,3 +1,68 @@
+2004-10-12 08:48:04  Rev 736    jorge
+
+	* common.h:
+	  New version number on common.h: 0.50rc6
+
+2004-10-12 01:11:51  Rev 735    jorge
+
+	* tag_edit:
+	  tag_edit removed, as it was a tool for cvs
+
+2004-10-12 00:56:13  Rev 734    jorge
+
+	* svn-scripts/build_release.sh:
+	  Added $, and set the keywords
+
+2004-10-11 23:28:09  Rev 733    jorge
+
+	* svn-scripts/build_release.sh:
+	  Minor code cleanup
+
+2004-10-11 23:06:16  Rev 732    jorge
+
+	* TODO:
+	  Updated TODO. Consistency checks on slave, done.
+
+2004-10-11 23:05:20  Rev 731    jorge
+
+	* slave.c slave.h:
+	  Added consistency check on slave that creates a new process, just in case things get weird. Like in v0.49 were one slave hanged out as running when it actually wasn't.
+
+2004-10-11 21:58:10  Rev 730    jorge
+
+	* TODO:
+	  Updated TODO
+
+2004-10-11 15:57:18  Rev 729    jorge
+
+	* drqman/drqm_jobs.c:
+	  Several minor bug fixes in the job\'s page
+
+2004-10-11 15:13:36  Rev 728    jorge
+
+	* Makefile:
+	  Added CPPFLAGS for sendjob
+
+2004-10-11 15:09:13  Rev 727    jorge
+
+	* sendjob.cpp:
+	  Solved compilation bug on FreeBSD and MacOS X
+
+2004-10-11 14:11:18  Rev 726    jorge
+
+	* Revision:
+	  Previous tag stored on Revision
+
+2004-10-11 14:10:47  Rev 725    jorge
+
+	* svn-scripts/build_release.sh:
+	  build_package.sh now also commits the Revision just after the update
+
+2004-10-11 14:04:08  Rev 723    jorge
+
+	* ChangeLog:
+	  Changelog commited by build_package.sh
+
 2004-10-11 14:03:50  Rev 722    jorge
 
 	* common.h:
