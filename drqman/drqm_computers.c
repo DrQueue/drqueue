@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_computers.c,v 1.21 2002/02/21 15:50:02 jorge Exp $
+ * $Id: drqm_computers.c,v 1.22 2002/02/21 15:56:24 jorge Exp $
  */
 
 #include <stdlib.h>
@@ -335,6 +335,7 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
   gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
   gtk_widget_show (hbox2);
   label = gtk_label_new ("21:00");
+  info->cdd.limits.lautoenabletime = label;
   gtk_box_pack_start (GTK_BOX(hbox2),label,TRUE,TRUE,2);
   button = gtk_button_new_with_label ("Change");
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
@@ -441,6 +442,10 @@ int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
   snprintf(msg,BUFFERLEN-1,"%i",
 	   info->computers[info->row].limits.maxfreeloadcpu);
   gtk_label_set_text (GTK_LABEL(info->cdd.limits.lmaxfreeloadcpu),msg);
+  snprintf(msg,BUFFERLEN-1,"%i:%02i",
+	   info->computers[info->row].limits.autoenable.h,
+	   info->computers[info->row].limits.autoenable.m);
+  gtk_label_set_text (GTK_LABEL(info->cdd.limits.lautoenabletime),msg);
 
   /* Tasks clist */
   buff = (char**) g_malloc((ncols + 1) * sizeof(char*));
