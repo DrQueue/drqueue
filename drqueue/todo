@@ -1,4 +1,15 @@
+TO DO:
+-----
 
 * Frame_info memory allocation and deallocation
 * file locking on logging functions
 * limit structures for jobs and computers
+* Negative and backwards frame numbers
+
+BUGS:
+----
+
+* If there is no task space available on a computer the frame is still assigned.
+  This happens ONLY if there are more processors than MAXTASKS, so the computer
+  is still available even with all the tasks filled.
+

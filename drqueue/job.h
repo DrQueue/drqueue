@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.4 2001/06/05 12:19:45 jorge Exp $ */
+/* $Id: job.h,v 1.5 2001/07/04 10:13:59 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -38,7 +38,7 @@ struct job {
   char name[MAXNAMELEN];
   char cmd[MAXCMDLEN];
   char owner[MAXNAMELEN];
-  uint32_t frame_start,frame_end;
+  uint32_t frame_start,frame_end; /* first and last frames */
   time_t avg_frame_time;	/* Average frame time */
   time_t est_finish_time;	/* Estimated finish time */
   struct frame_info *frame_info; /* Status of every frame */

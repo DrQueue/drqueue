@@ -1,4 +1,4 @@
-/* $Id: request_codes.h,v 1.3 2001/05/28 14:21:31 jorge Exp $ */
+/* $Id: request_codes.h,v 1.4 2001/07/04 10:13:59 jorge Exp $ */
 
 #ifndef _REQUEST_CODES_H_
 #define _REQUEST_CODES_H_
@@ -11,5 +11,7 @@
 #define R_A_REGISJOB 6		/* Answer to register new job */
 #define R_R_AVAILJOB 7		/* Request available job */
 #define R_A_AVAILJOB 8		/* Answer to previous */
+#define R_R_TASKFINI 9		/* Request task finished, the slave send this when finishes a task */
+#define R_A_TASKFINI 10		/* Answer to the previous */
 
 #endif /* _REQUEST_CODES_H_ */

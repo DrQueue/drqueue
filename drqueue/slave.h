@@ -1,4 +1,4 @@
-/* $Id: slave.h,v 1.5 2001/05/30 15:11:47 jorge Exp $ */
+/* $Id: slave.h,v 1.6 2001/07/04 10:13:59 jorge Exp $ */
 
 #ifndef _SLAVE_H_
 #define _SLAVE_H_
@@ -23,6 +23,7 @@ struct slave_database {
 void set_signal_handlers (void);
 void set_signal_handlers_child_listening (void); /* For the accepting process */
 void set_signal_handlers_child_chandler (void);	/* Once accepted the connection */
+void set_signal_handlers_child_launcher (void); /* For the child that execs the command and keeps waiting */
 
 void clean_out (int signal, siginfo_t *info, void *data);
 void sigalarm_handler (int signal, siginfo_t *info, void *data);
@@ -30,6 +31,7 @@ void sigpipe_handler (int signal, siginfo_t *info, void *data);
 
 void slave_listening_process (struct slave_database *sdb);
 void launch_task (struct slave_database *sdb);
+void set_environment (struct slave_database *sdb);
 
 int get_shared_memory_slave (void);
 int get_semaphores_slave (void);

@@ -1,4 +1,4 @@
-/* $Id: task.h,v 1.6 2001/06/05 12:45:36 jorge Exp $ */
+/* $Id: task.h,v 1.7 2001/07/04 10:13:59 jorge Exp $ */
 
 #ifndef _TASK_H_
 #define _TASK_H_
@@ -22,6 +22,7 @@ struct task {
   char owner[MAXNAMELEN];	/* owner of the job */
   uint32_t frame;		/* current frame */
   int32_t pid;			/* pid */
+  int32_t exitstatus;		/* exit status, the library says only "int" so I'll need to check this for Irix */
   uint8_t status;		/* status */
 };
 

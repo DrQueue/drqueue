@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.3 2001/06/05 12:19:45 jorge Exp $ */
+/* $Id: computer.c,v 1.4 2001/07/04 10:13:59 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -71,7 +71,7 @@ int computer_index_free (void *pwdb)
 int computer_available (struct computer *computer)
 {
   /* Returns 1 or 0 if the computer is or not available for rendering */
-  if (computer->status.numtasks >= computer->hwinfo.numproc) {
+  if (computer->status.numtasks >= (computer->hwinfo.numproc*1000)) {
     /* If we already have all the processors running... */
     return 0;
   }
@@ -97,6 +97,7 @@ void computer_update_assigned (struct database *wdb,int ijob,int iframe,int icom
   strncpy(task->owner,job->owner,MAXNAMELEN-1);
   task->frame = iframe;
   task->pid = 0;
+  task->exitstatus = 0;
 }
 
 void computer_init (struct computer *computer)

@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.5 2001/06/05 12:19:45 jorge Exp $ */
+/* $Id: communications.c,v 1.6 2001/07/04 10:13:59 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -446,7 +446,7 @@ void recv_task (int sfd, struct task *task,int who)
   task->jobindex = ntohs (task->jobindex);
   task->frame = ntohl (task->frame);
   task->pid = ntohl (task->pid);
-
+  task->exitstatus = ntohl (task->exitstatus);
 }
 
 void send_task (int sfd, struct task *task,int who)
@@ -462,6 +462,7 @@ void send_task (int sfd, struct task *task,int who)
   bswapped.jobindex = htons (bswapped.jobindex);
   bswapped.frame = htonl (bswapped.frame);
   bswapped.pid = htonl (bswapped.pid);
+  bswapped.exitstatus = htonl (bswapped.exitstatus);
 
   bleft = sizeof (bswapped);
   while ((w = write(sfd,buf,bleft)) < bleft) {
