@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.42 2001/10/22 14:12:26 jorge Exp $ */
+/* $Id: job.c,v 1.43 2001/10/24 14:52:00 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -339,7 +339,7 @@ void job_update_info (struct database *wdb,uint32_t ijob)
   static int old_nprocs = 0;	/* Same that old_fdone */
 
 
-  log_master (L_DEBUG,"Entering job_update_info.");
+/*    log_master (L_DEBUG,"Entering job_update_info."); */
 
   semaphore_lock(wdb->semid);
 
@@ -653,4 +653,20 @@ void job_frame_info_init (struct frame_info *fi)
   fi->start_time = fi->end_time = 0;
   fi->exitcode = 0;
   fi->icomp = fi->itask = 0;
+}
+
+void job_logs_remove (struct job *job)
+{
+  char filename[BUFFERLEN];
+  char dir[BUFFERLEN];
+  char *basedir;
+
+  if ((basedir = getenv("DRQUEUE_ROOT")) == NULL) {
+    /* This should never happen because we check at the begining of every program */
+    return;
+  }
+
+  snprintf(dir,BUFFERLEN-1,"%s/logs/%s",basedir,task->jobname);
+
+  remove_dir(dir);
 }
