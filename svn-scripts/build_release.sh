@@ -46,7 +46,7 @@ fi
 read -p "Do you want to create recreate the ChangeLog ? (y/n) " CHLG
 if [ "$CHLG" != "n" ]; then
 	echo "Creating ChangeLog"
-	svn log -v | svn2cl.pl > ChangeLog # Dump log to ChangeLog
+	svn log -v | ./svn-scripts/svn2cl.pl > ChangeLog # Dump log to ChangeLog
 	echo "Created !"
 	echo "Commiting ChangeLog"
 	svn ci -m "Changelog commited by build_package.sh" ChangeLog
@@ -82,5 +82,5 @@ if [ "$CHLG" = "y" ]; then
 	OLDREV=`svn log --stop-on-copy http://www.drqueue.org/svn/tags/$OLDTAG | awk '/^r[0-9]+/ { sub (/r/,"",$1); print $1; }'`
 	echo "Old Revision number: $OLDREV"
 	echo "Creating ChangeLog.$VERSION"
-	(svn log -v -r HEAD:$OLDREV | svn2cl.pl > ../ChangeLog.$VERSION )
+	(svn log -v -r HEAD:$OLDREV | ./svn-scripts/svn2cl.pl > ../ChangeLog.$VERSION )
 fi
