@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.13 2001/08/02 10:19:33 jorge Exp $ */
+/* $Id: job.c,v 1.14 2001/08/06 12:39:23 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -92,11 +92,12 @@ void job_init (struct job *job)
 
 void job_delete (struct job *job)
 {
+  /* This function is called by the master locked */
   job->used = 0;
 
   if (job->fishmid != -1) {
     if (shmctl (job->fishmid,IPC_RMID,NULL) == -1) {
-      log_master_job(job,L_ERROR,"shmctl (job->fishmid,IPC_RMID,NULL)");
+      log_master_job(job,L_ERROR,"job_delete: shmctl (job->fishmid,IPC_RMID,NULL)");
     }
     job->fishmid = -1;
   }
