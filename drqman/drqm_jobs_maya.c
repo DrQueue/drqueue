@@ -24,6 +24,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <pwd.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 
 #include "drqm_jobs.h"
@@ -251,14 +252,17 @@ static void dnj_koj_frame_maya_renderdir_search (GtkWidget *button, struct drqmj
 
 static void dnj_koj_frame_maya_renderdir_set (GtkWidget *button, struct drqmj_koji_maya *info)
 {
+  struct stat s;
   char buf[BUFFERLEN];
   char *p;
   
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsrenderdir)),BUFFERLEN-1);
-  p = strrchr(buf,'/');
-
-  if (p)
-    *p = 0;
+  stat(buf, &s);
+  if (!S_ISDIR(s.st_mode)) {
+    p = strrchr(buf,'/');
+    if (p)
+      *p = 0;
+  }
   gtk_entry_set_text (GTK_ENTRY(info->erenderdir),buf);
 }
 
