@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.32 2001/11/08 09:14:02 jorge Exp $ */
+/* $Id: master.c,v 1.33 2001/11/16 15:51:35 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -74,7 +74,7 @@ int main (int argc, char *argv[])
 
   printf ("Waiting for connections...\n");
   while (1) {
-    if ((csfd = accept_socket (sfd,wdb,&icomp,&addr)) != -1) {
+    if ((csfd = accept_socket (sfd,wdb,&addr)) != -1) {
       if ((child = fork()) == 0) {
 #ifdef COMM_REPORT
 	long int bsentb = bsent; /* Bytes sent before */
@@ -85,6 +85,7 @@ int main (int argc, char *argv[])
 	set_signal_handlers_child_conn_handler ();
 	close (sfd);
 	set_alarm ();
+	icomp = computer_index_addr (wdb,addr.sin_addr);
 	handle_request_master (csfd,wdb,icomp,&addr);
 	close (csfd);
 #ifdef COMM_REPORT
