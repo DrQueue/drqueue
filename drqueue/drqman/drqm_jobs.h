@@ -80,6 +80,7 @@ struct drqmj_jddi {							/* job details dialog info*/
   struct job job;								/* The struct of the selected job */
   struct drqmj_limits limits;		/* Limits info */
   struct drqmj_sesframes sesframes;	/* Info about start, end, step frames */
+	struct drqm_jobs_info *oldinfo; // Pointer to the previous info, so we can update the joblist
 };
 
 struct drqm_jobs_info {
