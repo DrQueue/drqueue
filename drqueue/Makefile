@@ -57,8 +57,8 @@ else
      CPPFLAGS = -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__CYGWIN -g -O2
 	   MAKE = make
 	   UIFLAGS += -e _mainCRTStartup -mwindows contrib/windows/Resources/drqueue.res 
- 	  else
- $(error Cannot make DrQueue -- systype "$(systype)" is unknown)
+		else	
+			$(error Cannot make DrQueue -- systype "$(systype)" is unknown)
 	  endif
 	 endif
 	endif
@@ -176,6 +176,7 @@ ifeq ($(systype),IRIX)
 	install -root $(PWD) -m 0755 -f /bin -src master master.$(systype)
 	install -root $(PWD) -m 0755 -f /bin -src requeue requeue.$(systype)
 	install -root $(PWD) -m 0755 -f /bin -src jobfinfo jobfinfo.$(systype)
+	install -root $(PWD) -m 0755 -f /bin -src jobinfo jobinfo.$(systype)
 	install -root $(PWD) -m 0755 -f /bin -src blockhost blockhost.$(systype)
 	install -root $(PWD) -m 0755 -f /bin -src cjob cjob.$(systype)
 	install -root $(PWD) -m 0755 -f /bin -src sendjob sendjob.$(systype)
@@ -187,6 +188,7 @@ else
 	install -m 0755 -p ./master.exe bin/master.exe
 	install -m 0755 -p ./requeue.exe bin/requeue.exe
 	install -m 0755 -p ./jobfinfo.exe bin/jobfinfo.exe
+	install -m 0755 -p ./jobinfo.exe bin/jobfinfo.exe
 	install -m 0755 -p ./blockhost.exe bin/blockhost.exe
 	install -m 0755 -p ./cjob.exe bin/cjob.exe
 	install -m 0755 -p ./sendjob.exe bin/sendjob.exe
@@ -197,6 +199,7 @@ else
 	install -m 0755 -p ./master bin/master.$(systype)
 	install -m 0755 -p ./requeue bin/requeue.$(systype)
 	install -m 0755 -p ./jobfinfo bin/jobfinfo.$(systype)
+	install -m 0755 -p ./jobinfo bin/jobinfo.$(systype)
 	install -m 0755 -p ./blockhost bin/blockhost.$(systype)
 	install -m 0755 -p ./cjob bin/cjob.$(systype)
 	install -m 0755 -p ./sendjob bin/sendjob.$(systype)
@@ -211,7 +214,7 @@ tags:
 	etags *.[ch] drqman/*.[ch]
 
 clean:
-	rm -fR *.o *~ libdrqueue.a slave master sendjob requeue jobfinfo cjob TAGS tmp/* logs/* db/* contrib/windows/*.exe bin/*.$(systype)
+	rm -fR *.o *~ libdrqueue.a slave master sendjob requeue jobfinfo jobinfo cjob TAGS tmp/* logs/* db/* contrib/windows/*.exe bin/*.$(systype)
 	rm -fR blockhost
 	$(MAKE) -C drqman clean
 
