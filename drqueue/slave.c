@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.10 2001/07/05 10:53:24 jorge Exp $ */
+/* $Id: slave.c,v 1.11 2001/07/05 15:19:39 jorge Exp $ */
 
 #include <unistd.h>
 #include <signal.h>
@@ -293,10 +293,10 @@ void set_environment (struct slave_database *sdb)
   char msg[BUFFERLEN];
 
   snprintf (msg,BUFFERLEN,"%04i",sdb->comp->status.task[sdb->itask].frame);
-  if (setenv("FRAME",msg,1) == -1)
+  if (setenv("FRAME",msg,1) == -1) {
     printf ("ERROR\n");
-
-  printf ("Environment: %s\n",getenv("FRAME"));
+    kill(0,SIGINT);
+  }
 }
 
 
