@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.19 2001/08/27 08:13:47 jorge Exp $ */
+/* $Id: communications.c,v 1.20 2001/08/27 15:22:58 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -380,6 +380,8 @@ void recv_job (int sfd, struct job *job,int who)
   job->status = ntohs (job->status);
   job->frame_start = ntohl (job->frame_start);
   job->frame_end = ntohl (job->frame_end);
+  job->frame_step = ntohl (job->frame_step);
+  job->frame_step = (job->frame_step == 0) ? 1 : job->frame_step; /* No 0 on step !! */
   job->avg_frame_time = ntohl (job->avg_frame_time);
   job->est_finish_time = ntohl (job->est_finish_time);
 
@@ -405,6 +407,7 @@ void send_job (int sfd, struct job *job,int who)
   bswapped.status = htons (bswapped.status);
   bswapped.frame_start = htonl (bswapped.frame_start);
   bswapped.frame_end = htonl (bswapped.frame_end);
+  bswapped.frame_step = htonl (bswapped.frame_step);
   bswapped.avg_frame_time = htonl (bswapped.avg_frame_time);
   bswapped.est_finish_time = htonl (bswapped.est_finish_time);
 
