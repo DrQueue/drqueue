@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_computers.c,v 1.8 2001/08/29 15:26:32 jorge Exp $
+ * $Id: drqm_computers.c,v 1.9 2001/08/30 13:17:27 jorge Exp $
  */
 
 #include <stdlib.h>
@@ -308,7 +308,7 @@ static GtkWidget *ComputerDetailsDialog (struct info_drqm_computers *info)
 
 static GtkWidget *CreateTasksClist (void)
 {
-  gchar *titles[] = { "ID","Status","Job name","Job index","Owner","Frame","PID","Start","End"};
+  gchar *titles[] = { "ID","Status","Job name","Job id","Owner","Frame","PID","Start","End"};
   GtkWidget *clist;
 
   clist = gtk_clist_new_with_titles (9, titles);
@@ -334,105 +334,65 @@ static int cdd_update (GtkWidget *w, struct info_drqm_computers *info)
 {
   /* This function depends on info->icomp properly set */
   char msg[BUFFERLEN];
-  char *buf;
   char **buff;			/* for hte clist stuff */
-  int ncols = 7;
+  int ncols = 9;
   int i;
+  
 
-  if (!request_job_xfer(info->ijob,&info->jobs[info->ijob],CLIENT)) {
+  if (!request_comp_xfer(info->icomp,&info->computers[info->icomp],CLIENT)) {
     if (drerrno == DRE_NOTREGISTERED) {
-      gtk_object_destroy (GTK_OBJECT(info->jdd.dialog));
-/*        gtk_widget_destroy (info->jdd.dialog); */
-/*        gtk_signal_emit_by_name (GTK_OBJECT(info->jdd.dialog),"destroy"); */
+      fprintf (stderr,"Not registered anymore !\n");
     } else {
-      fprintf (stderr,"Error request job xfer: %s\n",drerrno_str());
+      fprintf (stderr,"Error request computer xfer: %s\n",drerrno_str());
     }
     return 0;
   }
 
-  nframes = job_nframes (&info->jobs[info->ijob]);
+  gtk_label_set_text (GTK_LABEL(info->cdd.lname),info->computers[info->icomp].hwinfo.name);
+  gtk_label_set_text (GTK_LABEL(info->cdd.los),osstring(info->computers[info->icomp].hwinfo.os));
 
-  if (!info->jobs[info->ijob].frame_info) {
-    if (!(fi = malloc(sizeof (struct frame_info) * nframes))) {
-      fprintf (stderr,"Error allocating memory for frame information\n");
-      return 0;
-    }
-
-    if (!request_job_xferfi (info->ijob,fi,nframes,CLIENT)) {
-      fprintf (stderr,"Error request job frame info xfer: %s\n",drerrno_str());
-      free (fi);
-      return 0;
-    }
-
-    info->jobs[info->ijob].frame_info = fi;
-  }
-
-  gtk_label_set_text (GTK_LABEL(info->jdd.lname),info->jobs[info->ijob].name);
-  gtk_label_set_text (GTK_LABEL(info->jdd.lcmd),info->jobs[info->ijob].cmd);
-  gtk_label_set_text (GTK_LABEL(info->jdd.lstatus),job_status_string(info->jobs[info->ijob].status));
+  snprintf(msg,BUFFERLEN-1,"%i %s %i MHz",
+	   info->computers[info->icomp].hwinfo.numproc,
+	   proctypestring(info->computers[info->icomp].hwinfo.proctype),
+	   info->computers[info->icomp].hwinfo.procspeed);
+  gtk_label_set_text (GTK_LABEL(info->cdd.lcpuinfo),msg);
   
-  snprintf(msg,BUFFERLEN-1,"From %i to %i every %i",
-	   info->jobs[info->ijob].frame_start,
-	   info->jobs[info->ijob].frame_end,
-	   info->jobs[info->ijob].frame_step);
-  gtk_label_set_text (GTK_LABEL(info->jdd.lstartend),msg);
-  
-  snprintf(msg,BUFFERLEN-1,"%i",info->jobs[info->ijob].priority);
-  gtk_label_set_text (GTK_LABEL(info->jdd.lpri),msg);
-
-  snprintf(msg,BUFFERLEN-1,"%i,%i,%i,%i",
-	   info->jobs[info->ijob].nprocs,
-	   info->jobs[info->ijob].fleft,
-	   info->jobs[info->ijob].fdone,
-	   info->jobs[info->ijob].ffailed);
-  gtk_label_set_text (GTK_LABEL(info->jdd.lfrldf),msg);
-
-  if ((info->jobs[info->ijob].avg_frame_time / 3600) > 0) {
-    snprintf(msg,BUFFERLEN-1,"%li hours %li minutes %li seconds",
-	     info->jobs[info->ijob].avg_frame_time / 3600,
-	     (info->jobs[info->ijob].avg_frame_time % 3600) / 60,
-	     (info->jobs[info->ijob].avg_frame_time % 3600) % 60);
-  } else if ((info->jobs[info->ijob].avg_frame_time / 60) > 0) {
-    snprintf(msg,BUFFERLEN-1,"%li minutes %li seconds",
-	     (info->jobs[info->ijob].avg_frame_time) / 60,
-	     (info->jobs[info->ijob].avg_frame_time) % 60);
-  } else {
-    snprintf(msg,BUFFERLEN-1,"%li seconds",
-	     info->jobs[info->ijob].avg_frame_time);
-  }
-  gtk_label_set_text (GTK_LABEL(info->jdd.lavgt),msg);
-  
-  snprintf(msg,BUFFERLEN-1,"%s",ctime(&info->jobs[info->ijob].est_finish_time));
-  buf = strchr (msg,'\n');
-  if (buf != NULL)
-    *buf = '\0';
-  gtk_label_set_text (GTK_LABEL(info->jdd.lestf),msg);
+  snprintf(msg,BUFFERLEN-1,"%i %i %i",
+	   info->computers[info->icomp].status.loadavg[0],
+	   info->computers[info->icomp].status.loadavg[1],
+	   info->computers[info->icomp].status.loadavg[2]);
+  gtk_label_set_text (GTK_LABEL(info->cdd.lloadavg),msg);
+		      
+  snprintf(msg,BUFFERLEN-1,"%i",
+	   info->computers[info->icomp].status.ntasks);
+  gtk_label_set_text (GTK_LABEL(info->cdd.lntasks),msg);
 
 
+  /* Tasks clist */
   buff = (char**) g_malloc((ncols + 1) * sizeof(char*));
   for (i=0;i<ncols;i++)
     buff[i] = (char*) g_malloc (BUFFERLEN);
   buff[ncols] = NULL;
   
-  gtk_clist_freeze(GTK_CLIST(info->jdd.clist));
-  gtk_clist_clear(GTK_CLIST(info->jdd.clist));
-  for (i=0; i < nframes; i++) {
-    snprintf (buff[0],BUFFERLEN-1,"%i",job_frame_index_to_number (&info->jobs[info->ijob],i));
-    strncpy(buff[1],job_frame_status_string(info->jobs[info->ijob].frame_info[i].status),BUFFERLEN);
-    if (info->jobs[info->ijob].frame_info[i].status != FS_WAITING) {
-      strncpy(buff[2],ctime(&info->jobs[info->ijob].frame_info[i].start_time),BUFFERLEN); 
-      strncpy(buff[3],ctime(&info->jobs[info->ijob].frame_info[i].end_time),BUFFERLEN);
-    } else {
-      strncpy(buff[2],"Not started",BUFFERLEN); 
-      strncpy(buff[3],"Not started",BUFFERLEN);
-    }      
-    snprintf (buff[4],BUFFERLEN,"%i",info->jobs[info->ijob].frame_info[i].exitcode);
-    snprintf (buff[5],BUFFERLEN,"%i",info->jobs[info->ijob].frame_info[i].icomp);
-    snprintf (buff[6],BUFFERLEN,"%i",info->jobs[info->ijob].frame_info[i].itask);
-    gtk_clist_append(GTK_CLIST(info->jdd.clist),buff);
+  gtk_clist_freeze(GTK_CLIST(info->cdd.clist));
+  gtk_clist_clear(GTK_CLIST(info->cdd.clist));
+  for (i=0; i < MAXTASKS; i++) {
+    if (info->computers[info->icomp].status.task[i].used) {
+      snprintf (buff[0],BUFFERLEN-1,"%i",i);
+      snprintf (buff[1],BUFFERLEN-1,"%s",
+		task_status_string(info->computers[info->icomp].status.task[i].status));
+      snprintf (buff[2],BUFFERLEN-1,"%s",info->computers[info->icomp].status.task[i].jobname);
+      snprintf (buff[3],BUFFERLEN-1,"%i",info->computers[info->icomp].status.task[i].ijob);
+      snprintf (buff[4],BUFFERLEN-1,"%s",info->computers[info->icomp].status.task[i].owner);
+      snprintf (buff[5],BUFFERLEN-1,"%i",info->computers[info->icomp].status.task[i].frame);
+      snprintf (buff[6],BUFFERLEN-1,"%i",info->computers[info->icomp].status.task[i].pid);
+      strncpy(buff[7],"Not yet implemented",BUFFERLEN); 
+      strncpy(buff[8],"Not yet implemented",BUFFERLEN);
+      gtk_clist_append(GTK_CLIST(info->cdd.clist),buff);
+    }
   }
 
-  gtk_clist_thaw(GTK_CLIST(info->jdd.clist));
+  gtk_clist_thaw(GTK_CLIST(info->cdd.clist));
 
   for(i=0;i<ncols;i++)
     g_free (buff[i]);
