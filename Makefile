@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.41 2004/03/09 18:53:22 jorge Exp $
+# $Id: Makefile,v 1.42 2004/03/15 23:45:40 jorge Exp $
 
 CC = gcc
 CPP = g++-2.95
@@ -7,7 +7,7 @@ OBJS_LIBDRQUEUE = computer_info.o computer_status.o task.o logger.o communicatio
 			mayasg.o blendersg.o bmrtsg.o pixiesg.o
 LDFLAGS =
 
-INSTROOT = /DG/Tool/DrQueue
+INSTROOT = /lot/s800/HOME/RENDUSR/drqueue
 
 ifeq ($(systype),linux)
 	CFLAGS = -DCOMM_REPORT -Wall -I. -D__LINUX -g -O2
