@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.44 2001/10/22 14:16:53 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.45 2001/10/24 12:51:58 jorge Exp $
  */
 
 #include <string.h>
@@ -28,7 +28,6 @@ static GtkWidget *CreateMenu (struct drqm_jobs_info *info);
 static int pri_cmp_clist (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
 
 
-
 static void JobDetails(GtkWidget *menu_item, struct drqm_jobs_info *info);
 static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info);
 static GtkWidget *CreateFrameInfoClist (void);
@@ -37,14 +36,18 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info);
 static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info);
 static gint PopupMenuFrames (GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *info);
 static void SeeFrameLog (GtkWidget *w, struct drqm_jobs_info *info);
+static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info);
 static void jdd_requeue_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
 static void jdd_kill_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
 static void jdd_finish_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
 static void jdd_kill_finish_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
 static void jdd_sesframes_bcp (GtkWidget *button, struct drqm_jobs_info *info);
-static GtkWidget *sesframes_change_dialog (struct drqm_jobs_info *info);
-static void sesframes_cd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *info);
-static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info);
+static GtkWidget *jdd_sesframes_change_dialog (struct drqm_jobs_info *info);
+static void jdd_sesframes_cd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *info);
+static void jdd_priority_bcp (GtkWidget *button, struct drqm_jobs_info *info);
+static GtkWidget *jdd_priority_change_dialog (struct drqm_jobs_info *info);
+static void jdd_pcd_cpri_changed (GtkWidget *entry, struct drqmj_jddi *info);
+
 /* Limits */
 static GtkWidget *jdd_limits_widgets (struct drqm_jobs_info *info);
 static void jdd_limits_nmaxcpus_bcp (GtkWidget *button, struct drqm_jobs_info *info);
@@ -233,6 +236,9 @@ void drqm_update_joblist (struct drqm_jobs_info *info)
 
 static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *info)
 {
+  int i;
+  char *buf;
+
   if (event->type == GDK_BUTTON_PRESS) {
     GdkEventButton *bevent = (GdkEventButton *) event;
     if (bevent->button != 3)
@@ -240,6 +246,22 @@ static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *
     info->selected = gtk_clist_get_selection_info(GTK_CLIST(info->clist),
 						  (int)bevent->x,(int)bevent->y,
 						  &info->row,&info->column);
+    
+    if (info->selected) {
+      gtk_clist_get_text(GTK_CLIST(info->clist),info->row,0,&buf);
+      info->ijob = atoi (buf);
+
+      info->row = -1;
+      for (i=0;i<info->njobs;i++) {
+	if (info->jobs[i].id == info->ijob) {
+	  info->row = i;
+	}
+      }
+
+      if (info->row == -1)
+	return FALSE;
+    }
+
     gtk_menu_popup (GTK_MENU(info->menu), NULL, NULL, NULL, NULL,
 		    bevent->button, bevent->time);
     return TRUE;
@@ -747,13 +769,9 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   GtkWidget *clist;
   GtkWidget *swin;
   GtkWidget *button;
-  char *buf;
   GtkTooltips *tooltips;
 
-  if (info->njobs) {
-    gtk_clist_get_text(GTK_CLIST(info->clist),info->row,0,&buf);
-    info->ijob = atoi (buf);
-  } else {
+  if (!info->njobs) {
     return NULL;
   }
 
@@ -833,10 +851,15 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
   label = gtk_label_new ("Priority:");
   gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
-  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  hbox2 = gtk_hbox_new (FALSE,2);
+  gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,2);
   label = gtk_label_new (NULL);
-  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  gtk_box_pack_start (GTK_BOX(hbox2),label,TRUE,TRUE,2);
   info->jdd.lpri = label;
+  button = gtk_button_new_with_label ("Change");
+  gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
+  gtk_signal_connect (GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_priority_bcp),info);
 
   /* Frames left, done and failed */
   hbox = gtk_hbox_new (TRUE,2);
@@ -1751,12 +1774,12 @@ static void jdd_sesframes_bcp (GtkWidget *button, struct drqm_jobs_info *info)
   /* Start, End, Step frames, button change pressed */
   GtkWidget *dialog;
 
-  dialog = sesframes_change_dialog (info);
+  dialog = jdd_sesframes_change_dialog (info);
   if (dialog)
     gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static GtkWidget *sesframes_change_dialog (struct drqm_jobs_info *info)
+static GtkWidget *jdd_sesframes_change_dialog (struct drqm_jobs_info *info)
 {
   GtkWidget *window;
   GtkWidget *vbox;
@@ -1806,7 +1829,7 @@ static GtkWidget *sesframes_change_dialog (struct drqm_jobs_info *info)
   gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
   button = gtk_button_new_with_label ("Submit");
   gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
-  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(sesframes_cd_bsumbit_pressed),info);
+  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_sesframes_cd_bsumbit_pressed),info);
 /*    gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(cdd_update),info); */
   gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
 			     GTK_SIGNAL_FUNC(gtk_widget_destroy),
@@ -1823,7 +1846,7 @@ static GtkWidget *sesframes_change_dialog (struct drqm_jobs_info *info)
   return window;
 }
 
-static void sesframes_cd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *info)
+static void jdd_sesframes_cd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *info)
 {
   uint32_t frame_start,frame_end,frame_step;
 
@@ -1954,7 +1977,6 @@ GtkWidget *nmcc_dialog (struct drqm_jobs_info *info)
   button = gtk_button_new_with_label ("Submit");
   gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
   gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(nmccd_bsumbit_pressed),info);
-/*    gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(cdd_update),info); */
   gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
 			     GTK_SIGNAL_FUNC(gtk_widget_destroy),
 			     (gpointer) window);
@@ -1987,5 +2009,105 @@ void nmccd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *info)
   gtk_label_set_text (GTK_LABEL(info->jdd.limits.lnmaxcpuscomputer),msg);
 }
 
+static void jdd_priority_bcp (GtkWidget *button, struct drqm_jobs_info *info)
+{
+  /* Priority button change pressed */
+  GtkWidget *dialog;
 
+  dialog = jdd_priority_change_dialog (info);
+  if (dialog)
+    gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
+}
 
+GtkWidget *jdd_priority_change_dialog (struct drqm_jobs_info *info)
+{
+  GtkWidget *window;
+  GtkWidget *vbox;
+  GtkWidget *hbox,*hbox2;
+  GtkWidget *label;
+  GtkWidget *entry;
+  GtkWidget *button;
+  GtkWidget *combo;
+  GList *items = NULL;
+  char msg[BUFFERLEN];
+
+  window = gtk_window_new (GTK_WINDOW_DIALOG);
+  gtk_window_set_title (GTK_WINDOW(window),"New priority");
+  gtk_window_set_policy(GTK_WINDOW(window),FALSE,FALSE,TRUE);
+  vbox = gtk_vbox_new (FALSE,2);
+  gtk_container_add(GTK_CONTAINER(window),vbox);
+
+  hbox = gtk_hbox_new (FALSE,2);
+  gtk_box_pack_start(GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("New priority:");
+  gtk_box_pack_start(GTK_BOX(hbox),label,FALSE,FALSE,2);
+  hbox2 = gtk_hbox_new (FALSE,0);
+  gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
+  gtk_widget_show (hbox2);
+  items = g_list_append (items,"Highest");
+  items = g_list_append (items,"High");
+  items = g_list_append (items,"Normal");
+  items = g_list_append (items,"Low");
+  items = g_list_append (items,"Lowest");
+  items = g_list_append (items,"Custom");
+  combo = gtk_combo_new();
+  gtk_combo_set_popdown_strings (GTK_COMBO(combo),items);
+  gtk_widget_show (combo);
+  gtk_box_pack_start (GTK_BOX(hbox2),combo,TRUE,TRUE,0);
+  gtk_entry_set_editable (GTK_ENTRY(GTK_COMBO(combo)->entry),FALSE);
+  info->jdd.cpri = combo;
+  entry = gtk_entry_new_with_max_length (MAXCMDLEN-1);
+  info->jdd.epri = entry;
+  gtk_box_pack_start (GTK_BOX(hbox2),entry,TRUE,TRUE,2);
+  gtk_widget_show(entry);
+  gtk_signal_connect (GTK_OBJECT(GTK_ENTRY(GTK_COMBO(combo)->entry)),
+		      "changed",jdd_pcd_cpri_changed,&info->jdd);
+  gtk_entry_set_text (GTK_ENTRY(GTK_COMBO(combo)->entry),"Custom");
+  snprintf(msg,BUFFERLEN-1,"%i",info->jobs[info->row].priority);
+  gtk_entry_set_text (GTK_ENTRY(entry),msg);
+
+  hbox = gtk_hbutton_box_new ();
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  button = gtk_button_new_with_label ("Submit");
+  gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
+/*    gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(nmcd_bsumbit_pressed),info); */
+/*    gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(cdd_update),info); */
+  gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
+			     GTK_SIGNAL_FUNC(gtk_widget_destroy),
+			     (gpointer) window);
+
+  button = gtk_button_new_with_label ("Cancel");
+  gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
+  gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
+			     GTK_SIGNAL_FUNC(gtk_widget_destroy),
+			     (gpointer) window);
+
+  gtk_widget_show_all(window);
+
+  return window;
+}
+
+static void jdd_pcd_cpri_changed (GtkWidget *entry, struct drqmj_jddi *info)
+{
+  if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Highest") == 0) {
+    gtk_entry_set_editable (GTK_ENTRY(info->epri),FALSE);
+    gtk_entry_set_text (GTK_ENTRY(info->epri),"100");
+  } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"High") == 0) {
+    gtk_entry_set_editable (GTK_ENTRY(info->epri),FALSE);
+    gtk_entry_set_text (GTK_ENTRY(info->epri),"250");
+  } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Normal") == 0) {
+    gtk_entry_set_editable (GTK_ENTRY(info->epri),FALSE);
+    gtk_entry_set_text (GTK_ENTRY(info->epri),"500");
+  } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Low") == 0) {
+    gtk_entry_set_editable (GTK_ENTRY(info->epri),FALSE);
+    gtk_entry_set_text (GTK_ENTRY(info->epri),"750");
+  } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Lowest") == 0) {
+    gtk_entry_set_editable (GTK_ENTRY(info->epri),FALSE);
+    gtk_entry_set_text (GTK_ENTRY(info->epri),"1000");
+  } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Custom") == 0) {
+    gtk_entry_set_editable (GTK_ENTRY(info->epri),TRUE);
+    gtk_entry_set_text (GTK_ENTRY(info->epri),"500");
+  } else {
+    fprintf (stderr,"Not listed!\n");
+  }
+}
