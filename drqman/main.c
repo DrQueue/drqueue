@@ -1,16 +1,17 @@
 /* 
- * $Header: /root/cvs/drqueue/drqman/main.c,v 1.3 2001/08/28 21:49:27 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/main.c,v 1.4 2001/08/29 15:28:02 jorge Exp $
  */
 
 #include <gtk/gtk.h>
 #include "drqman.h"
 #include "notebook.h"
 
+static struct info_drqm info;
+
 int main (int argc, char *argv[])
 {
   GtkWidget *window;
   GtkWidget *main_vbox;
-  struct info_drqm info;
   
   gtk_init(&argc,&argv);
 
