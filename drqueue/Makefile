@@ -112,14 +112,16 @@ CYGWIN_NT-5.1_install:
 	install -d -m 0755 $(INSTROOT)/etc
 	install -d -m 0777 $(INSTROOT)/db
 	install -d -m 0777 $(INSTROOT)/contrib
+	install -d -m 0777 $(INSTROOT)/contrib/windows
 	cp ./bin/*.exe $(INSTROOT)/bin/ || exit 0
 	cp `which ipc-daemon2` $(INSTROOT)/bin || exit 0
 	cp ./etc/* $(INSTROOT)/etc/ || exit 0
 	cp ./contrib/* $(INSTROOT)/contrib/ || exit 0
+	cp ./contrib/windows/* $(INSTROOT)/contrib/windows || exit 0
 	cp COPYING $(INSTROOT)/
 	chmod 0755 $(INSTROOT)/bin/* || exit 0
 	chmod 0755 $(INSTROOT)/contrib/* || exit 0
-	contrib/install_dlls.sh $(INSTROOT)/bin
+	sh contrib/windows/install_dlls.sh $(INSTROOT)/bin
 
 FreeBSD_install:
 	install -d -m 0777 $(INSTROOT)/tmp
