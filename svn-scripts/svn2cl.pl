@@ -16,7 +16,7 @@ require 5.0;
 use strict;
 
 my %hackers = (
-    "jorge"     => "Jorge Daza <jorge\@drqueue.org>"
+    "jorge"     => "Jorge Daza <jorge\@drqueue.org>",
     "caedes"     => "Pablo Martin <caedes\@sindominio.net>"
 );
 
