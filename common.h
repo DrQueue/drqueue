@@ -23,7 +23,7 @@
 
 #include "job.h"
 
-#define VERSION  "0.50rc6"
+#define VERSION  "0.50rc7"
 
 int common_environment_check (void);
 void show_version (char **argv);
