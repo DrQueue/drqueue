@@ -1,4 +1,4 @@
-/* $Id: mayasg.c,v 1.8 2002/06/20 15:28:48 jorge Exp $ */
+/* $Id: mayasg.c,v 1.9 2002/08/02 17:40:21 jorge Exp $ */
 
 #include <stdio.h>
 #include <time.h>
@@ -59,6 +59,7 @@ char *mayasg_create (struct mayasgi *info)
   fprintf(f,"#!/bin/tcsh\n\n");
   fprintf(f,"set RD=%s\n",info->renderdir);
   fprintf(f,"set SCENE=%s\n",info->scene);
+  fprintf(f,"set RF_OWNER=%s\n",info->file_owner);
   if (strlen(info->image)) {
     fprintf(f,"set IMAGE=%s\n",info->image);
     snprintf(image_arg,BUFFERLEN-1,"-p $IMAGE");
@@ -156,6 +157,7 @@ char *mayablocksg_create (struct mayasgi *info)
   fprintf(f,"#!/bin/tcsh\n\n");
   fprintf(f,"set RD=%s\n",info->renderdir);
   fprintf(f,"set SCENE=%s\n",info->scene);
+  fprintf(f,"set RF_OWNER=%s\n",info->file_owner);
   if (strlen(info->image)) {
     fprintf(f,"set IMAGE=%s\n",info->image);
     snprintf(image_arg,BUFFERLEN-1,"-p $IMAGE");
@@ -173,7 +175,7 @@ char *mayablocksg_create (struct mayasgi *info)
     fprintf(f,"echo So the default configuration will be used\n");
     fprintf(f,"echo -------------------------------------------------\n");
     fprintf(f,"\n\n");
-    fprintf(f,"Render -s $FRAME -e `expr $FRAME + $STEPFRAME` -rd $RD %s $SCENE\n\n",image_arg);
+    fprintf(f,"Render -s $FRAME -e `expr $FRAME + $STEPFRAME - 1` -rd $RD %s $SCENE\n\n",image_arg);
   } else {
     fd_etc_mayablock_sg = fileno (etc_mayablock_sg);
     fd_f = fileno (f);

@@ -33,7 +33,7 @@ if ( $? != 0 ) then
 #  kill -INT $$
 else
   # The frame was rendered properly
-  chown_block $OWNER $RD/$IMAGE $FRAME $BLOCK 
+  chown_block $RF_OWNER $RD/$IMAGE $FRAME $BLOCK 
 endif
 
 #

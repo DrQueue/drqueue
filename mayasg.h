@@ -1,4 +1,4 @@
-/* $Id: mayasg.h,v 1.5 2002/06/20 15:28:48 jorge Exp $ */
+/* $Id: mayasg.h,v 1.6 2002/08/02 17:40:21 jorge Exp $ */
 
 #ifndef _MAYASG_H_
 #define _MAYASG_H_
@@ -10,6 +10,7 @@ struct mayasgi {		/* Maya Script Generator Info */
   char scene[BUFFERLEN];
   char image[BUFFERLEN];
   char scriptdir[BUFFERLEN];
+  char file_owner[BUFFERLEN];
 };
 
 char *mayasg_create (struct mayasgi *info);
