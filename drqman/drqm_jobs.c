@@ -1410,7 +1410,7 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->jdd.limits.cb_linux),
 				info->jdd.job.limits.os_flags & OSF_LINUX);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->jdd.limits.cb_osx),
-				info->jdd.job.limits.os_flags & OSF_LINUX);
+				info->jdd.job.limits.os_flags & OSF_OSX);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->jdd.limits.cb_freebsd),
 				info->jdd.job.limits.os_flags & OSF_FREEBSD);
 
