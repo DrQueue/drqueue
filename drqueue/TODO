@@ -1,7 +1,6 @@
 TO DO:
 -----
 
-* Authentication on the slave requests.
 * job permissions.
 * License control
 * User defined shell for script generators
