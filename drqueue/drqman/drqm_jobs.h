@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.19 2001/09/14 16:32:01 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.20 2001/09/16 15:40:07 jorge Exp $
  */
 
 #ifndef _DRQM_JOBS_H_
@@ -8,15 +8,20 @@
 #include <gtk/gtk.h>
 #include "libdrqueue.h"
 
-struct drqmj_kojid_maya {
+struct drqmj_koji_maya {
   GtkWidget *escene;
+  GtkWidget *fsscene;		/* File selector for the scene */
   GtkWidget *eproject;
+  GtkWidget *fsproject;		/* File selector for the project */
   GtkWidget *eimage;
   GtkWidget *eviewcmd;
+  GtkWidget *escript;		/* Entry script location */
+  GtkWidget *fsscript;		/* File selectot for the script directory */
 };
 
 struct drqmj_dnji {		/* dialog new job */
   GtkWidget *dialog;
+  GtkWidget *vbox;
   GtkWidget *ename;
   GtkWidget *ecmd;
   GtkWidget *esf,*eef,*estf;	/* entry start frame, entry end frame, entry step frames */
@@ -25,8 +30,9 @@ struct drqmj_dnji {		/* dialog new job */
 
   /* koj */
   GtkWidget *ckoj;		/* combo koj */
+  GtkWidget *fkoj;		/* frame koj */
   uint16_t koj;			/* koj */
-  union koj_info koji;		/* koj info */
+  struct drqmj_koji_maya koji_maya; /* koj info for maya */
 };
 
 struct drqmj_jddi {		/* job details dialog */
@@ -46,17 +52,6 @@ struct drqmj_jddi {		/* job details dialog */
   int selected;			/* if a frame is selected */
 };
 
-struct drqmj_msgdi {		/* Maya script generator dialog */
-  GtkWidget *dialog;
-  GtkWidget *escene;		/* Entry scene */
-  GtkWidget *fsscene;		/* File selector for the scene */
-  GtkWidget *eproject;		/* Entry project */
-  GtkWidget *fsproject;		/* File selector for the project */
-  GtkWidget *eimage;		/* Entry image name */
-  GtkWidget *fsscript;		/* File selectot for the script directory */
-  GtkWidget *escript;		/* Entry script location */
-};
-
 struct drqm_jobs_info {
   GtkWidget *clist;		/* main clist */
   gint row, column;		/* selected job */
@@ -67,7 +62,6 @@ struct drqm_jobs_info {
   struct job *jobs;		/* The job list */
   struct drqmj_dnji dnj;	/* dialog new job */
   struct drqmj_jddi jdd;	/* job details dialog */
-  struct drqmj_msgdi msgd;	/* Maya script generator dialog */
 };
 
 struct info_drqm;
