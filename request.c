@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.52 2001/09/21 14:41:43 jorge Exp $ */
+/* $Id: request.c,v 1.53 2001/09/25 15:55:41 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -472,7 +472,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
     ijob = pol[i].index;
     /* ATENTION job_available sets the available frame as FS_ASSIGNED !! */
     /* We need to set it back to FS_WAITING if something fails */
-    if (job_available(wdb,ijob,&iframe)) {
+    if (job_available(wdb,ijob,&iframe,icomp)) {
       snprintf(msg,BUFFERLEN-1,"Frame %i assigned",iframe);
       log_master_job(&wdb->job[ijob],L_INFO,msg);
       break;
