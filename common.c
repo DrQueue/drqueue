@@ -1,4 +1,4 @@
-/* $Id: common.c,v 1.11 2002/02/15 11:51:00 jorge Exp $ */
+/* $Id: common.c,v 1.12 2002/02/26 15:52:04 jorge Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -141,8 +141,9 @@ int common_date_check (void)
   time(&now);
   tm_now = localtime (&now);
   
-  if (((tm_now->tm_mon >= 4) && (tm_now->tm_year == 2002))
-      || (tm_now->tm_year > 2002))
+/*    fprintf (stderr,"Date: %i.%i.%u\n",tm_now->tm_mday,tm_now->tm_mon,tm_now->tm_year); */
+  if (((tm_now->tm_mon >= 4) && (tm_now->tm_year == 102))
+      || (tm_now->tm_year > 102))
     return 0;
   
   return 1;

@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.53 2002/02/15 11:51:00 jorge Exp $ */
+/* $Id: slave.c,v 1.54 2002/02/26 15:52:05 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -45,7 +45,7 @@ int main (int argc,char *argv[])
 
   computer_status_init (&sdb.comp->status);
   get_hwinfo (&sdb.comp->hwinfo);
-  computer_init_limits (sdb.comp);
+  computer_init_limits (sdb.comp); /* computer_init_limits depends on the hardware information */
 
   report_hwinfo (&sdb.comp->hwinfo);
 
@@ -159,7 +159,7 @@ int get_shared_memory_slave (int force)
   char *root;
 
   root = getenv("DRQUEUE_ROOT");
-  snprintf (file,BUFFERLEN-1,"%s/bin/slave",root);
+  snprintf (file,BUFFERLEN-1,"%s/bin/slave.sh",root);
 
   if ((key = ftok (file,'A')) == -1) {
     perror ("Getting key for shared memory");
@@ -191,7 +191,7 @@ int get_semaphores_slave (void)
   char *root;
 
   root = getenv("DRQUEUE_ROOT");
-  snprintf (file,BUFFERLEN-1,"%s/bin/slave",root);
+  snprintf (file,BUFFERLEN-1,"%s/bin/slave.sh",root);
 
   if ((key = ftok (file,'A')) == -1) {
     perror ("Getting key for semaphores");

@@ -1,4 +1,4 @@
-/* $Id: sendjob.c,v 1.6 2001/07/31 13:10:42 jorge Exp $ */
+/* $Id: sendjob.c,v 1.7 2002/02/26 15:52:05 jorge Exp $ */
 /* To set up a job from a terminal and send it to the master */
 /* I'd like it to be curses based */
 
@@ -74,12 +74,10 @@ void input_get_word (char *res,int len,char *question)
 void input_get_line (char *res,int len,char *question)
 {
   char buf[len];
-  int n;
 
-  do {
-    printf ("%s",question);
-    fgets (buf,len,stdin);
-  } while (n != 1);
+  printf ("%s",question);
+  fgets (buf,len,stdin);
+
   strncpy(res,buf,len-1);
 }
 
