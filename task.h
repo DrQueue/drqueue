@@ -1,4 +1,4 @@
-/* $Id: task.h,v 1.11 2001/07/24 10:31:02 jorge Exp $ */
+/* $Id: task.h,v 1.12 2001/07/24 15:14:39 jorge Exp $ */
 
 #ifndef _TASK_H_
 #define _TASK_H_
@@ -15,8 +15,8 @@
 
 #include "constants.h"
 
-#define DR_EXITEDFLAG (1<<8)
-#define DR_SIGNALEDFLAG (1<<9)
+#define DR_EXITEDFLAG (0x0100)
+#define DR_SIGNALEDFLAG (0x0200)
 
 #define DR_WIFEXITED(stat)   ((stat)&DR_EXITEDFLAG)
 #define DR_WEXITSTATUS(stat) ((stat)&0xff)
