@@ -1,25 +1,19 @@
-/* $Id: computer_info.h,v 1.10 2004/10/09 03:31:30 jorge Exp $ */
+/* $Id$ */
 
 #ifndef _COMPUTER_INFO_H_
 #define _COMPUTER_INFO_H_
 
 
-#ifdef __LINUX
+#if defined (__LINUX)
+#include <stdint.h>
+#elif defined (__IRIX)
+#include <sys/types.h>
+#elif defined (__OSX)
+#include <stdint.h>
+#elif defined (__FREEBSD)
 #include <stdint.h>
 #else
-# ifdef __IRIX
-#  include <sys/types.h>
-# else
-#  ifdef __OSX
-#   include <stdint.h>
-#  else
-#   ifdef __FREEBSD
-#    include <stdint.h>
-#   else
-#    error You need to define the OS, or OS defined not supported
-#   endif
-#  endif
-# endif
+#error You need to define the OS, or OS defined not supported
 #endif
 
 #include "constants.h"
