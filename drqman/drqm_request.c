@@ -1,16 +1,18 @@
-/* $Id: drqm_request.c,v 1.2 2001/07/17 10:23:11 jorge Exp $ */
+/* $Id: drqm_request.c,v 1.3 2001/07/19 09:08:49 jorge Exp $ */
 
 #include <stdlib.h>
 #include <unistd.h>
 
 #include <libdrqueue.h>
+
+#include "drqm_jobs.h"
+#include "drqm_computers.h"
 #include "drqm_request.h"
 
 void drqm_request_joblist (struct info_drqm_jobs *info)
 {
   /* This function is called non-blocked */
   /* This function is called from inside drqman */
-  /* It sends the information to the master about a finished task */
   struct request req;
   int sfd;
   struct job *tjob;	
@@ -56,5 +58,53 @@ void clean_joblist (struct info_drqm_jobs *info)
   }
 }
 
+void drqm_request_computerlist (struct info_drqm_computers *info)
+{
+  /* This function is called non-blocked */
+  /* This function is called from inside drqman */
+  struct request req;
+  int sfd;
+  struct computer *tcomputer;	
+  int i;
+
+  if ((sfd = connect_to_master ()) == -1) {
+    fprintf(stderr,"%s\n",drerrno_str());
+    return;
+  }
+
+  req.type = R_R_LISTCOMP;
+
+  send_request (sfd,&req,CLIENT);
+  recv_request (sfd,&req,CLIENT);
+
+  if (req.type == R_A_LISTCOMP) {
+    info->ncomputers = req.data_s;
+  } else {
+    fprintf (stderr,"ERROR: Not appropiate answer to request R_R_TASKFINI\n");
+    goto end;			/* Should I use gotos ? It seems like a reasonable option for this case */
+  }
+
+  clean_computerlist (info);
+  if ((info->computers = malloc (sizeof (struct computer) * info->ncomputers)) == NULL) {
+    fprintf (stderr,"Not enough memory for job structures\n");
+    goto end;
+  }
+  tcomputer = info->computers;
+  for (i=0;i<info->ncomputers;i++) {
+    recv_computer (sfd,tcomputer,CLIENT);
+    tcomputer++;
+  }
+
+ end:
+  close (sfd);
+}
+
+void clean_computerlist (struct info_drqm_computers *info)
+{
+  if (info->computers) {
+    free (info->computers);
+    info->computers = NULL;
+  }
+}
 
 
