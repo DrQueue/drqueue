@@ -772,13 +772,13 @@ int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp)
     return 0;
 
 	// Solved bug 0000003
-  if ((wdb->computer[icomp].hwinfo.os == OSF_LINUX) && !(wdb->job[ijob].limits.os_flags & OSF_LINUX))
+  if ((wdb->computer[icomp].hwinfo.os == OS_LINUX) && !(wdb->job[ijob].limits.os_flags & OSF_LINUX))
 		return 0;
-  if ((wdb->computer[icomp].hwinfo.os == OSF_IRIX) && !(wdb->job[ijob].limits.os_flags & OSF_IRIX))
+  if ((wdb->computer[icomp].hwinfo.os == OS_IRIX) && !(wdb->job[ijob].limits.os_flags & OSF_IRIX))
 		return 0;
-  if ((wdb->computer[icomp].hwinfo.os == OSF_OSX) && !(wdb->job[ijob].limits.os_flags & OSF_OSX))
+  if ((wdb->computer[icomp].hwinfo.os == OS_OSX) && !(wdb->job[ijob].limits.os_flags & OSF_OSX))
 		return 0;
-  if ((wdb->computer[icomp].hwinfo.os == OSF_FREEBSD) && !(wdb->job[ijob].limits.os_flags & OSF_FREEBSD))
+  if ((wdb->computer[icomp].hwinfo.os == OS_FREEBSD) && !(wdb->job[ijob].limits.os_flags & OSF_FREEBSD))
 		return 0;
 
 	if (wdb->job[ijob].nblocked
