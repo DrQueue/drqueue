@@ -54,7 +54,7 @@ svn update > Revision
 
 # Build package
 make clean > /dev/null
-(cd ..; tar zcvf drqueue.$VERSION.tgz --exclude=/.svn/ drqueue) > /dev/null
+(cd ..; tar zcvf drqueue.$VERSION.tgz --exclude=".svn/" drqueue) > /dev/null
 
 # Package ChangeLog
 read -p "Do you want to create a package ChangeLog compared to previous tag ? (y/n) " CHLG
