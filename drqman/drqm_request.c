@@ -1,4 +1,4 @@
-/* $Id: drqm_request.c,v 1.5 2001/08/07 13:06:20 jorge Exp $ */
+/* $Id: drqm_request.c,v 1.6 2001/08/22 09:05:29 jorge Exp $ */
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -25,8 +25,11 @@ void drqm_request_joblist (struct info_drqm_jobs *info)
 
   req.type = R_R_LISTJOBS;
 
-  send_request (sfd,&req,CLIENT);
-  recv_request (sfd,&req,CLIENT);
+  if (!send_request (sfd,&req,CLIENT))
+    goto end;
+
+  if (!recv_request (sfd,&req))
+    goto end;
 
   if (req.type == R_A_LISTJOBS) {
     info->njobs = req.data_s;
@@ -74,8 +77,14 @@ void drqm_request_computerlist (struct info_drqm_computers *info)
 
   req.type = R_R_LISTCOMP;
 
-  send_request (sfd,&req,CLIENT);
-  recv_request (sfd,&req,CLIENT);
+  if (!send_request (sfd,&req,CLIENT)) {
+    fprintf(stderr,"%s\n",drerrno_str());
+    goto end;
+  }
+  if (!recv_request (sfd,&req)) {
+    fprintf(stderr,"%s\n",drerrno_str());
+    goto end;
+  }
 
   if (req.type == R_A_LISTCOMP) {
     info->ncomputers = req.data_s;
