@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_computers.c,v 1.3 2001/07/20 08:28:50 jorge Exp $
+ * $Id: drqm_computers.c,v 1.4 2001/07/20 15:30:18 jorge Exp $
  */
 
 #include <string.h>
@@ -112,14 +112,12 @@ void drqm_update_computerlist (struct info_drqm_computers *info)
 {
   int i;
   char **buff;
+  int ncols = 5;
   
-  buff = (char**) g_malloc(6 * sizeof(char*));
-  buff[0] = (char*) g_malloc (BUFFERLEN);
-  buff[1] = (char*) g_malloc (BUFFERLEN);
-  buff[2] = (char*) g_malloc (BUFFERLEN);
-  buff[3] = (char*) g_malloc (BUFFERLEN);
-  buff[4] = (char*) g_malloc (BUFFERLEN);
-  buff[5] = NULL;
+  buff = (char**) g_malloc((ncols+1) * sizeof(char*));
+  for (i=0;i<ncols;i++)
+    buff[i] = (char*) g_malloc (BUFFERLEN);
+  buff[ncols] = NULL;
   
   gtk_clist_freeze(GTK_CLIST(info->clist));
   gtk_clist_clear(GTK_CLIST(info->clist));
@@ -132,6 +130,9 @@ void drqm_update_computerlist (struct info_drqm_computers *info)
     gtk_clist_append(GTK_CLIST(info->clist),buff);
   }
   gtk_clist_thaw(GTK_CLIST(info->clist));
+
+  for(i=0;i<ncols;i++)
+    g_free (buff[i]);
 }
 
 static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct info_drqm_computers *info)

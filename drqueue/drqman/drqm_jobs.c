@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.6 2001/07/20 08:29:14 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.7 2001/07/20 15:30:19 jorge Exp $
  */
 
 #include <string.h>
@@ -115,17 +115,12 @@ void drqm_update_joblist (struct info_drqm_jobs *info)
 {
   int i;
   char **buff;
-  
-  buff = (char**) g_malloc(9 * sizeof(char*));
-  buff[0] = (char*) g_malloc (BUFFERLEN);
-  buff[1] = (char*) g_malloc (BUFFERLEN);
-  buff[2] = (char*) g_malloc (BUFFERLEN);
-  buff[3] = (char*) g_malloc (BUFFERLEN);
-  buff[4] = (char*) g_malloc (BUFFERLEN);
-  buff[5] = (char*) g_malloc (BUFFERLEN);
-  buff[6] = (char*) g_malloc (BUFFERLEN);
-  buff[7] = (char*) g_malloc (BUFFERLEN);
-  buff[8] = NULL;
+  int ncols = 8;
+
+  buff = (char**) g_malloc((ncols + 1) * sizeof(char*));
+  for (i=0;i<ncols;i++)
+    buff[i] = (char*) g_malloc (BUFFERLEN);
+  buff[ncols] = NULL;
   
   gtk_clist_freeze(GTK_CLIST(info->clist));
   gtk_clist_clear(GTK_CLIST(info->clist));
@@ -141,6 +136,9 @@ void drqm_update_joblist (struct info_drqm_jobs *info)
     gtk_clist_append(GTK_CLIST(info->clist),buff);
   }
   gtk_clist_thaw(GTK_CLIST(info->clist));
+
+  for(i=0;i<ncols;i++)
+    g_free (buff[i]);
 }
 
 static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct info_drqm_jobs *info)
