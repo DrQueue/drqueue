@@ -1,3 +1,75 @@
+2004-10-20 20:49:31  Rev 868    jorge
+
+	* common.h:
+	  New version number on common.h: 0.51.5
+
+2004-10-20 20:41:22  Rev 867    jorge
+
+	* common.c etc/master.conf:
+	  Parsing all values.
+
+2004-10-20 20:32:50  Rev 866    jorge
+
+	* drqman/main.c common.c slave.c master.c common.h slave.h master.h:
+	  Only one config_parse function for all
+
+2004-10-20 20:25:26  Rev 865    jorge
+
+	* drqman/main.c etc/master.conf master.c etc/drqman.conf master.h:
+	  More changes regarding the config files
+
+2004-10-20 20:15:47  Rev 864    jorge
+
+	* database.c blendersg.c drqman/main.c libdrqueue.h pixiesg.c slave.
+	  c job.c requeue.c drerrno.c slave.h logger.c constants.h mayasg.c 
+	  etc/slave.conf common.c master.c common.h bmrtsg.c master.h:
+	  Preliminary support for config files
+
+2004-10-20 09:35:58  Rev 863    jorge
+
+	* svn-scripts/build_release.sh:
+	  Debian compliance
+
+2004-10-20 09:35:32  Rev 862    jorge
+
+	* svn-scripts/build_release.sh:
+	  Debian compliance
+
+2004-10-20 09:34:35  Rev 861    jorge
+
+	* sendjob.cpp:
+	  Solved warning messages
+
+2004-10-19 23:49:17  Rev 860    jorge
+
+	* Makefile cjob.c:
+	  Added cjob tool.
+
+2004-10-19 22:40:22  Rev 859    jorge
+
+	* listjobs.c Makefile:
+	  Removed listjobs
+
+2004-10-19 22:39:26  Rev 858    jorge
+
+	* blockhost.c:
+	  Added option to list blocked hosts to blockhost
+
+2004-10-19 21:57:53  Rev 857    jorge
+
+	* pixiesg.h:
+	  Theodore Schundler's patch for FreeBSD
+
+2004-10-19 11:38:42  Rev 856    jorge
+
+	* Revision:
+	  New Revision commited by build_package.sh
+
+2004-10-19 11:38:19  Rev 854    jorge
+
+	* ChangeLog:
+	  Changelog commited by build_package.sh
+
 2004-10-19 11:37:54  Rev 853    jorge
 
 	* common.h:
