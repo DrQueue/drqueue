@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.29 2001/09/20 10:52:56 jorge Exp $ */
+/* $Id: master.c,v 1.30 2001/09/28 10:40:02 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -119,7 +119,7 @@ int get_shared_memory (int force)
 
   if ((key = ftok (file,'Z')) == -1) {
     perror ("Getting key for shared memory");
-    kill(0,SIGINT);
+    exit (1);
   }
   
   if (force) {
@@ -132,7 +132,7 @@ int get_shared_memory (int force)
     perror ("Getting shared memory");
     if (!force)
       fprintf (stderr,"Try with option -f (if you are sure that no other master is running)\n");
-    kill(0,SIGINT);
+    exit (1);
   }
 
   return shmid;
@@ -304,7 +304,6 @@ void clean_out (int signal, siginfo_t *info, void *data)
   }
 
   fprintf (stderr,"PID,Signal that caused death: %i,%i\n",(int)getpid(),signal);
-
 
   exit (1);
 }
