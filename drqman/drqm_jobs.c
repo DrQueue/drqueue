@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.68 2003/12/18 04:11:07 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.69 2003/12/18 04:31:15 jorge Exp $
  */
 
 #include <string.h>
@@ -560,6 +560,7 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
 	gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
 	gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
 	entry = gtk_entry_new ();
+  gtk_tooltips_set_tip(tooltips,entry,"Size of the block that will be rendered",NULL);
 	gtk_entry_set_text (GTK_ENTRY(entry),"1");
 	info->dnj.ebs = entry;
 	gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
