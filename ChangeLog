@@ -1,3 +1,91 @@
+2004-10-31 11:21:24  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/ChangeLog
+
+	* Changelog commited by build_package.sh
+
+2004-10-31 11:20:58  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/common.h
+
+	* New version number on common.h: 0.53.2
+
+2004-10-31 10:19:25  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/computer_info.freebsd.c
+
+	* Bugfix for get_hwinfo on FreeBSD reporting negative speed.
+
+2004-10-31 10:09:58  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/communications.c
+
+	* Bugfix, memory value was not being sent properly over the network.
+
+2004-10-31 10:04:13  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/computer_info.freebsd.c
+	   M /trunk/drqueue/computer_info.irix.c
+	   M /trunk/drqueue/computer_info.osx.c
+
+	* Ted Schundler implementation of get_memory for FreeBSD and Irix
+
+2004-10-30 19:05:42  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/cjob.c
+
+	* Added warning on usage for hard stop.
+
+2004-10-30 16:53:19  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/cjob.c
+	   M /trunk/drqueue/sendjob.cpp
+
+	* Fixed typo
+
+2004-10-30 15:39:04  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/blockhost.c
+	   M /trunk/drqueue/cjob.c
+	   M /trunk/drqueue/drqman/drqm_computers.c
+	   M /trunk/drqueue/drqman/drqm_computers.h
+
+	* Memory info shown on computer details.
+
+2004-10-30 04:00:29  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/svn-scripts/build_release.sh
+
+	* Typo
+
+2004-10-29 23:50:57  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/TODO
+
+	* Updated
+
+2004-10-29 22:46:55  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/communications.c
+	   M /trunk/drqueue/drqman/drqm_jobs.c
+	   M /trunk/drqueue/drqman/drqm_jobs_common.h
+	   M /trunk/drqueue/drqman/drqm_jobs_jdd.c
+	   M /trunk/drqueue/job.c
+	   M /trunk/drqueue/job.h
+
+	* Memory limits added to jobs. Change memory limit button doesn't work yet.
+
 2004-10-29 22:22:30  Jorge Daza <jorge@drqueue.org>
 
 	* Changed paths:
