@@ -843,10 +843,12 @@ void cdd_limits_pool_bcp (GtkWidget *bclicked, struct drqm_computers_info *info)
 	button = gtk_button_new_with_label ("Add");
 	gtk_box_pack_end(GTK_BOX(GTK_DIALOG(dialog)->action_area),button,TRUE,TRUE,2);
 	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(cdd_limits_pool_add_clicked),info);
+	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(cdd_limits_pool_refresh_pool_list),info);
 	// Remove
 	button = gtk_button_new_with_label ("Remove");
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->action_area),button,TRUE,TRUE,2);
 	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(cdd_limits_pool_remove_clicked),info);
+	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(cdd_limits_pool_refresh_pool_list),info);
 	
 	cdd_limits_pool_refresh_pool_list (button,info);
 
