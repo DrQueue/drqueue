@@ -1,4 +1,4 @@
-/* $Id: task.c,v 1.4 2001/08/29 13:16:12 jorge Exp $ */
+/* $Id: task.c,v 1.5 2001/09/16 15:39:39 jorge Exp $ */
 
 #include <stdio.h>
 
@@ -64,4 +64,38 @@ char *task_status_string (unsigned char status)
   }
 
   return st_string;
+}
+
+void task_environment_set (struct task *task)
+{
+  char msg[BUFFERLEN];
+
+#ifdef __LINUX
+  /* Padded frame number */
+  snprintf (msg,BUFFERLEN,"%04i",task->frame);
+  if (setenv("PADFRAME",msg,1) == -1) {
+    printf ("ERROR\n");
+    kill(0,SIGINT);
+  }
+  /* Frame number */
+  snprintf (msg,BUFFERLEN,"%i",task->frame);
+  if (setenv("FRAME",msg,1) == -1) {
+    printf ("ERROR\n");
+    kill(0,SIGINT);
+  }
+  /* OS */
+  if (setenv("DRQUEUE_OS","LINUX",1) == -1) {
+    printf ("ERROR\n");
+    kill(0,SIGINT);
+  }
+#else
+  /* Padded frame number */
+  snprintf (msg,BUFFERLEN,"PADFRAME=%04i",task->frame);
+  putenv (msg);
+  /* Frame number */
+  snprintf (msg,BUFFERLEN,"FRAME=%i",task->frame);
+  putenv (msg);
+  /* OS */
+  putenv ("DRQUEUE_OS=IRIX");
+#endif
 }
