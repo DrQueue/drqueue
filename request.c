@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.11 2001/07/17 10:19:56 jorge Exp $ */
+/* $Id: request.c,v 1.12 2001/07/17 10:42:19 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -45,6 +45,10 @@ void handle_request_master (int sfd,struct database *wdb,int icomp)
   case R_R_TASKFINI:
     log_master (L_INFO,"Request task finished");
     handle_r_r_taskfini (sfd,wdb,icomp);
+    break;
+  case R_R_LISTJOBS:
+    log_master (L_INFO,"Request list of jobs");
+    handle_r_r_listjobs (sfd,wdb,icomp);
     break;
   default:
     log_master (L_WARNING,"Unknown request");
@@ -587,7 +591,7 @@ void handle_r_r_listjobs (int sfd,struct database *wdb,int icomp)
 
   answer.type = R_A_LISTJOBS;
   answer.data_s = job_njobs_masterdb (wdb);
-
+  
   send_request (sfd,&answer,MASTER);
   for (i=0;i<MAXJOBS;i++) {
     if (wdb->job[i].used) {
