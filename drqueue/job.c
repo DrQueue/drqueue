@@ -737,6 +737,15 @@ void job_environment_set (struct job *job, uint32_t iframe)
     putenv (renderdir);
     snprintf (image,BUFFERLEN-1,"IMAGE=%s",job->koji.maya.image);
     putenv (image);
+    break;
+  case KOJ_MENTALRAY:
+    snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.mentalray.scene);
+    putenv (scene);
+    snprintf (renderdir,BUFFERLEN-1,"DRQUEUE_RD=%s",job->koji.mentalray.renderdir);
+    putenv (renderdir);
+    snprintf (image,BUFFERLEN-1,"DRQUEUE_IMAGE=%s",job->koji.mentalray.image);
+    putenv (image);
+    break;
   case KOJ_BLENDER:
     snprintf (scene,BUFFERLEN-1,"SCENE=%s",job->koji.blender.scene);
     break;
@@ -846,12 +855,15 @@ char *job_koj_string (struct job *job)
   case KOJ_MAYA:
     msg = "Maya";
     break;
+  case KOJ_MENTALRAY:
+    msg = "Mental Ray";
+    break;
   case KOJ_BLENDER:
     msg = "Blender";
     break;
-	case KOJ_BMRT:
-		msg = "Bmrt";
-		break;
+  case KOJ_BMRT:
+    msg = "Bmrt";
+    break;
   case KOJ_PIXIE:
     msg = "Pixie";
     break;

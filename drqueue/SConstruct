@@ -20,7 +20,7 @@ env.Append (CPPFLAGS='-I.')
 #
 libdrqueue = Split ("""computer_info.c computer_status.c task.c logger.c communications.c
       computer.c request.c semaphores.c job.c drerrno.c database.c common.c
-      mayasg.c blendersg.c bmrtsg.c pixiesg.c""")
+      mayasg.c mentalraysg.c blendersg.c bmrtsg.c pixiesg.c""")
 libdrqueue_a = env.Library ('libdrqueue.a', libdrqueue)
 
 #

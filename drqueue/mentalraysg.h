@@ -16,30 +16,34 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-/* $Id$ */
 
-#ifndef _SENDJOB_H_
-#define _SENDJOB_H_
+#ifndef _MENTALRAYSG_H_
+#define _MENTALRAYSG_H_
 
-#include <fstream>
-#include "job.h"
+#include "constants.h"
 
-#define TOJ_NONE		0
-#define TOJ_MAYA		1
-#define	TOJ_BLENDER		2
-/*
- ...
- */
-#define TOJ_MENTALRAY		6
+#ifdef __CPLUSPLUS
+extern "C" {
+#endif 
 
-void presentation (void);
+struct mentalraysgi {		/* Menatl Ray Script Generator Info */
+  char renderdir[BUFFERLEN];
+  char scene[BUFFERLEN];
+  char image[BUFFERLEN];
+  char scriptdir[BUFFERLEN];
+  char file_owner[BUFFERLEN];
+  char camera[BUFFERLEN];
+  int  res_x,res_y;		/* Resolution of the frame */
+  char format[BUFFERLEN];
+  int  mentalray;  // 1 if we should render with mr
+};
 
-int RegisterMayaJobFromFile (std::ifstream &infile);
-int RegisterMentalrayJobFromFile (std::ifstream &infile);
-int RegisterBlenderJobFromFile (std::ifstream &infile);
+char *mentalraysg_create (struct mentalraysgi *info);
 
-int str2toj (char *str);
+char *mentalraysg_default_script_path (void);
 
-void cleanup (int signum);
+#ifdef __CPLUSPLUS
+}
+#endif 
 
-#endif /* _SENDJOB_H_ */
+#endif /* _MENTALRAYSG_H_ */

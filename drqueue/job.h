@@ -85,6 +85,12 @@ union koj_info {		/* Kind of job information */
     char image[BUFFERLEN];
     char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
   } maya;
+  struct koji_mentalray {
+    char scene[BUFFERLEN];
+    char renderdir[BUFFERLEN];	/* Output directory for the images */
+    char image[BUFFERLEN];
+    char viewcmd[BUFFERLEN];	/* something like "imf_disp $DRQUEUE_RD/$DRQUEUE_IMAGE.$DRQUEUE_FRAME.iff" */
+  } mentalray;
   struct koji_blender {
     char scene[BUFFERLEN];
     char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
@@ -113,10 +119,11 @@ union koj_info {		/* Kind of job information */
 /* Koj types */
 #define KOJ_GENERAL     			0	/* Not specific koj */
 #define KOJ_MAYA        			1	/* Maya koj */
-#define KOJ_BLENDER						2 /* Blender koj */
-#define KOJ_BMRT							3	/* BMRT koj */
-#define KOJ_3DELIGHT					4	/* 3delight koj */
-#define KOJ_PIXIE							5	/* Pixie koj */
+#define KOJ_BLENDER				2	/* Blender koj */
+#define KOJ_BMRT				3	/* BMRT koj */
+#define KOJ_3DELIGHT				4	/* 3delight koj */
+#define KOJ_PIXIE				5	/* Pixie koj */
+#define KOJ_MENTALRAY        			6	/* Mental Ray koj */
 
 /* JOB SECTION */
 typedef enum {
