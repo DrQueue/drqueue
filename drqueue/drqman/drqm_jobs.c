@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.60 2002/06/21 15:49:40 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.61 2002/06/24 08:40:50 jorge Exp $
  */
 
 #include <string.h>
@@ -121,10 +121,14 @@ static void job_hstop_cb (GtkWidget *button, struct drqm_jobs_info *info);
 /* CONTINUE JOB */
 static void ContinueJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
 
+
+
+
 struct row_data {
   uint32_t frame;
   struct drqm_jobs_info *info;
 };
+
 
 void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info)
 {
@@ -1032,6 +1036,9 @@ static GtkWidget *CreateFrameInfoClist (void)
   gtk_clist_set_column_width (GTK_CLIST(clist),5,45);
   gtk_clist_set_column_width (GTK_CLIST(clist),6,45);
 
+  gtk_clist_set_sort_type (GTK_CLIST(clist),GTK_SORT_ASCENDING);
+  gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_frame);
+
   gtk_widget_show(clist);
 
   return (clist);
@@ -1203,6 +1210,8 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
     rdata->info = info;
     gtk_clist_set_row_data_full (GTK_CLIST(info->jdd.clist),i,(gpointer)rdata, free);
   }
+
+  gtk_clist_sort (GTK_CLIST(info->jdd.clist));
 
   gtk_clist_thaw(GTK_CLIST(info->jdd.clist));
 
