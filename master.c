@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.3 2001/05/09 10:53:08 jorge Exp $ */
+/* $Id: master.c,v 1.4 2001/05/28 14:21:31 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -16,6 +16,7 @@
 #include "communications.h"
 #include "request.h"
 #include "semaphores.h"
+#include "drerrno.h"
 
 struct database *wdb;		/* whole database */
 int sfd;			/* socket file descriptor */
@@ -26,6 +27,8 @@ int main (int argc, char *argv[])
 {
   int csfd;			/* child sfd, the socket once accepted the connection */
   int shmid;			/* shared memory id */
+
+  printf ("%i\n",sizeof(time_t));
 
   log_master ("Starting...");
 
@@ -44,7 +47,9 @@ int main (int argc, char *argv[])
     exit (0);
   }
 
-  sfd = get_socket(MASTERPORT);
+  if ((sfd = get_socket(MASTERPORT)) == -1) {
+    kill(0,SIGINT);
+  }
 
   printf ("Pid: %i Gid: %i\n",getpid(),getpgid(0));
   printf ("%i %i\n",sizeof(*wdb),sizeof(struct database));
