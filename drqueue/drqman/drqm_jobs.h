@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.2 2001/07/16 09:53:07 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.3 2001/07/17 10:21:52 jorge Exp $
  */
 
 #ifndef _DRQM_JOBS_H
@@ -12,7 +12,8 @@ struct info_drqm_jobs {
   GtkWidget *clist;		/* main clist */
   gint row, column;
   GtkWidget *menu;		/* Popup menu */
-  
+  uint32_t njobs;		/* Number of jobs in the list */
+  struct job *jobs;		/* The job list */
 };
 
 void CreateJobsPage (GtkWidget *);
