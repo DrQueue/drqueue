@@ -27,11 +27,13 @@
 #include "computer.h"
 #include "job.h"
 
-#define KEY_SLAVE "%s/bin/slave"	/* Key file for shared memory and semaphores */
+#define KEY_SLAVE "%s/slave"	/* Key file for shared memory and semaphores */
 
 /* Each slave has a slave_database global variable that is local to each */
 /* process. _Except_ the pointer to the computer struct that is a shared */
 /* memory one */
+
+#define SLAVE_CONF_FILE "/etc/drqueue/slave.conf"
 
 #define SDBF_SETMAXCPUS	(1<<0) // Set if we have to change the maximum number of CPUs at start.
 
@@ -42,12 +44,14 @@ struct slave_database {
   int itask;			/* Index to current process task */
 	struct computer_limits limits;
 	uint16_t flags;
+	char conf[PATH_MAX];
 };				/* slave database */
 
 extern int phantom[2];
 
 void slave_get_options (int *argc,char ***argv, int *force, struct slave_database *sdb);
 void usage (void);
+void slave_config_parse (struct slave_database *sdb);
 
 void set_signal_handlers (void);
 void set_signal_handlers_child_listening (void); /* For the accepting process */

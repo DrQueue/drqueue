@@ -39,7 +39,7 @@ char *bmrtsg_create (struct bmrtsgi *info)
   FILE *etc_bmrt_sg; 		/* The bmrt script generator configuration file */
   int fd_etc_bmrt_sg,fd_f;
   static char filename[BUFFERLEN];
-  char fn_etc_bmrt_sg[BUFFERLEN]; /* File name pointing to DRQUEUE_ROOT/etc/bmrt.sg */
+  char fn_etc_bmrt_sg[BUFFERLEN]; /* File name pointing to DRQUEUE_ETC/bmrt.sg */
   char buf[BUFFERLEN];
 	int size;
   char *p;			/* Scene filename without path */
@@ -101,7 +101,7 @@ char *bmrtsg_create (struct bmrtsgi *info)
 	
 	
 
-  snprintf(fn_etc_bmrt_sg,BUFFERLEN-1,"%s/etc/bmrt.sg",getenv("DRQUEUE_ROOT"));
+  snprintf(fn_etc_bmrt_sg,BUFFERLEN-1,"%s/bmrt.sg",getenv("DRQUEUE_ETC"));
 
   fflush (f);
 
@@ -132,14 +132,14 @@ char *bmrtsg_default_script_path (void)
   static char buf[BUFFERLEN];
   char *p;
 
-  if (!(p = getenv("DRQUEUE_ROOT"))) {
-    return ("/drqueue_root/not/set/");
+  if (!(p = getenv("DRQUEUE_TMP"))) {
+    return ("/drqueue_tmp/not/set/");
   }
   
   if (p[strlen(p)-1] == '/')
-    p[strlen(p)-1] = 0;		/* ATENTION this modifies the environment */
-
-  snprintf (buf,BUFFERLEN-1,"%s/tmp/",p);
+		snprintf (buf,BUFFERLEN-1,"%s",p);
+	else
+		snprintf (buf,BUFFERLEN-1,"%s/",p);
 
   return buf;
 }

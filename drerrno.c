@@ -86,19 +86,19 @@ char *drerrno_str (void)
     msg = "Could not attach shared memory";
     break;
   case DRE_NOTMPDIR:
-    msg = "Directory for temporary files ($DRQUEUE_ROOT/tmp) does not exist or is not writeable";
+    msg = "Directory for temporary files ($DRQUEUE_TMP)does not exist or is not writeable";
     break;
   case DRE_NODBDIR:
-    msg = "Directory for database files ($DRQUEUE_ROOT/db) does not exist or is not writeable";
+    msg = "Directory for database files ($DRQUEUE_DB) does not exist or is not writeable";
     break;
   case DRE_NOLOGDIR:
-    msg = "Directory for log files ($DRQUEUE_ROOT/logs) does not exist or is not writeable";
+    msg = "Directory for log files ($DRQUEUE_LOGS) does not exist or is not writeable";
     break;
   case DRE_NOBINDIR:
-    msg = "Directory for binary files ($DRQUEUE_ROOT/bin) does not exist";
+    msg = "Directory for binary files ($DRQUEUE_BIN) does not exist";
     break;
   case DRE_NOETCDIR:
-    msg = "Directory for configuration files ($DRQUEUE_ROOT/etc) does not exist";
+    msg = "Directory for configuration files ($DRQUEUE_ETC) does not exist";
     break;
   default:
     msg = "drerrno NOT listed !!";

@@ -39,7 +39,7 @@ char *pixiesg_create (struct pixiesgi *info)
   FILE *etc_pixie_sg; 		/* The pixie script generator configuration file */
   int fd_etc_pixie_sg,fd_f;
   static char filename[BUFFERLEN];
-  char fn_etc_pixie_sg[BUFFERLEN]; /* File name pointing to DRQUEUE_ROOT/etc/pixie.sg */
+  char fn_etc_pixie_sg[BUFFERLEN]; /* File name pointing to DRQUEUE_ETC/pixie.sg */
   char buf[BUFFERLEN];
 	int size;
   char *p;			/* Scene filename without path */
@@ -103,7 +103,7 @@ char *pixiesg_create (struct pixiesgi *info)
 	
 	
 
-  snprintf(fn_etc_pixie_sg,BUFFERLEN-1,"%s/etc/pixie.sg",getenv("DRQUEUE_ROOT"));
+  snprintf(fn_etc_pixie_sg,BUFFERLEN-1,"%s/pixie.sg",getenv("DRQUEUE_ETC"));
 
   fflush (f);
 
@@ -133,14 +133,14 @@ char *pixiesg_default_script_path (void)
   static char buf[BUFFERLEN];
   char *p;
 
-  if (!(p = getenv("DRQUEUE_ROOT"))) {
-    return ("/drqueue_root/not/set/");
+  if (!(p = getenv("DRQUEUE_TMP"))) {
+    return ("/drqueue_tmp/not/set/");
   }
   
   if (p[strlen(p)-1] == '/')
-    p[strlen(p)-1] = 0;		/* ATENTION this modifies the environment */
-
-  snprintf (buf,BUFFERLEN-1,"%s/tmp/",p);
+		snprintf (buf,BUFFERLEN-1,"%s",p);
+	else
+		snprintf (buf,BUFFERLEN-1,"%s/",p);
 
   return buf;
 }
