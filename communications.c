@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.33 2001/09/20 10:52:54 jorge Exp $ */
+/* $Id: communications.c,v 1.34 2001/10/02 12:37:09 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -294,45 +294,30 @@ int send_request (int sfd, struct request *request,int who)
   return 1;
 }
 
-void send_computer_status (int sfd, struct computer_status *status,int who)
+int send_computer_status (int sfd, struct computer_status *status)
 {
   struct computer_status bswapped;
   int w;
   int bleft;
   void *buf = &bswapped;
-  int i;
+  uint16_t i;
   
   /* We make a copy coz we need to modify the values */
   memcpy (buf,status,sizeof(bswapped));
   /* Prepare for sending */
   for (i=0;i<3;i++)
     bswapped.loadavg[i] = htons (bswapped.loadavg[i]);
-  bswapped.ntasks = htons (bswapped.ntasks);
-  for (i=0;i<MAXTASKS;i++) {
-    if (bswapped.task[i].used) {
-      bswapped.task[i].ijob = htons (bswapped.task[i].ijob);
-      bswapped.task[i].frame = htonl (bswapped.task[i].frame);
-      bswapped.task[i].pid = htonl (bswapped.task[i].pid);
-      bswapped.task[i].exitstatus = htonl (bswapped.task[i].exitstatus);
-    }
-  }
 
-  bleft = sizeof (bswapped);
+  bswapped.ntasks = htons (bswapped.ntasks);
+
+  bleft = sizeof (uint16_t) * 4; /* 3 loadvg + 1 ntasks */
   while ((w = write(sfd,buf,bleft)) < bleft) {
     bleft -= w;
     buf += w;
     if ((w == -1) || ((w == 0) && (bleft > 0))) {
       /* if w is error or if there are no more bytes are written but they _SHOULD_ be */
-      if (who == MASTER) {
-	log_master (L_ERROR,"Sending computer status");
-	exit (1);
-      } else if (who == SLAVE) {
-	log_slave_computer (L_ERROR,"Sending computer status");
-	kill(0,SIGINT);
-      } else {
-	fprintf (stderr,"ERROR: send_computer_status: who value not valid !\n");
-	exit (1);
-      }
+      drerrno = DRE_ERRORSENDING;
+      return 0;
     }
 #ifdef COMM_REPORT
     bsent += w;
@@ -341,30 +326,39 @@ void send_computer_status (int sfd, struct computer_status *status,int who)
 #ifdef COMM_REPORT
   bsent += w;
 #endif
+
+  /* We just send the used tasks */
+  for (i=0;i<MAXTASKS;i++) {
+    if (status->task[i].used) {
+      bswapped.task[i].itask = htons (bswapped.task[i].itask);
+      if ((w = write (sfd,&bswapped.task[i].itask,sizeof(uint16_t))) == -1)
+	return 0;
+#ifdef COMM_REPORT
+      bsent += w;
+#endif
+      if (!send_task(sfd,&bswapped.task[i]))
+	return 0;
+    }
+  }
+
+  return 1;
 }
 
-void recv_computer_status (int sfd, struct computer_status *status,int who)
+int recv_computer_status (int sfd, struct computer_status *status)
 {
   int r;
   int bleft;
   void *buf;
   int i;
+  uint16_t itask;
 
   buf = status;
-  bleft = sizeof (struct computer_status);
+  bleft = sizeof (uint16_t) * 4; /* 3 loadavg + 1 ntasks */
   while ((r = read (sfd,buf,bleft)) < bleft) {
     if ((r == -1) || ((r == 0) && (bleft > 0))) {
       /* if r is error or if there are no more bytes left on the socket but there _SHOULD_ be */
-      if (who == MASTER) {
-	log_master (L_ERROR,"Receiving computer status");
-	exit (1);
-      } else if (who == SLAVE) {
-	log_slave_computer (L_ERROR,"Receiving computer status");
-	kill(0,SIGINT);
-      } else {
-	fprintf (stderr,"ERROR: recv_computer_status: who value not valid !\n");
-	exit (1);
-      }
+      drerrno = DRE_ERRORRECEIVING;
+      return 0;
     }
     bleft -= r;
     buf += r;
@@ -380,14 +374,20 @@ void recv_computer_status (int sfd, struct computer_status *status,int who)
   for (i=0;i<3;i++)
     status->loadavg[i] = ntohs (status->loadavg[i]);
   status->ntasks = ntohs (status->ntasks);
-  for (i=0;i<MAXTASKS;i++) {
-    if (status->task[i].used) {
-      status->task[i].ijob = ntohs (status->task[i].ijob);
-      status->task[i].frame = ntohl (status->task[i].frame);
-      status->task[i].pid = ntohl (status->task[i].pid);
-      status->task[i].exitstatus = ntohl (status->task[i].exitstatus);
+
+  for (i=0;i<status->ntasks;i++) {
+    if ((r = read (sfd,&itask,sizeof(uint16_t))) == -1)
+      return 0;
+#ifdef COMM_REPORT
+    brecv += r;
+#endif
+    itask = ntohs (itask);
+    if (!recv_task(sfd,&status->task[itask])) {
+      return 0;
     }
   }
+
+  return 1;
 }
 
 void recv_job (int sfd, struct job *job,int who)
@@ -550,6 +550,7 @@ int recv_task (int sfd, struct task *task)
   task->frame = ntohl (task->frame);
   task->pid = ntohl (task->pid);
   task->exitstatus = ntohl (task->exitstatus);
+  task->itask = ntohs (task->itask);
 
   return 1;
 }
@@ -568,6 +569,7 @@ int send_task (int sfd, struct task *task)
   bswapped.frame = htonl (bswapped.frame);
   bswapped.pid = htonl (bswapped.pid);
   bswapped.exitstatus = htonl (bswapped.exitstatus);
+  bswapped.itask = htons (bswapped.itask);
 
   bleft = sizeof (bswapped);
   while ((w = write(sfd,buf,bleft)) < bleft) {
@@ -591,9 +593,13 @@ int send_task (int sfd, struct task *task)
 
 int send_computer (int sfd, struct computer *computer,int who)
 {
-  send_computer_status (sfd,&computer->status,who);
+  if (!send_computer_status (sfd,&computer->status)) {
+    printf ("error send_computer_status\n");
+    return 0;
+  }
   send_computer_hwinfo (sfd,&computer->hwinfo,who);
   if (!send_computer_limits (sfd,&computer->limits)) {
+    printf ("error send_computer_limits\n");
     return 0;
   }
   return 1;
@@ -601,9 +607,13 @@ int send_computer (int sfd, struct computer *computer,int who)
 
 int recv_computer (int sfd, struct computer *computer,int who)
 {
-  recv_computer_status (sfd,&computer->status,who);
+  if (!recv_computer_status (sfd,&computer->status)) {
+    printf ("error recv_computer_status\n");
+    return 0;
+  }
   recv_computer_hwinfo (sfd,&computer->hwinfo,who);
   if (!recv_computer_limits (sfd,&computer->limits)) {
+    printf ("error recv_computer_limits\n");
     return 0;
   }
   return 1;
