@@ -19,6 +19,14 @@ ifeq ($(origin INSTGID),undefined)
 INSTGID = drqueue 
 endif
 
+ifeq ($(origin DOTNETPATH),undefined)
+DOTNETPATH = C:/WINDOWS/Microsoft.NET/Framework/v1.1.4322
+endif
+
+ifeq ($(origin NSISPATH),undefined)
+NSISPATH = C:/Program\ Files/NSIS
+endif
+
 #Figure out OS-specific Configuration parameters
 ifeq ($(origin systype),undefined)
  systype=$(shell uname -s)
@@ -113,15 +121,19 @@ CYGWIN_NT-5.1_install:
 	install -d -m 0777 $(INSTROOT)/db
 	install -d -m 0777 $(INSTROOT)/contrib
 	install -d -m 0777 $(INSTROOT)/contrib/windows
+	install -d -m 0777 $(INSTROOT)/contrib/windows/Installer
 	cp ./bin/*.exe $(INSTROOT)/bin/ || exit 0
 	cp `which ipc-daemon2` $(INSTROOT)/bin || exit 0
 	cp ./etc/* $(INSTROOT)/etc/ || exit 0
+	sh ./contrib/windows/build_services.sh $(PWD)/contrib/windows $(DOTNETPATH) 
 	cp ./contrib/* $(INSTROOT)/contrib/ || exit 0
-	cp ./contrib/windows/* $(INSTROOT)/contrib/windows || exit 0
+	cp ./contrib/windows/*.exe $(INSTROOT)/contrib/windows || exit 0
+	cp ./contrib/windows/Installer/* $(INSTROOT)/contrib/windows/installer || exit 0
 	cp COPYING $(INSTROOT)/
 	chmod 0755 $(INSTROOT)/bin/* || exit 0
 	chmod 0755 $(INSTROOT)/contrib/* || exit 0
 	sh contrib/windows/install_dlls.sh $(INSTROOT)/bin
+	$(NSISPATH)/makensis.exe `cygpath -w $(INSTROOT)/contrib/windows/Installer/installer.nsi`
 
 FreeBSD_install:
 	install -d -m 0777 $(INSTROOT)/tmp
@@ -195,7 +207,7 @@ tags:
 	etags *.[ch] drqman/*.[ch]
 
 clean:
-	rm -fR *.o *~ libdrqueue.a slave master sendjob requeue jobfinfo cjob TAGS tmp/* logs/* db/* bin/*.$(systype)
+	rm -fR *.o *~ libdrqueue.a slave master sendjob requeue jobfinfo cjob TAGS tmp/* logs/* db/* contrib/windows/*.exe bin/*.$(systype)
 	rm -fR blockhost
 	$(MAKE) -C drqman clean
 
