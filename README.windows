@@ -5,6 +5,7 @@ to compil drqueue under windows you need do all this steps
 http://www.cygwin.com/setup.exe
 
 .run cygwin setup and choose install for devel category (click on devel)
+and tcsh (used by drqueue) 
 
 .run again cygwin setup with default settings to be sure verything is installed
 
