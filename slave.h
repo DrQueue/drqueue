@@ -23,6 +23,9 @@
 #define _SLAVE_H_
 
 #include <signal.h>
+#if defined (__OSX)
+#include <sys/syslimits.h>
+#endif
 
 #include "computer.h"
 #include "job.h"
