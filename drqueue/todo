@@ -3,12 +3,15 @@ TO DO:
 
 * Frame_info memory allocation and deallocation		[DONE]
 * Priority support for jobs
+* Check frames registered as running if running really
+* Check frames registered as loading if loading really
 * Process output logging				[DONE]
 * file locking on logging functions
 * limit structures for jobs and computers
 * Negative and backwards frame numbers
 * Master database saved and reloaded from disk
 * Update the r_r_taskfini protocol
+* -f to force if shared memory or semaphores exist	[DONE]
 
 BUGS:
 ----
