@@ -640,7 +640,18 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
 		// Pols are equal
 		for (i=wdb->lb.first_i;i<MAXJOBS;i++) {
 			if ((i+wdb->lb.counter) >= MAXJOBS) {
-				wdb->lb.counter = 0;
+				for (i=0;i<MAXJOBS;i++) {
+					ijob = pol[i].index;
+					/* ATENTION job_available sets the available frame as FS_ASSIGNED !! */
+					/* We need to set it back to FS_WAITING if something fails */
+					if (job_available(wdb,ijob,&iframe,icomp)) {
+						log_master_job(&wdb->job[ijob],L_INFO,"Frame %i assigned",job_frame_index_to_number(&wdb->job[ijob],iframe));
+						break;
+					}
+				}
+				wdb->lb.first_i = i;
+				wdb->lb.counter = 1;
+				break;
 			}
 			if (pol[i].pri == pol[i+wdb->lb.counter].pri) {
 				ijob = pol[i+wdb->lb.counter].index;
@@ -652,7 +663,18 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
 					break;
 				}
 			} else {
-				wdb->lb.counter = 0;
+				for (i=0;i<MAXJOBS;i++) {
+					ijob = pol[i].index;
+					/* ATENTION job_available sets the available frame as FS_ASSIGNED !! */
+					/* We need to set it back to FS_WAITING if something fails */
+					if (job_available(wdb,ijob,&iframe,icomp)) {
+						log_master_job(&wdb->job[ijob],L_INFO,"Frame %i assigned",job_frame_index_to_number(&wdb->job[ijob],iframe));
+						break;
+					}
+				}
+				wdb->lb.first_i = i;
+				wdb->lb.counter = 1;
+				break;
 			}
 		}
 	}
