@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.62 2002/07/23 13:03:53 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.63 2002/08/02 17:40:21 jorge Exp $
  */
 
 #include <string.h>
@@ -850,7 +850,7 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   gtk_signal_connect (GTK_OBJECT(window),"destroy",GTK_SIGNAL_FUNC(jdd_destroy),info);
   gtk_signal_connect_object(GTK_OBJECT(window),"destroy",GTK_SIGNAL_FUNC(gtk_widget_destroy),
 			    (GtkObject*)window);
-  gtk_window_set_default_size(GTK_WINDOW(window),800,600);
+  gtk_window_set_default_size(GTK_WINDOW(window),800,900);
   gtk_window_set_policy(GTK_WINDOW(window), FALSE, TRUE, FALSE);
   gtk_container_set_border_width (GTK_CONTAINER(window),5);
   info->jdd.dialog = window;
