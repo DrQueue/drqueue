@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.21 2001/07/24 13:56:09 jorge Exp $ */
+/* $Id: slave.c,v 1.22 2001/07/24 14:15:30 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -10,6 +10,8 @@
 #include <sys/wait.h>
 #include <stdlib.h>
 #include <sys/types.h>
+#include <string.h>
+#include <ctype.h>
 
 #include "slave.h"
 #include "libdrqueue.h"
@@ -282,10 +284,13 @@ void launch_task (struct slave_database *sdb)
       int lfd;			/* logger fd */
       int i;
       const char *targ;
+      char cmd[MAXCMDLEN];
       
       set_signal_handlers_task_exec ();
+      strncpy(cmd,sdb->comp->status.task[sdb->itask].jobcmd,MAXCMDLEN);
+      zerocmd (cmd);
       for (i=0;i<64;i++) {
-	if ((targ = parse_arg(sdb->comp->status.task[sdb->itask].jobcmd,i)) != NULL)
+	if ((targ = parse_arg(cmd,i)) != NULL)
 	  new_argv[i] = targ;
 	else
 	  break;
@@ -300,7 +305,7 @@ void launch_task (struct slave_database *sdb)
 
       set_environment(sdb);
 
-      execve(SHELL_PATH,(char*const*)new_argv,environ);
+      execve(new_argv[0],(char*const*)new_argv,environ);
 
       exit(errno);		/* If we arrive here, something happened exec'ing */
     }
@@ -324,7 +329,7 @@ void launch_task (struct slave_database *sdb)
       if (WIFSIGNALED(rc)) {
 	/* Process exited abnormally either killed by us or by itself (SIGSEGV) */
 	printf ("\n\nSIGNALED with %i\n",WTERMSIG(rc));
-	sdb->comp->status.task[sdb->itask].exitstatus |= DR_EXITEDFLAG ;
+	sdb->comp->status.task[sdb->itask].exitstatus |= DR_SIGNALEDFLAG ;
 	sdb->comp->status.task[sdb->itask].exitstatus |= (WTERMSIG(rc)&&0xff);
       } else {
 	if (WIFEXITED(rc)) {
@@ -362,10 +367,29 @@ void set_environment (struct slave_database *sdb)
 #endif
 }
 
+void zerocmd (char *cmd)
+{
+  /* this functions zeros all the spaces of a cmd so it can be later parsed */
+  while (*cmd != 0) {
+    if (isspace (*cmd))
+      *cmd = 0;
+    cmd++;
+  }
+}
 
+char *parse_arg (const char *cmd,int pos)
+{
+  int c = 0; 
+  const char *a = cmd;			/* argument to be returned */
 
+  while (c < pos) {
+    while (*a) a++;		/* jumps a word */
+    while (!*a) a++;		/* jumps the zeroes */
+    c++;
+  }
 
-
+  return a;
+}
 
 
 

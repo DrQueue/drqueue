@@ -1,4 +1,4 @@
-/* $Id: slave.h,v 1.7 2001/07/06 09:14:11 jorge Exp $ */
+/* $Id: slave.h,v 1.8 2001/07/24 14:15:30 jorge Exp $ */
 
 #ifndef _SLAVE_H_
 #define _SLAVE_H_
@@ -37,5 +37,8 @@ void set_environment (struct slave_database *sdb);
 int get_shared_memory_slave (void);
 int get_semaphores_slave (void);
 void *attach_shared_memory_slave (int shmid);
+
+void zerocmd (char *cmd);
+char *parse_arg (const char *cmd,int pos);
 
 #endif
