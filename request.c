@@ -2091,6 +2091,8 @@ void handle_r_r_jobdelblkhost (int sfd, struct database *wdb, int icomp, struct 
 
 	if (ihost >= wdb->job[ijob].nblocked) {
 		// ihost out of range
+		semaphore_release (wdb->semid);
+		log_master (L_INFO,"Host to be blocked out of range");
 		return;
 	}
 
@@ -2122,6 +2124,7 @@ void handle_r_r_jobdelblkhost (int sfd, struct database *wdb, int icomp, struct 
 												"job_delete: shmctl (job->bhshmid,IPC_RMID,NULL) [Removing blocked hosts shared memory]");
 		}
 		wdb->job[ijob].bhshmid = nbhshmid;
+		wdb->job[ijob].nblocked--;
 	} else {
 		// nblocked must be 1
 		if ((obh = attach_blocked_host_shared_memory (wdb->job[ijob].bhshmid)) == (void *)-1) {
@@ -2208,6 +2211,7 @@ void handle_r_r_joblstblkhost (int sfd, struct database *wdb, int icomp, struct 
 	}
 
 	for (i=0;i<wdb->job[ijob].nblocked;i++) {
+		// log_master (L_DEBUG,"Listing: %s",nbh[i].name);
 		send_blocked_host (sfd,&nbh[i]);
 	}
 
@@ -2292,13 +2296,6 @@ void handle_r_r_jobblkhost (int sfd, struct database *wdb, int icomp, struct req
 	wdb->job[ijob].nblocked++;
 
 	semaphore_release (wdb->semid);	
-	{
-		int i;
-
-		for (i=0;i<wdb->job[ijob].nblocked;i++) {
-			log_master_job(&wdb->job[ijob],L_INFO,"Host blocked : %s",nbh[i].name);
-		}
-	}
 
 	log_master(L_DEBUG,"Exiting handle_r_r_jobblkhost");
 }
