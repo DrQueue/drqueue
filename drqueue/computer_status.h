@@ -1,4 +1,4 @@
-/* $Id: computer_status.h,v 1.7 2002/02/15 11:51:00 jorge Exp $ */
+/* $Id: computer_status.h,v 1.8 2002/03/01 11:38:07 jorge Exp $ */
 
 #ifndef _COMPUTER_STATUS_H_
 #define _COMPUTER_STATUS_H_
@@ -25,9 +25,9 @@ struct computer_status {
   struct task task[MAXTASKS];
 };
 
-void get_computer_status (struct computer_status *cstatus);
+void get_computer_status (struct computer_status *cstatus, int semid);
 void computer_status_init (struct computer_status *cstatus);
-void check_tasks (struct computer_status *cstatus);
+void check_tasks (struct computer_status *cstatus, int semid);
 void get_loadavg (uint16_t *loadavg);
 void report_computer_status (struct computer_status *status);
 

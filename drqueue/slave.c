@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.54 2002/02/26 15:52:05 jorge Exp $ */
+/* $Id: slave.c,v 1.55 2002/03/01 11:38:08 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -63,7 +63,7 @@ int main (int argc,char *argv[])
   }
 
   while (1) {
-    get_computer_status (&sdb.comp->status);
+    get_computer_status (&sdb.comp->status,sdb.semid);
 
     launched = 0;
     while (computer_available(sdb.comp)) {
