@@ -1,4 +1,116 @@
-2005-02-18 17:10:06  kraken
+2005-03-25 23:06:20  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/computer_info.freebsd.c
+
+	* Problem with FreeBSD processor speed solved
+
+2005-03-11 20:11:56  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/common.c
+	   M /trunk/drqueue/master.c
+	   M /trunk/drqueue/slave.c
+
+	* Help info updated
+
+2005-03-11 20:08:05  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/common.c
+	   M /trunk/drqueue/etc/slave.conf
+	   M /trunk/drqueue/master.c
+
+	* Problem with carriage return on config files solved
+
+2005-03-09 20:10:52  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/drqman/drqm_jobs_jdd.c
+	   M /trunk/drqueue/etc/pixie.sg
+
+	* Pixie.sg problem solved
+
+2005-03-03 12:43:01  Vincent Dedun <kraken+spam@smousseland.com>
+
+	* Changed paths:
+	   M /trunk/drqueue/contrib/windows/Controller/ServicesController.Form1.resources.src.gz
+	   M /trunk/drqueue/contrib/windows/Installer/installer.ini
+	   M /trunk/drqueue/contrib/windows/Installer/installer.nsi
+	   M /trunk/drqueue/contrib/windows/install_dlls.sh
+	   M /trunk/drqueue/drqman/drqm_common.c
+	   M /trunk/drqueue/drqman/drqm_common.h
+	   M /trunk/drqueue/drqman/drqm_cygwin.c
+	   M /trunk/drqueue/drqman/drqm_cygwin.h
+	   M /trunk/drqueue/drqman/drqm_jobs.c
+	   M /trunk/drqueue/drqman/drqm_jobs_3delight.c
+	   M /trunk/drqueue/drqman/drqm_jobs_blender.c
+	   M /trunk/drqueue/drqman/drqm_jobs_bmrt.c
+	   M /trunk/drqueue/drqman/drqm_jobs_maya.c
+	   M /trunk/drqueue/drqman/drqm_jobs_mentalray.c
+	   M /trunk/drqueue/drqman/drqm_jobs_pixie.c
+
+	* Windows installer now accept network path for temp dir
+	* Windows installer now ask for log dir
+	* Fix in windows drqman, don't convert path to unix path
+	* Added pool column in job list
+	* Fix in windows dll installation
+	* Cygwin functions cleanup
+
+2005-03-02 13:27:14  Vincent Dedun <kraken+spam@smousseland.com>
+
+	* Changed paths:
+	   M /trunk/drqueue/etc/blender.sg
+
+	* fix in blender script
+
+2005-03-02 13:18:12  Vincent Dedun <kraken+spam@smousseland.com>
+
+	* Changed paths:
+	   M /trunk/drqueue/blendersg.c
+	   M /trunk/drqueue/drqman/drqm_computers.c
+	   M /trunk/drqueue/etc/blender.sg
+	   M /trunk/drqueue/svn-scripts/svn2cl.pl
+
+	* Added pools filter in computer list
+	* Fix in blender script (works on windows)
+
+2005-02-28 14:14:19  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/svn-scripts/svn2cl.pl
+
+	* The comma
+
+2005-02-28 14:13:25  Pablo Martin <caedes@sindominio.net>
+
+	* Changed paths:
+	   M /trunk/drqueue/svn-scripts/svn2cl.pl
+
+	* añadido caedes a $hackers
+
+2005-02-27 04:46:23  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/Revision
+
+	* New Revision commited by build_package.sh
+
+2005-02-27 04:46:15  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/ChangeLog
+
+	* ChangeLog commited by build_package.sh
+
+2005-02-27 04:46:07  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/common.h
+
+	* New version number on common.h: 0.59.3
+
+2005-02-18 17:10:06  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   M /trunk/drqueue/README.windows
@@ -13,7 +125,7 @@
 	* Added viewing command for windows version
 	* Windows controller will now quit on demand, and not block windows when shutdown
 
-2005-02-11 15:53:47  kraken
+2005-02-11 15:53:47  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   M /trunk/drqueue/Makefile
@@ -25,7 +137,7 @@
 
 	* Fixed windows version master with SP2
 
-2005-02-11 14:41:08  kraken
+2005-02-11 14:41:08  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   M /trunk/drqueue/contrib/windows/Controller/Form1.cs
@@ -33,7 +145,7 @@
 
 	* Windows controller is disabled by default
 
-2005-02-11 14:35:11  kraken
+2005-02-11 14:35:11  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   M /trunk/drqueue/contrib/windows/Controller/ServicesController.Form1.resources.src.gz
@@ -41,7 +153,7 @@
 
 	* Forgot to remove temporary code for windows version in slave
 
-2005-02-11 14:31:52  kraken
+2005-02-11 14:31:52  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   M /trunk/drqueue/master.c
@@ -49,7 +161,7 @@
 
 	* fix in windows version, now works with SP2
 
-2005-02-09 18:08:44  kraken
+2005-02-09 18:08:44  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   M /trunk/drqueue/computer_status.c
@@ -99,7 +211,7 @@
 
 	* Added ServicesController resources files
 
-2005-02-04 13:22:40  kraken
+2005-02-04 13:22:40  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   D /trunk/drqueue/contrib/windows/Controller/ServicesController.Form1.resources
@@ -108,14 +220,14 @@
 
 	* Add gz resource as it is corrupted by svn
 
-2005-02-04 12:58:32  kraken
+2005-02-04 12:58:32  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   A /trunk/drqueue/contrib/windows/Controller/ServicesController.Form1.resources
 
 	* fixes in windows controller ressources
 
-2005-02-04 12:57:11  kraken
+2005-02-04 12:57:11  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   M /trunk/drqueue/Makefile
@@ -130,7 +242,7 @@
 
 	* Fixes in windows resources
 
-2005-02-04 11:31:28  kraken
+2005-02-04 11:31:28  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   M /trunk/drqueue/Makefile
@@ -163,7 +275,7 @@
 
 	* Problem with Madrake 10.0 with libwrap
 
-2005-02-01 12:08:53  kraken
+2005-02-01 12:08:53  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   M /trunk/drqueue/contrib/windows/Installer/installer.nsi
@@ -208,7 +320,7 @@
 
 	* New version number on common.h: 0.59.2
 
-2005-01-31 19:49:42  kraken
+2005-01-31 19:49:42  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   M /trunk/drqueue/Makefile
@@ -227,7 +339,7 @@
 
 	* IPC correction, drqman fixes for windows version
 
-2005-01-31 15:20:01  kraken
+2005-01-31 15:20:01  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   M /trunk/drqueue/Makefile
@@ -236,7 +348,7 @@
 
 	* Fixes in windows installation
 
-2005-01-31 07:14:26  kraken
+2005-01-31 07:14:26  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   M /trunk/drqueue/3delightsg.c
@@ -277,7 +389,7 @@
 
 	* Native windows gtk version
 
-2005-01-30 21:09:05  kraken
+2005-01-30 21:09:05  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   M /trunk/drqueue/Makefile
@@ -285,7 +397,7 @@
 
 	* Add icon for windows in Makefile
 
-2005-01-30 18:53:36  kraken
+2005-01-30 18:53:36  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   M /trunk/drqueue/Makefile
@@ -299,7 +411,7 @@
 
 	* Windows services fixes
 
-2005-01-27 18:22:58  kraken
+2005-01-27 18:22:58  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   M /trunk/drqueue/common.c
@@ -325,14 +437,14 @@
 
 	* Windows installation fixes (services back for master and ipc)
 
-2005-01-27 17:23:33  kraken
+2005-01-27 17:23:33  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   M /trunk/drqueue/etc/maya.sg
 
 	* fix maya sg script for windows
 
-2005-01-27 17:21:37  kraken
+2005-01-27 17:21:37  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   M /trunk/drqueue/etc/3delight.sg
@@ -348,7 +460,7 @@
 
 	* fix sg script to work on windows
 
-2005-01-27 13:08:56  kraken
+2005-01-27 13:08:56  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   M /trunk/drqueue/drqman/drqm_request.c
@@ -357,7 +469,7 @@
 
 	* fixes for windows version (slave, master, drqman)
 
-2005-01-27 11:27:02  kraken
+2005-01-27 11:27:02  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   M /trunk/drqueue/Makefile
@@ -368,7 +480,7 @@
 	* fix in task windows path for execution
 	* fix name of notify icon in windows Controller
 
-2005-01-27 00:59:07  kraken
+2005-01-27 00:59:07  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   M /trunk/drqueue/Makefile
@@ -378,14 +490,14 @@
 
 	* Fixes in windows version
 
-2005-01-27 00:21:34  kraken
+2005-01-27 00:21:34  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   M /trunk/drqueue/contrib/windows/Installer/installer.nsi
 
 	* Windows installer fixes
 
-2005-01-27 00:09:25  kraken
+2005-01-27 00:09:25  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   A /trunk/drqueue/contrib/windows/Controller
@@ -403,7 +515,7 @@
 
 	* Removed windows services, redesigned windows Controller GUI
 
-2005-01-26 19:53:06  kraken
+2005-01-26 19:53:06  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   M /trunk/drqueue/contrib/windows/Installer/installer.ini
@@ -412,7 +524,7 @@
 
 	* fixes in windows installer
 
-2005-01-26 14:03:29  kraken
+2005-01-26 14:03:29  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   M /trunk/drqueue/drqman/drqm_request.c
@@ -420,7 +532,7 @@
 
 	* bugfixe in requests
 
-2005-01-26 13:19:09  kraken
+2005-01-26 13:19:09  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   M /trunk/drqueue/contrib/windows/Installer/installer.nsi
@@ -431,14 +543,14 @@
 
 	* bug fixes in windows installer and service
 
-2005-01-26 12:33:46  kraken
+2005-01-26 12:33:46  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   A /trunk/drqueue/contrib/windows/Services/ServicesController/Form1.resources
 
 	* added windows service controller compiled resource file
 
-2005-01-26 12:32:25  kraken
+2005-01-26 12:32:25  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   M /trunk/drqueue/Makefile
@@ -459,7 +571,7 @@
 
 	* Windows version fixes in Makefile and contrib scripts
 
-2005-01-25 18:59:03  kraken
+2005-01-25 18:59:03  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   M /trunk/drqueue/Makefile
@@ -478,7 +590,7 @@
 
 	* Added binary icon
 
-2005-01-25 18:36:01  kraken
+2005-01-25 18:36:01  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   A /trunk/drqueue/contrib/windows/Service.nsh
@@ -516,21 +628,21 @@
 
 	* Initial windows installer and service
 
-2005-01-25 18:23:36  kraken
+2005-01-25 18:23:36  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   A /trunk/drqueue/contrib/windows/installer.ini
 
 	* Windows installer gui
 
-2005-01-25 18:08:21  kraken
+2005-01-25 18:08:21  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   A /trunk/drqueue/contrib/windows
 
 	* contrib fixup for windows version
 
-2005-01-25 17:46:47  kraken
+2005-01-25 17:46:47  Vincent Dedun <kraken+spam@smousseland.com>
 
 	* Changed paths:
 	   D /trunk/drqueue/contrib/Service.nsh
