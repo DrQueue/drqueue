@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.16 2001/09/06 13:06:59 jorge Exp $ */
+/* $Id: job.h,v 1.17 2001/09/12 15:05:09 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -31,11 +31,12 @@ typedef enum {
   FS_FINISHED			/* Finished with success */
 } t_framestatus;
 
+/* Struct that holds information about a single frame */
 struct frame_info {
   char status;			/* Status */
   time_t start_time,end_time;	/* Time of start and ending of the frame (32 bit integer) */
   char exitcode;		/* Exit code of the process */
-  uint16_t icomp;		/* Index to computer */
+  uint32_t icomp;		/* Index to computer */
   uint16_t itask;		/* Index to task on computer */
 };
 
