@@ -1,7 +1,10 @@
-/* $Id: common.c,v 1.6 2001/11/14 14:23:37 jorge Exp $ */
+/* $Id: common.c,v 1.7 2001/11/15 14:30:55 jorge Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "common.h"
 #include "drerrno.h"
@@ -9,7 +12,10 @@
 
 int common_environment_check (void)
 {
+  /* This function checks the environment AND the directory structure */
   char *buf;
+  struct stat s_stat;
+  char dir_str[BUFFERLEN];
 
   if ((buf = getenv("DRQUEUE_MASTER")) == NULL) {
     drerrno = DRE_NOENVMASTER;
@@ -18,6 +24,39 @@ int common_environment_check (void)
 
   if ((buf = getenv("DRQUEUE_ROOT")) == NULL) {
     drerrno = DRE_NOENVROOT;
+    return 0;
+  }
+
+  snprintf (dir_str,BUFFERLEN-1,"%s/tmp",buf);
+  if (stat (dir_str,&s_stat) == -1) {
+    drerrno = DRE_NOTMPDIR;
+    return 0;
+  } else if ((!S_ISDIR(s_stat.st_mode)) || (!(S_IWOTH & s_stat.st_mode))) {
+    drerrno = DRE_NOTMPDIR;
+    return 0;
+  }
+
+  snprintf (dir_str,BUFFERLEN-1,"%s/db",buf);
+  if (stat (dir_str,&s_stat) == -1) {
+    drerrno = DRE_NODBDIR;
+    return 0;
+  } else if ((!S_ISDIR(s_stat.st_mode)) || (!(S_IWUSR & s_stat.st_mode))) {
+    drerrno = DRE_NODBDIR;
+    return 0;
+  }
+
+  snprintf (dir_str,BUFFERLEN-1,"%s/logs",buf);
+  if (stat (dir_str,&s_stat) == -1) {
+    drerrno = DRE_NOLOGDIR;
+    return 0;
+  } else if ((!S_ISDIR(s_stat.st_mode)) || (!(S_IWUSR & s_stat.st_mode))) {
+    drerrno = DRE_NOLOGDIR;
+    return 0;
+  }
+
+  snprintf (dir_str,BUFFERLEN-1,"%s/bin",buf);
+  if (stat (dir_str,&s_stat) == -1) {
+    drerrno = DRE_NOBINDIR;
     return 0;
   }
 
@@ -87,3 +126,5 @@ char *time_str (uint32_t nseconds)
 
   return msg;
 }
+
+
