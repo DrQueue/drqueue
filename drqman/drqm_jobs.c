@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.23 2001/09/04 16:00:04 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.24 2001/09/04 23:27:50 jorge Exp $
  */
 
 #include <string.h>
@@ -18,52 +18,54 @@
 #include "drqm_jobs.h"
 
 /* Static functions declaration */
-static GtkWidget *CreateJobsList(struct info_drqm_jobs *info);
+static GtkWidget *CreateJobsList(struct drqm_jobs_info *info);
 static GtkWidget *CreateClist (GtkWidget *window);
-static GtkWidget *CreateButtonRefresh (struct info_drqm_jobs *info);
-static void PressedButtonRefresh (GtkWidget *b, struct info_drqm_jobs *info);
-static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct info_drqm_jobs *info);
-static GtkWidget *CreateMenu (struct info_drqm_jobs *info);
+static GtkWidget *CreateButtonRefresh (struct drqm_jobs_info *info);
+static void PressedButtonRefresh (GtkWidget *b, struct drqm_jobs_info *info);
+static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *info);
+static GtkWidget *CreateMenu (struct drqm_jobs_info *info);
 static int pri_cmp_clist (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
 
-static void JobDetails(GtkWidget *menu_item, struct info_drqm_jobs *info);
-static GtkWidget *JobDetailsDialog (struct info_drqm_jobs *info);
+static void JobDetails(GtkWidget *menu_item, struct drqm_jobs_info *info);
+static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info);
 static GtkWidget *CreateFrameInfoClist (void);
-static void jdd_destroy (GtkWidget *w, struct info_drqm_jobs *info);
-static int jdd_update (GtkWidget *w, struct info_drqm_jobs *info);
-static GtkWidget *CreateMenuFrames (struct info_drqm_jobs *info);
-static gint PopupMenuFrames (GtkWidget *clist, GdkEvent *event, struct info_drqm_jobs *info);
-static void SeeFrameLog (GtkWidget *w, struct info_drqm_jobs *info);
-static GtkWidget *SeeFrameLogDialog (struct info_drqm_jobs *info);
+static void jdd_destroy (GtkWidget *w, struct drqm_jobs_info *info);
+static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info);
+static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info);
+static gint PopupMenuFrames (GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *info);
+static void SeeFrameLog (GtkWidget *w, struct drqm_jobs_info *info);
+static void jdd_requeue_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
+static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info);
 
-static void NewJob (GtkWidget *menu_item, struct info_drqm_jobs *info);
-static GtkWidget *NewJobDialog (struct info_drqm_jobs *info);
-static void dnj_psearch (GtkWidget *button, struct info_dnj *info);
-static void dnj_set_cmd (GtkWidget *button, struct info_dnj *info);
-static void dnj_cpri_changed (GtkWidget *entry, struct info_dnj *info);
-static void dnj_bsubmit_pressed (GtkWidget *button, struct info_dnj *info);
-static int dnj_submit (struct info_dnj *info);
-static void dnj_destroyed (GtkWidget *dialog, struct info_drqm_jobs *info);
+static void NewJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
+static GtkWidget *NewJobDialog (struct drqm_jobs_info *info);
+static void dnj_psearch (GtkWidget *button, struct drqmj_dnji *info);
+static void dnj_set_cmd (GtkWidget *button, struct drqmj_dnji *info);
+static void dnj_cpri_changed (GtkWidget *entry, struct drqmj_dnji *info);
+static void dnj_bsubmit_pressed (GtkWidget *button, struct drqmj_dnji *info);
+static int dnj_submit (struct drqmj_dnji *info);
+static void dnj_destroyed (GtkWidget *dialog, struct drqm_jobs_info *info);
 
-static void DeleteJob (GtkWidget *menu_item, struct info_drqm_jobs *info);
-static GtkWidget *DeleteJobDialog (struct info_drqm_jobs *info);
-static void djd_bok_pressed (GtkWidget *button, struct info_drqm_jobs *info);
+static void DeleteJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
+static GtkWidget *DeleteJobDialog (struct drqm_jobs_info *info);
+static void djd_bok_pressed (GtkWidget *button, struct drqm_jobs_info *info);
 
-static void StopJob (GtkWidget *menu_item, struct info_drqm_jobs *info);
+static void StopJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
 
-static void HStopJob (GtkWidget *menu_item, struct info_drqm_jobs *info);
-static GtkWidget *HStopJobDialog (struct info_drqm_jobs *info);
-static void djhs_bok_pressed (GtkWidget *button, struct info_drqm_jobs *info);
+static void HStopJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
+static GtkWidget *HStopJobDialog (struct drqm_jobs_info *info);
+static void djhs_bok_pressed (GtkWidget *button, struct drqm_jobs_info *info);
 
-static void ContinueJob (GtkWidget *menu_item, struct info_drqm_jobs *info);
+static void ContinueJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
 
 /* Maya Script Generator */
-static void MayaScriptGenerator (GtkWidget *button,struct info_drqm_jobs *info_dj);
-static GtkWidget *MayaScriptGeneratorDialog (struct info_drqm_jobs *info_dj);
-static void msgd_scene_search (GtkWidget *button, struct info_msgd *info);
-static void msgd_set_scene (GtkWidget *button, struct info_msgd *info);
-static void msgd_project_search (GtkWidget *button, struct info_msgd *info);
-static void msgd_set_project (GtkWidget *button, struct info_msgd *info);
+static void MayaScriptGenerator (GtkWidget *button,struct drqm_jobs_info *info_dj);
+static GtkWidget *MayaScriptGeneratorDialog (struct drqm_jobs_info *info_dj);
+static void msgd_scene_search (GtkWidget *button, struct drqmj_msgdi *info);
+static void msgd_set_scene (GtkWidget *button, struct drqmj_msgdi *info);
+static void msgd_project_search (GtkWidget *button, struct drqmj_msgdi *info);
+static void msgd_set_project (GtkWidget *button, struct drqmj_msgdi *info);
+static void msgd_bcreate_pressed (GtkWidget *button, struct drqm_jobs_info *info);
 char *default_script_path (void);
 
 void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info)
@@ -103,7 +105,7 @@ void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info)
   gtk_widget_show(container);
 }
 
-static GtkWidget *CreateJobsList(struct info_drqm_jobs *info)
+static GtkWidget *CreateJobsList(struct drqm_jobs_info *info)
 {
   GtkWidget *window;
 
@@ -137,7 +139,7 @@ static GtkWidget *CreateClist (GtkWidget *window)
 
   gtk_clist_set_sort_column (GTK_CLIST(clist),8);
   gtk_clist_set_sort_type (GTK_CLIST(clist),GTK_SORT_ASCENDING);
-/*    gtk_clist_set_compare_func (GTK_CLIST(clist),pri_cmp_clist); */
+  gtk_clist_set_compare_func (GTK_CLIST(clist),pri_cmp_clist);
 
   gtk_widget_show(clist);
 
@@ -145,7 +147,7 @@ static GtkWidget *CreateClist (GtkWidget *window)
 }
 
 
-static GtkWidget *CreateButtonRefresh (struct info_drqm_jobs *info)
+static GtkWidget *CreateButtonRefresh (struct drqm_jobs_info *info)
 {
   GtkWidget *b;
   
@@ -157,13 +159,13 @@ static GtkWidget *CreateButtonRefresh (struct info_drqm_jobs *info)
   return b;
 }
 
-static void PressedButtonRefresh (GtkWidget *b, struct info_drqm_jobs *info)
+static void PressedButtonRefresh (GtkWidget *b, struct drqm_jobs_info *info)
 {
   drqm_request_joblist (info);
   drqm_update_joblist (info);
 }
 
-void drqm_update_joblist (struct info_drqm_jobs *info)
+void drqm_update_joblist (struct drqm_jobs_info *info)
 {
   int i;
   char **buff;
@@ -187,6 +189,7 @@ void drqm_update_joblist (struct info_drqm_jobs *info)
     snprintf (buff[7],BUFFERLEN,"%i",info->jobs[i].ffailed);
     snprintf (buff[8],BUFFERLEN,"%i",info->jobs[i].priority);
     gtk_clist_append(GTK_CLIST(info->clist),buff);
+    gtk_clist_set_row_data(GTK_CLIST(info->clist),i,(gpointer)info->jobs[i].priority);
   }
 
   gtk_clist_sort (GTK_CLIST(info->clist));
@@ -196,7 +199,7 @@ void drqm_update_joblist (struct info_drqm_jobs *info)
     g_free (buff[i]);
 }
 
-static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct info_drqm_jobs *info)
+static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *info)
 {
   if (event->type == GDK_BUTTON_PRESS) {
     GdkEventButton *bevent = (GdkEventButton *) event;
@@ -212,7 +215,7 @@ static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct info_drqm_jobs *
   return FALSE;
 }
 
-static GtkWidget *CreateMenu (struct info_drqm_jobs *info)
+static GtkWidget *CreateMenu (struct drqm_jobs_info *info)
 {
   GtkWidget *menu;
   GtkWidget *menu_item;
@@ -221,32 +224,33 @@ static GtkWidget *CreateMenu (struct info_drqm_jobs *info)
   menu_item = gtk_menu_item_new_with_label("Details");
   gtk_menu_append(GTK_MENU(menu),menu_item);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(JobDetails),info);
-  gtk_widget_show(menu_item);
+
+  menu_item = gtk_menu_item_new();
+  gtk_menu_append(GTK_MENU(menu),menu_item);
 
   menu_item = gtk_menu_item_new_with_label("New Job");
   gtk_menu_append(GTK_MENU(menu),menu_item);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(NewJob),info);
   gtk_widget_show(menu_item);
 
+  menu_item = gtk_menu_item_new();
+  gtk_menu_append(GTK_MENU(menu),menu_item);
+
   menu_item = gtk_menu_item_new_with_label("Stop");
   gtk_menu_append(GTK_MENU(menu),menu_item);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(StopJob),info);
-  gtk_widget_show(menu_item);
 
   menu_item = gtk_menu_item_new_with_label("Hard Stop");
   gtk_menu_append(GTK_MENU(menu),menu_item);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(HStopJob),info);
-  gtk_widget_show(menu_item);
 
   menu_item = gtk_menu_item_new_with_label("Continue");
   gtk_menu_append(GTK_MENU(menu),menu_item);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(ContinueJob),info);
-  gtk_widget_show(menu_item);
 
   menu_item = gtk_menu_item_new_with_label("Delete");
   gtk_menu_append(GTK_MENU(menu),menu_item);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(DeleteJob),info);
-  gtk_widget_show(menu_item);
 
   gtk_signal_connect(GTK_OBJECT((info->clist)),"event",GTK_SIGNAL_FUNC(PopupMenu),info);
 
@@ -255,7 +259,7 @@ static GtkWidget *CreateMenu (struct info_drqm_jobs *info)
   return (menu);
 }
 
-static void JobDetails(GtkWidget *menu_item, struct info_drqm_jobs *info)
+static void JobDetails(GtkWidget *menu_item, struct drqm_jobs_info *info)
 {
   GtkWidget *dialog;
 
@@ -267,7 +271,7 @@ static void JobDetails(GtkWidget *menu_item, struct info_drqm_jobs *info)
     gtk_grab_add(dialog);
 }
 
-static void NewJob (GtkWidget *menu_item, struct info_drqm_jobs *info)
+static void NewJob (GtkWidget *menu_item, struct drqm_jobs_info *info)
 {
   GtkWidget *dialog;
   dialog = NewJobDialog(info);
@@ -276,7 +280,7 @@ static void NewJob (GtkWidget *menu_item, struct info_drqm_jobs *info)
   gtk_grab_add(dialog);
 }
 
-static GtkWidget *NewJobDialog (struct info_drqm_jobs *info)
+static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
 {
   GtkWidget *window;
   GtkWidget *frame;
@@ -439,7 +443,7 @@ static GtkWidget *NewJobDialog (struct info_drqm_jobs *info)
   return window;
 }
 
-static void dnj_psearch (GtkWidget *button, struct info_dnj *info)
+static void dnj_psearch (GtkWidget *button, struct drqmj_dnji *info)
 {
   GtkWidget *dialog;
 
@@ -458,12 +462,12 @@ static void dnj_psearch (GtkWidget *button, struct info_dnj *info)
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void dnj_set_cmd (GtkWidget *button, struct info_dnj *info)
+static void dnj_set_cmd (GtkWidget *button, struct drqmj_dnji *info)
 {
   gtk_entry_set_text (GTK_ENTRY(info->ecmd),gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fs)));
 }
 
-static void dnj_cpri_changed (GtkWidget *entry, struct info_dnj *info)
+static void dnj_cpri_changed (GtkWidget *entry, struct drqmj_dnji *info)
 {
   if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Highest") == 0) {
     gtk_entry_set_editable (GTK_ENTRY(info->epri),FALSE);
@@ -488,7 +492,7 @@ static void dnj_cpri_changed (GtkWidget *entry, struct info_dnj *info)
   }
 }
 
-static void dnj_bsubmit_pressed (GtkWidget *button, struct info_dnj *info)
+static void dnj_bsubmit_pressed (GtkWidget *button, struct drqmj_dnji *info)
 {
   GtkWidget *dialog, *label, *okay_button;
 
@@ -512,7 +516,7 @@ static void dnj_bsubmit_pressed (GtkWidget *button, struct info_dnj *info)
   }
 }
 
-static int dnj_submit (struct info_dnj *info)
+static int dnj_submit (struct drqmj_dnji *info)
 {
   /* This is the function that actually submits the job info */
   struct job job;
@@ -549,7 +553,7 @@ static int dnj_submit (struct info_dnj *info)
   return 1;
 }
 
-static void dnj_destroyed (GtkWidget *dialog, struct info_drqm_jobs *info)
+static void dnj_destroyed (GtkWidget *dialog, struct drqm_jobs_info *info)
 {
   drqm_request_joblist (info);
   drqm_update_joblist (info);
@@ -559,12 +563,9 @@ static int pri_cmp_clist (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr
 {
   uint32_t a,b;
 
-  sscanf(ptr1,"%u",&a);
-  sscanf(ptr2,"%u",&b);
-  fprintf (stderr,"%u %u\n",a,b);
-  fprintf (stderr,"%u %u\n",(int)ptr1,(int)ptr2);
-  fprintf (stderr,"%u %u\n",*((int*)ptr1),*((int*)ptr2));
-  
+  a = (uint32_t) ((GtkCListRow*)ptr1)->data;
+  b = (uint32_t) ((GtkCListRow*)ptr2)->data;
+
   if (a > b) {
     return 1;
   } else if (a == b) {
@@ -576,7 +577,7 @@ static int pri_cmp_clist (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr
   return 0;
 }
 
-static void DeleteJob (GtkWidget *menu_item, struct info_drqm_jobs *info)
+static void DeleteJob (GtkWidget *menu_item, struct drqm_jobs_info *info)
 {
   GtkWidget *dialog;
 
@@ -589,7 +590,7 @@ static void DeleteJob (GtkWidget *menu_item, struct info_drqm_jobs *info)
   gtk_window_set_modal(GTK_WINDOW(dialog),TRUE);
 }
 
-static GtkWidget *DeleteJobDialog (struct info_drqm_jobs *info)
+static GtkWidget *DeleteJobDialog (struct drqm_jobs_info *info)
 {
   GtkWidget *dialog;
   GtkWidget *label;
@@ -625,12 +626,12 @@ static GtkWidget *DeleteJobDialog (struct info_drqm_jobs *info)
   return dialog;
 }
 
-static void djd_bok_pressed (GtkWidget *button, struct info_drqm_jobs *info)
+static void djd_bok_pressed (GtkWidget *button, struct drqm_jobs_info *info)
 {
   drqm_request_job_delete (info);
 }
 
-static void StopJob (GtkWidget *menu_item, struct info_drqm_jobs *info)
+static void StopJob (GtkWidget *menu_item, struct drqm_jobs_info *info)
 {
   if (!info->selected)
     return;
@@ -639,7 +640,7 @@ static void StopJob (GtkWidget *menu_item, struct info_drqm_jobs *info)
   dnj_destroyed(menu_item,info); /* updates the list */
 }
 
-static void ContinueJob (GtkWidget *menu_item, struct info_drqm_jobs *info)
+static void ContinueJob (GtkWidget *menu_item, struct drqm_jobs_info *info)
 {
   if (!info->selected)
     return;
@@ -648,7 +649,7 @@ static void ContinueJob (GtkWidget *menu_item, struct info_drqm_jobs *info)
   dnj_destroyed(menu_item,info); /* Updates the list */
 }
 
-static void HStopJob (GtkWidget *menu_item, struct info_drqm_jobs *info)
+static void HStopJob (GtkWidget *menu_item, struct drqm_jobs_info *info)
 {
   GtkWidget *dialog;
 
@@ -661,7 +662,7 @@ static void HStopJob (GtkWidget *menu_item, struct info_drqm_jobs *info)
   gtk_grab_add(dialog);
 }
 
-static GtkWidget *JobDetailsDialog (struct info_drqm_jobs *info)
+static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
 {
   GtkWidget *window;
   GtkWidget *frame;
@@ -793,6 +794,7 @@ static GtkWidget *JobDetailsDialog (struct info_drqm_jobs *info)
   swin = gtk_scrolled_window_new (NULL,NULL);
   gtk_container_add (GTK_CONTAINER(frame),swin);
   clist = CreateFrameInfoClist ();
+  gtk_clist_set_selection_mode(GTK_CLIST(clist),GTK_SELECTION_EXTENDED);
   gtk_container_add (GTK_CONTAINER(swin),clist);
   info->jdd.clist = clist;
 
@@ -841,7 +843,7 @@ static GtkWidget *JobDetailsDialog (struct info_drqm_jobs *info)
   return window;
 }
 
-static void jdd_destroy (GtkWidget *w, struct info_drqm_jobs *info)
+static void jdd_destroy (GtkWidget *w, struct drqm_jobs_info *info)
 {
   if (info->jobs[info->ijob].frame_info) {
     free (info->jobs[info->ijob].frame_info);
@@ -871,7 +873,7 @@ static GtkWidget *CreateFrameInfoClist (void)
 
 }
 
-static int jdd_update (GtkWidget *w, struct info_drqm_jobs *info)
+static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
 {
   /* This function depends on info->ijob properly set */
   int nframes;
@@ -961,10 +963,10 @@ static int jdd_update (GtkWidget *w, struct info_drqm_jobs *info)
     *buf = '\0';
   gtk_label_set_text (GTK_LABEL(info->jdd.lestf),msg);
 
-  
   /* Pixmap stuff */
   if (!w_mask) {
     toplevel = gtk_widget_get_toplevel(info->jdd.dialog);
+    gtk_widget_realize(toplevel);
     w_data = gdk_pixmap_create_from_xpm_d (GTK_WIDGET(toplevel)->window,&w_mask,NULL,(gchar**)waiting_xpm);
     if (!r_mask)
       r_data = gdk_pixmap_create_from_xpm_d (GTK_WIDGET(toplevel)->window,&r_mask,NULL,(gchar**)running_xpm);
@@ -1016,7 +1018,9 @@ static int jdd_update (GtkWidget *w, struct info_drqm_jobs *info)
 			     job_frame_status_string(info->jobs[info->ijob].frame_info[i].status), 2,
 			     e_data,e_mask);
       break;
-    }			    
+    }
+    /* Put the frame number as data for the row */
+    gtk_clist_set_row_data (GTK_CLIST(info->jdd.clist),i,(gpointer)job_frame_index_to_number (&info->jobs[info->ijob],i));
   }
 
   gtk_clist_thaw(GTK_CLIST(info->jdd.clist));
@@ -1027,7 +1031,7 @@ static int jdd_update (GtkWidget *w, struct info_drqm_jobs *info)
   return 1;
 }
 
-static GtkWidget *HStopJobDialog (struct info_drqm_jobs *info)
+static GtkWidget *HStopJobDialog (struct drqm_jobs_info *info)
 {
   GtkWidget *dialog;
   GtkWidget *label;
@@ -1063,12 +1067,12 @@ static GtkWidget *HStopJobDialog (struct info_drqm_jobs *info)
   return dialog;
 }
 
-static void djhs_bok_pressed (GtkWidget *button, struct info_drqm_jobs *info)
+static void djhs_bok_pressed (GtkWidget *button, struct drqm_jobs_info *info)
 {
   drqm_request_job_hstop (info);
 }
 
-static GtkWidget *CreateMenuFrames (struct info_drqm_jobs *info)
+static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info)
 {
   GtkWidget *menu;
   GtkWidget *menu_item;
@@ -1076,7 +1080,8 @@ static GtkWidget *CreateMenuFrames (struct info_drqm_jobs *info)
   menu = gtk_menu_new ();
   menu_item = gtk_menu_item_new_with_label("Set Waiting (requeue)");
   gtk_menu_append(GTK_MENU(menu),menu_item);
-/*    gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(JobDetails),info); */
+  gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_requeue_frames),info);
+  gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_update),info);
 
   menu_item = gtk_menu_item_new_with_label("Set Finished");
   gtk_menu_append(GTK_MENU(menu),menu_item);
@@ -1102,8 +1107,24 @@ static GtkWidget *CreateMenuFrames (struct info_drqm_jobs *info)
   return (menu);
 }
 
+static void jdd_requeue_frames (GtkWidget *button,struct drqm_jobs_info *info_dj)
+{
+  GList *sel;
+  uint32_t frame;
 
-static gint PopupMenuFrames (GtkWidget *clist, GdkEvent *event, struct info_drqm_jobs *info)
+  if (!(sel = GTK_CLIST(info_dj->jdd.clist)->selection)) {
+    return;
+  }
+
+  for (;sel;sel = sel->next) {
+    frame = (uint32_t) gtk_clist_get_row_data(GTK_CLIST(info_dj->jdd.clist), (gint)sel->data);
+    printf ("Requeueing Frame: %i\n",frame);
+    drqm_request_job_frame_waiting (info_dj->jobs[info_dj->ijob].id,frame);
+  }
+}
+
+
+static gint PopupMenuFrames (GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *info)
 {
   if (event->type == GDK_BUTTON_PRESS) {
     GdkEventButton *bevent = (GdkEventButton *) event;
@@ -1119,7 +1140,7 @@ static gint PopupMenuFrames (GtkWidget *clist, GdkEvent *event, struct info_drqm
   return FALSE;
 }
 
-static void SeeFrameLog (GtkWidget *w, struct info_drqm_jobs *info)
+static void SeeFrameLog (GtkWidget *w, struct drqm_jobs_info *info)
 {
   GtkWidget *dialog;
 
@@ -1131,7 +1152,7 @@ static void SeeFrameLog (GtkWidget *w, struct info_drqm_jobs *info)
     gtk_grab_add(dialog);
 }
 
-static GtkWidget *SeeFrameLogDialog (struct info_drqm_jobs *info)
+static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info)
 {
   GtkWidget *window;
   GtkWidget *frame;
@@ -1181,7 +1202,7 @@ static GtkWidget *SeeFrameLogDialog (struct info_drqm_jobs *info)
   return window;
 }
 
-static void MayaScriptGenerator (GtkWidget *button,struct info_drqm_jobs *info_dj)
+static void MayaScriptGenerator (GtkWidget *button,struct drqm_jobs_info *info_dj)
 {
   GtkWidget *dialog;
 
@@ -1191,7 +1212,7 @@ static void MayaScriptGenerator (GtkWidget *button,struct info_drqm_jobs *info_d
     gtk_window_set_modal(GTK_WINDOW(dialog),TRUE);
 }
 
-static GtkWidget *MayaScriptGeneratorDialog (struct info_drqm_jobs *info_dj)
+static GtkWidget *MayaScriptGeneratorDialog (struct drqm_jobs_info *info_dj)
 {
   GtkWidget *window;
   GtkWidget *frame;
@@ -1275,8 +1296,10 @@ static GtkWidget *MayaScriptGeneratorDialog (struct info_drqm_jobs *info_dj)
   gtk_widget_show (bbox);
   button = gtk_button_new_with_label ("Create");
   gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,TRUE,2);
-/*    gtk_signal_connect (GTK_OBJECT(button),"clicked", */
-/*  		      dnj_bsubmit_pressed,&info_dj->dnj); */
+  gtk_signal_connect (GTK_OBJECT(button),"clicked",
+		      msgd_bcreate_pressed,info_dj);
+  gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
+			     GTK_SIGNAL_FUNC(gtk_widget_destroy),(gpointer)window);
 
   /* cancel */
   button = gtk_button_new_with_label ("Cancel");
@@ -1290,7 +1313,7 @@ static GtkWidget *MayaScriptGeneratorDialog (struct info_drqm_jobs *info_dj)
   return window;
 }
 
-static void msgd_project_search (GtkWidget *button, struct info_msgd *info)
+static void msgd_project_search (GtkWidget *button, struct drqmj_msgdi *info)
 {
   GtkWidget *dialog;
 
@@ -1309,7 +1332,7 @@ static void msgd_project_search (GtkWidget *button, struct info_msgd *info)
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void msgd_set_project (GtkWidget *button, struct info_msgd *info)
+static void msgd_set_project (GtkWidget *button, struct drqmj_msgdi *info)
 {
   char buf[BUFFERLEN];
   char *p;
@@ -1321,7 +1344,7 @@ static void msgd_set_project (GtkWidget *button, struct info_msgd *info)
   gtk_entry_set_text (GTK_ENTRY(info->eproject),buf);
 }
 
-static void msgd_scene_search (GtkWidget *button, struct info_msgd *info)
+static void msgd_scene_search (GtkWidget *button, struct drqmj_msgdi *info)
 {
   GtkWidget *dialog;
 
@@ -1340,7 +1363,7 @@ static void msgd_scene_search (GtkWidget *button, struct info_msgd *info)
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void msgd_set_scene (GtkWidget *button, struct info_msgd *info)
+static void msgd_set_scene (GtkWidget *button, struct drqmj_msgdi *info)
 {
   char buf[BUFFERLEN];
   char *p;
@@ -1349,6 +1372,23 @@ static void msgd_set_scene (GtkWidget *button, struct info_msgd *info)
   p = strrchr(buf,'/');
   p = ( p ) ? p+1 : buf;
   gtk_entry_set_text (GTK_ENTRY(info->escene),p);
+}
+
+static void msgd_bcreate_pressed (GtkWidget *button, struct drqm_jobs_info *info)
+{
+  struct mayasgi mayasgi;	/* Maya script generator info */
+  char *file;
+
+  strncpy (mayasgi.project,gtk_entry_get_text(GTK_ENTRY(info->msgd.eproject)),BUFFERLEN-1);
+  strncpy (mayasgi.scene,gtk_entry_get_text(GTK_ENTRY(info->msgd.escene)),BUFFERLEN-1);
+  strncpy (mayasgi.image,gtk_entry_get_text(GTK_ENTRY(info->msgd.eimage)),BUFFERLEN-1);
+
+  if ((file = mayasg_create (&mayasgi)) == NULL) {
+    fprintf (stderr,"ERROR: %s\n",drerrno_str());
+    return;
+  } else {
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.ecmd),file);
+  } 
 }
 
 char *default_script_path (void)
@@ -1367,3 +1407,4 @@ char *default_script_path (void)
 
   return buf;
 }
+
