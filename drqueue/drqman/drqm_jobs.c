@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.10 2001/08/06 12:35:03 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.11 2001/08/07 13:05:40 jorge Exp $
  */
 
 #include <string.h>
@@ -34,6 +34,9 @@ static void DeleteJob (GtkWidget *menu_item, struct info_drqm_jobs *info);
 static GtkWidget *DeleteJobDialog (struct info_drqm_jobs *info);
 static void djd_bok_pressed (GtkWidget *button, struct info_drqm_jobs *info);
 
+static void StopJob (GtkWidget *menu_item, struct info_drqm_jobs *info);
+static void HStopJob (GtkWidget *menu_item, struct info_drqm_jobs *info);
+static void ContinueJob (GtkWidget *menu_item, struct info_drqm_jobs *info);
 
 void CreateJobsPage (GtkWidget *notebook)
 {
@@ -196,6 +199,21 @@ static GtkWidget *CreateMenu (struct info_drqm_jobs *info)
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(NewJob),info);
   gtk_widget_show(menu_item);
 
+  menu_item = gtk_menu_item_new_with_label("Stop");
+  gtk_menu_append(GTK_MENU(menu),menu_item);
+  gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(StopJob),info);
+  gtk_widget_show(menu_item);
+
+  menu_item = gtk_menu_item_new_with_label("Hard Stop");
+  gtk_menu_append(GTK_MENU(menu),menu_item);
+  gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(HStopJob),info);
+  gtk_widget_show(menu_item);
+
+  menu_item = gtk_menu_item_new_with_label("Continue");
+  gtk_menu_append(GTK_MENU(menu),menu_item);
+  gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(ContinueJob),info);
+  gtk_widget_show(menu_item);
+
   menu_item = gtk_menu_item_new_with_label("Delete");
   gtk_menu_append(GTK_MENU(menu),menu_item);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(DeleteJob),info);
@@ -203,13 +221,14 @@ static GtkWidget *CreateMenu (struct info_drqm_jobs *info)
 
   gtk_signal_connect(GTK_OBJECT((info->clist)),"event",GTK_SIGNAL_FUNC(PopupMenu),info);
 
-  gtk_widget_show(menu);
+  gtk_widget_show_all(menu);
 
   return (menu);
 }
 
 static void JobDetails(GtkWidget *menu_item, struct info_drqm_jobs *info)
 {
+  printf ("Not implemented, yet\n");
 /*    GtkWidget *dialog; */
 /*    dialog = AddDivisionDialog(info); */
 /*    gtk_grab_add(dialog); */
@@ -560,3 +579,26 @@ static void djd_bok_pressed (GtkWidget *button, struct info_drqm_jobs *info)
   drqm_request_job_delete (info);
 }
 
+static void StopJob (GtkWidget *menu_item, struct info_drqm_jobs *info)
+{
+  if (!info->selected)
+    return;
+
+  drqm_request_job_stop (info);
+}
+
+static void ContinueJob (GtkWidget *menu_item, struct info_drqm_jobs *info)
+{
+  if (!info->selected)
+    return;
+
+  drqm_request_job_continue (info);
+}
+
+static void HStopJob (GtkWidget *menu_item, struct info_drqm_jobs *info)
+{
+  if (!info->selected)
+    return;
+
+  drqm_request_job_hstop (info);
+}
