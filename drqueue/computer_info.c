@@ -1,4 +1,4 @@
-/* $Id: computer_info.c,v 1.9 2001/09/08 13:37:40 jorge Exp $ */
+/* $Id: computer_info.c,v 1.10 2001/11/16 15:48:18 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -240,85 +240,82 @@ void report_hwinfo (struct computer_hwinfo *hwinfo)
 
 char *osstring (t_os os)
 {
-  static char osstring[BUFFERLEN];
+  char *msg;
 
-  osstring[MAXCMDLEN-1] = 0;
   switch (os) {
   case OS_UNKNOWN:
-    strncpy (osstring,"UNKNOWN",BUFFERLEN-1);
+    msg = "UNKNOWN";
     break;
   case OS_IRIX:
-    strncpy (osstring,"Irix",BUFFERLEN-1);
+    msg = "Irix";
     break;
   case OS_LINUX:
-    strncpy (osstring,"Linux",BUFFERLEN-1);
+    msg = "Linux";
     break;
   case OS_WINDOWS:
-    strncpy (osstring,"Windows",BUFFERLEN-1);
+    msg = "Windows";
     break;
   default:
-    strncpy (osstring,"DEFAULT (?!)",BUFFERLEN-1);
+    msg = "DEFAULT (ERROR)";
     fprintf (stderr,"os == DEFAULT\n");
   }
 
-  return osstring;
+  return msg;
 }
 
 char *archstring (t_arch arch)
 {
-  static char archstring[BUFFERLEN];
+  char *msg;
 
-  archstring[BUFFERLEN-1] = 0;
   switch (arch) {
   case ARCH_UNKNOWN:
-    strncpy (archstring,"UNKNOWN",BUFFERLEN-1);
+    msg = "UNKNOWN";
     break;
   case ARCH_INTEL:
-    strncpy (archstring,"Intel (Little Endian)",BUFFERLEN-1);
+    msg = "Intel (Little Endian)";
     break;
   case ARCH_MIPS:
-    strncpy (archstring,"Mips (Big Endian)",BUFFERLEN-1);
+    msg = "Mips (Big Endian)";
     break;
   default:
-    strncpy (archstring,"DEFAULT (?!)",BUFFERLEN-1);
+    msg = "DEFAULT (ERROR)";
     fprintf (stderr,"arch == DEFAULT\n");
   }
 
-  return archstring;
+  return msg;
 }
 
 char *proctypestring (t_proctype proctype)
 {
-  static char proctypestring[BUFFERLEN];
+  char *msg;
 
-  proctypestring[BUFFERLEN-1] = 0;
   switch (proctype) {
   case PROCTYPE_UNKNOWN:
-    strncpy (proctypestring,"UNKNOWN",BUFFERLEN-1);
+    msg = "UNKNOWN";
     break;
   case PROCTYPE_PENTIUM:
-    strncpy (proctypestring,"Pentium",BUFFERLEN-1);
+    msg = "Pentium";
     break;
   case PROCTYPE_PENTIUMII:
-    strncpy (proctypestring,"Pentium II",BUFFERLEN-1);
+    msg = "Pentium II";
     break;
   case PROCTYPE_PENTIUMIII:
-    strncpy (proctypestring,"Pentium III",BUFFERLEN-1);
+    msg = "Pentium III";
     break;
   case PROCTYPE_PENTIUM4:
-    strncpy (proctypestring,"Pentium 4",BUFFERLEN-1);
+    msg = "Pentium 4";
     break;
   case PROCTYPE_MIPSR5000:
-    strncpy (proctypestring,"R5000",BUFFERLEN-1);
+    msg = "R5000";
     break;
   case PROCTYPE_MIPSR10000:
-    strncpy (proctypestring,"R10000",BUFFERLEN-1);
+    msg = "R10000";
     break;
   default:
-    strncpy (proctypestring,"DEFAULT (?!)",BUFFERLEN-1);
+    msg = "DEFAULT (ERROR)";
     fprintf (stderr,"proctype == DEFAULT\n");
   }
 
-  return proctypestring;
+  return msg;
 }
 
