@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.12 2001/08/08 12:57:39 jorge Exp $ */
+/* $Id: computer.c,v 1.13 2001/08/27 15:23:24 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -99,7 +99,6 @@ int computer_available (struct computer *computer)
     return 0;
   } 
     
-
 /*    if (computer->status.loadavg[0] >= (computer->hwinfo.numproc * MAXLOADAVG)) { */
 /*      return 0; */
 /*    } */
@@ -119,7 +118,7 @@ void computer_update_assigned (struct database *wdb,uint32_t ijob,int iframe,int
   task->jobindex = ijob;
   strncpy(task->jobcmd,job->cmd,MAXCMDLEN-1);
   strncpy(task->owner,job->owner,MAXNAMELEN-1);
-  task->frame = iframe + wdb->job[ijob].frame_start;
+  task->frame = job_frame_index_to_number (&wdb->job[ijob],iframe);
   task->pid = 0;
   task->exitstatus = 0;
 }
