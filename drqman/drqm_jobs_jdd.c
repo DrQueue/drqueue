@@ -225,6 +225,7 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info)
   gtk_menu_append(GTK_MENU(menu),menu_item);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(SeeFrameLog),info);
 
+#ifndef __CYGWIN 
   switch (info->jdd.job.koj) {
   case KOJ_GENERAL:
     break;
@@ -271,6 +272,7 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info)
     gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_3delight_viewcmd_exec),info);
     break;
   }
+#endif
 
   gtk_signal_connect(GTK_OBJECT((info->jdd.clist)),"event",GTK_SIGNAL_FUNC(PopupMenuFrames),info);
 

@@ -8,7 +8,7 @@
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "drqueue"
 !define PRODUCT_VERSION "beta"
-!define PRODUCT_PUBLISHER "Jorge and Kraken"
+!define PRODUCT_PUBLISHER "Jorge Daza and Vincent Dedun (Windows)"
 !define PRODUCT_WEB_SITE "http://www.drqueue.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\ServicesController.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -19,6 +19,7 @@
 
 ; MUI Settings
 !define MUI_ABORTWARNING
+#!define MUI_ICON "..\Resources\drqueue.ico"
 !define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\modern-install.ico"
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
 
@@ -28,6 +29,8 @@
 !define MUI_LANGDLL_REGISTRY_VALUENAME "NSIS:Language"
 
 ; Welcome page
+!define MUI_WELCOMEPAGE_TITLE "Welcome to drqueue installation"
+!define MUI_WELCOMEPAGE_TEXT "Drqueue uses GTK+2, please download and install it from this website before you use drqueue : \r\nhttp://gimp-win.sourceforge.net/stable.html"
 !insertmacro MUI_PAGE_WELCOME
 ; License page
 !insertmacro MUI_PAGE_LICENSE "..\..\..\COPYING"
@@ -37,6 +40,7 @@ Page custom SetCustom ValidateCustom
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
 ; Finish page
+!define MUI_FINISHPAGE_TEXT_REBOOT "Drqueue needs a reboot of the computer to run, please reboot." 
 #define MUI_FINISHPAGE_RUN "$INSTDIR\contrib\ServicesController.exe"
 !insertmacro MUI_PAGE_FINISH
 
@@ -128,6 +132,8 @@ hostname_ok:
 FunctionEnd
 
 Section "SectionPrincipale" SEC01
+  SetShellVarContext all
+  SetRebootFlag true  
   SetOutPath "$INSTDIR\bin"
   SetOverwrite try
   File "..\..\..\bin\*.exe"
@@ -243,6 +249,7 @@ Function un.onInit
 FunctionEnd
 
 Section Uninstall
+  SetShellVarContext all
   Delete "$INSTDIR\${PRODUCT_NAME}.url"
   Delete "$INSTDIR\uninst.exe"
   Delete "$INSTDIR\etc\slave.conf"
