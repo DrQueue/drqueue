@@ -619,11 +619,30 @@ int send_frame_info (int sfd, struct frame_info *fi)
 
 int send_string (int sfd, char *str)
 {
+	uint16_t len,lensw;
+
+	len = strlen (str)+1;
+	lensw = htons (len);
+	if (!dr_write (sfd,&lensw,sizeof (len)))
+		return 0;
+
+	if (!dr_write (sfd,str,len))
+		return 0;
+
 	return 1;
 }
 
 int recv_string (int sfd, char **str)
 {
+	uint16_t len;
+
+	if (!dr_read (sfd,&len,sizeof(len)))
+		return 0;
+
+	*str = (char *) malloc (len);
+	if (!dr_read (sfd,*str,len))
+		return 0;
+
 	return 1;
 }
 
@@ -635,15 +654,13 @@ int send_computer_pools (int sfd, struct computer_limits *cl)
 	npools = computer_npools (cl);
 	fprintf (stderr,"Send npools: %u\n",npools);
 	npools = htons (npools);
-	if (!dr_write(sfd,&npools,sizeof(npools))) {
+	if (!dr_write (sfd,&npools,sizeof(npools))) {
 		return 0;
 	}
-	
-/* 	for (i=0;cl->pool[i] != NULL; i++) { */
-/* 		if (!send_string (sfd,cl->pool[i]))  */
-/* 			return 0; */
-/* 		fprintf (stderr,"Send string: %s\n",cl->pool[i]); */
-/* 	} */
+
+	for (i=0;cl->pool[i] != NULL; i++) 
+
+	computer_pool_list (cl);
 
 	return 1;
 }
@@ -651,18 +668,19 @@ int send_computer_pools (int sfd, struct computer_limits *cl)
 int recv_computer_pools (int sfd, struct computer_limits *cl)
 {
 	uint16_t npools;
-	int i = 0;
+	int i;
+	char *string;
 
-	computer_pool_free (cl);
-
-	if (!dr_read(sfd,&npools,sizeof(npools))) {
+	if (!dr_read (sfd,&npools,sizeof(npools))) {
 		return 0;
 	}
 	npools = ntohs (npools);
 	fprintf (stderr,"Recv npools: %u\n",npools);
 
-	cl->pool = (char **) malloc (sizeof (char *) * npools);
-	cl->pool[0] = NULL;
+	for (i = 0; i < (npools-1); i++) {
+		recv_string (sfd,&string);
+		computer_pool_add (cl,string);
+	}
 
 	return 1;
 }
