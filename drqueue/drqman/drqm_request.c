@@ -1,4 +1,4 @@
-/* $Id: drqm_request.c,v 1.6 2001/08/22 09:05:29 jorge Exp $ */
+/* $Id: drqm_request.c,v 1.7 2001/08/23 13:25:13 jorge Exp $ */
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -119,23 +119,38 @@ void clean_computerlist (struct info_drqm_computers *info)
 void drqm_request_job_delete (struct info_drqm_jobs *info)
 {
   /* This function sends the request to delete the job selected from the queue */
+  int n;
+  char *buf;
+
   if (info->njobs) {
-    request_job_delete (&info->jobs[info->row],CLIENT);
+    gtk_clist_get_text(GTK_CLIST(info->clist),info->row,0,&buf);
+    n = atoi (buf);
+    request_job_delete (&info->jobs[n],CLIENT);
   }
 }
 
 void drqm_request_job_stop (struct info_drqm_jobs *info)
 {
   /* This function sends the request to stop the job selected from the queue */
+  int n;
+  char *buf;
+
   if (info->njobs) {
-    request_job_stop ((uint32_t)info->jobs[info->row].id,CLIENT);
+    gtk_clist_get_text(GTK_CLIST(info->clist),info->row,0,&buf);
+    n = atoi (buf);
+    request_job_stop ((uint32_t)info->jobs[n].id,CLIENT);
   }
 }
 
 void drqm_request_job_hstop (struct info_drqm_jobs *info)
 {
-  /* This function sends the request to stop the job selected from the queue */
+  /* This function sends the request to hard stop the job selected from the queue */
+  int n;
+  char *buf;
+
   if (info->njobs) {
+    gtk_clist_get_text(GTK_CLIST(info->clist),info->row,0,&buf);
+    n = atoi (buf);
     request_job_hstop ((uint32_t)info->jobs[info->row].id,CLIENT);
   }
 }
@@ -143,7 +158,12 @@ void drqm_request_job_hstop (struct info_drqm_jobs *info)
 void drqm_request_job_continue (struct info_drqm_jobs *info)
 {
   /* This function sends the request to continue the (stopped) job selected from the queue */
+  int n;
+  char *buf;
+
   if (info->njobs) {
+    gtk_clist_get_text(GTK_CLIST(info->clist),info->row,0,&buf);
+    n = atoi (buf);
     request_job_continue ((uint32_t)info->jobs[info->row].id,CLIENT);
   }
 }
