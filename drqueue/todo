@@ -31,6 +31,7 @@ NOTES:
 DRQMAN
 ------
 
+* Put KOJ information in the job details view
 * Autorefresh configurable
 * Watching the output logs as tail -f does.
 * Names of computers instead of id numbers.
