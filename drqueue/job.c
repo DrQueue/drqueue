@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.43 2001/10/24 14:52:00 jorge Exp $ */
+/* $Id: job.c,v 1.44 2001/10/25 13:19:52 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -12,6 +12,7 @@
 #include "slave.h"
 #include "logger.h"
 #include "semaphores.h"
+#include "common.h"
 
 int job_index_free (void *pwdb)
 {
@@ -657,7 +658,6 @@ void job_frame_info_init (struct frame_info *fi)
 
 void job_logs_remove (struct job *job)
 {
-  char filename[BUFFERLEN];
   char dir[BUFFERLEN];
   char *basedir;
 
@@ -666,7 +666,7 @@ void job_logs_remove (struct job *job)
     return;
   }
 
-  snprintf(dir,BUFFERLEN-1,"%s/logs/%s",basedir,task->jobname);
+  snprintf(dir,BUFFERLEN-1,"%s/logs/%s",basedir,job->name);
 
   remove_dir(dir);
 }
