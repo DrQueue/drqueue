@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.49 2004/10/09 04:50:37 jorge Exp $
+# $Id: Makefile,v 1.50 2004/10/09 05:22:02 jorge Exp $
 
 CC = gcc
 CPP = g++
@@ -30,20 +30,20 @@ ifeq ($(systype),Linux)
  MAKE = make
 else 
  ifeq ($(systype),IRIX)
-  CFLAGS = -DCOMM_REPORT -Wall -I. -D__IRIX -g -O2
-  MAKE = /usr/freeware/bin/gmake
+	CFLAGS = -DCOMM_REPORT -Wall -I. -D__IRIX -g -O2
+	MAKE = /usr/freeware/bin/gmake
  else
-  ifeq ($(systype),Darwin)
-   CFLAGS = -DCOMM_REPORT -Wall -I. -D__OSX -g -O2
-   MAKE = make
-  else
-   ifeq ($(systype),FreeBSD)
-    CFLAGS = -DCOMM_REPORT -Wall -I. -D__FREEBSD -g -O2
-    MAKE = gmake
-   else
+	ifeq ($(systype),Darwin)
+	 CFLAGS = -DCOMM_REPORT -Wall -I. -D__OSX -g -O2
+	 MAKE = make
+	else
+	 ifeq ($(systype),FreeBSD)
+	  CFLAGS = -DCOMM_REPORT -Wall -I. -D__FREEBSD -g -O2
+	  MAKE = gmake
+	 else
 $(error Cannot make DrQueue -- systype "$(systype)" is unknown)
-   endif
-  endif
+	 endif
+	endif
  endif	
 endif
 
@@ -57,7 +57,7 @@ endif
 
 all: base drqman
 
-base: slave master requeue
+base: slave master requeue sendjob
 
 install: miniinstall $(systype)_install 
 
@@ -66,6 +66,7 @@ drqman: libdrqueue.a
 	$(MAKE) -C drqman
 
 IRIX_install:
+	#FIXME This doesn't work, but I (Jorge) have no access to an Irix box by now.
 	install -d -u rendusr -g staff -m 0777 $(INSTROOT)/bin
 	su rendusr -c "install -m 0777 -u rendusr -g nisuser ./slave ./master $(INSTROOT)/bin/"
 	install -d -u rendusr -g staff -m 0777 $(INSTROOT)/etc
@@ -78,10 +79,14 @@ Linux_install:
 	install -d -m 0755 $(INSTROOT)/bin
 	install -d -m 0755 $(INSTROOT)/etc
 	install -d -m 0777 $(INSTROOT)/db
+	install -d -m 0777 $(INSTROOT)/contrib
 	cp ./bin/* $(INSTROOT)/bin/ || exit 0
 	cp ./etc/* $(INSTROOT)/etc/ || exit 0
+	cp ./contrib/* $(INSTROOT)/contrib/ || exit 0
 	chmod 0755 $(INSTROOT)/bin/* || exit 0
+	chmod 0755 $(INSTROOT)/contrib/* || exit 0
 	chown $(INSTUID):$(INSTGID) $(INSTROOT)/bin/*
+	chown $(INSTUID):$(INSTGID) $(INSTROOT)/contrib/*
 
 FreeBSD_install:
 	install -d -m 0777 $(INSTROOT)/tmp
@@ -89,10 +94,14 @@ FreeBSD_install:
 	install -d -m 0755 $(INSTROOT)/bin
 	install -d -m 0755 $(INSTROOT)/etc
 	install -d -m 0777 $(INSTROOT)/db
+	install -d -m 0777 $(INSTROOT)/contrib
 	cp ./bin/* $(INSTROOT)/bin/ || exit 0
 	cp ./etc/* $(INSTROOT)/etc/ || exit 0
+	cp ./contrib/* $(INSTROOT)/contrib/ || exit 0
 	chmod 0755 $(INSTROOT)/bin/* || exit 0
+	chmod 0755 $(INSTROOT)/contrib/* || exit 0
 	chown $(INSTUID):$(INSTGID) $(INSTROOT)/bin/*
+	chown $(INSTUID):$(INSTGID) $(INSTROOT)/contrib/*
 
 Darwin_install:
 	install -d -m 0777 $(INSTROOT)/tmp
@@ -100,10 +109,14 @@ Darwin_install:
 	install -d -m 0755 $(INSTROOT)/bin
 	install -d -m 0755 $(INSTROOT)/etc
 	install -d -m 0777 $(INSTROOT)/db
+	install -d -m 0777 $(INSTROOT)/contrib
 	cp ./bin/* $(INSTROOT)/bin/ || exit 0
 	cp ./etc/* $(INSTROOT)/etc/ || exit 0
+	cp ./contrib/* $(INSTROOT)/contrib/ || exit 0
 	chmod 0755 $(INSTROOT)/bin/* || exit 0
+	chmod 0755 $(INSTROOT)/contrib/* || exit 0
 	chown $(INSTUID):$(INSTGID) $(INSTROOT)/bin/*
+	chown $(INSTUID):$(INSTGID) $(INSTROOT)/contrib/*
 
 miniinstall: base
 ifeq ($(systype),IRIX)
