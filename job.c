@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.37 2001/10/02 12:39:39 jorge Exp $ */
+/* $Id: job.c,v 1.38 2001/10/08 12:32:03 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -62,12 +62,23 @@ void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job)
   /* We allocate the memory for the frame_info */
   nframes = job_nframes (&wdb->job[ijob]);
 
-  wdb->job[ijob].fishmid = get_frame_shared_memory (nframes);
-  wdb->job[ijob].frame_info = attach_frame_shared_memory (wdb->job[ijob].fishmid);
+  if ((wdb->job[ijob].fishmid = get_frame_shared_memory (nframes)) == -1) {
+    job_init (&wdb->job[ijob]);
+    semaphore_release(wdb->semid);
+    log_master(L_ERROR,"Getting frame shared memory. New job could not be registered.");
+    return;
+  }
+
+  if ((wdb->job[ijob].frame_info = attach_frame_shared_memory (wdb->job[ijob].fishmid)) == (void *)-1) {
+    job_init (&wdb->job[ijob]);
+    semaphore_release(wdb->semid);
+    log_master(L_ERROR,"Attaching frame shared memory. New job could not be registered.");
+    return;
+  }
 
   /* Set done frames to NONE */
   for (i=0;i<nframes;i++) {
-    wdb->job[ijob].frame_info[i].status = FS_WAITING;
+    job_frame_info_init (&wdb->job[ijob].frame_info[i]);
   }
 
   wdb->job[ijob].fleft = nframes;
@@ -129,7 +140,6 @@ char *job_status_string (char status)
   default:
     strncpy (sstring,"DEFAULT (?!)",BUFFERLEN-1);
     fprintf (stderr,"job_status == DEFAULT\n");
-    exit (1);
   }
 
   return sstring;
@@ -276,7 +286,8 @@ int get_frame_shared_memory (int nframes)
 
   if ((shmid = shmget (IPC_PRIVATE,sizeof(struct frame_info)*nframes, IPC_EXCL|IPC_CREAT|0600)) == -1) {
     log_master (L_ERROR,"get_frame_shared_memory: shmget");
-    exit (1);
+    perror ("shmget");
+    return shmid;
   }
 
   return shmid;
@@ -626,4 +637,12 @@ int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp)
     return 0;
 
   return 1;
+}
+
+void job_frame_info_init (struct frame_info *fi)
+{
+  fi->status = FS_WAITING;
+  fi->start_time = fi->end_time = 0;
+  fi->exitcode = 0;
+  fi->icomp = fi->itask = 0;
 }
