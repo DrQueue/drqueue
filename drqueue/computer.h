@@ -1,4 +1,4 @@
-/* $Id: computer.h,v 1.7 2001/07/17 15:01:53 jorge Exp $ */
+/* $Id: computer.h,v 1.8 2001/07/19 09:03:51 jorge Exp $ */
 
 #ifndef _COMPUTER_H_
 #define _COMPUTER_H_
@@ -24,6 +24,7 @@ int computer_index_free (void *pwdb);
 int computer_available (struct computer *computer);
 void computer_update_assigned (struct database *wdb,uint32_t ijob,int iframe,int icomp,int itask);
 void computer_init (struct computer *computer);
+int computer_ncomputers_masterdb (struct database *wdb);
 
 
 
