@@ -166,7 +166,6 @@ namespace ServicesController
 			this.ClientSize = new System.Drawing.Size(288, 29);
 			this.Controls.Add(this.statusBar1);
 			this.ForeColor = System.Drawing.Color.White;
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "Form1";
