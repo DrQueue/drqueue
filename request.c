@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.13 2001/07/17 15:09:13 jorge Exp $ */
+/* $Id: request.c,v 1.14 2001/07/19 09:05:31 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -49,6 +49,10 @@ void handle_request_master (int sfd,struct database *wdb,int icomp)
   case R_R_LISTJOBS:
     log_master (L_INFO,"Request list of jobs");
     handle_r_r_listjobs (sfd,wdb,icomp);
+    break;
+  case R_R_LISTCOMP:
+    log_master (L_INFO,"Request list of computers");
+    handle_r_r_listcomp (sfd,wdb,icomp);
     break;
   default:
     log_master (L_WARNING,"Unknown request");
@@ -452,7 +456,7 @@ int request_job_available (struct slave_database *sdb)
   /* that is not yet runnning so pid == 0 */
   semaphore_lock(sdb->semid);
   memcpy(&sdb->comp->status.task[sdb->itask],&ttask,sizeof(ttask));
-  sdb->comp->status.numtasks++;
+  sdb->comp->status.ntasks++;
   semaphore_release(sdb->semid);
 
   close (sfd);
@@ -603,4 +607,22 @@ void handle_r_r_listjobs (int sfd,struct database *wdb,int icomp)
   }
 }
 
+void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp)
+{
+  /* The master handles this type of packages */
+  /* This function is called unlocked */
+  /* This function is called by the master */
+  struct request answer;
+  int i;
+
+  answer.type = R_A_LISTCOMP;
+  answer.data_s = computer_ncomputers_masterdb (wdb);
+  
+  send_request (sfd,&answer,MASTER);
+  for (i=0;i<MAXCOMPUTERS;i++) {
+    if (wdb->computer[i].used) {
+      send_computer (sfd,&wdb->computer[i],MASTER);
+    }
+  }
+}
 
