@@ -35,6 +35,10 @@
 #include "drqm_request.h"
 #include "drqm_jobs.h"
 
+#ifdef __CYGWIN
+#include "drqm_cygwin.h"
+#endif
+
 // Jdd static declarations
 static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info);
 static void jdd_destroy (GtkWidget *w, struct drqm_jobs_info *info);
@@ -69,6 +73,9 @@ static int jdd_framelist_cmp_start_time (GtkCList *clist, gconstpointer ptr1, gc
 static int jdd_framelist_cmp_end_time (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
 static int jdd_framelist_cmp_requeued (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
 static gboolean show_log (gpointer data);
+#ifdef __CYGWIN
+static void jdd_shellopen_exec(GtkWidget *button, char *path);
+#endif
 
 // Blocked hosts
 static GtkWidget *CreateBlockedHostsClist (void);
@@ -225,7 +232,6 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info)
   gtk_menu_append(GTK_MENU(menu),menu_item);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(SeeFrameLog),info);
 
-#ifndef __CYGWIN 
   switch (info->jdd.job.koj) {
   case KOJ_GENERAL:
     break;
@@ -272,7 +278,6 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info)
     gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_3delight_viewcmd_exec),info);
     break;
   }
-#endif
 
   gtk_signal_connect(GTK_OBJECT((info->jdd.clist)),"event",GTK_SIGNAL_FUNC(PopupMenuFrames),info);
 
@@ -648,6 +653,19 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
 	main_vbox = gtk_vbox_new (FALSE,2);
 	gtk_container_add (GTK_CONTAINER(window),main_vbox);
 
+
+  /* Button Open render directory */
+#ifdef __CYGWIN
+  switch (newinfo->jdd.job.koj)
+  {
+    case KOJ_MAYA :
+      button = gtk_button_new_with_label ("Open render directory");
+      gtk_container_border_width (GTK_CONTAINER(button),1);
+      gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_shellopen_exec), (char *) newinfo->jdd.job.koji.maya.renderdir);
+      gtk_box_pack_start (GTK_BOX(main_vbox),button,FALSE,FALSE,2);
+      break;
+  }
+#endif
 	
 	// Notebook
 	notebook = gtk_notebook_new();
@@ -761,6 +779,7 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
 	newinfo->jdd.swindow = swin;
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(swin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_container_add (GTK_CONTAINER(frame),swin);
+
   clist = CreateFrameInfoClist ();
   gtk_signal_connect(GTK_OBJECT(clist),"click-column",
 		     GTK_SIGNAL_FUNC(jdd_framelist_column_clicked),newinfo);
@@ -823,7 +842,6 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(DeleteJob),newinfo);
   gtk_tooltips_set_tip (tooltips,button,"Delete the job from the queue killing running frames",NULL);
   gtk_widget_set_name (GTK_WIDGET(button),"danger");
-
 
 	// Out of the notebook
   /* Button Refresh */
@@ -1019,6 +1037,13 @@ static gboolean show_log (gpointer data)
 	return TRUE;
 }
 
+#ifdef __CYGWIN
+static void jdd_shellopen_exec(GtkWidget *button, char *path)
+{
+  cygwin_shell_execute("explore", path);
+}
+#endif
+
 static void jdd_requeue_frames (GtkWidget *button,struct drqm_jobs_info *info_dj)
 {
   /* Requeues the finished frames, sets them as waiting again */
@@ -1208,27 +1233,27 @@ static void jdd_maya_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *inf
   
   iframe = job_frame_number_to_index (&info->jdd.job,frame);
 
-  if (fork() == 0) {
 #ifdef __CYGWIN
-      new_argv[0] = SHELL_NAME;
-      if ((new_argv[1] = malloc(MAXCMDLEN)) == NULL) return;
-      cygwin_conv_to_posix_path(info->jdd.job.koji.maya.viewcmd, (char *) new_argv[1]);
-      new_argv[2] = NULL;
-#else
+  static char image[BUFFERLEN]; 
+
+  snprintf(image, BUFFERLEN-1, "%s\\%s.%04i.%s",
+    info->jdd.job.koji.maya.renderdir,
+    info->jdd.job.koji.maya.image,
+    iframe + 1,
+    info->jdd.job.koji.maya.viewcmd); 
+  cygwin_shell_execute("open", image);
+  return;
+#endif
+
+  if (fork() == 0) {
     new_argv[0] = SHELL_NAME;
     new_argv[1] = "-c";
     new_argv[2] = info->jdd.job.koji.maya.viewcmd;
     new_argv[3] = NULL;    
-#endif
 
     job_environment_set(&info->jdd.job,iframe);
 
-#ifdef __CYGWIN
-	exec_path = malloc(MAXCMDLEN);
-	snprintf (exec_path,BUFFERLEN-1,"%s/tcsh.exe",getenv("DRQUEUE_BIN"));
-#else
-      exec_path = SHELL_PATH;
-#endif    
+    exec_path = SHELL_PATH;
 //    printf("running %s %s %s %s\n", exec_path, new_argv[0], new_argv[1], new_argv[2]); 
     execve(exec_path ,(char*const*)new_argv,environ);
     perror("execve");
@@ -1256,26 +1281,14 @@ static void jdd_mentalray_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info
   iframe = job_frame_number_to_index (&info->jdd.job,frame);
 
   if (fork() == 0) {
-#ifdef __CYGWIN
-      new_argv[0] = SHELL_NAME;
-      if ((new_argv[1] = malloc(MAXCMDLEN)) == NULL) return;
-      cygwin_conv_to_posix_path(info->jdd.job.koji.mentalray.viewcmd, (char *) new_argv[1]);
-      new_argv[2] = NULL;
-#else
     new_argv[0] = SHELL_NAME;
     new_argv[1] = "-c";
     new_argv[2] = info->jdd.job.koji.mentalray.viewcmd;
     new_argv[3] = NULL;    
-#endif
 
     job_environment_set(&info->jdd.job,iframe);
     
-#ifdef __CYGWIN
-	exec_path = malloc(MAXCMDLEN);
-	snprintf (exec_path,BUFFERLEN-1,"%s/tcsh.exe",getenv("DRQUEUE_BIN"));
-#else
-      exec_path = SHELL_PATH;
-#endif    
+    exec_path = SHELL_PATH;
     execve(exec_path ,(char*const*)new_argv,environ);
     perror("execve");
     exit (1);
@@ -1302,26 +1315,14 @@ static void jdd_blender_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *
   iframe = job_frame_number_to_index (&info->jdd.job,frame);
 
   if (fork() == 0) {
-#ifdef __CYGWIN
-      new_argv[0] = SHELL_NAME;
-      if ((new_argv[1] = malloc(MAXCMDLEN)) == NULL) return;
-      cygwin_conv_to_posix_path(info->jdd.job.koji.blender.viewcmd, (char *) new_argv[1]);
-      new_argv[2] = NULL;
-#else
     new_argv[0] = SHELL_NAME;
     new_argv[1] = "-c";
     new_argv[2] = info->jdd.job.koji.blender.viewcmd;
     new_argv[3] = NULL;    
-#endif
     
     job_environment_set(&info->jdd.job,iframe);
     
-#ifdef __CYGWIN
-	exec_path = malloc(MAXCMDLEN);
-	snprintf (exec_path,BUFFERLEN-1,"%s/tcsh.exe",getenv("DRQUEUE_BIN"));
-#else
-      exec_path = SHELL_PATH;
-#endif    
+    exec_path = SHELL_PATH;
     execve(exec_path ,(char*const*)new_argv,environ);
     perror("execve");
     exit (1);
@@ -1348,26 +1349,14 @@ static void jdd_bmrt_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *inf
   iframe = job_frame_number_to_index (&info->jdd.job,frame);
 
   if (fork() == 0) {
-#ifdef __CYGWIN
-      new_argv[0] = SHELL_NAME;
-      if ((new_argv[1] = malloc(MAXCMDLEN)) == NULL) return;
-      cygwin_conv_to_posix_path(info->jdd.job.koji.bmrt.viewcmd, (char *) new_argv[1]);
-      new_argv[2] = NULL;
-#else
     new_argv[0] = SHELL_NAME;
     new_argv[1] = "-c";
     new_argv[2] = info->jdd.job.koji.bmrt.viewcmd;
     new_argv[3] = NULL;    
-#endif
     
     job_environment_set(&info->jdd.job,iframe);
     
-#ifdef __CYGWIN
-	exec_path = malloc(MAXCMDLEN);
-	snprintf (exec_path,BUFFERLEN-1,"%s/tcsh.exe",getenv("DRQUEUE_BIN"));
-#else
-      exec_path = SHELL_PATH;
-#endif    
+    exec_path = SHELL_PATH;
     execve(exec_path ,(char*const*)new_argv,environ);
     perror("execve");
     exit (1);
@@ -1394,26 +1383,14 @@ static void jdd_pixie_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *in
   iframe = job_frame_number_to_index (&info->jdd.job,frame);
 
   if (fork() == 0) {
-#ifdef __CYGWIN
-      new_argv[0] = SHELL_NAME;
-      if ((new_argv[1] = malloc(MAXCMDLEN)) == NULL) return;
-      cygwin_conv_to_posix_path(info->jdd.job.koji.pixie.viewcmd, (char *) new_argv[1]);
-      new_argv[2] = NULL;
-#else
     new_argv[0] = SHELL_NAME;
     new_argv[1] = "-c";
     new_argv[2] = info->jdd.job.koji.pixie.viewcmd;
     new_argv[3] = NULL;    
-#endif
     
     job_environment_set(&info->jdd.job,iframe);
     
-#ifdef __CYGWIN
-	exec_path = malloc(MAXCMDLEN);
-	snprintf (exec_path,BUFFERLEN-1,"%s/tcsh.exe",getenv("DRQUEUE_BIN"));
-#else
-      exec_path = SHELL_PATH;
-#endif    
+    exec_path = SHELL_PATH;
     execve(exec_path ,(char*const*)new_argv,environ);
     perror("execve");
     exit (1);
@@ -1440,26 +1417,14 @@ static void jdd_3delight_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info 
   iframe = job_frame_number_to_index (&info->jdd.job,frame);
 
   if (fork() == 0) {
-#ifdef __CYGWIN
-      new_argv[0] = SHELL_NAME;
-      if ((new_argv[1] = malloc(MAXCMDLEN)) == NULL) return;
-      cygwin_conv_to_posix_path(info->jdd.job.koji.threedelight.viewcmd, (char *) new_argv[1]);
-      new_argv[2] = NULL;
-#else
     new_argv[0] = SHELL_NAME;
     new_argv[1] = "-c";
     new_argv[2] = info->jdd.job.koji.threedelight.viewcmd;
     new_argv[3] = NULL;    
-#endif
     
     job_environment_set(&info->jdd.job,iframe);
     
-#ifdef __CYGWIN
-	exec_path = malloc(MAXCMDLEN);
-	snprintf (exec_path,BUFFERLEN-1,"%s/tcsh.exe",getenv("DRQUEUE_BIN"));
-#else
-      exec_path = SHELL_PATH;
-#endif    
+    exec_path = SHELL_PATH;
     execve(exec_path ,(char*const*)new_argv,environ);
     perror("execve");
     exit (1);

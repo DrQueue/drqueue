@@ -24,13 +24,30 @@
 
 #include <windows.h>
 #include <commdlg.h>
-//include <shell32.h>
+#include <shellapi.h>
 #include <shlobj.h>
 #include <objidl.h>
 #ifndef OPENFILENAME_SIZE_VERSION_400
 #define OPENFILENAME_SIZE_VERSION_400 sizeof(OPENFILENAME)
 #endif
 
+
+void cygwin_shell_execute(char *verb, char *path)
+{
+  SHELLEXECUTEINFO ShExecInfo;
+
+        ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+        ShExecInfo.fMask = NULL;
+        ShExecInfo.hwnd = NULL;
+        ShExecInfo.lpVerb = verb;
+        ShExecInfo.lpFile = path;
+        ShExecInfo.lpParameters = NULL;
+        ShExecInfo.lpDirectory = NULL;
+        ShExecInfo.nShow = SW_MAXIMIZE;
+        ShExecInfo.hInstApp = NULL;
+
+        ShellExecuteEx(&ShExecInfo);
+} 
 
 char *cygwin_dir_dialog(char *message)
 {
