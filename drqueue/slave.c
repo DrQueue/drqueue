@@ -54,12 +54,14 @@ int main (int argc,char *argv[])
   int force = 0;
   int launched;
 
-  log_slave_computer (L_INFO,"Starting...");
+  slave_get_options(&argc,&argv,&force,&sdb);
 
   if (!common_environment_check()) {
     fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
     exit (1);
   }
+
+  log_slave_computer (L_INFO,"Starting...");
 
   set_signal_handlers ();
 
@@ -70,8 +72,7 @@ int main (int argc,char *argv[])
   computer_status_init (&sdb.comp->status);
   get_hwinfo (&sdb.comp->hwinfo);
   computer_init_limits (sdb.comp); /* computer_init_limits depends on the hardware information */
-
-  slave_get_options(&argc,&argv,&force,&sdb);
+	slave_set_limits (&sdb);
 
   report_hwinfo (&sdb.comp->hwinfo);
 
@@ -548,7 +549,7 @@ char *parse_arg (char *cmd,int pos,int len)
 void usage (void)
 {
   fprintf (stderr,"Valid options:\n"
-	   "\t-a to use autoenable\n"
+	   "\t-a <hour:minute> to use autoenable\n"
 	   "\t-f to force continuing if shared memory already exists\n"
 	   "\t-l <loglevel> From 0 to 3 (0=errors,1=warnings,2=info,3=debug).\n\t\tDefaults to 1. Each level logs all the previous levels\n"
 	   "\t-o log on screen instead of on files\n"
@@ -559,11 +560,21 @@ void usage (void)
 void slave_get_options (int *argc,char ***argv, int *force, struct slave_database *sdb)
 {
   int opt;
+	char *hour,*min;
 
-  while ((opt = getopt (*argc,*argv,"afl:ohv")) != -1) {
+  while ((opt = getopt (*argc,*argv,"a:fl:ohv")) != -1) {
     switch (opt) {
 		case 'a':
-			sdb->comp->limits.autoenable.flags |= AEF_ACTIVE;
+			sdb->limits.autoenable.flags |= AEF_ACTIVE;
+			hour = optarg;
+			if ((min = strchr (hour,':')) == NULL) {
+				usage ();
+				exit (1);
+			}
+			*min = '\0';
+			min++;
+			sdb->limits.autoenable.h = atoi (hour) % 24;
+			sdb->limits.autoenable.m = atoi (min) % 60;
 			break;
     case 'f':
       *force = 1;
@@ -578,12 +589,20 @@ void slave_get_options (int *argc,char ***argv, int *force, struct slave_databas
       break;
     case 'v':
       show_version (*argv);
-      exit (0);
+			kill (0,SIGINT);
     case '?':
     case 'h':
       usage();
-      exit (1);
+    	kill (0,SIGINT);
     }
   }
 }
 
+void slave_set_limits (struct slave_database *sdb)
+{
+	if (sdb->limits.autoenable.flags &= AEF_ACTIVE) {
+		sdb->comp->limits.autoenable.flags = sdb->limits.autoenable.flags;
+		sdb->comp->limits.autoenable.h = sdb->limits.autoenable.h % 24;
+		sdb->comp->limits.autoenable.m = sdb->limits.autoenable.m % 60;
+	}
+}
