@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.49 2001/09/10 09:17:44 jorge Exp $ */
+/* $Id: request.c,v 1.50 2001/09/18 13:24:02 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -107,6 +107,10 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
   case R_R_UCLIMITS:
     log_master (L_DEBUG,"Update computer limits request");
     handle_r_r_uclimits (sfd,wdb,icomp,&request);
+    break;
+  case R_R_SLAVEXIT:
+    log_master (L_DEBUG,"Slave exiting");
+    handle_r_r_slavexit (sfd,wdb,icomp,&request);
     break;
   default:
     log_master (L_WARNING,"Unknown request");
@@ -1940,7 +1944,51 @@ int request_slave_limits_maxfreeloadcpu_set (char *slave, uint32_t maxfreeloadcp
 }
 
 
+int request_slavexit (uint32_t icomp, int who)
+{
+  /* On error returns 0, error otherwise drerrno is set to the error */
+  int sfd;
+  struct request req;
 
+  if ((sfd = connect_to_master ()) == -1) {
+    drerrno = DRE_NOCONNECT;
+    return 0;
+  }
 
+  req.type = R_R_SLAVEXIT;
+  req.data = icomp;
 
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORSENDING;
+    close (sfd);
+    return 0;
+  }
 
+  close (sfd);
+  return 1;
+}
+
+void handle_r_r_slavexit (int sfd,struct database *wdb,int icomp,struct request *req)
+{
+  /* The master handles this type of packages */
+  /* This function is called unlocked */
+  /* This function is called by the master */
+  uint32_t icomp2;
+
+  log_master (L_DEBUG,"Entering handle_r_r_slavexit");
+
+  icomp2 = req->data;
+
+  semaphore_lock (wdb->semid);
+
+  if (!computer_index_correct_master (wdb,icomp2))
+    return;
+
+  if (wdb->computer[icomp2].used) {
+    wdb->computer[icomp2].used = 0;
+  }
+
+  semaphore_release (wdb->semid);
+
+  log_master (L_DEBUG,"Exiting handle_r_r_slavexit");
+}
