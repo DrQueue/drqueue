@@ -33,12 +33,15 @@
 /* process. _Except_ the pointer to the computer struct that is a shared */
 /* memory one */
 
+#define SDBF_SETMAXCPUS	(1<<0) // Set if we have to change the maximum number of CPUs at start.
+
 struct slave_database {
   struct computer *comp;
   int shmid;
   int semid;
   int itask;			/* Index to current process task */
 	struct computer_limits limits;
+	uint16_t flags;
 };				/* slave database */
 
 extern int phantom[2];
