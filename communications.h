@@ -55,6 +55,8 @@ int recv_frame_info (int sfd, struct frame_info *fi);
 int send_frame_info (int sfd, struct frame_info *fi);
 int recv_autoenable (int sfd, struct autoenable *ae);
 int send_autoenable (int sfd, struct autoenable *ae);
+int send_blocked_host (int sdf, struct blocked_host *bh);
+int recv_blocked_host (int sdf, struct blocked_host *bh);
 
 int write_32b (int sfd, void *data);
 int write_16b (int sfd, void *data);
