@@ -1,4 +1,4 @@
-/* $Id: computer_info.c,v 1.12 2004/01/22 17:48:24 jorge Exp $ */
+/* $Id: computer_info.c,v 1.13 2004/01/23 03:28:00 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -87,7 +87,7 @@ int get_procspeed (void)
     fgets (buf,BUFFERLEN-1,cpuinfo);
     if (strstr(buf,"cpu MHz") != NULL) {
       while (!isdigit(buf[index]))
-	index++;
+				index++;
       sscanf (&buf[index],"%f\n",&st);
       procspeed = (int) st;
       found = 1;
@@ -193,9 +193,9 @@ int get_procspeed (void)
     if (strstr(buf,"MHZ") != NULL) {
       /* The MHz are the second number on this line */
       if (sscanf (buf,"%i %i",&nprocs,&procspeed) == 2) {
-	found = 1;
+				found = 1;
       } else if (sscanf (buf,"Processor %i:  %i",&nprocs,&procspeed) == 2) {
-	found = 1;
+				found = 1;
       }
     }
   }
@@ -213,10 +213,57 @@ int get_numproc (void)
 {
   return sysmp (MP_NPROCS);
 }
-# else 
-#  error You need to define the OS, or OS defined not supported
-# endif
-#endif
+# else
+#  ifdef __OSX
+void get_hwinfo (struct computer_hwinfo *hwinfo)
+{
+  if (gethostname (hwinfo->name,MAXNAMELEN-1) == -1) {
+    perror ("get_hwinfo: gethostname");
+    kill(0,SIGINT);
+  }
+  hwinfo->arch = ARCH_PPC;
+  hwinfo->os = OS_OSX;
+  hwinfo->proctype = PROCTYPE_PPC;
+  hwinfo->procspeed = 1000;
+  hwinfo->ncpus = get_numproc();
+  hwinfo->speedindex = get_speedindex (hwinfo);
+}
+
+int get_numproc (void)
+{
+	FILE *system_profiler;
+	int nprocs = 1;
+	char buf[BUFFERLEN];
+	int found = 1;
+	char *fd;
+
+	if ((system_profiler = popen ("/usr/sbin/system_profiler -detailLevel -2","r")) == NULL) {
+		fprintf (stderr, "Warning: Problems executing '/usr/sbin/system_profiler'\n");
+		return nprocs;
+	}
+
+	while (!found || (fgets(buf,BUFFERLEN,system_profiler) != NULL)) {
+		if (strstr(buf,"CPUs") != NULL) {
+			fd = buf;
+			while (!isdigit((int)*fd))
+				fd++;
+			if (sscanf (fd,"%i\n",&nprocs) == 1) {
+				found = 1;
+			} else {
+				fprintf (stderr,"Warning: get_numproc. Found but not read !\n");
+			}
+		}
+	}
+
+	pclose (system_profiler);
+
+	return nprocs;
+}
+#  else 
+#   error You need to define the OS, or OS defined not supported
+#  endif // __OSX
+# endif // __IRIX
+#endif // __LINUX
 
 int get_speedindex (struct computer_hwinfo *hwinfo)
 {
@@ -257,6 +304,9 @@ char *osstring (t_os os)
   case OS_WINDOWS:
     msg = "Windows";
     break;
+  case OS_OSX:
+		msg = "Mac OSX";
+		break;
   default:
     msg = "DEFAULT (ERROR)";
     fprintf (stderr,"os == DEFAULT\n");
@@ -279,6 +329,9 @@ char *archstring (t_arch arch)
   case ARCH_MIPS:
     msg = "Mips (Big Endian)";
     break;
+	case ARCH_PPC:
+		msg = "PowerPC";
+		break;
   default:
     msg = "DEFAULT (ERROR)";
     fprintf (stderr,"arch == DEFAULT\n");
@@ -316,6 +369,9 @@ char *proctypestring (t_proctype proctype)
   case PROCTYPE_MIPSR10000:
     msg = "R10000";
     break;
+	case PROCTYPE_PPC:
+		msg = "PPC";
+		break;
   default:
     msg = "DEFAULT (ERROR)";
     fprintf (stderr,"proctype == DEFAULT\n");
