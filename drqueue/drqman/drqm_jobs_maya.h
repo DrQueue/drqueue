@@ -23,7 +23,11 @@
 
 #include <gtk/gtk.h>
 
+#ifdef __CYGWIN
+#define KOJ_MAYA_DFLT_VIEWCMD "fcheck $DRQUEUE_RD\\\\$DRQUEUE_IMAGE.$DRQUEUE_PADFRAME.iff"
+#else
 #define KOJ_MAYA_DFLT_VIEWCMD "fcheck $DRQUEUE_RD/$DRQUEUE_IMAGE.$DRQUEUE_PADFRAME.sgi"
+#endif
 
 struct drqmj_koji_maya {
   GtkWidget *escene;

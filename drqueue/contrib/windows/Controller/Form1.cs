@@ -369,7 +369,7 @@ namespace ServicesController
 				{
 					statusBar1.Text = ex.Message;
 				}
-				Activate(SLAVE);
+				Activate(SLAVE, "-f");
 			}
 			timer1.Start();
 		}

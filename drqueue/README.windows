@@ -1,3 +1,9 @@
+to run drqueue under windows
+----------------------------
+.install GTK2 from 
+http://prdownloads.sourceforge.net/gimp-win/gtk%2B-2.4.14-setup.zip?download
+.install drqueue and run drqueue-services
+
 to compil drqueue under windows you need do all this steps
 ----------------------------------------------------------
 
@@ -9,7 +15,8 @@ and tcsh (used by drqueue)
 
 .run again cygwin setup with default settings to be sure verything is installed
 
-.get win32 glib-dev,gtk-dev and pkgconfig packages at
+.get win32 glib-dev,gtk-dev, pkgconfig, atk-dev, pango-dev, iconv, zlib, and
+gettext packages at
 http://www.gimp.org/~tml/gimp/win32/downloads.html
 Unzip all of them in cygwin path /usr/local/gtk
 Add /usr/local/gtk/bin to PATH environment variable
@@ -25,8 +32,7 @@ it will be needed to run (and to compil) windows drqueue services
 replace your_version with the actual dotnet framework version (v1.1.4322
 for exemple)
 
-.you get installer.exe (in /usr/local/drqueue/contrib/windows/Installer by
-default) with contains everything needed, just install it as any windows 
-application (.nsi, .nsh files in this directory are not needed, just
-installer.exe)
+.you get drqueue-setup.exe (in /usr/local/drqueue/contrib/ by default)
+which contains everything needed, just install it as any windows 
+application
  

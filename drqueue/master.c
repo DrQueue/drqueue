@@ -80,22 +80,18 @@ int main (int argc, char *argv[])
     exit (1);
   }
   set_signal_handlers ();
-printf("ok sig\n");
 
   shmid = get_shared_memory (force);
-printf("ok sget shm\n");
 
   if ((wdb = attach_shared_memory (shmid)) == (void *) -1)
 	exit (1);
   wdb->shmid = shmid;
   wdb->semid = get_semaphores (force);
-printf("ok atach shm\n");
 
   if (!database_load(wdb)) {
     fprintf (stderr,"Could not load database: %s. Initializing.\n",drerrno_str());
     database_init(wdb);
   }
-printf("ok base\n");
 	for (i=0;i<MAXCOMPUTERS;i++) {
 		computer_init (&wdb->computer[i]);
 	}

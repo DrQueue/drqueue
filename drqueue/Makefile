@@ -125,7 +125,8 @@ CYGWIN_NT-5.1_install:
 	cp ./bin/*.exe $(INSTROOT)/bin/ || exit 0
 	cp /usr/sbin/cygserver $(INSTROOT)/bin || exit 0
 	cp `which expr.exe` $(INSTROOT)/bin || exit 0
-	cp `which tcsh` $(INSTROOT)/bin || exit 0
+	cp `which tcsh.exe` $(INSTROOT)/bin || exit 0
+	cp `which cygpath.exe` $(INSTROOT)/bin || exit 0
 	cp ./etc/* $(INSTROOT)/etc/ || exit 0
 	sh ./contrib/windows/build_services.sh $(PWD)/contrib/windows $(DOTNETPATH) 
 	cp ./contrib/* $(INSTROOT)/contrib/ || exit 0
@@ -136,6 +137,7 @@ CYGWIN_NT-5.1_install:
 	chmod 0755 $(INSTROOT)/contrib/* || exit 0
 	sh contrib/windows/install_dlls.sh $(INSTROOT)/bin
 	$(NSISPATH)/makensis.exe `cygpath -w $(INSTROOT)/contrib/windows/Installer/installer.nsi`
+	mv $(INSTROOT)/contrib/windows/Installer/Install.exe $(INSTROOT)/contrib/drqueue-setup.exe  
 
 FreeBSD_install:
 	install -d -m 0777 $(INSTROOT)/tmp
@@ -218,7 +220,7 @@ clean:
 libdrqueue.a : $(OBJS_LIBDRQUEUE) libdrqueue.h
 	ar sq $@ $(OBJS_LIBDRQUEUE)
 slave: slave.o libdrqueue.a
-	$(CC) -o $@ slave.o libdrqueue.a $(LDFLAGS) $(UIFLAGS) 
+	$(CC) -o $@ slave.o libdrqueue.a $(LDFLAGS) #$(UIFLAGS) 
 master: master.o libdrqueue.a
 	$(CC) -o $@ master.o libdrqueue.a $(LDFLAGS) $(UIFLAGS) 
 requeue: requeue.o libdrqueue.a
