@@ -26,6 +26,11 @@
 #include <gtk/gtk.h>
 #include "libdrqueue.h"
 
+#ifdef __CYGWIN
+extern FILE *file_null;
+#define stderr file_null
+#endif
+
 #define TOOLTIPS_DELAY 1000
 
 GtkWidget *ConfirmDialog (char *text, GList *callbacks);

@@ -54,7 +54,7 @@ char *mayasg_create (struct mayasgi *info)
   char *renderdir;
 
   /* Check the parameters */
-  if ((!strlen(info->renderdir)) || (!strlen(info->scene))) {
+  if ((!info->renderdir) || (!info->scene) || (!strlen(info->renderdir)) || (!strlen(info->scene))) {
     drerrno = DRE_NOTCOMPLETE;
     return NULL;
   }
