@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.33 2001/09/20 10:52:35 jorge Exp $ */
+/* $Id: job.c,v 1.34 2001/09/21 14:40:39 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -585,4 +585,15 @@ void job_environment_set (struct job *job, uint32_t iframe)
     putenv (image);
     break;
   }
+}
+
+void job_copy (struct job *src, struct job *dst)
+{
+  memcpy (dst,src,sizeof(struct job));
+  dst->frame_info = NULL;
+}
+
+void job_init_limits (struct job *job)
+{
+
 }
