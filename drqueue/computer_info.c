@@ -1,4 +1,4 @@
-/* $Id: computer_info.c,v 1.8 2001/08/31 09:28:10 jorge Exp $ */
+/* $Id: computer_info.c,v 1.9 2001/09/08 13:37:40 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -25,7 +25,7 @@ void get_hwinfo (struct computer_hwinfo *hwinfo)
   hwinfo->os = OS_LINUX;
   hwinfo->proctype = get_proctype();
   hwinfo->procspeed = get_procspeed();
-  hwinfo->numproc = get_numproc();
+  hwinfo->ncpus = get_numproc();
   hwinfo->speedindex = get_speedindex (hwinfo);
 }
 
@@ -137,7 +137,7 @@ void get_hwinfo (struct computer_hwinfo *hwinfo)
   hwinfo->os = OS_IRIX;
   hwinfo->proctype = get_proctype();
   hwinfo->procspeed = get_procspeed();
-  hwinfo->numproc = get_numproc();
+  hwinfo->ncpus = get_numproc();
   hwinfo->speedindex = get_speedindex (hwinfo);
 }
 
@@ -234,7 +234,7 @@ void report_hwinfo (struct computer_hwinfo *hwinfo)
   printf ("OS:\t\t\t%s\n",osstring(hwinfo->os));
   printf ("Processor type:\t\t%s\n",proctypestring(hwinfo->proctype));
   printf ("Processor speed:\t%i MHz\n",hwinfo->procspeed);
-  printf ("Number of processors:\t%i\n",hwinfo->numproc);
+  printf ("Number of processors:\t%i\n",hwinfo->ncpus);
   printf ("Speed index:\t\t%i\n",hwinfo->speedindex);
 }
 
