@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.4 2001/05/28 14:21:31 jorge Exp $ */
+/* $Id: master.c,v 1.5 2001/06/05 12:19:45 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -9,6 +9,7 @@
 #include <signal.h>
 #include <wait.h>
 #include <time.h>
+#include <stdlib.h>
 
 #include "master.h"
 #include "database.h"
@@ -28,20 +29,22 @@ int main (int argc, char *argv[])
   int csfd;			/* child sfd, the socket once accepted the connection */
   int shmid;			/* shared memory id */
 
-  printf ("%i\n",sizeof(time_t));
+  fprintf (stderr,"Master at: %i\n",getpid());
 
   log_master ("Starting...");
-
   set_signal_handlers ();
 
   shmid = get_shared_memory ();
   wdb = attach_shared_memory (shmid);
   wdb->shmid = shmid;
   wdb->semid = get_semaphores ();
-  
+
+  database_init(wdb);
+
   if (fork() == 0) {
+    fprintf (stderr,"Consistency checks at: %i\n",getpid());
     /* Create the consistency checks process */
-    strcpy (argv[0],"DrQueue - Consistency checks");
+/*      strcpy (argv[0],"DrQueue - Consistency checks"); */
     set_signal_handlers_child_cchecks ();
     master_consistency_checks (wdb);
     exit (0);
@@ -51,24 +54,23 @@ int main (int argc, char *argv[])
     kill(0,SIGINT);
   }
 
-  printf ("Pid: %i Gid: %i\n",getpid(),getpgid(0));
-  printf ("%i %i\n",sizeof(*wdb),sizeof(struct database));
-  printf ("%i %i\n",sizeof(int),sizeof(long int));
-  printf ("%i %i\n",sizeof(struct job),sizeof(struct computer));
-  printf ("%i \n",sizeof(struct computer_status));
-
   while (1) {
     printf ("Waiting for connections...\n");
     if ((csfd = accept_socket (sfd,wdb,&icomp)) != -1) {
       if (fork() == 0) {
+	fprintf (stderr,"Child at: %i\n",getpid());
+	fflush(stderr);
 	/* Create a connection handler */
-	strcpy (argv[0],"DrQueue - Connection handler");
+/*  	strcpy (argv[0],"DrQueue - Connection handler"); */
 	set_signal_handlers_child_conn_handler ();
 	close (sfd);
 	set_alarm ();
 	handle_request_master (csfd,wdb,icomp);
 	close (csfd);
 	exit (0);
+      } else {
+	close (csfd);
+	printf ("csfd: %i\n",csfd);
       }
     }
   }
@@ -81,12 +83,12 @@ int get_shared_memory (void)
   key_t key;
   int shmid;
 
-  if ((key = ftok ("master",'Z')) == -1) {
+  if ((key = ftok ("./master",'Z')) == -1) {
     perror ("ftok");
     exit (1);
   }
   
-  if ((shmid = shmget (key,sizeof (struct database), IPC_EXCL|IPC_CREAT|0600)) == -1) {
+  if ((shmid = shmget (key,sizeof(struct database), IPC_EXCL|IPC_CREAT|0600)) == -1) {
     perror ("shmget");
     exit (1);
   }
@@ -138,6 +140,7 @@ void set_signal_handlers (void)
   clean.sa_flags = SA_SIGINFO;
   sigaction (SIGINT, &clean, NULL);
   sigaction (SIGTERM, &clean, NULL);
+  sigaction (SIGSEGV, &clean, NULL);
 
   ignore.sa_handler = SIG_IGN;
   sigemptyset (&ignore.sa_mask);
@@ -152,6 +155,7 @@ void set_signal_handlers_child_conn_handler (void)
   struct sigaction action_dfl;
   struct sigaction action_alarm;
   struct sigaction action_pipe;
+  struct sigaction action_sigsegv;
 
   action_dfl.sa_sigaction = (void *)SIG_DFL;
   sigemptyset (&action_dfl.sa_mask);
@@ -167,6 +171,12 @@ void set_signal_handlers_child_conn_handler (void)
   sigemptyset (&action_pipe.sa_mask);
   action_pipe.sa_flags = SA_SIGINFO;
   sigaction (SIGPIPE, &action_pipe, NULL);
+
+  /* segv */
+  action_sigsegv.sa_sigaction = sigsegv_handler;
+  sigemptyset (&action_sigsegv.sa_mask);
+  action_sigsegv.sa_flags = SA_SIGINFO;
+  sigaction (SIGSEGV, &action_sigsegv, NULL);
 }
 
 void set_signal_handlers_child_cchecks (void)
@@ -178,12 +188,14 @@ void set_signal_handlers_child_cchecks (void)
   action_dfl.sa_flags = SA_SIGINFO;
   sigaction (SIGINT, &action_dfl, NULL);
   sigaction (SIGTERM, &action_dfl, NULL);
+  sigaction (SIGSEGV, &action_dfl, NULL);
 }
 
 void clean_out (int signal, siginfo_t *info, void *data)
 {
   int rc;
   pid_t child_pid;
+  int i;
 
   kill(0,SIGINT);		/* Kill all the children (Wow, I don't really want to do that...) */
   while ((child_pid = wait (&rc)) != -1) {
@@ -192,6 +204,11 @@ void clean_out (int signal, siginfo_t *info, void *data)
   log_master ("Cleaning...");
 
   close (sfd);
+
+  for (i=0;i<MAXJOBS;i++) {
+    job_delete(&wdb->job[i]);
+  }
+
   if (semctl (wdb->semid,0,IPC_RMID,NULL) == -1) {
     perror ("wdb->semid");
   }
@@ -199,12 +216,14 @@ void clean_out (int signal, siginfo_t *info, void *data)
     perror ("wdb->shmid");
   }
 
+  fprintf (stderr,"PID,Signal: %i,%i\n",getpid(),signal);
+
   exit (1);
 }
 
 void set_alarm (void)
 {
-  alarm (MAXTIMECONNECTION);
+/*    alarm (MAXTIMECONNECTION); */
 }
 
 void sigalarm_handler (int signal, siginfo_t *info, void *data)
@@ -222,6 +241,15 @@ void sigpipe_handler (int signal, siginfo_t *info, void *data)
     log_master_computer (&wdb->computer[icomp],"Broken connection while reading or writing");
   else
     log_master ("Broken connection while reading or writing");
+  exit (1);
+}
+
+void sigsegv_handler (int signal, siginfo_t *info, void *data)
+{
+  if (icomp != -1)
+    log_master_computer (&wdb->computer[icomp],"Segmentation fault... too bad");
+  else
+    log_master ("Segmentation fault... too bad");
   exit (1);
 }
 

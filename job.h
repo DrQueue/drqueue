@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.3 2001/05/30 15:11:47 jorge Exp $ */
+/* $Id: job.h,v 1.4 2001/06/05 12:19:45 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -26,7 +26,7 @@ typedef enum {
 
 struct frame_info {
   char status;			/* Status */
-  time_t start,end;		/* Time of start and ending of the frame (32 bit integer) */
+  time_t start_time,end_time;	/* Time of start and ending of the frame (32 bit integer) */
   char exitcode;		/* Exit code of the process */
   uint16_t icomp;		/* Index to computer */
   uint16_t itask;		/* Index to task on computer */
@@ -39,7 +39,10 @@ struct job {
   char cmd[MAXCMDLEN];
   char owner[MAXNAMELEN];
   uint32_t frame_start,frame_end;
+  time_t avg_frame_time;	/* Average frame time */
+  time_t est_finish_time;	/* Estimated finish time */
   struct frame_info *frame_info; /* Status of every frame */
+  int fishmid;			/* Shared memory id for the frame_info structure */
 };
 
 struct job;
@@ -47,11 +50,21 @@ struct database;
 
 int job_index_free (void *pwdb);
 void job_report (struct job *job);
-void job_init (struct job *job);
 char *job_status_string (char status);
 int job_nframes (struct job *job);
 int job_available (struct database *wdb,int ijob, int *iframe);
 int job_first_frame_available (struct database *wdb,int ijob);
 void job_update_assigned (struct database *wdb, int ijob, int iframe, int icomp, int itask);
+void job_init_registered (struct database *wdb,int ijob,struct job *job);
+void job_init (struct job *job);
+void job_delete (struct job *job);
+
+int get_frame_shared_memory (int nframes); /* ipc shared memory */
+void *attach_frame_shared_memory (int shmid);
+void detach_frame_shared_memory (struct frame_info *fishp);
+
 
 #endif /* _JOB_H_ */
+
+
+

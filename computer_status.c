@@ -1,4 +1,4 @@
-/* $Id: computer_status.c,v 1.2 2001/05/30 15:11:47 jorge Exp $ */
+/* $Id: computer_status.c,v 1.3 2001/06/05 12:19:45 jorge Exp $ */
 
 #include <stdio.h>
 #include <signal.h>
@@ -37,6 +37,8 @@ void check_tasks (struct computer_status *cstatus)
 	  /* task is registered but not running */
 	  cstatus->task[i].used = 0;
 	}
+      } else {
+	cstatus->numtasks++;
       }
     }
   }
