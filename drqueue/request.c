@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.27 2001/08/27 15:29:16 jorge Exp $ */
+/* $Id: request.c,v 1.28 2001/08/28 08:22:50 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -1131,6 +1131,7 @@ void handle_r_r_jobxfer (int sfd,struct database *wdb,int icomp,struct request *
     req->data = RERR_NOREGIS;
     if (!send_request(sfd,req,MASTER))
       return;
+    return;
   }
 
   req->type = R_A_JOBXFER;
