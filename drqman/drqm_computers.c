@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_computers.c,v 1.24 2003/12/19 17:26:23 jorge Exp $
+ * $Id$
  */
 
 #include <stdlib.h>
@@ -651,11 +651,13 @@ static void KillTask (GtkWidget *menu_item, struct drqm_computers_info *info)
 
   if (!cbs) {
     cbs = g_list_append (cbs,dtk_bok_pressed);
+		cbs = g_list_append (cbs,info);
     cbs = g_list_append (cbs,cdd_update);
+		cbs = g_list_append (cbs,info);
   }
 
   dialog = ConfirmDialog ("Do you really want to kill the tasks ?",
-			  cbs,(gpointer)info);
+			  cbs);
   if (dialog)
     gtk_window_set_modal(GTK_WINDOW(dialog),TRUE);
 }
