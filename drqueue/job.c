@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.57 2002/12/02 22:24:08 jorge Exp $ */
+/* $Id: job.c,v 1.58 2003/12/15 22:18:32 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -725,6 +725,12 @@ char *job_koj_string (struct job *job)
     break;
   case KOJ_MAYABLOCK:
     msg = "Maya Block";
+    break;
+  case KOJ_BLENDER:
+    msg = "Blender";
+    break;
+  case KOJ_BLENDERBLOCK:
+    msg = "Blender Block";
     break;
   default:
     msg = "DEFAULT (ERROR)";

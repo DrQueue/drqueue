@@ -1,4 +1,4 @@
-/* $Id: libdrqueue.h,v 1.3 2001/09/04 16:05:03 jorge Exp $ */
+/* $Id: libdrqueue.h,v 1.4 2003/12/15 22:18:32 jorge Exp $ */
 #ifndef _LIBDRQUEUE_H_
 #define _LIBDRQUEUE_H_
 
@@ -15,5 +15,6 @@
 
 /* Script generators */
 #include "mayasg.h"
+#include "blendersg.h"
 
 #endif /* _libdrqueue_h_ */

@@ -1,0 +1,176 @@
+/* $Id: blendersg.c,v 1.1 2003/12/15 22:18:32 jorge Exp $ */
+
+#include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <string.h>
+#include <unistd.h>
+
+#include "blendersg.h"
+#include "libdrqueue.h"
+
+char *blendersg_create (struct blendersgi *info)
+{
+  /* This function creates the blender render script based on the information given */
+  /* Returns a pointer to a string containing the path of the just created file */
+  /* Returns NULL on failure and sets drerrno */
+  FILE *f;
+  FILE *etc_blender_sg; 		/* The blender script generator configuration file */
+  int fd_etc_blender_sg,fd_f;
+  static char filename[BUFFERLEN];
+  char fn_etc_blender_sg[BUFFERLEN]; /* File name pointing to DRQUEUE_ROOT/etc/blender.sg */
+  char buf[BUFFERLEN];
+	int size;
+  char *p;			/* Scene filename without path */
+
+  /* Check the parameters */
+  if (!strlen(info->scene)) {
+    drerrno = DRE_NOTCOMPLETE;
+    return NULL;
+  }
+
+  p = strrchr(info->scene,'/');
+  p = ( p ) ? p+1 : info->scene;
+  snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,time(NULL));
+
+  if ((f = fopen (filename, "a")) == NULL) {
+    if (errno == ENOENT) {
+      /* If its because the directory does not exist we try creating it first */
+      if (mkdir (info->scriptdir,0775) == -1) {
+				drerrno = DRE_COULDNOTCREATE;
+				return NULL;
+      } else if ((f = fopen (filename, "a")) == NULL) {
+				drerrno = DRE_COULDNOTCREATE;
+				return NULL;
+      }
+    } else {
+      drerrno = DRE_COULDNOTCREATE;
+      return NULL;
+    }
+  }
+
+  fchmod (fileno(f),0777);
+
+  /* So now we have the file open and so we must write to it */
+  fprintf(f,"#!/bin/tcsh\n\n");
+  fprintf(f,"set SCENE=%s\n",info->scene);
+
+  snprintf(fn_etc_blender_sg,BUFFERLEN-1,"%s/etc/blender.sg",getenv("DRQUEUE_ROOT"));
+
+  fflush (f);
+
+  if ((etc_blender_sg = fopen (fn_etc_blender_sg,"r")) == NULL) {
+    fprintf(f,"\necho -------------------------------------------------\n");
+    fprintf(f,"echo ATTENTION ! There was a problem opening: %s\n",fn_etc_blender_sg);
+    fprintf(f,"echo So the default configuration will be used\n");
+    fprintf(f,"echo -------------------------------------------------\n");
+    fprintf(f,"\n\n");
+    fprintf(f,"blender -b $SCENE -f $FRAME\n\n");
+  } else {
+    fd_etc_blender_sg = fileno (etc_blender_sg);
+    fd_f = fileno (f);
+    while ((size = read (fd_etc_blender_sg,buf,BUFFERLEN)) != 0) {
+      write (fd_f,buf,size);
+    }
+    fclose(etc_blender_sg);
+  }
+
+  fclose(f);
+
+  return filename;
+}
+
+
+char *blendersg_default_script_path (void)
+{
+  static char buf[BUFFERLEN];
+  char *p;
+
+  if (!(p = getenv("DRQUEUE_ROOT"))) {
+    return ("/drqueue_root/not/set/report/bug/please");
+  }
+  
+  if (p[strlen(p)-1] == '/')
+    p[strlen(p)-1] = 0;		/* ATENTION this modifies the environment */
+
+  snprintf (buf,BUFFERLEN-1,"%s/tmp/",p);
+
+  return buf;
+}
+
+char *blenderblocksg_create (struct blendersgi *info)
+{
+  /* This function creates the blender render script based on the information given */
+  /* Returns a pointer to a string containing the path of the just created file */
+  /* Returns NULL on failure and sets drerrno */
+  FILE *f;
+  FILE *etc_blenderblock_sg; 		/* The blender script generator configuration file */
+  int fd_etc_blenderblock_sg,fd_f;
+  static char filename[BUFFERLEN];
+  char fn_etc_blenderblock_sg[BUFFERLEN];
+  char buf[BUFFERLEN];
+  int size;
+  char *p;			/* Scene filename without path */
+
+  /* Check the parameters */
+  if (!strlen(info->scene)) {
+    drerrno = DRE_NOTCOMPLETE;
+    return NULL;
+  }
+
+  p = strrchr(info->scene,'/');
+  p = ( p ) ? p+1 : info->scene;
+  snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,time(NULL));
+
+  if ((f = fopen (filename, "a")) == NULL) {
+    if (errno == ENOENT) {
+      /* If its because the directory does not exist we try creating it first */
+      if (mkdir (info->scriptdir,0775) == -1) {
+				drerrno = DRE_COULDNOTCREATE;
+				return NULL;
+      } else if ((f = fopen (filename, "a")) == NULL) {
+				drerrno = DRE_COULDNOTCREATE;
+				return NULL;
+      }
+    } else {
+      drerrno = DRE_COULDNOTCREATE;
+      return NULL;
+    }
+  }
+
+  fchmod (fileno(f),0777);
+
+  /* So now we have the file open and so we must write to it */
+  fprintf(f,"#!/bin/tcsh\n\n");
+  fprintf(f,"set SCENE=%s\n",info->scene);
+
+  snprintf(fn_etc_blenderblock_sg,BUFFERLEN-1,"%s/etc/blenderblock.sg",getenv("DRQUEUE_ROOT"));
+
+  fflush (f);
+
+  if ((etc_blenderblock_sg = fopen (fn_etc_blenderblock_sg,"r")) == NULL) {
+    fprintf(f,"\necho -------------------------------------------------\n");
+    fprintf(f,"echo ATTENTION ! There was a problem opening: %s\n",fn_etc_blenderblock_sg);
+    fprintf(f,"echo So the default configuration will be used\n");
+    fprintf(f,"echo -------------------------------------------------\n");
+    fprintf(f,"\n\n");
+    fprintf(f,"blender -b $SCENE -s $FRAME -e `expr $FRAME + $STEPFRAME - 1` -a\n\n");
+  } else {
+    fd_etc_blenderblock_sg = fileno (etc_blenderblock_sg);
+    fd_f = fileno (f);
+    while ((size = read (fd_etc_blenderblock_sg,buf,BUFFERLEN)) != 0) {
+      write (fd_f,buf,size);
+    }
+    fclose(etc_blenderblock_sg);
+  }
+
+  fclose(f);
+
+  return filename;
+}
+
+
+

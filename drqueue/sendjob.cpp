@@ -1,5 +1,5 @@
 //
-// $Id: sendjob.cpp,v 1.2 2002/12/02 22:24:08 jorge Exp $
+// $Id: sendjob.cpp,v 1.3 2003/12/15 22:18:32 jorge Exp $
 // 
 // To set up a maya job from a file and send it to the master
 //
@@ -61,7 +61,7 @@ int main (int argc,char *argv[])
 
 void presentation (void)
 {
-  cout << "DrQueue - by Triple-e VFX\n\n";
+  cout << "DrQueue - by Jorge Daza García Blanes\n\n";
 }
 
 void cleanup (int signum)

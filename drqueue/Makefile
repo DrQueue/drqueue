@@ -1,10 +1,10 @@
-# $Id: Makefile,v 1.34 2002/09/22 19:10:24 jorge Exp $
+# $Id: Makefile,v 1.35 2003/12/15 22:18:32 jorge Exp $
 
 CC = gcc
-CPP = g++
+CPP = g++-2.95
 OBJS_LIBDRQUEUE = computer_info.o computer_status.o task.o logger.o communications.o \
 			computer.o request.o semaphores.o job.o drerrno.o database.o common.o \
-			mayasg.o
+			mayasg.o blendersg.o
 LDFLAGS =
 
 INSTROOT = /lot/s800/HOME/RENDUSR/drqueue
@@ -60,7 +60,7 @@ irix_miniinstall: irix
 doc:
 	cxref *.[ch] drqman/*.[ch] -all-comments -xref-all -index-all -R/home/jorge/prog/drqueue -O/home/jorge/prog/drqueue/doc -html32 -D__LINUX
 
-all: slave master requeue sendjob
+all: slave master requeue # sendjob
 
 libdrqueue.a : $(OBJS_LIBDRQUEUE) libdrqueue.h
 	ar sq $@ $(OBJS_LIBDRQUEUE)
@@ -80,7 +80,7 @@ libdrqueue.h: computer_info.h computer_status.h task.h logger.h communications.h
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 clean:
-	rm -f *.o *~ libdrqueue.a slave master sendjob TAGS
+	rm -f *.o *~ libdrqueue.a slave master sendjob requeue TAGS tmp/* logs/*
 	(cd drqman; $(MAKE) clean)
 
 tags:

@@ -1,0 +1,44 @@
+
+# Default configuration for maya script generator
+# You can set the environment variables here (csh style)
+# setupenv -ver 4.0 maya
+
+#
+# For platform dependend environment setting a form like this
+# can be used :
+#
+#
+# if ($DRQUEUE_OS == "LINUX") then
+#    # Environment for Linux
+# else if ($DRQUEUE_OS == "IRIX") then
+#    # Environment for Irix
+# else
+#    # Some error messages
+# endif
+#
+#
+#
+# The same structure can be used with the Render command
+
+set BLOCK=`expr $FRAME + $STEPFRAME - 1`
+if ( $BLOCK > $ENDFRAME ) then
+  set BLOCK=$ENDFRAME;
+endif
+
+echo blender -b $SCENE -s $FRAME -e $BLOCK -a
+
+blender -b $SCENE -s $FRAME -e $BLOCK -a
+
+# This should requeue the block if failed
+if ( $? != 0 ) then
+  echo "Requeueing block..."
+  kill -INT $$
+else
+  # The frame was rendered properly
+  # We don't know the output image name. If we knew we could set this correctly
+  # chown_block $RF_OWNER $RD/$IMAGE $FRAME $BLOCK 
+endif
+
+#
+# Notice that the exit code of the last command is received by DrQueue
+#

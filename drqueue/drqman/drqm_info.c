@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_info.c,v 1.3 2001/11/08 12:04:21 jorge Exp $
+ * $Id: drqm_info.c,v 1.4 2003/12/15 22:18:32 jorge Exp $
  */
 
 #include <string.h>
@@ -8,13 +8,13 @@
 #include <pwd.h>
 #include <sys/types.h>
 
-#include "eeelogo.xpm"
+/* #include "eeelogo.xpm" */
 
 #include "drqman.h"
 #include "drqm_common.h"
 
 /* Static functions declarations */
-static GtkWidget *CreateLogoWidget (GtkWidget *widget);
+/* static GtkWidget *CreateLogoWidget (GtkWidget *widget); */
 
 
 void CreateInfoPage (GtkWidget *notebook, struct info_drqm *info)
@@ -34,11 +34,11 @@ void CreateInfoPage (GtkWidget *notebook, struct info_drqm *info)
   vbox = gtk_vbox_new(FALSE,2);
   gtk_container_add(GTK_CONTAINER(container),vbox);
 
-  logo = CreateLogoWidget (info->main_window);
-  gtk_box_pack_start (GTK_BOX(vbox),logo,FALSE,FALSE,2);
+/*   logo = CreateLogoWidget (info->main_window); */
+/*   gtk_box_pack_start (GTK_BOX(vbox),logo,FALSE,FALSE,2); */
 
-  snprintf (msg,BUFFERLEN-1,"DrQueue Version %s\nby Triple-e VFX\n"
-	    "European Electronic Effects",VERSION);
+  snprintf (msg,BUFFERLEN-1,"DrQueue Version %s\nby Jorge Daza\n"
+	    "jorge@drqueue.org",VERSION);
   text = gtk_label_new (msg);
   gtk_box_pack_start (GTK_BOX(vbox),text,FALSE,FALSE,2);
 
@@ -50,16 +50,16 @@ void CreateInfoPage (GtkWidget *notebook, struct info_drqm *info)
   gtk_widget_show(container);
 }
 
-GtkWidget *CreateLogoWidget (GtkWidget *widget)
-{
-  GtkWidget *toplevel;
-  GdkBitmap *l_mask = NULL; /* Logo mask */
-  GdkPixmap *l_data = NULL; /* Logo data */
+/* GtkWidget *CreateLogoWidget (GtkWidget *widget) */
+/* { */
+/*   GtkWidget *toplevel; */
+/*   GdkBitmap *l_mask = NULL; /\* Logo mask *\/ */
+/*   GdkPixmap *l_data = NULL; /\* Logo data *\/ */
 
-  toplevel = gtk_widget_get_toplevel(widget);
-  gtk_widget_realize(toplevel);	/* Just in case */
-  l_data = gdk_pixmap_create_from_xpm_d (GTK_WIDGET(toplevel)->window,&l_mask,NULL,(gchar**)eeelogo_xpm);
+/*   toplevel = gtk_widget_get_toplevel(widget); */
+/*   gtk_widget_realize(toplevel);	/\* Just in case *\/ */
+/*   l_data = gdk_pixmap_create_from_xpm_d (GTK_WIDGET(toplevel)->window,&l_mask,NULL,(gchar**)eeelogo_xpm); */
 
-  return gtk_pixmap_new(l_data,l_mask);
-}
+/*   return gtk_pixmap_new(l_data,l_mask); */
+/* } */
 
