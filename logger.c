@@ -1,4 +1,4 @@
-/* $Id: logger.c,v 1.24 2002/03/01 11:06:53 jorge Exp $ */
+/* $Id: logger.c,v 1.25 2002/03/01 11:07:43 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -35,8 +35,6 @@ void log_slave_task (struct task *task,int level,char *fmt,...)
 
   if (level > loglevel)
     return;
-
-  /* Test comment */
 
   va_start (ap,fmt);
   vsnprintf (msg,BUFFERLEN-1,fmt,ap);
