@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.3 2001/05/02 16:12:33 jorge Exp $ */
+/* $Id: slave.c,v 1.4 2001/05/07 15:35:04 jorge Exp $ */
 
 #include <unistd.h>
 #include <signal.h>
@@ -6,25 +6,23 @@
 #include "slave.h"
 #include "computer.h"
 #include "logger.h"
+#include "request.h"
+#include "communications.h"
 
 struct computer comp;		/* Need to be on global scope because of signal handling */
 
 int main (int argc,char *argv[])
 {
-  get_hwinfo (&comp.hwinfo);
-  report_hwinfo (&comp.hwinfo);
 
   set_signal_handlers ();
 
-  get_computerstatus (&comp.status);
-  
-  strcpy (comp.status.task[0].jobname,"Test");
-  log_slave_task (&comp.status.task[0],"Another test");
-
   log_slave_computer ("Starting...");
+  get_hwinfo (&comp.hwinfo);
+  report_hwinfo (&comp.hwinfo);
 
-  while (1)
-    sleep (10);
+  register_slave (&comp);
+
+  get_computerstatus (&comp.status);
 
   exit (0);
 }
@@ -51,3 +49,38 @@ void clean_out (int signal, siginfo_t *info, void *data)
 
   exit (1);
 }
+
+void register_slave (struct computer *computer)
+{
+  struct request req;
+  int sfd;
+
+  sfd = connect_to_master ();
+  
+  req.type = R_R_REGISTER;
+  req.slave = 1;
+
+  send_request (sfd,&req,SLAVE);
+  recv_request (sfd,&req,SLAVE);
+  if (req.type == R_A_REGISTER) {
+    switch (req.data_s) {
+    case RERR_NOERROR:
+      send_computer_hwinfo (sfd,&computer->hwinfo,SLAVE);
+      break;
+    case RERR_ALREADY:
+      log_slave_computer ("Already registered");
+      kill (0,SIGINT);
+      break;
+    case RERR_NOSPACE:
+      log_slave_computer ("No space on database");
+      kill (0,SIGINT);
+      break;
+    default:
+    }
+  }
+
+  close (sfd);
+}
+
+
+
