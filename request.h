@@ -122,7 +122,7 @@ int request_job_frame_reset_requeued (uint32_t ijob, uint32_t frame, int who);
 int request_slave_killtask (char *slave,uint16_t itask,int who);
 int request_slave_limits_nmaxcpus_set (char *slave, uint32_t nmaxcpus, int who);
 int request_slave_limits_maxfreeloadcpu_set (char *slave, uint32_t maxfreeloadcpu, int who);
-int request_slave_limits_autoenable_set (char *slave, uint32_t h, uint32_t m, int who);
+int request_slave_limits_autoenable_set (char *slave, uint32_t h, uint32_t m, unsigned char flags, int who);
 int request_slave_job_available (char *slave, int who);
 void request_all_slaves_job_available (struct database *wdb);
 

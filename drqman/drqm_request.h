@@ -49,7 +49,7 @@ void drqm_request_computerlist (struct drqm_computers_info *info);
 
 void drqm_request_slave_limits_nmaxcpus_set (char *slave,uint32_t nmaxcpus);
 void drqm_request_slave_limits_maxfreeloadcpu_set (char *slave,uint32_t maxfreeloadcpu);
-void drqm_request_slave_limits_autoenable_set (char *slave,uint32_t h, uint32_t m);
+void drqm_request_slave_limits_autoenable_set (char *slave,uint32_t h, uint32_t m, unsigned char flags);
 void drqm_request_slave_task_kill (char *slave,uint16_t itask);
 
 #endif /* _DRQM_REQUEST_H_ */
