@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.54 2001/10/02 12:40:01 jorge Exp $ */
+/* $Id: request.c,v 1.55 2001/10/02 14:36:03 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -723,7 +723,7 @@ void request_task_finished (struct slave_database *sdb)
       return;
     }
   } else {
-    log_slave_computer (L_ERROR,"Not appropiate answer to request R_R_TASKFINI\n");
+    log_slave_computer (L_ERROR,"Not appropiate answer to request R_R_TASKFINI");
     close (sfd);
     return;
   }
@@ -758,16 +758,15 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
   answer.type = R_A_TASKFINI;
   answer.data = RERR_NOERROR;
   if (!send_request (sfd,&answer,MASTER)) {
-    log_master (L_ERROR,"Error receiving request (handle_r_r_taskfini)");
+    log_master (L_ERROR,"Receiving request (handle_r_r_taskfini)");
     return;
   }
 
   /* Receive task */
   if (!recv_task(sfd,&task)) {
-    log_master (L_ERROR,"Error receiving task (handle_r_r_taskfini)");
+    log_master (L_ERROR,"Receiving task (handle_r_r_taskfini)");
     return;
   }
-
 
   semaphore_lock(wdb->semid);
 
