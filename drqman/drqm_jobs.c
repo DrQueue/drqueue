@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.4 2001/07/17 15:10:11 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.5 2001/07/19 09:07:08 jorge Exp $
  */
 
 #include <string.h>
@@ -7,7 +7,18 @@
 #include "drqm_request.h"
 #include "drqm_jobs.h"
 
+/* Global variable */
 static struct info_drqm_jobs info;
+
+/* Static functions declaration */
+static GtkWidget *CreateJobsList(struct info_drqm_jobs *info);
+static GtkWidget *CreateClist (GtkWidget *window);
+static GtkWidget *CreateButtonRefresh (struct info_drqm_jobs *info);
+static void PressedButtonRefresh (GtkWidget *b, struct info_drqm_jobs *info);
+static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct info_drqm_jobs *info);
+static GtkWidget *CreateMenu (struct info_drqm_jobs *info);
+static void JobDetails(GtkWidget *menu_item, struct info_drqm_jobs *info);
+
 
 void CreateJobsPage (GtkWidget *notebook)
 {
@@ -35,26 +46,31 @@ void CreateJobsPage (GtkWidget *notebook)
   /* Append the page */
   gtk_notebook_append_page (GTK_NOTEBOOK(notebook), container, label);
 
+  /* Put the jobs on the list */
+  drqm_request_joblist (&info);
+  drqm_update_joblist (&info);
+
   gtk_widget_show(clist);
   gtk_widget_show(vbox);
   gtk_widget_show(label);
   gtk_widget_show(container);
 }
 
-GtkWidget *CreateJobsList(struct info_drqm_jobs *info)
+static GtkWidget *CreateJobsList(struct info_drqm_jobs *info)
 {
   GtkWidget *window;
-  GtkWidget *clist;
 
   /* Scrolled window */
   window = gtk_scrolled_window_new(NULL,NULL);
-  clist = CreateClist(window);
-  info->clist = clist;
+  info->clist = CreateClist(window);
+
+  /* Create the popup menu */
+  info->menu = CreateMenu(info);
 
   return (window);
 }
 
-GtkWidget *CreateClist (GtkWidget *window)
+static GtkWidget *CreateClist (GtkWidget *window)
 {
   gchar *titles[] = { "ID","Name","Owner","Status","Processors" };
   GtkWidget *clist;
@@ -64,13 +80,17 @@ GtkWidget *CreateClist (GtkWidget *window)
   gtk_clist_column_titles_show(GTK_CLIST(clist));
   gtk_clist_column_titles_passive(GTK_CLIST(clist));
   gtk_clist_set_column_width (GTK_CLIST(clist),0,25);
+  gtk_clist_set_column_width (GTK_CLIST(clist),1,75);
+  gtk_clist_set_column_width (GTK_CLIST(clist),2,75);
+  gtk_clist_set_column_width (GTK_CLIST(clist),3,75);
+  gtk_clist_set_column_width (GTK_CLIST(clist),4,25);
   gtk_widget_show(clist);
 
   return (clist);
 }
 
 
-GtkWidget *CreateButtonRefresh (struct info_drqm_jobs *info)
+static GtkWidget *CreateButtonRefresh (struct info_drqm_jobs *info)
 {
   GtkWidget *b;
   
@@ -82,7 +102,7 @@ GtkWidget *CreateButtonRefresh (struct info_drqm_jobs *info)
   return b;
 }
 
-void PressedButtonRefresh (GtkWidget *b, struct info_drqm_jobs *info)
+static void PressedButtonRefresh (GtkWidget *b, struct info_drqm_jobs *info)
 {
   drqm_request_joblist (info);
   drqm_update_joblist (info);
@@ -113,3 +133,48 @@ void drqm_update_joblist (struct info_drqm_jobs *info)
   }
   gtk_clist_thaw(GTK_CLIST(info->clist));
 }
+
+static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct info_drqm_jobs *info)
+{
+  if (event->type == GDK_BUTTON_PRESS) {
+    GdkEventButton *bevent = (GdkEventButton *) event;
+    if (bevent->button != 3)
+      return FALSE;
+    gtk_clist_get_selection_info(GTK_CLIST(info->clist),
+				 (int)bevent->x,(int)bevent->y,
+				 &info->row,&info->column);
+    gtk_menu_popup (GTK_MENU(info->menu), NULL, NULL, NULL, NULL,
+		    bevent->button, bevent->time);
+    return TRUE;
+  }
+  return FALSE;
+}
+
+static GtkWidget *CreateMenu (struct info_drqm_jobs *info)
+{
+  GtkWidget *menu;
+  GtkWidget *menu_item;
+
+  menu = gtk_menu_new ();
+  menu_item = gtk_menu_item_new_with_label("Details");
+  gtk_menu_append(GTK_MENU(menu),menu_item);
+  gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(JobDetails),info);
+  gtk_widget_show(menu_item);
+
+  gtk_signal_connect(GTK_OBJECT((info->clist)),"event",GTK_SIGNAL_FUNC(PopupMenu),info);
+
+  gtk_widget_show(menu);
+
+  return (menu);
+}
+
+static void JobDetails(GtkWidget *menu_item, struct info_drqm_jobs *info)
+{
+/*    GtkWidget *dialog; */
+/*    dialog = AddDivisionDialog(info); */
+/*    gtk_grab_add(dialog); */
+}
+
+
+
+
