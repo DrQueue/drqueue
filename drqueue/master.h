@@ -31,7 +31,6 @@ extern int phantom[2];
 
 void master_get_options (int *argc,char ***argv, int *force);
 void usage (void);
-void master_config_parse (char *cfg);
 
 int get_shared_memory (int force);
 int get_semaphores (int force);
