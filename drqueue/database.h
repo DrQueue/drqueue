@@ -1,4 +1,4 @@
-/* $Id: database.h,v 1.7 2001/11/02 10:52:59 jorge Exp $ */
+/* $Id: database.h,v 1.8 2001/11/02 16:12:20 jorge Exp $ */
 
 #ifndef _DATABASE_H_
 #define _DATABASE_H_
@@ -25,9 +25,12 @@ struct database_hdr {		/* Database header for the saved database */
   uint32_t magic;		/* Magics number */
   uint32_t version;		/* Version number for the saved database */
   uint16_t job_size;		/* Number of total (used and empty) jobs in the jobs structure */
-  uint16_t computer_size;	/* Number of total (used and empty) computers in the computers structure */
+				/* We only save the jobs, because the computers' slaves need to be restarted */
+  uint16_t njobs;		/* Number of used jobs */
 };
 
 void database_init (struct database *wdb);
+int database_save (struct database *wdb);
+int database_load (struct database *wdb);
 
 #endif /* _DATABASE_H_ */
