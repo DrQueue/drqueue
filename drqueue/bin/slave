@@ -1,19 +1,19 @@
 #!/bin/sh
 #
-# $Id: slave,v 1.3 2002/07/01 12:47:53 jorge Exp $
+# $Id: slave,v 1.4 2002/12/02 22:42:25 jorge Exp $
 #
 # Slave starting program that restarts the slave after failure
 #
     
 if [ `uname -s` == "Linux" ]; then
   while [ 1 ]; do
-    $DRQUEUE_ROOT/bin/slave.linux
+    $DRQUEUE_ROOT/bin/slave.linux $*
     sleep 60
   done
 else
   echo "Irix"
   while [ 1 ]; do
-    $DRQUEUE_ROOT/bin/slave.irix
+    $DRQUEUE_ROOT/bin/slave.irix $*
     sleep 60
   done
 fi
