@@ -1,4 +1,4 @@
-/* $Id: computer_info.c,v 1.14 2004/04/26 16:25:51 jorge Exp $ */
+/* $Id: computer_info.c,v 1.15 2004/10/06 16:16:57 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -47,16 +47,16 @@ t_proctype get_proctype (void)
   while (!(found || feof (cpuinfo))) {
     fgets (buf,BUFFERLEN-1,cpuinfo);
     if (strstr(buf,"model name") != NULL) {
-      if (strstr(buf,"AMD Athlon(tm)")) {
-	proctype = PROCTYPE_ATHLON;
+      if (strstr(buf,"AMD Athlon")) {
+				proctype = PROCTYPE_ATHLON;
       } else if (strstr(buf,"Pentium(R) 4") != NULL) {
-	proctype = PROCTYPE_PENTIUM4;
+				proctype = PROCTYPE_PENTIUM4;
       } else if (strstr(buf,"Pentium III") != NULL) {
-	proctype = PROCTYPE_PENTIUMIII;
+				proctype = PROCTYPE_PENTIUMIII;
       } else if (strstr(buf,"Pentium II") != NULL) {
-	proctype = PROCTYPE_PENTIUMII;
+				proctype = PROCTYPE_PENTIUMII;
       } else if (strstr(buf,"Pentium ") != NULL) {
-	proctype = PROCTYPE_PENTIUM;
+				proctype = PROCTYPE_PENTIUM;
       }
       found = 1;
     }
