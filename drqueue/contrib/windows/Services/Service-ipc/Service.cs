@@ -97,9 +97,9 @@ namespace Services
 
 			elapsed = 0;
 			Process theProcess = new Process();
-			theProcess.StartInfo.UseShellExecute = false;
+			theProcess.StartInfo.UseShellExecute = true;
 	        theProcess.StartInfo.WorkingDirectory = Environment.GetEnvironmentVariable("DRQUEUE_BIN");
-		    theProcess.StartInfo.FileName = theProcess.StartInfo.WorkingDirectory + "\\ipc-daemon2.exe";
+		    theProcess.StartInfo.FileName = "ipc-daemon2.exe"; //theProcess.StartInfo.WorkingDirectory + "\\ipc-daemon2.exe";
 			theProcess.Start();
 			eventLog1.WriteEntry(theProcess.StartInfo.FileName + " started !");
 

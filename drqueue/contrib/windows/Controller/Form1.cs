@@ -297,7 +297,10 @@ namespace ServicesController
 				if (!IsActive(SLAVE))
 				{
 					if (serviceControllerIpc.Status == System.ServiceProcess.ServiceControllerStatus.Stopped)
+					{
 						serviceControllerIpc.Start();
+						System.Threading.Thread.Sleep(1000);
+					}
 					Activate(SLAVE);
 				}
 				else
@@ -320,7 +323,10 @@ namespace ServicesController
 				try
 				{
 					if (serviceControllerIpc.Status == System.ServiceProcess.ServiceControllerStatus.Stopped)
+					{
 						serviceControllerIpc.Start();
+						System.Threading.Thread.Sleep(1000);
+					}
 				}
 				catch(System.Exception ex)
 				{
