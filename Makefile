@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.47 2004/10/09 03:42:36 jorge Exp $
+# $Id: Makefile,v 1.48 2004/10/09 03:44:29 jorge Exp $
 
 CC = gcc
 CPP = g++
@@ -67,9 +67,9 @@ drqman: libdrqueue.a
 
 IRIX_install:
 	install -d -u rendusr -g staff -m 0777 $(INSTROOT)/bin
-	su rendusr -c "install -m 0777 -u rendusr -g nisuser ./slave ./master $(IRIX_INSTROOT)/bin/"
+	su rendusr -c "install -m 0777 -u rendusr -g nisuser ./slave ./master $(INSTROOT)/bin/"
 	install -d -u rendusr -g staff -m 0777 $(INSTROOT)/etc
-	su rendusr -c "cd etc; install -m 0777 -u rendusr -g nisuser ./maya.sg ./drqman.rc $(IRIX_INSTROOT)/etc/"
+	su rendusr -c "cd etc; install -m 0777 -u rendusr -g nisuser ./maya.sg ./drqman.rc $(INSTROOT)/etc/"
 	cp ./drqman/drqman /usr/local/software
 
 Linux_install:
