@@ -1,4 +1,4 @@
-/* $Id: request.h,v 1.13 2001/08/07 13:03:02 jorge Exp $ */
+/* $Id: request.h,v 1.14 2001/08/08 12:59:46 jorge Exp $ */
 /* The request structure is not just used for the requests themselves */
 /* but also for the answers to the requests */
 
@@ -52,6 +52,7 @@ int request_job_available (struct slave_database *sdb);
 void request_task_finished (struct slave_database *sdb);
 int request_job_delete (struct job *job,int who);
 int request_job_stop (uint32_t ijob, int who);
+int request_job_hstop (uint32_t ijob, int who);
 int request_job_continue (uint32_t ijob, int who);
 
 
