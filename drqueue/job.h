@@ -124,14 +124,16 @@ union koj_info {		/* Kind of job information */
 /* JOB SECTION */
 typedef enum {
   JOBSTATUS_WAITING,		/* Waiting to be dispatched */
-  JOBSTATUS_ACTIVE,		/* Already dispatched */
+  JOBSTATUS_ACTIVE,     /* Already dispatched */
   JOBSTATUS_STOPPED,		/* Stopped, waiting for current frames to finish */
   JOBSTATUS_FINISHED
 } t_jobstatus;
 
 /* JOB FLAGS */
 #define JF_MAILNOTIFY     (1<<0) /* Mail notifications on events */
-#define JF_MNDIFEMAIL	  (1<<1) /* Email address for notifications specified on "email" field */
+#define JF_MNDIFEMAIL			(1<<1) /* Email address for notifications specified on "email" field */
+#define JF_CMDONFINISH		(1<<2) // Do something when the job is finished
+#define JF_COFDONE				(1<<3) // Command On Finish done, set when we have already executed the COF
 
 /* OS FLAGS */
 #define OSF_IRIX          (1<<0) /* If set will run on Irix */
@@ -142,18 +144,19 @@ typedef enum {
 /* THE JOB ITSELF */
 struct job {
   char used;
-  uint32_t id;			/* Id number for the job */
-  uint16_t nprocs;		/* Number of procs currently assigned */
-  uint16_t status;		/* Status of the job */
-  uint32_t priority;		/* Priority */
+  uint32_t id; 				/* Id number for the job */
+  uint16_t nprocs;	  /* Number of procs currently assigned */
+  uint16_t status; 		/* Status of the job */
+  uint32_t priority;  /* Priority */
 
   char name[MAXNAMELEN];
   char cmd[MAXCMDLEN];
+	char cmdonfinish[MAXCMDLEN];
   char owner[MAXNAMELEN];
   char email[MAXNAMELEN];	/* Specific email address for email notifications */
 
-  uint16_t koj;			/* Kind of job */
-  union koj_info koji;		/* koj info */
+  uint16_t koj;									/* Kind of job */
+  union koj_info koji;					/* koj info */
   
 	// FIXME: frames are uint32_t but the function that returns frames available is int 
   uint32_t frame_start,frame_end;
