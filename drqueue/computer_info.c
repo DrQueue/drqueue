@@ -1,4 +1,4 @@
-/* $Id: computer_info.c,v 1.7 2001/08/29 09:44:19 jorge Exp $ */
+/* $Id: computer_info.c,v 1.8 2001/08/31 09:28:10 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -191,6 +191,8 @@ int get_procspeed (void)
     if (strstr(buf,"MHZ") != NULL) {
       /* The MHz are the second number on this line */
       if (sscanf (buf,"%i %i",&nprocs,&procspeed) == 2) {
+	found = 1;
+      } else if (sscanf (buf,"Processor %i:  %i",&nprocs,&procspeed) == 2) {
 	found = 1;
       }
     }
