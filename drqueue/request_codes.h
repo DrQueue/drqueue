@@ -48,6 +48,7 @@
 #define R_R_JOBFINFO   25 // Job frame info
 #define R_R_JOBFRSTRQD 26 // Job frame reset requeued
 #define R_R_JOBBLKHOST 27 // Job block host
+#define R_R_JOBDELBLKHOST 28 // Job block host delete
 
 /* Requests to the slave */
 #define RS_R_KILLTASK           1 /* Request to slave to kill a task */
