@@ -57,9 +57,9 @@ else
   set FFORMAT = ""
 endif
 
-echo Render -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT -rd $RD $CIMAGE $CAMERA $SCENE
+echo Render -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT -rd $DRQUEUE_RD $CIMAGE $CAMERA $DRQUEUE_SCENE
 
-Render -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT -rd $DRQUEUE_RD $CIMAGE $CAMERA $SCENE
+Render -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT -rd $DRQUEUE_RD $CIMAGE $CAMERA $DRQUEUE_SCENE
 
 # This should requeue the frame if failed
 if ( $? != 0 ) then
