@@ -22,17 +22,18 @@ TO DO:
 BUGS:
 ----
 
+* When I set a frame as waiting it must check before if it is finished.
 
 NOTES:
 -----
 
-* The frame number in the task struct is _different_ from iframe in the job handling stuff
 * I should use a dynamically allocated structure for the computers' tasks (or not?)
-* Both the index frame and the frame number are uint32 so no negative numbers are supported.
+* Both the frame index and the frame number are uint32 so no negative numbers are supported.
 
 DRQMAN
 ------
 
+* Watching the frame with fchech while rendering.
 * Autorefresh configurable
 * Watching the output logs as tail -f does.
 * Names of computers instead of id numbers.
@@ -48,4 +49,6 @@ INSTALLATION NOTES:
 ------------------
 
 1) Check that the master host resolves to the same point on both directions.
-2) The creation of the logs directory iis not automatic
+2) The creation of the logs directory is not automatic
+3) Binaries on DRQUEUE_ROOT/bin
+4) DRQUEUE_ROOT/tmp directory
