@@ -60,11 +60,11 @@ char *mayasg_create (struct mayasgi *info)
     if (errno == ENOENT) {
       /* If its because the directory does not exist we try creating it first */
       if (mkdir (info->scriptdir,0775) == -1) {
-	drerrno = DRE_COULDNOTCREATE;
-	return NULL;
+				drerrno = DRE_COULDNOTCREATE;
+				return NULL;
       } else if ((f = fopen (filename, "a")) == NULL) {
-	drerrno = DRE_COULDNOTCREATE;
-	return NULL;
+				drerrno = DRE_COULDNOTCREATE;
+				return NULL;
       }
     } else {
       drerrno = DRE_COULDNOTCREATE;

@@ -16,9 +16,9 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-/*
- * $Id$
- */
+//
+// $Id$
+//
 
 #include <stdlib.h>
 #include <string.h>
@@ -331,12 +331,13 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
   hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start(GTK_BOX(vbox2),hbox,FALSE,FALSE,2);
   label = gtk_label_new ("Maximum number of cpus:");
+	gtk_misc_set_alignment (GTK_MISC(label), 0, .5);
   gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
   gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
   hbox2 = gtk_hbox_new (FALSE,0);
   gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
-  gtk_widget_show (hbox2);
   label = gtk_label_new ("0");
+	gtk_misc_set_alignment (GTK_MISC(label), 1, .5);
   info->cdd.limits.lnmaxcpus = label;
   gtk_box_pack_start (GTK_BOX(hbox2),label,TRUE,TRUE,2);
   button = gtk_button_new_with_label ("Change");
@@ -346,12 +347,13 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
   hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start(GTK_BOX(vbox2),hbox,FALSE,FALSE,2);
   label = gtk_label_new ("Maximum load a cpu can have to be considered free:");
+	gtk_misc_set_alignment (GTK_MISC(label), 0, .5);
   gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
   gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
   hbox2 = gtk_hbox_new (FALSE,0);
   gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
-  gtk_widget_show (hbox2);
   label = gtk_label_new ("80");
+	gtk_misc_set_alignment (GTK_MISC(label), 1, .5);
   info->cdd.limits.lmaxfreeloadcpu = label;
   gtk_box_pack_start (GTK_BOX(hbox2),label,TRUE,TRUE,2);
   button = gtk_button_new_with_label ("Change");
@@ -361,17 +363,32 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
   hbox = gtk_hbox_new (FALSE,0);
   gtk_box_pack_start (GTK_BOX(vbox2),hbox,FALSE,FALSE,2);
   label = gtk_label_new ("Autoenable Time:");
+	gtk_misc_set_alignment (GTK_MISC(label), 0, .5);
   gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
   gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
   hbox2 = gtk_hbox_new (FALSE,0);
   gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
-  gtk_widget_show (hbox2);
   label = gtk_label_new ("21:00");
   info->cdd.limits.lautoenabletime = label;
+	gtk_misc_set_alignment (GTK_MISC(label), 1, .5);
   gtk_box_pack_start (GTK_BOX(hbox2),label,TRUE,TRUE,2);
   button = gtk_button_new_with_label ("Change");
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
   g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(cdd_limits_autoenable_bcp),info);
+	// Limits pools,
+  hbox = gtk_hbox_new (FALSE,0);
+  gtk_box_pack_start (GTK_BOX(vbox2),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Pools this computer belongs to:");
+	gtk_misc_set_alignment (GTK_MISC(label), 0, .5);
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+	hbox2 = gtk_hbox_new (FALSE,0);
+	gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
+  label = gtk_label_new ("Default");
+	gtk_misc_set_alignment (GTK_MISC(label), 1, .5);
+  info->cdd.limits.lpools = label;
+  gtk_box_pack_start (GTK_BOX(hbox2),label,TRUE,TRUE,2);
+  button = gtk_button_new_with_label ("Change");
+  gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
 
   /* Clist with the task info */
   /* Frame */
@@ -434,6 +451,7 @@ int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
   /* info->icomp and info->row are related, the first is the id of the computer in */
   /* the master, the second is the index in the local structure of computer */
   char msg[BUFFERLEN];
+  char msg2[BUFFERLEN];
   char **buff;			/* for hte clist stuff */
   int ncols = 9;
   int i,row;
@@ -486,6 +504,20 @@ int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
 		gtk_label_set_text (GTK_LABEL(info->cdd.limits.lautoenabletime),msg);
 	} else {
 		gtk_label_set_text (GTK_LABEL(info->cdd.limits.lautoenabletime),"OFF");
+	}
+
+	if (info->computers[info->row].limits.npools) {
+		struct pool *pool;
+		pool = computer_pool_attach_shared_memory(info->computers[info->row].limits.poolshmid);
+		snprintf (msg,BUFFERLEN,"%s",pool[0].name);
+		for (i=1;i<info->computers[info->row].limits.npools;i++) {
+			snprintf (msg2,BUFFERLEN,"%s,%s",msg,pool[i].name);
+			strncpy (msg,msg2,BUFFERLEN-1);
+		}
+		gtk_label_set_text (GTK_LABEL(info->cdd.limits.lpools),msg);
+		computer_pool_detach_shared_memory(pool);
+	} else {
+		gtk_label_set_text (GTK_LABEL(info->cdd.limits.lpools),"WARNING: This computer doesn't belong to any pool");
 	}
 
   /* Tasks clist */

@@ -23,6 +23,8 @@
 
 #include <gtk/gtk.h>
 
+#define KOJ_MAYA_DFLT_VIEWCMD "fcheck $DRQUEUE_RD/$DRQUEUE_IMAGE.$DRQUEUE_PADFRAME.sgi"
+
 struct drqmj_koji_maya {
   GtkWidget *escene;
   GtkWidget *fsscene;		/* File selector for the scene */

@@ -44,6 +44,7 @@ struct drqmc_cddi {					 /* computer details dialog information */
     GtkWidget *lautoenabletime;	/* Autoenable time */
     GtkWidget *eautoenabletime_h; /* Entry for the hour */
     GtkWidget *eautoenabletime_m; /* Entry for the minutes */
+		GtkWidget *lpools;          // Label Pools 
   } limits;
 
   GtkWidget *clist;							/* List of tasks */

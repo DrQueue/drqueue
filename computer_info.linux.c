@@ -90,6 +90,8 @@ t_proctype get_proctype (void)
 				proctype = PROCTYPE_OPTERON;
       } else if (strstr(buf,"AMD Athlon") != NULL) {
 				proctype = PROCTYPE_ATHLON;
+			} else if (strstr(buf,"Xeon") != NULL) {
+				proctype = PROCTYPE_INTELXEON;
       } else if (strstr(buf,"Pentium(R) 4") != NULL) {
 				proctype = PROCTYPE_PENTIUM4;
       } else if (strstr(buf,"Pentium III") != NULL) {
