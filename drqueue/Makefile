@@ -31,7 +31,7 @@ ifeq ($(systype),Linux)
 else 
  ifeq ($(systype),IRIX)
 	CFLAGS = -DCOMM_REPORT -Wall -I. -D__IRIX -g -O2
-  CPPFLAGS = -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__IRIX -g -O2
+	CPPFLAGS = -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__IRIX -g -O2
 	MAKE = /usr/freeware/bin/gmake
  else
 	ifeq ($(systype),Darwin)
@@ -69,12 +69,19 @@ drqman: libdrqueue.a
 	$(MAKE) -C drqman
 
 IRIX_install:
-	#FIXME This doesn't work, but I (Jorge) have no access to an Irix box by now.
-	install -d -u rendusr -g staff -m 0777 $(INSTROOT)/bin
-	su rendusr -c "install -m 0777 -u rendusr -g nisuser ./slave ./master $(INSTROOT)/bin/"
-	install -d -u rendusr -g staff -m 0777 $(INSTROOT)/etc
-	su rendusr -c "cd etc; install -m 0777 -u rendusr -g nisuser ./maya.sg ./drqman.rc $(INSTROOT)/etc/"
-	cp ./drqman/drqman /usr/local/software
+	install -d -m 0777 $(INSTROOT)/tmp
+	install -d -m 0777 $(INSTROOT)/logs
+	install -d -m 0755 $(INSTROOT)/bin
+	install -d -m 0755 $(INSTROOT)/etc
+	install -d -m 0777 $(INSTROOT)/db
+	install -d -m 0777 $(INSTROOT)/contrib
+	cp ./bin/* $(INSTROOT)/bin/ || exit 0
+	cp ./etc/* $(INSTROOT)/etc/ || exit 0
+	cp ./contrib/* $(INSTROOT)/contrib/ || exit 0
+	chmod 0755 $(INSTROOT)/bin/* || exit 0
+	chmod 0755 $(INSTROOT)/contrib/* || exit 0
+	chown $(INSTUID):$(INSTGID) $(INSTROOT)/bin/*
+	chown $(INSTUID):$(INSTGID) $(INSTROOT)/contrib/*
 
 Linux_install:
 	install -d -m 0777 $(INSTROOT)/tmp
