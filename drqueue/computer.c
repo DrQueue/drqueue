@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.8 2001/07/06 15:07:09 jorge Exp $ */
+/* $Id: computer.c,v 1.9 2001/07/17 15:01:52 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -94,7 +94,7 @@ int computer_available (struct computer *computer)
   return 1;
 }
 
-void computer_update_assigned (struct database *wdb,int ijob,int iframe,int icomp,int itask)
+void computer_update_assigned (struct database *wdb,uint32_t ijob,int iframe,int icomp,int itask)
 {
   /* This function should put into the computer task structure */
   /* all the information about ijob, iframe */
