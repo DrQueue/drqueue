@@ -452,7 +452,6 @@ void handle_r_r_ucstatus (int sfd,struct database *wdb,int icomp)
 
 int register_job (struct job *job)
 {
-  /* This function is called by drqman */
   /* returns 0 on failure */
   struct request req;
   int sfd;
@@ -513,7 +512,7 @@ int register_job (struct job *job)
 
 void handle_r_r_regisjob (int sfd,struct database *wdb)
 {
-  /* The master handles this type of packages */
+  /* The master handles this type of request */
   struct request answer;
   struct job job;
   int index;
@@ -521,7 +520,7 @@ void handle_r_r_regisjob (int sfd,struct database *wdb)
   /* TO DO */
   /* Check if the job is already registered ! Or not ? */
 
-  semaphore_lock(wdb->semid);	/* I put the lock here so no race condition can appear... */
+  semaphore_lock(wdb->semid);
   if ((index = job_index_free(wdb)) == -1) {
     /* No space left on database */
     semaphore_release(wdb->semid);
@@ -529,7 +528,7 @@ void handle_r_r_regisjob (int sfd,struct database *wdb)
     answer.type = R_R_REGISJOB;
     answer.data = RERR_NOSPACE;
     send_request (sfd,&answer,MASTER);
-    exit (0);
+    return;
   }
   wdb->job[index].used = 1;
   semaphore_release(wdb->semid);
@@ -547,19 +546,19 @@ void handle_r_r_regisjob (int sfd,struct database *wdb)
     semaphore_lock(wdb->semid);
     job_init (&wdb->job[index]); /* We unassign the reserved space for that job */
     semaphore_release(wdb->semid);
+		return;
   }
+
+	// We send the job first to avoid race conditions with "submit job stopped"
+  job_init_registered (wdb,index,&job);
 	
 	// Send job index
 	answer.type = R_R_REGISJOB;
 	answer.data = index;
 	if (!send_request (sfd,&answer,MASTER)) {
 		log_master (L_ERROR,"Sending job index");
-		exit (0);
+		return;
 	}
-			
-
-  job_init_registered (wdb,index,&job);
-/*    job_report(&wdb->job[index]); */
 }
 
 
