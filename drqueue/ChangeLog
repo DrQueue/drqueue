@@ -1,3 +1,116 @@
+2004-10-27 19:17:18  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/TODO
+	   M /trunk/drqueue/drqman/drqm_jobs.c
+	   M /trunk/drqueue/job.c
+
+	* Copy job now also copies the job flags.
+
+2004-10-27 11:12:55  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/drqman/drqm_jobs.c
+	   M /trunk/drqueue/drqman/drqm_jobs.h
+	   M /trunk/drqueue/drqman/drqm_jobs_jdd.c
+	   M /trunk/drqueue/job.c
+	   M /trunk/drqueue/job.h
+
+	* Support for job dependencies on drqman
+
+2004-10-27 10:43:02  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/drqman/drqm_jobs.c
+	   M /trunk/drqueue/job.c
+	   M /trunk/drqueue/job.h
+	   M /trunk/drqueue/master.c
+
+	* Basic support for job dependencies.
+
+2004-10-27 09:51:43  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/drqman/drqm_jobs.c
+
+	* dnj_cleanup removed
+
+2004-10-27 09:50:35  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/drqman/drqm_jobs.c
+
+	* Minor bugfix, warning message when cancelling a new job
+
+2004-10-27 09:45:15  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/computer.c
+	   M /trunk/drqueue/drqman/drqm_jobs.c
+	   M /trunk/drqueue/job.c
+	   M /trunk/drqueue/job.h
+	   M /trunk/drqueue/request.c
+	   M /trunk/drqueue/slave.c
+	   M /trunk/drqueue/task.h
+
+	* Changes for command on finish reverted. Bugfix for race condition when using "submit stopped".
+
+2004-10-27 04:25:26  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/request.c
+
+	* Bugfix for race condition when using "submit job stopped"
+
+2004-10-27 03:08:15  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/computer.c
+	   M /trunk/drqueue/drqman/drqm_jobs.c
+	   M /trunk/drqueue/job.c
+	   M /trunk/drqueue/job.h
+	   M /trunk/drqueue/request.c
+	   M /trunk/drqueue/slave.c
+	   M /trunk/drqueue/task.h
+
+	* Preliminary support for "Command On Finished".
+
+2004-10-26 22:20:33  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/svn-scripts/build_release.sh
+
+	* build_release.sh updated to point to the new svn2cl.pl
+
+2004-10-26 22:12:33  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/Revision
+
+	* New Revision commited by build_package.sh
+
+2004-10-26 22:11:52  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/ChangeLog
+
+	* Changelog commited by build_package.sh
+
+2004-10-26 22:10:03  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/common.h
+
+	* New version number on common.h: 0.53.0
+
+2004-10-26 22:08:59  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/ChangeLog
+	   M /trunk/drqueue/svn-scripts/build_release.sh
+
+	* Merged from 0.52.x revisions 937:938
+
 2004-10-26 22:00:16  Jorge Daza <jorge@drqueue.org>
 
 	* Changed paths:
