@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.24 2001/10/08 12:31:06 jorge Exp $ */
+/* $Id: job.h,v 1.25 2001/10/25 13:19:53 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -126,6 +126,7 @@ void job_init_limits (struct job *job);
 int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp);
 
 void job_environment_set (struct job *job, uint32_t iframe);
+void job_logs_remove (struct job *job);
 
 int get_frame_shared_memory (int nframes); /* ipc shared memory */
 void *attach_frame_shared_memory (int shmid);
