@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.16 2001/08/22 09:04:32 jorge Exp $ */
+/* $Id: job.c,v 1.17 2001/08/23 13:23:11 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -269,6 +269,8 @@ void job_update_info (struct database *wdb,uint32_t ijob)
   struct frame_info *fi;
   int fleft=0,fdone=0,ffailed=0;
   int total;
+  time_t avg_frame_time = 0;
+
   if (ijob > MAXJOBS)
     return;
 
@@ -287,12 +289,15 @@ void job_update_info (struct database *wdb,uint32_t ijob)
       break;
     case FS_FINISHED:
       fdone++;
+      avg_frame_time += (fi[i].end_time - fi[i].start_time);
       break;
     case FS_ERROR:
       ffailed++;
       break;
     }
   }
+  if (fdone)
+    avg_frame_time /= fdone;
   detach_frame_shared_memory(fi);
 
   semaphore_lock(wdb->semid);
@@ -300,6 +305,10 @@ void job_update_info (struct database *wdb,uint32_t ijob)
   wdb->job[ijob].fleft = fleft;
   wdb->job[ijob].fdone = fdone;
   wdb->job[ijob].ffailed = ffailed;
+  if (fdone)
+    wdb->job[ijob].avg_frame_time = avg_frame_time;
+  if (nprocs)
+    wdb->job[ijob].est_finish_time = time(NULL) + ((avg_frame_time * (fleft+nprocs)) / nprocs);
   switch (wdb->job[ijob].status) {
   case JOBSTATUS_WAITING:
   case JOBSTATUS_ACTIVE:
@@ -308,6 +317,7 @@ void job_update_info (struct database *wdb,uint32_t ijob)
     } else {
       if (fleft == 0) {
 	wdb->job[ijob].status = JOBSTATUS_FINISHED;
+	wdb->job[ijob].est_finish_time = time(NULL);
       } else {
 	wdb->job[ijob].status = JOBSTATUS_WAITING;
       }
