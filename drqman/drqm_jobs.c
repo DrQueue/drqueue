@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.5 2001/07/19 09:07:08 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.6 2001/07/20 08:29:14 jorge Exp $
  */
 
 #include <string.h>
@@ -72,10 +72,10 @@ static GtkWidget *CreateJobsList(struct info_drqm_jobs *info)
 
 static GtkWidget *CreateClist (GtkWidget *window)
 {
-  gchar *titles[] = { "ID","Name","Owner","Status","Processors" };
+  gchar *titles[] = { "ID","Name","Owner","Status","Processors","Left","Done","Failed" };
   GtkWidget *clist;
 
-  clist = gtk_clist_new_with_titles (5, titles);
+  clist = gtk_clist_new_with_titles (8, titles);
   gtk_container_add(GTK_CONTAINER(window),clist);
   gtk_clist_column_titles_show(GTK_CLIST(clist));
   gtk_clist_column_titles_passive(GTK_CLIST(clist));
@@ -83,7 +83,10 @@ static GtkWidget *CreateClist (GtkWidget *window)
   gtk_clist_set_column_width (GTK_CLIST(clist),1,75);
   gtk_clist_set_column_width (GTK_CLIST(clist),2,75);
   gtk_clist_set_column_width (GTK_CLIST(clist),3,75);
-  gtk_clist_set_column_width (GTK_CLIST(clist),4,25);
+  gtk_clist_set_column_width (GTK_CLIST(clist),4,75);
+  gtk_clist_set_column_width (GTK_CLIST(clist),5,35);
+  gtk_clist_set_column_width (GTK_CLIST(clist),6,35);
+  gtk_clist_set_column_width (GTK_CLIST(clist),7,35);
   gtk_widget_show(clist);
 
   return (clist);
@@ -113,13 +116,16 @@ void drqm_update_joblist (struct info_drqm_jobs *info)
   int i;
   char **buff;
   
-  buff = (char**) g_malloc(6 * sizeof(char*));
+  buff = (char**) g_malloc(9 * sizeof(char*));
   buff[0] = (char*) g_malloc (BUFFERLEN);
   buff[1] = (char*) g_malloc (BUFFERLEN);
   buff[2] = (char*) g_malloc (BUFFERLEN);
   buff[3] = (char*) g_malloc (BUFFERLEN);
   buff[4] = (char*) g_malloc (BUFFERLEN);
-  buff[5] = NULL;
+  buff[5] = (char*) g_malloc (BUFFERLEN);
+  buff[6] = (char*) g_malloc (BUFFERLEN);
+  buff[7] = (char*) g_malloc (BUFFERLEN);
+  buff[8] = NULL;
   
   gtk_clist_freeze(GTK_CLIST(info->clist));
   gtk_clist_clear(GTK_CLIST(info->clist));
@@ -129,6 +135,9 @@ void drqm_update_joblist (struct info_drqm_jobs *info)
     strncpy(buff[2],info->jobs[i].owner,BUFFERLEN); 
     snprintf (buff[3],BUFFERLEN,"%s",job_status_string(info->jobs[i].status));
     snprintf (buff[4],BUFFERLEN,"%i",info->jobs[i].nprocs);
+    snprintf (buff[5],BUFFERLEN,"%i",info->jobs[i].fleft);
+    snprintf (buff[6],BUFFERLEN,"%i",info->jobs[i].fdone);
+    snprintf (buff[7],BUFFERLEN,"%i",info->jobs[i].ffailed);
     gtk_clist_append(GTK_CLIST(info->clist),buff);
   }
   gtk_clist_thaw(GTK_CLIST(info->clist));
