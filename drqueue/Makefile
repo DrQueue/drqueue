@@ -219,10 +219,25 @@ clean:
 
 libdrqueue.a : $(OBJS_LIBDRQUEUE) libdrqueue.h
 	ar sq $@ $(OBJS_LIBDRQUEUE)
+
+ifeq ($(systype),CYGWIN_NT-5.1)
+
+contrib/windows/Resources/drqueue.res: contrib/windows/Resources/drqueue.rc
+	$(MAKE) -C contrib/windows/Resources
 slave: slave.o libdrqueue.a
 	$(CC) -o $@ slave.o libdrqueue.a $(LDFLAGS) #$(UIFLAGS) 
+master: master.o libdrqueue.a contrib/windows/Resources/drqueue.res
+	$(CC) -o $@ master.o libdrqueue.a $(LDFLAGS) #$(UIFLAGS) 
+
+else
+
+slave: slave.o libdrqueue.a
+	$(CC) -o $@ slave.o libdrqueue.a $(LDFLAGS)
 master: master.o libdrqueue.a
-	$(CC) -o $@ master.o libdrqueue.a $(LDFLAGS) $(UIFLAGS) 
+	$(CC) -o $@ master.o libdrqueue.a $(LDFLAGS)
+
+endif
+
 requeue: requeue.o libdrqueue.a
 requeue.o: requeue.c
 	$(CC) -c $(CFLAGS) -o $@ $<
