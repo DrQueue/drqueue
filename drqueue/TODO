@@ -12,6 +12,7 @@ TO DO:
 * Renice options
 * STEPFRAME included in all .sg files
 * Counter on how many times a frame has been requeued. For version 0.51
+* Autoenable flag.
 
 BUGS:
 ----
