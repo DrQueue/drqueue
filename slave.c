@@ -54,8 +54,6 @@ int main (int argc,char *argv[])
   int force = 0;
   int launched;
 
-  slave_get_options(&argc,&argv,&force);
-
   log_slave_computer (L_INFO,"Starting...");
 
   if (!common_environment_check()) {
@@ -72,6 +70,8 @@ int main (int argc,char *argv[])
   computer_status_init (&sdb.comp->status);
   get_hwinfo (&sdb.comp->hwinfo);
   computer_init_limits (sdb.comp); /* computer_init_limits depends on the hardware information */
+
+  slave_get_options(&argc,&argv,&force,&sdb);
 
   report_hwinfo (&sdb.comp->hwinfo);
 
@@ -548,6 +548,7 @@ char *parse_arg (char *cmd,int pos,int len)
 void usage (void)
 {
   fprintf (stderr,"Valid options:\n"
+	   "\t-a to use autoenable\n"
 	   "\t-f to force continuing if shared memory already exists\n"
 	   "\t-l <loglevel> From 0 to 3 (0=errors,1=warnings,2=info,3=debug).\n\t\tDefaults to 1. Each level logs all the previous levels\n"
 	   "\t-o log on screen instead of on files\n"
@@ -555,12 +556,15 @@ void usage (void)
 	   "\t-h prints this help\n");
 }
 
-void slave_get_options (int *argc,char ***argv, int *force)
+void slave_get_options (int *argc,char ***argv, int *force, struct slave_database *sdb)
 {
   int opt;
 
-  while ((opt = getopt (*argc,*argv,"fl:ohv")) != -1) {
+  while ((opt = getopt (*argc,*argv,"afl:ohv")) != -1) {
     switch (opt) {
+		case 'a':
+			sdb->comp->limits.autoenable.flags |= AEF_ACTIVE;
+			break;
     case 'f':
       *force = 1;
       break;
