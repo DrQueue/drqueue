@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.35 2001/09/18 12:54:57 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.36 2001/09/24 16:10:43 jorge Exp $
  */
 
 #include <string.h>
@@ -236,7 +236,9 @@ static GtkWidget *CreateMenu (struct drqm_jobs_info *info)
 {
   GtkWidget *menu;
   GtkWidget *menu_item;
+  GtkTooltips *tooltips;
 
+  tooltips = TooltipsNew ();
   menu = gtk_menu_new ();
   menu_item = gtk_menu_item_new_with_label("Details");
   gtk_menu_append(GTK_MENU(menu),menu_item);
@@ -256,18 +258,22 @@ static GtkWidget *CreateMenu (struct drqm_jobs_info *info)
   menu_item = gtk_menu_item_new_with_label("Stop");
   gtk_menu_append(GTK_MENU(menu),menu_item);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(StopJob),info);
+  gtk_tooltips_set_tip (tooltips,menu_item,"Set the job as 'Stopped' but let the running frames finish",NULL);
 
   menu_item = gtk_menu_item_new_with_label("Hard Stop");
   gtk_menu_append(GTK_MENU(menu),menu_item);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(HStopJob),info);
+  gtk_tooltips_set_tip (tooltips,menu_item,"Set the job as 'Stopped' killing all running frames",NULL);
 
   menu_item = gtk_menu_item_new_with_label("Continue");
   gtk_menu_append(GTK_MENU(menu),menu_item);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(ContinueJob),info);
+  gtk_tooltips_set_tip (tooltips,menu_item,"Set a 'Stopped' job as 'Waiting' again",NULL);
 
   menu_item = gtk_menu_item_new_with_label("Delete");
   gtk_menu_append(GTK_MENU(menu),menu_item);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(DeleteJob),info);
+  gtk_tooltips_set_tip (tooltips,menu_item,"Delete the job from the queue killing running frames",NULL);
 
   gtk_signal_connect(GTK_OBJECT((info->clist)),"event",GTK_SIGNAL_FUNC(PopupMenu),info);
 
@@ -309,6 +315,9 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
   GtkWidget *combo;
   GtkWidget *bbox;
   GList *items = NULL;
+  GtkTooltips *tooltips;
+
+  tooltips = TooltipsNew ();
 
   /* Dialog */
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -340,10 +349,10 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
   gtk_widget_show (hbox);
   label = gtk_label_new ("Name:");
   gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
-/*    gtk_misc_set_padding (GTK_MISC(label),20,2); */
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
   gtk_widget_show(label);
   entry = gtk_entry_new_with_max_length (MAXNAMELEN-1);
+  gtk_tooltips_set_tip(tooltips,entry,"Name of the job. Should be a descriptive name",NULL);
   info->dnj.ename = entry;
   gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
   gtk_widget_show(entry);
@@ -354,17 +363,18 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
   gtk_widget_show (hbox);
   label = gtk_label_new ("Command:");
   gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
-/*    gtk_misc_set_padding (GTK_MISC(label),20,2); */
   gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
   gtk_widget_show(label);
   hbox2 = gtk_hbox_new (FALSE,0);
   gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
   gtk_widget_show (hbox2);
   entry = gtk_entry_new_with_max_length (MAXCMDLEN-1);
+  gtk_tooltips_set_tip(tooltips,entry,"Job script or command that will be executed",NULL);
   info->dnj.ecmd = entry;
   gtk_box_pack_start (GTK_BOX(hbox2),entry,TRUE,TRUE,2);
   gtk_widget_show(entry);
   button = gtk_button_new_with_label ("Search");
+  gtk_tooltips_set_tip(tooltips,button,"File selector for job command",NULL);
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
   gtk_widget_show (button);
   gtk_signal_connect (GTK_OBJECT(button),"clicked",dnj_psearch,&info->dnj);
@@ -439,12 +449,14 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
   gtk_box_pack_end (GTK_BOX(vbox),bbox,FALSE,FALSE,5);
   gtk_widget_show (bbox);
   button = gtk_button_new_with_label ("Submit");
+  gtk_tooltips_set_tip(tooltips,button,"Send the information to the queue",NULL);
   gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,TRUE,2);
   gtk_signal_connect (GTK_OBJECT(button),"clicked",
 		      dnj_bsubmit_pressed,&info->dnj);
 
   /* cancel */
   button = gtk_button_new_with_label ("Cancel");
+  gtk_tooltips_set_tip(tooltips,button,"Close without sending any information",NULL);
   gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,TRUE,2);
   gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
 			     GTK_SIGNAL_FUNC(gtk_widget_destroy),
@@ -1406,6 +1418,9 @@ static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info)
   GtkWidget *vbox, *hbox, *hbox2;
   GtkWidget *label, *combo;
   GList *items = NULL;
+  GtkTooltips *tooltips;
+
+  tooltips = TooltipsNew ();
 
   frame = gtk_frame_new ("Kind of job");
   vbox = gtk_vbox_new (FALSE,2);
@@ -1421,6 +1436,7 @@ static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info)
   items = g_list_append (items,"General");
   items = g_list_append (items,"Maya");
   combo = gtk_combo_new();
+  gtk_tooltips_set_tip(tooltips,GTK_COMBO(combo)->entry,"Selector for the kind of job",NULL);
   gtk_combo_set_popdown_strings (GTK_COMBO(combo),items);
   gtk_box_pack_start (GTK_BOX(hbox2),combo,TRUE,TRUE,2);
   gtk_entry_set_editable (GTK_ENTRY(GTK_COMBO(combo)->entry),FALSE);
@@ -1471,6 +1487,9 @@ static GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
   GtkWidget *entry; 
   GtkWidget *button;
   GtkWidget *bbox;
+  GtkTooltips *tooltips;
+
+  tooltips = TooltipsNew ();
 
   /* Frame */
   frame = gtk_frame_new ("Maya job information");
@@ -1488,8 +1507,10 @@ static GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
   gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
   entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
   info->dnj.koji_maya.escene = entry;
+  gtk_tooltips_set_tip(tooltips,entry,"File name of the maya scene file that should be rendered",NULL);
   gtk_box_pack_start (GTK_BOX(hbox2),entry,TRUE,TRUE,2);
   button = gtk_button_new_with_label ("Search");
+  gtk_tooltips_set_tip(tooltips,button,"File selector for the maya scene file",NULL);
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
   gtk_signal_connect (GTK_OBJECT(button),"clicked",dnj_koj_frame_maya_scene_search,&info->dnj.koji_maya);
 
@@ -1501,9 +1522,11 @@ static GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
   hbox2 = gtk_hbox_new (FALSE,0);
   gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
   entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
+  gtk_tooltips_set_tip(tooltips,entry,"Directory name of the maya project",NULL);
   info->dnj.koji_maya.eproject = entry;
   gtk_box_pack_start (GTK_BOX(hbox2),entry,TRUE,TRUE,2);
   button = gtk_button_new_with_label ("Search");
+  gtk_tooltips_set_tip(tooltips,button,"File selector for the maya project directory",NULL);
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
   gtk_signal_connect (GTK_OBJECT(button),"clicked",dnj_koj_frame_maya_project_search,&info->dnj.koji_maya);
 
@@ -1513,6 +1536,9 @@ static GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
   label = gtk_label_new ("Output image filename:");
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
   entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
+  gtk_tooltips_set_tip(tooltips,entry,"File name of the output image without extension. "
+		       "The extension will be taken from the scene. "
+		       "If no image name is specified it will be taken from the scene",NULL);
   info->dnj.koji_maya.eimage = entry;
   gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
 
@@ -1522,6 +1548,8 @@ static GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
   label = gtk_label_new ("View command:");
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
   entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
+  gtk_tooltips_set_tip(tooltips,entry,"Command that will be executed when you select 'Watch image' "
+		       "in the frames list (inside the detailed job view)",NULL);
   info->dnj.koji_maya.eviewcmd = entry;
   gtk_entry_set_text(GTK_ENTRY(entry),KOJ_MAYA_DFLT_VIEWCMD);
   gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
@@ -1534,10 +1562,13 @@ static GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
   hbox2 = gtk_hbox_new (FALSE,0);
   gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
   entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
+  gtk_tooltips_set_tip(tooltips,entry,"Directory in which, in case of using the automatic "
+		       "script generator, the command script will be saved.",NULL);
   info->dnj.koji_maya.escript = entry;
   gtk_entry_set_text (GTK_ENTRY(entry),mayasg_default_script_path());
   gtk_box_pack_start (GTK_BOX(hbox2),entry,TRUE,TRUE,2);
   button = gtk_button_new_with_label ("Search");
+  gtk_tooltips_set_tip(tooltips,button,"File selector for the script directory",NULL);
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
   gtk_signal_connect (GTK_OBJECT(button),"clicked",dnj_koj_frame_maya_script_search,&info->dnj.koji_maya);
 
@@ -1548,6 +1579,7 @@ static GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
   gtk_box_pack_start (GTK_BOX(vbox),bbox,TRUE,TRUE,5);
   gtk_widget_show (bbox);
   button = gtk_button_new_with_label ("Create Script");
+  gtk_tooltips_set_tip(tooltips,button,"Create automagically the script based on the given information",NULL);
   gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,TRUE,2);
   gtk_signal_connect (GTK_OBJECT(button),"clicked",
 		      dnj_koj_frame_maya_bcreate_pressed,&info->dnj);
