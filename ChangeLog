@@ -1,47 +1,47 @@
-2004-10-26 21:32:48  Jorge Daza <jorge@drqueue.org>
+2004-10-26 22:00:16  Jorge Daza <jorge@drqueue.org>
 
 	* Changed paths:
-	   M /branches/0.52.x/Revision
+	   M /trunk/drqueue/ChangeLog
+	   M /trunk/drqueue/Revision
+	   M /trunk/drqueue/common.c
+	   M /trunk/drqueue/common.h
+	   M /trunk/drqueue/svn-scripts/build_release.sh
+	   A /trunk/drqueue/svn-scripts/svn2cl.pl (from /branches/0.52.x/svn-scripts/svn2cl.pl:936)
 
-	* New Revision commited by build_package.sh
+	* Merged from 0.52.x revisions 926:936
 
-2004-10-26 21:32:27  Jorge Daza <jorge@drqueue.org>
-
-	* Changed paths:
-	   M /branches/0.52.x/ChangeLog
-
-	* Changelog commited by build_package.sh
-
-2004-10-26 21:32:03  Jorge Daza <jorge@drqueue.org>
+2004-10-26 20:34:42  Jorge Daza <jorge@drqueue.org>
 
 	* Changed paths:
-	   M /branches/0.52.x/common.h
+	   M /trunk/drqueue/common.h
 
-	* New version number on common.h: 0.52.1
+	* Minor change
 
-2004-10-26 13:28:16  Jorge Daza <jorge@drqueue.org>
-
-	* Changed paths:
-	   M /branches/0.52.x/Makefile
-	   M /branches/0.52.x/TODO
-	   M /branches/0.52.x/sendjob.cpp
-
-	* Merged 923:925 from trunk. Marc Ume bugfix for sendjob.
-
-2004-10-26 13:25:25  Jorge Daza <jorge@drqueue.org>
+2004-10-26 17:26:23  Jorge Daza <jorge@drqueue.org>
 
 	* Changed paths:
-	   D /branches/0.50.x
-	   A /branches/0.52.x (from /branches/0.50.x:924)
+	   M /trunk/drqueue/TODO
 
-	* Fixed typo. It was branch 0.52.x, not 0.50.x.
+	* Added feature: submit job stopped.
 
-2004-10-26 11:27:46  Jorge Daza <jorge@drqueue.org>
+2004-10-26 17:21:52  Jorge Daza <jorge@drqueue.org>
 
 	* Changed paths:
-	   A /branches/0.50.x (from /trunk/drqueue:922)
+	   M /trunk/drqueue/TODO
+	   M /trunk/drqueue/drqman/drqm_jobs.c
+	   M /trunk/drqueue/drqman/drqm_jobs.h
+	   M /trunk/drqueue/request.c
 
-	* New stable development branch.
+	* Added feature: submit job stopped.
+
+2004-10-26 13:22:48  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/Makefile
+	   M /trunk/drqueue/TODO
+	   M /trunk/drqueue/sendjob.cpp
+
+	* Marc Ume patch for sendjob
 
 2004-10-26 11:22:11  Jorge Daza <jorge@drqueue.org>
 
