@@ -1,5 +1,6 @@
-/* $Id: semaphores.c,v 1.6 2001/07/20 08:28:24 jorge Exp $ */
+/* $Id: semaphores.c,v 1.7 2004/01/23 03:28:00 jorge Exp $ */
 
+#include <sys/types.h>
 #include <sys/sem.h>
 #include <signal.h>
 #include <stdio.h>

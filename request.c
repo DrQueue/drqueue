@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.78 2004/01/07 21:50:21 jorge Exp $ */
+/* $Id: request.c,v 1.79 2004/01/23 03:28:00 jorge Exp $ */
 #include <unistd.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -8,7 +8,9 @@
 #include <signal.h>
 #include <time.h>
 #include <string.h>
-#include <wait.h>
+#ifndef __OSX
+# include <wait.h>
+#endif
 #include <stdlib.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>

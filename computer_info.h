@@ -1,4 +1,4 @@
-/* $Id: computer_info.h,v 1.7 2004/01/22 17:48:24 jorge Exp $ */
+/* $Id: computer_info.h,v 1.8 2004/01/23 03:28:00 jorge Exp $ */
 
 #ifndef _COMPUTER_INFO_H_
 #define _COMPUTER_INFO_H_
@@ -22,14 +22,16 @@
 typedef enum {
   ARCH_UNKNOWN,
   ARCH_INTEL,
-  ARCH_MIPS
+  ARCH_MIPS,
+	ARCH_PPC
 } t_arch;
 
 typedef enum {
   OS_UNKNOWN,
   OS_IRIX,
   OS_LINUX,
-  OS_WINDOWS
+  OS_WINDOWS,
+	OS_OSX
 } t_os;
 
 typedef enum {
@@ -40,7 +42,8 @@ typedef enum {
   PROCTYPE_PENTIUM4,
   PROCTYPE_ATHLON,
   PROCTYPE_MIPSR5000,
-  PROCTYPE_MIPSR10000
+  PROCTYPE_MIPSR10000,
+	PROCTYPE_PPC
 } t_proctype;
 
 struct computer_hwinfo {
