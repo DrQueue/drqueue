@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.45 2001/09/07 16:44:08 jorge Exp $ */
+/* $Id: request.c,v 1.46 2001/09/08 16:21:18 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -200,7 +200,6 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
   strncpy(wdb->computer[index].hwinfo.name,name,MAXNAMELEN); /* We substitute the name that the computer sent */
 							     /* with the name that we obtained resolving it's ip */
   wdb->computer[index].hwinfo.id = index;
-  computer_init_limits (&wdb->computer[index]);
 
   semaphore_release(wdb->semid);
 
