@@ -40,7 +40,7 @@ BUGS:
 
 * In the new job dialog I cannot justify the labels to the left
 * When I delete a job from the detailed job information dialog the windows isn't closed after.
-* You need ti hit refresh after a hard stop.
+* You need to hit refresh after a hard stop.
 
 INSTALLATION NOTES:
 ------------------
