@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.72 2003/12/18 23:08:58 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.73 2003/12/19 00:08:34 jorge Exp $
  */
 
 #include <string.h>
@@ -277,24 +277,24 @@ static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *
     if (bevent->button != 3)
       return FALSE;
     info->selected = gtk_clist_get_selection_info(GTK_CLIST(info->clist),
-						  (int)bevent->x,(int)bevent->y,
-						  &info->row,&info->column);
+																									(int)bevent->x,(int)bevent->y,
+																									&info->row,&info->column);
     
     if (info->selected) {
       gtk_clist_get_text(GTK_CLIST(info->clist),info->row,0,&buf);
       info->ijob = atoi (buf);
-
+			
       info->row = -1;
       for (i=0;i<info->njobs;i++) {
-	if (info->jobs[i].id == info->ijob) {
-	  info->row = i;
-	}
+				if (info->jobs[i].id == info->ijob) {
+					info->row = i;
+				}
       }
 
       if (info->row == -1)
-	return FALSE;
+				return FALSE;
     }
-
+		
     gtk_menu_popup (GTK_MENU(info->menu), NULL, NULL, NULL, NULL,
 		    bevent->button, bevent->time);
     return TRUE;
@@ -2518,29 +2518,27 @@ void jdd_framelist_column_clicked (GtkCList *clist, gint column, struct drqm_job
     gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
     gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_frame);
     gtk_clist_sort (GTK_CLIST(clist));
-  } 
-	/* We've got to attach the frame_info structure to make this work */
-/* 	else if (column == 1) { */
-/*     gtk_clist_set_sort_type (GTK_CLIST(clist),dir); */
-/*     gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_status); */
-/*     gtk_clist_sort (GTK_CLIST(clist)); */
-/*   } else if (column == 2) { */
-/*     gtk_clist_set_sort_type (GTK_CLIST(clist),dir); */
-/*     gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_start_time); */
-/*     gtk_clist_sort (GTK_CLIST(clist)); */
-/*   } else if (column == 3) { */
-/*     gtk_clist_set_sort_type (GTK_CLIST(clist),dir); */
-/*     gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_end_time); */
-/*     gtk_clist_sort (GTK_CLIST(clist)); */
-/*   } else if (column == 4) { */
-/*     gtk_clist_set_sort_type (GTK_CLIST(clist),dir); */
-/*     gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_exitcode); */
-/*     gtk_clist_sort (GTK_CLIST(clist)); */
-/*   } else if (column == 5) { */
-/*     gtk_clist_set_sort_type (GTK_CLIST(clist),dir); */
-/*     gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_icomp); */
-/*     gtk_clist_sort (GTK_CLIST(clist)); */
-/*   } */
+	} else if (column == 1) {
+    gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+    gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_status);
+    gtk_clist_sort (GTK_CLIST(clist));
+  } else if (column == 2) {
+    gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+    gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_start_time);
+    gtk_clist_sort (GTK_CLIST(clist));
+  } else if (column == 3) {
+    gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+    gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_end_time);
+    gtk_clist_sort (GTK_CLIST(clist));
+  } else if (column == 4) {
+    gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+    gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_exitcode);
+    gtk_clist_sort (GTK_CLIST(clist));
+  } else if (column == 5) {
+    gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+    gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_icomp);
+    gtk_clist_sort (GTK_CLIST(clist));
+  }
 }
 
 int jdd_framelist_cmp_frame (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
@@ -2574,11 +2572,11 @@ int jdd_framelist_cmp_exitcode (GtkCList *clist, gconstpointer ptr1, gconstpoint
   ra = (struct row_data *) ((GtkCListRow*)ptr1)->data;
   rb = (struct row_data *) ((GtkCListRow*)ptr2)->data;
 
-  ifa = job_frame_number_to_index (&ra->info->jobs[ra->info->row],ra->frame);
-  ifb = job_frame_number_to_index (&rb->info->jobs[ra->info->row],rb->frame);
+  ifa = job_frame_number_to_index (&ra->info->jdd.job,ra->frame);
+  ifb = job_frame_number_to_index (&rb->info->jdd.job,rb->frame);
 
-  a = ra->info->jobs[ra->info->row].frame_info[ifa].exitcode;
-  b = rb->info->jobs[rb->info->row].frame_info[ifb].exitcode;
+  a = ra->info->jdd.job.frame_info[ifa].exitcode;
+  b = rb->info->jdd.job.frame_info[ifb].exitcode;
 			
   if (a > b) {
     return 1;
@@ -2600,11 +2598,11 @@ int jdd_framelist_cmp_status (GtkCList *clist, gconstpointer ptr1, gconstpointer
   ra = (struct row_data *) ((GtkCListRow*)ptr1)->data;
   rb = (struct row_data *) ((GtkCListRow*)ptr2)->data;
 
-  ifa = job_frame_number_to_index (&ra->info->jobs[ra->info->row],ra->frame);
-  ifb = job_frame_number_to_index (&rb->info->jobs[ra->info->row],rb->frame);
+  ifa = job_frame_number_to_index (&ra->info->jdd.job,ra->frame);
+  ifb = job_frame_number_to_index (&rb->info->jdd.job,rb->frame);
 
-  a = ra->info->jobs[ra->info->row].frame_info[ifa].status;
-  b = rb->info->jobs[rb->info->row].frame_info[ifb].status;
+  a = ra->info->jdd.job.frame_info[ifa].status;
+  b = rb->info->jdd.job.frame_info[ifb].status;
 			
   if (a > b) {
     return 1;
@@ -2626,11 +2624,11 @@ int jdd_framelist_cmp_icomp (GtkCList *clist, gconstpointer ptr1, gconstpointer 
   ra = (struct row_data *) ((GtkCListRow*)ptr1)->data;
   rb = (struct row_data *) ((GtkCListRow*)ptr2)->data;
 
-  ifa = job_frame_number_to_index (&ra->info->jobs[ra->info->row],ra->frame);
-  ifb = job_frame_number_to_index (&rb->info->jobs[ra->info->row],rb->frame);
+  ifa = job_frame_number_to_index (&ra->info->jdd.job,ra->frame);
+  ifb = job_frame_number_to_index (&rb->info->jdd.job,rb->frame);
 
-  a = ra->info->jobs[ra->info->row].frame_info[ifa].icomp;
-  b = rb->info->jobs[rb->info->row].frame_info[ifb].icomp;
+  a = ra->info->jdd.job.frame_info[ifa].icomp;
+  b = rb->info->jdd.job.frame_info[ifb].icomp;
 			
   if (a > b) {
     return 1;
@@ -2652,11 +2650,11 @@ int jdd_framelist_cmp_start_time (GtkCList *clist, gconstpointer ptr1, gconstpoi
   ra = (struct row_data *) ((GtkCListRow*)ptr1)->data;
   rb = (struct row_data *) ((GtkCListRow*)ptr2)->data;
 
-  ifa = job_frame_number_to_index (&ra->info->jobs[ra->info->row],ra->frame);
-  ifb = job_frame_number_to_index (&rb->info->jobs[ra->info->row],rb->frame);
+  ifa = job_frame_number_to_index (&ra->info->jdd.job,ra->frame);
+  ifb = job_frame_number_to_index (&rb->info->jdd.job,rb->frame);
 
-  a = ra->info->jobs[ra->info->row].frame_info[ifa].start_time;
-  b = rb->info->jobs[rb->info->row].frame_info[ifb].start_time;
+  a = ra->info->jdd.job.frame_info[ifa].start_time;
+  b = rb->info->jdd.job.frame_info[ifb].start_time;
 			
   if (a > b) {
     return 1;
@@ -2678,11 +2676,11 @@ int jdd_framelist_cmp_end_time (GtkCList *clist, gconstpointer ptr1, gconstpoint
   ra = (struct row_data *) ((GtkCListRow*)ptr1)->data;
   rb = (struct row_data *) ((GtkCListRow*)ptr2)->data;
 
-  ifa = job_frame_number_to_index (&ra->info->jobs[ra->info->row],ra->frame);
-  ifb = job_frame_number_to_index (&rb->info->jobs[ra->info->row],rb->frame);
+  ifa = job_frame_number_to_index (&ra->info->jdd.job,ra->frame);
+  ifb = job_frame_number_to_index (&rb->info->jdd.job,rb->frame);
 
-  a = ra->info->jobs[ra->info->row].frame_info[ifa].end_time;
-  b = rb->info->jobs[rb->info->row].frame_info[ifb].end_time;
+  a = ra->info->jdd.job.frame_info[ifa].end_time;
+  b = rb->info->jdd.job.frame_info[ifb].end_time;
 			
   if (a > b) {
     return 1;
