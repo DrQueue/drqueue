@@ -1,6 +1,7 @@
 TO DO:
 -----
 
+* Summary of transmissions (Kb/s sent, Kb/s received)
 * Checks at the beginning of every program for the directories.
 * limit structures for jobs.
 * Master database saved and reloaded from disk.
