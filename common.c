@@ -1,6 +1,7 @@
-/* $Id: common.c,v 1.4 2001/10/25 13:17:36 jorge Exp $ */
+/* $Id: common.c,v 1.5 2001/11/13 15:50:24 jorge Exp $ */
 
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "common.h"
 #include "drerrno.h"
@@ -39,4 +40,44 @@ int remove_dir (char *dir)
   snprintf (cmd,BUFFERLEN,"rm -fR %s",dir);
 
   return system (cmd);
+}
+
+void mn_job_finished (struct job *job)
+{
+  FILE *mail;
+  char command[BUFFERLEN];
+
+  snprintf (command,BUFFERLEN-1,"mail -s 'Your job (%s) is finished' %s",job->name,job->owner);
+
+  if ((mail = popen (command,"w")) == NULL) {
+    /* There was a problem creating the piped command */
+    return;
+  }
+
+  fprintf (mail,"\n"
+	   "The average time per frame was: %s\n"
+	   "And the total rendering time was: %s\n"
+	   "\n.\n\n");
+
+  pclose (mail);
+}
+
+char *time_str (uint32_t nseconds)
+{
+  static char msg[BUFFERLEN];
+
+  if ((nseconds / 3600) > 0) {
+    snprintf(msg,BUFFERLEN-1,"%i hours %i minutes %i seconds",
+	     nseconds / 3600,
+	     (nseconds % 3600) / 60,
+	     (nseconds % 3600) % 60);
+  } else if ((nseconds / 60) > 0) {
+    snprintf(msg,BUFFERLEN-1,"%i minutes %i seconds",
+	     nseconds / 60,
+	     nseconds % 60);
+  } else {
+    snprintf(msg,BUFFERLEN-1,"%i seconds",nseconds);
+  }
+
+  return msg;
 }
