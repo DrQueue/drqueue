@@ -43,7 +43,7 @@
 echo "renderdl -frames $DRQUEUE_FRAME $DRQUEUE_FRAME $DRQUEUE_SCENE"
 
 
-renderdl -frames $DRQUEUE_FRAME $DRQUEUE_FRAME $DRQUEUE_SCENE
+renderdl -frames $DRQUEUE_FRAME $DRQUEUE_FRAME "$DRQUEUE_SCENE"
 # This should requeue the frame if failed
 if ( $? != 0 ) then
   echo "Requeueing frame..."

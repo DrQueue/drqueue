@@ -22,14 +22,18 @@
 #
 #
 
-set BLOCK=`expr $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
+if ($DRQUEUE_OS == "WINDOWS") then
+  set BLOCK=`"$DRQUEUE_BIN/expr.exe" $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
+else
+  set BLOCK=`expr $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
+endif
 if ($BLOCK > $DRQUEUE_ENDFRAME) then
 	BLOCK = $DRQUEUE_ENDFRAME;
 endif
 
 echo blender -b $SCENE -s $DRQUEUE_FRAME -e $BLOCK -a
 
-blender -b $SCENE -s $DRQUEUE_FRAME -e $BLOCK -a
+blender -b "$SCENE" -s $DRQUEUE_FRAME -e $BLOCK -a
 
 # This should requeue the frame if failed
 if ( $? != 0 ) then

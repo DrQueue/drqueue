@@ -28,7 +28,12 @@ setenv SI_LINKTAB_LOCATION "/mnt/nfs/shared/mi33"
 setenv SPM_HOST "license_server"
 
 
-set BLOCK=`expr $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
+if ($DRQUEUE_OS == "WINDOWS") then
+  set BLOCK=`"$DRQUEUE_BIN/expr.exe" $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
+else
+  set BLOCK=`expr $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
+endif
+
 if ($BLOCK > $DRQUEUE_ENDFRAME) then
 	set BLOCK = $DRQUEUE_ENDFRAME;
 endif
@@ -60,7 +65,7 @@ endif
 
 echo mentalrayrender $DRQUEUE_SCENE -render $DRQUEUE_FRAME $BLOCK
 
-mentalrayrender $DRQUEUE_SCENE -render $DRQUEUE_FRAME $BLOCK
+mentalrayrender "$DRQUEUE_SCENE" -render $DRQUEUE_FRAME $BLOCK
 
 # This should requeue the frame if failed
 if ( $? != 0 ) then
