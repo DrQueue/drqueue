@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.16 2001/07/19 10:21:53 jorge Exp $
+# $Id: Makefile,v 1.17 2001/07/20 08:36:45 jorge Exp $
 
 CC = gcc
 OBJS_LIBDRQUEUE = computer_info.o computer_status.o task.o logger.o communications.o \
@@ -7,20 +7,22 @@ LDFLAGS =
 
 ifeq ($(systype),linux)
 	CFLAGS = -Wall -I. -D__LINUX -g
+	MAKE = make
 else 
  ifeq ($(systype),irix)
 	CFLAGS = -Wall -I. -D__IRIX -g
+	MAKE = /usr/freeware/bin/gmake
  endif
 endif
 
 .PHONY: clean irix linux tags
 linux: 
-	make systype=linux all
-	(cd drqman; make linux)
+	$(MAKE) systype=linux all
+	(cd drqman; $(MAKE) linux)
 
 irix:
-	/usr/freeware/bin/gmake systype=irix all
-	(cd drqman; make linux)
+	$(MAKE) systype=irix all
+	(cd drqman; $(MAKE) irix)
 
 all: slave master sendjob
 
@@ -37,7 +39,8 @@ libdrqueue.h: computer_info.h computer_status.h task.h logger.h communications.h
 	$(CC) -c $(CFLAGS) -o $@ $<
 clean:
 	rm -f *.o *~ libdrqueue.a slave master sendjob TAGS
-	(cd drqman; make clean)
+	(cd drqman; $(MAKE) clean)
 
 tags:
 	etags *.[ch] drqman/*.[ch]
+
