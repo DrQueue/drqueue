@@ -1,4 +1,4 @@
-/* $Id: drqm_request.h,v 1.16 2001/10/22 14:16:55 jorge Exp $ */
+/* $Id: drqm_request.h,v 1.17 2001/10/24 14:53:18 jorge Exp $ */
 
 #ifndef _DRQM_REQUEST_H_
 #define _DRQM_REQUEST_H_
@@ -21,6 +21,7 @@ void drqm_request_job_frame_kill_finish (uint32_t jobid,uint32_t frame);
 void drqm_request_job_sesupdate (uint32_t jobid,uint32_t frame_start,uint32_t frame_end, uint32_t frame_step);
 void drqm_request_job_limits_nmaxcpus_set (uint32_t jobid, uint16_t nmaxcpus);
 void drqm_request_job_limits_nmaxcpuscomputer_set (uint32_t jobid, uint16_t nmaxcpuscomputer);
+void drqm_request_job_priority_update (uint32_t jobid, uint32_t priority);
 
 /* Computer related functions */
 void drqm_clean_computerlist (struct drqm_computers_info *info);
