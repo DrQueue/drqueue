@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.13 2001/08/22 09:04:33 jorge Exp $ */
+/* $Id: job.h,v 1.14 2001/08/27 14:13:44 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -48,6 +48,7 @@ struct job {
   char cmd[MAXCMDLEN];
   char owner[MAXNAMELEN];
   uint32_t frame_start,frame_end; /* first and last frames */
+  uint32_t frame_step;		/* step */
   uint32_t fleft,fdone,ffailed;	/* Frames left,done and failed */
   time_t avg_frame_time;	/* Average frame time */
   time_t est_finish_time;	/* Estimated finish time */
@@ -66,7 +67,11 @@ struct tpol {			/* Priority ordered list of jobs */
 int job_index_free (void *pwdb);
 void job_report (struct job *job);
 char *job_status_string (char status);
-int job_nframes (struct job *job);
+char *job_frame_status_string (char status);
+uint32_t job_frame_index_to_number (struct job *job,uint32_t index);
+uint32_t job_frame_number_to_index (struct job *job,uint32_t number);
+int job_frame_number_correct (struct job *job,uint32_t number);
+uint32_t job_nframes (struct job *job);
 int job_available (struct database *wdb,uint32_t ijob, int *iframe);
 int job_first_frame_available (struct database *wdb,uint32_t ijob);
 void job_frame_waiting (struct database *wdb,uint32_t ijob, int iframe);
