@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.45 2001/09/18 10:47:21 jorge Exp $ */
+/* $Id: slave.c,v 1.46 2001/09/18 12:38:40 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -72,12 +72,13 @@ int main (int argc,char *argv[])
     update_computer_status (sdb.comp); /* sends the computer status to the master */
 
     if (launched) {
-      sleep (SLAVEDELAY);	/* Just to have good load values on next loop */
-				/* if we don't wait more here, the load won't have */
-				/* assimilated the new processes */
-				/* It takes a while (1 minute) to the load average to reflect the real load */
-				/* But we need to connect before MAXTIMENOCONN because if not */
-				/* the computer is removed from the queue */
+      /* Just to have good load values on next loop */
+      /* if we don't wait more here, the load won't have */
+      /* assimilated the new processes */
+      /* It takes a while (1 minute) to the load average to reflect the real load */
+      /* But we need to connect before MAXTIMENOCONN because if not */
+      /* the computer is removed from the queue */
+      sleep (SLAVEDELAY);
     }
     sleep (SLAVEDELAY);
   }
