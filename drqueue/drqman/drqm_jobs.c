@@ -1242,8 +1242,9 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   frame = gtk_frame_new ("Frame Information");
 	label = gtk_label_new ("Frame Information");
 	gtk_notebook_append_page (GTK_NOTEBOOK(notebook),GTK_WIDGET(frame),GTK_WIDGET(label));
-  /* Clist with the frame info */
+  /* Clist with the frame info inside a scrolled window */
   swin = gtk_scrolled_window_new (NULL,NULL);
+	newinfo->jdd.swindow = swin;
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(swin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_container_add (GTK_CONTAINER(frame),swin);
   clist = CreateFrameInfoClist ();
@@ -1424,6 +1425,9 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
   int ncols = 8;
   int i;
   GtkWidget *toplevel;
+	// To keep the state of the scrolled window
+	GtkAdjustment *adj;
+	gdouble vadj_value,hadj_value;
 
   static GdkBitmap *w_mask = NULL;
   static GdkPixmap *w_data = NULL;
@@ -1530,6 +1534,12 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
       e_data = gdk_pixmap_create_from_xpm_d (GTK_WIDGET(toplevel)->window,&e_mask,NULL,(gchar**)error_xpm);
   }
 
+	// ScrolledWindow save the state
+	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW(info->jdd.swindow));
+	vadj_value = gtk_adjustment_get_value (GTK_ADJUSTMENT(adj));
+	adj = gtk_scrolled_window_get_hadjustment (GTK_SCROLLED_WINDOW(info->jdd.swindow));
+	hadj_value = gtk_adjustment_get_value (GTK_ADJUSTMENT(adj));
+
   buff = (char**) g_malloc((ncols + 1) * sizeof(char*));
   for (i=0;i<ncols;i++)
     buff[i] = (char*) g_malloc (BUFFERLEN);
@@ -1596,6 +1606,12 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
   gtk_clist_sort (GTK_CLIST(info->jdd.clist));
 
   gtk_clist_thaw(GTK_CLIST(info->jdd.clist));
+
+	// Recover the previous state of the scrolled window
+	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW(info->jdd.swindow));
+	gtk_adjustment_set_value (GTK_ADJUSTMENT(adj),vadj_value);
+	adj = gtk_scrolled_window_get_hadjustment (GTK_SCROLLED_WINDOW(info->jdd.swindow));
+	gtk_adjustment_set_value (GTK_ADJUSTMENT(adj),hadj_value);
 
   for(i=0;i<ncols;i++)
     g_free (buff[i]);

@@ -50,9 +50,9 @@ GtkWidget *ConfirmDialog (char *text, GList *callbacks)
   for (;callbacks;callbacks = cb2->next) {
 		cb2 = callbacks->next;
 		data = cb2->data;
-    gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(callbacks->data),data);
+    g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(callbacks->data),data);
   }
-  gtk_signal_connect_object(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(gtk_widget_destroy),
+  g_signal_connect_swapped(GTK_OBJECT(button),"clicked",G_CALLBACK(gtk_widget_destroy),
 			    (GtkObject*)dialog);
 
   button = gtk_button_new_with_label ("No");
