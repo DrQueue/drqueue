@@ -433,8 +433,9 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
 				info->jdd.job.limits.os_flags & OSF_OSX);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->jdd.limits.cb_freebsd),
 				info->jdd.job.limits.os_flags & OSF_FREEBSD);
-
-
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->jdd.limits.cb_cygwin),
+				info->jdd.job.limits.os_flags & OSF_CYGWIN);
+	
   /* Pixmap stuff */
   if (!w_mask) {
     toplevel = gtk_widget_get_toplevel(info->jdd.dialog);
@@ -1469,6 +1470,11 @@ static GtkWidget *jdd_limits_widgets (struct drqm_jobs_info *info)
   cbutton = gtk_check_button_new_with_label ("FreeBSD");
   gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
   info->jdd.limits.cb_freebsd = cbutton;
+  gtk_widget_set_sensitive (GTK_WIDGET(cbutton),FALSE);
+
+  cbutton = gtk_check_button_new_with_label ("Windows");
+  gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
+  info->jdd.limits.cb_cygwin = cbutton;
   gtk_widget_set_sensitive (GTK_WIDGET(cbutton),FALSE);
 
   return (frame);

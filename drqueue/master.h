@@ -24,7 +24,11 @@
 
 #include "database.h"
 
+#if defined (__CYGWIN)
+#define KEY_MASTER "%s/master.exe"	/* Key for shared memory and semaphores */
+#else
 #define KEY_MASTER "%s/master"	/* Key for shared memory and semaphores */
+#endif
 
 #define MASTER_CONF_FILE "/etc/drqueue/master.conf"
 

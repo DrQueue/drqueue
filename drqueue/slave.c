@@ -435,6 +435,7 @@ void launch_task (struct slave_database *sdb)
   int rc;
   pid_t task_pid,waiter_pid;
   extern char **environ;
+  char *exec_path;
 
   if ((waiter_pid = fork()) == 0) {
     /* This child reports the execution of the command itself */
@@ -461,8 +462,14 @@ void launch_task (struct slave_database *sdb)
       }
 			
       task_environment_set(&sdb->comp->status.task[sdb->itask]);
+
+#ifdef __CYGWIN
+      snprintf (exec_path,BUFFERLEN-1,"/tcsh.exe",getenv("DRQUEUE_BIN"));
+#else
+      exec_path = SHELL_PATH;
+#endif
 			
-      execve(SHELL_PATH,(char*const*)new_argv,environ);
+      execve(exec_path,(char*const*)new_argv,environ);
       perror("execve");
       exit(errno);		/* If we arrive here, something happened exec'ing */
     } else if (task_pid == -1) {

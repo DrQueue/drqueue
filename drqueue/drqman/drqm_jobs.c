@@ -48,6 +48,10 @@
 // Icon includes
 #include "job_icon.h"
 
+#ifdef __CYGWIN
+ void cygwin_conv_to_win32_path(const char *path, char *win32_path);
+#endif
+
 /* Static functions declaration */
 static GtkWidget *CreateJobsList(struct drqm_jobs_info *info);
 static GtkWidget *CreateClist (GtkWidget *window);
@@ -733,7 +737,17 @@ static void dnj_psearch (GtkWidget *button, struct drqmj_dnji *info)
 
 static void dnj_set_cmd (GtkWidget *button, struct drqmj_dnji *info)
 {
+#ifdef __CYGWIN
+  char *win32_path;
+
+  if ((win32_path = malloc(MAXCMDLEN)) == NULL)
+	return;
+  cygwin_conv_to_win32_path(gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fs)), win32_path);
+  gtk_entry_set_text (GTK_ENTRY(info->ecmd), win32_path);
+#else
   gtk_entry_set_text (GTK_ENTRY(info->ecmd),gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fs)));
+#endif
+
 }
 
 static void dnj_cpri_changed (GtkWidget *entry, struct drqmj_dnji *info)
@@ -912,6 +926,9 @@ static int dnj_submit (struct drqmj_dnji *info)
 	if (GTK_TOGGLE_BUTTON(info->limits.cb_freebsd)->active) {
 		job.limits.os_flags |= (OSF_FREEBSD);
 	}
+	if (GTK_TOGGLE_BUTTON(info->limits.cb_cygwin)->active) {
+    		job.limits.os_flags |= (OSF_CYGWIN);
+  	}
 
   /* Flags */
   job.flags = 0;
@@ -1160,7 +1177,7 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
   if (new_koj != info->dnj.koj) {
     if (info->dnj.fkoj) {
       gtk_widget_destroy (info->dnj.fkoj);
-      info->dnj.fkoj = NULL;
+      //info->dnj.fkoj = NULL;
     }
     info->dnj.koj = (uint16_t) new_koj;
     switch (info->dnj.koj) {
@@ -1284,10 +1301,17 @@ static GtkWidget *dnj_limits_widgets (struct drqm_jobs_info *info)
   gtk_tooltips_set_tip (tooltips,cbutton,"If set this job will try to be executed on FreeBSD "
 			"computers. If not set it won't.", NULL);
 
+  cbutton = gtk_check_button_new_with_label ("Windows");
+  gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
+  info->dnj.limits.cb_cygwin = cbutton;
+  gtk_tooltips_set_tip (tooltips,cbutton,"If set this job will try to be executed on Windows "
+			"computers. If not set it won't.", NULL);
+
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.limits.cb_irix),TRUE);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.limits.cb_linux),TRUE);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.limits.cb_osx),TRUE);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.limits.cb_freebsd),TRUE);
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.limits.cb_cygwin),TRUE);
 
   return (frame);
 }
