@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.57 2002/06/20 15:28:48 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.58 2002/06/20 19:32:50 jorge Exp $
  */
 
 #include <string.h>
@@ -2469,46 +2469,45 @@ GtkWidget *jdd_koj_widgets (struct drqm_jobs_info *info)
 
 GtkWidget *jdd_koj_maya_widgets (struct drqm_jobs_info *info)
 {
-  GtkWidget *vbox, *hbox;
+  GtkWidget *table;
   GtkWidget *label;
+  GtkAttachOptions options = GTK_EXPAND | GTK_SHRINK | GTK_FILL ;
 
-  vbox = gtk_vbox_new (FALSE,2);
+  table = gtk_table_new (4,2, FALSE);
 
-  hbox = gtk_hbox_new (TRUE,2);
-  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
   label = gtk_label_new ("Scene:");
-  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  gtk_label_set_justify (GTK_LABEL(label), GTK_JUSTIFY_LEFT);
+  gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 0,1,0,1, options, options, 3 , 3 );
   label = gtk_label_new (info->jobs[info->row].koji.maya.scene);
-  gtk_widget_set_usize (GTK_WIDGET(label),100,1);
   gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
-  gtk_label_set_justify (GTK_LABEL(label), GTK_JUSTIFY_CENTER);
-  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  gtk_label_set_justify (GTK_LABEL(label), GTK_JUSTIFY_LEFT);
+  gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 1,2,0,1, options, options, 3 , 3 );
 
-  hbox = gtk_hbox_new (TRUE,2);
-  gtk_box_pack_start (GTK_BOX(vbox),hbox,TRUE,FALSE,2);
+
   label = gtk_label_new ("Render directory:");
-  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 0,1,1,2, options, options, 3 , 3 );
   label = gtk_label_new (info->jobs[info->row].koji.maya.renderdir);
   gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
-  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  gtk_label_set_justify (GTK_LABEL(label), GTK_JUSTIFY_LEFT);
+  gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 1,2,1,2, options, options, 3 , 3 );
 
-  hbox = gtk_hbox_new (TRUE,2);
-  gtk_box_pack_start (GTK_BOX(vbox),hbox,TRUE,FALSE,2);
+
   label = gtk_label_new ("Output image:");
-  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 0,1,2,3, options, options, 3 , 3 );
   label = gtk_label_new (info->jobs[info->row].koji.maya.image);
   gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
-  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  gtk_label_set_justify (GTK_LABEL(label), GTK_JUSTIFY_LEFT);
+  gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 1,2,2,3, options, options, 3 , 3 );
 
-  hbox = gtk_hbox_new (TRUE,2);
-  gtk_box_pack_start (GTK_BOX(vbox),hbox,TRUE,FALSE,2);
+
   label = gtk_label_new ("View command:");
-  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 0,1,3,4, options, options, 3 , 3 );
   label = gtk_label_new (info->jobs[info->row].koji.maya.viewcmd);
   gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
-  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  gtk_label_set_justify (GTK_LABEL(label), GTK_JUSTIFY_LEFT);
+  gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 1,2,3,4, options, options, 3 , 3 );
 
-  return vbox;
+  return table;
 }
 
 
