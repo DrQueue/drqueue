@@ -34,7 +34,7 @@ else
    else
     ifeq ($(systype),CYGWIN_NT-5.1)
      CFLAGS = -Wall -I.. -D__CYGWIN -g `pkg-config --cflags gtk+-2.0` -O2
-     LDFLAGS = `pkg-config --libs gtk+-2.0` -e _mainCRTStartup -mwindows 
+     LDFLAGS = `pkg-config --libs gtk+-2.0` -e _mainCRTStartup -mwindows ../contrib/windows/Resources/drqueue.res 
      MAKE = make
     else
 $(error Cannot make DrQueueManager -- systype "$(systype)" is unknown)
