@@ -3,9 +3,6 @@ TO DO:
 
 * Authentication on the slave requests.
 * job permissions.
-* functions that return void in communications should
-  return int. And error checking should be coded 
-  extensively.
 * License control
 * User defined shell for script generators
 * Renice options
