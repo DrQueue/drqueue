@@ -1,5 +1,4 @@
-/* $Id: slave.c,v 1.37 2001/09/05 13:36:39 jorge Exp $ */
-/* $Name:  $ */
+/* $Id: slave.c,v 1.38 2001/09/05 15:18:40 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -472,7 +471,7 @@ void slave_get_options (int *argc,char ***argv, int *force)
 {
   int opt;
 
-  while ((opt = getopt (*argc,*argv,"fl:oh")) != -1) {
+  while ((opt = getopt (*argc,*argv,"fl:ohv")) != -1) {
     switch (opt) {
     case 'f':
       *force = 1;
@@ -485,6 +484,9 @@ void slave_get_options (int *argc,char ***argv, int *force)
       logonscreen = 1;
       printf ("Logging on screen.\n");
       break;
+    case 'v':
+      show_version (*argv);
+      exit (0);
     case '?':
     case 'h':
       usage();
@@ -492,3 +494,4 @@ void slave_get_options (int *argc,char ***argv, int *force)
     }
   }
 }
+
