@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.32 2001/09/18 12:38:20 jorge Exp $ */
+/* $Id: job.c,v 1.33 2001/09/20 10:52:35 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -478,6 +478,7 @@ void job_stop (struct job *job)
     break;
   case JOBSTATUS_STOPPED:
   case JOBSTATUS_FINISHED:
+    break;
   }
 }
 
