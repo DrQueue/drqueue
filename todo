@@ -5,7 +5,6 @@ TO DO:
 * Priority support for jobs				[DONE]
 * Check frames registered as running if running really	[DONE]
 * Process output logging				[DONE]
-* file locking on logging functions
 * limit structures for jobs and computers
 * Negative and backwards frame numbers
 * Master database saved and reloaded from disk
@@ -13,11 +12,13 @@ TO DO:
 * -f to force if shared memory or semaphores exist	[DONE]
 * The slave must check that the requests come from the
   master
+* job permissions.
+* flag on master and slave to set logging level.	[DONE]
+* logging on screen					[DONE]
 * functions that return void in communications should
   return int. And error checking should be coded 
   extensively.
-* job permissions.
-* flag on master and slave to set logging level.	[DONE]
+* file locking on logging functions
 
 BUGS:
 ----
