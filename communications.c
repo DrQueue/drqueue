@@ -752,9 +752,6 @@ int send_computer_limits (int sfd, struct computer_limits *cl)
   /* Autoenable stuff */
   bswapped.autoenable.last = htonl (bswapped.autoenable.last);
 
-	// Pools
-	bswapped.npools = htons (bswapped.npools);
-
   if (!dr_write(sfd,buf,sizeof(struct computer_limits))) {
     return 0;
   }
