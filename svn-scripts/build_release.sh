@@ -57,8 +57,11 @@ echo "Creating tag $VERSION"
 # Update Revision
 echo "Updating Revision"
 svn update > Revision
+echo "Commiting new Revision"
+svn ci -m "New Revision commited by build_package.sh" Revision
 
 # Build package
+echo "Building package"
 make clean > /dev/null
 (cd ..; tar zcvf drqueue.$VERSION.tgz --exclude="*/.svn/*" drqueue) > /dev/null
 
