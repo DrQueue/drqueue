@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.63 2001/11/07 10:21:45 jorge Exp $ */
+/* $Id: request.c,v 1.64 2001/11/08 09:14:03 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -965,7 +965,7 @@ int request_job_delete (uint32_t ijob, int who)
   req.data = ijob;
 
   if (!send_request (sfd,&req,who)) {
-    drerrno = DRE_ERRORSENDING;
+    drerrno = DRE_ERRORWRITING;
     close (sfd);
     return 0;
   }
@@ -1039,7 +1039,7 @@ int request_slave_killtask (char *slave,uint16_t itask,int who)
   request.data = itask;
 
   if (!send_request (sfd,&request,who)) {
-    drerrno = DRE_ERRORSENDING;
+    drerrno = DRE_ERRORWRITING;
     return 0;
   }
   
@@ -1067,7 +1067,7 @@ int request_job_stop (uint32_t ijob, int who)
   req.data = ijob;
 
   if (!send_request (sfd,&req,who)) {
-    drerrno = DRE_ERRORSENDING;
+    drerrno = DRE_ERRORWRITING;
     close (sfd);
     return 0;
   }
@@ -1091,7 +1091,7 @@ int request_job_continue (uint32_t ijob, int who)
   req.data = ijob;
 
   if (!send_request (sfd,&req,who)) {
-    drerrno = DRE_ERRORSENDING;
+    drerrno = DRE_ERRORWRITING;
     close (sfd);
     return 0;
   }
@@ -1199,7 +1199,7 @@ int request_job_hstop (uint32_t ijob, int who)
   req.data = ijob;
 
   if (!send_request (sfd,&req,who)) {
-    drerrno = DRE_ERRORSENDING;
+    drerrno = DRE_ERRORWRITING;
     close (sfd);
     return 0;
   }
@@ -1253,7 +1253,7 @@ int request_job_xfer (uint32_t ijob, struct job *job, int who)
   }
   
   if (!recv_job (sfd,job)) {
-    drerrno = DRE_ERRORRECEIVING;
+    drerrno = DRE_ERRORREADING;
     close (sfd);
     return 0;
   }
@@ -1532,7 +1532,7 @@ int request_job_frame_waiting (uint32_t ijob, uint32_t frame, int who)
   req.data = ijob;
 
   if (!send_request (sfd,&req,who)) {
-    drerrno = DRE_ERRORSENDING;
+    drerrno = DRE_ERRORWRITING;
     close (sfd);
     return 0;
   }
@@ -1541,7 +1541,7 @@ int request_job_frame_waiting (uint32_t ijob, uint32_t frame, int who)
   req.data = frame;
 
   if (!send_request (sfd,&req,who)) {
-    drerrno = DRE_ERRORSENDING;
+    drerrno = DRE_ERRORWRITING;
     close (sfd);
     return 0;
   }
@@ -1634,7 +1634,7 @@ int request_job_frame_kill (uint32_t ijob, uint32_t frame, int who)
   req.data = ijob;
 
   if (!send_request (sfd,&req,who)) {
-    drerrno = DRE_ERRORSENDING;
+    drerrno = DRE_ERRORWRITING;
     close (sfd);
     return 0;
   }
@@ -1643,7 +1643,7 @@ int request_job_frame_kill (uint32_t ijob, uint32_t frame, int who)
   req.data = frame;
 
   if (!send_request (sfd,&req,who)) {
-    drerrno = DRE_ERRORSENDING;
+    drerrno = DRE_ERRORWRITING;
     close (sfd);
     return 0;
   }
@@ -1736,7 +1736,7 @@ int request_job_frame_finish (uint32_t ijob, uint32_t frame, int who)
   req.data = ijob;
 
   if (!send_request (sfd,&req,who)) {
-    drerrno = DRE_ERRORSENDING;
+    drerrno = DRE_ERRORWRITING;
     close (sfd);
     return 0;
   }
@@ -1745,7 +1745,7 @@ int request_job_frame_finish (uint32_t ijob, uint32_t frame, int who)
   req.data = frame;
 
   if (!send_request (sfd,&req,who)) {
-    drerrno = DRE_ERRORSENDING;
+    drerrno = DRE_ERRORWRITING;
     close (sfd);
     return 0;
   }
@@ -1832,7 +1832,7 @@ int request_job_frame_kill_finish (uint32_t ijob, uint32_t frame, int who)
   req.data = ijob;
 
   if (!send_request (sfd,&req,who)) {
-    drerrno = DRE_ERRORSENDING;
+    drerrno = DRE_ERRORWRITING;
     close (sfd);
     return 0;
   }
@@ -1841,7 +1841,7 @@ int request_job_frame_kill_finish (uint32_t ijob, uint32_t frame, int who)
   req.data = frame;
 
   if (!send_request (sfd,&req,who)) {
-    drerrno = DRE_ERRORSENDING;
+    drerrno = DRE_ERRORWRITING;
     close (sfd);
     return 0;
   }
@@ -1927,7 +1927,7 @@ int request_slave_limits_nmaxcpus_set (char *slave, uint32_t nmaxcpus, int who)
   req.data = nmaxcpus;
 
   if (!send_request (sfd,&req,who)) {
-    drerrno = DRE_ERRORSENDING;
+    drerrno = DRE_ERRORWRITING;
     return 0;
   }
   
@@ -2034,7 +2034,7 @@ void handle_r_r_uclimits (int sfd,struct database *wdb,int icomp, struct request
   }
 
   if (!recv_computer_limits (sfd, &limits)) {
-    log_master (L_ERROR,"Receiving request (handle_r_r_uclimits)");
+    log_master (L_ERROR,"Receiving computer limits (handle_r_r_uclimits)");
     exit (0);
   }
 
@@ -2088,7 +2088,7 @@ int request_slave_limits_maxfreeloadcpu_set (char *slave, uint32_t maxfreeloadcp
   req.data = maxfreeloadcpu;
 
   if (!send_request (sfd,&req,who)) {
-    drerrno = DRE_ERRORSENDING;
+    drerrno = DRE_ERRORWRITING;
     return 0;
   }
   
@@ -2111,7 +2111,7 @@ int request_slavexit (uint32_t icomp, int who)
   req.data = icomp;
 
   if (!send_request (sfd,&req,who)) {
-    drerrno = DRE_ERRORSENDING;
+    drerrno = DRE_ERRORWRITING;
     close (sfd);
     return 0;
   }
@@ -2161,7 +2161,7 @@ int request_job_sesupdate (uint32_t ijob, uint32_t frame_start,uint32_t frame_en
   req.data = ijob;
 
   if (!send_request (sfd,&req,who)) {
-    drerrno = DRE_ERRORSENDING;
+    drerrno = DRE_ERRORWRITING;
     close (sfd);
     return 0;
   }
@@ -2170,7 +2170,7 @@ int request_job_sesupdate (uint32_t ijob, uint32_t frame_start,uint32_t frame_en
   req.data = frame_start;
 
   if (!send_request (sfd,&req,who)) {
-    drerrno = DRE_ERRORSENDING;
+    drerrno = DRE_ERRORWRITING;
     close (sfd);
     return 0;
   }
@@ -2179,7 +2179,7 @@ int request_job_sesupdate (uint32_t ijob, uint32_t frame_start,uint32_t frame_en
   req.data = frame_end;
 
   if (!send_request (sfd,&req,who)) {
-    drerrno = DRE_ERRORSENDING;
+    drerrno = DRE_ERRORWRITING;
     close (sfd);
     return 0;
   }
@@ -2188,7 +2188,7 @@ int request_job_sesupdate (uint32_t ijob, uint32_t frame_start,uint32_t frame_en
   req.data = frame_step;
 
   if (!send_request (sfd,&req,who)) {
-    drerrno = DRE_ERRORSENDING;
+    drerrno = DRE_ERRORWRITING;
     close (sfd);
     return 0;
   }
@@ -2345,7 +2345,7 @@ int request_job_limits_nmaxcpus_set (uint32_t ijob, uint16_t nmaxcpus, int who)
   req.data = ijob;
 
   if (!send_request (sfd,&req,who)) {
-    drerrno = DRE_ERRORSENDING;
+    drerrno = DRE_ERRORWRITING;
     close (sfd);
     return 0;
   }
@@ -2354,7 +2354,7 @@ int request_job_limits_nmaxcpus_set (uint32_t ijob, uint16_t nmaxcpus, int who)
   req.data = nmaxcpus;
 
   if (!send_request (sfd,&req,who)) {
-    drerrno = DRE_ERRORSENDING;
+    drerrno = DRE_ERRORWRITING;
     close (sfd);
     return 0;
   }
@@ -2414,7 +2414,7 @@ int request_job_limits_nmaxcpuscomputer_set (uint32_t ijob, uint16_t nmaxcpuscom
   req.data = ijob;
 
   if (!send_request (sfd,&req,who)) {
-    drerrno = DRE_ERRORSENDING;
+    drerrno = DRE_ERRORWRITING;
     close (sfd);
     return 0;
   }
@@ -2423,7 +2423,7 @@ int request_job_limits_nmaxcpuscomputer_set (uint32_t ijob, uint16_t nmaxcpuscom
   req.data = nmaxcpuscomputer;
 
   if (!send_request (sfd,&req,who)) {
-    drerrno = DRE_ERRORSENDING;
+    drerrno = DRE_ERRORWRITING;
     close (sfd);
     return 0;
   }
@@ -2483,7 +2483,7 @@ int request_job_priority_update (uint32_t ijob, uint32_t priority, int who)
   req.data = ijob;
 
   if (!send_request (sfd,&req,who)) {
-    drerrno = DRE_ERRORSENDING;
+    drerrno = DRE_ERRORWRITING;
     close (sfd);
     return 0;
   }
@@ -2492,7 +2492,7 @@ int request_job_priority_update (uint32_t ijob, uint32_t priority, int who)
   req.data = priority;
 
   if (!send_request (sfd,&req,who)) {
-    drerrno = DRE_ERRORSENDING;
+    drerrno = DRE_ERRORWRITING;
     close (sfd);
     return 0;
   }
