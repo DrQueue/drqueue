@@ -1,4 +1,4 @@
-/* $Id: drqm_request.c,v 1.17 2001/09/09 22:04:07 jorge Exp $ */
+/* $Id: drqm_request.c,v 1.18 2001/09/11 12:52:54 jorge Exp $ */
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -178,4 +178,8 @@ void drqm_request_slave_limits_maxfreeloadcpu_set (char *slave,uint32_t maxfreel
   request_slave_limits_maxfreeloadcpu_set (slave,maxfreeloadcpu,CLIENT);
 }
 
+void drqm_request_slave_task_kill (char *slave,uint16_t itask)
+{
+  request_slave_killtask (slave,itask,CLIENT);
+}
 
