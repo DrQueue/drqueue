@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.55 2002/03/01 11:38:08 jorge Exp $ */
+/* $Id: slave.c,v 1.56 2002/03/01 14:14:15 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -64,6 +64,8 @@ int main (int argc,char *argv[])
 
   while (1) {
     get_computer_status (&sdb.comp->status,sdb.semid);
+
+    computer_autoenable_check (&sdb); /* Check if it's time for autoenable */
 
     launched = 0;
     while (computer_available(sdb.comp)) {
