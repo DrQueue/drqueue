@@ -814,6 +814,9 @@ static GtkWidget *jdd_add_blocked_host_dialog (struct drqm_jobs_info *info)
 	GtkWidget *button;
 	GtkWidget *swindow;
 	GtkWidget *clist;
+	GtkTooltips *tooltips;
+
+	tooltips = TooltipsNew();
 
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW(window),"Add host(s) to block list");
@@ -842,6 +845,7 @@ static GtkWidget *jdd_add_blocked_host_dialog (struct drqm_jobs_info *info)
 	hbox = gtk_hbox_new (FALSE,2);
 	gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
 	button = gtk_button_new_with_label ("Add");
+	gtk_tooltips_set_tip (tooltips,button,"Add selected host(s) to the blocked list",NULL);
 	gtk_box_pack_start (GTK_BOX(hbox),button, TRUE, TRUE, 2);
 	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(jdd_add_blocked_host),info);
 	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(jdd_update),info);
