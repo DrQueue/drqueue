@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.39 2004/01/16 00:17:37 jorge Exp $
+# $Id: Makefile,v 1.40 2004/01/22 17:48:24 jorge Exp $
 
 CC = gcc
 CPP = g++-2.95
@@ -15,9 +15,14 @@ ifeq ($(systype),linux)
 	MAKE = make
 else 
  ifeq ($(systype),irix)
-	CFLAGS = -DCOMM_REPORT -Wall -I. -D__IRIX -g -O2
-	MAKE = /usr/freeware/bin/gmake
- endif
+  CFLAGS = -DCOMM_REPORT -Wall -I. -D__IRIX -g -O2
+  MAKE = /usr/freeware/bin/gmake
+ else
+  ifeq ($(systype),osx)
+   CFLAGS = -DCOMM_REPORT -Wall -I. -D__OSX -g -O2
+   MAKE = make
+  endif
+ endif	
 endif
 
 .PHONY: clean irix linux tags irix_install doc
@@ -29,6 +34,10 @@ linux:
 irix:
 	$(MAKE) systype=irix all
 	(cd drqman; $(MAKE) irix)
+
+osx:
+	$(MAKE) systype=osx all
+	(cd drqman; $(MAKE) osx)
 
 irix_install: irix
 	install -d -u rendusr -g staff -m 0777 $(INSTROOT)/bin

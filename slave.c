@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.61 2004/01/07 21:50:21 jorge Exp $ */
+/* $Id: slave.c,v 1.62 2004/01/22 17:48:24 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -12,6 +12,10 @@
 #include <sys/types.h>
 #include <string.h>
 #include <ctype.h>
+
+#ifdef __OSX
+# include <sys/select.h>
+#endif
 
 #include "slave.h"
 #include "libdrqueue.h"
@@ -137,7 +141,11 @@ void set_signal_handlers (void)
   sigemptyset (&ignore.sa_mask);
   ignore.sa_flags = 0;
   sigaction (SIGHUP, &ignore, NULL);
+#ifdef __OSX
+  sigaction (SIGCHLD, &ignore, NULL);
+#else
   sigaction (SIGCLD, &ignore, NULL);
+#endif
 }
 
 void clean_out (int signal, siginfo_t *info, void *data)
@@ -297,7 +305,11 @@ void set_signal_handlers_child_launcher (void)
 
   action_dfl.sa_handler = (void *)SIG_DFL;
   sigemptyset (&action_dfl.sa_mask);
+#ifdef __OSX
+	sigaction (SIGCHLD, &action_dfl, NULL);
+#else
   sigaction (SIGCLD, &action_dfl, NULL);
+#endif
 }
 
 void set_signal_handlers_task_exec (void)
@@ -308,7 +320,11 @@ void set_signal_handlers_task_exec (void)
   sigemptyset (&action_dfl.sa_mask);
   sigaction (SIGINT, &action_dfl, NULL);
   sigaction (SIGTERM, &action_dfl, NULL);
+#ifdef __OSX
+  sigaction (SIGCHLD, &action_dfl, NULL);
+#else
   sigaction (SIGCLD, &action_dfl, NULL);
+#endif
 }
 
 void slave_listening_process (struct slave_database *sdb)
