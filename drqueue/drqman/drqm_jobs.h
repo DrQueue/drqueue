@@ -38,6 +38,8 @@ struct drqmj_flags {
   GtkWidget *cbmailnotify;			/* Check button */
   GtkWidget *cbdifemail;	/* Specific email for mail notification ? */
   GtkWidget *edifemail;					/* Entry for the email */
+	GtkWidget *cbjobdepend;       // Depends on another job
+	GtkWidget *ejobdepend;        // Which one ?
 };
 
 struct drqmj_dnji {							/* dialog new job info */
