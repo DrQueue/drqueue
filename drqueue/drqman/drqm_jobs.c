@@ -43,6 +43,7 @@
 #include "drqm_jobs_blender.h"
 #include "drqm_jobs_bmrt.h"
 #include "drqm_jobs_pixie.h"
+#include "drqm_jobs_3delight.h"
 
 // Icon includes
 #include "job_icon.h"
@@ -490,6 +491,14 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info)
     gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_pixie.eviewcmd),
 											 info->jobs[info->row].koji.pixie.viewcmd);
     break;
+  case KOJ_3DELIGHT:
+		gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(info->dnj.ckoj)->entry),
+											 "3delight");
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_3delight.escene),
+											 info->jobs[info->row].koji.threedelight.scene);
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_3delight.eviewcmd),
+											 info->jobs[info->row].koji.threedelight.viewcmd);
+    break;
   }
 }
 
@@ -869,8 +878,12 @@ static int dnj_submit (struct drqmj_dnji *info)
 		}
     break;
   case KOJ_PIXIE:
-    strncpy(job.koji.blender.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_pixie.escene)),BUFFERLEN-1);
-    strncpy(job.koji.blender.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_pixie.eviewcmd)),BUFFERLEN-1);
+    strncpy(job.koji.pixie.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_pixie.escene)),BUFFERLEN-1);
+    strncpy(job.koji.pixie.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_pixie.eviewcmd)),BUFFERLEN-1);
+    break;
+  case KOJ_3DELIGHT:
+    strncpy(job.koji.threedelight.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_3delight.escene)),BUFFERLEN-1);
+    strncpy(job.koji.threedelight.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_3delight.eviewcmd)),BUFFERLEN-1);
     break;
   }
 
@@ -1104,6 +1117,7 @@ static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info)
 	items = g_list_append (items,"Blender");
 	items = g_list_append (items,"Bmrt");
 	items = g_list_append (items,"Pixie");
+	items = g_list_append (items,"3delight");
   combo = gtk_combo_new();
   gtk_tooltips_set_tip(tooltips,GTK_COMBO(combo)->entry,"Selector for the kind of job",NULL);
   gtk_combo_set_popdown_strings (GTK_COMBO(combo),items);
@@ -1135,6 +1149,8 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
     new_koj = KOJ_BMRT;
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Pixie") == 0) {
     new_koj = KOJ_PIXIE;
+  } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"3delight") == 0) {
+    new_koj = KOJ_3DELIGHT;
   } else {
 /*     fprintf (stderr,"dnj_koj_combo_changed: koj not listed!\n"); */
 /* 		fprintf (stderr,"entry: %s\n",gtk_entry_get_text(GTK_ENTRY(entry))); */
@@ -1168,6 +1184,10 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
       break;
     case KOJ_PIXIE:
       info->dnj.fkoj = dnj_koj_frame_pixie (info);
+      gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
+      break;
+    case KOJ_3DELIGHT:
+      info->dnj.fkoj = dnj_koj_frame_3delight (info);
       gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
       break;
     }

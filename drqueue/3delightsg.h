@@ -16,39 +16,27 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-// $Id$
-//
 
-#ifndef _LIBDRQUEUE_H_
-#define _LIBDRQUEUE_H_
+#ifndef _3DELIGHTSG_H_
+#define _3DELIGHTSG_H_
+
+#include "constants.h"
 
 #ifdef __CPLUSPLUS
 extern "C" {
 #endif 
 
-#include "computer.h"
-#include "job.h"
-#include "task.h"
-#include "logger.h"
-#include "communications.h"
-#include "request.h"
-#include "drerrno.h"
-#include "database.h"
-#include "semaphores.h"
-#include "common.h"
+struct threedelightsgi {		/* Mental Ray Script Generator Info */
+  char scene[BUFFERLEN];
+  char scriptdir[BUFFERLEN];
+  char file_owner[BUFFERLEN];
+};
 
-/* Script generators */
-#include "mayasg.h"
-#include "mentalraysg.h"
-#include "blendersg.h"
-#include "bmrtsg.h"
-#include "pixiesg.h"
-#include "3delightsg.h"
-
-int phantom[2];									/* FIXME: This should be local to the slave */
+char *threedelightsg_create (struct threedelightsgi *info);
+char *threedelightsg_default_script_path (void);
 
 #ifdef __CPLUSPLUS
 }
 #endif 
 
-#endif /* _libdrqueue_h_ */
+#endif /* _3DELIGHTSG_H_ */

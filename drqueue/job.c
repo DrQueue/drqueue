@@ -732,11 +732,11 @@ void job_environment_set (struct job *job, uint32_t iframe)
   case KOJ_GENERAL:
     break;
   case KOJ_MAYA:
-    snprintf (scene,BUFFERLEN-1,"SCENE=%s",job->koji.maya.scene);
+    snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.maya.scene);
     putenv (scene);
-    snprintf (renderdir,BUFFERLEN-1,"RD=%s",job->koji.maya.renderdir);
+    snprintf (renderdir,BUFFERLEN-1,"DRQUEUE_RD=%s",job->koji.maya.renderdir);
     putenv (renderdir);
-    snprintf (image,BUFFERLEN-1,"IMAGE=%s",job->koji.maya.image);
+    snprintf (image,BUFFERLEN-1,"DRQUEUE_IMAGE=%s",job->koji.maya.image);
     putenv (image);
     break;
   case KOJ_MENTALRAY:
@@ -748,10 +748,13 @@ void job_environment_set (struct job *job, uint32_t iframe)
     putenv (image);
     break;
   case KOJ_BLENDER:
-    snprintf (scene,BUFFERLEN-1,"SCENE=%s",job->koji.blender.scene);
+    snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.blender.scene);
     break;
   case KOJ_BMRT:
-    snprintf (scene,BUFFERLEN-1,"SCENE=%s",job->koji.bmrt.scene);
+    snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.bmrt.scene);
+    break;
+  case KOJ_3DELIGHT:
+    snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.threedelight.scene);
     break;
   }
 }
@@ -868,6 +871,9 @@ char *job_koj_string (struct job *job)
   case KOJ_PIXIE:
     msg = "Pixie";
     break;
+	case KOJ_3DELIGHT:
+		msg = "3delight";
+		break;
   default:
     msg = "DEFAULT (ERROR)";
   }
