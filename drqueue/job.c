@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.7 2001/07/17 10:19:01 jorge Exp $ */
+/* $Id: job.c,v 1.8 2001/07/17 10:29:55 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -244,7 +244,7 @@ int job_njobs_masterdb (struct database *wdb)
 {
   int i,c=0;
 
-  for (i=0;i>MAXJOBS;i++) {
+  for (i=0;i<MAXJOBS;i++) {
     if (wdb->job[i].used) {
       c++;
     }
