@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.28 2001/09/16 15:36:16 jorge Exp $ */
+/* $Id: job.c,v 1.29 2001/09/17 12:30:10 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -544,8 +544,20 @@ int job_index_correct_master (struct database *wdb,uint32_t ijob)
 
 void job_environment_set (struct job *job, uint32_t iframe)
 {
+  uint32_t frame;
+
+#ifdef __LINUX
   char msg[BUFFERLEN];
-  uint32_t frame = job_frame_index_to_number (job,iframe);
+#else
+  static char padframe[BUFFERLEN];
+  static char s_frame[BUFFERLEN];
+  static char s_iframe[BUFFERLEN];
+  static char scene[BUFFERLEN];
+  static char project[BUFFERLEN];
+  static char image[BUFFERLEN];
+#endif
+
+  frame = job_frame_index_to_number (job,iframe);
 
 #ifdef __LINUX
   /* Padded frame number */
@@ -594,14 +606,14 @@ void job_environment_set (struct job *job, uint32_t iframe)
 
 #else
   /* Padded frame number */
-  snprintf (msg,BUFFERLEN-1,"PADFRAME=%04i",frame);
-  putenv (msg);
+  snprintf (padframe,BUFFERLEN-1,"PADFRAME=%04i",frame);
+  putenv (padframe);
   /* Frame number */
-  snprintf (msg,BUFFERLEN-1,"FRAME=%i",frame);
-  putenv (msg);
+  snprintf (s_frame,BUFFERLEN-1,"FRAME=%i",frame);
+  putenv (s_frame);
   /* Frame index */
-  snprintf (msg,BUFFERLEN-1,"IFRAME=%i",iframe);
-  putenv (msg);
+  snprintf (s_iframe,BUFFERLEN-1,"IFRAME=%i",iframe);
+  putenv (s_iframe);
   /* OS */
   putenv ("DRQUEUE_OS=IRIX");
 
@@ -609,15 +621,14 @@ void job_environment_set (struct job *job, uint32_t iframe)
   case KOJ_GENERAL:
     break;
   case KOJ_MAYA:
-    snprintf (msg,BUFFERLEN-1,"SCENE=%s",job->koji.maya.scene);
-    putenv (msg);
-    snprintf (msg,BUFFERLEN-1,"PROJECT=%s",job->koji.maya.project);
-    putenv (msg);
-    snprintf (msg,BUFFERLEN-1,"IMAGE=%s",job->koji.maya.image);
-    putenv (msg);
+    snprintf (scene,BUFFERLEN-1,"SCENE=%s",job->koji.maya.scene);
+    putenv (scene);
+    snprintf (project,BUFFERLEN-1,"PROJECT=%s",job->koji.maya.project);
+    putenv (project);
+    snprintf (image,BUFFERLEN-1,"IMAGE=%s",job->koji.maya.image);
+    putenv (image);
     break;
   }
-
 
 #endif
 
