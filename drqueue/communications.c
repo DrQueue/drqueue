@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.39 2001/10/29 16:25:07 jorge Exp $ */
+/* $Id: communications.c,v 1.40 2001/10/31 15:58:15 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -96,7 +96,7 @@ int connect_to_master (void)
   struct hostent *hostinfo;
 
   if ((master = getenv ("DRQUEUE_MASTER")) == NULL) {
-    drerrno = DRE_NODRMAENV;
+    drerrno = DRE_NOENVMASTER;
     return -1;
   }
 
@@ -120,6 +120,7 @@ int connect_to_master (void)
     return -1;
   }
 
+  drerrno = DRE_NOERROR;
   return sfd;
 }
 
