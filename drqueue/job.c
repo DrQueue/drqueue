@@ -695,19 +695,14 @@ int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp)
   if (computer_ntasks_job(&wdb->computer[icomp],ijob) >= wdb->job[ijob].limits.nmaxcpuscomputer)
     return 0;
 
-#if defined (__LINUX)
-  if (!(wdb->job[ijob].limits.os_flags & OSF_LINUX))
+  if ((wdb->computer[icomp].hwinfo.os == OSF_LINUX) && (wdb->job[ijob].limits.os_flags & OSF_LINUX))
 		return 0;
-#elif defined (_IRIX)
-  if (!(wdb->job[ijob].limits.os_flags & OSF_IRIX))
-    return 0;
-#elif defined (__OSX)
-  if (!(wdb->job[ijob].limits.os_flags & OSF_OSX))
-    return 0;
-#elif defined (__FREEBSD)
-	if (!(wdb->job[ijob].limits.os_flags & OSF_FREEBSD))
+  if ((wdb->computer[icomp].hwinfo.os == OSF_IRIX) && (wdb->job[ijob].limits.os_flags & OSF_IRIX))
 		return 0;
-#endif
+  if ((wdb->computer[icomp].hwinfo.os == OSF_OSX) && (wdb->job[ijob].limits.os_flags & OSF_OSX))
+		return 0;
+  if ((wdb->computer[icomp].hwinfo.os == OSF_FREEBSD) && (wdb->job[ijob].limits.os_flags & OSF_FREEBSD))
+		return 0;
 
   return 1;
 }
