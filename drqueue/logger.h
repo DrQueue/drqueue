@@ -1,4 +1,4 @@
-/* $Id: logger.h,v 1.8 2001/08/07 13:00:33 jorge Exp $ */
+/* $Id: logger.h,v 1.9 2001/08/08 10:54:34 jorge Exp $ */
 
 #ifndef _LOGGER_H_
 #define _LOGGER_H_
@@ -14,7 +14,7 @@
 #define L_INFO 2
 #define L_DEBUG 3
 
-int loglevel = L_WARNING;
+extern int loglevel;
 
 void log_slave_task (struct task *task, int level, char *msg);
 FILE *log_slave_open_task (struct task *task);
