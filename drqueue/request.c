@@ -580,11 +580,12 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
 {
   /* The master handles this type of packages */
   struct request answer;
-  uint32_t ijob = 0,i;
+  uint32_t ijob = 0,i,j;
   uint16_t itask;
   int iframe;
   struct tpol pol[MAXJOBS];
 	int equal_pols;
+	int counter;
 
   log_master (L_DEBUG,"Entering handle_r_r_availjob");
 
@@ -625,41 +626,52 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
 			wdb->lb.pol[i].pri = pol[i].pri;
 		}
 		// Then we search for the first available job
+		counter = 0;
 		for (i=0;i<MAXJOBS;i++) {
 			ijob = pol[i].index;
+			if (pol[i].pri == wdb->lb.last_priority) {
+				for (j=wdb->lb.next_i;j<MAXJOBS;j++) {
+					ijob = pol[j].index;
+					if (job_available(wdb,ijob,&iframe,icomp)) {
+						log_master_job(&wdb->job[ijob],L_INFO,"Frame %i assigned",job_frame_index_to_number(&wdb->job[ijob],iframe));
+						wdb->lb.next_i = j+1;
+						break;
+					}
+				}
+				i = j;
+				break;
+			}
 			/* ATENTION job_available sets the available frame as FS_ASSIGNED !! */
 			/* We need to set it back to FS_WAITING if something fails */
 			if (job_available(wdb,ijob,&iframe,icomp)) {
 				log_master_job(&wdb->job[ijob],L_INFO,"Frame %i assigned",job_frame_index_to_number(&wdb->job[ijob],iframe));
+				wdb->lb.next_i = i+1;
 				break;
 			}
 		}
-		wdb->lb.first_i = i;
-		wdb->lb.counter = 1;
 	} else {
 		// Pols are equal
-		for (i=wdb->lb.first_i;i<MAXJOBS;i++) {
-			if ((i+wdb->lb.counter) >= MAXJOBS) {
+		for (i=wdb->lb.next_i;i<MAXJOBS;i++) {
+			if ((i+1) >= MAXJOBS) {
 				for (i=0;i<MAXJOBS;i++) {
 					ijob = pol[i].index;
 					/* ATENTION job_available sets the available frame as FS_ASSIGNED !! */
 					/* We need to set it back to FS_WAITING if something fails */
 					if (job_available(wdb,ijob,&iframe,icomp)) {
 						log_master_job(&wdb->job[ijob],L_INFO,"Frame %i assigned",job_frame_index_to_number(&wdb->job[ijob],iframe));
+						wdb->lb.next_i = i+1;
 						break;
 					}
 				}
-				wdb->lb.first_i = i;
-				wdb->lb.counter = 1;
 				break;
 			}
-			if (pol[i].pri == pol[i+wdb->lb.counter].pri) {
-				ijob = pol[i+wdb->lb.counter].index;
+			if (pol[i].pri == wdb->lb.last_priority) {
+				ijob = pol[i].index;
 				/* ATENTION job_available sets the available frame as FS_ASSIGNED !! */
 				/* We need to set it back to FS_WAITING if something fails */
 				if (job_available(wdb,ijob,&iframe,icomp)) {
 					log_master_job(&wdb->job[ijob],L_INFO,"Frame %i assigned",job_frame_index_to_number(&wdb->job[ijob],iframe));
-					wdb->lb.counter++;
+					wdb->lb.next_i = i+1;
 					break;
 				}
 			} else {
@@ -669,17 +681,17 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
 					/* We need to set it back to FS_WAITING if something fails */
 					if (job_available(wdb,ijob,&iframe,icomp)) {
 						log_master_job(&wdb->job[ijob],L_INFO,"Frame %i assigned",job_frame_index_to_number(&wdb->job[ijob],iframe));
+						wdb->lb.next_i = i+1;
 						break;
 					}
 				}
-				wdb->lb.first_i = i;
-				wdb->lb.counter = 1;
 				break;
 			}
 		}
 	}
 
-  if (i==MAXJOBS) {
+  if (i>=MAXJOBS) {
+		wdb->lb.next_i = 0;
     log_master_computer(&wdb->computer[icomp],L_DEBUG,"No available job");
     answer.type = R_R_AVAILJOB;
     answer.data = RERR_NOAVJOB;
@@ -687,7 +699,9 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
       log_master(L_WARNING,"Error sending request (handle_r_r_availjob)");
     }
     exit (0);
-  } 
+  } else {
+		wdb->lb.last_priority = pol[i].pri;
+	}
 
   log_master (L_DEBUG,"Available job (%i) on frame %i assigned. Sending RERR_NOERROR",ijob,iframe);
 
@@ -1108,7 +1122,7 @@ void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp)
 
   for (i=0;i<MAXCOMPUTERS;i++) {
     if (computer[i].used) {
-	log_master(L_DEBUG,"Send computer");
+			log_master(L_DEBUG,"Send computer");
       if (!send_computer (sfd,&computer[i])) {
 				log_master (L_ERROR,"Sending computer (handle_r_r_listcomp)");
 				break;
@@ -2749,7 +2763,7 @@ void handle_r_r_uclimits (int sfd,struct database *wdb,int icomp, struct request
   memcpy (&wdb->computer[icomp].limits, &limits, sizeof(limits));
   semaphore_release(wdb->semid);
 
-	computer_pool_list (&limits);
+	//	computer_pool_list (&limits);
 
   log_master (L_DEBUG,"Exiting handle_r_r_uclimits");
 }
