@@ -1,5 +1,5 @@
 //
-// $Id: sendjob.cpp,v 1.5 2004/10/09 05:21:43 jorge Exp $
+// $Id$
 // 
 // To set up a maya job from a file and send it to the master
 //
@@ -9,14 +9,10 @@
 #include <string>
 #include <unistd.h>
 
-#ifdef __LINUX
-#include <stdint.h>
-#else
-# ifdef __IRIX
+#if defined (__IRIX)
 #include <sys/types.h>
-# else
-#  error You need to define the OS, or OS defined not supported
-# endif
+#else
+#include <stdint.h>
 #endif
 
 #include "sendjob.h"
