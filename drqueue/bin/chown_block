@@ -1,0 +1,22 @@
+#!/usr/bin/perl
+
+if (scalar(@ARGV) != 4) {
+  usage ();
+  exit (1);
+}
+
+$user = $ARGV[0];
+$file_prefix = $ARGV[1];
+$startf = $ARGV[2];
+$endf = $ARGV[3];
+
+for ($i = $startf; $i <= $endf; $i++) {
+  $file = sprintf ("%s.%04i.*",$file_prefix,$i);
+  chown ((getpwnam($user))[2,3],$file);
+}
+
+sub usage ()
+{
+  print "Usage: chown_block <user> <file_prefix> <start_frame> <end_frame>\n";
+}
+
