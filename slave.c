@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.6 2001/05/28 14:21:31 jorge Exp $ */
+/* $Id: slave.c,v 1.7 2001/06/05 12:19:45 jorge Exp $ */
 
 #include <unistd.h>
 #include <signal.h>
@@ -34,7 +34,7 @@ int main (int argc,char *argv[])
 
   if (fork() == 0) {
     /* Create the listening process */
-    strcpy (argv[0],"DrQueue - slave -> listening process");
+/*      strcpy (argv[0],"DrQueue - slave -> listening process"); */
     set_signal_handlers_child_listening ();
     slave_listening_process (&sdb);
     exit (0);
@@ -70,6 +70,7 @@ void set_signal_handlers (void)
   clean.sa_flags = SA_SIGINFO;
   sigaction (SIGINT, &clean, NULL);
   sigaction (SIGTERM, &clean, NULL);
+  sigaction (SIGSEGV, &clean, NULL);
 
   ignore.sa_handler = SIG_IGN;
   sigemptyset (&ignore.sa_mask);
@@ -100,12 +101,12 @@ int get_shared_memory_slave (void)
   key_t key;
   int shmid;
 
-  if ((key = ftok ("slave",'Z')) == -1) {
+  if ((key = ftok ("./slave",'A')) == -1) {
     perror ("ftok");
     exit (1);
   }
   
-  if ((shmid = shmget (key,sizeof (struct computer), IPC_EXCL|IPC_CREAT|0600)) == -1) {
+  if ((shmid = shmget (key,sizeof(struct computer), IPC_EXCL|IPC_CREAT|0600)) == -1) {
     perror ("shmget");
     exit (1);
   }
@@ -118,7 +119,7 @@ int get_semaphores_slave (void)
   key_t key;
   int semid;
 
-  if ((key = ftok ("slave",'Z')) == -1) {
+  if ((key = ftok ("slave",'A')) == -1) {
     perror ("ftok");
     kill (0,SIGINT);
   }
@@ -193,6 +194,9 @@ void slave_listening_process (struct slave_database *sdb)
 	handle_request_slave (csfd,sdb);
 	close (csfd);
 	exit (0);
+      } else {
+	close (sfd);
+	printf ("csfd: %i\n",csfd);
       }
     }
   }

@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.4 2001/05/30 15:11:47 jorge Exp $ */
+/* $Id: request.c,v 1.5 2001/06/05 12:19:45 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -156,7 +156,6 @@ void register_slave (struct computer *computer)
   }
 
   req.type = R_R_REGISTER;
-  req.slave = 1;
 
   send_request (sfd,&req,SLAVE);
   recv_request (sfd,&req,SLAVE);
@@ -262,8 +261,9 @@ void handle_r_r_regisjob (int sfd,struct database *wdb)
   struct request answer;
   struct job job;
   int index;
-  int nframes;
+  char msg[BUFFERLEN];
 
+  /* TO DO */
   /* Check if the job is already registered ! Or not ? */
 
   semaphore_lock(wdb->semid);	/* I put the lock here so no race condition can appear... */
@@ -272,34 +272,24 @@ void handle_r_r_regisjob (int sfd,struct database *wdb)
     log_master ("Warning: No space left for job");
     answer.type = R_A_REGISJOB;
     answer.data_s = RERR_NOSPACE;
-    answer.slave = 0;
     send_request (sfd,&answer,MASTER);
     exit (0);
   }
   wdb->job[index].used = 1;
   semaphore_release(wdb->semid);
 
+  /* Debug */
+  snprintf(msg,BUFFERLEN,"DEBUG: Job index %i free",index);
+  log_master(msg);
+
   /* No errors, we (master) can receive the job from the remote */
   /* computer to be registered */
   answer.type = R_A_REGISJOB;
   answer.data_s = RERR_NOERROR;
   send_request (sfd,&answer,MASTER);
-  
   recv_job (sfd, &job, MASTER);
-  semaphore_lock(wdb->semid);
-  memcpy (&wdb->job[index], &job, sizeof(job));
-  wdb->job[index].status = JOBSTATUS_WAITING;
-  wdb->job[index].used = 1;
-  /* We allocate the memory for the frame_info */
-  nframes = job_nframes (&wdb->job[index]);
-  wdb->job[index].frame_info = (struct frame_info *) malloc (sizeof (struct frame_info) * nframes);
-  if (wdb->job[index].frame_info == NULL) {
-    log_master ("Warning: Could not allocate memory for frame info");
-    wdb->job[index].used = 0;
-  } else {
-    job_init_assigned (&wdb->job[index]);
-  }
-  semaphore_release(wdb->semid);
+
+  job_init_registered (wdb,index,&job);
 
   printf ("Index: %i\n",index);
   job_report(&wdb->job[index]);
@@ -312,6 +302,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
   int ijob;
   int itask;
   int iframe;
+  char msg[BUFFERLEN];
 
   if (icomp == -1) {
     log_master ("Info: Not registered computer requesting available job");
@@ -322,11 +313,15 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
   }
 
   for (ijob=0;ijob<MAXJOBS;ijob++) {
-    if (job_available(wdb,ijob,&iframe))
+    if (job_available(wdb,ijob,&iframe)) {
+      snprintf(msg,BUFFERLEN,"Info: Frame %i assigned",iframe);
+      log_master_job(&wdb->job[ijob],msg);
       break;
+    }
   }
 
   if (ijob==MAXJOBS) {
+    log_master("DEBUG: No available job");
     answer.type = R_A_AVAILJOB;
     answer.data_s = RERR_NOAVJOB;
     send_request (sfd,&answer,MASTER);
@@ -343,6 +338,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
     switch (answer.data_s) {
     case RERR_NOERROR:
       /* We continue processing the matter */
+      log_master_computer(&wdb->computer[icomp],"DEBUG: Task space available");
       break;
     case RERR_NOSPACE:
       log_master_computer(&wdb->computer[icomp],"Warning: No space for task");
@@ -359,6 +355,8 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
   recv_request (sfd,&answer,MASTER);
   if (answer.type == R_A_AVAILJOB) {
     itask = answer.data_s;
+    snprintf(msg,BUFFERLEN,"DEBUG: Task index %i on computer %i",itask,icomp);
+    log_master_computer(&wdb->computer[icomp],msg);
   } else {
     log_master_computer (&wdb->computer[icomp],"ERROR: Not appropiate answer, expecting task index");
     exit (0);
@@ -381,7 +379,7 @@ int request_job_available (struct slave_database *sdb)
   struct request req;
   int sfd;
   char emsg[BUFFERLEN];
-  struct task task;		/* Temporary task */
+  struct task ttask;		/* Temporary task structure */
 
   if ((sfd = connect_to_master ()) == -1) {
     snprintf(emsg,BUFFERLEN-1,"ERROR: %s",drerrno_str());
@@ -393,10 +391,12 @@ int request_job_available (struct slave_database *sdb)
 
   send_request (sfd,&req,SLAVE);
   recv_request (sfd,&req,SLAVE);
+
   if (req.type == R_A_AVAILJOB) {
     switch (req.data_s) {
     case RERR_NOERROR:
       /* We continue processing the matter */
+      log_slave_computer("DEBUG: Available job");
       break;
     case RERR_NOAVJOB:
       log_slave_computer("Info: No available job");
@@ -424,16 +424,31 @@ int request_job_available (struct slave_database *sdb)
     send_request(sfd,&req,SLAVE);
     close (sfd);		/* Finish */
     return 0;
-  } else {
-    /* We've got an available task so we send the index */
-    req.type = R_A_AVALJOB;
-    req.data_s = sdb->itask;
-    send_reques(sfd,&req,SLAVE);
   }
-    
+
+  /* We've got an available task */
+  req.type = R_A_AVAILJOB;
+  req.data_s = RERR_NOERROR;
+  send_request(sfd,&req,SLAVE);
+
+  /* So then we send the index */
+  req.data_s = sdb->itask;
+  send_request(sfd,&req,SLAVE);
+
+  /* Then we receive the task */
+  recv_task(sfd,&ttask,SLAVE);
+
+  /* The we update the computer structure to reflect the new assigned task */
+  /* that is not yet runnning so pid == 0 */
+  semaphore_lock(sdb->semid);
+  memcpy(&sdb->comp->status.task[sdb->itask],&ttask,sizeof(ttask));
+  sdb->comp->status.numtasks++;
+  semaphore_release(sdb->semid);
 
   close (sfd);
   return 1;
 }
+
+
 
 

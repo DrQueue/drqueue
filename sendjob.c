@@ -1,4 +1,4 @@
-/* $Id: sendjob.c,v 1.1 2001/05/28 14:21:31 jorge Exp $ */
+/* $Id: sendjob.c,v 1.2 2001/06/05 12:19:45 jorge Exp $ */
 /* To set up a job from a terminal and send it to the master */
 /* I'd like it to be curses based */
 
@@ -43,6 +43,7 @@ void jobinfo_get (struct job *job)
   strncpy (job->owner,getlogin(),MAXNAMELEN-1);
   job->owner[MAXNAMELEN-1] = 0;
   job->status = JOBSTATUS_WAITING;
+  job->frame_info = NULL;
 }
 
 void input_get_string (char *res,int len,char *question)
