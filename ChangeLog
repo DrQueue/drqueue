@@ -1,3 +1,28 @@
+2004-10-13 08:34:34  Rev 749    jorge
+
+	* common.h:
+	  New version number on common.h: 0.50rc8
+
+2004-10-13 08:32:24  Rev 748    jorge
+
+	* drqman/drqm_jobs.c:
+	  All popup windows made toplevel
+
+2004-10-13 08:27:37  Rev 747    jorge
+
+	* drqman/drqm_jobs.c drqman/drqm_jobs.h:
+	  New job dialog improved placing in another tab, all KOJ information
+
+2004-10-12 22:54:17  Rev 746    jorge
+
+	* Revision:
+	  New Revision commited by build_package.sh
+
+2004-10-12 22:53:55  Rev 744    jorge
+
+	* ChangeLog:
+	  Changelog commited by build_package.sh
+
 2004-10-12 22:53:34  Rev 743    jorge
 
 	* common.h:
