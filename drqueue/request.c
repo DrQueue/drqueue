@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.25 2001/08/27 08:19:10 jorge Exp $ */
+/* $Id: request.c,v 1.26 2001/08/27 14:15:14 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -706,10 +706,9 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
   }
 
   fi = attach_frame_shared_memory(wdb->job[task.jobindex].fishmid);
-  if ((task.frame >= wdb->job[task.jobindex].frame_start)
-      || (task.frame <= wdb->job[task.jobindex].frame_end)) {
+  if (job_frame_number_correct (&wdb->job[task.jobindex],task.frame)) {
     /* Frame is in range */
-    task.frame -= wdb->job[task.jobindex].frame_start;/* frame converted to index frame */
+    task.frame = job_frame_number_to_index (&wdb->job[task.jobindex],task.frame);/* frame converted to index frame */
     /* Now we should check the exit code to act accordingly */
     if (DR_WIFEXITED(task.exitstatus)) {
       fi[task.frame].status = FS_FINISHED;
@@ -723,18 +722,20 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
 	log_master_job (&wdb->job[task.jobindex],L_DEBUG,msg);
 	if ((sig == SIGTERM) || (sig == SIGINT) || (sig == SIGKILL)) {
 	  /* Somebody killed the process, so it should be retried */
-	  snprintf(msg,BUFFERLEN-1,"Retrying frame %i", task.frame + wdb->job[task.jobindex].frame_start);
+	  snprintf(msg,BUFFERLEN-1,"Retrying frame %i", job_frame_index_to_number (&wdb->job[task.jobindex],task.frame));
 	  log_master_job (&wdb->job[task.jobindex],L_INFO,msg);
 	  fi[task.frame].status = FS_WAITING;
 	} else {
-	  snprintf(msg,BUFFERLEN-1,"Frame %i died signal not catched", task.frame + wdb->job[task.jobindex].frame_start);
+	  snprintf(msg,BUFFERLEN-1,"Frame %i died signal not catched", 
+		   job_frame_index_to_number (&wdb->job[task.jobindex],task.frame));
 	  log_master_job (&wdb->job[task.jobindex],L_INFO,msg);
 	  fi[task.frame].status = FS_ERROR;
 	  time(&fi[task.frame].end_time);
 	}
       } else {
 	/* This must be WIFSTOPPED, but I'm not sure */
-	snprintf(msg,BUFFERLEN-1,"Frame %i died abnormally", task.frame + wdb->job[task.jobindex].frame_start);
+	snprintf(msg,BUFFERLEN-1,"Frame %i died abnormally", 
+		 job_frame_index_to_number (&wdb->job[task.jobindex],task.frame));
 	log_master_job (&wdb->job[task.jobindex],L_INFO,msg);
 	fi[task.frame].status = FS_ERROR;
 	time(&fi[task.frame].end_time);
