@@ -1,4 +1,4 @@
-/* $Id: libdrqueue.h,v 1.1 2001/07/13 15:45:57 jorge Exp $ */
+/* $Id: libdrqueue.h,v 1.2 2001/09/02 14:17:35 jorge Exp $ */
 #ifndef _LIBDRQUEUE_H_
 #define _LIBDRQUEUE_H_
 
@@ -11,5 +11,6 @@
 #include "drerrno.h"
 #include "database.h"
 #include "semaphores.h"
+#include "common.h"
 
 #endif /* _libdrqueue_h_ */
