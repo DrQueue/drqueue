@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.35 2001/09/25 08:23:50 jorge Exp $ */
+/* $Id: job.c,v 1.36 2001/09/25 15:54:52 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -170,19 +170,34 @@ uint32_t job_nframes (struct job *job)
 }
 
 
-int job_available (struct database *wdb,uint32_t ijob, int *iframe)
+int job_available (struct database *wdb,uint32_t ijob, int *iframe, uint32_t icomp)
 {
-  if (wdb->job[ijob].used == 0)
-    return 0;
+  semaphore_lock(wdb->semid);
 
-  if (!((wdb->job[ijob].status == JOBSTATUS_WAITING) || (wdb->job[ijob].status == JOBSTATUS_ACTIVE)))
+  if (!job_index_correct_master(wdb,ijob)) {
+    semaphore_release(wdb->semid);
     return 0;
+  }
 
-  if ((*iframe = job_first_frame_available (wdb,ijob)) == -1) /* This must be the last test because it actually */
-							      /* reserves one frame (sets it to assigned) */
+  if (!((wdb->job[ijob].status == JOBSTATUS_WAITING) || (wdb->job[ijob].status == JOBSTATUS_ACTIVE))) {
+    semaphore_release(wdb->semid);
     return 0;
+  }
+  
+  if (!job_limits_passed(wdb,ijob,icomp)) {
+    semaphore_release(wdb->semid);
+    return 0;
+  }
 
+  if ((*iframe = job_first_frame_available (wdb,ijob)) == -1) { /* This must be the last test because it actually */
+				                                /* reserves one frame (sets it to assigned) */
+    semaphore_release(wdb->semid);
+    return 0;
+  }
+
+  semaphore_release(wdb->semid);
   return 1;
+
 }
 
 int job_first_frame_available (struct database *wdb,uint32_t ijob)
@@ -190,29 +205,25 @@ int job_first_frame_available (struct database *wdb,uint32_t ijob)
   /* This function not only returns the first frame */
   /* available but also updates the job structure when found */
   /* so the frame status goes to assigned (we still have to */
-  /* set the info about the icomp,start,itask */
-  /* This function is called unlocked */
+  /* set the info about the icomp,start,itask) */
   int i;
   int r = -1;
   int nframes;
   struct frame_info *fi;
 
-  semaphore_lock(wdb->semid);
-  if (!job_index_correct_master(wdb,ijob)) {
-    semaphore_release(wdb->semid);
-    return -1;
-  }
   nframes = job_nframes (&wdb->job[ijob]);
   fi = attach_frame_shared_memory(wdb->job[ijob].fishmid);
   for (i=0;i<nframes;i++) {
     if (fi[i].status == FS_WAITING) {
       r = i;			/* return = current */
       fi[i].status = FS_ASSIGNED; /* Change the status to assigned */
+
+      /* This is temporary and will be set correctly in job_update_info */
+      wdb->job[ijob].nprocs++;	/* Add 1 to the number of running processes */
       break;
     }
   }
   detach_frame_shared_memory(fi);
-  semaphore_release(wdb->semid);
 
   return r;
 }
@@ -513,6 +524,12 @@ void job_frame_waiting (struct database *wdb,uint32_t ijob, int iframe)
   fi = attach_frame_shared_memory(wdb->job[ijob].fishmid);
   fi[iframe].status = FS_WAITING;
   detach_frame_shared_memory(fi);
+
+  /* This is a temporary adjust for consistency reasons */
+  /* The appropiate value will be set on job_update_info */ 
+  if (wdb->job[ijob].nprocs)
+    wdb->job[ijob].nprocs--;
+
   semaphore_release(wdb->semid);
 }
 
@@ -597,4 +614,17 @@ void job_init_limits (struct job *job)
 {
   job->limits.nmaxcpus = -1;	/* No limit or 65535 */
   job->limits.nmaxcpuscomputer = -1; /* the same */
+}
+
+int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp)
+{
+  /* This function should return 0 in case the limits are not met for the computer */
+  
+  if (wdb->job[ijob].nprocs >= wdb->job[ijob].limits.nmaxcpus)
+    return 0;
+
+  if (computer_ntasks_job(&wdb->computer[icomp],ijob) >= wdb->job[ijob].limits.nmaxcpuscomputer)
+    return 0;
+
+  return 1;
 }

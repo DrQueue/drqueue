@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.22 2001/09/24 08:23:23 jorge Exp $ */
+/* $Id: job.h,v 1.23 2001/09/25 15:54:53 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -107,7 +107,7 @@ uint32_t job_frame_number_to_index (struct job *job,uint32_t number);
 int job_frame_number_correct (struct job *job,uint32_t number);
 uint32_t job_nframes (struct job *job);
 void job_copy (struct job *src, struct job *dst);
-int job_available (struct database *wdb,uint32_t ijob, int *iframe);
+int job_available (struct database *wdb,uint32_t ijob, int *iframe, uint32_t icomp);
 int job_first_frame_available (struct database *wdb,uint32_t ijob);
 void job_frame_waiting (struct database *wdb,uint32_t ijob, int iframe);
 void job_update_assigned (struct database *wdb,uint32_t ijob, int iframe, int icomp, int itask);
@@ -122,6 +122,7 @@ void job_continue (struct job *job);
 int job_index_correct_master (struct database *wdb,uint32_t ijob);
 
 void job_init_limits (struct job *job);
+int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp);
 
 void job_environment_set (struct job *job, uint32_t iframe);
 
