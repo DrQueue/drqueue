@@ -1,5 +1,5 @@
 /* 
- * $Id: drqm_jobs_bmrt.c,v 1.4 2003/12/19 17:42:37 jorge Exp $ 
+ * $Id: drqm_jobs_bmrt.c,v 1.5 2003/12/22 22:38:58 jorge Exp $ 
  */
 
 #include <string.h>
@@ -250,6 +250,7 @@ GtkWidget *jdd_koj_bmrt_widgets (struct drqm_jobs_info *info)
   GtkWidget *table;
   GtkWidget *label;
   GtkAttachOptions options = GTK_EXPAND | GTK_SHRINK | GTK_FILL ;
+	char buf[BUFFERLEN];
   char *labels[] = { "Scene:", info->jdd.job.koji.bmrt.scene,
 		     "View command:", info->jdd.job.koji.bmrt.viewcmd,
 		     NULL };
@@ -274,6 +275,94 @@ GtkWidget *jdd_koj_bmrt_widgets (struct drqm_jobs_info *info)
     cur++;
     r++;			/* New row */
   }
+
+	if (info->jdd.job.koji.bmrt.custom_crop) {
+		label = gtk_label_new ("Custom Crop (xmin,xmax,ymin,ymax):");
+		gtk_misc_set_alignment (GTK_MISC(label), 0, .5);
+		gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 0, 1, r, r+1, options, options, 1, 1);
+		snprintf(buf,BUFFERLEN-1,"%u,%u,%u,%u",
+						 info->jdd.job.koji.bmrt.xmin,
+						 info->jdd.job.koji.bmrt.xmax,
+						 info->jdd.job.koji.bmrt.ymin,
+						 info->jdd.job.koji.bmrt.ymax);
+		label = gtk_label_new(buf);
+		gtk_misc_set_alignment (GTK_MISC(label), 1, .5);
+		gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 1, 2, r, r+1, options, options, 1, 1);
+		r++;
+	}
+
+	if (info->jdd.job.koji.bmrt.custom_samples) {
+		label = gtk_label_new ("Custom Samples (x,y):");
+		gtk_misc_set_alignment (GTK_MISC(label), 0, .5);
+		gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 0, 1, r, r+1, options, options, 1, 1);
+		snprintf(buf,BUFFERLEN-1,"%u,%u",
+						 info->jdd.job.koji.bmrt.xsamples,
+						 info->jdd.job.koji.bmrt.ysamples);
+		label = gtk_label_new(buf);
+		gtk_misc_set_alignment (GTK_MISC(label), 1, .5);
+		gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 1, 2, r, r+1, options, options, 1, 1);
+		r++;
+	}
+
+	label = gtk_label_new ("Display Statistics:");
+	gtk_misc_set_alignment (GTK_MISC(label), 0, .5);
+	gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 0, 1, r, r+1, options, options, 1, 1);
+	if (info->jdd.job.koji.bmrt.disp_stats) {
+		label = gtk_label_new("ON");
+	} else {
+		label = gtk_label_new("OFF");
+	}
+	gtk_misc_set_alignment (GTK_MISC(label), 1, .5);
+	gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 1, 2, r, r+1, options, options, 1, 1);
+	r++;
+
+	label = gtk_label_new ("Verbose:");
+	gtk_misc_set_alignment (GTK_MISC(label), 0, .5);
+	gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 0, 1, r, r+1, options, options, 1, 1);
+	if (info->jdd.job.koji.bmrt.verbose) {
+		label = gtk_label_new("ON");
+	} else {
+		label = gtk_label_new("OFF");
+	}
+	gtk_misc_set_alignment (GTK_MISC(label), 1, .5);
+	gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 1, 2, r, r+1, options, options, 1, 1);
+	r++;
+
+	label = gtk_label_new ("Beep:");
+	gtk_misc_set_alignment (GTK_MISC(label), 0, .5);
+	gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 0, 1, r, r+1, options, options, 1, 1);
+	if (info->jdd.job.koji.bmrt.custom_beep) {
+		label = gtk_label_new("ON");
+	} else {
+		label = gtk_label_new("OFF");
+	}
+	gtk_misc_set_alignment (GTK_MISC(label), 1, .5);
+	gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 1, 2, r, r+1, options, options, 1, 1);
+	r++;
+
+	if (info->jdd.job.koji.bmrt.custom_radiosity) {
+		label = gtk_label_new ("Radiosity samples:");
+		gtk_misc_set_alignment (GTK_MISC(label), 0, .5);
+		gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 0, 1, r, r+1, options, options, 1, 1);
+		snprintf(buf,BUFFERLEN-1,"%u",
+						 info->jdd.job.koji.bmrt.radiosity_samples);
+		label = gtk_label_new(buf);
+		gtk_misc_set_alignment (GTK_MISC(label), 1, .5);
+		gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 1, 2, r, r+1, options, options, 1, 1);
+		r++;
+	}
+
+	if (info->jdd.job.koji.bmrt.custom_raysamples) {
+		label = gtk_label_new ("Ray samples:");
+		gtk_misc_set_alignment (GTK_MISC(label), 0, .5);
+		gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 0, 1, r, r+1, options, options, 1, 1);
+		snprintf(buf,BUFFERLEN-1,"%u",
+						 info->jdd.job.koji.bmrt.raysamples);
+		label = gtk_label_new(buf);
+		gtk_misc_set_alignment (GTK_MISC(label), 1, .5);
+		gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 1, 2, r, r+1, options, options, 1, 1);
+		r++;
+	}
 
   return table;
 }
