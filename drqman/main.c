@@ -1,5 +1,5 @@
 /* 
- * $Header: /root/cvs/drqueue/drqman/main.c,v 1.6 2001/09/04 16:00:04 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/main.c,v 1.7 2001/11/08 11:47:43 jorge Exp $
  */
 
 #include <gtk/gtk.h>
@@ -31,6 +31,7 @@ int main (int argc, char *argv[])
   gtk_signal_connect(GTK_OBJECT(window),"delete_event",
 		     GTK_SIGNAL_FUNC(gtk_main_quit), NULL);
   gtk_widget_set_usize(window,200,200);
+  info.main_window = window;
 
   main_vbox = gtk_vbox_new(FALSE,1);
   gtk_container_add(GTK_CONTAINER(window),main_vbox);
