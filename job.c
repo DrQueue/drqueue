@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.66 2004/04/26 16:25:51 jorge Exp $ */
+/* $Id: job.c,v 1.67 2004/10/06 13:56:02 jorge Exp $ */
 
 #ifdef __FREEBSD
 # include <sys/types.h>
@@ -177,11 +177,12 @@ char *job_frame_status_string (char status)
 
 uint32_t job_nframes (struct job *job)
 {
-  uint32_t n;
+	uint32_t n_step,n;
+	
+	n_step = (job->frame_end - job->frame_start + job->frame_step) / job->frame_step;
+	n = (n_step + job->block_size - 1) / job->block_size;
 
-  n = (((job->frame_end - job->frame_start + job->block_size) / job->block_size) + job->frame_step) / job->frame_step;
-
-  return n;
+	return n;
 }
 
 
