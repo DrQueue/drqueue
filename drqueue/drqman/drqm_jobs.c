@@ -1400,7 +1400,7 @@ static int jdd_update_blocked_hosts (GtkWidget *w, struct drqm_jobs_info *info)
 		
 		gtk_clist_append (GTK_CLIST(info->jdd.clist_bh),buff);
 
-		gtk_clist_set_row_data (GTK_CLIST(info->jdd.clist_bh),i,(void*)i);
+		gtk_clist_set_row_data (GTK_CLIST(info->jdd.clist_bh),i,(gpointer)i);
   }
 
   gtk_clist_thaw(GTK_CLIST(info->jdd.clist_bh));
@@ -1729,13 +1729,15 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info)
 static void jdd_delete_blocked_host (GtkWidget *w, struct drqm_jobs_info *info)
 {
 	GList *sel;
+	uint32_t ipos;	// Position on the blocked host list
 
 	if (!(sel = GTK_CLIST(info->jdd.clist_bh)->selection)) {
 		return;
 	}
   
 	for (;sel;sel = sel->next) {
-    request_job_delete_blocked_host (info->jdd.job.id,(uint32_t)sel->data,CLIENT);
+		ipos = (uint32_t) gtk_clist_get_row_data (GTK_CLIST(info->jdd.clist_bh), (gint)sel->data);
+    request_job_delete_blocked_host (info->jdd.job.id,ipos,CLIENT);
   }
 }
 
