@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.17 2001/07/24 15:14:39 jorge Exp $ */
+/* $Id: request.c,v 1.18 2001/07/31 13:10:41 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -9,6 +9,7 @@
 #include <time.h>
 #include <string.h>
 #include <wait.h>
+#include <stdlib.h>
 
 #include "request.h"
 #include "database.h"
@@ -307,14 +308,16 @@ void handle_r_r_regisjob (int sfd,struct database *wdb)
   job_report(&wdb->job[index]);
 }
 
+
 void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
 {
   /* The master handles this type of packages */
   struct request answer;
-  uint32_t ijob;
+  uint32_t ijob,i;
   int itask;
   int iframe;
   char msg[BUFFERLEN];
+  struct tpol pol[MAXJOBS];
 
   log_master (L_DEBUG,"Entering handle_r_r_availjob");
 
@@ -326,7 +329,14 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
     exit (0);
   }
 
-  for (ijob=0;ijob<MAXJOBS;ijob++) {
+  for (i=0;i<MAXJOBS;i++) {
+    pol[i].index = i;
+    pol[i].pri = wdb->job[i].priority;
+  }
+  qsort ((void*)pol,MAXJOBS,sizeof(struct tpol),priority_job_compare);
+
+  for (i=0;i<MAXJOBS;i++) {
+    ijob = pol[i].index;
     if (job_available(wdb,ijob,&iframe)) {
       snprintf(msg,BUFFERLEN,"Frame %i assigned",iframe);
       log_master_job(&wdb->job[ijob],L_INFO,msg);
@@ -334,7 +344,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
     }
   }
 
-  if (ijob==MAXJOBS) {
+  if (i==MAXJOBS) {
     log_master(L_DEBUG,"No available job");
     answer.type = R_A_AVAILJOB;
     answer.data_s = RERR_NOAVJOB;
