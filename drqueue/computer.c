@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.26 2001/09/18 13:18:16 jorge Exp $ */
+/* $Id: computer.c,v 1.27 2001/09/25 15:50:43 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -139,8 +139,23 @@ void computer_update_assigned (struct database *wdb,uint32_t ijob,int iframe,int
 {
   /* This function should put into the computer task structure */
   /* all the information about ijob, iframe */
-  struct task *task = &wdb->computer[icomp].status.task[itask];
-  struct job *job = &wdb->job[ijob];
+  /* This function must be called _locked_ */
+  struct task *task;
+  struct job *job;
+
+  if (!job_index_correct_master(wdb,ijob))
+    return;
+
+  if (!computer_index_correct_master(wdb,icomp))
+    return;
+
+  if (itask >= MAXTASKS)
+    return;
+
+  job = &wdb->job[ijob];
+  task = &wdb->computer[icomp].status.task[itask];
+
+  /* This updates the task */
   task->used = 1;
   task->status = TASKSTATUS_LOADING; /* Not yet running */
   strncpy(task->jobname,job->name,MAXNAMELEN-1);
@@ -150,6 +165,14 @@ void computer_update_assigned (struct database *wdb,uint32_t ijob,int iframe,int
   task->frame = job_frame_index_to_number (&wdb->job[ijob],iframe);
   task->pid = 0;
   task->exitstatus = 0;
+
+  /* This updates the number of running tasks */
+  /* This is temporary because the computer will send us the correct number later */
+  /* but we need to update this now because the computer won't send the information */
+  /* until it has exited the launching loop. And we need this information for the limits */
+  /* tests */
+  wdb->computer[icomp].status.ntasks++;
+
 }
 
 void computer_init (struct computer *computer)
@@ -173,6 +196,7 @@ int computer_ncomputers_masterdb (struct database *wdb)
 
 int computer_ntasks (struct computer *comp)
 {
+  /* This function returns the number of running tasks */
   /* This function should be called locked */
   int i;
   int ntasks = 0;
@@ -198,4 +222,22 @@ int computer_index_correct_master (struct database *wdb, uint32_t icomp)
   if (!wdb->computer[icomp].used)
     return 0;
   return 1;
+}
+
+int computer_ntasks_job (struct computer *comp,uint32_t ijob)
+{
+  /* This function returns the number of tasks that are running the specified */
+  /* ijob in the given computer */
+  /* This function should be called locked */
+  int n = 0;
+  int c;
+
+  for (c=0;c<MAXTASKS;c++) {
+    if ((comp->status.task[c].used)
+	&& (comp->status.task[c].ijob == ijob)) {
+      n++;
+    }
+  }
+
+  return n;
 }
