@@ -1,9 +1,9 @@
 #
-# $Id: Makefile,v 1.4 2001/07/17 10:20:47 jorge Exp $
+# $Id: Makefile,v 1.5 2001/07/19 09:06:26 jorge Exp $
 #
 
 CC = gcc
-OBJS = main.o notebook.o drqm_jobs.o drqm_request.o
+OBJS = main.o notebook.o drqm_jobs.o drqm_request.o drqm_computers.o
 
 ifeq ($(systype),linux)
 	CFLAGS = -Wall -I.. -D__LINUX -g `gtk-config --cflags`
