@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.46 2001/11/13 15:51:17 jorge Exp $ */
+/* $Id: job.c,v 1.47 2001/11/16 15:49:41 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -57,6 +57,7 @@ void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job)
   }
 
   memcpy (&wdb->job[ijob], job, sizeof(struct job));
+
   wdb->job[ijob].used = 1;
   wdb->job[ijob].id = ijob;
   wdb->job[ijob].status = JOBSTATUS_WAITING;
@@ -124,53 +125,51 @@ void job_delete (struct job *job)
 
 char *job_status_string (char status)
 {
-  static char sstring[BUFFERLEN];
+  char *msg;
 
-  sstring[MAXCMDLEN-1] = 0;
   switch (status) {
   case JOBSTATUS_WAITING:
-    strncpy (sstring,"Waiting",BUFFERLEN-1);
+    msg = "Waiting";
     break;
   case JOBSTATUS_ACTIVE:
-    strncpy (sstring,"Active",BUFFERLEN-1);
+    msg = "Active";
     break;
   case JOBSTATUS_STOPPED:
-    strncpy (sstring,"Stopped",BUFFERLEN-1);
+    msg = "Stopped";
     break;
   case JOBSTATUS_FINISHED:
-    strncpy (sstring,"Finished",BUFFERLEN-1);
+    msg = "Finished";
     break;
   default:
-    strncpy (sstring,"DEFAULT (?!)",BUFFERLEN-1);
+    msg = "DEFAULT (ERROR)";
     fprintf (stderr,"job_status == DEFAULT\n");
   }
 
-  return sstring;
+  return msg;
 }
 
 char *job_frame_status_string (char status)
 {
-  static char sstring[BUFFERLEN];
+  char *msg;
 
-  sstring[MAXCMDLEN-1] = 0;
   switch (status) {
   case FS_WAITING:
-    strncpy (sstring,"Waiting",BUFFERLEN-1);
+    msg = "Waiting";
     break;
   case FS_ASSIGNED:
-    strncpy (sstring,"Running",BUFFERLEN-1);
+    msg = "Running";
     break;
   case FS_ERROR:
-    strncpy (sstring,"Error",BUFFERLEN-1);
+    msg = "Error";
     break;
   case FS_FINISHED:
-    strncpy (sstring,"Finished",BUFFERLEN-1);
+    msg = "Finished";
     break;
   default:
-    strncpy (sstring,"DEFAULT (?!)",BUFFERLEN-1);
+    msg = "DEFAULT (ERROR)";
   }
 
-  return sstring;
+  return msg;
 }
 
 uint32_t job_nframes (struct job *job)
@@ -673,3 +672,22 @@ void job_logs_remove (struct job *job)
 
   remove_dir(dir);
 }
+
+char *job_koj_string (struct job *job)
+{
+  char *msg;
+
+  switch (job->koj) {
+  case KOJ_GENERAL:
+    msg = "General";
+    break;
+  case KOJ_MAYA:
+    msg = "Maya";
+    break;
+  default:
+    msg = "DEFAULT (ERROR)";
+  }
+
+  return msg;
+}
+	  
