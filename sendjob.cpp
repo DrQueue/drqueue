@@ -166,8 +166,8 @@ int RegisterMayaJobFromFile (std::ifstream &infile)
   strncpy (job.koji.maya.viewcmd,"",BUFFERLEN-1);
 
   job.limits.os_flags = OSF_LINUX;
-  job.limits.nmaxcpus = -1;
-  job.limits.nmaxcpuscomputer = -1;
+  job.limits.nmaxcpus = (uint16_t)-1;
+  job.limits.nmaxcpuscomputer = (uint16_t)-1;
 
   if (!register_job(&job)) {
     std::cerr << "Error sending job to the queue\n";
@@ -218,8 +218,8 @@ int RegisterBlenderJobFromFile (std::ifstream &infile)
   strncpy (job.koji.blender.viewcmd,"",BUFFERLEN-1);
 
   job.limits.os_flags = OSF_LINUX;
-  job.limits.nmaxcpus = -1;
-  job.limits.nmaxcpuscomputer = -1;
+  job.limits.nmaxcpus = (uint16_t)-1;
+  job.limits.nmaxcpuscomputer = (uint16_t)-1;
 
   if (!register_job(&job)) {
 		std::cerr << "Error sending job to the queue\n";
