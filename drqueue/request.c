@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.10 2001/07/13 14:04:21 jorge Exp $ */
+/* $Id: request.c,v 1.11 2001/07/17 10:19:56 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -577,5 +577,23 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
   semaphore_release(wdb->semid);
 }
 
+void handle_r_r_listjobs (int sfd,struct database *wdb,int icomp)
+{
+  /* The master handles this type of packages */
+  /* This function is called unlocked */
+  /* This function is called by the master */
+  struct request answer;
+  int i;
+
+  answer.type = R_A_LISTJOBS;
+  answer.data_s = job_njobs_masterdb (wdb);
+
+  send_request (sfd,&answer,MASTER);
+  for (i=0;i<MAXJOBS;i++) {
+    if (wdb->job[i].used) {
+      send_job (sfd,&wdb->job[i],MASTER);
+    }
+  }
+}
 
 
