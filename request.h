@@ -87,6 +87,7 @@ void handle_r_r_jobfrstrqd (int sfd,struct database *wdb,int icomp,struct reques
 void handle_r_r_jobblkhost (int sfd,struct database *wdb,int icomp,struct request *req);
 void handle_r_r_jobdelblkhost (int sfd,struct database *wdb,int icomp,struct request *req);
 void handle_r_r_joblstblkhost (int sfd,struct database *wdb,int icomp,struct request *req);
+void handle_r_r_joblms (int sfd,struct database *wdb,int icomp,struct request *req);
 
 /* sent TO MASTER */
 void update_computer_status (struct slave_database *database); /* The slave calls this function to update the */
@@ -114,6 +115,7 @@ int request_job_sesupdate (uint32_t ijob, uint32_t frame_start,uint32_t frame_en
 													 uint32_t frame_step, uint32_t block_size, int who);
 int request_job_limits_nmaxcpus_set (uint32_t ijob, uint16_t nmaxcpus, int who);
 int request_job_limits_nmaxcpuscomputer_set (uint32_t ijob, uint16_t nmaxcpuscomputer, int who);
+int request_job_limits_memory_set (uint32_t ijob, uint32_t memory, int who);
 int request_job_priority_update (uint32_t ijob, uint32_t priority, int who);
 int request_job_frame_reset_requeued (uint32_t ijob, uint32_t frame, int who);
 int request_job_add_blocked_host (uint32_t ijob, uint32_t icomp, int who);

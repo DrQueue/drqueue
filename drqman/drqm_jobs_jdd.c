@@ -87,6 +87,8 @@ static void jdd_nmcd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *
 static void jdd_limits_nmaxcpuscomputer_bcp (GtkWidget *button, struct drqm_jobs_info *info);
 static GtkWidget *jdd_nmcc_dialog (struct drqm_jobs_info *info);
 static void jdd_nmccd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *info);
+static void jdd_limits_lmemory_bcp (GtkWidget *bclicked, struct drqm_jobs_info *info);
+static void jdd_limits_lmemory_bcp_bokp (GtkWidget *bclicked, struct drqm_jobs_info *info);
 /* Flags */
 static GtkWidget *jdd_flags_widgets (struct drqm_jobs_info *info);
 /* KOJ */
@@ -1330,7 +1332,7 @@ static GtkWidget *jdd_limits_widgets (struct drqm_jobs_info *info)
   info->jdd.limits.lmemory = label;
   button = gtk_button_new_with_label ("Change");
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
-	//  g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(jdd_limits_nmaxcpuscomputer_bcp),info);
+	g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(jdd_limits_lmemory_bcp),info);
 
 	// OS stuff
   frame2 = gtk_frame_new ("Operating Systems");
@@ -1359,6 +1361,55 @@ static GtkWidget *jdd_limits_widgets (struct drqm_jobs_info *info)
   gtk_widget_set_sensitive (GTK_WIDGET(cbutton),FALSE);
 
   return (frame);
+}
+
+static void jdd_limits_lmemory_bcp (GtkWidget *bclicked, struct drqm_jobs_info *info)
+{
+	GtkWidget *dialog;
+	GtkWidget *hbox;
+	GtkWidget *label;
+	GtkWidget *entry;
+	GtkWidget *button;
+	char buf[BUFFERLEN];
+
+	dialog = gtk_dialog_new ();
+	gtk_window_set_title (GTK_WINDOW(dialog),"Change minimum amount of memory");
+
+	// The stuff
+	hbox = gtk_hbox_new (TRUE,2);
+	gtk_container_add (GTK_CONTAINER(GTK_DIALOG(dialog)->vbox),hbox);
+	label = gtk_label_new ("New minumum amount of memory : ");
+	gtk_box_pack_start (GTK_BOX(hbox),label, TRUE, TRUE, 2);
+	entry = gtk_entry_new_with_max_length (BUFFERLEN);
+	gtk_box_pack_start (GTK_BOX(hbox),entry, TRUE, TRUE, 2);
+	info->jdd.limits.ememory = entry;
+	snprintf (buf,BUFFERLEN,"%u",info->jdd.job.limits.memory);
+	gtk_entry_set_text(GTK_ENTRY(entry),buf);
+	
+	// The buttons
+	button = gtk_button_new_with_label ("Ok");
+	gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->action_area), button, TRUE, TRUE, 2);
+	GTK_WIDGET_SET_FLAGS(button,GTK_CAN_DEFAULT);
+	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(jdd_limits_lmemory_bcp_bokp),info);
+	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(jdd_update),info);
+	g_signal_connect_swapped (G_OBJECT(button),"clicked",G_CALLBACK(gtk_widget_destroy),dialog);
+
+	button = gtk_button_new_with_label ("Cancel");
+	gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->action_area), button, TRUE, TRUE, 2);
+	g_signal_connect_swapped (G_OBJECT(button),"clicked",G_CALLBACK(gtk_widget_destroy),dialog);
+
+	gtk_widget_show_all (dialog);
+
+	gtk_grab_add (dialog);
+}
+
+static void jdd_limits_lmemory_bcp_bokp (GtkWidget *bclicked, struct drqm_jobs_info *info)
+{
+	uint32_t memory;
+	
+  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->jdd.limits.ememory)),"%u",&memory) != 1)
+    return;
+	request_job_limits_memory_set(info->jdd.job.id,memory,CLIENT);
 }
 
 static void jdd_sesframes_bcp (GtkWidget *button, struct drqm_jobs_info *info)
