@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.51 2001/10/04 08:29:57 jorge Exp $ */
+/* $Id: slave.c,v 1.52 2001/10/26 13:56:59 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -158,7 +158,7 @@ int get_shared_memory_slave (int force)
 
   if ((key = ftok (file,'A')) == -1) {
     perror ("Getting key for shared memory");
-    kill(0,SIGINT);
+    exit (1);
   }
   
   if (force) {
@@ -171,7 +171,7 @@ int get_shared_memory_slave (int force)
     perror ("Getting shared memory");
     if (!force)
       fprintf (stderr,"Try with option -f (if you are sure that no other slave is running)\n");
-    kill(0,SIGINT);
+    exit (1);
   }
 
   return shmid;
