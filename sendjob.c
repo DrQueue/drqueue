@@ -1,4 +1,4 @@
-/* $Id: sendjob.c,v 1.4 2001/07/06 13:13:21 jorge Exp $ */
+/* $Id: sendjob.c,v 1.5 2001/07/13 15:44:00 jorge Exp $ */
 /* To set up a job from a terminal and send it to the master */
 /* I'd like it to be curses based */
 
@@ -17,8 +17,7 @@
 #endif
 
 #include "sendjob.h"
-#include "request.h"
-#include "job.h"
+#include "libdrqueue.h"
 
 int main (int argc,char *argv[])
 {

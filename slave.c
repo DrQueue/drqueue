@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.15 2001/07/06 14:17:55 jorge Exp $ */
+/* $Id: slave.c,v 1.16 2001/07/13 15:44:00 jorge Exp $ */
 
 #include <unistd.h>
 #include <signal.h>
@@ -10,11 +10,7 @@
 #include <stdlib.h>
 
 #include "slave.h"
-#include "computer.h"
-#include "logger.h"
-#include "request.h"
-#include "communications.h"
-#include "semaphores.h"
+#include "libdrqueue.h"
 
 struct slave_database sdb;	/* slave database */
 
