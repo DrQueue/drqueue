@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.9 2001/07/20 08:27:34 jorge Exp $ */
+/* $Id: job.h,v 1.10 2001/07/20 15:26:39 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -28,7 +28,7 @@ typedef enum {
 
 typedef enum {
   FS_WAITING,			/* Waiting to be assigned */
-  FS_LOADING,			/* NOT USED (yet) Assigned but not running */
+  FS_LOADING,			/* Assigned but not running */
   FS_ASSIGNED,			/* Currently assigned but not finished (so RUNNING) */
   FS_ERROR,			/* Finished with error */
   FS_FINISHED			/* Finished with success */
