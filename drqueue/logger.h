@@ -1,4 +1,4 @@
-/* $Id: logger.h,v 1.9 2001/08/08 10:54:34 jorge Exp $ */
+/* $Id: logger.h,v 1.10 2001/08/22 10:15:25 jorge Exp $ */
 
 #ifndef _LOGGER_H_
 #define _LOGGER_H_
@@ -15,6 +15,7 @@
 #define L_DEBUG 3
 
 extern int loglevel;
+extern int logonscreen;
 
 void log_slave_task (struct task *task, int level, char *msg);
 FILE *log_slave_open_task (struct task *task);

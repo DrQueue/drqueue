@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.29 2001/08/22 09:05:20 jorge Exp $ */
+/* $Id: slave.c,v 1.30 2001/08/22 10:15:27 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -27,7 +27,7 @@ int main (int argc,char *argv[])
   log_slave_computer (L_INFO,"Starting...");
   set_signal_handlers ();
 
-  while ((opt = getopt (argc,argv,"fl:h")) != -1) {
+  while ((opt = getopt (argc,argv,"fl:oh")) != -1) {
     switch (opt) {
     case 'f':
       force = 1;
@@ -35,6 +35,10 @@ int main (int argc,char *argv[])
     case 'l':
       loglevel = atoi (optarg);
       printf ("Logging level set to: %i\n",loglevel);
+      break;
+    case 'o':
+      logonscreen = 1;
+      printf ("Logging on screen.\n");
       break;
     case '?':
     case 'h':
@@ -431,7 +435,8 @@ char *parse_arg (char *cmd,int pos,int len)
 void usage (void)
 {
   fprintf (stderr,"Valid options:\n"
-	  "\t-f to force continuing if shared memory already exists\n"
-	  "\t-l <loglevel> From 0 to 3 (0=errors,1=warnings,2=info,3=debug).\n\t\tDefaults to 1. Each level logs all the previous levels\n"
-	  "\t-h prints this help\n");
+	   "\t-f to force continuing if shared memory already exists\n"
+	   "\t-l <loglevel> From 0 to 3 (0=errors,1=warnings,2=info,3=debug).\n\t\tDefaults to 1. Each level logs all the previous levels\n"
+	   "\t-o log on screen instead of on files\n"
+	   "\t-h prints this help\n");
 }
