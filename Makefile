@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.1 2001/04/26 14:20:55 jorge Exp $
+# $Id: Makefile,v 1.2 2001/04/26 16:06:22 jorge Exp $
 
 CC = gcc
 OBJS_SLAVE = arch/computer_info.o arch/computer_status.o slave.o task.o logger.o
@@ -25,8 +25,8 @@ slave:	$(OBJS_SLAVE)
 task.o : task.h
 arch/computer_info.o : arch/computer_info.h constants.h
 arch/computer_status.o : arch/computer_status.h task.h logger.h
-slave.o : computer.h
-logger.o : logger.h arch/computer_status.h
+slave.o : computer.h logger.h
+logger.o : logger.h task.h
 computer.h : arch/computer_info.h arch/computer_status.h
 
 clean:
