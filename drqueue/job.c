@@ -222,10 +222,19 @@ int job_available (struct database *wdb,uint32_t ijob, int *iframe, uint32_t ico
     return 0;
   }
 
-  if (!((wdb->job[ijob].status == JOBSTATUS_WAITING) || (wdb->job[ijob].status == JOBSTATUS_ACTIVE))) {
-    semaphore_release(wdb->semid);
-    return 0;
-  }
+  if (!((wdb->job[ijob].status == JOBSTATUS_WAITING) 
+				|| (wdb->job[ijob].status == JOBSTATUS_ACTIVE))) 
+		{
+			semaphore_release(wdb->semid);
+			return 0;
+		}
+
+	if ((wdb->job[ijob].flags &= JF_DEPEND)
+			&& (wdb->job[wdb->job[ijob].dependid].status != JOBSTATUS_FINISHED))
+		{
+			semaphore_release(wdb->semid);
+			return 0;
+		}
   
   if (!job_limits_passed(wdb,ijob,icomp)) {
     semaphore_release(wdb->semid);
@@ -473,12 +482,12 @@ void job_update_info (struct database *wdb,uint32_t ijob)
       wdb->job[ijob].status = JOBSTATUS_ACTIVE;	/* Leave it active */
     } else {
       if (fleft == 0) {
-	wdb->job[ijob].status = JOBSTATUS_FINISHED;
-	wdb->job[ijob].est_finish_time = time(NULL);
-	if (wdb->job[ijob].flags & JF_MAILNOTIFY)
-	  mn_job_finished (&wdb->job[ijob]); /* Mail notification */
+				wdb->job[ijob].status = JOBSTATUS_FINISHED;
+				wdb->job[ijob].est_finish_time = time(NULL);
+				if (wdb->job[ijob].flags & JF_MAILNOTIFY)
+					mn_job_finished (&wdb->job[ijob]); /* Mail no	tification */
       } else {
-	wdb->job[ijob].status = JOBSTATUS_WAITING;
+				wdb->job[ijob].status = JOBSTATUS_WAITING;
       }
     }
     break;
