@@ -55,6 +55,9 @@ static void mflcd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info
 static void cdd_limits_autoenable_bcp (GtkWidget *button, struct drqm_computers_info *info);
 static GtkWidget *autoenable_change_dialog (struct drqm_computers_info *info);
 static void aecd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info);
+// pool
+static void cdd_limits_pool_bcp (GtkWidget *bp, struct drqm_computers_info *info);
+static void cdd_limits_pool_refresh_pool_list (GtkWidget *bclicked, struct drqm_computers_info *info);
 /* kill task */
 static void KillTask (GtkWidget *menu_item, struct drqm_computers_info *info);
 static void dtk_bok_pressed (GtkWidget *button,struct drqm_computers_info *info);
@@ -389,6 +392,7 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
   gtk_box_pack_start (GTK_BOX(hbox2),label,TRUE,TRUE,2);
   button = gtk_button_new_with_label ("Change");
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
+  g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(cdd_limits_pool_bcp),info);
 
   /* Clist with the task info */
   /* Frame */
@@ -777,6 +781,97 @@ static gint PopupMenuTasks (GtkWidget *clist, GdkEvent *event, struct drqm_compu
   }
   return FALSE;
 }
+
+void cdd_limits_pool_bcp (GtkWidget *bp, struct drqm_computers_info *info)
+{
+  /* Computer Details Dialog Limits pool Button Change Pressed */
+	GtkWidget *dialog;
+	GtkWidget *swindow;
+	GtkWidget *button;
+	GtkWidget *entry;
+
+	// TreeView stuff
+	GtkCellRenderer *renderer;
+	GtkTreeModel *model;
+	GtkWidget *view;
+	// Store
+	GtkListStore *store;
+
+	dialog = gtk_dialog_new();
+	gtk_window_set_title (GTK_WINDOW(dialog),"List of pools");
+	gtk_window_set_default_size (GTK_WINDOW(dialog),300,200);
+
+	swindow = gtk_scrolled_window_new (NULL,NULL);
+	// Scrolled window
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(swindow),GTK_POLICY_AUTOMATIC,GTK_POLICY_AUTOMATIC);
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),swindow,TRUE,TRUE,2);
+	// Refresh button
+	button = gtk_button_new_with_label("Refresh");
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),button,FALSE,FALSE,2);
+	g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(cdd_limits_pool_refresh_pool_list),info);
+	// Entry
+	entry = gtk_entry_new_with_max_length (MAXNAMELEN-1);
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),entry,FALSE,FALSE,2);
+	info->cdd.limits.epool = entry;
+
+	// The view
+	view = gtk_tree_view_new();
+	info->cdd.limits.pool_view = GTK_TREE_VIEW (view);
+	gtk_container_add(GTK_CONTAINER(swindow),view);
+	
+
+
+	// Column 1
+	renderer = gtk_cell_renderer_text_new();
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW(view),
+																							 -1,
+																							 "Pool name",
+																							 renderer,
+																							 "text",CDD_POOL_COL_NAME,
+																							 NULL);
+	
+	// Store & TreeView
+	store = gtk_list_store_new (CDD_POOL_NUM_COLS, G_TYPE_STRING);
+	info->cdd.limits.pool_store = store;
+	model = GTK_TREE_MODEL (store);
+	gtk_tree_view_set_model (GTK_TREE_VIEW(view),model);
+	g_object_unref (model);
+
+	// Add
+	button = gtk_button_new_with_label ("Add");
+	gtk_box_pack_end(GTK_BOX(GTK_DIALOG(dialog)->action_area),button,TRUE,TRUE,2);
+	// Remove
+	button = gtk_button_new_with_label ("Remove");
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->action_area),button,TRUE,TRUE,2);
+	
+	cdd_limits_pool_refresh_pool_list (button,info);
+
+	gtk_widget_show_all (dialog);
+
+	gtk_grab_add (dialog);
+}
+
+void cdd_limits_pool_refresh_pool_list (GtkWidget *bclicked, struct drqm_computers_info *info)
+{
+	GtkListStore *store = info->cdd.limits.pool_store;
+	GtkTreeIter iter;
+	int i;
+
+	gtk_list_store_clear (GTK_LIST_STORE(store));
+	cdd_update(bclicked,info);
+	if (info->computers[info->row].limits.npools) {
+		struct pool *pool;
+		pool = computer_pool_attach_shared_memory(info->computers[info->row].limits.poolshmid);
+		for (i=0;i<info->computers[info->row].limits.npools;i++) {
+			gtk_list_store_append (store,&iter);
+			gtk_list_store_set (store, &iter,
+													CDD_POOL_COL_NAME,pool[i].name,
+													-1);
+		}
+		computer_pool_detach_shared_memory(pool);
+	}
+}
+
 
 void cdd_limits_autoenable_bcp (GtkWidget *button, struct drqm_computers_info *info)
 {

@@ -53,7 +53,8 @@ void CreateInfoPage (GtkWidget *notebook, struct info_drqm *info)
 	gtk_box_pack_start (GTK_BOX(vbox),logo,FALSE,FALSE,2);
 
   snprintf (msg,BUFFERLEN-1,"DrQueue Version %s\nby Jorge Daza\n"
-	    "jorge@drqueue.org",VERSION);
+						"jorge@drqueue.org\n"
+						"For bug reports use the bugtracker at http://www.drqueue.org/",VERSION);
   text = gtk_label_new (msg);
   gtk_box_pack_start (GTK_BOX(vbox),text,FALSE,FALSE,2);
 
