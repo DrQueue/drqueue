@@ -98,7 +98,19 @@ namespace Services
 			theProcess.StartInfo.FileName = "ipc-daemon2.exe";
 	        theProcess.StartInfo.WorkingDirectory = Environment.GetEnvironmentVariable("DRQUEUE_BIN");
 		    theProcess.Start();
-			timer1.Start();
+		    //try
+			//{
+		    	//Process []findProcess;
+		    	//do
+		    	//{
+		    		//findProcess = Process.GetProcessesByName("ipc-daemon2");
+		    	//}
+		    	//while (findProcess.Length < 1);
+				timer1.Start();
+		    //}
+			//catch (System.ServiceProcess.TimeoutException)
+			//{
+			//}
 		}
  
 		/// <summary>

@@ -13,6 +13,6 @@ cd $1/Services/Service-slave
 $2/csc.exe /out:service-slave.exe *.cs
 mv service-slave.exe $1
 cd $1/Services/ServicesController
-$2/csc.exe /win32icon:App.ico /out:ServicesController.exe /resource:Form1.resources *.cs 
+$2/csc.exe /t:winexe /win32icon:App.ico /out:ServicesController.exe /resource:Form1.resources *.cs 
 mv ServicesController.exe $1
 cd $START
