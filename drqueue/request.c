@@ -1000,8 +1000,8 @@ void handle_r_r_listjobs (int sfd,struct database *wdb,int icomp)
   for (i=0;i<MAXJOBS;i++) {
     if (wdb->job[i].used) {
       if (!send_job (sfd,&wdb->job[i])) {
-	log_master (L_WARNING,"Error sending job on handling r_r_listjobs");
-	return;
+				log_master (L_WARNING,"Error sending job on handling r_r_listjobs");
+				return;
       }
     }
   }

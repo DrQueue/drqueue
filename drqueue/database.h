@@ -25,7 +25,7 @@
 #include "job.h"
 #include "computer.h"
 
-#define DB_VERSION 5		/* Database version. This version must change when we change the job structure */
+#define DB_VERSION 6		/* Database version. This version must change when we change the job structure */
 #define DB_MAGIC   0xADDEEFBE	/* magic number */
 
 struct database {
