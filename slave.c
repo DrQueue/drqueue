@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.12 2001/07/06 09:14:11 jorge Exp $ */
+/* $Id: slave.c,v 1.13 2001/07/06 13:13:21 jorge Exp $ */
 
 #include <unistd.h>
 #include <signal.h>
@@ -21,6 +21,7 @@ struct slave_database sdb;	/* slave database */
 int main (int argc,char *argv[])
 {
 
+  printf ("struct request: %i\n",sizeof(struct request));
   log_slave_computer (L_INFO,"Starting...");
   set_signal_handlers ();
 
@@ -92,7 +93,7 @@ void clean_out (int signal, siginfo_t *info, void *data)
   kill (0,SIGINT);
   log_slave_computer (L_INFO,"Cleaning...");
   while ((child_pid = wait (&rc)) != -1) {
-    printf ("Child arrived ! %i\n",child_pid); 
+    printf ("Child arrived ! %i\n",(int)child_pid); 
   }
 
   if (semctl (sdb.semid,0,IPC_RMID,NULL) == -1) {
@@ -308,12 +309,18 @@ void set_environment (struct slave_database *sdb)
 {
   char msg[BUFFERLEN];
 
+#ifdef __LINUX
   snprintf (msg,BUFFERLEN,"%04i",sdb->comp->status.task[sdb->itask].frame);
   if (setenv("FRAME",msg,1) == -1) {
     printf ("ERROR\n");
     kill(0,SIGINT);
   }
+#else
+  snprintf (msg,BUFFERLEN,"FRAME=%04i",sdb->comp->status.task[sdb->itask].frame);
+  putenv (msg);
+#endif
 }
+
 
 
 

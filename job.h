@@ -1,9 +1,18 @@
-/* $Id: job.h,v 1.5 2001/07/04 10:13:59 jorge Exp $ */
+/* $Id: job.h,v 1.6 2001/07/06 13:13:21 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
 
+#ifdef __LINUX
 #include <stdint.h>
+#else
+# ifdef __IRIX
+#include <sys/types.h>
+# else
+#  error You need to define the OS, or OS defined not supported
+# endif
+#endif
+
 #include <time.h>
 
 #include "constants.h"
