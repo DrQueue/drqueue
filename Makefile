@@ -56,7 +56,7 @@ else
 	   CFLAGS = -DCOMM_REPORT -Wall -I. -D__CYGWIN -g -O2 -I/usr/include/cygipc 
      CPPFLAGS = -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__CYGWIN -g -O2 -I/usr/include/cygipc
 	   MAKE = make
-	   LDFLAGS += -lcygipc
+	   LDFLAGS += -e _mainCRTStartup -mwindows -lcygipc
  	  else
  $(error Cannot make DrQueue -- systype "$(systype)" is unknown)
 	  endif

@@ -23,10 +23,15 @@
 # Append mentalray bin to PATH
 # SPM_HOST, SI_LINKTAB_LOCATION must be set
 #
-setenv PATH "${PATH}:/usr/local/mi33/bin"
-setenv SI_LINKTAB_LOCATION "/mnt/nfs/shared/mi33"
-setenv SPM_HOST "license_server"
-
+if ($DRQUEUE_OS == "WINDOWS") then
+	setenv PATH "${PATH}:C:\Program Files\Alias\mental ray 3.3\bin"
+	#setenv SI_LINKTAB_LOCATION "/mnt/nfs/shared/mi33"
+	setenv SPM_HOST "localhost"
+else
+	setenv PATH "${PATH}:/usr/local/mi33/bin"
+	setenv SI_LINKTAB_LOCATION "/mnt/nfs/shared/mi33"
+	setenv SPM_HOST "license_server"
+endif
 
 if ($DRQUEUE_OS == "WINDOWS") then
   set BLOCK=`"$DRQUEUE_BIN/expr.exe" $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
