@@ -1,14 +1,9 @@
-# $Id: Makefile,v 1.11 2001/07/06 14:38:01 jorge Exp $
+# $Id: Makefile,v 1.12 2001/07/11 14:50:28 jorge Exp $
 
 CC = gcc
-OBJS_SLAVE = computer_info.o computer_status.o slave.o task.o logger.o communications.o \
-		computer.o request.o semaphores.o job.o drerrno.o
-OBJS_MASTER = master.o database.o logger.o communications.o computer.o semaphores.o request.o \
-		computer_info.o computer_status.o task.o job.o drerrno.o computer.o
-OBJS_SENDJOB = sendjob.o request.o job.o communications.o logger.o semaphores.o \
-		computer_status.o computer_info.o task.o computer.o drerrno.o
-
-LDFLAGS =
+OBJS_LIBDRQUEUE = computer_info.o computer_status.o task.o logger.o communications.o \
+			computer.o request.o semaphores.o job.o drerrno.o database.o
+LDFLAGS = -ldrqueue -L.
 LDFLAGS_CURSES = -lcurses
 
 ifeq ($(systype),linux)
@@ -27,10 +22,12 @@ irix:
 
 all: slave master sendjob
 
-slave:	$(OBJS_SLAVE)
-master: $(OBJS_MASTER)
-sendjob: $(OBJS_SENDJOB)
-	gcc -o $@ $(OBJS_SENDJOB) $(LDFLAGS_CURSES)
+libdrqueue.a : $(OBJS_LIBDRQUEUE)
+	ar q $@ $^
+	ranlib $@
+slave: slave.o libdrqueue.a
+master: master.o libdrqueue.a
+sendjob: sendjob.o libdrqueue.a
 
 task.o : task.h slave.h
 computer_info.o : computer_info.h constants.h
