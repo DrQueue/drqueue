@@ -1,0 +1,225 @@
+/* 
+ * $Id: drqm_jobs_blender.c,v 1.1 2003/12/18 04:11:07 jorge Exp $ 
+ */
+
+#include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <pwd.h>
+#include <sys/types.h>
+
+#include "drqm_jobs.h"
+#include "drqm_common.h"
+#include "drqm_jobs_blender.h"
+
+static void dnj_koj_frame_blender_script_search (GtkWidget *button, struct drqmj_koji_blender *info);
+static void dnj_koj_frame_blender_script_set (GtkWidget *button, struct drqmj_koji_blender *info);
+static void dnj_koj_frame_blender_scene_search (GtkWidget *button, struct drqmj_koji_blender *info);
+static void dnj_koj_frame_blender_scene_set (GtkWidget *button, struct drqmj_koji_blender *info);
+static void dnj_koj_frame_blender_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info);
+
+GtkWidget *dnj_koj_frame_blender (struct drqm_jobs_info *info)
+{
+  GtkWidget *frame;
+  GtkWidget *vbox;
+  GtkWidget *hbox,*hbox2;
+  GtkWidget *label;
+  GtkWidget *entry; 
+  GtkWidget *button;
+  GtkWidget *bbox;
+  GtkTooltips *tooltips;
+
+  tooltips = TooltipsNew ();
+
+  /* Frame */
+  frame = gtk_frame_new ("Blender job information");
+
+  /* Main vbox */
+  vbox = gtk_vbox_new (FALSE,2);
+  gtk_container_add (GTK_CONTAINER(frame),vbox);
+
+  /* Scene file */
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Scene file:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  hbox2 = gtk_hbox_new (FALSE,0);
+  gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
+  entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
+  info->dnj.koji_blender.escene = entry;
+  gtk_tooltips_set_tip(tooltips,entry,"File name of the blender scene file that should be rendered",NULL);
+  gtk_box_pack_start (GTK_BOX(hbox2),entry,TRUE,TRUE,2);
+  button = gtk_button_new_with_label ("Search");
+  gtk_tooltips_set_tip(tooltips,button,"File selector for the blender scene file",NULL);
+  gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
+  gtk_signal_connect (GTK_OBJECT(button),"clicked",dnj_koj_frame_blender_scene_search,&info->dnj.koji_blender);
+
+  /* View command */
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("View command:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
+  gtk_tooltips_set_tip(tooltips,entry,"Command that will be executed when you select 'Watch image' "
+		       "in the frames list (inside the detailed job view)",NULL);
+  info->dnj.koji_blender.eviewcmd = entry;
+  gtk_entry_set_text(GTK_ENTRY(entry),KOJ_BLENDER_DFLT_VIEWCMD);
+  gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
+
+  /* Script directory */
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Script directory:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  hbox2 = gtk_hbox_new (FALSE,0);
+  gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
+  entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
+  gtk_tooltips_set_tip(tooltips,entry,"Directory in which, in case of using the automatic "
+		       "script generator, the command script will be saved.",NULL);
+  info->dnj.koji_blender.escript = entry;
+  gtk_entry_set_text (GTK_ENTRY(entry),blendersg_default_script_path());
+  gtk_box_pack_start (GTK_BOX(hbox2),entry,TRUE,TRUE,2);
+  button = gtk_button_new_with_label ("Search");
+  gtk_tooltips_set_tip(tooltips,button,"File selector for the script directory",NULL);
+  gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
+  gtk_signal_connect (GTK_OBJECT(button),"clicked",dnj_koj_frame_blender_script_search,&info->dnj.koji_blender);
+
+  /* Buttons */
+  /* Create script */
+  bbox = gtk_hbutton_box_new ();
+  gtk_box_pack_start (GTK_BOX(vbox),bbox,TRUE,TRUE,5);
+  gtk_widget_show (bbox);
+  button = gtk_button_new_with_label ("Create Script");
+  gtk_tooltips_set_tip(tooltips,button,"Create automagically the script based on the given information",NULL);
+  gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,TRUE,2);
+  switch (info->dnj.koj) {
+  case KOJ_BLENDER:
+    gtk_signal_connect (GTK_OBJECT(button),"clicked",
+			dnj_koj_frame_blender_bcreate_pressed,&info->dnj);
+    break;
+  default:
+    fprintf (stderr,"What ?!\n");
+    break;
+  }
+
+  gtk_widget_show_all(frame);
+
+  return frame;
+}
+
+GtkWidget *jdd_koj_blender_widgets (struct drqm_jobs_info *info)
+{
+  GtkWidget *table;
+  GtkWidget *label;
+  GtkAttachOptions options = GTK_EXPAND | GTK_SHRINK | GTK_FILL ;
+  char *labels[] = { "Scene:", info->jdd.job.koji.blender.scene,
+		     "View command:", info->jdd.job.koji.blender.viewcmd,
+		     NULL };
+  char **cur;
+  int r,c;			/* Rows and columns */
+
+  table = gtk_table_new (4,2, FALSE);
+
+  cur = labels;
+  r = 0;
+  while ( *cur ) {
+    c = 0;			/* First column */
+    label = gtk_label_new (*cur);
+    gtk_misc_set_alignment (GTK_MISC(label), 0, .5);
+    gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), c, c+1, r, r+1, options, options, 1 , 1 );
+    cur++;			/* Next label */
+    c++;			/* New column */
+    label = gtk_label_new (*cur);
+    gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
+    gtk_misc_set_alignment (GTK_MISC(label), 1, .5);
+    gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), c, c+1, r, r+1, options, options, 1 , 1 );
+    cur++;
+    r++;			/* New row */
+  }
+
+  return table;
+}
+
+static void dnj_koj_frame_blender_scene_search (GtkWidget *button, struct drqmj_koji_blender *info)
+{
+  GtkWidget *dialog;
+
+  dialog = gtk_file_selection_new ("Please select a scene file");
+  info->fsscene = dialog;
+
+  if (strlen(gtk_entry_get_text(GTK_ENTRY(info->escene)))) {
+    gtk_file_selection_set_filename (GTK_FILE_SELECTION(dialog),gtk_entry_get_text(GTK_ENTRY(info->escene)));
+  }
+
+  gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
+		      "clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_blender_scene_set), info);
+  gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
+			     "clicked", GTK_SIGNAL_FUNC (gtk_widget_destroy),
+			     (gpointer) dialog);
+  gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->cancel_button),
+			     "clicked", GTK_SIGNAL_FUNC (gtk_widget_destroy),
+			     (gpointer) dialog);
+  gtk_widget_show (dialog);
+  gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
+}
+
+static void dnj_koj_frame_blender_scene_set (GtkWidget *button, struct drqmj_koji_blender *info)
+{
+  char buf[BUFFERLEN];
+  char *p;
+  
+  strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscene)),BUFFERLEN-1);
+  /* We need the whole scene path */
+  p = buf;
+  gtk_entry_set_text (GTK_ENTRY(info->escene),p);
+}
+
+static void dnj_koj_frame_blender_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info)
+{
+  struct blendersgi blendersgi;	/* Blender script generator info */
+  char *file;
+
+  strncpy (blendersgi.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_blender.escene)),BUFFERLEN-1);
+  strncpy (blendersgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->koji_blender.escript)),BUFFERLEN-1);
+
+  if ((file = blendersg_create (&blendersgi)) == NULL) {
+    fprintf (stderr,"ERROR: %s\n",drerrno_str());
+    return;
+  } else {
+    gtk_entry_set_text(GTK_ENTRY(info->ecmd),file);
+  } 
+}
+static void dnj_koj_frame_blender_script_search (GtkWidget *button, struct drqmj_koji_blender *info)
+{
+  GtkWidget *dialog;
+
+  dialog = gtk_file_selection_new ("Please select a script directory");
+  info->fsscript = dialog;
+
+  if (strlen(gtk_entry_get_text(GTK_ENTRY(info->escript)))) {
+    gtk_file_selection_set_filename (GTK_FILE_SELECTION(dialog),gtk_entry_get_text(GTK_ENTRY(info->escript)));
+  }
+
+  gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
+		      "clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_blender_script_set), info);
+  gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
+			     "clicked", GTK_SIGNAL_FUNC (gtk_widget_destroy),
+			     (gpointer) dialog);
+  gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->cancel_button),
+			     "clicked", GTK_SIGNAL_FUNC (gtk_widget_destroy),
+			     (gpointer) dialog);
+  gtk_widget_show (dialog);
+  gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
+}
+
+static void dnj_koj_frame_blender_script_set (GtkWidget *button, struct drqmj_koji_blender *info)
+{
+  char buf[BUFFERLEN];
+  char *p;
+  
+  strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscript)),BUFFERLEN-1);
+  p = strrchr(buf,'/');
+  if (p)
+    *p = 0;
+  gtk_entry_set_text (GTK_ENTRY(info->escript),buf);
+}
