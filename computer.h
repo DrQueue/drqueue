@@ -1,4 +1,4 @@
-/* $Id: computer.h,v 1.3 2001/05/07 15:35:04 jorge Exp $ */
+/* $Id: computer.h,v 1.4 2001/05/09 10:53:08 jorge Exp $ */
 
 #ifndef _COMPUTER_H_
 #define _COMPUTER_H_
@@ -16,8 +16,9 @@ struct computer {
   unsigned char used;		/* If the record is being used or not */
 };
 
-int computer_index_addr (void *pwdb,struct in_addr addr);
-int computer_index_name (void *pwdb,char *name);
+int computer_index_addr (void *pwdb,struct in_addr addr); /* I use pointers to void instead to struct database */
+int computer_index_name (void *pwdb,char *name);          /* because if I did I would have to create a dependency loop */
 int computer_index_free (void *pwdb);
+int computer_available (struct computer *computer);
 
 #endif /* _COMPUTER_H_ */

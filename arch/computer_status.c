@@ -1,13 +1,14 @@
-/* $Id: computer_status.c,v 1.2 2001/04/26 16:06:22 jorge Exp $ */
+/* $Id: computer_status.c,v 1.3 2001/05/09 10:53:08 jorge Exp $ */
 
 #include <stdio.h>
 #include <signal.h>
+#include <stdint.h>
 
 #include "computer_status.h"
 #include "task.h"
 #include "logger.h"
 
-void get_computerstatus (struct computer_status *cstatus)
+void get_computer_status (struct computer_status *cstatus)
 {
   /* Get status not only gets the load average but also */
   /* checks that every task is running and in case they're not */
@@ -16,7 +17,7 @@ void get_computerstatus (struct computer_status *cstatus)
   check_tasks (cstatus);
 }
 
-void init_computerstatus (struct computer_status *cstatus)
+void init_computer_status (struct computer_status *cstatus)
 {
   init_tasks (cstatus->task);
 }
@@ -40,7 +41,7 @@ void check_tasks (struct computer_status *cstatus)
 
 #ifdef __LINUX			/* __LINUX  */
 
-void get_loadavg (int *loadavg)
+void get_loadavg (uint16_t *loadavg)
 {
   FILE *f_loadavg;
   float a,b,c;
@@ -63,6 +64,24 @@ void get_loadavg (int *loadavg)
 #error You need to define the OS, or OS defined not supported
 #endif 
 
+void report_computer_status (struct computer_status *status)
+{
+  int i;
+
+  printf ("Load Average: %i %i %i\n",status->loadavg[0],status->loadavg[1],status->loadavg[2]);
+  printf ("Number of tasks running: %i\n",status->numtasks);
+  for (i=0;i<MAXTASKS;i++) {
+    if (status->task[i].used) {
+      printf ("Task record: %i\n",i);
+      printf ("Job name: %s\n",status->task[i].jobname);
+      printf ("Job index: %i\n",status->task[i].jobindex);
+      printf ("Job command: %s\n",status->task[i].jobcmd);
+      printf ("Current frame: %i\n",status->task[i].frame);
+      printf ("Task pid: %i\n",status->task[i].pid);
+      printf ("Task status: %i\n",status->task[i].status);
+    }
+  }
+}
 
 
 
