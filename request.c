@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.56 2001/10/04 08:19:25 jorge Exp $ */
+/* $Id: request.c,v 1.57 2001/10/05 15:50:30 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -111,6 +111,10 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
   case R_R_SLAVEXIT:
     log_master (L_DEBUG,"Slave exiting");
     handle_r_r_slavexit (sfd,wdb,icomp,&request);
+    break;
+  case R_R_JOBSESUP:
+    log_master (L_DEBUG,"Update job SES");
+    handle_r_r_jobsesup (sfd,wdb,icomp,&request);
     break;
   default:
     log_master (L_WARNING,"Unknown request");
@@ -420,6 +424,7 @@ void handle_r_r_regisjob (int sfd,struct database *wdb)
   semaphore_lock(wdb->semid);	/* I put the lock here so no race condition can appear... */
   if ((index = job_index_free(wdb)) == -1) {
     /* No space left on database */
+    semaphore_release(wdb->semid);
     log_master (L_WARNING,"No space left for job");
     answer.type = R_A_REGISJOB;
     answer.data = RERR_NOSPACE;
@@ -2071,4 +2076,107 @@ void handle_r_r_slavexit (int sfd,struct database *wdb,int icomp,struct request 
   semaphore_release (wdb->semid);
 
   log_master (L_DEBUG,"Exiting handle_r_r_slavexit");
+}
+
+int request_job_sesupdate (uint32_t ijob, uint32_t frame_start,uint32_t frame_end,uint32_t frame_step, int who)
+{
+  /* On error returns 0, error otherwise drerrno is set to the error */
+  /* This function sends the new frame_start,end and step for ijob */
+  int sfd;
+  struct request req;
+
+  if ((sfd = connect_to_master ()) == -1) {
+    drerrno = DRE_NOCONNECT;
+    return 0;
+  }
+
+  req.type = R_R_JOBSESUP;
+  req.data = ijob;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORSENDING;
+    close (sfd);
+    return 0;
+  }
+
+  req.type = R_R_JOBSESUP;
+  req.data = frame_start;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORSENDING;
+    close (sfd);
+    return 0;
+  }
+
+  req.type = R_R_JOBSESUP;
+  req.data = frame_end;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORSENDING;
+    close (sfd);
+    return 0;
+  }
+
+  req.type = R_R_JOBSESUP;
+  req.data = frame_step;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORSENDING;
+    close (sfd);
+    return 0;
+  }
+
+  close (sfd);
+  return 1;
+}
+
+void handle_r_r_jobsesup (int sfd,struct database *wdb,int icomp,struct request *req)
+{
+  /* The master handles this type of packages */
+  /* This function is called unlocked */
+  /* This function is called by the master */
+  uint32_t ijob;
+  uint32_t frame_start,frame_end,frame_step;
+  uint32_t nframes;
+  struct job job;		/* Temporary job to calc nframes */
+  struct frame_info *nfi,*ofi;	/* new and old frame_info */
+
+  log_master (L_DEBUG,"Entering handle_r_r_jobsesup");
+
+  ijob = req->data;
+  if (!recv_request(sfd,req))
+    return;
+  job.frame_start = req->data;
+  if (!recv_request(sfd,req))
+    return;
+  job.frame_end = req->data;
+  if (!recv_request(sfd,req))
+    return;
+  job.frame_step = req->data;
+
+  nframes = job_nframes (&job);
+
+  semaphore_lock(wdb->semid);
+
+  if (!job_index_correct_master (wdb,ijob)) {
+    semaphore_release(wdb->semid);
+    log_master (L_INFO,"Job SES update received for non-existing job.");
+    return;
+  }
+
+  if ((nfi = get_frame_shared_memory (nframes)) == -1) {
+    semaphore_release(wdb->semid);
+    log_master (L_ERROR,"Could not allocate memory for new SES. Aborting operation.");
+    return;
+  }
+
+  if ((ofi = attach_frame_shared_memory(wdb->job[ijob].fishmid)) == -1) {
+    semaphore_release(wdb->semid);
+    log_master (L_ERROR,"Could not attach frame shared memory.");
+    return;
+  }
+
+  semaphore_release(wdb->semid);
+
+  log_master (L_DEBUG,"Exiting handle_r_r_jobsesup");
 }
