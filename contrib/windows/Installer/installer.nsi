@@ -7,10 +7,10 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "drqueue"
-!define PRODUCT_VERSION "0.6"
-!define PRODUCT_PUBLISHER "Kraken"
+!define PRODUCT_VERSION "beta"
+!define PRODUCT_PUBLISHER "Jorge and Kraken"
 !define PRODUCT_WEB_SITE "http://www.drqueue.org"
-!define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\drqman.exe"
+!define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\ServicesController.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 
@@ -134,12 +134,12 @@ Section "SectionPrincipale" SEC01
   File "..\..\..\bin\*.dll"
   CreateDirectory "$SMPROGRAMS\drqueue"
   CreateShortCut "$SMPROGRAMS\drqueue\drqman.lnk" "$INSTDIR\bin\drqman.exe"
-  CreateShortCut "$DESKTOP\drqman.lnk" "$INSTDIR\bin\drqman.exe"
   SetOutPath "$INSTDIR\contrib"
   File "..\..\..\contrib\sendjob.blender.py"
   File "..\..\..\contrib\windows\servicesController.exe"
   CreateShortCut "$SMSTARTUP\drqueue-services.lnk" "$INSTDIR\contrib\servicesController.exe"
   CreateShortCut "$SMPROGRAMS\drqueue\drqueue-services.lnk" "$INSTDIR\contrib\servicesController.exe"
+  CreateShortCut "$DESKTOP\drqueue-services.lnk" "$INSTDIR\contrib\servicesController.exe"
   SetOutPath "$INSTDIR\etc"
   File "..\..\..\etc\3delight.sg"
   File "..\..\..\etc\aqsis.sg"
@@ -169,10 +169,10 @@ SectionEnd
 
 Section -Post
   WriteUninstaller "$INSTDIR\uninst.exe"
-  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\bin\drqman.exe"
+  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\contrib\servicesController.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\bin\drqman.exe"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\contrib\servicesController.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
