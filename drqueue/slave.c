@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.26 2001/07/30 12:49:11 jorge Exp $ */
+/* $Id: slave.c,v 1.27 2001/08/07 13:03:57 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -353,21 +353,21 @@ void launch_task (struct slave_database *sdb)
       /* We have to clean the task and send the info to the master */
       /* consider WIFSIGNALED(status), WTERMSIG(status), WEXITSTATUS(status) */
       /* we pass directly the status (translated to DR) to the master and he decides what to do with the frame */
-      log_slave_task(&sdb->comp->status.task[sdb->itask],L_INFO,"Frame finished");
-      
       semaphore_lock(sdb->semid);
       sdb->comp->status.task[sdb->itask].exitstatus = 0;
       if (WIFSIGNALED(rc)) {
 	/* Process exited abnormally either killed by us or by itself (SIGSEGV) */
-	printf ("\n\nSIGNALED with %i\n",WTERMSIG(rc));
+/*  	printf ("\n\nSIGNALED with %i\n",WTERMSIG(rc)); */
 	sdb->comp->status.task[sdb->itask].exitstatus |= DR_SIGNALEDFLAG ;
 	sdb->comp->status.task[sdb->itask].exitstatus |= WTERMSIG(rc);
+	log_slave_task(&sdb->comp->status.task[sdb->itask],L_INFO,"Task signaled");
       } else {
 	if (WIFEXITED(rc)) {
-	  printf ("\n\nEXITED with %i\n",WEXITSTATUS(rc));
+/*  	  printf ("\n\nEXITED with %i\n",WEXITSTATUS(rc)); */
 	  sdb->comp->status.task[sdb->itask].exitstatus |= DR_EXITEDFLAG ;
 	  sdb->comp->status.task[sdb->itask].exitstatus |= WEXITSTATUS(rc);
-	  printf ("\n\nEXITED with %i\n",DR_WEXITSTATUS(sdb->comp->status.task[sdb->itask].exitstatus));
+/*  	  printf ("\n\nEXITED with %i\n",DR_WEXITSTATUS(sdb->comp->status.task[sdb->itask].exitstatus)); */
+	  log_slave_task(&sdb->comp->status.task[sdb->itask],L_INFO,"Task finished");
 	}
       }
       semaphore_release(sdb->semid);
