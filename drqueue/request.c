@@ -1402,7 +1402,7 @@ void handle_r_r_jobxferfi (int sfd,struct database *wdb,int icomp,struct request
   /* This function is called unlocked */
   /* This function is called by the master */
   uint32_t ijob;
-  struct frame_info *fi,*fi_copy;
+  struct frame_info *fi,*fi_copy,*fi_start;
   int nframes;
   int i;
 
@@ -1432,7 +1432,7 @@ void handle_r_r_jobxferfi (int sfd,struct database *wdb,int icomp,struct request
   }
   
   nframes = job_nframes (&wdb->job[ijob]);
-  fi_copy = (struct frame_info *) malloc (sizeof(struct frame_info) * nframes);
+  fi_start = fi_copy = (struct frame_info *) malloc (sizeof(struct frame_info) * nframes);
   if (!fi_copy) {
     semaphore_release(wdb->semid);
     log_master (L_ERROR,"Allocating memory on handle_r_r_jobxferfi");
@@ -1458,7 +1458,7 @@ void handle_r_r_jobxferfi (int sfd,struct database *wdb,int icomp,struct request
     fi_copy++;
   }
 
-	free (fi_copy);
+	free (fi_start);
 
   log_master (L_DEBUG,"Exiting handle_r_r_jobxferfi");
 }
@@ -2230,7 +2230,8 @@ void handle_r_r_slavexit (int sfd,struct database *wdb,int icomp,struct request 
   log_master (L_DEBUG,"Exiting handle_r_r_slavexit");
 }
 
-int request_job_sesupdate (uint32_t ijob, uint32_t frame_start,uint32_t frame_end,uint32_t frame_step, int who)
+int request_job_sesupdate (uint32_t ijob, uint32_t frame_start,uint32_t frame_end,
+													 uint32_t frame_step, uint32_t block_size, int who)
 {
   /* On error returns 0, error otherwise drerrno is set to the error */
   /* This function sends the new frame_start,end and step for ijob */
@@ -2278,6 +2279,14 @@ int request_job_sesupdate (uint32_t ijob, uint32_t frame_start,uint32_t frame_en
     return 0;
   }
 
+  req.type = R_R_JOBSESUP;
+  req.data = block_size;
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORWRITING;
+    close (sfd);
+    return 0;
+  }
+
   close (sfd);
   return 1;
 }
@@ -2310,6 +2319,9 @@ void handle_r_r_jobsesup (int sfd,struct database *wdb,int icomp,struct request 
   if (!recv_request(sfd,req))
     return;
   job.frame_step = req->data;
+  if (!recv_request(sfd,req))
+    return;
+  job.block_size = req->data;
 
   semaphore_lock(wdb->semid);
 
@@ -2365,11 +2377,13 @@ void handle_r_r_jobsesup (int sfd,struct database *wdb,int icomp,struct request 
   ojob.frame_start = wdb->job[ijob].frame_start;
   ojob.frame_end = wdb->job[ijob].frame_end;
   ojob.frame_step = wdb->job[ijob].frame_step;
+	ojob.block_size = wdb->job[ijob].block_size;
 
   /* Now everything can continue using the new frame info */
   wdb->job[ijob].frame_start = job.frame_start;
   wdb->job[ijob].frame_end = job.frame_end;
   wdb->job[ijob].frame_step = job.frame_step;
+	wdb->job[ijob].block_size = job.block_size;
   
   ofishmid = wdb->job[ijob].fishmid;
   wdb->job[ijob].fishmid = nfishmid;
@@ -2388,18 +2402,18 @@ void handle_r_r_jobsesup (int sfd,struct database *wdb,int icomp,struct request 
       /* We kill the frames that are running and are not inside the range */
       switch (ofi[i].status) {
       case FS_WAITING:
-	break;
+				break;
       case FS_ASSIGNED:
-	semaphore_lock (wdb->semid);
-	if (computer_index_correct_master(wdb,ofi[i].icomp)) {
-	  strncpy(cname,wdb->computer[ofi[i].icomp].hwinfo.name,MAXNAMELEN-1);
-	}
-	semaphore_release (wdb->semid);
-	request_slave_killtask (cname,ofi[i].itask,MASTER);
-	break;
+				semaphore_lock (wdb->semid);
+				if (computer_index_correct_master(wdb,ofi[i].icomp)) {
+					strncpy(cname,wdb->computer[ofi[i].icomp].hwinfo.name,MAXNAMELEN-1);
+				}
+				semaphore_release (wdb->semid);
+				request_slave_killtask (cname,ofi[i].itask,MASTER);
+				break;
       case FS_ERROR:
       case FS_FINISHED:
-	break;
+				break;
       }
     }
   }
