@@ -373,6 +373,7 @@ int recv_job (int sfd, struct job *job)
 	// Blocked hosts
 	job->blocked_host = NULL;
 	job->bhshmid = -1;
+	job->nblocked = 0;
 
   /* Koj Stuff */
   job->koj = ntohs (job->koj);
