@@ -1,4 +1,4 @@
-/* $Id: logger.c,v 1.19 2001/09/03 10:06:35 jorge Exp $ */
+/* $Id: logger.c,v 1.20 2002/02/26 15:52:04 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -11,6 +11,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <time.h>
+#include <stdarg.h>
 
 #include "logger.h"
 #include "task.h"
@@ -20,15 +21,21 @@
 int loglevel = L_WARNING;
 int logonscreen = 0;
 
-void log_slave_task (struct task *task,int level,char *msg)
+void log_slave_task (struct task *task,int level,char *fmt,...)
 {
   FILE *f_log;
   char name[MAXNAMELEN];
-  char buf[BUFFERLEN];
+  char buf[BUFFERLEN];		/* Buffer used to store ctime */
+  char msg[BUFFERLEN];
   time_t now;
+  va_list ap;
   
   if (level > loglevel)
     return;
+
+  va_start (ap,fmt);
+  vsnprintf (msg,BUFFERLEN-1,fmt,ap);
+  va_end (ap);
 
   if (gethostname (name,MAXNAMELEN-1) == -1) {
     strcpy (name,"UNKNOWN");

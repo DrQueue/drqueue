@@ -2,8 +2,7 @@ TO DO:
 -----
 
 * If any directory does not exist at the beginning create them if there is an apropiate flag
-* The slave must check that the requests come from the
-  master.
+* Authentication on the slave requests.
 * job permissions.
 * functions that return void in communications should
   return int. And error checking should be coded 

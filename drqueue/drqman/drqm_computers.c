@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_computers.c,v 1.22 2002/02/21 15:56:24 jorge Exp $
+ * $Id: drqm_computers.c,v 1.23 2002/02/26 15:52:05 jorge Exp $
  */
 
 #include <stdlib.h>
@@ -18,19 +18,27 @@ static void PressedButtonRefresh (GtkWidget *b, struct drqm_computers_info *info
 static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_computers_info *info);
 static GtkWidget *CreateMenu (struct drqm_computers_info *info);
 
+
+/* COMPUTER DETAILS */
 static void ComputerDetails(GtkWidget *menu_item, struct drqm_computers_info *info);
 static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info);
 static int cdd_update (GtkWidget *w, struct drqm_computers_info *info);
 static GtkWidget *CreateTasksClist (void);
 static GtkWidget *CreateMenuTasks (struct drqm_computers_info *info);
 static gint PopupMenuTasks (GtkWidget *clist, GdkEvent *event, struct drqm_computers_info *info);
+/* nmaxcpus */
 static void cdd_limits_nmaxcpus_bcp (GtkWidget *button, struct drqm_computers_info *info);
 static GtkWidget *nmc_dialog (struct drqm_computers_info *info);
 static void nmcd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info);
+/* maxfreeloadcpu */
 static void cdd_limits_maxfreeloadcpu_bcp (GtkWidget *button, struct drqm_computers_info *info);
 static GtkWidget *mflc_dialog (struct drqm_computers_info *info);
 static void mflcd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info);
-
+/* autoenable */
+static void cdd_limits_autoenable_bcp (GtkWidget *button, struct drqm_computers_info *info);
+static GtkWidget *autoenable_change_dialog (struct drqm_computers_info *info);
+static void aecd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info);
+/* kill task */
 static void KillTask (GtkWidget *menu_item, struct drqm_computers_info *info);
 static void dtk_bok_pressed (GtkWidget *button,struct drqm_computers_info *info);
 
@@ -339,7 +347,7 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
   gtk_box_pack_start (GTK_BOX(hbox2),label,TRUE,TRUE,2);
   button = gtk_button_new_with_label ("Change");
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
-/*    gtk_signal_connect (GTK_OBJECT(button),"clicked",cdd_limits_maxfreeloadcpu_bcp,info); */
+  gtk_signal_connect (GTK_OBJECT(button),"clicked",cdd_limits_autoenable_bcp,info);
 
   /* Clist with the task info */
   /* Frame */
@@ -703,3 +711,97 @@ static gint PopupMenuTasks (GtkWidget *clist, GdkEvent *event, struct drqm_compu
   return FALSE;
 }
 
+void cdd_limits_autoenable_bcp (GtkWidget *button, struct drqm_computers_info *info)
+{
+  /* Computer Details Dialog Limits autoenable Button Change Pressed */
+  GtkWidget *dialog;
+
+  dialog = autoenable_change_dialog (info);
+  if (dialog)
+    gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
+}
+
+GtkWidget *autoenable_change_dialog (struct drqm_computers_info *info)
+{
+  GtkWidget *window;
+  GtkWidget *vbox;
+  GtkWidget *hbox,*hbox2;
+  GtkWidget *label;
+  GtkWidget *entry;
+  GtkWidget *button;
+  char msg[BUFFERLEN];
+
+  window = gtk_window_new (GTK_WINDOW_DIALOG);
+  gtk_window_set_title (GTK_WINDOW(window),"New autoenable time");
+  gtk_window_set_policy(GTK_WINDOW(window),FALSE,FALSE,TRUE);
+  vbox = gtk_vbox_new (FALSE,2);
+  gtk_container_add(GTK_CONTAINER(window),vbox);
+
+  hbox = gtk_hbox_new (FALSE,2);
+  gtk_box_pack_start(GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("New autoenable time:");
+  gtk_box_pack_start(GTK_BOX(hbox),label,FALSE,FALSE,2);
+
+  hbox2 = gtk_hbox_new (FALSE,2);
+  gtk_box_pack_start(GTK_BOX(hbox),hbox2,FALSE,FALSE,2);
+  /* hour */
+  entry = gtk_entry_new_with_max_length(BUFFERLEN);
+  info->cdd.limits.eautoenabletime_h = entry;
+  snprintf(msg,BUFFERLEN-1,"%i",info->computers[info->row].limits.autoenable.h);
+  gtk_entry_set_text(GTK_ENTRY(entry),msg);
+  gtk_box_pack_start(GTK_BOX(hbox2),entry,FALSE,FALSE,2);
+  /* colon */
+  label = gtk_label_new (":");
+  gtk_box_pack_start(GTK_BOX(hbox2),label,FALSE,FALSE,2);
+  /* minute */
+  entry = gtk_entry_new_with_max_length(BUFFERLEN);
+  info->cdd.limits.eautoenabletime_m = entry;
+  snprintf(msg,BUFFERLEN-1,"%02i",info->computers[info->row].limits.autoenable.m);
+  gtk_entry_set_text(GTK_ENTRY(entry),msg);
+  gtk_box_pack_start(GTK_BOX(hbox2),entry,FALSE,FALSE,2);
+
+  hbox = gtk_hbutton_box_new ();
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  button = gtk_button_new_with_label ("Submit");
+  gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
+  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(aecd_bsumbit_pressed),info);
+/*    gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(cdd_update),info); */
+  gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
+			     GTK_SIGNAL_FUNC(gtk_widget_destroy),
+			     (gpointer) window);
+
+  button = gtk_button_new_with_label ("Cancel");
+  gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
+  gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
+			     GTK_SIGNAL_FUNC(gtk_widget_destroy),
+			     (gpointer) window);
+
+  gtk_widget_show_all(window);
+
+  return window;
+}
+
+void aecd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info)
+{
+  uint32_t h,m;			/* Hour, minute */
+  char msg[BUFFERLEN];
+
+  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->cdd.limits.eautoenabletime_h)),"%u",&h) != 1)
+    return;			/* Error in the entry */
+
+  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->cdd.limits.eautoenabletime_m)),"%u",&m) != 1)
+    return;			/* Error in the entry */
+
+  h = h % 24;
+  m = m % 60;
+
+  drqm_request_slave_limits_autoenable_set(info->computers[info->row].hwinfo.name,h,m);
+
+  info->computers[info->row].limits.autoenable.h = h;
+  info->computers[info->row].limits.autoenable.m = m;
+
+  snprintf(msg,BUFFERLEN-1,"%i:%02i",
+	   info->computers[info->row].limits.autoenable.h,
+	   info->computers[info->row].limits.autoenable.m);
+  gtk_label_set_text (GTK_LABEL(info->cdd.limits.lautoenabletime),msg);
+}

@@ -1,4 +1,4 @@
-/* $Id: logger.h,v 1.11 2001/08/28 15:34:13 jorge Exp $ */
+/* $Id: logger.h,v 1.12 2002/02/26 15:52:04 jorge Exp $ */
 
 #ifndef _LOGGER_H_
 #define _LOGGER_H_
@@ -17,7 +17,7 @@
 extern int loglevel;
 extern int logonscreen;
 
-void log_slave_task (struct task *task, int level, char *msg);
+void log_slave_task (struct task *task,int level,char *fmt,...);
 FILE *log_slave_open_task (struct task *task);
 void log_slave_computer (int level, char *msg);
 FILE *log_slave_open_computer (char *name);

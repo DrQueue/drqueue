@@ -1,4 +1,4 @@
-/* $Id: constants.h,v 1.14 2001/11/23 15:29:07 jorge Exp $ */
+/* $Id: constants.h,v 1.15 2002/02/26 15:52:04 jorge Exp $ */
 
 #ifndef _CONSTANTS_H_
 #define _CONSTANTS_H_
@@ -36,6 +36,7 @@
 #define MAXLISTEN 100		/* Maximum number of connections waiting to be accepted */
 #define MAXLOADAVG 80		/* Load average from which we consider a computer unavailable */
 #define DFLTAVGFTIME 120	/* Default average frame time in seconds */
+#define AE_DELAY 120		/* The time between possible autoenables */
 
 #endif /* _CONSTANTS_H_ */
 
