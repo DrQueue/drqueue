@@ -103,6 +103,9 @@ char *drerrno_str (void)
 	case DRE_RMSHMEM:
 		msg = "Could not remove shared memory";
 		break;
+	case DRE_NOMEMORY:
+		msg = "Not enough memory";
+		break;
   default:
     msg = "drerrno NOT listed !!";
   }

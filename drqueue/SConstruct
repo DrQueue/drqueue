@@ -44,6 +44,7 @@ slave = env.Program ('slave.c', LIBS=['libdrqueue.a'], LIBPATH=['.'])
 # Tools
 #
 jobfinfo = env.Program ('jobfinfo.c', LIBS=['libdrqueue.a'], LIBPATH=['.'])
+jobinfo = env.Program ('jobinfo.c', LIBS=['libdrqueue.a'], LIBPATH=['.'])
 requeue = env.Program ('requeue.c', LIBS=['libdrqueue.a'], LIBPATH=['.'])
 cjob = env.Program ('cjob.c', LIBS=['libdrqueue.a'], LIBPATH=['.'])
 blockhost = env.Program ('blockhost.c', LIBS=['libdrqueue.a'], LIBPATH=['.'])
