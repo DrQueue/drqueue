@@ -1,4 +1,4 @@
-/* $Id: request.h,v 1.18 2001/09/01 16:40:15 jorge Exp $ */
+/* $Id: request.h,v 1.19 2001/09/01 20:00:42 jorge Exp $ */
 /* The request structure is not just used for the requests themselves */
 /* but also for the answers to the requests */
 
@@ -27,11 +27,11 @@ struct request {
   uint32_t data;		/* Data number that might be needed for the request */
 };
 
-void handle_request_master (int sfd,struct database *wdb,int icomp);
+void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockaddr_in *addr);
 void handle_request_slave (int sfd,struct slave_database *sdb);
 
 /* handled by MASTER */
-int  handle_r_r_register (int sfd,struct database *wdb,int icomp);
+int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_in *addr);
 void handle_r_r_ucstatus (int sfd,struct database *wdb,int icomp);
 void handle_r_r_regisjob (int sfd,struct database *wdb);
 void handle_r_r_availjob (int sfd,struct database *wdb,int icomp);
