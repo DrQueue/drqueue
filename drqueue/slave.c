@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.33 2001/09/01 20:00:43 jorge Exp $ */
+/* $Id: slave.c,v 1.34 2001/09/02 14:19:45 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -21,30 +21,17 @@ struct slave_database sdb;	/* slave database */
 int main (int argc,char *argv[])
 {
   int force = 0;
-  int opt;
+
+  slave_get_options(&argc,&argv,&force);
 
   log_slave_computer (L_INFO,"Starting...");
-  set_signal_handlers ();
 
-  while ((opt = getopt (argc,argv,"fl:oh")) != -1) {
-    switch (opt) {
-    case 'f':
-      force = 1;
-      break;
-    case 'l':
-      loglevel = atoi (optarg);
-      printf ("Logging level set to: %i\n",loglevel);
-      break;
-    case 'o':
-      logonscreen = 1;
-      printf ("Logging on screen.\n");
-      break;
-    case '?':
-    case 'h':
-      usage();
-      exit (1);
-    }
+  if (!common_environment_check()) {
+    fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
+    exit (1);
   }
+
+  set_signal_handlers ();
 
   sdb.shmid = get_shared_memory_slave (force);
   sdb.comp = attach_shared_memory_slave (sdb.shmid);
@@ -134,10 +121,15 @@ int get_shared_memory_slave (int force)
   key_t key;
   int shmid;
   int shmflg;
+  char file[BUFFERLEN];
+  char *root;
 
-  if ((key = ftok ("./slave",'A')) == -1) {
-    perror ("ftok");
-    exit (1);
+  root = getenv("DRQUEUE_ROOT");
+  snprintf (file,BUFFERLEN-1,"%s/bin/slave",root);
+
+  if ((key = ftok (file,'A')) == -1) {
+    perror ("Getting key for shared memory");
+    kill(0,SIGINT);
   }
   
   if (force) {
@@ -147,10 +139,10 @@ int get_shared_memory_slave (int force)
   }
 
   if ((shmid = shmget (key,sizeof(struct computer),shmflg)) == -1) {
-    perror ("shmget");
+    perror ("Getting shared memory");
     if (!force)
       fprintf (stderr,"Try with option -f (if you are sure that no other slave is running)\n");
-    exit (1);
+    kill(0,SIGINT);
   }
 
   return shmid;
@@ -161,14 +153,19 @@ int get_semaphores_slave (void)
   key_t key;
   int semid;
   struct sembuf op;
+  char file[BUFFERLEN];
+  char *root;
 
-  if ((key = ftok ("slave",'A')) == -1) {
-    perror ("ftok");
+  root = getenv("DRQUEUE_ROOT");
+  snprintf (file,BUFFERLEN-1,"%s/bin/slave",root);
+
+  if ((key = ftok (file,'A')) == -1) {
+    perror ("Getting key for semaphores");
     kill (0,SIGINT);
   }
 
   if ((semid = semget (key,1, IPC_CREAT|0600)) == -1) {
-    perror ("semget");
+    perror ("Getting semaphores");
     kill (0,SIGINT);
   }
 
@@ -460,4 +457,29 @@ void usage (void)
 	   "\t-l <loglevel> From 0 to 3 (0=errors,1=warnings,2=info,3=debug).\n\t\tDefaults to 1. Each level logs all the previous levels\n"
 	   "\t-o log on screen instead of on files\n"
 	   "\t-h prints this help\n");
+}
+
+void slave_get_options (int *argc,char ***argv, int *force)
+{
+  int opt;
+
+  while ((opt = getopt (*argc,*argv,"fl:oh")) != -1) {
+    switch (opt) {
+    case 'f':
+      *force = 1;
+      break;
+    case 'l':
+      loglevel = atoi (optarg);
+      printf ("Logging level set to: %i\n",loglevel);
+      break;
+    case 'o':
+      logonscreen = 1;
+      printf ("Logging on screen.\n");
+      break;
+    case '?':
+    case 'h':
+      usage();
+      exit (1);
+    }
+  }
 }
