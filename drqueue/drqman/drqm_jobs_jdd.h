@@ -50,7 +50,6 @@ struct drqmj_jddi {							/* job details dialog info*/
 	// Blocked hosts
 	GtkWidget *menu_bh;						// Blocked hosts menu
 	GtkWidget *clist_bh;					// Blocked hosts clist
-	GtkWidget *entry_bh;					// Entry to add a blocked host
 	struct drqm_computers_info bhdi_computers_info;
 
   gint row,column;							/* selected frame */
