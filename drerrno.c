@@ -1,4 +1,4 @@
-/* $Id: drerrno.c,v 1.10 2001/11/15 14:30:56 jorge Exp $ */
+/* $Id: drerrno.c,v 1.11 2001/11/21 10:15:21 jorge Exp $ */
 
 #include "drerrno.h"
 #include "constants.h"
@@ -75,6 +75,9 @@ char *drerrno_str (void)
     break;
   case DRE_NOBINDIR:
     msg = "Directory for binary files ($DRQUEUE_ROOT/bin) does not exist";
+    break;
+  case DRE_NOETCDIR:
+    msg = "Directory for configuration files ($DRQUEUE_ROOT/etc) does not exist";
     break;
   default:
     msg = "drerrno NOT listed !!";

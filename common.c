@@ -1,4 +1,4 @@
-/* $Id: common.c,v 1.8 2001/11/16 15:39:59 jorge Exp $ */
+/* $Id: common.c,v 1.9 2001/11/21 10:15:20 jorge Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -57,6 +57,12 @@ int common_environment_check (void)
   snprintf (dir_str,BUFFERLEN-1,"%s/bin",buf);
   if (stat (dir_str,&s_stat) == -1) {
     drerrno = DRE_NOBINDIR;
+    return 0;
+  }
+
+  snprintf (dir_str,BUFFERLEN-1,"%s/etc",buf);
+  if (stat (dir_str,&s_stat) == -1) {
+    drerrno = DRE_NOETCDIR;
     return 0;
   }
 
