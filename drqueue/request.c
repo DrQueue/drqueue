@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.75 2002/05/17 16:05:58 jorge Exp $ */
+/* $Id: request.c,v 1.76 2002/06/26 17:22:29 jorge Exp $ */
 #include <unistd.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -934,12 +934,16 @@ void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp)
   /* This function is called unlocked */
   /* This function is called by the master */
   struct request answer;
+  struct computer computer[MAXCOMPUTERS];
   int i;
 
   log_master (L_DEBUG,"Entering handle_r_r_listcomp");
 
+  semaphore_lock(wdb->semid);
   answer.type = R_R_LISTCOMP;
   answer.data = computer_ncomputers_masterdb (wdb);
+  memcpy (computer,wdb->computer,sizeof(struct computer) * MAXCOMPUTERS);
+  semaphore_release(wdb->semid);
   
   if (!send_request (sfd,&answer,MASTER)) {
     log_master (L_ERROR,"Receiving request (handle_r_r_listcomp)");
@@ -947,8 +951,8 @@ void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp)
   }
 
   for (i=0;i<MAXCOMPUTERS;i++) {
-    if (wdb->computer[i].used) {
-      if (!send_computer (sfd,&wdb->computer[i])) {
+    if (computer[i].used) {
+      if (!send_computer (sfd,&computer[i])) {
 	log_master (L_ERROR,"Sending computer (handle_r_r_listcomp)");
 	break;
       }
