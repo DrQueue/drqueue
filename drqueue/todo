@@ -32,6 +32,7 @@ NOTES:
 DRQMAN
 ------
 
+* Autorefresh configurable
 * Watching the output logs as tail -f does.
 
 BUGS:
@@ -39,3 +40,9 @@ BUGS:
 
 * In the new job dialog I cannot justify the labels to the left
 * When I delete a job from the detailed job information dialog the windows isn't closed after.
+* You need ti hit refresh after a hard stop.
+
+INSTALLATION NOTES:
+------------------
+
+1) Check that the master host resolves to the same point on both directions.
