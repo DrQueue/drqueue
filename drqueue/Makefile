@@ -124,6 +124,7 @@ CYGWIN_NT-5.1_install:
 	install -d -m 0777 $(INSTROOT)/contrib/windows/Installer
 	cp ./bin/*.exe $(INSTROOT)/bin/ || exit 0
 	cp `which ipc-daemon2` $(INSTROOT)/bin || exit 0
+	cp `which tcsh` $(INSTROOT)/bin || exit 0
 	cp ./etc/* $(INSTROOT)/etc/ || exit 0
 	sh ./contrib/windows/build_services.sh $(PWD)/contrib/windows $(DOTNETPATH) 
 	cp ./contrib/* $(INSTROOT)/contrib/ || exit 0
