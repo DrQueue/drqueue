@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.36 2001/09/25 15:54:52 jorge Exp $ */
+/* $Id: job.c,v 1.37 2001/10/02 12:39:39 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -43,7 +43,7 @@ void job_report (struct job *job)
 
 void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job)
 {
-  /* Called we we have just received a job to be registered */
+  /* Called when we have just received a job to be registered */
   int i;
   int nframes;
   char msg[BUFFERLEN];
@@ -100,7 +100,7 @@ void job_delete (struct job *job)
   /* This functions sets for removal the frame info structure of the job */
   if (job->fishmid != -1) {
     if (shmctl (job->fishmid,IPC_RMID,NULL) == -1) {
-      log_master_job(job,L_ERROR,"job_delete: shmctl (job->fishmid,IPC_RMID,NULL)");
+      log_master_job(job,L_ERROR,"job_delete: shmctl (job->fishmid,IPC_RMID,NULL) [Removing frame shared memory]");
     }
     job->fishmid = -1;
   }
@@ -289,7 +289,6 @@ void *attach_frame_shared_memory (int shmid)
   if ((rv = shmat (shmid,0,0)) == (void *)-1) {
     log_master (L_ERROR,"attach_frame_shared_memory: shmat");
     perror ("shmat");
-    exit (1);
   }
 
   return rv;
