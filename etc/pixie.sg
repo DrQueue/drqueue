@@ -1,9 +1,8 @@
 #
 # THIS IS A TCSH SCRIPT FILE
 # 
-# Default configuration for maya script generator
+# Default configuration for Pixie script generator
 # You can set the environment variables here (csh style)
-# setupenv -ver 4.0 maya
 
 #
 # For platform dependend environment setting a form like this
@@ -18,7 +17,7 @@
 #    # Some error messages
 # endif
 #
-# The same structure can be used with the Render command
+# The same structure can be used with the render command
 #
 #
 
