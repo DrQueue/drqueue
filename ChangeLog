@@ -1,3 +1,34 @@
+2004-10-29 20:18:24  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /branches/0.52.x/svn-scripts/build_release.sh
+
+	* Bugfix for build_package.sh
+
+2004-10-29 20:08:28  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /branches/0.52.x/job.c
+
+	* Bugfix for the problem of not working operating system flags for FreeBSD.
+
+2004-10-26 22:07:33  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /branches/0.52.x/ChangeLog
+	   M /branches/0.52.x/svn-scripts/build_release.sh
+
+	* New ChangeLog and generator
+
+2004-10-26 21:56:16  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /branches/0.52.x/ChangeLog
+	   M /branches/0.52.x/svn-scripts/build_release.sh
+	   A /branches/0.52.x/svn-scripts/svn2cl.pl
+
+	* New ChangeLog and generator scripts
+
 2004-10-26 21:32:48  Jorge Daza <jorge@drqueue.org>
 
 	* Changed paths:
