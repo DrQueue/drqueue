@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.58 2002/06/20 19:32:50 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.59 2002/06/20 22:55:34 jorge Exp $
  */
 
 #include <string.h>
@@ -52,6 +52,11 @@ static void jdd_priority_bcp (GtkWidget *button, struct drqm_jobs_info *info);
 static GtkWidget *jdd_priority_change_dialog (struct drqm_jobs_info *info);
 static void jdd_pcd_cpri_changed (GtkWidget *entry, struct drqmj_jddi *info);
 static void jdd_pcd_bsumbit_pressed (GtkWidget *button, struct drqm_jobs_info *info);
+static void jdd_table_pack (GtkWidget *table, GtkWidget *label1, GtkWidget *label2, GtkWidget *button, int row);
+static void jdd_framelist_column_clicked (GtkCList *clist, gint column, struct drqm_jobs_info *info);
+static int jdd_framelist_cmp_frame (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+static int jdd_framelist_cmp_exitcode (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+static int jdd_framelist_cmp_status (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
 /* Limits */
 static GtkWidget *jdd_limits_widgets (struct drqm_jobs_info *info);
 static void jdd_limits_nmaxcpus_bcp (GtkWidget *button, struct drqm_jobs_info *info);
@@ -113,6 +118,10 @@ static void job_hstop_cb (GtkWidget *button, struct drqm_jobs_info *info);
 /* CONTINUE JOB */
 static void ContinueJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
 
+struct row_data {
+  uint32_t frame;
+  struct drqm_jobs_info *info;
+};
 
 void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info)
 {
@@ -814,8 +823,9 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   GtkWidget *window;
   GtkWidget *frame;
   GtkWidget *vbox;
-  GtkWidget *hbox,*hbox2;
-  GtkWidget *label;
+  GtkWidget *hbox;
+  GtkWidget *table;
+  GtkWidget *label, *label2;
   GtkWidget *clist;
   GtkWidget *swin;
   GtkWidget *button;
@@ -851,119 +861,69 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   gtk_label_set_pattern (GTK_LABEL(label),"________________________________");
   gtk_box_pack_start (GTK_BOX(vbox),label,FALSE,FALSE,4);
 
+  /* Table */
+  table = gtk_table_new ( 9, 3, FALSE );
+  gtk_box_pack_start (GTK_BOX(vbox),table,FALSE,FALSE,2);
+
   /* Name of the job */
-  hbox = gtk_hbox_new (TRUE,2);
-  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
   label = gtk_label_new ("Name:");
-  gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
-  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
-  label = gtk_label_new (NULL);
-  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
-  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
-  info->jdd.lname = label;
+  label2 = gtk_label_new (NULL);
+  info->jdd.lname = label2;
+  jdd_table_pack (table, label, label2, NULL, 0);
 
   /* Owner */
-  hbox = gtk_hbox_new (TRUE,2);
-  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
   label = gtk_label_new ("Owner:");
-  gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
-  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
-  label = gtk_label_new (NULL);
-  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
-  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
-  info->jdd.lowner = label;
+  label2 = gtk_label_new (NULL);
+  info->jdd.lowner = label2;
+  jdd_table_pack (table, label, label2, NULL, 1);
 
   /* Status */
-  hbox = gtk_hbox_new (TRUE,2);
-  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
   label = gtk_label_new ("Status:");
-  gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
-  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
-  label = gtk_label_new (NULL);
-  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
-  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
-  info->jdd.lstatus = label;
+  label2 = gtk_label_new (NULL);
+  info->jdd.lstatus = label2;
+  jdd_table_pack (table, label, label2, NULL, 2);
 
 
   /* Cmd of the job */
-  hbox = gtk_hbox_new (TRUE,2);
-  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
   label = gtk_label_new ("Command:");
-  gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
-  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
-  label = gtk_label_new (NULL);
-  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
-  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
-  info->jdd.lcmd = label;
+  label2 = gtk_label_new (NULL);
+  info->jdd.lcmd = label2;
+  jdd_table_pack (table, label, label2, NULL, 3);
 
   /* Start and End frames */
-  hbox = gtk_hbox_new (TRUE,2);
-  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
   label = gtk_label_new ("Start, end and step frames:");
-  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
-  hbox2 = gtk_hbox_new (FALSE,2);
-  gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,2);
-  label = gtk_label_new (NULL);
-  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
-  gtk_box_pack_start (GTK_BOX(hbox2),label,TRUE,TRUE,2);
-  info->jdd.lstartend = label;
+  label2 = gtk_label_new (NULL);
+  info->jdd.lstartend = label2;
   button = gtk_button_new_with_label ("Change");
-  gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
   gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_sesframes_bcp),info);
+  jdd_table_pack (table, label, label2, button, 4);
   
 
   /* Priority */
-  hbox = gtk_hbox_new (TRUE,2);
-  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
   label = gtk_label_new ("Priority:");
-  gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
-  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
-  hbox2 = gtk_hbox_new (FALSE,2);
-  gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,2);
-
-  label = gtk_label_new (NULL);
-  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
-  gtk_box_pack_start (GTK_BOX(hbox2),label,TRUE,TRUE,2);
-  info->jdd.lpri = label;
+  label2 = gtk_label_new (NULL);
+  info->jdd.lpri = label2;
   button = gtk_button_new_with_label ("Change");
-  gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
   gtk_signal_connect (GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_priority_bcp),info);
+  jdd_table_pack (table, label, label2, button, 5);
 
   /* Frames left, done and failed */
-  hbox = gtk_hbox_new (TRUE,2);
-  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
   label = gtk_label_new ("Frames running, left, done and failed:");
-  gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
-  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
-
-  label = gtk_label_new (NULL);
-  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
-  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
-  info->jdd.lfrldf = label;
+  label2 = gtk_label_new (NULL);
+  info->jdd.lfrldf = label2;
+  jdd_table_pack (table, label, label2, NULL, 6);
 
   /* Average time per frame */
-  hbox = gtk_hbox_new (TRUE,2);
-  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
   label = gtk_label_new ("Average frame time:");
-  gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
-  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
-
-  label = gtk_label_new (NULL);
-  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
-  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
-  info->jdd.lavgt = label;
+  label2 = gtk_label_new (NULL);
+  info->jdd.lavgt = label2;
+  jdd_table_pack (table, label, label2, NULL, 7);
 
   /* Estimated finish time */
-  hbox = gtk_hbox_new (TRUE,2);
-  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
   label = gtk_label_new ("Estimated finish time:");
-  gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
-  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
-
-  label = gtk_label_new (NULL);
-  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
-  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
-  info->jdd.lestf = label;
+  label2 = gtk_label_new (NULL);
+  info->jdd.lestf = label2;
+  jdd_table_pack (table, label, label2, NULL, 8);
 
   /* KOJ */
   frame = jdd_koj_widgets (info);
@@ -986,6 +946,8 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(swin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_container_add (GTK_CONTAINER(frame),swin);
   clist = CreateFrameInfoClist ();
+  gtk_signal_connect(GTK_OBJECT(clist),"click-column",
+		     GTK_SIGNAL_FUNC(jdd_framelist_column_clicked),info);
   gtk_clist_set_selection_mode(GTK_CLIST(clist),GTK_SELECTION_EXTENDED);
   gtk_container_add (GTK_CONTAINER(swin),clist);
   info->jdd.clist = clist;
@@ -1059,7 +1021,6 @@ static GtkWidget *CreateFrameInfoClist (void)
 
   clist = gtk_clist_new_with_titles (7, titles);
   gtk_clist_column_titles_show(GTK_CLIST(clist));
-  gtk_clist_column_titles_passive(GTK_CLIST(clist));
   gtk_clist_set_column_width (GTK_CLIST(clist),0,75);
   gtk_clist_set_column_width (GTK_CLIST(clist),1,95);
   gtk_clist_set_column_width (GTK_CLIST(clist),2,180);
@@ -1124,22 +1085,9 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
 
 
   gtk_label_set_text (GTK_LABEL(info->jdd.lname),info->jobs[info->row].name);
-  gtk_widget_set_usize (GTK_WIDGET(info->jdd.lname), 80, 20);
-  gtk_label_set_line_wrap (GTK_LABEL(info->jdd.lname), TRUE);
-
   gtk_label_set_text (GTK_LABEL(info->jdd.lowner),info->jobs[info->row].owner);
-  gtk_widget_set_usize (GTK_WIDGET(info->jdd.lowner), 80, 20);
-  gtk_label_set_line_wrap (GTK_LABEL(info->jdd.lowner), TRUE);
-
   gtk_label_set_text (GTK_LABEL(info->jdd.lcmd),info->jobs[info->row].cmd);
-  gtk_widget_set_usize (GTK_WIDGET(info->jdd.lcmd), 80, 20);
-  gtk_label_set_line_wrap (GTK_LABEL(info->jdd.lcmd), TRUE);
-
   gtk_label_set_text (GTK_LABEL(info->jdd.lstatus),job_status_string(info->jobs[info->row].status));
-  gtk_widget_set_usize (GTK_WIDGET(info->jdd.lstatus), 80, 20);
-  gtk_label_set_line_wrap (GTK_LABEL(info->jdd.lstatus), TRUE);
-  
-
 
   snprintf(msg,BUFFERLEN-1,"From %i to %i every %i",
 	   info->jobs[info->row].frame_start,
@@ -1205,6 +1153,8 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
   gtk_clist_freeze(GTK_CLIST(info->jdd.clist));
   gtk_clist_clear(GTK_CLIST(info->jdd.clist));
   for (i=0; i < nframes; i++) {
+    struct row_data *rdata;
+
     snprintf (buff[0],BUFFERLEN-1,"%i",job_frame_index_to_number (&info->jobs[info->row],i));
     strncpy(buff[1],job_frame_status_string(info->jobs[info->row].frame_info[i].status),BUFFERLEN);
     if (info->jobs[info->row].frame_info[i].start_time != 0) {
@@ -1240,8 +1190,15 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
 			     e_data,e_mask);
       break;
     }
-    /* Put the frame number as data for the row */
-    gtk_clist_set_row_data (GTK_CLIST(info->jdd.clist),i,(gpointer)job_frame_index_to_number (&info->jobs[info->row],i));
+
+    /* Set the information for the row */
+    rdata = gtk_clist_get_row_data (GTK_CLIST(info->jdd.clist),i);
+    if (!rdata) {
+      rdata = malloc (sizeof (*rdata));
+    }
+    rdata->frame = job_frame_index_to_number (&info->jobs[info->row],i);
+    rdata->info = info;
+    gtk_clist_set_row_data_full (GTK_CLIST(info->jdd.clist),i,(gpointer)rdata, free);
   }
 
   gtk_clist_thaw(GTK_CLIST(info->jdd.clist));
@@ -1329,13 +1286,15 @@ static void jdd_requeue_frames (GtkWidget *button,struct drqm_jobs_info *info_dj
   /* Requeues the finished frames, sets them as waiting again */
   GList *sel;
   uint32_t frame;
-
+  struct row_data *rdata;
+  
   if (!(sel = GTK_CLIST(info_dj->jdd.clist)->selection)) {
     return;
   }
 
   for (;sel;sel = sel->next) {
-    frame = (uint32_t) gtk_clist_get_row_data(GTK_CLIST(info_dj->jdd.clist), (gint)sel->data);
+    rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info_dj->jdd.clist), (gint)sel->data);
+    frame = rdata->frame;
     drqm_request_job_frame_waiting (info_dj->jobs[info_dj->ijob].id,frame);
   }
 }
@@ -1366,13 +1325,15 @@ static void jdd_kill_frames (GtkWidget *button,struct drqm_jobs_info *info_dj)
   /* Signals the running frames and queues them again */
   GList *sel;
   uint32_t frame;
+  struct row_data *rdata;
 
   if (!(sel = GTK_CLIST(info_dj->jdd.clist)->selection)) {
     return;
   }
 
   for (;sel;sel = sel->next) {
-    frame = (uint32_t) gtk_clist_get_row_data(GTK_CLIST(info_dj->jdd.clist), (gint)sel->data);
+    rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info_dj->jdd.clist), (gint)sel->data);
+    frame = rdata->frame;
     drqm_request_job_frame_kill (info_dj->jobs[info_dj->ijob].id,frame);
   }
 }
@@ -1382,13 +1343,15 @@ static void jdd_finish_frames (GtkWidget *button,struct drqm_jobs_info *info_dj)
   /* Sets the waiting frames as finished */
   GList *sel;
   uint32_t frame;
+  struct row_data *rdata;
 
   if (!(sel = GTK_CLIST(info_dj->jdd.clist)->selection)) {
     return;
   }
 
   for (;sel;sel = sel->next) {
-    frame = (uint32_t) gtk_clist_get_row_data(GTK_CLIST(info_dj->jdd.clist), (gint)sel->data);
+    rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info_dj->jdd.clist), (gint)sel->data);
+    frame = rdata->frame;
     drqm_request_job_frame_finish (info_dj->jobs[info_dj->ijob].id,frame);
   }
 }
@@ -1419,13 +1382,15 @@ static void jdd_kill_finish_frames (GtkWidget *button,struct drqm_jobs_info *inf
   /* Sets the waiting frames as finished */
   GList *sel;
   uint32_t frame;
+  struct row_data *rdata;
 
   if (!(sel = GTK_CLIST(info_dj->jdd.clist)->selection)) {
     return;
   }
 
   for (;sel;sel = sel->next) {
-    frame = (uint32_t) gtk_clist_get_row_data(GTK_CLIST(info_dj->jdd.clist), (gint)sel->data);
+    rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info_dj->jdd.clist), (gint)sel->data);
+    frame = rdata->frame;
     drqm_request_job_frame_kill_finish (info_dj->jobs[info_dj->ijob].id,frame);
   }
 }
@@ -1840,12 +1805,14 @@ static void jdd_maya_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *inf
   uint32_t frame,iframe;
   const char *new_argv[4];
   extern char **environ;
-
+  struct row_data *rdata;
+  
   if (!(sel = GTK_CLIST(info->jdd.clist)->selection)) {
     return;
   }
 
-  frame = (uint32_t) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+  frame = rdata->frame;
   
   iframe = job_frame_number_to_index (&info->jobs[info->row],frame);
 
@@ -2472,45 +2439,149 @@ GtkWidget *jdd_koj_maya_widgets (struct drqm_jobs_info *info)
   GtkWidget *table;
   GtkWidget *label;
   GtkAttachOptions options = GTK_EXPAND | GTK_SHRINK | GTK_FILL ;
+  char *labels[] = { "Scene:", info->jobs[info->row].koji.maya.scene,
+		     "Render directory:", info->jobs[info->row].koji.maya.renderdir,
+		     "Output image:", info->jobs[info->row].koji.maya.image,
+		     "View command:", info->jobs[info->row].koji.maya.viewcmd,
+		     NULL };
+  char **cur;
+  int r,c;			/* Rows and columns */
 
   table = gtk_table_new (4,2, FALSE);
 
-  label = gtk_label_new ("Scene:");
-  gtk_label_set_justify (GTK_LABEL(label), GTK_JUSTIFY_LEFT);
-  gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 0,1,0,1, options, options, 3 , 3 );
-  label = gtk_label_new (info->jobs[info->row].koji.maya.scene);
-  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
-  gtk_label_set_justify (GTK_LABEL(label), GTK_JUSTIFY_LEFT);
-  gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 1,2,0,1, options, options, 3 , 3 );
-
-
-  label = gtk_label_new ("Render directory:");
-  gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 0,1,1,2, options, options, 3 , 3 );
-  label = gtk_label_new (info->jobs[info->row].koji.maya.renderdir);
-  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
-  gtk_label_set_justify (GTK_LABEL(label), GTK_JUSTIFY_LEFT);
-  gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 1,2,1,2, options, options, 3 , 3 );
-
-
-  label = gtk_label_new ("Output image:");
-  gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 0,1,2,3, options, options, 3 , 3 );
-  label = gtk_label_new (info->jobs[info->row].koji.maya.image);
-  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
-  gtk_label_set_justify (GTK_LABEL(label), GTK_JUSTIFY_LEFT);
-  gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 1,2,2,3, options, options, 3 , 3 );
-
-
-  label = gtk_label_new ("View command:");
-  gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 0,1,3,4, options, options, 3 , 3 );
-  label = gtk_label_new (info->jobs[info->row].koji.maya.viewcmd);
-  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
-  gtk_label_set_justify (GTK_LABEL(label), GTK_JUSTIFY_LEFT);
-  gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), 1,2,3,4, options, options, 3 , 3 );
+  cur = labels;
+  r = 0;
+  while ( *cur ) {
+    c = 0;			/* First column */
+    label = gtk_label_new (*cur);
+    gtk_misc_set_alignment (GTK_MISC(label), 0, .5);
+    gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), c, c+1, r, r+1, options, options, 1 , 1 );
+    cur++;			/* Next label */
+    c++;			/* New column */
+    label = gtk_label_new (*cur);
+    gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
+    gtk_misc_set_alignment (GTK_MISC(label), 1, .5);
+    gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label), c, c+1, r, r+1, options, options, 1 , 1 );
+    cur++;
+    r++;			/* New row */
+  }
 
   return table;
 }
 
+void jdd_table_pack (GtkWidget *table, GtkWidget *label1, GtkWidget *label2, GtkWidget *button, int row)
+{
+  GtkAttachOptions options = GTK_EXPAND | GTK_SHRINK | GTK_FILL ;
 
+  gtk_misc_set_alignment (GTK_MISC(label1), 0, .5);
+  gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label1), 0, 1, row, row+1, options, options, 1 , 1);
+  gtk_label_set_justify (GTK_LABEL(label1),GTK_JUSTIFY_CENTER);
+  
+  gtk_label_set_line_wrap (GTK_LABEL(label2), TRUE);
+  gtk_misc_set_alignment (GTK_MISC(label2), 0 , .5);
+  gtk_label_set_justify (GTK_LABEL(label2),GTK_JUSTIFY_CENTER);
+  gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label2), 1, 2, row, row+1, options, options, 1 , 1);
 
+  if (button) {
+    gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(button), 2, 3, row, row+1, 0, 0, 1 , 1);
+  }
+}
 
+void jdd_framelist_column_clicked (GtkCList *clist, gint column, struct drqm_jobs_info *info)
+{
+  static GtkSortType dir = GTK_SORT_ASCENDING;
 
+  if (dir == GTK_SORT_DESCENDING) {
+    dir = GTK_SORT_ASCENDING;
+  } else {
+    dir = GTK_SORT_DESCENDING;
+  }
+
+  if (column == 0) {
+    gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+    gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_frame);
+    gtk_clist_sort (GTK_CLIST(clist));
+  } else if (column == 1) {
+    gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+    gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_status);
+    gtk_clist_sort (GTK_CLIST(clist));
+  } else if (column == 4) {
+    gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+    gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_exitcode);
+    gtk_clist_sort (GTK_CLIST(clist));
+  }
+}
+
+int jdd_framelist_cmp_frame (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+  struct row_data *ra,*rb;
+  uint32_t a,b;
+
+  ra = (struct row_data *) ((GtkCListRow*)ptr1)->data;
+  rb = (struct row_data *) ((GtkCListRow*)ptr2)->data;
+
+  a = ra->frame;
+  b = rb->frame;
+				  
+  if (a > b) {
+    return 1;
+  } else if (a == b) {
+    return 0;
+  } else {
+    return -1;
+  }
+
+  return 0;
+}
+
+int jdd_framelist_cmp_exitcode (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+  struct row_data *ra,*rb;
+  char a,b;
+  uint32_t ifa,ifb;
+
+  ra = (struct row_data *) ((GtkCListRow*)ptr1)->data;
+  rb = (struct row_data *) ((GtkCListRow*)ptr2)->data;
+
+  ifa = job_frame_number_to_index (&ra->info->jobs[ra->info->row],ra->frame);
+  ifb = job_frame_number_to_index (&rb->info->jobs[ra->info->row],rb->frame);
+
+  a = ra->info->jobs[ra->info->row].frame_info[ifa].exitcode;
+  b = rb->info->jobs[rb->info->row].frame_info[ifb].exitcode;
+			
+  if (a > b) {
+    return 1;
+  } else if (a == b) {
+    return 0;
+  } else {
+    return -1;
+  }
+
+  return 0;
+}
+
+int jdd_framelist_cmp_status (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+  struct row_data *ra,*rb;
+  char a,b;
+  uint16_t ifa,ifb;
+
+  ra = (struct row_data *) ((GtkCListRow*)ptr1)->data;
+  rb = (struct row_data *) ((GtkCListRow*)ptr2)->data;
+
+  ifa = job_frame_number_to_index (&ra->info->jobs[ra->info->row],ra->frame);
+  ifb = job_frame_number_to_index (&rb->info->jobs[ra->info->row],rb->frame);
+
+  a = ra->info->jobs[ra->info->row].frame_info[ifa].status;
+  b = rb->info->jobs[rb->info->row].frame_info[ifb].status;
+			
+  if (a > b) {
+    return 1;
+  } else if (a == b) {
+    return 0;
+  } else {
+    return -1;
+  }
+
+  return 0;
+}
