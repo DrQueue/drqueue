@@ -23,6 +23,8 @@
 
 #include <gtk/gtk.h>
 
+#define KOJ_BMRT_DFLT_VIEWCMD "display image.$DRQUEUE_FRAME.sgi"
+
 struct drqmj_koji_bmrt {
   GtkWidget *escene;
   GtkWidget *fsscene;						/* File selector for the scene */

@@ -60,11 +60,11 @@ char *mayasg_create (struct mayasgi *info)
     if (errno == ENOENT) {
       /* If its because the directory does not exist we try creating it first */
       if (mkdir (info->scriptdir,0775) == -1) {
-	drerrno = DRE_COULDNOTCREATE;
-	return NULL;
+				drerrno = DRE_COULDNOTCREATE;
+				return NULL;
       } else if ((f = fopen (filename, "a")) == NULL) {
-	drerrno = DRE_COULDNOTCREATE;
-	return NULL;
+				drerrno = DRE_COULDNOTCREATE;
+				return NULL;
       }
     } else {
       drerrno = DRE_COULDNOTCREATE;
@@ -94,7 +94,10 @@ char *mayasg_create (struct mayasgi *info)
   if (strlen(info->image)) {
     fprintf(f,"set DRQUEUE_IMAGE=%s\n",info->image);
   }
-
+	if (info->mentalray) {
+		fprintf(f,"set MENTALRAY=1");
+	}
+	
   snprintf(fn_etc_maya_sg,BUFFERLEN-1,"%s/maya.sg",getenv("DRQUEUE_ETC"));
 
   fflush (f);
@@ -126,7 +129,7 @@ char *mayasg_default_script_path (void)
   static char buf[BUFFERLEN];
   char *p;
 
-  if (!(p = getenv("DRQUEUE_tmp"))) {
+  if (!(p = getenv("DRQUEUE_TMP"))) {
     return ("/drqueue_tmp/not/set/");
   }
   
