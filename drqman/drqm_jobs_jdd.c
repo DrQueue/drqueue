@@ -76,6 +76,7 @@ static gint PopupMenuBlockedHosts (GtkWidget *clist, GdkEvent *event, struct drq
 static void jdd_delete_blocked_host (GtkWidget *w, struct drqm_jobs_info *info);
 static void jdd_add_blocked_host_bp (GtkWidget *button, struct drqm_jobs_info *info);
 static GtkWidget *jdd_add_blocked_host_dialog (struct drqm_jobs_info *info);
+static GtkWidget *jdd_add_blocked_host_dialog_clist (struct drqm_jobs_info *info);
 
 /* Limits */
 static GtkWidget *jdd_limits_widgets (struct drqm_jobs_info *info);
@@ -776,6 +777,26 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   return window;
 }
 
+static GtkWidget *jdd_add_blocked_host_dialog_clist (struct drqm_jobs_info *info)
+{
+  gchar *titles[] = { "ID","Running","Name","OS","CPUs","Load Avg" };
+  GtkWidget *clist;
+
+  clist = gtk_clist_new_with_titles (6, titles);
+  gtk_clist_column_titles_show(GTK_CLIST(clist));
+  gtk_clist_column_titles_passive(GTK_CLIST(clist));
+  gtk_clist_set_column_width (GTK_CLIST(clist),0,75);
+  gtk_clist_set_column_width (GTK_CLIST(clist),1,100);
+  gtk_clist_set_column_width (GTK_CLIST(clist),2,100);
+  gtk_clist_set_column_width (GTK_CLIST(clist),3,100);
+  gtk_clist_set_column_width (GTK_CLIST(clist),4,45);
+  gtk_clist_set_column_width (GTK_CLIST(clist),5,100);
+  gtk_clist_set_selection_mode(GTK_CLIST(clist),GTK_SELECTION_EXTENDED);
+  gtk_widget_show(clist);
+
+  return (clist);
+}
+
 static GtkWidget *jdd_add_blocked_host_dialog (struct drqm_jobs_info *info)
 {
 	GtkWidget *window;
@@ -783,12 +804,29 @@ static GtkWidget *jdd_add_blocked_host_dialog (struct drqm_jobs_info *info)
 	GtkWidget *label;
 	GtkWidget *entry;
 	GtkWidget *button;
-	
+	GtkWidget *swindow;
+	GtkWidget *clist;
+
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW(window),"Add host to block list");
-  gtk_window_set_policy(GTK_WINDOW(window),FALSE,FALSE,TRUE);
+  gtk_window_set_title (GTK_WINDOW(window),"Add host(s) to block list");
+  gtk_window_set_policy(GTK_WINDOW(window),TRUE,TRUE,TRUE);
   vbox = gtk_vbox_new (FALSE,2);
   gtk_container_add(GTK_CONTAINER(window),vbox);
+
+	// Scrolled window
+	swindow = gtk_scrolled_window_new (NULL,NULL);
+	info->jdd.bhdi_computers_info.swindow = swindow;
+	gtk_box_pack_start (GTK_BOX(vbox),swindow,TRUE,TRUE,2);
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(swindow), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+	// Computers clist
+	clist = jdd_add_blocked_host_dialog_clist (info);
+	info->jdd.bhdi_computers_info.clist = clist;
+	gtk_container_add(GTK_CONTAINER(swindow),clist);
+  drqm_request_computerlist (&info->jdd.bhdi_computers_info);
+  drqm_update_computerlist (&info->jdd.bhdi_computers_info);
+	// Button to refresh the list
+	button = gtk_button_new_with_label ("Refresh");
+	gtk_box_pack_start (GTK_BOX(vbox),button,FALSE,FALSE,2);
 
 	hbox = gtk_hbox_new (FALSE,2);
 	gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
