@@ -1,4 +1,4 @@
-/* $Id: request_codes.h,v 1.15 2001/09/08 20:46:38 jorge Exp $ */
+/* $Id: request_codes.h,v 1.16 2001/09/09 22:02:30 jorge Exp $ */
 
 #ifndef _REQUEST_CODES_H_
 #define _REQUEST_CODES_H_
@@ -47,5 +47,7 @@
 #define RS_A_KILLTASK     2
 #define RS_R_SETNMAXCPUS  3	/* Request to set limits nmaxcpus */
 #define RS_A_SETNMAXCPUS  4
+#define RS_R_SETMAXFREELOADCPU  5 /* Request to set limits maxfreeloadcpu */
+#define RS_A_SETMAXFREELOADCPU  6
 
 #endif /* _REQUEST_CODES_H_ */
