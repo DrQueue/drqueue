@@ -3,7 +3,6 @@ TO DO:
 
 * Checks at the beginning of every program for the 
   environment variables and directories.
-* Names of computers instead of id numbers.
 * limit structures for jobs and computers.
 * Master database saved and reloaded from disk.
 * The slave must check that the requests come from the
@@ -34,6 +33,7 @@ DRQMAN
 
 * Autorefresh configurable
 * Watching the output logs as tail -f does.
+* Names of computers instead of id numbers.
 
 BUGS:
 ----
@@ -46,3 +46,4 @@ INSTALLATION NOTES:
 ------------------
 
 1) Check that the master host resolves to the same point on both directions.
+2) The creation of the logs directory iis not automatic
