@@ -1,3 +1,35 @@
+2004-10-26 19:32:03  Rev 932    jorge
+
+	* :
+	  New version number on common.h: 0.52.1
+
+2004-10-26 11:28:16  Rev 926    jorge
+
+	* :
+	  Merged 923:925 from trunk. Marc Ume bugfix for sendjob.
+
+2004-10-26 11:25:25  Rev 925    jorge
+
+	* :
+	  Fixed typo. It was branch 0.52.x, not 0.50.x.
+
+
+2004-10-26 09:27:46  Rev 923    jorge
+
+	* :
+	  New stable development branch.
+
+
+2004-10-26 09:22:11  Rev 922    jorge
+
+	* Revision:
+	  New Revision commited by build_package.sh
+
+2004-10-26 09:19:33  Rev 920    jorge
+
+	* ChangeLog:
+	  Changelog commited by build_package.sh
+
 2004-10-26 09:19:06  Rev 919    jorge
 
 	* common.h:
