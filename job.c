@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.52 2002/02/27 16:36:35 jorge Exp $ */
+/* $Id: job.c,v 1.53 2002/03/01 09:36:50 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -590,6 +590,7 @@ void job_environment_set (struct job *job, uint32_t iframe)
   static char scene[BUFFERLEN];
   static char project[BUFFERLEN];
   static char image[BUFFERLEN];
+  static char owner[BUFFERLEN];
 
   frame = job_frame_index_to_number (job,iframe);
 
@@ -599,6 +600,9 @@ void job_environment_set (struct job *job, uint32_t iframe)
   /* Frame number */
   snprintf (s_frame,BUFFERLEN-1,"FRAME=%i",frame);
   putenv (s_frame);
+  /* Owner of the job */
+  snprintf (owner,BUFFERLEN-1,"OWNER=%s",job->owner);
+  putenv (owner);
 
   /* OS */
 #ifdef __LINUX
