@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.20 2001/08/31 15:27:55 jorge Exp $
+# $Id: Makefile,v 1.21 2001/08/31 15:55:08 jorge Exp $
 
 CC = gcc
 OBJS_LIBDRQUEUE = computer_info.o computer_status.o task.o logger.o communications.o \
@@ -30,8 +30,8 @@ irix:
 	(cd drqman; $(MAKE) irix)
 
 irix_install: irix
-	install -d -o rendusr -g staff -m 0777 $(IRIX_INSTROOT)/bin
-	install -p -o rendusr -g staff ./slave ./master ./drqman/drqman $(IRIX_INSTROOT)/bin/
+	install -d -u rendusr -g staff -m 0777 $(IRIX_INSTROOT)/bin
+	install -u rendusr -g staff ./slave ./master ./drqman/drqman $(IRIX_INSTROOT)/bin/
 
 linux_install: linux
 	install -d -o rendusr -g staff -m 0777 $(LINUX_INSTROOT)/bin
