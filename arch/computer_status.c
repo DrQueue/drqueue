@@ -1,4 +1,4 @@
-/* $Id: computer_status.c,v 1.1 2001/04/26 14:20:55 jorge Exp $ */
+/* $Id: computer_status.c,v 1.2 2001/04/26 16:06:22 jorge Exp $ */
 
 #include <stdio.h>
 #include <signal.h>
@@ -11,7 +11,7 @@ void get_computerstatus (struct computer_status *cstatus)
 {
   /* Get status not only gets the load average but also */
   /* checks that every task is running and in case they're not */
-  /* it deletes the task record */
+  /* it sets the task record to unused (used = 0) */
   get_loadavg (cstatus->loadavg);
   check_tasks (cstatus);
 }
@@ -38,7 +38,7 @@ void check_tasks (struct computer_status *cstatus)
   }
 }
 
-#ifdef __LINUX
+#ifdef __LINUX			/* __LINUX  */
 
 void get_loadavg (int *loadavg)
 {
@@ -62,4 +62,10 @@ void get_loadavg (int *loadavg)
 #else
 #error You need to define the OS, or OS defined not supported
 #endif 
+
+
+
+
+
+
 
