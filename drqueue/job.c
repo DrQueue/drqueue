@@ -1,5 +1,8 @@
-/* $Id: job.c,v 1.65 2004/03/15 23:45:40 jorge Exp $ */
+/* $Id: job.c,v 1.66 2004/04/26 16:25:51 jorge Exp $ */
 
+#ifdef __FREEBSD
+# include <sys/types.h>
+#endif
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -617,30 +620,34 @@ void job_environment_set (struct job *job, uint32_t iframe)
 
   /* Padded frame number */
   /* TODO: make padding length user defined */
-  snprintf (padframe,BUFFERLEN-1,"PADFRAME=%04i",frame);
+  snprintf (padframe,BUFFERLEN-1,"DRQUEUE_PADFRAME=%04i",frame);
   putenv (padframe);
   /* Frame number */
-  snprintf (s_frame,BUFFERLEN-1,"FRAME=%i",frame);
+  snprintf (s_frame,BUFFERLEN-1,"DRQUEUE_FRAME=%i",frame);
   putenv (s_frame);
   /* Start and end frame numbers */
-  snprintf (startframe,BUFFERLEN-1,"STARTFRAME=%i",job->frame_start);
+  snprintf (startframe,BUFFERLEN-1,"DRQUEUE_STARTFRAME=%i",job->frame_start);
   putenv (startframe);
-  snprintf (endframe,BUFFERLEN-1,"ENDFRAME=%i",job->frame_end);
+  snprintf (endframe,BUFFERLEN-1,"DRQUEUE_ENDFRAME=%i",job->frame_end);
   putenv (endframe);
   /* Step frames */
-  snprintf (stepframe,BUFFERLEN-1,"STEPFRAME=%i",job->frame_step);
+  snprintf (stepframe,BUFFERLEN-1,"DRQUEUE_STEPFRAME=%i",job->frame_step);
   putenv (stepframe);
   /* Block size */
-  snprintf (blocksize,BUFFERLEN-1,"BLOCKSIZE=%i",job->block_size);
+  snprintf (blocksize,BUFFERLEN-1,"DRQUEUE_BLOCKKSIZE=%i",job->block_size);
   putenv (blocksize);
 
   /* Owner of the job */
-  snprintf (owner,BUFFERLEN-1,"OWNER=%s",job->owner);
+  snprintf (owner,BUFFERLEN-1,"DRQUEUE_OWNER=%s",job->owner);
   putenv (owner);
 
   /* OS */
-#ifdef __LINUX
+#if defined(__LINUX)
   putenv ("DRQUEUE_OS=LINUX");
+#elif defined(__FREEBSD)
+  putenv ("DRQUEUE_OS=FREEBSD");
+#elif defined(__OSX)
+  putenv ("DRQUEUE_OS=OSX");
 #else
   putenv ("DRQUEUE_OS=IRIX");
 #endif
@@ -655,11 +662,11 @@ void job_environment_set (struct job *job, uint32_t iframe)
     putenv (renderdir);
     snprintf (image,BUFFERLEN-1,"IMAGE=%s",job->koji.maya.image);
     putenv (image);
-	case KOJ_BLENDER:
-		snprintf (scene,BUFFERLEN-1,"SCENE=%s",job->koji.blender.scene);
+  case KOJ_BLENDER:
+    snprintf (scene,BUFFERLEN-1,"SCENE=%s",job->koji.blender.scene);
     break;
-	case KOJ_BMRT:
-		snprintf (scene,BUFFERLEN-1,"SCENE=%s",job->koji.bmrt.scene);
+  case KOJ_BMRT:
+    snprintf (scene,BUFFERLEN-1,"SCENE=%s",job->koji.bmrt.scene);
     break;
   }
 }

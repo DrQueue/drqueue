@@ -1,11 +1,24 @@
 #!/bin/sh
 #
-# $Id: requeue,v 1.3 2002/06/20 15:28:48 jorge Exp $
+# $Id: requeue,v 1.4 2004/04/26 16:25:51 jorge Exp $
 #
 
-if [ `uname -s` == "Linux" ]; then
-	$DRQUEUE_ROOT/bin/requeue.linux $*
-else
-	echo "Irix"
-	$DRQUEUE_ROOT/bin/requeue.irix $*
+if [ ! $DRQUEUE_ROOT ]; then
+  echo ERROR: DRQUEUE_ROOT not set in environment
+  exit 1
 fi
+
+if [ ! $DRQUEUE_MASTER ]; then
+  echo ERROR: DRQUEUE_MASTER not set in environment
+  exit 2
+fi
+
+RQ_CMD=$DRQUEUE_ROOT/bin/requeue.`uname -s`
+
+if [ ! -x $RQ_CMD ]; then
+  echo ERROR: requeue for your platform \(master.`uname -s`\) does not exist in $DRQUEUE_ROOT/bin.
+  echo Perhaps you did not install it \(make miniinstall or make install\).
+  exit 3
+fi
+
+$RQ_CMD $*

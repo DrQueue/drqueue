@@ -1,4 +1,4 @@
-/* $Id: task.h,v 1.20 2004/01/22 17:48:24 jorge Exp $ */
+/* $Id: task.h,v 1.21 2004/04/26 16:25:51 jorge Exp $ */
 
 #ifndef _TASK_H_
 #define _TASK_H_
@@ -12,7 +12,11 @@
 #  ifdef __OSX
 #   include <stdint.h>
 #  else
-#   error You need to define the OS, or OS defined not supported
+#   ifdef __FREEBSD
+#    include <stdint.h>
+#   else
+#    error You need to define the OS, or OS defined not supported
+#   endif
 #  endif
 # endif
 #endif

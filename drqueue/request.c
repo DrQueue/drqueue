@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.79 2004/01/23 03:28:00 jorge Exp $ */
+/* $Id: request.c,v 1.80 2004/04/26 16:25:51 jorge Exp $ */
 #include <unistd.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -8,9 +8,13 @@
 #include <signal.h>
 #include <time.h>
 #include <string.h>
-#ifndef __OSX
-# include <wait.h>
-#endif
+//#ifndef __OSX
+//# ifdef __FREEBSD
+#  include <sys/wait.h>
+//# else
+//#  include <wait.h>
+//# endif
+//#endif
 #include <stdlib.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
@@ -201,7 +205,9 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
 
   if ((host = gethostbyaddr ((const void *)&addr->sin_addr.s_addr,sizeof (struct in_addr),AF_INET)) == NULL) {
     log_master (L_WARNING,"Could not resolve name for: %s",inet_ntoa(addr->sin_addr));
-    return -1;
+    //return -1;
+    name=inet_ntoa(addr->sin_addr);
+
   } else {
     if ((dot = strchr (host->h_name,'.')) != NULL) 
       *dot = '\0';
