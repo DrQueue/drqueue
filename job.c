@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.64 2004/03/09 18:53:22 jorge Exp $ */
+/* $Id: job.c,v 1.65 2004/03/15 23:45:40 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -176,7 +176,7 @@ uint32_t job_nframes (struct job *job)
 {
   uint32_t n;
 
-  n = (job->frame_end - job->frame_start + job->block_size) / job->block_size;
+  n = (((job->frame_end - job->frame_start + job->block_size) / job->block_size) + job->frame_step) / job->frame_step;
 
   return n;
 }
@@ -569,12 +569,12 @@ void job_frame_waiting (struct database *wdb,uint32_t ijob, int iframe)
 
 uint32_t job_frame_index_to_number (struct job *job,uint32_t index)
 {
-  return (job->frame_start + (index * job->block_size)); 
+  return (job->frame_start + (index * job->block_size * job->frame_step)); 
 }
 
 uint32_t job_frame_number_to_index (struct job *job,uint32_t number)
 {
-  return ((number - job->frame_start) / job->block_size); 
+  return ((number - job->frame_start) / (job->block_size * job->frame_step)); 
 }
 
 int job_frame_number_correct (struct job *job,uint32_t number)
