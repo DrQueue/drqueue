@@ -161,7 +161,7 @@ namespace ServicesController
 			// Form1
 			// 
 			this.AutoScale = false;
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 14);
+			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.BackColor = System.Drawing.Color.Black;
 			this.ClientSize = new System.Drawing.Size(288, 29);
 			this.Controls.Add(this.statusBar1);
@@ -200,20 +200,30 @@ namespace ServicesController
 		private void Activate(string name)
 		{
 			Process theProcess = new Process();
-			theProcess.StartInfo.UseShellExecute = true;
+			theProcess.StartInfo.UseShellExecute = false;
 			theProcess.StartInfo.WorkingDirectory = Environment.GetEnvironmentVariable("DRQUEUE_BIN");
-			theProcess.StartInfo.FileName = name + ".exe";
+			theProcess.StartInfo.FileName = theProcess.StartInfo.WorkingDirectory + "\\" + name + ".exe";
+			theProcess.StartInfo.CreateNoWindow = true;
+			theProcess.StartInfo.RedirectStandardOutput = true;
+			theProcess.StartInfo.RedirectStandardError = true;
 			theProcess.Start();
+//			System.Console.Write(theProcess.StandardOutput.ReadToEnd());
+//			System.Console.Write(theProcess.StandardError.ReadToEnd());
 		}
 				
 		private void Activate(string name, string argument)
 		{
 			Process theProcess = new Process();
-			theProcess.StartInfo.UseShellExecute = true;
+			theProcess.StartInfo.UseShellExecute = false;
 			theProcess.StartInfo.WorkingDirectory = Environment.GetEnvironmentVariable("DRQUEUE_BIN");
-			theProcess.StartInfo.FileName = name + ".exe";
+			theProcess.StartInfo.FileName = theProcess.StartInfo.WorkingDirectory + "\\" + name + ".exe";
 			theProcess.StartInfo.Arguments = argument;
+			theProcess.StartInfo.CreateNoWindow = true;
+			theProcess.StartInfo.RedirectStandardOutput = true;
+			theProcess.StartInfo.RedirectStandardError = true;
 			theProcess.Start();
+//			System.Console.Write(theProcess.StandardOutput.ReadToEnd());
+//			System.Console.Write(theProcess.StandardError.ReadToEnd());
 		}
 
 		private void Kill(string name)
@@ -300,12 +310,10 @@ namespace ServicesController
 
 		void Form1Closing(object sender, System.ComponentModel.CancelEventArgs e)
 		{
-			/*
 			e.Cancel = true;
 			this.ShowInTaskbar = true;
 			this.WindowState = FormWindowState.Minimized;
 			this.ShowInTaskbar = false;			
-			*/
 		}
 		void MenuItemConnectClick(object sender, System.EventArgs e)
 		{
