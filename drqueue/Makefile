@@ -145,7 +145,7 @@ tags:
 	etags *.[ch] drqman/*.[ch]
 
 clean:
-	rm -fR *.o *~ libdrqueue.a slave master sendjob requeue jobinfo TAGS tmp/* logs/* db/* bin/*.$(systype)
+	rm -fR *.o *~ libdrqueue.a slave master sendjob requeue jobfinfo TAGS tmp/* logs/* db/* bin/*.$(systype)
 	$(MAKE) -C drqman clean
 
 #actual object make targets
