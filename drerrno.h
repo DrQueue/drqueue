@@ -1,4 +1,4 @@
-/* $Id: drerrno.h,v 1.9 2001/11/08 09:14:01 jorge Exp $ */
+/* $Id: drerrno.h,v 1.10 2001/11/15 14:30:57 jorge Exp $ */
 
 #ifndef _DRERRNO_H_
 #define _DRERRNO_H_
@@ -24,6 +24,10 @@ extern int drerrno;		/* global errno */
 #define DRE_DIFJOBSIZE      16	/* Different jobsize (number of jobs) than expected */
 #define DRE_GETSHMEM        17	/* Could not allocate (Get) shared memory */
 #define DRE_ATTACHSHMEM     18	/* Could not attach shared memory */
+#define DRE_NOTMPDIR        19	/* No temporary directory */
+#define DRE_NODBDIR         20	/* No database directory */
+#define DRE_NOLOGDIR        21  /* No logs directory */
+#define DRE_NOBINDIR        22  /* No bin directory */
 
 char *drerrno_str (void);
 
