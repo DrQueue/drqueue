@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.3 2001/05/28 14:21:31 jorge Exp $ */
+/* $Id: communications.c,v 1.4 2001/05/30 15:11:47 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -18,6 +18,7 @@
 #include "logger.h"
 #include "job.h"
 #include "drerrno.h"
+#include "task.h"
 
 int get_socket (short port)
 {
@@ -54,7 +55,7 @@ int accept_socket (int sfd,struct database *wdb,int *index)
   if ((fd = accept (sfd,(struct sockaddr *)&addr,&len)) != -1) {
     *index = computer_index_addr (wdb,addr.sin_addr);
   } else {
-    log_master ("Error: accepting connection.");
+    log_master ("ERROR: accepting connection.");
     exit (1);
   }
 
@@ -68,7 +69,7 @@ int accept_socket_slave (int sfd)
   int len;
 
   if ((fd = accept (sfd,(struct sockaddr *)&addr,&len)) == -1) {
-    log_slave_computer ("Error: accepting connection.");
+    log_slave_computer ("ERROR: accepting connection.");
     exit (1);
   }
 
@@ -128,10 +129,10 @@ void recv_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo,int who)
     if ((r == -1) || ((r == 0) && (bleft > 0))) {
       /* if r is error or if there are no more bytes left on the socket but there _SHOULD_ be */
       if (who == MASTER) {
-	log_master ("Error: receiving computer_hwinfo");
+	log_master ("ERROR: receiving computer_hwinfo");
 	exit (1);
       } else if (who == SLAVE) {
-	log_slave_computer ("Error: receiving computer_hwinfo");
+	log_slave_computer ("ERROR: receiving computer_hwinfo");
 	kill(0,SIGINT);
       } else {
 	fprintf (stderr,"ERROR: recv_computer_hwinfo: who value not valid !\n");
@@ -167,10 +168,10 @@ void send_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo,int who)
     if ((w == -1) || ((w == 0) && (bleft > 0))) {
       /* if w is error or if there are no more bytes are written but they _SHOULD_ be */
       if (who == MASTER) {
-	log_master ("Error: sending computer hardware info");
+	log_master ("ERROR: sending computer hardware info");
 	exit (1);
       } else if (who == SLAVE) {
-	log_slave_computer ("Error: sending computer hardware info");
+	log_slave_computer ("ERROR: sending computer hardware info");
 	kill(0,SIGINT);
       } else {
 	fprintf (stderr,"ERROR: send_computer_hwinfo: who value not valid !\n");
@@ -195,15 +196,15 @@ void recv_request (int sfd, struct request *request,int who)
       /* if r is error or if there are no more bytes left on the socket but there _SHOULD_ be */
       switch (who) {
       case MASTER:
-	log_master ("Error: receiving request");
+	log_master ("ERROR: receiving request");
 	exit (1);
 	break;
       case SLAVE:
-	log_slave_computer ("Error: receiving request");
+	log_slave_computer ("ERROR: receiving request");
 	kill(0,SIGINT);
 	break;
       case SLAVE_CHANDLER:
-	log_slave_computer ("Error: connection handler: receiving request");
+	log_slave_computer ("ERROR: connection handler: receiving request");
 	exit (1);
       case CLIENT:
 	fprintf (stderr,"ERROR: receiving request\n");
@@ -239,10 +240,10 @@ void send_request (int sfd, struct request *request,int who)
       /* if w is error or if there are no more bytes are written but they _SHOULD_ be */
       switch (who) {
       case MASTER:
-	log_master ("Error sending request");
+	log_master ("ERROR sending request");
 	exit (1);
       case SLAVE:
-	log_slave_computer ("Error sending request");
+	log_slave_computer ("ERROR sending request");
 	kill(0,SIGINT);
       case CLIENT:
 	fprintf (stderr,"ERROR: sending request");
@@ -284,10 +285,10 @@ void send_computer_status (int sfd, struct computer_status *status,int who)
     if ((w == -1) || ((w == 0) && (bleft > 0))) {
       /* if w is error or if there are no more bytes are written but they _SHOULD_ be */
       if (who == MASTER) {
-	log_master ("Error sending computer status");
+	log_master ("ERROR sending computer status");
 	exit (1);
       } else if (who == SLAVE) {
-	log_slave_computer ("Error sending computer status");
+	log_slave_computer ("ERROR sending computer status");
 	kill(0,SIGINT);
       } else {
 	fprintf (stderr,"ERROR: send_computer_status: who value not valid !\n");
@@ -313,10 +314,10 @@ void recv_computer_status (int sfd, struct computer_status *status,int who)
     if ((r == -1) || ((r == 0) && (bleft > 0))) {
       /* if r is error or if there are no more bytes left on the socket but there _SHOULD_ be */
       if (who == MASTER) {
-	log_master ("Error receiving computer status");
+	log_master ("ERROR receiving computer status");
 	exit (1);
       } else if (who == SLAVE) {
-	log_slave_computer ("Error receiving computer status");
+	log_slave_computer ("ERROR receiving computer status");
 	kill(0,SIGINT);
       } else {
 	fprintf (stderr,"ERROR: recv_computer_status: who value not valid !\n");
@@ -353,10 +354,10 @@ void recv_job (int sfd, struct job *job,int who)
     if ((r == -1) || ((r == 0) && (bleft > 0))) {
       /* if r is error or if there are no more bytes left on the socket but there _SHOULD_ be */
       if (who == MASTER) {
-	log_master ("Error: receiving job");
+	log_master ("ERROR: receiving job");
 	exit (1);
       } else if (who == SLAVE) {
-	log_slave_computer ("Error: receiving job");
+	log_slave_computer ("ERROR: receiving job");
 	kill(0,SIGINT);
       } else {
 	fprintf (stderr,"ERROR: recv_job: who value not valid !\n");
@@ -393,10 +394,10 @@ void send_job (int sfd, struct job *job,int who)
       /* if w is error or if there are no more bytes are written but they _SHOULD_ be */
       switch (who) {
       case MASTER:
-	log_master ("Error: sending job");
+	log_master ("ERROR: sending job");
 	exit (1);
       case SLAVE:
-	log_slave_computer ("Error: sending job");
+	log_slave_computer ("ERROR: sending job");
 	kill(0,SIGINT);
       case CLIENT:
 	fprintf (stderr,"ERROR: sending job\n");
@@ -409,14 +410,14 @@ void send_job (int sfd, struct job *job,int who)
   }
 }
 
-void recv_task (int sfd, struct job *job,int who)
+void recv_task (int sfd, struct task *task,int who)
 {
   int r;
   int bleft;
   void *buf;
 
-  buf = job;			/* So when copying to buf we're really copying into job */
-  bleft = sizeof (struct job);
+  buf = task;			/* So when copying to buf we're really copying into job */
+  bleft = sizeof (struct task);
   while ((r = read (sfd,buf,bleft)) < bleft) {
     bleft -= r;
     buf += r;
@@ -424,37 +425,38 @@ void recv_task (int sfd, struct job *job,int who)
     if ((r == -1) || ((r == 0) && (bleft > 0))) {
       /* if r is error or if there are no more bytes left on the socket but there _SHOULD_ be */
       if (who == MASTER) {
-	log_master ("Error: receiving job");
-	exit (1);
+	log_master ("ERROR: receiving task");
+	exit (0);
       } else if (who == SLAVE) {
-	log_slave_computer ("Error: receiving job");
+	log_slave_computer ("ERROR: receiving task");
 	kill(0,SIGINT);
       } else {
-	fprintf (stderr,"ERROR: recv_job: who value not valid !\n");
-	exit (1);
+	fprintf (stderr,"ERROR: recv_task: who value not valid !\n");
+	kill(0,SIGINT);
       }
     }
   }
-  /* Now we should have the computer hardware info with the values in */
+  /* Now we should have the task info with the values in */
   /* network byte order, so we put them in host byte order */
-  job->status = ntohs (job->status);
-  job->frame_start = ntohl (job->frame_start);
-  job->frame_end = ntohl (job->frame_end);
+  task->jobindex = ntohs (task->jobindex);
+  task->frame = ntohl (task->frame);
+  task->pid = ntohl (task->pid);
+
 }
 
-void send_job (int sfd, struct job *job,int who)
+void send_task (int sfd, struct task *task,int who)
 {
-  struct job bswapped;
+  struct task bswapped;
   int w;
   int bleft;
   void *buf = &bswapped;
   
   /* We make a copy coz we need to modify the values */
-  memcpy (buf,job,sizeof(bswapped));
+  memcpy (buf,task,sizeof(bswapped));
   /* Prepare for sending */
-  bswapped.status = htons (bswapped.status);
-  bswapped.frame_start = htonl (bswapped.frame_start);
-  bswapped.frame_end = htonl (bswapped.frame_end);
+  bswapped.jobindex = htons (bswapped.jobindex);
+  bswapped.frame = htonl (bswapped.frame);
+  bswapped.pid = htonl (bswapped.pid);
 
   bleft = sizeof (bswapped);
   while ((w = write(sfd,buf,bleft)) < bleft) {
@@ -464,17 +466,15 @@ void send_job (int sfd, struct job *job,int who)
       /* if w is error or if there are no more bytes are written but they _SHOULD_ be */
       switch (who) {
       case MASTER:
-	log_master ("Error: sending job");
-	exit (1);
+	log_master ("ERROR: sending task");
+	exit (0);
       case SLAVE:
-	log_slave_computer ("Error: sending job");
+	log_slave_computer ("ERROR: sending task");
 	kill(0,SIGINT);
-      case CLIENT:
-	fprintf (stderr,"ERROR: sending job\n");
-	exit (1);
+	break;
       default:
-	fprintf (stderr,"ERROR: send_job: who value not valid !\n");
-	exit (1);
+	fprintf (stderr,"ERROR: send_task: who value not valid !\n");
+	kill(0,SIGINT);
       }
     }
   }

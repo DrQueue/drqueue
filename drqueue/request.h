@@ -1,4 +1,4 @@
-/* $Id: request.h,v 1.3 2001/05/28 14:21:31 jorge Exp $ */
+/* $Id: request.h,v 1.4 2001/05/30 15:11:47 jorge Exp $ */
 /* The request structure is not just used for the requests themselves */
 /* but also for the answers to the requests */
 
@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "job.h"
 #include "database.h"
 #include "request_errors.h"
 #include "request_codes.h"
