@@ -1,4 +1,4 @@
-/* $Id: database.h,v 1.11 2001/11/16 15:48:32 jorge Exp $ */
+/* $Id: database.h,v 1.12 2001/11/22 14:43:14 jorge Exp $ */
 
 #ifndef _DATABASE_H_
 #define _DATABASE_H_
@@ -7,7 +7,7 @@
 #include "job.h"
 #include "computer.h"
 
-#define DB_VERSION 3		/* Database version. This version must change when we change the job structure */
+#define DB_VERSION 4		/* Database version. This version must change when we change the job structure */
 #define DB_MAGIC   0xADDEEFBE	/* magic number */
 
 struct database {
