@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.21 2001/08/31 15:55:08 jorge Exp $
+# $Id: Makefile,v 1.22 2001/09/01 16:31:41 jorge Exp $
 
 CC = gcc
 OBJS_LIBDRQUEUE = computer_info.o computer_status.o task.o logger.o communications.o \
@@ -10,11 +10,11 @@ IRIX_INSTROOT = $(INSTROOT)/irix
 LINUX_INSTROOT = $(INSTROOT)/linux
 
 ifeq ($(systype),linux)
-	CFLAGS = -Wall -I. -D__LINUX -g
+	CFLAGS = -Wall -I. -D__LINUX -g -O2
 	MAKE = make
 else 
  ifeq ($(systype),irix)
-	CFLAGS = -Wall -I. -D__IRIX -g
+	CFLAGS = -Wall -I. -D__IRIX -g -O2
 	MAKE = /usr/freeware/bin/gmake
  endif
 endif
