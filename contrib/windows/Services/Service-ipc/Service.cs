@@ -99,7 +99,7 @@ namespace Services
 			Process theProcess = new Process();
 			theProcess.StartInfo.UseShellExecute = true;
 	        theProcess.StartInfo.WorkingDirectory = Environment.GetEnvironmentVariable("DRQUEUE_BIN");
-		    theProcess.StartInfo.FileName = "ipc-daemon2.exe"; //theProcess.StartInfo.WorkingDirectory + "\\ipc-daemon2.exe";
+		    theProcess.StartInfo.FileName = "cygserver.exe"; //theProcess.StartInfo.WorkingDirectory + "\\cygserver.exe";
 			theProcess.Start();
 			eventLog1.WriteEntry(theProcess.StartInfo.FileName + " started !");
 
@@ -108,7 +108,7 @@ namespace Services
 		    	//Process []findProcess;
 		    	//do
 		    	//{
-		    		//findProcess = Process.GetProcessesByName("ipc-daemon2");
+		    		//findProcess = Process.GetProcessesByName("cygserver");
 		    	//}
 		    	//while (findProcess.Length < 1);
 				timer1.Start();
@@ -125,7 +125,7 @@ namespace Services
 		{
 			try
 			{
-				Process []findProcess = Process.GetProcessesByName("ipc-daemon2");
+				Process []findProcess = Process.GetProcessesByName("cygserver");
 				foreach (Process proc in findProcess)
 				{
 					proc.Kill();
@@ -143,7 +143,7 @@ namespace Services
 			elapsed += (int) System.Math.Round(timer1.Interval);
 			if (elapsed < 2000)
 				return;
-			Process []findProcess = Process.GetProcessesByName("ipc-daemon2");
+			Process []findProcess = Process.GetProcessesByName("cygserver");
 			if (findProcess.Length < 1)
 			{
 				ServiceController ctrl = new ServiceController("drqueue_ipc");

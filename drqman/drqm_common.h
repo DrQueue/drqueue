@@ -31,12 +31,10 @@
 GtkWidget *ConfirmDialog (char *text, GList *callbacks);
 GtkTooltips *TooltipsNew (void);
 
+#ifdef __CYGWIN
+char *conv_to_posix_path(char *win32_path);
+char *conv_to_win32_path(char *posix_path);
+#endif
+
 #endif /* _DRQM_COMMON_H */
-
-
-
-
-
-
-
 

@@ -9,17 +9,10 @@ and tcsh (used by drqueue)
 
 .run again cygwin setup with default settings to be sure verything is installed
 
-.run again cygwin setup and add this server 
-http://web.sfc.keio.ac.jp/~s01397ms/cygwin 
-choose gtk+-win32 in package list (show full list to find it)
-
-Installation may crach at the end, but it is not a problem as files are copied.
-If you have problem with gtk (crashing when there were some packages left to
-install), please select gtk+-win32 and verify that it will automaticly select 
-dependent packages (atk..), then deselect gtk+-win32 but keep previously 
-selected dependent packages, install this, and then rerun setup with just
-gtk+-win32 selected (which may crash setup again, but won't be a problem as
-dependent packages are already installed). 
+.get win32 glib-dev,gtk-dev and pkgconfig packages at
+http://www.gimp.org/~tml/gimp/win32/downloads.html
+Unzip all of them in cygwin path /usr/local/gtk
+Add /usr/local/gtk/bin to PATH environment variable
 
 .install nullsoft installation system (in default c: directory) from 
 http://nsis.sourceforge.net/download

@@ -53,10 +53,10 @@ else
 	  MAKE = gmake
 	 else
 	  ifeq ($(systype),CYGWIN_NT-5.1)
-	   CFLAGS = -DCOMM_REPORT -Wall -I. -D__CYGWIN -g -O2 -I/usr/include/cygipc 
-     CPPFLAGS = -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__CYGWIN -g -O2 -I/usr/include/cygipc
+	   CFLAGS = -DCOMM_REPORT -Wall -I. -D__CYGWIN -g -O2 
+     CPPFLAGS = -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__CYGWIN -g -O2
 	   MAKE = make
-	   LDFLAGS += -e _mainCRTStartup -mwindows -lcygipc contrib/windows/Resources/drqueue.res 
+	   UIFLAGS += #-e _mainCRTStartup -mwindows contrib/windows/Resources/drqueue.res 
  	  else
  $(error Cannot make DrQueue -- systype "$(systype)" is unknown)
 	  endif
@@ -123,7 +123,7 @@ CYGWIN_NT-5.1_install:
 	install -d -m 0777 $(INSTROOT)/contrib/windows
 	install -d -m 0777 $(INSTROOT)/contrib/windows/Installer
 	cp ./bin/*.exe $(INSTROOT)/bin/ || exit 0
-	cp `which ipc-daemon2` $(INSTROOT)/bin || exit 0
+	cp /usr/sbin/cygserver $(INSTROOT)/bin || exit 0
 	cp `which expr.exe` $(INSTROOT)/bin || exit 0
 	cp `which tcsh` $(INSTROOT)/bin || exit 0
 	cp ./etc/* $(INSTROOT)/etc/ || exit 0
@@ -218,9 +218,9 @@ clean:
 libdrqueue.a : $(OBJS_LIBDRQUEUE) libdrqueue.h
 	ar sq $@ $(OBJS_LIBDRQUEUE)
 slave: slave.o libdrqueue.a
-	$(CC) -o $@ slave.o libdrqueue.a $(LDFLAGS) 
+	$(CC) -o $@ slave.o libdrqueue.a $(LDFLAGS) $(UIFLAGS) 
 master: master.o libdrqueue.a
-	$(CC) -o $@ master.o libdrqueue.a $(LDFLAGS) 
+	$(CC) -o $@ master.o libdrqueue.a $(LDFLAGS) $(UIFLAGS) 
 requeue: requeue.o libdrqueue.a
 requeue.o: requeue.c
 	$(CC) -c $(CFLAGS) -o $@ $<
