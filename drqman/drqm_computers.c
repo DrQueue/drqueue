@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_computers.c,v 1.1 2001/07/19 09:22:25 jorge Exp $
+ * $Id: drqm_computers.c,v 1.2 2001/07/19 10:23:44 jorge Exp $
  */
 
 #include <string.h>
@@ -80,9 +80,9 @@ static GtkWidget *CreateClist (GtkWidget *window)
   gtk_container_add(GTK_CONTAINER(window),clist);
   gtk_clist_column_titles_show(GTK_CLIST(clist));
   gtk_clist_column_titles_passive(GTK_CLIST(clist));
-  gtk_clist_set_column_width (GTK_CLIST(clist),0,45);
-  gtk_clist_set_column_width (GTK_CLIST(clist),1,75);
-  gtk_clist_set_column_width (GTK_CLIST(clist),2,75);
+  gtk_clist_set_column_width (GTK_CLIST(clist),0,75);
+  gtk_clist_set_column_width (GTK_CLIST(clist),1,100);
+  gtk_clist_set_column_width (GTK_CLIST(clist),2,100);
   gtk_clist_set_column_width (GTK_CLIST(clist),4,45);
   gtk_widget_show(clist);
 
@@ -122,10 +122,10 @@ void drqm_update_computerlist (struct info_drqm_computers *info)
   gtk_clist_freeze(GTK_CLIST(info->clist));
   gtk_clist_clear(GTK_CLIST(info->clist));
   for (i=0; i < info->ncomputers; i++) {
-    snprintf (buff[0],BUFFERLEN,"%i",info->computers[i].hwinfo.numproc);
+    snprintf (buff[0],BUFFERLEN,"%i",info->computers[i].status.ntasks);
     strncpy(buff[1],info->computers[i].hwinfo.name,BUFFERLEN);
     snprintf (buff[2],BUFFERLEN,"REGISTERED");
-    snprintf (buff[3],BUFFERLEN,"%i",info->computers[i].status.ntasks);
+    snprintf (buff[3],BUFFERLEN,"%i",info->computers[i].hwinfo.numproc);
     gtk_clist_append(GTK_CLIST(info->clist),buff);
   }
   gtk_clist_thaw(GTK_CLIST(info->clist));
