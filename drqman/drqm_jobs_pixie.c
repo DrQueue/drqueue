@@ -202,7 +202,7 @@ static void dnj_koj_frame_pixie_bcreate_pressed (GtkWidget *button, struct drqmj
   strncpy (pixiesgi.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_pixie.escene)),BUFFERLEN-1);
   strncpy (pixiesgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->koji_pixie.escript)),BUFFERLEN-1);
 
-#ifdef CYGWIN
+#ifdef __CYGWIN
   strncpy(pixiesgi.scene, conv_to_posix_path(pixiesgi.scene), BUFFERLEN-1);
   strncpy(pixiesgi.scriptdir, conv_to_posix_path(pixiesgi.scriptdir), BUFFERLEN-1);
 #endif
