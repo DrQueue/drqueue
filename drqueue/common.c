@@ -1,9 +1,10 @@
-/* $Id: common.c,v 1.3 2001/09/05 15:17:38 jorge Exp $ */
+/* $Id: common.c,v 1.4 2001/10/25 13:17:36 jorge Exp $ */
 
 #include <stdlib.h>
 
 #include "common.h"
 #include "drerrno.h"
+#include "constants.h"
 
 int common_environment_check (void)
 {
@@ -30,3 +31,12 @@ void show_version (char **argv)
   printf ("\n");
 }
 
+int remove_dir (char *dir)
+{
+  /* Removes a directory recursively */
+  char cmd[BUFFERLEN];
+
+  snprintf (cmd,BUFFERLEN,"rm -fR %s",dir);
+
+  return system (cmd);
+}
