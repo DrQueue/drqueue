@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.7 2001/07/06 14:38:01 jorge Exp $ */
+/* $Id: computer.c,v 1.8 2001/07/06 15:07:09 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -20,9 +20,11 @@ int computer_index_addr (void *pwdb,struct in_addr addr)
   char msg[BUFFERLEN];
   char *name;
 
-  if ((host = gethostbyaddr (&addr,sizeof (struct in_addr),AF_INET)) == NULL) {
-    snprintf(msg,BUFFERLEN-1,"Could not resolve name for: %s\n",name = inet_ntoa(addr));
+  if ((host = gethostbyaddr ((const void *)&addr.s_addr,sizeof (struct in_addr),AF_INET)) == NULL) {
+    snprintf(msg,BUFFERLEN-1,"Could not resolve name for: %s",inet_ntoa(addr));
+    fprintf (stderr,"%s\n",msg);
     log_master (L_WARNING,msg);
+    return -1;
   } else {
     if ((dot = strchr (host->h_name,'.')) != NULL) 
       *dot = '\0';
