@@ -293,6 +293,16 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
   info->cdd.lcpuinfo = label;
 
+	// Memory
+	hbox = gtk_hbox_new (TRUE,2);
+	gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+	label = gtk_label_new ("System memory:");
+	gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
+	gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+	label = gtk_label_new (NULL);
+	gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+	info->cdd.lmemory = label;
+
   /* Load average */
   hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
@@ -446,6 +456,10 @@ int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
 	   proctypestring(info->computers[info->row].hwinfo.proctype),
 	   info->computers[info->row].hwinfo.procspeed);
   gtk_label_set_text (GTK_LABEL(info->cdd.lcpuinfo),msg);
+
+	// Memory
+	snprintf (msg,BUFFERLEN,"%i Mb",info->computers[info->row].hwinfo.memory);
+	gtk_label_set_text (GTK_LABEL(info->cdd.lmemory),msg);
   
   snprintf(msg,BUFFERLEN-1,"%i %i %i",
 	   info->computers[info->row].status.loadavg[0],
