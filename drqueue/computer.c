@@ -312,7 +312,7 @@ int computer_pool_add (struct computer_limits *cl, char *pool)
 	}
 
 	if ((npool = computer_pool_attach_shared_memory(npoolshmid)) == (void *) -1) {
-		fprintf (stderr,"Could not attach old shared memory\n");
+		fprintf (stderr,"Could not attach new shared memory\n");
 		return 0;
 	}
 	
