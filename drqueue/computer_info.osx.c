@@ -36,7 +36,7 @@ void get_hwinfo (struct computer_hwinfo *hwinfo)
   hwinfo->proctype = PROCTYPE_PPC;
   hwinfo->ncpus = get_numproc();
   hwinfo->speedindex = get_speedindex (hwinfo);
-	len = 8; // Hardcoded (?)
+	len = 8; // FIXME Hardcoded (?)
 	sysctlbyname ("hw.cpufrequency",&freq,&len,NULL,0);
   hwinfo->procspeed = freq / 10e5;
 	hwinfo->memory = get_memory ();
@@ -44,7 +44,13 @@ void get_hwinfo (struct computer_hwinfo *hwinfo)
 
 uint32_t get_memory (void)
 {
-	return 0;
+	size_t len = 8; // FIXME hardcoded ?
+	uint64_t memory;
+
+	sysctlbyname ("hw.memsize",&memory,&len,NULL,0);
+	memory /= 1024*1024;
+
+	return memory;
 }
 
 int get_numproc (void)
