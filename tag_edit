@@ -2,20 +2,18 @@
 
 if ($ARGV[1] eq "add") {
     print "Tag added on $ARGV[2]\n";
-    open (FILE,"common.h");
+    open (FILE,"common.h") || exit 0;
     @lines = <FILE>;
     close (FILE);
-    if (scalar(@lines) > 0) {
-	open (FILE,">common.h");
-	foreach $line (@lines) {
-	    if ($line =~ /VERSION/) {
-		print FILE "#define VERSION \"$ARGV[0]\"\n";
-		next;
-	    }
-	    print FILE $line;
+    open (FILE,">common.h");
+    foreach $line (@lines) {
+	if ($line =~ /VERSION/) {
+	    print FILE "#define VERSION \"$ARGV[0]\"\n";
+	    next;
 	}
-	close (FILE);
+	print FILE $line;
     }
+    close (FILE);
 } elsif ($ARGV[1] eq "mov") {
     print "Tag moved\n";
 } elsif ($ARGV[1] eq "del") {
