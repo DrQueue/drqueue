@@ -695,6 +695,7 @@ int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp)
   if (computer_ntasks_job(&wdb->computer[icomp],ijob) >= wdb->job[ijob].limits.nmaxcpuscomputer)
     return 0;
 
+	// Solved bug 0000003
   if ((wdb->computer[icomp].hwinfo.os == OSF_LINUX) && !(wdb->job[ijob].limits.os_flags & OSF_LINUX))
 		return 0;
   if ((wdb->computer[icomp].hwinfo.os == OSF_IRIX) && !(wdb->job[ijob].limits.os_flags & OSF_IRIX))
