@@ -29,8 +29,10 @@
 
 #include "libdrqueue.h"
 
-#define ACTION_ADD 0
-#define ACTION_DEL 1
+#define ACTION_NONE 0
+#define ACTION_ADD  1
+#define ACTION_DEL  2
+#define ACTION_LIST 3
 
 void usage (void);
 
@@ -39,9 +41,12 @@ int main (int argc,char *argv[])
   int opt;
   uint32_t ijob = -1;
 	uint32_t icomp = -1;
-	int action = ACTION_ADD;
+	int action = ACTION_NONE;
+	struct blocked_host *bh;
+	uint16_t nblocked;
+	int i;
 	
-  while ((opt = getopt (argc,argv,"j:a:d:vh")) != -1) {
+  while ((opt = getopt (argc,argv,"lj:a:d:vh")) != -1) {
     switch (opt) {
     case 'a':
 			action = ACTION_ADD;
@@ -50,6 +55,9 @@ int main (int argc,char *argv[])
 		case 'd':
 			action = ACTION_DEL;
 			icomp = atoi (optarg);
+			break;
+		case 'l':
+			action = ACTION_LIST;
 			break;
     case 'j':
       ijob = atoi (optarg);
@@ -64,7 +72,7 @@ int main (int argc,char *argv[])
     }
   }
 
-  if ((icomp == -1) || (ijob == -1)) {
+  if ((ijob == -1) || (action == ACTION_NONE)) {
     usage ();
     exit (1);
   }
@@ -89,6 +97,12 @@ int main (int argc,char *argv[])
   		}
   		printf ("Host unblocked successfully\n");
 			break;
+		case ACTION_LIST:
+			request_job_list_blocked_host (ijob,&bh,&nblocked,CLIENT);
+			for (i=0;i<nblocked;i++) {
+				printf ("%i\t%s\n",i,bh[i].name);
+			}
+			break;
 	}
 
   exit (0);
@@ -98,9 +112,11 @@ void usage (void)
 {
     fprintf (stderr,"Usage: blockhost [-vh] -c <computer_id> -j <job_id>\n"
 										"       blockhost [-vh] -d <computer_pos> -j <job_id>\n"
+										"       blockhost [-vh] -l -j <job_id>\n"
 	     "Valid options:\n"
 	     "\t-a <computer_id> adds computer to the list of blocked hosts\n"
 			 "\t-d <computer_pos> deletes computer on position computer_pos from the list of blocked hosts\n"
+	     "\t-l will print a list of blocked hosts for a job\n"
 	     "\t-j <job_id>\n"
 	     "\t-v print version\n"
 	     "\t-h print this help\n");
