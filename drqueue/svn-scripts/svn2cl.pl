@@ -17,7 +17,8 @@ use strict;
 
 my %hackers = (
     "jorge"     => "Jorge Daza <jorge\@drqueue.org>",
-    "caedes"     => "Pablo Martin <caedes\@sindominio.net>"
+    "caedes"    => "Pablo Martin <caedes\@sindominio.net>",
+    "kraken"	=> "Vincent Dedun <kraken+spam\@smousseland.com>"
 );
 
 my $parse_next_line = 0;
