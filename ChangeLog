@@ -1,3 +1,28 @@
+2004-10-23 19:06:01  Rev 901    jorge
+
+	* common.h:
+	  New version number on common.h: 0.51.9
+
+2004-10-23 18:54:46  Rev 900    jorge
+
+	* libdrqueue.h:
+	  Bugfix of sendjob
+
+2004-10-23 18:48:50  Rev 899    jorge
+
+	* drqman/drqm_jobs_jdd.c:
+	  Reverse blocked host selection list
+
+2004-10-23 16:45:26  Rev 898    jorge
+
+	* Revision:
+	  New Revision commited by build_package.sh
+
+2004-10-23 16:45:02  Rev 896    jorge
+
+	* ChangeLog:
+	  Changelog commited by build_package.sh
+
 2004-10-23 16:44:33  Rev 895    jorge
 
 	* common.h:
