@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.20 2001/08/27 15:22:58 jorge Exp $ */
+/* $Id: communications.c,v 1.21 2001/08/27 21:15:32 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -24,12 +24,14 @@ int get_socket (short port)
 {
   int sfd;
   struct sockaddr_in addr;
+  char opt = 1;
 
   sfd = socket (PF_INET,SOCK_STREAM,0);
   if (sfd == -1) {
     perror ("socket");
     exit (1);
   } else {
+    setsockopt(sfd,SOL_SOCKET,SO_REUSEADDR,(char *)&opt,sizeof(opt));
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
     addr.sin_addr.s_addr = htonl(INADDR_ANY);
