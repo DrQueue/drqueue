@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.41 2004/04/26 16:25:51 jorge Exp $ */
+/* $Id: job.h,v 1.42 2004/10/06 16:16:57 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -115,6 +115,7 @@ typedef enum {
 #define OSF_IRIX          (1<<0) /* If set will run on Irix */
 #define OSF_LINUX         (1<<1) /* If set will run on Linux */
 #define OSF_OSX						(1<<2) /* If set will run on OSX */
+#define OSF_FREEBSD				(1<<3) /* If set will run on FreeBSD */
 
 /* THE JOB ITSELF */
 struct job {

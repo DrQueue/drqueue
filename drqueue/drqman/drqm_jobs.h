@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.33 2004/03/09 18:53:22 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.34 2004/10/06 16:16:57 jorge Exp $
  */
 
 #ifndef _DRQM_JOBS_H_
@@ -26,6 +26,7 @@ struct drqmj_limits {
   GtkWidget *cb_irix;		/* Check buttons */
   GtkWidget *cb_linux;
 	GtkWidget *cb_osx;
+	GtkWidget *cb_freebsd;
 };
 
 struct drqmj_flags {
