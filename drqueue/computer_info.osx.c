@@ -43,31 +43,11 @@ void get_hwinfo (struct computer_hwinfo *hwinfo)
 
 int get_numproc (void)
 {
-	FILE *system_profiler;
-	int nprocs = 1;
-	char buf[BUFFERLEN];
-	int found = 1;
-	char *fd;
+	size_t len;
+	int ncpu;
 
-	if ((system_profiler = popen ("/usr/sbin/system_profiler -detailLevel -2","r")) == NULL) {
-		fprintf (stderr, "Warning: Problems executing '/usr/sbin/system_profiler'\n");
-		return nprocs;
-	}
+	sysctlbyname ("hw.ncpu",NULL,&len,NULL,0);
+	sysctlbyname ("hw.ncpu",&ncpu,&len,NULL,0);
 
-	while (!found || (fgets(buf,BUFFERLEN,system_profiler) != NULL)) {
-		if (strstr(buf,"CPUs") != NULL) {
-			fd = buf;
-			while (!isdigit((int)*fd))
-				fd++;
-			if (sscanf (fd,"%i\n",&nprocs) == 1) {
-				found = 1;
-			} else {
-				fprintf (stderr,"Warning: get_numproc. Found but not read !\n");
-			}
-		}
-	}
-
-	pclose (system_profiler);
-
-	return nprocs;
+	return ncpu;
 }
