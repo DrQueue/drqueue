@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.25 2001/10/25 13:19:53 jorge Exp $ */
+/* $Id: job.h,v 1.26 2001/11/09 15:01:05 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -87,6 +87,8 @@ struct job {
   time_t est_finish_time;	/* Estimated finish time */
   struct frame_info *frame_info; /* Status of every frame */
   int fishmid;			/* Shared memory id for the frame_info structure */
+
+  uint32_t flags;		/* Job flags */
 
   struct job_limits limits;
 };

@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.44 2001/10/25 13:19:52 jorge Exp $ */
+/* $Id: job.c,v 1.45 2001/11/09 15:01:04 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -104,6 +104,8 @@ void job_init (struct job *job)
   job->used = 0;
   job->frame_info = NULL;
   job->fishmid = -1;		/* -1 when not reserved */
+
+  job->flags = 0;
 }
 
 void job_delete (struct job *job)
