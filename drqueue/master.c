@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.10 2001/07/06 14:47:14 jorge Exp $ */
+/* $Id: master.c,v 1.11 2001/07/06 15:07:09 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -211,7 +211,7 @@ void clean_out (int signal, siginfo_t *info, void *data)
 
   kill(0,SIGINT);		/* Kill all the children (Wow, I don't really want to do that...) */
   while ((child_pid = wait (&rc)) != -1) {
-    printf ("Child arrived ! %i\n",child_pid); 
+    printf ("Child arrived ! %i\n",(int)child_pid); 
   }
   log_master (L_INFO,"Cleaning...");
 
