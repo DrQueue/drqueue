@@ -217,9 +217,9 @@ void drqm_request_slave_limits_maxfreeloadcpu_set (char *slave,uint32_t maxfreel
   request_slave_limits_maxfreeloadcpu_set (slave,maxfreeloadcpu,CLIENT);
 }
 
-void drqm_request_slave_limits_autoenable_set (char *slave,uint32_t h, uint32_t m)
+void drqm_request_slave_limits_autoenable_set (char *slave,uint32_t h, uint32_t m, unsigned char flags)
 {
-  request_slave_limits_autoenable_set (slave,h,m,CLIENT);
+  request_slave_limits_autoenable_set (slave,h,m,flags,CLIENT);
 }
 
 void drqm_request_slave_task_kill (char *slave,uint16_t itask)

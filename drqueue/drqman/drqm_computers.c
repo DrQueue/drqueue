@@ -354,7 +354,7 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
   /* Limits autoenable */
   hbox = gtk_hbox_new (FALSE,0);
   gtk_box_pack_start (GTK_BOX(vbox2),hbox,FALSE,FALSE,2);
-  label = gtk_label_new ("Autoenable time:");
+  label = gtk_label_new ("Autoenable Time:");
   gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
   gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
   hbox2 = gtk_hbox_new (FALSE,0);
@@ -468,10 +468,15 @@ int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
   snprintf(msg,BUFFERLEN-1,"%i",
 	   info->computers[info->row].limits.maxfreeloadcpu);
   gtk_label_set_text (GTK_LABEL(info->cdd.limits.lmaxfreeloadcpu),msg);
-  snprintf(msg,BUFFERLEN-1,"%i:%02i",
-	   info->computers[info->row].limits.autoenable.h,
-	   info->computers[info->row].limits.autoenable.m);
-  gtk_label_set_text (GTK_LABEL(info->cdd.limits.lautoenabletime),msg);
+	// Limits autoenable
+	if (info->computers[info->row].limits.autoenable.flags &= AEF_ACTIVE) {
+		snprintf(msg,BUFFERLEN-1,"%i:%02i",
+						 info->computers[info->row].limits.autoenable.h,
+						 info->computers[info->row].limits.autoenable.m);
+		gtk_label_set_text (GTK_LABEL(info->cdd.limits.lautoenabletime),msg);
+	} else {
+		gtk_label_set_text (GTK_LABEL(info->cdd.limits.lautoenabletime),"OFF");
+	}
 
   /* Tasks clist */
   buff = (char**) g_malloc((ncols + 1) * sizeof(char*));
@@ -737,6 +742,7 @@ void cdd_limits_autoenable_bcp (GtkWidget *button, struct drqm_computers_info *i
   GtkWidget *dialog;
 
   dialog = autoenable_change_dialog (info);
+
   if (dialog)
     gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
@@ -749,17 +755,28 @@ GtkWidget *autoenable_change_dialog (struct drqm_computers_info *info)
   GtkWidget *label;
   GtkWidget *entry;
   GtkWidget *button;
+	GtkWidget *cbutton;
   char msg[BUFFERLEN];
 
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW(window),"New autoenable time");
+  gtk_window_set_title (GTK_WINDOW(window),"Change autoenable settings");
   gtk_window_set_policy(GTK_WINDOW(window),FALSE,FALSE,TRUE);
   vbox = gtk_vbox_new (FALSE,2);
   gtk_container_add(GTK_CONTAINER(window),vbox);
 
+
   hbox = gtk_hbox_new (FALSE,2);
   gtk_box_pack_start(GTK_BOX(vbox),hbox,FALSE,FALSE,2);
-  label = gtk_label_new ("New autoenable time:");
+
+	// Checkbutton
+	cbutton = gtk_check_button_new_with_label ("Enabled");
+	gtk_box_pack_start(GTK_BOX(hbox),cbutton,FALSE,FALSE,2);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(cbutton),
+															 (info->computers[info->row].limits.autoenable.flags &= AEF_ACTIVE));
+	info->cdd.limits.cautoenable = cbutton;
+
+	// Label
+  label = gtk_label_new ("New time:");
   gtk_box_pack_start(GTK_BOX(hbox),label,FALSE,FALSE,2);
 
   hbox2 = gtk_hbox_new (FALSE,2);
@@ -785,7 +802,7 @@ GtkWidget *autoenable_change_dialog (struct drqm_computers_info *info)
   button = gtk_button_new_with_label ("Submit");
   gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
   gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(aecd_bsumbit_pressed),info);
-/*    gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(cdd_update),info); */
+	gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(cdd_update),info);
   gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
 			     GTK_SIGNAL_FUNC(gtk_widget_destroy),
 			     (gpointer) window);
@@ -804,6 +821,7 @@ GtkWidget *autoenable_change_dialog (struct drqm_computers_info *info)
 void aecd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info)
 {
   uint32_t h,m;			/* Hour, minute */
+	unsigned char flags ;
   char msg[BUFFERLEN];
 
   if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->cdd.limits.eautoenabletime_h)),"%u",&h) != 1)
@@ -812,10 +830,17 @@ void aecd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info)
   if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->cdd.limits.eautoenabletime_m)),"%u",&m) != 1)
     return;			/* Error in the entry */
 
+	flags = info->computers[info->row].limits.autoenable.flags;
+	if (GTK_TOGGLE_BUTTON(info->cdd.limits.cautoenable)->active) {
+		flags |= AEF_ACTIVE;
+	} else {
+		flags &= !AEF_ACTIVE;
+	}
+
   h = h % 24;
   m = m % 60;
 
-  drqm_request_slave_limits_autoenable_set(info->computers[info->row].hwinfo.name,h,m);
+  drqm_request_slave_limits_autoenable_set(info->computers[info->row].hwinfo.name,h,m,flags);
 
   info->computers[info->row].limits.autoenable.h = h;
   info->computers[info->row].limits.autoenable.m = m;

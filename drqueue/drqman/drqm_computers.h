@@ -39,6 +39,7 @@ struct drqmc_cddi {		/* computer details dialog information */
     GtkWidget *enmaxcpus;	/* Entry */
     GtkWidget *lmaxfreeloadcpu;	/* Label maximum free load cpu */
     GtkWidget *emaxfreeloadcpu;	/* Entry */
+		GtkWidget *cautoenable;			/* Autoenable checkbox */
     GtkWidget *lautoenabletime;	/* Autoenable time */
     GtkWidget *eautoenabletime_h; /* Entry for the hour */
     GtkWidget *eautoenabletime_m; /* Entry for the minutes */
