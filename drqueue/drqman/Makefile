@@ -37,7 +37,7 @@ else
     MAKE = gmake
    else
     ifeq ($(systype),CYGWIN_NT-5.1)
-     CFLAGS = -Wall -I.. -D__CYGWIN -g `pkg-config --cflags gtk+-2.0` -mms-bitfields -O2
+     CFLAGS = -Wall -I.. -D__CYGWIN -g `$(GTK_PATH)/pkg-config --cflags gtk+-2.0` -mms-bitfields -O2
      LDFLAGS = `$(GTK_PATH)/pkg-config --libs gtk+-2.0` -e _mainCRTStartup -mwindows ../contrib/windows/Resources/drqueue.res 
      MAKE = make
     else
