@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.23 2001/09/25 15:54:53 jorge Exp $ */
+/* $Id: job.h,v 1.24 2001/10/08 12:31:06 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -113,6 +113,7 @@ void job_frame_waiting (struct database *wdb,uint32_t ijob, int iframe);
 void job_update_assigned (struct database *wdb,uint32_t ijob, int iframe, int icomp, int itask);
 void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job);
 void job_init (struct job *job);
+void job_frame_info_init (struct frame_info *fi);
 void job_delete (struct job *job);
 int job_njobs_masterdb (struct database *wdb);
 void job_update_info (struct database *wdb,uint32_t ijob);
