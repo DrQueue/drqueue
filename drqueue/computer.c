@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.31 2002/02/26 15:52:04 jorge Exp $ */
+/* $Id: computer.c,v 1.32 2002/02/27 16:36:35 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -23,14 +23,12 @@ int computer_index_addr (void *pwdb,struct in_addr addr)
   struct hostent *host;
   char *dot;
   int i=0;
-  char msg[BUFFERLEN];
   char *name;
 
   log_master (L_DEBUG,"Entering computer_index_addr");
 
   if ((host = gethostbyaddr ((const void *)&addr.s_addr,sizeof (struct in_addr),AF_INET)) == NULL) {
-    snprintf(msg,BUFFERLEN-1,"Could not resolve name for: %s",inet_ntoa(addr));
-    log_master (L_WARNING,msg);
+    log_master (L_WARNING,"Could not resolve name for: %s",inet_ntoa(addr));
     return -1;
   }
 
@@ -51,8 +49,7 @@ int computer_index_addr (void *pwdb,struct in_addr addr)
   index = computer_index_name (pwdb,name);
   semaphore_release(((struct database *)pwdb)->semid);
 
-  snprintf (msg,BUFFERLEN-1,"Exiting computer_index_addr. Index of computer %s is %i.",name,index);
-  log_master (L_DEBUG,msg);
+  log_master (L_DEBUG,"Exiting computer_index_addr. Index of computer %s is %i.",name,index);
 
   return index;
 }

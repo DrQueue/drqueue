@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.35 2002/02/26 15:52:04 jorge Exp $ */
+/* $Id: master.c,v 1.36 2002/02/27 16:36:35 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -320,10 +320,12 @@ void set_alarm (void)
 
 void sigalarm_handler (int signal, siginfo_t *info, void *data)
 {
+  char *msg = "Connection time exceeded";
+
   if (icomp != -1)
-    log_master_computer (&wdb->computer[icomp],L_WARNING,"Connection time exceeded");
+    log_master_computer (&wdb->computer[icomp],L_WARNING,msg);
   else
-    log_master (L_WARNING,"Connection time exceeded");
+    log_master (L_WARNING,msg);
   exit (1);
 }
 
@@ -371,15 +373,14 @@ void check_lastconn_times (struct database *wdb)
 {
   int i;
   time_t now;
-  char msg [BUFFERLEN];
 
   time(&now);
   for (i=0;i<MAXCOMPUTERS;i++) {
     if (wdb->computer[i].used) {
       if ((now - wdb->computer[i].lastconn) > MAXTIMENOCONN) {
-	snprintf (msg,BUFFERLEN-1,"Maximum time without connecting exceeded. Deleting. (Time not connected: %i)",
-		  (int) (now - wdb->computer[i].lastconn));
-	log_master_computer (&wdb->computer[i],L_WARNING,msg);
+	log_master_computer (&wdb->computer[i],L_WARNING,
+			     "Maximum time without connecting exceeded. Deleting. (Time not connected: %i)",
+			     (int) (now - wdb->computer[i].lastconn));
 	semaphore_lock(wdb->semid);
 	/* We only need to remove it this way, without requeueing its frames because */
 	/* the frames will be requeued on the consistency checks (job_update_info) */

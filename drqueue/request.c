@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.73 2002/02/27 10:42:50 jorge Exp $ */
+/* $Id: request.c,v 1.74 2002/02/27 16:36:35 jorge Exp $ */
 #include <unistd.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -1567,7 +1567,6 @@ void handle_r_r_jobfwait (int sfd,struct database *wdb,int icomp,struct request 
   uint32_t iframe;
   uint32_t nframes;
   struct frame_info *fi;
-  char msg[BUFFERLEN];
 
   log_master(L_DEBUG,"Entering handle_r_r_jobfwait");
 
@@ -1579,8 +1578,7 @@ void handle_r_r_jobfwait (int sfd,struct database *wdb,int icomp,struct request 
 
   frame = req->data;
   
-  snprintf(msg,BUFFERLEN-1,"Requested job frame waiting for Job %i Frame %i ",ijob,frame);
-  log_master(L_DEBUG,msg);
+  log_master(L_DEBUG,"Requested job frame waiting for Job %i Frame %i ",ijob,frame);
 
   semaphore_lock(wdb->semid);
 
@@ -1769,7 +1767,6 @@ void handle_r_r_jobffini (int sfd,struct database *wdb,int icomp,struct request 
   uint32_t iframe;
   uint32_t nframes;
   struct frame_info *fi;
-  char msg[BUFFERLEN];
 
   log_master(L_DEBUG,"Entering handle_r_r_jobffini");
 
@@ -1781,8 +1778,7 @@ void handle_r_r_jobffini (int sfd,struct database *wdb,int icomp,struct request 
 
   frame = req->data;
   
-  snprintf(msg,BUFFERLEN-1,"Requested job frame finish for Job %i Frame %i ",ijob,frame);
-  log_master(L_DEBUG,msg);
+  log_master(L_DEBUG,"Requested job frame finish for Job %i Frame %i ",ijob,frame);
 
   semaphore_lock(wdb->semid);
 
