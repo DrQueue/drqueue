@@ -2081,6 +2081,8 @@ void handle_r_r_jobdelblkhost (int sfd, struct database *wdb, int icomp, struct 
 	log_master(L_DEBUG,"Entering handle_r_r_jobdelblkhost");
 
 	ijob = req->data;
+	if (!job_index_correct_master(wdb,ijob))
+		return;
 
 	if (!recv_request(sfd,req)) {
 		return;
@@ -2110,7 +2112,7 @@ void handle_r_r_jobdelblkhost (int sfd, struct database *wdb, int icomp, struct 
 		tnbh = nbh;
 		for (i=0; i < wdb->job[ijob].nblocked; i++) {
 			if (i != ihost) {
-				memcpy (tnbh,obh,sizeof(struct blocked_host));
+				memcpy (tnbh,&obh[i],sizeof(struct blocked_host));
 				tnbh++;
 			} else {
 				log_master_job(&wdb->job[ijob],L_INFO,"Deleted host %s from block list.",obh[i].name);
