@@ -3,18 +3,19 @@
     <File name=".\AssemblyInfo.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\Form1.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
     <File name=".\ServicesController.Form1.resources" subtype="Code" buildaction="EmbedAsResource" dependson="" data="" />
-    <File name=".\App.ico" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\led-off.ico" subtype="Code" buildaction="EmbedAsResource" dependson="" data="" />
+    <File name=".\led-on.ico" subtype="Code" buildaction="EmbedAsResource" dependson="" data="" />
   </Contents>
   <References />
   <DeploymentInformation target="" script="" strategy="File" />
   <Configuration runwithwarnings="True" name="Debug">
-    <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" mainclass="" target="WinExe" definesymbols="DEBUG;TRACE" generatexmldocumentation="False" win32Icon="" noconfig="False" nostdlib="False" />
+    <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" mainclass="" target="WinExe" definesymbols="DEBUG;TRACE" generatexmldocumentation="False" win32Icon="..\Resources\drqueue.ico" noconfig="False" nostdlib="False" />
     <Execution commandlineparameters="" consolepause="True" />
     <Output directory=".\bin\Debug\" assembly="ServicesController" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
   </Configuration>
   <Configurations active="Debug">
     <Configuration runwithwarnings="True" name="Debug">
-      <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" mainclass="" target="WinExe" definesymbols="DEBUG;TRACE" generatexmldocumentation="False" win32Icon="" noconfig="False" nostdlib="False" />
+      <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" mainclass="" target="WinExe" definesymbols="DEBUG;TRACE" generatexmldocumentation="False" win32Icon="..\Resources\drqueue.ico" noconfig="False" nostdlib="False" />
       <Execution commandlineparameters="" consolepause="True" />
       <Output directory=".\bin\Debug\" assembly="ServicesController" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
     </Configuration>

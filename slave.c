@@ -40,7 +40,7 @@
 #endif
 
 #ifdef __CYGWIN
-  void cygwin_conv_to_posix_path(const char *path, char *posix_path);
+//  void cygwin_conv_to_posix_path(const char *path, char *posix_path);
 #endif
 
 #include "slave.h"

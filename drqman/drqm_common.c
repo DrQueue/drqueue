@@ -24,6 +24,12 @@
 
 #include "drqm_common.h"
 
+#ifdef __CYGWIN
+#include <malloc.h>
+void cygwin_conv_to_posix_path(const char *path, char *posix_path);
+void cygwin_conv_to_win32_path(const char *path, char *win32_path);
+#endif
+
 GtkWidget *ConfirmDialog (char *text, GList *callbacks)
 {
   GtkWidget *dialog;
@@ -76,3 +82,29 @@ GtkTooltips *TooltipsNew (void)
 
   return tooltips;
 }
+
+#ifdef __CYGWIN
+
+char *conv_to_posix_path(char *win32_path)
+{
+  char *posix_path;
+
+  if ((posix_path = malloc(MAXCMDLEN)) == NULL)
+	return (NULL);
+  cygwin_conv_to_posix_path(win32_path, posix_path);
+  return (posix_path);
+}
+
+
+char *conv_to_win32_path(char *posix_path)
+{
+  char *win32_path;
+
+  if ((win32_path = malloc(MAXCMDLEN)) == NULL)
+	return(NULL);
+  cygwin_conv_to_win32_path(posix_path, win32_path);
+  return (win32_path);
+
+}
+#endif
+

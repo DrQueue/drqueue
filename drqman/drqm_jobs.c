@@ -48,10 +48,6 @@
 // Icon includes
 #include "job_icon.h"
 
-#ifdef __CYGWIN
- void cygwin_conv_to_win32_path(const char *path, char *win32_path);
-#endif
-
 /* Static functions declaration */
 static GtkWidget *CreateJobsList(struct drqm_jobs_info *info);
 static GtkWidget *CreateClist (GtkWidget *window);
@@ -737,17 +733,7 @@ static void dnj_psearch (GtkWidget *button, struct drqmj_dnji *info)
 
 static void dnj_set_cmd (GtkWidget *button, struct drqmj_dnji *info)
 {
-#ifdef __CYGWIN
-  char *win32_path;
-
-  if ((win32_path = malloc(MAXCMDLEN)) == NULL)
-	return;
-  cygwin_conv_to_win32_path(gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fs)), win32_path);
-  gtk_entry_set_text (GTK_ENTRY(info->ecmd), win32_path);
-#else
   gtk_entry_set_text (GTK_ENTRY(info->ecmd),gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fs)));
-#endif
-
 }
 
 static void dnj_cpri_changed (GtkWidget *entry, struct drqmj_dnji *info)
@@ -807,7 +793,11 @@ static int dnj_submit (struct drqmj_dnji *info)
   strncpy(job.name,gtk_entry_get_text(GTK_ENTRY(info->ename)),MAXNAMELEN-1);
   if (strlen(job.name) == 0)
     return 0;
+#ifdef __CYGWIN
+  strncpy(job.cmd,conv_to_posix_path(gtk_entry_get_text(GTK_ENTRY(info->ecmd))),MAXCMDLEN-1);
+#else
   strncpy(job.cmd,gtk_entry_get_text(GTK_ENTRY(info->ecmd)),MAXCMDLEN-1);
+#endif
   if (strlen(job.cmd) == 0)
     return 0;
   if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->esf)),"%u",&job.frame_start) != 1)

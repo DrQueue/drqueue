@@ -151,6 +151,7 @@ Section "SectionPrincipale" SEC01
   File "..\..\..\etc\drqman.conf"
   CreateShortCut "$SMPROGRAMS\drqueue\drqman.conf.lnk" "$INSTDIR\etc\drqman.conf"
   File "..\..\..\etc\drqman.rc"
+  File "..\..\..\etc\drqman-windows.rc"
   File "..\..\..\etc\master.conf"
   File "..\..\..\etc\maya.sg"
   File "..\..\..\etc\mentalray.sg"
@@ -205,6 +206,9 @@ Section -Post
   Push "DRQUEUE_ISSLAVE"
   Push "$InstallationSlave"
   Call WriteEnvStr
+  Push "CYGWIN"
+  Push "server"
+  Call WriteEnvStr
   
   !insertmacro SERVICE "delete" "drqueue_master" ""
   !insertmacro SERVICE "delete" "drqueue_ipc" ""
@@ -247,6 +251,7 @@ Section Uninstall
   Delete "$INSTDIR\etc\maya.sg"
   Delete "$INSTDIR\etc\master.conf"
   Delete "$INSTDIR\etc\drqman.rc"
+  Delete "$INSTDIR\etc\drqman-windows.rc"
   Delete "$INSTDIR\etc\drqman.conf"
   Delete "$INSTDIR\etc\bmrt.sg"
   Delete "$INSTDIR\etc\blender.sg"
@@ -294,6 +299,8 @@ Section Uninstall
   Push "DRQUEUE_MASTER"
   Call un.DeleteEnvStr
   Push "DRQUEUE_ISSLAVE"
+  Call un.DeleteEnvStr
+  Push "CYGWIN"
   Call un.DeleteEnvStr
 
   !undef UN

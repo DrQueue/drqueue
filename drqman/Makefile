@@ -2,6 +2,10 @@
 # $Id$
 #
 
+ifeq ($(origin GTK_PATH),undefined)
+GTK_PATH = /usr/local/gtk/bin
+endif
+
 CC = gcc
 OBJS = main.o notebook.o drqm_jobs.o drqm_request.o drqm_computers.o drqm_common.o drqm_info.o \
 				drqm_jobs_maya.o drqm_jobs_mentalray.o drqm_jobs_blender.o drqm_jobs_bmrt.o \
@@ -33,8 +37,8 @@ else
     MAKE = gmake
    else
     ifeq ($(systype),CYGWIN_NT-5.1)
-     CFLAGS = -Wall -I.. -D__CYGWIN -g `pkg-config --cflags gtk+-2.0` -O2
-     LDFLAGS = `pkg-config --libs gtk+-2.0` -e _mainCRTStartup -mwindows ../contrib/windows/Resources/drqueue.res 
+     CFLAGS = -Wall -I.. -D__CYGWIN -g `pkg-config --cflags gtk+-2.0` -mms-bitfields -O2
+     LDFLAGS = `$(GTK_PATH)/pkg-config --libs gtk+-2.0` #-e _mainCRTStartup -mwindows ../contrib/windows/Resources/drqueue.res 
      MAKE = make
     else
 $(error Cannot make DrQueueManager -- systype "$(systype)" is unknown)
