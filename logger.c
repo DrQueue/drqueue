@@ -1,4 +1,4 @@
-/* $Id: logger.c,v 1.20 2002/02/26 15:52:04 jorge Exp $ */
+/* $Id: logger.c,v 1.21 2002/02/27 10:42:34 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -20,6 +20,9 @@
 
 int loglevel = L_WARNING;
 int logonscreen = 0;
+
+/* One important detail about the logger functions is that all of them */
+/* add the trailing newline (\n). So the message shouldn't have it. */
 
 void log_slave_task (struct task *task,int level,char *fmt,...)
 {
@@ -102,16 +105,22 @@ FILE *log_slave_open_task (struct task *task)
   return f;
 }
 
-void log_slave_computer (int level, char *msg)
+void log_slave_computer (int level, char *fmt, ...)
 {
   FILE *f_log;
   char name2[MAXNAMELEN];
   char *name = NULL;		/* To only make a call to gethostname */
-  char buf[BUFFERLEN];
+  char buf[BUFFERLEN];		/* Buffer to hold the current time */
+  char msg[BUFFERLEN];
   time_t now;
-  
+  va_list ap;
+
   if (level > loglevel)
     return;
+
+  va_start (ap,fmt);
+  vsnprintf (msg,BUFFERLEN-1,fmt,ap);
+  va_end (ap);
 
   time (&now);
   strncpy (buf,ctime(&now),BUFFERLEN-1);
@@ -163,14 +172,20 @@ FILE *log_slave_open_computer (char *name)
   return f;
 }
 
-void log_master_job (struct job *job, int level, char *msg)
+void log_master_job (struct job *job, int level, char *fmt, ...)
 {
   FILE *f_log;
-  char buf[BUFFERLEN];
+  char buf[BUFFERLEN];		/* Buffer to hold the time */
+  char msg[BUFFERLEN];
   time_t now;
-  
+  va_list ap;
+
   if (level > loglevel)
     return;
+
+  va_start (ap,fmt);
+  vsnprintf (msg,BUFFERLEN-1,fmt,ap);
+  va_end (ap);
 
   time (&now);
   strncpy (buf,ctime(&now),BUFFERLEN-1);
@@ -193,14 +208,20 @@ void log_master_job (struct job *job, int level, char *msg)
     fclose (f_log);
 }
 
-void log_master_computer (struct computer *computer, int level, char *msg)
+void log_master_computer (struct computer *computer, int level, char *fmt, ...)
 {
   FILE *f_log;
   char buf[BUFFERLEN];
+  char msg[BUFFERLEN];
   time_t now;
+  va_list ap;
   
   if (level > loglevel)
     return;
+
+  va_start (ap,fmt);
+  vsnprintf (msg,BUFFERLEN-1,fmt,ap);
+  va_end (ap);
 
   time (&now);
   strncpy (buf,ctime(&now),BUFFERLEN-1);
@@ -223,14 +244,20 @@ void log_master_computer (struct computer *computer, int level, char *msg)
     fclose (f_log);
 }
 
-void log_master (int level,char *msg)
+void log_master (int level,char *fmt, ...)
 {
   FILE *f_log;
-  char buf[BUFFERLEN];
+  char buf[BUFFERLEN];		/* Buffer to hold the time */
+  char msg[BUFFERLEN];
   time_t now;
+  va_list ap;
   
   if (level > loglevel)
     return;
+
+  va_start (ap,fmt);
+  vsnprintf (msg,BUFFERLEN-1,fmt,ap);
+  va_end (ap);
 
   time (&now);
   strncpy (buf,ctime(&now),BUFFERLEN-1);
