@@ -54,6 +54,7 @@ void get_hwinfo (struct computer_hwinfo *hwinfo)
 
   bl=8;
   sysctlbyname("machdep.tsc_freq", &sysctl_data,&bl,NULL,0);
+	if (bl < 8) sysctl_data &= (2LL << (8*bl))-1;
   hwinfo->procspeed = (sysctl_data+500000)/1000000;
 
   bl=8;
