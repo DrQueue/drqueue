@@ -1,3 +1,28 @@
+2004-10-24 10:34:47  Rev 907    jorge
+
+	* common.h:
+	  New version number on common.h: 0.51.10
+
+2004-10-24 09:26:19  Rev 906    jorge
+
+	* drqman/Makefile:
+	  FreeBSD bugfix
+
+2004-10-24 09:21:38  Rev 905    jorge
+
+	* slave.h:
+	  FreeBSD compilation bugfix
+
+2004-10-23 19:06:45  Rev 904    jorge
+
+	* Revision:
+	  New Revision commited by build_package.sh
+
+2004-10-23 19:06:24  Rev 902    jorge
+
+	* ChangeLog:
+	  Changelog commited by build_package.sh
+
 2004-10-23 19:06:01  Rev 901    jorge
 
 	* common.h:
