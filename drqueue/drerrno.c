@@ -1,4 +1,4 @@
-/* $Id: drerrno.c,v 1.4 2001/08/22 09:02:48 jorge Exp $ */
+/* $Id: drerrno.c,v 1.5 2001/08/27 08:14:12 jorge Exp $ */
 
 #include "drerrno.h"
 #include "constants.h"
@@ -36,6 +36,9 @@ char *drerrno_str (void)
     break;
   case DRE_ERRORRECEIVING:
     msg = "Error receiving through socket";
+    break;
+  case DRE_NOTREGISTERED:
+    msg = "Structure (job,computer,task...) not registered";
     break;
   default:
     msg = "drerrno NOT listed !!";
