@@ -1017,16 +1017,18 @@ static void ContinueJob (GtkWidget *menu_item, struct drqm_jobs_info *info)
 static void HStopJob (GtkWidget *menu_item, struct drqm_jobs_info *info)
 {
   GtkWidget *dialog;
-  GList *cbs = NULL ;		/* callbacks */
+  GList *cbs = NULL ;		/* callbacks, pairs (function, argument)*/
 
   if (!info->selected)
     return;
   
   cbs = g_list_append (cbs,job_hstop_cb);
+	cbs = g_list_append (cbs,info);
   cbs = g_list_append (cbs,dnj_destroyed);
+	cbs = g_list_append (cbs,info);
 
   dialog = ConfirmDialog ("Do you really want to hard stop the job?\n(This will kill all current running processes)",
-			  cbs,info);
+			  cbs);
 
   g_list_free (cbs);
 
@@ -1585,10 +1587,11 @@ static void jdd_kill_frames_confirm (GtkWidget *button, struct drqm_jobs_info *i
   }
   
   cbs = g_list_append (cbs,jdd_kill_frames);
+	cbs = g_list_append (cbs,info_dj);
 
   dialog = ConfirmDialog ("Do you really want to kill and requeue the running frames?\n"
 			  "(You will lose the partially rendered images)",
-			  cbs,info_dj);
+			  cbs);
 
   g_list_free (cbs);
 
@@ -1642,10 +1645,11 @@ static void jdd_kill_finish_frames_confirm (GtkWidget *button, struct drqm_jobs_
   }
   
   cbs = g_list_append (cbs,jdd_kill_finish_frames);
+  cbs = g_list_append (cbs,info);
 
   dialog = ConfirmDialog ("Do you really want to kill and set as finished the running frames?\n"
 			  "(Running frames won't be really finished even when they are marked as so)",
-			  cbs,info);
+			  cbs);
 
   g_list_free (cbs);
 
