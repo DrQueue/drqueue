@@ -281,7 +281,7 @@ void computer_autoenable_check (struct slave_database *sdb)
 
   time (&now);
 
-  if ((sdb->comp->limits.autoenable.flags &= AEF_ACTIVE) 
+  if ((sdb->comp->limits.autoenable.flags & AEF_ACTIVE) 
 			&& ((now - sdb->comp->limits.autoenable.last) > AE_DELAY))
 	{
     /* If more time than AE_DELAY has passed since the last autoenable */
