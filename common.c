@@ -1,4 +1,4 @@
-/* $Id: common.c,v 1.13 2003/12/15 22:18:32 jorge Exp $ */
+/* $Id$ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -77,12 +77,30 @@ void show_version (char **argv)
   printf ("\n");
 }
 
+int rmdir_check_str (char *path)
+{
+	// This function should test a path's validity
+	// So we don't pass a wrong path to remove_dir by mistake
+
+	if (strstr(path,"/../") != NULL)
+		return 1;
+	if (strchr(path,'"') != NULL)
+		return 1;	
+	if (strchr(path,'\'') != NULL)
+		return 1;
+
+	return 0;
+}
+
 int remove_dir (char *dir)
 {
   /* Removes a directory recursively */
   char cmd[BUFFERLEN];
 
-  snprintf (cmd,BUFFERLEN,"rm -fR %s",dir);
+	if (rmdir_check_str (dir)) // Check the path. If wrong don't remove
+		return 0;
+
+  snprintf (cmd,BUFFERLEN,"rm -fR '%s'",dir);
 
   return system (cmd);
 }
