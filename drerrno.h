@@ -1,4 +1,4 @@
-/* $Id: drerrno.h,v 1.10 2001/11/15 14:30:57 jorge Exp $ */
+/* $Id: drerrno.h,v 1.11 2001/11/21 10:15:22 jorge Exp $ */
 
 #ifndef _DRERRNO_H_
 #define _DRERRNO_H_
@@ -28,6 +28,7 @@ extern int drerrno;		/* global errno */
 #define DRE_NODBDIR         20	/* No database directory */
 #define DRE_NOLOGDIR        21  /* No logs directory */
 #define DRE_NOBINDIR        22  /* No bin directory */
+#define DRE_NOETCDIR        23	/* No etc directory */
 
 char *drerrno_str (void);
 
