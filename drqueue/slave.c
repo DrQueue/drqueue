@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.16 2001/07/13 15:44:00 jorge Exp $ */
+/* $Id: slave.c,v 1.17 2001/07/19 10:22:18 jorge Exp $ */
 
 #include <unistd.h>
 #include <signal.h>
@@ -194,11 +194,17 @@ void set_signal_handlers_child_chandler (void)
 void set_signal_handlers_child_launcher (void)
 {
   struct sigaction action_ignore;
+  struct sigaction action_dfl;
 
   action_ignore.sa_handler = SIG_IGN;
   sigemptyset (&action_ignore.sa_mask);
   sigaction (SIGINT, &action_ignore, NULL);
   sigaction (SIGTERM, &action_ignore, NULL);
+
+  action_dfl.sa_sigaction = (void *)SIG_DFL;
+  sigemptyset (&action_dfl.sa_mask);
+  action_dfl.sa_flags = SA_SIGINFO;
+  sigaction (SIGCLD, &action_dfl, NULL);
 }
 
 void set_signal_handlers_task_exec (void)
