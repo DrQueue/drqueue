@@ -1,5 +1,5 @@
 /* 
- * $Id: drqm_jobs_bmrt.c,v 1.3 2003/12/18 21:38:32 jorge Exp $ 
+ * $Id: drqm_jobs_bmrt.c,v 1.4 2003/12/19 17:42:37 jorge Exp $ 
  */
 
 #include <string.h>
@@ -58,7 +58,8 @@ GtkWidget *dnj_koj_frame_bmrt (struct drqm_jobs_info *info)
   button = gtk_button_new_with_label ("Search");
   gtk_tooltips_set_tip(tooltips,button,"File selector for the bmrt scene file",NULL);
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
-  gtk_signal_connect (GTK_OBJECT(button),"clicked",dnj_koj_frame_bmrt_scene_search,&info->dnj.koji_bmrt);
+  g_signal_connect (G_OBJECT(button),"clicked",
+										G_CALLBACK(dnj_koj_frame_bmrt_scene_search),&info->dnj.koji_bmrt);
 
   /* Custom crop */
   hbox = gtk_hbox_new (TRUE,2);
@@ -66,7 +67,7 @@ GtkWidget *dnj_koj_frame_bmrt (struct drqm_jobs_info *info)
 	cbutton = gtk_check_button_new_with_label ("Crop (xmin,xmax,ymin,ymax):");
 	info->dnj.koji_bmrt.cbcrop = cbutton;
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(cbutton),FALSE);
-	gtk_signal_connect (GTK_OBJECT(cbutton),"toggled",GTK_SIGNAL_FUNC(dnj_flags_cbcrop_toggled),info);
+	g_signal_connect (G_OBJECT(cbutton),"toggled",G_CALLBACK(dnj_flags_cbcrop_toggled),info);
 	gtk_box_pack_start(GTK_BOX(hbox),cbutton,FALSE,FALSE,2);
 
 	entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
@@ -95,7 +96,7 @@ GtkWidget *dnj_koj_frame_bmrt (struct drqm_jobs_info *info)
 	cbutton = gtk_check_button_new_with_label ("Samples:");
 	info->dnj.koji_bmrt.cbsamples = cbutton;
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(cbutton),FALSE);
-	gtk_signal_connect (GTK_OBJECT(cbutton),"toggled",GTK_SIGNAL_FUNC(dnj_flags_cbsamples_toggled),info);
+	g_signal_connect (G_OBJECT(cbutton),"toggled",G_CALLBACK(dnj_flags_cbsamples_toggled),info);
 	gtk_box_pack_start(GTK_BOX(hbox),cbutton,FALSE,FALSE,2);
 	entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
 	gtk_widget_set_sensitive(GTK_WIDGET(entry),FALSE);
@@ -130,7 +131,7 @@ GtkWidget *dnj_koj_frame_bmrt (struct drqm_jobs_info *info)
 	cbutton = gtk_check_button_new_with_label ("Radiosity samples:");
 	info->dnj.koji_bmrt.cbradiositysamples = cbutton;
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(cbutton),FALSE);
-	gtk_signal_connect (GTK_OBJECT(cbutton),"toggled",GTK_SIGNAL_FUNC(dnj_flags_cbradiositysamples_toggled),info);
+	g_signal_connect (G_OBJECT(cbutton),"toggled",G_CALLBACK(dnj_flags_cbradiositysamples_toggled),info);
 	gtk_box_pack_start(GTK_BOX(hbox),cbutton,FALSE,FALSE,2);
 	entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
 	gtk_widget_set_sensitive(GTK_WIDGET(entry),FALSE);
@@ -140,7 +141,7 @@ GtkWidget *dnj_koj_frame_bmrt (struct drqm_jobs_info *info)
 	cbutton = gtk_check_button_new_with_label ("Ray samples:");
 	info->dnj.koji_bmrt.cbraysamples = cbutton;
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(cbutton),FALSE);
-	gtk_signal_connect (GTK_OBJECT(cbutton),"toggled",GTK_SIGNAL_FUNC(dnj_flags_cbraysamples_toggled),info);
+	g_signal_connect (G_OBJECT(cbutton),"toggled",G_CALLBACK(dnj_flags_cbraysamples_toggled),info);
 	gtk_box_pack_start(GTK_BOX(hbox),cbutton,FALSE,FALSE,2);
 	entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
 	gtk_widget_set_sensitive(GTK_WIDGET(entry),FALSE);
@@ -175,7 +176,7 @@ GtkWidget *dnj_koj_frame_bmrt (struct drqm_jobs_info *info)
   button = gtk_button_new_with_label ("Search");
   gtk_tooltips_set_tip(tooltips,button,"File selector for the script directory",NULL);
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
-  gtk_signal_connect (GTK_OBJECT(button),"clicked",dnj_koj_frame_bmrt_script_search,&info->dnj.koji_bmrt);
+  g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(dnj_koj_frame_bmrt_script_search),&info->dnj.koji_bmrt);
 
   /* Buttons */
   /* Create script */
@@ -187,8 +188,8 @@ GtkWidget *dnj_koj_frame_bmrt (struct drqm_jobs_info *info)
   gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,TRUE,2);
   switch (info->dnj.koj) {
   case KOJ_BMRT:
-    gtk_signal_connect (GTK_OBJECT(button),"clicked",
-			dnj_koj_frame_bmrt_bcreate_pressed,&info->dnj);
+    g_signal_connect (G_OBJECT(button),"clicked",
+			G_CALLBACK(dnj_koj_frame_bmrt_bcreate_pressed),&info->dnj);
     break;
   default:
     fprintf (stderr,"What ?!\n");

@@ -1,5 +1,5 @@
 /* 
- * $Id: drqm_jobs_maya.c,v 1.1 2003/12/18 04:11:07 jorge Exp $ 
+ * $Id: drqm_jobs_maya.c,v 1.2 2003/12/19 17:42:37 jorge Exp $ 
  */
 
 #include <string.h>
@@ -55,7 +55,8 @@ GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
   button = gtk_button_new_with_label ("Search");
   gtk_tooltips_set_tip(tooltips,button,"File selector for the maya scene file",NULL);
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
-  gtk_signal_connect (GTK_OBJECT(button),"clicked",dnj_koj_frame_maya_scene_search,&info->dnj.koji_maya);
+  g_signal_connect (G_OBJECT(button),"clicked",
+										G_CALLBACK(dnj_koj_frame_maya_scene_search),&info->dnj.koji_maya);
 
   /* Project directory */
   hbox = gtk_hbox_new (TRUE,2);
@@ -71,7 +72,8 @@ GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
   button = gtk_button_new_with_label ("Search");
   gtk_tooltips_set_tip(tooltips,button,"File selector for the maya render directory",NULL);
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
-  gtk_signal_connect (GTK_OBJECT(button),"clicked",dnj_koj_frame_maya_renderdir_search,&info->dnj.koji_maya);
+  g_signal_connect (G_OBJECT(button),"clicked",
+										G_CALLBACK(dnj_koj_frame_maya_renderdir_search),&info->dnj.koji_maya);
 
   /* Output Image file name */
   hbox = gtk_hbox_new (TRUE,2);
@@ -131,7 +133,8 @@ GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
   button = gtk_button_new_with_label ("Search");
   gtk_tooltips_set_tip(tooltips,button,"File selector for the script directory",NULL);
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
-  gtk_signal_connect (GTK_OBJECT(button),"clicked",dnj_koj_frame_maya_script_search,&info->dnj.koji_maya);
+  g_signal_connect (G_OBJECT(button),"clicked",
+										G_CALLBACK(dnj_koj_frame_maya_script_search),&info->dnj.koji_maya);
 
   /* Buttons */
   /* Create script */
@@ -142,12 +145,12 @@ GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
   gtk_tooltips_set_tip(tooltips,button,"Create automagically the script based on the given information",NULL);
   gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,TRUE,2);
   switch (info->dnj.koj) {
-  case KOJ_GENERAL:
-    fprintf (stderr,"What ?!\n");
-    break;
   case KOJ_MAYA:
-    gtk_signal_connect (GTK_OBJECT(button),"clicked",
-			dnj_koj_frame_maya_bcreate_pressed,&info->dnj);
+    g_signal_connect (G_OBJECT(button),"clicked",
+											G_CALLBACK(dnj_koj_frame_maya_bcreate_pressed),&info->dnj);
+    break;
+  default:
+    fprintf (stderr,"What ?!\n");
     break;
   }
 
