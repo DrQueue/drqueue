@@ -1,28 +1,22 @@
 TO DO:
 -----
 
-* Frame_info memory allocation and deallocation		[DONE]
-* Priority support for jobs				[DONE]
-* Check frames registered as running if running really	[DONE]
-* Process output logging				[DONE]
 * Checks at the beginning of every program for the 
   environment variables and directories.
-* Names of computers instead of id numbers
-* limit structures for jobs and computers
-* Master database saved and reloaded from disk
-* Update the r_r_taskfini protocol			[DONE]
-* -f to force if shared memory or semaphores exist	[DONE]
+* Names of computers instead of id numbers.
+* limit structures for jobs and computers.
+* Master database saved and reloaded from disk.
 * The slave must check that the requests come from the
-  master
+  master.
 * job permissions.
-* flag on master and slave to set logging level.	[DONE]
-* logging on screen					[DONE]
 * functions that return void in communications should
   return int. And error checking should be coded 
   extensively.
-* file locking on logging functions
+* file locking on logging functions.
 * check file descriptor numbers on connect to see if
   they grow.
+* Silent logging, no output at all.
+
 
 BUGS:
 ----
@@ -33,7 +27,7 @@ NOTES:
 
 * The frame number in the task struct is _different_ from iframe in the job handling stuff
 * I should use a dynamically allocated structure for the computers' tasks (or not?)
-* Both the index frame and the frame number are uint32 so no negative numbers supported.
+* Both the index frame and the frame number are uint32 so no negative numbers are supported.
 
 DRQMAN
 ------
@@ -44,5 +38,4 @@ BUGS:
 ----
 
 * In the new job dialog I cannot justify the labels to the left
-* When there is no job selected and you click on remove it removes row 0		[SOLVED]
 
