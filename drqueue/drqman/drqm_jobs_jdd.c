@@ -501,7 +501,17 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
 
 static void jdd_add_blocked_host (GtkWidget *button, struct drqm_jobs_info *info)
 {
-	request_job_add_blocked_host (info->jdd.job.id, atoi(gtk_entry_get_text(GTK_ENTRY(info->jdd.entry_bh))), CLIENT);
+  GList *sel;
+  uint32_t icomp;
+  
+  if (!(sel = GTK_CLIST(info->jdd.bhdi_computers_info.clist)->selection)) {
+    return;
+  }
+
+  for (;sel;sel = sel->next) {
+    icomp = (uint32_t) gtk_clist_get_row_data(GTK_CLIST(info->jdd.bhdi_computers_info.clist), (gint)sel->data);
+		request_job_add_blocked_host (info->jdd.job.id,icomp, CLIENT);
+  }
 }
 
 static GtkWidget *CreateFrameInfoClist (void)
@@ -801,8 +811,6 @@ static GtkWidget *jdd_add_blocked_host_dialog (struct drqm_jobs_info *info)
 {
 	GtkWidget *window;
 	GtkWidget *vbox,*hbox;
-	GtkWidget *label;
-	GtkWidget *entry;
 	GtkWidget *button;
 	GtkWidget *swindow;
 	GtkWidget *clist;
@@ -810,6 +818,7 @@ static GtkWidget *jdd_add_blocked_host_dialog (struct drqm_jobs_info *info)
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW(window),"Add host(s) to block list");
   gtk_window_set_policy(GTK_WINDOW(window),TRUE,TRUE,TRUE);
+	gtk_window_set_default_size (GTK_WINDOW(window),600,200);
   vbox = gtk_vbox_new (FALSE,2);
   gtk_container_add(GTK_CONTAINER(window),vbox);
 
@@ -830,15 +839,7 @@ static GtkWidget *jdd_add_blocked_host_dialog (struct drqm_jobs_info *info)
 
 	hbox = gtk_hbox_new (FALSE,2);
 	gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
-	label = gtk_label_new ("Computer Id :");
-	gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
-	entry = gtk_entry_new_with_max_length (BUFFERLEN);
-	gtk_box_pack_start (GTK_BOX(hbox),entry,FALSE,FALSE,2);
-	info->jdd.entry_bh = entry;
-
-	hbox = gtk_hbox_new (FALSE,2);
-	gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
-	button = gtk_button_new_with_label ("OK");
+	button = gtk_button_new_with_label ("Add");
 	gtk_box_pack_start (GTK_BOX(hbox),button, TRUE, TRUE, 2);
 	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(jdd_add_blocked_host),info);
 	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(jdd_update),info);
