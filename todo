@@ -18,6 +18,7 @@ TO DO:
 * Mail notifications
 * On the registration if the computer ip can not be resolved
   then use the string of the ip address as name.
+* There are no consistency checks in the slave. Should be.
 
 BUGS:
 ----
@@ -32,6 +33,7 @@ DRQMAN
 ------
 
 * Put KOJ information in the job details view
+* Buttons for changing job limits.
 * Autorefresh configurable
 * Watching the output logs as tail -f does.
 * Names of computers instead of id numbers.
