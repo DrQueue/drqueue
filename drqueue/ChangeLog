@@ -1,3 +1,38 @@
+2004-10-11 14:03:50  Rev 722    jorge
+
+	* common.h:
+	  New version number on common.h: 0.50rc5
+
+2004-10-11 14:03:29  Rev 721    jorge
+
+	* svn-scripts/build_release.sh:
+	  Commit Changelog added
+
+2004-10-11 13:59:54  Rev 720    jorge
+
+	* svn-scripts/build_release.sh:
+	  Revision update after tagging, not before
+
+2004-10-11 13:47:49  Rev 718    jorge
+
+	* Revision:
+	  Commited by build_release.sh
+
+2004-10-11 13:46:31  Rev 717    jorge
+
+	* Revision:
+	  Commited by build_release.sh
+
+2004-10-11 13:45:36  Rev 716    jorge
+
+	* svn-scripts/build_release.sh:
+	  Now it autocreates the tag
+
+2004-10-11 13:35:51  Rev 713    jorge
+
+	* ChangeLog Revision:
+	  Modified by buil_release.sh
+
 2004-10-11 13:33:54  Rev 712    jorge
 
 	* svn-scripts/build_release.sh:
