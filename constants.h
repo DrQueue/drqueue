@@ -1,4 +1,4 @@
-/* $Id: constants.h,v 1.13 2001/09/19 09:59:02 jorge Exp $ */
+/* $Id: constants.h,v 1.14 2001/11/23 15:29:07 jorge Exp $ */
 
 #ifndef _CONSTANTS_H_
 #define _CONSTANTS_H_
@@ -27,9 +27,9 @@
 
 /* Delays */
 #define SLAVEDELAY 15		/* Delay between each loop on the slave */
-#define MAXTIMECONNECTION 30	/* Maximum time that can take to handle a request */
+#define MAXTIMECONNECTION 20	/* Maximum time that can take to handle a request */
 #define MASTERCCHECKSDELAY 10	/* Delay between every consistency check */
-#define MAXTIMENOCONN 120	/* If this time is exceeded without connecting to the */
+#define MAXTIMENOCONN 30	/* If this time is exceeded without connecting to the */
                                 /* master the computer is erased from the db */
 
 /* Others */
