@@ -1,4 +1,4 @@
-/* $Id: request_codes.h,v 1.6 2001/07/19 09:05:53 jorge Exp $ */
+/* $Id: request_codes.h,v 1.7 2001/08/06 12:32:28 jorge Exp $ */
 
 #ifndef _REQUEST_CODES_H_
 #define _REQUEST_CODES_H_
@@ -17,5 +17,12 @@
 #define R_A_LISTJOBS 12		/* Answer to the previous */
 #define R_R_LISTCOMP 13		/* Request a list of current registered computers */
 #define R_A_LISTCOMP 14		/* Answer to the previous */
+#define R_R_DELETJOB 15		/* Request a job to be deleted */
+#define R_A_DELETJOB 16
+
+
+/* Requests to the slave */
+#define RS_R_KILLTASK 1		/* Request to slave to kill a task */
+#define RS_A_KILLTASK 2
 
 #endif /* _REQUEST_CODES_H_ */
