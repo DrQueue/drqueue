@@ -1,4 +1,4 @@
-/* $Id: constants.h,v 1.6 2001/05/28 14:21:31 jorge Exp $ */
+/* $Id: constants.h,v 1.7 2001/06/05 12:19:45 jorge Exp $ */
 
 #ifndef _CONSTANTS_H_
 #define _CONSTANTS_H_
@@ -9,7 +9,7 @@
 #define CLIENT 3		/* General to clients, like sendjob or so */
 
 #define SLAVEDELAY 15		/* Delay between each loop on the slave */
-#define MAXJOBS 2		/* Maximum number of jobs */
+#define MAXJOBS 100		/* Maximum number of jobs */
 #define MAXCOMPUTERS 100	/* Maximum number of computers */
 #define MASTERPORT 1234		/* Master listening port */
 #define SLAVEPORT 2345		/* Slave listening port */
@@ -25,6 +25,7 @@
                                 /* master the computer is erased from the db */
 #define MAXFRAMES 1024		/* Maximum number of frames / 8 (so the real maximum is 8192) */
 				/* cause I use 1 bit for each frame */
+#define DFLTAVGFTIME 120	/* Default average frame time in seconds */
 
 #endif /* _CONSTANTS_H_ */
 

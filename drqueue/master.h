@@ -1,4 +1,4 @@
-/* $Id: master.h,v 1.3 2001/05/09 10:53:08 jorge Exp $ */
+/* $Id: master.h,v 1.4 2001/06/05 12:19:45 jorge Exp $ */
 
 #ifndef _MASTER_H_
 #define _MASTER_H_
@@ -16,6 +16,7 @@ void set_signal_handlers_child_cchecks (void);
 void clean_out (int signal, siginfo_t *info, void *data);
 void sigalarm_handler (int signal, siginfo_t *info, void *data);
 void sigpipe_handler (int signal, siginfo_t *info, void *data);
+void sigsegv_handler (int signal, siginfo_t *info, void *data);
 void set_alarm (void);
 
 void master_consistency_checks (struct database *wdb); /* Main consistency checks function */

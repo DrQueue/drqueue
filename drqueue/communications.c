@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.4 2001/05/30 15:11:47 jorge Exp $ */
+/* $Id: communications.c,v 1.5 2001/06/05 12:19:45 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -201,6 +201,7 @@ void recv_request (int sfd, struct request *request,int who)
 	break;
       case SLAVE:
 	log_slave_computer ("ERROR: receiving request");
+	perror ("read");
 	kill(0,SIGINT);
 	break;
       case SLAVE_CHANDLER:
@@ -370,6 +371,8 @@ void recv_job (int sfd, struct job *job,int who)
   job->status = ntohs (job->status);
   job->frame_start = ntohl (job->frame_start);
   job->frame_end = ntohl (job->frame_end);
+  job->avg_frame_time = ntohl (job->avg_frame_time);
+  job->est_finish_time = ntohl (job->avg_frame_time);
 }
 
 void send_job (int sfd, struct job *job,int who)
@@ -385,6 +388,8 @@ void send_job (int sfd, struct job *job,int who)
   bswapped.status = htons (bswapped.status);
   bswapped.frame_start = htonl (bswapped.frame_start);
   bswapped.frame_end = htonl (bswapped.frame_end);
+  bswapped.avg_frame_time = htonl (bswapped.avg_frame_time);
+  bswapped.est_finish_time = htonl (bswapped.est_finish_time);
 
   bleft = sizeof (bswapped);
   while ((w = write(sfd,buf,bleft)) < bleft) {
@@ -404,7 +409,7 @@ void send_job (int sfd, struct job *job,int who)
 	exit (1);
       default:
 	fprintf (stderr,"ERROR: send_job: who value not valid !\n");
-	exit (1);
+	kill(0,SIGINT);
       }
     }
   }
