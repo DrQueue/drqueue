@@ -1,4 +1,4 @@
-/* $Id: drqm_request.c,v 1.24 2001/10/25 13:20:16 jorge Exp $ */
+/* $Id: drqm_request.c,v 1.25 2001/11/07 10:21:46 jorge Exp $ */
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -51,7 +51,10 @@ void drqm_request_joblist (struct drqm_jobs_info *info)
   }
   tjob = info->jobs;
   for (i=0;i<info->njobs;i++) {
-    recv_job (sfd,tjob,CLIENT);
+    if (!recv_job (sfd,tjob)) {
+      fprintf (stderr,"ERROR: Receiving job (drqm_request_joblist)\n");
+      break;
+    }
     tjob++;
   }
 
@@ -96,7 +99,7 @@ void drqm_request_computerlist (struct drqm_computers_info *info)
   if (req.type == R_R_LISTCOMP) {
     info->ncomputers = req.data;
   } else {
-    fprintf (stderr,"ERROR: Not appropiate answer to request R_R_TASKFINI\n");
+    fprintf (stderr,"ERROR: Not appropiate answer to request R_R_LISTCOMP\n");
     close (sfd);
     return;
   }
@@ -110,8 +113,8 @@ void drqm_request_computerlist (struct drqm_computers_info *info)
   tcomputer = info->computers;
   for (i=0;i<info->ncomputers;i++) {
     computer_init(tcomputer);
-    if (!recv_computer (sfd,tcomputer,CLIENT)) {
-      fprintf (stderr,"ERROR: Receiving computer structure\n");
+    if (!recv_computer (sfd,tcomputer)) {
+      fprintf (stderr,"ERROR: Receiving computer structure (drqm_request_computerlist)\n");
       exit (1);
     }
     tcomputer++;
