@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_computers.c,v 1.17 2001/09/18 09:25:03 jorge Exp $
+ * $Id: drqm_computers.c,v 1.18 2001/09/25 09:29:38 jorge Exp $
  */
 
 #include <stdlib.h>
@@ -77,6 +77,7 @@ static GtkWidget *CreateComputersList(struct drqm_computers_info *info)
 
   /* Scrolled window */
   window = gtk_scrolled_window_new(NULL,NULL);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   info->clist = CreateClist(window);
 
   /* Create the popup menu */
@@ -330,6 +331,7 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
   frame = gtk_frame_new ("Task information");
   gtk_box_pack_start (GTK_BOX(vbox),frame,TRUE,TRUE,2);
   swin = gtk_scrolled_window_new (NULL,NULL);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(swin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_container_add (GTK_CONTAINER(frame),swin);
   clist = CreateTasksClist ();
   gtk_container_add (GTK_CONTAINER(swin),clist);
