@@ -60,7 +60,7 @@ endif
 
 all: base drqman
 
-base: slave master requeue sendjob jobfinfo blockhost
+base: slave master requeue sendjob jobfinfo blockhost cjob
 
 install: miniinstall $(systype)_install 
 
@@ -129,6 +129,7 @@ ifeq ($(systype),IRIX)
 	install -root $(PWD) -m 0755 -f /bin -src requeue requeue.$(systype)
 	install -root $(PWD) -m 0755 -f /bin -src jobfinfo jobfinfo.$(systype)
 	install -root $(PWD) -m 0755 -f /bin -src blockhost blockhost.$(systype)
+	install -root $(PWD) -m 0755 -f /bin -src cjob cjob.$(systype)
 	test -x ./drqman/drqman && install -root $(PWD) -m 0755 -f /bin -src drqman/drqman drqman.$(systype) || test 1
 else
 	install -d -m 0755 bin
@@ -137,6 +138,7 @@ else
 	install -m 0755 -p ./requeue bin/requeue.$(systype)
 	install -m 0755 -p ./jobfinfo bin/jobfinfo.$(systype)
 	install -m 0755 -p ./blockhost bin/blockhost.$(systype)
+	install -m 0755 -p ./cjob bin/cjob.$(systype)
 	test -x ./drqman/drqman && install -m 0755 -p ./drqman/drqman bin/drqman.$(systype) || exit 0
 endif
 
@@ -147,7 +149,7 @@ tags:
 	etags *.[ch] drqman/*.[ch]
 
 clean:
-	rm -fR *.o *~ libdrqueue.a slave master sendjob requeue jobfinfo TAGS tmp/* logs/* db/* bin/*.$(systype)
+	rm -fR *.o *~ libdrqueue.a slave master sendjob requeue jobfinfo cjob TAGS tmp/* logs/* db/* bin/*.$(systype)
 	rm -fR blockhost
 	$(MAKE) -C drqman clean
 
@@ -165,6 +167,9 @@ jobfinfo.o: jobfinfo.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 blockhost: blockhost.o libdrqueue.a
 blockhost.o: blockhost.c
+	$(CC) -c $(CFLAGS) -o $@ $<
+cjob: cjob.o libdrqueue.a
+cjob.o: cjob.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 sendjob: sendjob.o libdrqueue.a
