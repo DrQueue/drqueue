@@ -23,12 +23,13 @@
 
 #include "database.h"
 
-#define KEY_MASTER "%s/bin/master"	/* Key for shared memory and semaphores */
+#define KEY_MASTER "%s/master"	/* Key for shared memory and semaphores */
 
 extern int phantom[2];
 
 void master_get_options (int *argc,char ***argv, int *force);
 void usage (void);
+void master_config_parse (char *cfg);
 
 int get_shared_memory (int force);
 int get_semaphores (int force);

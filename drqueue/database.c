@@ -65,13 +65,13 @@ database_load (struct database *wdb)
 	struct frame_info *fi;
 	int nframes;
 
-	if ((basedir = getenv ("DRQUEUE_ROOT")) == NULL) {
+	if ((basedir = getenv ("DRQUEUE_DB")) == NULL) {
 		/* This should never happen because we check it at the beginning of the program */
 		drerrno = DRE_NOENVROOT;
 		return 0;
 	}
 
-	snprintf (filename, BUFFERLEN - 1, "%s/db/drqueue.db", basedir);
+	snprintf (filename, BUFFERLEN - 1, "%s/drqueue.db", basedir);
 	if ((fd = open (filename, O_RDONLY)) == -1) {
 		drerrno = DRE_ERROROPENING;
 		return 0;
@@ -142,13 +142,13 @@ database_save (struct database *wdb)
 	int c;
 	struct frame_info *fi;
 
-	if ((basedir = getenv ("DRQUEUE_ROOT")) == NULL) {
+	if ((basedir = getenv ("DRQUEUE_DB")) == NULL) {
 		/* This should never happen because we check it at the beginning of the program */
 		drerrno = DRE_NOENVROOT;
 		return 0;
 	}
 
-	snprintf (dir, BUFFERLEN - 1, "%s/db", basedir);
+	snprintf (dir, BUFFERLEN - 1, "%s", basedir);
 	snprintf (filename, BUFFERLEN - 1, "%s/drqueue.db", dir);
 	if ((fd = open (filename, O_CREAT | O_TRUNC | O_RDWR, 0664)) == -1) {
 		if (errno == ENOENT) {
