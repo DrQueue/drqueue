@@ -1,8 +1,9 @@
-/* $Id: computer.h,v 1.15 2003/12/15 22:18:32 jorge Exp $ */
+/* $Id: computer.h,v 1.16 2004/01/24 00:19:08 jorge Exp $ */
 
 #ifndef _COMPUTER_H_
 #define _COMPUTER_H_
 
+#include <sys/types.h>
 #include <netinet/in.h>
 #include <time.h>
 
