@@ -136,7 +136,7 @@ union koj_info {		/* Kind of job information */
 #define KOJ_3DELIGHT    4	/* 3delight koj */
 #define KOJ_PIXIE       5	/* Pixie koj */
 #define KOJ_MENTALRAY   6	/* Mental Ray koj */
-#define KOJ_LIGHTWAVE	7
+#define KOJ_LIGHTWAVE   7 // Lightwave koj
 
 /* JOB SECTION */
 typedef enum {

@@ -47,7 +47,6 @@ char *lightwavesg_create (struct lightwavesgi *info)
   static char filename[BUFFERLEN];
   char fn_etc_lightwave_sg[BUFFERLEN]; /* File name pointing to DRQUEUE_ETC/lightwave.sg */
   char buf[BUFFERLEN];
-  char image_arg[BUFFERLEN];
   int size;
   char *p;			/* Scene filename without path */
   char *scene;
@@ -122,7 +121,7 @@ char *lightwavesg_create (struct lightwavesgi *info)
     fprintf(f,"echo So the default configuration will be used\n");
     fprintf(f,"echo -------------------------------------------------\n");
     fprintf(f,"\n\n");
-    fprintf(f,"lwsn -3 -d$DRQUEUE_RD -q$DRQUEUE_SCENE $DRQUEUE_FRAME $DRQUEUE_FRAME 1 %s\n\n",image_arg);
+    fprintf(f,"lwsn -3 -d$DRQUEUE_RD -q$DRQUEUE_SCENE $DRQUEUE_FRAME $DRQUEUE_FRAME 1\n\n");
   } else {
     fd_etc_lightwave_sg = fileno (etc_lightwave_sg);
     fd_f = fileno (f);
