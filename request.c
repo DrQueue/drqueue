@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.15 2001/07/20 08:27:59 jorge Exp $ */
+/* $Id: request.c,v 1.16 2001/07/24 10:31:00 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -555,14 +555,15 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
     /* Frame is in range */
     task.frame -= wdb->job[task.jobindex].frame_start;
     /* Now we should check the exit code to act accordingly */
-    if (WIFEXITED(task.exitstatus)) {
+    if (DR_WIFEXITED(task.exitstatus)) {
       fi[task.frame].status = FS_FINISHED;
-      fi[task.frame].exitcode = WEXITSTATUS(task.exitstatus);
+      fi[task.frame].exitcode = DR_WEXITSTATUS(task.exitstatus);
       time(&fi[task.frame].end_time);
     } else {
       /* Process exited abnormally either killed by us or by itself (SIGSEGV) */
-      if (WIFSIGNALED(task.exitstatus)) {
-	int sig = WTERMSIG(task.exitstatus);
+      if (DR_WIFSIGNALED(task.exitstatus)) {
+	int sig = DR_WTERMSIG(task.exitstatus);
+	printf ("\n\nSIGNALED with %i\n",sig);
 	if ((sig == SIGTERM) || (sig == SIGINT) || (sig == SIGKILL)) {
 	  /* Somebody killed the process, so it should be retried */
 	  snprintf(msg,BUFFERLEN-1,"Retrying frame %i", task.frame + wdb->job[task.jobindex].frame_start);
