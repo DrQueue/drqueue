@@ -1,4 +1,4 @@
-/* $Id: slave.h,v 1.8 2001/07/24 14:15:30 jorge Exp $ */
+/* $Id: slave.h,v 1.9 2001/07/24 14:49:36 jorge Exp $ */
 
 #ifndef _SLAVE_H_
 #define _SLAVE_H_
@@ -39,6 +39,6 @@ int get_semaphores_slave (void);
 void *attach_shared_memory_slave (int shmid);
 
 void zerocmd (char *cmd);
-char *parse_arg (const char *cmd,int pos);
+char *parse_arg (char *cmd,int pos,int len);
 
 #endif
