@@ -48,7 +48,7 @@ uint32_t get_memory (void)
 	uint64_t memory;
 
 	sysctlbyname ("hw.memsize",&memory,&len,NULL,0);
-	memory /= 1024*1024;
+	memory >>= 20;
 
 	return memory;
 }

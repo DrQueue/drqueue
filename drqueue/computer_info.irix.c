@@ -36,7 +36,33 @@ void get_hwinfo (struct computer_hwinfo *hwinfo)
 
 uint32_t get_memory (void)
 {
-	return 0;
+	FILE *hinv;
+	char buf[BUFFERLEN];
+	char* offset;
+	int memsize = 0;                      /* number of cpus */
+	int found = 0;
+
+	if ((hinv = popen ("/sbin/hinv","r")) == NULL) {
+		fprintf (stderr,"Warning: Problems executing '/sbin/hinv'\n");
+		return memsize;
+	}
+	
+	while (fgets (buf,BUFFERLEN,hinv) != NULL) {
+		if ((offset=strstr(buf,"memory size:")) != NULL) {
+			/* system memory in mbytes is on this line */
+			if (sscanf (offset+13,"%i",&memsize) == 1) {
+				found = 1;
+			}
+		}
+	}
+	
+	if (!found) {
+		fprintf (stderr,"ERROR: Memory size not found\n");
+	}
+	
+	pclose (hinv);
+	
+	return memsize;
 }
 
 t_proctype get_proctype (void)

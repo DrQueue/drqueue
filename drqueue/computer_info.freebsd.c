@@ -65,5 +65,11 @@ void get_hwinfo (struct computer_hwinfo *hwinfo)
 
 uint32_t get_memory (void)
 {
-	return 0;
+	uint64_t memory;
+	size_t len = sizeof(uint64_t);
+	
+	sysctlbyname ("hw.physmem",&memory,&len,NULL,0);
+	memory >>= 20 ;
+	
+	return (uint32_t)memory; 
 }
