@@ -310,6 +310,7 @@ int RegisterBlenderJobFromFile (std::ifstream &infile)
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
 	job.limits.memory = 0;
+	strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
 
   if (!register_job(&job)) {
 		std::cerr << "Error sending job to the queue\n";
