@@ -1,10 +1,12 @@
 /*
- * $Id: drqm_jobs.c,v 1.15 2001/08/28 09:56:46 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.16 2001/08/28 15:35:55 jorge Exp $
  */
 
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <pwd.h>
+#include <sys/types.h>
 
 #include "drqm_request.h"
 #include "drqm_jobs.h"
@@ -26,6 +28,10 @@ static GtkWidget *JobDetailsDialog (struct info_drqm_jobs *info);
 static GtkWidget *CreateFrameInfoClist (void);
 static void jdd_destroy (GtkWidget *w, struct info_drqm_jobs *info);
 static int jdd_update (GtkWidget *w, struct info_drqm_jobs *info);
+static GtkWidget *CreateMenuFrames (struct info_drqm_jobs *info);
+static gint PopupMenuFrames (GtkWidget *clist, GdkEvent *event, struct info_drqm_jobs *info);
+static void SeeFrameLog (GtkWidget *w, struct info_drqm_jobs *info);
+static GtkWidget *SeeFrameLogDialog (struct info_drqm_jobs *info);
 
 static void NewJob (GtkWidget *menu_item, struct info_drqm_jobs *info);
 static GtkWidget *NewJobDialog (struct info_drqm_jobs *info);
@@ -50,6 +56,7 @@ static void ContinueJob (GtkWidget *menu_item, struct info_drqm_jobs *info);
 
 void CreateJobsPage (GtkWidget *notebook)
 {
+  /* This function receives the notebook widget to wich the new tab will append */
   GtkWidget *label;
   GtkWidget *container;
   GtkWidget *clist;
@@ -491,6 +498,7 @@ static int dnj_submit (struct info_dnj *info)
 {
   /* This is the function that actually submits the job info */
   struct job job;
+  struct passwd *pw;
 
   strncpy(job.name,gtk_entry_get_text(GTK_ENTRY(info->ename)),MAXNAMELEN-1);
   if (strlen(job.name) == 0)
@@ -507,7 +515,12 @@ static int dnj_submit (struct info_dnj *info)
   if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->epri)),"%u",&job.priority) != 1)
     return 0;
 
-  strncpy (job.owner,getlogin(),MAXNAMELEN-1);
+  if (!(pw = getpwuid(geteuid()))) {
+    strncpy (job.owner,"ERROR",MAXNAMELEN-1);
+  } else {
+    strncpy (job.owner,pw->pw_name,MAXNAMELEN-1);
+  }
+
   job.owner[MAXNAMELEN-1] = 0;
   job.status = JOBSTATUS_WAITING;
   job.frame_info = NULL;
@@ -765,6 +778,8 @@ static GtkWidget *JobDetailsDialog (struct info_drqm_jobs *info)
   gtk_container_add (GTK_CONTAINER(swin),clist);
   info->jdd.clist = clist;
 
+  info->jdd.menu = CreateMenuFrames(info);
+
   if (!jdd_update (window,info)) {
     return NULL;
   }
@@ -989,4 +1004,114 @@ static GtkWidget *HStopJobDialog (struct info_drqm_jobs *info)
 static void djhs_bok_pressed (GtkWidget *button, struct info_drqm_jobs *info)
 {
   drqm_request_job_hstop (info);
+}
+
+static GtkWidget *CreateMenuFrames (struct info_drqm_jobs *info)
+{
+  GtkWidget *menu;
+  GtkWidget *menu_item;
+
+  menu = gtk_menu_new ();
+  menu_item = gtk_menu_item_new_with_label("Set Waiting (requeue)");
+  gtk_menu_append(GTK_MENU(menu),menu_item);
+/*    gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(JobDetails),info); */
+
+  menu_item = gtk_menu_item_new_with_label("Set Finished");
+  gtk_menu_append(GTK_MENU(menu),menu_item);
+/*    gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(NewJob),info); */
+
+  menu_item = gtk_menu_item_new_with_label("Set ERROR");
+  gtk_menu_append(GTK_MENU(menu),menu_item);
+/*    gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(StopJob),info); */
+
+  menu_item = gtk_menu_item_new_with_label("Watch frame Log");
+  gtk_menu_append(GTK_MENU(menu),menu_item);
+  gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(SeeFrameLog),info);
+
+
+  gtk_signal_connect(GTK_OBJECT((info->jdd.clist)),"event",GTK_SIGNAL_FUNC(PopupMenuFrames),info);
+
+  gtk_widget_show_all(menu);
+
+  return (menu);
+}
+
+
+static gint PopupMenuFrames (GtkWidget *clist, GdkEvent *event, struct info_drqm_jobs *info)
+{
+  if (event->type == GDK_BUTTON_PRESS) {
+    GdkEventButton *bevent = (GdkEventButton *) event;
+    if (bevent->button != 3)
+      return FALSE;
+    info->jdd.selected = gtk_clist_get_selection_info(GTK_CLIST(info->jdd.clist),
+						      (int)bevent->x,(int)bevent->y,
+						      &info->jdd.row,&info->jdd.column);
+    gtk_menu_popup (GTK_MENU(info->jdd.menu), NULL, NULL, NULL, NULL,
+		    bevent->button, bevent->time);
+    return TRUE;
+  }
+  return FALSE;
+}
+
+static void SeeFrameLog (GtkWidget *w, struct info_drqm_jobs *info)
+{
+  GtkWidget *dialog;
+
+  if (!info->jdd.selected)
+    return;
+
+  dialog = SeeFrameLogDialog(info);
+  if (dialog)
+    gtk_grab_add(dialog);
+}
+
+static GtkWidget *SeeFrameLogDialog (struct info_drqm_jobs *info)
+{
+  GtkWidget *window;
+  GtkWidget *frame;
+  GtkWidget *text;
+  GtkWidget *swin;
+  int fd;
+  struct task task;
+  char buf[BUFFERLEN];
+  int n;
+
+  /* log_dumptask_open only uses the jobname and frame fields of the task */
+  /* so I fill a task with only those two valid fields and so can use that */
+  /* function */
+  strncpy (task.jobname,info->jobs[info->row].name,MAXNAMELEN-1);
+  task.frame = job_frame_index_to_number (&info->jobs[info->row],info->jdd.row);
+
+  /* Dialog */
+  window = gtk_window_new (GTK_WINDOW_DIALOG);
+  gtk_window_set_title (GTK_WINDOW(window),"New Job");
+  gtk_signal_connect_object(GTK_OBJECT(window),"destroy",GTK_SIGNAL_FUNC(gtk_widget_destroy),
+			    (GtkObject*)window);
+  gtk_window_set_default_size(GTK_WINDOW(window),600,200);
+  gtk_container_set_border_width (GTK_CONTAINER(window),5);
+
+  /* Frame */
+  snprintf (buf,BUFFERLEN-1,"Log for frame %i on job %s",task.frame,task.jobname);
+  frame = gtk_frame_new (buf);
+  gtk_container_add (GTK_CONTAINER(window),frame);
+
+  /* Text */
+  swin = gtk_scrolled_window_new(NULL,NULL);
+  gtk_container_add (GTK_CONTAINER(frame),swin);
+  text = gtk_text_new (NULL,NULL);
+  gtk_container_add (GTK_CONTAINER(swin),text);
+
+  if ((fd = log_dumptask_open_ro (&task)) == -1) {
+    char msg[] = "Couldn't open log file";
+    gtk_text_insert (GTK_TEXT(text),NULL,NULL,NULL,msg,strlen(msg));
+    printf ("%s\n",msg);
+  } else {
+    while ((n = read (fd,buf,BUFFERLEN))) {
+      gtk_text_insert (GTK_TEXT(text),NULL,NULL,NULL,buf,n);
+    }
+  }
+
+  gtk_widget_show_all (window);
+
+  return window;
 }
