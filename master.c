@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.22 2001/09/04 23:24:01 jorge Exp $ */
+/* $Id: master.c,v 1.23 2001/09/05 15:18:39 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -361,7 +361,7 @@ void master_get_options (int *argc,char ***argv, int *force)
 {
   int opt;
 
-  while ((opt = getopt (*argc,*argv,"fl:oh")) != -1) {
+  while ((opt = getopt (*argc,*argv,"fl:ohv")) != -1) {
     switch (opt) {
     case 'f':
       *force = 1;
@@ -373,6 +373,10 @@ void master_get_options (int *argc,char ***argv, int *force)
     case 'o':
       logonscreen = 1;
       printf ("Logging on screen.\n");
+      break;
+    case 'v':
+      show_version (*argv);
+      exit (0);
       break;
     case '?':
     case 'h':
