@@ -101,6 +101,7 @@ void register_slave (struct computer *computer);
 int register_job (struct job *job);
 int request_job_available (struct slave_database *sdb);
 void request_task_finished (struct slave_database *sdb);
+int request_job_list (struct job **job, int who);
 int request_job_delete (uint32_t ijob,int who);
 int request_job_stop (uint32_t ijob, int who);
 int request_job_hstop (uint32_t ijob, int who);
