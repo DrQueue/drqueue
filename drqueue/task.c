@@ -1,4 +1,4 @@
-/* $Id: task.c,v 1.12 2002/12/02 22:24:08 jorge Exp $ */
+/* $Id: task.c,v 1.13 2003/12/18 04:11:07 jorge Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -86,6 +86,7 @@ void task_environment_set (struct task *task)
   static char frame_start[BUFFERLEN];
   static char frame_end[BUFFERLEN];
   static char frame_step[BUFFERLEN];
+  static char block_size[BUFFERLEN];
   static char ijob[BUFFERLEN];
 
   /* Padded frame number */
@@ -93,18 +94,21 @@ void task_environment_set (struct task *task)
   snprintf (padframe,BUFFERLEN,"PADFRAME=%04i",task->frame);
   putenv (padframe);
   /* Frame number */
-  snprintf (frame,BUFFERLEN,"FRAME=%i",task->frame);
+  snprintf (frame,BUFFERLEN,"FRAME=%u",task->frame);
   putenv (frame);
   /* Owner of the job */
   snprintf (owner,BUFFERLEN-1,"OWNER=%s",task->owner);
   putenv (owner);
   /* Start, end and step frame numbers */
-  snprintf (frame_start,BUFFERLEN-1,"STARTFRAME=%i",task->frame_start);
+  snprintf (frame_start,BUFFERLEN-1,"STARTFRAME=%u",task->frame_start);
   putenv (frame_start);
-  snprintf (frame_end,BUFFERLEN-1,"ENDFRAME=%i",task->frame_end);
+  snprintf (frame_end,BUFFERLEN-1,"ENDFRAME=%u",task->frame_end);
   putenv (frame_end);
-  snprintf (frame_step,BUFFERLEN-1,"STEPFRAME=%i",task->frame_step);
+  snprintf (frame_step,BUFFERLEN-1,"STEPFRAME=%u",task->frame_step);
   putenv (frame_step);
+	/* Block size */
+  snprintf (block_size,BUFFERLEN-1,"BLOCKSIZE=%u",task->block_size);
+  putenv (block_size);
 
   /* Job Index */
   snprintf (ijob,BUFFERLEN-1,"JOBID=%i",task->ijob);

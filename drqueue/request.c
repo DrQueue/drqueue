@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.76 2002/06/26 17:22:29 jorge Exp $ */
+/* $Id: request.c,v 1.77 2003/12/18 04:11:07 jorge Exp $ */
 #include <unistd.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -47,7 +47,7 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
     handle_r_r_regisjob (sfd,wdb);
     break;
   case R_R_AVAILJOB:
-    log_master (L_DEBUG,"Request of available job");
+    log_master (L_DEBUG,"Request available job");
     handle_r_r_availjob (sfd,wdb,icomp);
     break;
   case R_R_TASKFINI:

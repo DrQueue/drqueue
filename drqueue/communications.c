@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.52 2002/12/02 22:24:08 jorge Exp $ */
+/* $Id: communications.c,v 1.53 2003/12/18 04:11:07 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -329,6 +329,10 @@ int recv_job (int sfd, struct job *job)
   switch (job->koj) {
   case KOJ_GENERAL:
   case KOJ_MAYA:
+	case KOJ_BLENDER:
+	case KOJ_BMRT:
+	case KOJ_3DELIGHT:
+	case KOJ_PIXIE:
     break;
   }
 
@@ -337,6 +341,7 @@ int recv_job (int sfd, struct job *job)
   job->frame_end = ntohl (job->frame_end);
   job->frame_step = ntohl (job->frame_step);
   job->frame_step = (job->frame_step == 0) ? 1 : job->frame_step; /* No 0 on step !! */
+	job->block_size = ntohl (job->block_size);
   job->avg_frame_time = ntohl (job->avg_frame_time);
   job->est_finish_time = ntohl (job->est_finish_time);
   job->fleft = ntohl (job->fleft);
@@ -375,6 +380,10 @@ int send_job (int sfd, struct job *job)
   switch (bswapped.koj) {
   case KOJ_GENERAL:
   case KOJ_MAYA:
+	case KOJ_BLENDER:
+	case KOJ_BMRT:
+	case KOJ_3DELIGHT:
+	case KOJ_PIXIE:
     break;
   }
   bswapped.koj = htons (bswapped.koj);
@@ -383,6 +392,7 @@ int send_job (int sfd, struct job *job)
   bswapped.frame_start = htonl (bswapped.frame_start);
   bswapped.frame_end = htonl (bswapped.frame_end);
   bswapped.frame_step = htonl (bswapped.frame_step);
+	bswapped.block_size = htonl (bswapped.block_size);
   bswapped.avg_frame_time = htonl (bswapped.avg_frame_time);
   bswapped.est_finish_time = htonl (bswapped.est_finish_time);
   bswapped.fleft = htonl (bswapped.fleft);
@@ -436,6 +446,7 @@ int recv_task (int sfd, struct task *task)
   task->frame_start = ntohl (task->frame_start);
   task->frame_end = ntohl (task->frame_end);
   task->frame_step = ntohl (task->frame_step);
+	task->block_size = ntohl (task->block_size);
   task->pid = ntohl (task->pid);
   task->exitstatus = ntohl (task->exitstatus);
 
@@ -456,6 +467,7 @@ int send_task (int sfd, struct task *task)
   bswapped.frame_start = htonl (bswapped.frame_start);
   bswapped.frame_end = htonl (bswapped.frame_end);
   bswapped.frame_step = htonl (bswapped.frame_step);
+	bswapped.block_size = htonl (bswapped.block_size);
   bswapped.pid = htonl (bswapped.pid);
   bswapped.exitstatus = htonl (bswapped.exitstatus);
  

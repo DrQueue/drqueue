@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_info.c,v 1.4 2003/12/15 22:18:32 jorge Exp $
+ * $Id: drqm_info.c,v 1.5 2003/12/18 04:11:07 jorge Exp $
  */
 
 #include <string.h>
@@ -23,7 +23,7 @@ void CreateInfoPage (GtkWidget *notebook, struct info_drqm *info)
   GtkWidget *label;
   GtkWidget *container;
   GtkWidget *vbox;
-  GtkWidget *logo;
+/*   GtkWidget *logo; */
   GtkWidget *text;
   char msg[BUFFERLEN];
 

@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.58 2003/12/15 22:18:32 jorge Exp $ */
+/* $Id: job.c,v 1.59 2003/12/18 04:11:07 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -176,7 +176,7 @@ uint32_t job_nframes (struct job *job)
 {
   uint32_t n;
 
-  n = (job->frame_end - job->frame_start + job->frame_step) / job->frame_step;
+  n = (job->frame_end - job->frame_start + job->block_size) / job->block_size;
 
   return n;
 }
@@ -611,6 +611,7 @@ void job_environment_set (struct job *job, uint32_t iframe)
   static char startframe[BUFFERLEN];
   static char endframe[BUFFERLEN];
   static char stepframe[BUFFERLEN];
+	static char blocksize[BUFFERLEN];
 
   frame = job_frame_index_to_number (job,iframe);
 
@@ -629,6 +630,9 @@ void job_environment_set (struct job *job, uint32_t iframe)
   /* Step frames */
   snprintf (stepframe,BUFFERLEN-1,"STEPFRAME=%i",job->frame_step);
   putenv (stepframe);
+  /* Block size */
+  snprintf (blocksize,BUFFERLEN-1,"BLOCKSIZE=%i",job->block_size);
+  putenv (blocksize);
 
   /* Owner of the job */
   snprintf (owner,BUFFERLEN-1,"OWNER=%s",job->owner);
@@ -723,14 +727,8 @@ char *job_koj_string (struct job *job)
   case KOJ_MAYA:
     msg = "Maya";
     break;
-  case KOJ_MAYABLOCK:
-    msg = "Maya Block";
-    break;
   case KOJ_BLENDER:
     msg = "Blender";
-    break;
-  case KOJ_BLENDERBLOCK:
-    msg = "Blender Block";
     break;
   default:
     msg = "DEFAULT (ERROR)";
