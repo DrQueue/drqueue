@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.18 2001/08/23 13:22:30 jorge Exp $ */
+/* $Id: communications.c,v 1.19 2001/08/27 08:13:47 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -230,7 +230,7 @@ int recv_request (int sfd, struct request *request)
     }
   }
   /* Byte order ! */
-  request->data_s = ntohs (request->data_s);
+  request->data = ntohl (request->data);
   
   return 1;
 }
@@ -241,7 +241,7 @@ int send_request (int sfd, struct request *request,int who)
   int bleft;
   void *buf = request;
 
-  request->data_s = htons (request->data_s);
+  request->data = htonl (request->data);
   request->who = who;
 
   bleft = sizeof (struct request);
@@ -255,6 +255,7 @@ int send_request (int sfd, struct request *request,int who)
     }
   }
 
+  drerrno = DRE_NOERROR;
   return 1;
 }
 
@@ -507,4 +508,60 @@ void recv_computer (int sfd, struct computer *computer,int who)
   recv_computer_status (sfd,&computer->status,who);
   recv_computer_hwinfo (sfd,&computer->hwinfo,who);
 }
+
+int recv_frame_info (int sfd, struct frame_info *fi)
+{
+  int r;
+  int bleft;
+  void *buf;
+
+  buf = fi;
+  bleft = sizeof (struct frame_info);
+  while ((r = read (sfd,buf,bleft)) < bleft) {
+    bleft -= r;
+    buf += r;
+
+    if ((r == -1) || ((r == 0) && (bleft > 0))) {
+      /* if w is error or if no more bytes are read but they _SHOULD_ be */
+      drerrno = DRE_ERRORRECEIVING;
+      return 0;
+    }
+  }
+  fi->start_time = ntohl (fi->start_time);
+  fi->end_time = ntohl (fi->end_time);
+  fi->icomp = ntohs (fi->icomp);
+  fi->itask = ntohs (fi->itask);
+
+  return 1;
+}
+
+int send_frame_info (int sfd, struct frame_info *fi)
+{
+  struct frame_info bswapped;
+  int w;
+  int bleft;
+  void *buf = &bswapped;
+  
+  /* We make a copy coz we need to modify the values */
+  memcpy (buf,fi,sizeof(bswapped));
+  /* Prepare for sending */
+  bswapped.start_time = htonl (bswapped.start_time);
+  bswapped.end_time = htonl (bswapped.end_time);
+  bswapped.icomp = htons (bswapped.icomp);
+  bswapped.itask = htons (bswapped.itask);
+
+  bleft = sizeof (bswapped);
+  while ((w = write(sfd,buf,bleft)) < bleft) {
+    bleft -= w;
+    buf += w;
+    if ((w == -1) || ((w == 0) && (bleft > 0))) {
+      /* if w is error or if no more bytes are written but they _SHOULD_ be */
+      drerrno = DRE_ERRORSENDING;
+      return 0;
+    }
+  }
+
+  return 1;
+}
+
 
