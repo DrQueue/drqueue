@@ -106,7 +106,10 @@ static void jdd_bmrt_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *inf
 static void jdd_pixie_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 // Blocked hosts
 static GtkWidget *CreateBlockedHostsClist (void);
+static GtkWidget *CreateMenuBlockedHosts (struct drqm_jobs_info *info);
+static gint PopupMenuBlockedHosts (GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *info);
 static int jdd_update_blocked_hosts (GtkWidget *w, struct drqm_jobs_info *info);
+static void jdd_delete_blocked_host (GtkWidget *w, struct drqm_jobs_info *info);
 
 /* NEW JOB */
 static void NewJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
@@ -1246,6 +1249,8 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   gtk_clist_set_selection_mode(GTK_CLIST(clist),GTK_SELECTION_EXTENDED);
   gtk_container_add (GTK_CONTAINER(swin),clist);
   newinfo->jdd.clist = clist;
+	
+  newinfo->jdd.menu = CreateMenuFrames(newinfo);
 
 	// New notebook page
 	frame = gtk_frame_new ("Block list");
@@ -1259,8 +1264,8 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   gtk_clist_set_selection_mode(GTK_CLIST(clist),GTK_SELECTION_EXTENDED);
   gtk_container_add (GTK_CONTAINER(swin),clist);
   newinfo->jdd.clist_bh = clist;
+	newinfo->jdd.menu_bh = CreateMenuBlockedHosts (newinfo);
 
-  newinfo->jdd.menu = CreateMenuFrames(newinfo);
 
   if (!jdd_update (window,newinfo)) {
     gtk_widget_destroy (GTK_WIDGET(window));
@@ -1373,11 +1378,6 @@ static int jdd_update_blocked_hosts (GtkWidget *w, struct drqm_jobs_info *info)
 	int i;
 	char **buff;
 
-	if (info->jdd.job.blocked_host) {
-		free (info->jdd.job.blocked_host);
-		info->jdd.job.blocked_host = NULL;
-	}
-
 	if (!request_job_list_blocked_host(info->jdd.job.id, &info->jdd.job.blocked_host, &info->jdd.job.nblocked, CLIENT)) {
 		fprintf (stderr,"Error request_job_list_blocked_host\n");
 		if (info->jdd.job.blocked_host) {
@@ -1393,12 +1393,19 @@ static int jdd_update_blocked_hosts (GtkWidget *w, struct drqm_jobs_info *info)
   
   gtk_clist_freeze(GTK_CLIST(info->jdd.clist_bh));
   gtk_clist_clear(GTK_CLIST(info->jdd.clist_bh));
+
   for (i=0; i < info->jdd.job.nblocked; i++) {
     snprintf (buff[0],BUFFERLEN-1,"%i",i);
     snprintf (buff[1],BUFFERLEN,"%s",info->jdd.job.blocked_host[i].name);
 		
 		gtk_clist_append (GTK_CLIST(info->jdd.clist_bh),buff);
+
+		gtk_clist_set_row_data (GTK_CLIST(info->jdd.clist_bh),i,(void*)i);
   }
+
+  gtk_clist_thaw(GTK_CLIST(info->jdd.clist_bh));
+
+	free (info->jdd.job.blocked_host);
 
 	return 1;
 }
@@ -1594,6 +1601,24 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
   return 1;
 }
 
+static GtkWidget *CreateMenuBlockedHosts (struct drqm_jobs_info *info)
+{
+	GtkWidget *menu;
+	GtkWidget *menu_item;
+
+	menu = gtk_menu_new();
+	menu_item = gtk_menu_item_new_with_label("Delete");
+	gtk_menu_append(GTK_MENU(menu),menu_item);
+	g_signal_connect(G_OBJECT(menu_item),"activate",G_CALLBACK(jdd_delete_blocked_host),info);
+	g_signal_connect(G_OBJECT(menu_item),"activate",G_CALLBACK(jdd_update),info);
+
+  g_signal_connect(G_OBJECT(info->jdd.clist_bh),"event",G_CALLBACK(PopupMenuBlockedHosts),info);
+
+  gtk_widget_show_all(menu);
+
+	return menu;
+}
+
 static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info)
 {
   GtkWidget *menu;
@@ -1699,6 +1724,19 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info)
   gtk_widget_show_all(menu);
 
   return (menu);
+}
+
+static void jdd_delete_blocked_host (GtkWidget *w, struct drqm_jobs_info *info)
+{
+	GList *sel;
+
+	if (!(sel = GTK_CLIST(info->jdd.clist_bh)->selection)) {
+		return;
+	}
+  
+	for (;sel;sel = sel->next) {
+    request_job_delete_blocked_host (info->jdd.job.id,(uint32_t)sel->data,CLIENT);
+  }
 }
 
 static void jdd_requeue_frames (GtkWidget *button,struct drqm_jobs_info *info_dj)
@@ -1833,6 +1871,23 @@ static void jdd_kill_finish_frames (GtkWidget *button,struct drqm_jobs_info *inf
     frame = rdata->frame;
     drqm_request_job_frame_kill_finish (info->jdd.job.id,frame);
   }
+}
+
+static gint PopupMenuBlockedHosts (GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *info)
+{
+	if (event->type == GDK_BUTTON_PRESS) {
+		GdkEventButton *bevent = (GdkEventButton *) event;
+		if (bevent->button != 3)
+			return FALSE;
+    info->jdd.selected = gtk_clist_get_selection_info(GTK_CLIST(info->jdd.clist),
+						      (int)bevent->x,(int)bevent->y,
+						      &info->jdd.row,&info->jdd.column);
+		gtk_menu_popup (GTK_MENU(info->jdd.menu_bh), NULL, NULL, NULL, NULL,
+										bevent->button, bevent->time);
+		return TRUE;
+	}
+
+	return FALSE;
 }
 
 static gint PopupMenuFrames (GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *info)
