@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_computers.c,v 1.19 2001/10/02 12:41:21 jorge Exp $
+ * $Id: drqm_computers.c,v 1.20 2001/10/11 10:32:50 jorge Exp $
  */
 
 #include <stdlib.h>
@@ -214,7 +214,7 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
 
   if (info->ncomputers) {
     gtk_clist_get_text(GTK_CLIST(info->clist),info->row,0,&buf);
-    info->icomp = atoi (buf);
+    info->icomp = atoi (buf);	/* This is not needed usually */
   } else {
     return NULL;
   }
@@ -355,7 +355,7 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
   return window;
 }
 
-static GtkWidget *CreateTasksClist (void)
+GtkWidget *CreateTasksClist (void)
 {
   gchar *titles[] = { "ID","Status","Job name","Job id","Owner","Frame","PID","Start","End"};
   GtkWidget *clist;
@@ -381,16 +381,18 @@ static GtkWidget *CreateTasksClist (void)
 
 }
 
-static int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
+int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
 {
-  /* This function depends on info->icomp properly set */
+  /* This function depends on info->icomp and info->row properly set */
+  /* info->icomp and info->row are related, the first is the id of the computer in */
+  /* the master, the second is the index in the local structure of computer */
   char msg[BUFFERLEN];
   char **buff;			/* for hte clist stuff */
   int ncols = 9;
   int i,row;
   
 
-  if (!request_comp_xfer(info->icomp,&info->computers[info->icomp],CLIENT)) {
+  if (!request_comp_xfer(info->icomp,&info->computers[info->row],CLIENT)) {
     if (drerrno == DRE_NOTREGISTERED) {
       fprintf (stderr,"Not registered anymore !\n");
     } else {
@@ -399,31 +401,31 @@ static int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
     return 0;
   }
 
-  gtk_label_set_text (GTK_LABEL(info->cdd.lname),info->computers[info->icomp].hwinfo.name);
-  gtk_label_set_text (GTK_LABEL(info->cdd.los),osstring(info->computers[info->icomp].hwinfo.os));
+  gtk_label_set_text (GTK_LABEL(info->cdd.lname),info->computers[info->row].hwinfo.name);
+  gtk_label_set_text (GTK_LABEL(info->cdd.los),osstring(info->computers[info->row].hwinfo.os));
 
   snprintf(msg,BUFFERLEN-1,"%i %s %i MHz",
-	   info->computers[info->icomp].hwinfo.ncpus,
-	   proctypestring(info->computers[info->icomp].hwinfo.proctype),
-	   info->computers[info->icomp].hwinfo.procspeed);
+	   info->computers[info->row].hwinfo.ncpus,
+	   proctypestring(info->computers[info->row].hwinfo.proctype),
+	   info->computers[info->row].hwinfo.procspeed);
   gtk_label_set_text (GTK_LABEL(info->cdd.lcpuinfo),msg);
   
   snprintf(msg,BUFFERLEN-1,"%i %i %i",
-	   info->computers[info->icomp].status.loadavg[0],
-	   info->computers[info->icomp].status.loadavg[1],
-	   info->computers[info->icomp].status.loadavg[2]);
+	   info->computers[info->row].status.loadavg[0],
+	   info->computers[info->row].status.loadavg[1],
+	   info->computers[info->row].status.loadavg[2]);
   gtk_label_set_text (GTK_LABEL(info->cdd.lloadavg),msg);
 		      
   snprintf(msg,BUFFERLEN-1,"%i",
-	   info->computers[info->icomp].status.ntasks);
+	   info->computers[info->row].status.ntasks);
   gtk_label_set_text (GTK_LABEL(info->cdd.lntasks),msg);
 
   /* Limits */
   snprintf(msg,BUFFERLEN-1,"%i",
-	   info->computers[info->icomp].limits.nmaxcpus);
+	   info->computers[info->row].limits.nmaxcpus);
   gtk_label_set_text (GTK_LABEL(info->cdd.limits.lnmaxcpus),msg);
   snprintf(msg,BUFFERLEN-1,"%i",
-	   info->computers[info->icomp].limits.maxfreeloadcpu);
+	   info->computers[info->row].limits.maxfreeloadcpu);
   gtk_label_set_text (GTK_LABEL(info->cdd.limits.lmaxfreeloadcpu),msg);
 
   /* Tasks clist */
@@ -436,22 +438,22 @@ static int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
   gtk_clist_clear(GTK_CLIST(info->cdd.clist));
   row = 0;
   for (i=0; i < MAXTASKS; i++) {
-    if (info->computers[info->icomp].status.task[i].used) {
-      snprintf (buff[0],BUFFERLEN-1,"%i",info->computers[info->icomp].status.task[i].itask);
+    if (info->computers[info->row].status.task[i].used) {
+      snprintf (buff[0],BUFFERLEN-1,"%i",info->computers[info->row].status.task[i].itask);
       snprintf (buff[1],BUFFERLEN-1,"%s",
-		task_status_string(info->computers[info->icomp].status.task[i].status));
-      snprintf (buff[2],BUFFERLEN-1,"%s",info->computers[info->icomp].status.task[i].jobname);
-      snprintf (buff[3],BUFFERLEN-1,"%i",info->computers[info->icomp].status.task[i].ijob);
-      snprintf (buff[4],BUFFERLEN-1,"%s",info->computers[info->icomp].status.task[i].owner);
-      snprintf (buff[5],BUFFERLEN-1,"%i",info->computers[info->icomp].status.task[i].frame);
-      snprintf (buff[6],BUFFERLEN-1,"%i",info->computers[info->icomp].status.task[i].pid);
+		task_status_string(info->computers[info->row].status.task[i].status));
+      snprintf (buff[2],BUFFERLEN-1,"%s",info->computers[info->row].status.task[i].jobname);
+      snprintf (buff[3],BUFFERLEN-1,"%i",info->computers[info->row].status.task[i].ijob);
+      snprintf (buff[4],BUFFERLEN-1,"%s",info->computers[info->row].status.task[i].owner);
+      snprintf (buff[5],BUFFERLEN-1,"%i",info->computers[info->row].status.task[i].frame);
+      snprintf (buff[6],BUFFERLEN-1,"%i",info->computers[info->row].status.task[i].pid);
       strncpy(buff[7],"Not yet implemented",BUFFERLEN); 
       strncpy(buff[8],"Not yet implemented",BUFFERLEN);
       gtk_clist_append(GTK_CLIST(info->cdd.clist),buff);
       
       /* Row data */
       gtk_clist_set_row_data (GTK_CLIST(info->cdd.clist),row,
-			      (gpointer)(uint32_t)info->computers[info->icomp].status.task[i].itask);
+			      (gpointer)(uint32_t)info->computers[info->row].status.task[i].itask);
       row++;
     }
   }
@@ -496,7 +498,7 @@ GtkWidget *nmc_dialog (struct drqm_computers_info *info)
   gtk_box_pack_start(GTK_BOX(hbox),label,FALSE,FALSE,2);
   entry = gtk_entry_new_with_max_length(BUFFERLEN);
   info->cdd.limits.enmaxcpus = entry;
-  snprintf(msg,BUFFERLEN-1,"%i",info->computers[info->icomp].limits.nmaxcpus);
+  snprintf(msg,BUFFERLEN-1,"%i",info->computers[info->row].limits.nmaxcpus);
   gtk_entry_set_text(GTK_ENTRY(entry),msg);
   gtk_box_pack_start(GTK_BOX(hbox),entry,FALSE,FALSE,2);
 
@@ -529,12 +531,12 @@ void nmcd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info)
   if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->cdd.limits.enmaxcpus)),"%u",&nmaxcpus) != 1)
     return;			/* Error in the entry */
 
-  drqm_request_slave_limits_nmaxcpus_set(info->computers[info->icomp].hwinfo.name,nmaxcpus);
+  drqm_request_slave_limits_nmaxcpus_set(info->computers[info->row].hwinfo.name,nmaxcpus);
 
-  info->computers[info->icomp].limits.nmaxcpus = nmaxcpus;
+  info->computers[info->row].limits.nmaxcpus = nmaxcpus;
 
   snprintf(msg,BUFFERLEN-1,"%u",
-	   info->computers[info->icomp].limits.nmaxcpus);
+	   info->computers[info->row].limits.nmaxcpus);
   gtk_label_set_text (GTK_LABEL(info->cdd.limits.lnmaxcpus),msg);
 }
 
@@ -570,7 +572,7 @@ GtkWidget *mflc_dialog (struct drqm_computers_info *info)
   gtk_box_pack_start(GTK_BOX(hbox),label,FALSE,FALSE,2);
   entry = gtk_entry_new_with_max_length(BUFFERLEN);
   info->cdd.limits.emaxfreeloadcpu = entry;
-  snprintf(msg,BUFFERLEN-1,"%i",info->computers[info->icomp].limits.maxfreeloadcpu);
+  snprintf(msg,BUFFERLEN-1,"%i",info->computers[info->row].limits.maxfreeloadcpu);
   gtk_entry_set_text(GTK_ENTRY(entry),msg);
   gtk_box_pack_start(GTK_BOX(hbox),entry,FALSE,FALSE,2);
 
@@ -603,12 +605,12 @@ void mflcd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info)
   if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->cdd.limits.emaxfreeloadcpu)),"%u",&maxfreeloadcpu) != 1)
     return;			/* Error in the entry */
 
-  drqm_request_slave_limits_maxfreeloadcpu_set(info->computers[info->icomp].hwinfo.name,maxfreeloadcpu);
+  drqm_request_slave_limits_maxfreeloadcpu_set(info->computers[info->row].hwinfo.name,maxfreeloadcpu);
 
-  info->computers[info->icomp].limits.maxfreeloadcpu = maxfreeloadcpu;
+  info->computers[info->row].limits.maxfreeloadcpu = maxfreeloadcpu;
 
   snprintf(msg,BUFFERLEN-1,"%u",
-	   info->computers[info->icomp].limits.maxfreeloadcpu);
+	   info->computers[info->row].limits.maxfreeloadcpu);
   gtk_label_set_text (GTK_LABEL(info->cdd.limits.lmaxfreeloadcpu),msg);
 }
 
@@ -644,8 +646,8 @@ static void dtk_bok_pressed (GtkWidget *button,struct drqm_computers_info *info)
 
   for (;sel;sel = sel->next) {
     itask = (uint16_t)(uint32_t) gtk_clist_get_row_data(GTK_CLIST(info->cdd.clist),(gint)sel->data);
-    drqm_request_slave_task_kill (info->computers[info->icomp].hwinfo.name,itask);
-/*      printf ("Killing task: %i on computer: %s\n",itask,info->computers[info->icomp].hwinfo.name); */
+    drqm_request_slave_task_kill (info->computers[info->row].hwinfo.name,itask);
+/*      printf ("Killing task: %i on computer: %s\n",itask,info->computers[info->row].hwinfo.name); */
   }
 }
 
