@@ -1,6 +1,8 @@
 TO DO:
 -----
 
+* Remove logs when the job is removed from the queue
+* The slave should inform that is dying.
 * Summary of transmissions (Kb/s sent, Kb/s received)
 * Checks at the beginning of every program for the directories.
 * limit structures for jobs.
