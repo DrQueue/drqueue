@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.7 2001/07/20 15:30:19 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.8 2001/07/31 13:06:38 jorge Exp $
  */
 
 #include <string.h>
@@ -72,10 +72,10 @@ static GtkWidget *CreateJobsList(struct info_drqm_jobs *info)
 
 static GtkWidget *CreateClist (GtkWidget *window)
 {
-  gchar *titles[] = { "ID","Name","Owner","Status","Processors","Left","Done","Failed" };
+  gchar *titles[] = { "ID","Name","Owner","Status","Processors","Left","Done","Failed","Pri" };
   GtkWidget *clist;
 
-  clist = gtk_clist_new_with_titles (8, titles);
+  clist = gtk_clist_new_with_titles (9, titles);
   gtk_container_add(GTK_CONTAINER(window),clist);
   gtk_clist_column_titles_show(GTK_CLIST(clist));
   gtk_clist_column_titles_passive(GTK_CLIST(clist));
@@ -84,9 +84,9 @@ static GtkWidget *CreateClist (GtkWidget *window)
   gtk_clist_set_column_width (GTK_CLIST(clist),2,75);
   gtk_clist_set_column_width (GTK_CLIST(clist),3,75);
   gtk_clist_set_column_width (GTK_CLIST(clist),4,75);
-  gtk_clist_set_column_width (GTK_CLIST(clist),5,35);
-  gtk_clist_set_column_width (GTK_CLIST(clist),6,35);
-  gtk_clist_set_column_width (GTK_CLIST(clist),7,35);
+  gtk_clist_set_column_width (GTK_CLIST(clist),5,45);
+  gtk_clist_set_column_width (GTK_CLIST(clist),6,45);
+  gtk_clist_set_column_width (GTK_CLIST(clist),7,45);
   gtk_widget_show(clist);
 
   return (clist);
@@ -115,7 +115,7 @@ void drqm_update_joblist (struct info_drqm_jobs *info)
 {
   int i;
   char **buff;
-  int ncols = 8;
+  int ncols = 9;
 
   buff = (char**) g_malloc((ncols + 1) * sizeof(char*));
   for (i=0;i<ncols;i++)
@@ -133,6 +133,7 @@ void drqm_update_joblist (struct info_drqm_jobs *info)
     snprintf (buff[5],BUFFERLEN,"%i",info->jobs[i].fleft);
     snprintf (buff[6],BUFFERLEN,"%i",info->jobs[i].fdone);
     snprintf (buff[7],BUFFERLEN,"%i",info->jobs[i].ffailed);
+    snprintf (buff[8],BUFFERLEN,"%i",info->jobs[i].priority);
     gtk_clist_append(GTK_CLIST(info->clist),buff);
   }
   gtk_clist_thaw(GTK_CLIST(info->clist));
