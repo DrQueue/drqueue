@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.41 2001/09/08 16:59:38 jorge Exp $ */
+/* $Id: slave.c,v 1.42 2001/09/08 20:47:15 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -46,6 +46,7 @@ int main (int argc,char *argv[])
   report_hwinfo (&sdb.comp->hwinfo);
 
   register_slave (sdb.comp);
+  update_computer_limits(&sdb.comp->limits);
 
   if (fork() == 0) {
     /* Create the listening process */
