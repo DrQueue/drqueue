@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.16 2001/07/24 10:31:00 jorge Exp $ */
+/* $Id: request.c,v 1.17 2001/07/24 15:14:39 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -49,11 +49,11 @@ void handle_request_master (int sfd,struct database *wdb,int icomp)
   case R_R_LISTJOBS:
     log_master (L_INFO,"Request list of jobs");
     handle_r_r_listjobs (sfd,wdb,icomp);
-    break;
+    exit (0);
   case R_R_LISTCOMP:
     log_master (L_INFO,"Request list of computers");
     handle_r_r_listcomp (sfd,wdb,icomp);
-    break;
+    exit (0);
   default:
     log_master (L_WARNING,"Unknown request");
   }

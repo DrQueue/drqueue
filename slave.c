@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.23 2001/07/24 14:49:36 jorge Exp $ */
+/* $Id: slave.c,v 1.24 2001/07/24 15:14:39 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -333,12 +333,13 @@ void launch_task (struct slave_database *sdb)
 	/* Process exited abnormally either killed by us or by itself (SIGSEGV) */
 	printf ("\n\nSIGNALED with %i\n",WTERMSIG(rc));
 	sdb->comp->status.task[sdb->itask].exitstatus |= DR_SIGNALEDFLAG ;
-	sdb->comp->status.task[sdb->itask].exitstatus |= (WTERMSIG(rc)&&0xff);
+	sdb->comp->status.task[sdb->itask].exitstatus |= WTERMSIG(rc);
       } else {
 	if (WIFEXITED(rc)) {
 	  printf ("\n\nEXITED with %i\n",WEXITSTATUS(rc));
 	  sdb->comp->status.task[sdb->itask].exitstatus |= DR_EXITEDFLAG ;
-	  sdb->comp->status.task[sdb->itask].exitstatus |= (WEXITSTATUS(rc)&&0xff);
+	  sdb->comp->status.task[sdb->itask].exitstatus |= WEXITSTATUS(rc);
+	  printf ("\n\nEXITED with %i\n",DR_WEXITSTATUS(sdb->comp->status.task[sdb->itask].exitstatus));
 	}
       }
       semaphore_release(sdb->semid);
