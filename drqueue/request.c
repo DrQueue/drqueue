@@ -2165,7 +2165,7 @@ int request_slave_limits_nmaxcpus_set (char *slave, uint32_t nmaxcpus, int who)
   return 1;
 }
 
-int request_slave_limits_autoenable_set (char *slave, uint32_t h, uint32_t m, int who)
+int request_slave_limits_autoenable_set (char *slave, uint32_t h, uint32_t m, unsigned char flags, int who)
 {
   int sfd;
   struct request req;
@@ -2185,6 +2185,14 @@ int request_slave_limits_autoenable_set (char *slave, uint32_t h, uint32_t m, in
   
   req.type = RS_R_SETAUTOENABLE;
   req.data = m;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORWRITING;
+    return 0;
+  }
+
+  req.type = RS_R_SETAUTOENABLE;
+  req.data = flags;
 
   if (!send_request (sfd,&req,who)) {
     drerrno = DRE_ERRORWRITING;
@@ -2219,6 +2227,7 @@ void handle_rs_r_setautoenable (int sfd,struct slave_database *sdb,struct reques
 {
   struct computer_limits limits;
   uint32_t h,m;
+	unsigned char flags;
 
   log_slave_computer(L_DEBUG,"Entering handle_rs_r_setautoenable");
 
@@ -2233,12 +2242,20 @@ void handle_rs_r_setautoenable (int sfd,struct slave_database *sdb,struct reques
 
   log_slave_computer(L_DEBUG,"Received autoenable hour: %i:%02i",h,m);
 
+  if (!recv_request (sfd,req)) {
+    log_slave_computer (L_ERROR,"Receiving request (update_computer_limits)");
+    kill(0,SIGINT);
+  }
+
+	flags = req->data;
+
   semaphore_lock(sdb->semid);
 
   log_slave_computer(L_DEBUG,"Previous autoenable hour: %i:%02i",
 		     sdb->comp->limits.autoenable.h,
 		     sdb->comp->limits.autoenable.m);
 
+	sdb->comp->limits.autoenable.flags = flags;
   sdb->comp->limits.autoenable.h = h;
   sdb->comp->limits.autoenable.m = m;
   sdb->comp->limits.autoenable.last = time(NULL) - AE_DELAY;
