@@ -17,4 +17,4 @@ jobfile = file(jobfilepath,"w")
 jobfile.write(data)
 jobfile.close()
 
-os.system('sendjob %s'%(jobfilepath))
+os.system('sendjob -t blender %s'%(jobfilepath))
