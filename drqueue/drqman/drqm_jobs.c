@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.59 2002/06/20 22:55:34 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.60 2002/06/21 15:49:40 jorge Exp $
  */
 
 #include <string.h>
@@ -57,6 +57,9 @@ static void jdd_framelist_column_clicked (GtkCList *clist, gint column, struct d
 static int jdd_framelist_cmp_frame (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
 static int jdd_framelist_cmp_exitcode (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
 static int jdd_framelist_cmp_status (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+static int jdd_framelist_cmp_icomp (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+static int jdd_framelist_cmp_start_time (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+static int jdd_framelist_cmp_end_time (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
 /* Limits */
 static GtkWidget *jdd_limits_widgets (struct drqm_jobs_info *info);
 static void jdd_limits_nmaxcpus_bcp (GtkWidget *button, struct drqm_jobs_info *info);
@@ -2497,6 +2500,7 @@ void jdd_framelist_column_clicked (GtkCList *clist, gint column, struct drqm_job
     dir = GTK_SORT_DESCENDING;
   }
 
+  /* ATTENTION this column numbers must be changed if the column order changes */
   if (column == 0) {
     gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
     gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_frame);
@@ -2505,9 +2509,21 @@ void jdd_framelist_column_clicked (GtkCList *clist, gint column, struct drqm_job
     gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
     gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_status);
     gtk_clist_sort (GTK_CLIST(clist));
+  } else if (column == 2) {
+    gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+    gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_start_time);
+    gtk_clist_sort (GTK_CLIST(clist));
+  } else if (column == 3) {
+    gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+    gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_end_time);
+    gtk_clist_sort (GTK_CLIST(clist));
   } else if (column == 4) {
     gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
     gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_exitcode);
+    gtk_clist_sort (GTK_CLIST(clist));
+  } else if (column == 5) {
+    gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+    gtk_clist_set_compare_func (GTK_CLIST(clist),jdd_framelist_cmp_icomp);
     gtk_clist_sort (GTK_CLIST(clist));
   }
 }
@@ -2574,6 +2590,84 @@ int jdd_framelist_cmp_status (GtkCList *clist, gconstpointer ptr1, gconstpointer
 
   a = ra->info->jobs[ra->info->row].frame_info[ifa].status;
   b = rb->info->jobs[rb->info->row].frame_info[ifb].status;
+			
+  if (a > b) {
+    return 1;
+  } else if (a == b) {
+    return 0;
+  } else {
+    return -1;
+  }
+
+  return 0;
+}
+
+int jdd_framelist_cmp_icomp (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+  struct row_data *ra,*rb;
+  uint32_t a,b;
+  uint16_t ifa,ifb;
+
+  ra = (struct row_data *) ((GtkCListRow*)ptr1)->data;
+  rb = (struct row_data *) ((GtkCListRow*)ptr2)->data;
+
+  ifa = job_frame_number_to_index (&ra->info->jobs[ra->info->row],ra->frame);
+  ifb = job_frame_number_to_index (&rb->info->jobs[ra->info->row],rb->frame);
+
+  a = ra->info->jobs[ra->info->row].frame_info[ifa].icomp;
+  b = rb->info->jobs[rb->info->row].frame_info[ifb].icomp;
+			
+  if (a > b) {
+    return 1;
+  } else if (a == b) {
+    return 0;
+  } else {
+    return -1;
+  }
+
+  return 0;
+}
+
+int jdd_framelist_cmp_start_time (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+  struct row_data *ra,*rb;
+  time_t a,b;
+  uint16_t ifa,ifb;
+
+  ra = (struct row_data *) ((GtkCListRow*)ptr1)->data;
+  rb = (struct row_data *) ((GtkCListRow*)ptr2)->data;
+
+  ifa = job_frame_number_to_index (&ra->info->jobs[ra->info->row],ra->frame);
+  ifb = job_frame_number_to_index (&rb->info->jobs[ra->info->row],rb->frame);
+
+  a = ra->info->jobs[ra->info->row].frame_info[ifa].start_time;
+  b = rb->info->jobs[rb->info->row].frame_info[ifb].start_time;
+			
+  if (a > b) {
+    return 1;
+  } else if (a == b) {
+    return 0;
+  } else {
+    return -1;
+  }
+
+  return 0;
+}
+
+int jdd_framelist_cmp_end_time (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+  struct row_data *ra,*rb;
+  time_t a,b;
+  uint16_t ifa,ifb;
+
+  ra = (struct row_data *) ((GtkCListRow*)ptr1)->data;
+  rb = (struct row_data *) ((GtkCListRow*)ptr2)->data;
+
+  ifa = job_frame_number_to_index (&ra->info->jobs[ra->info->row],ra->frame);
+  ifb = job_frame_number_to_index (&rb->info->jobs[ra->info->row],rb->frame);
+
+  a = ra->info->jobs[ra->info->row].frame_info[ifa].end_time;
+  b = rb->info->jobs[rb->info->row].frame_info[ifb].end_time;
 			
   if (a > b) {
     return 1;
