@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.74 2003/12/19 17:26:23 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.75 2003/12/24 10:33:31 jorge Exp $
  */
 
 #include <string.h>
@@ -412,7 +412,24 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info)
   gtk_entry_set_text(GTK_ENTRY(info->dnj.eef),buf);
   snprintf(buf,BUFFERLEN-1,"%i",info->jobs[info->row].frame_step);
   gtk_entry_set_text(GTK_ENTRY(info->dnj.estf),buf);
-  /* TODO: copy priority */
+
+	/* Priority */
+  if (info->jobs[info->row].priority == 100) {
+		gtk_entry_set_text (GTK_ENTRY(GTK_COMBO(info->dnj.cpri)->entry),"Highest");
+  } else if (info->jobs[info->row].priority == 250) {
+		gtk_entry_set_text (GTK_ENTRY(GTK_COMBO(info->dnj.cpri)->entry),"High");
+  } else if (info->jobs[info->row].priority == 500) {
+		gtk_entry_set_text (GTK_ENTRY(GTK_COMBO(info->dnj.cpri)->entry),"Normal");
+  } else if (info->jobs[info->row].priority == 750) {
+		gtk_entry_set_text (GTK_ENTRY(GTK_COMBO(info->dnj.cpri)->entry),"Low");
+  } else if (info->jobs[info->row].priority == 1000) {
+		gtk_entry_set_text (GTK_ENTRY(GTK_COMBO(info->dnj.cpri)->entry),"Lowest");
+  } else {
+		gtk_entry_set_text (GTK_ENTRY(GTK_COMBO(info->dnj.cpri)->entry),"Custom");
+		snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].priority);
+		gtk_entry_set_text (GTK_ENTRY(info->dnj.epri),buf);
+  }
+	
 
   /* Limits */
   snprintf(buf,BUFFERLEN-1,"%i",(short int)info->jobs[info->row].limits.nmaxcpus);
