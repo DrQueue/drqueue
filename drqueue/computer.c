@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.32 2002/02/27 16:36:35 jorge Exp $ */
+/* $Id: computer.c,v 1.33 2002/03/01 14:14:13 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -9,10 +9,7 @@
 #include <sys/types.h>
 #include <signal.h>
 
-#include "computer.h"
-#include "database.h"
-#include "logger.h"
-#include "semaphores.h"
+#include "libdrqueue.h"
 
 int computer_index_addr (void *pwdb,struct in_addr addr)
 {
@@ -94,11 +91,9 @@ int computer_available (struct computer *computer)
   /* This means that never will be assigned more tasks than processors */
   /* This behaviour could be changed in the future */
   npt = (computer->limits.nmaxcpus < computer->hwinfo.ncpus) ? computer->limits.nmaxcpus : computer->hwinfo.ncpus;
-/*    printf ("1) npt: %i\n",npt); */
 
   /* then npt is the minimum of npt or the number of free tasks structures */
   npt = (npt < MAXTASKS) ? npt : MAXTASKS;
-/*    printf ("2) npt: %i\n",npt); */
 
   /* Prevent floating point exception */
   if (!computer->limits.maxfreeloadcpu)
@@ -112,19 +107,15 @@ int computer_available (struct computer *computer)
   t = (computer->status.loadavg[0] / computer->limits.maxfreeloadcpu) - computer->status.ntasks;
   t = ( t < 0 ) ? 0 : t;
   npt -= t;
-/*    printf ("3) npt: %i\n",npt); */
 
   /* Number of current working tasks */
   npt -= computer->status.ntasks;
-/*    printf ("4) npt: %i\n",npt); */
 
   if (computer->status.ntasks > MAXTASKS) {
     /* This should never happen, btw */
     fprintf (stderr,"CRITICAL ERROR: the computer has exceeded the MAXTASKS limit\n");
     kill (0,SIGINT);
   }
-
-/*    printf ("Number of possible tasks: %i\n",npt); */
     
   if (npt <= 0)
     return 0;
@@ -245,4 +236,38 @@ int computer_ntasks_job (struct computer *comp,uint32_t ijob)
   }
 
   return n;
+}
+
+void computer_autoenable_check (struct slave_database *sdb)
+{
+  /* This function will check if it's the time for auto enable */
+  /* If so, it will change the number of available processors to be the maximum */
+  time_t now;
+  struct tm *tm_now;
+  struct computer_limits limits;
+
+  time (&now);
+
+  if ((now - sdb->comp->limits.autoenable.last) > AE_DELAY) {
+    /* If more time than AE_DELAY has passed since the last autoenable */
+    tm_now = localtime (&now);
+    if ((sdb->comp->limits.autoenable.h == tm_now->tm_hour)
+	&& (sdb->comp->limits.autoenable.m == tm_now->tm_min)
+	&& (sdb->comp->limits.nmaxcpus == 0)) /* Only if the computer is completely disabled (?) */
+      {
+	/* Time for autoenable */
+	semaphore_lock (sdb->semid);
+	
+	sdb->comp->limits.autoenable.last = now;
+	sdb->comp->limits.nmaxcpus = sdb->comp->hwinfo.ncpus;
+
+	limits = sdb->comp->limits;
+
+	semaphore_release (sdb->semid);
+
+	log_slave_computer (L_INFO,"Autoenabled %i processor%s",limits.nmaxcpus,(limits.nmaxcpus > 1) ? "s" : "");
+	
+	update_computer_limits (&limits);
+      }
+  }
 }
