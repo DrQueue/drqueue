@@ -1,9 +1,12 @@
-/* $Id: request.c,v 1.36 2001/09/01 16:40:14 jorge Exp $ */
+/* $Id: request.c,v 1.37 2001/09/01 20:00:41 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
 #include <unistd.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <netdb.h>
 #include <stdio.h>
 #include <signal.h>
 #include <time.h>
@@ -20,7 +23,7 @@
 #include "drerrno.h"
 #include "job.h"
 
-void handle_request_master (int sfd,struct database *wdb,int icomp)
+void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockaddr_in *addr)
 {
   struct request request;
 
@@ -31,7 +34,7 @@ void handle_request_master (int sfd,struct database *wdb,int icomp)
   switch (request.type) {
   case R_R_REGISTER:
     log_master (L_DEBUG,"Registration of new slave request");
-    icomp = handle_r_r_register (sfd,wdb,icomp);
+    icomp = handle_r_r_register (sfd,wdb,icomp,addr);
     break;
   case R_R_UCSTATUS:
     log_master (L_DEBUG,"Update computer status request");
@@ -116,15 +119,28 @@ void handle_request_slave (int sfd,struct slave_database *sdb)
   }
 }
 
-int handle_r_r_register (int sfd,struct database *wdb,int icomp)
+int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_in *addr)
 {
   /* The master handles this type of requests */
   struct request answer;
   struct computer_hwinfo hwinfo;
   int index = -1;
   char msg[BUFFERLEN];
+  char *name;
+  char *dot;
+  struct hostent *host;
 
   log_master (L_DEBUG,"Entering handle_r_r_register");
+
+  if ((host = gethostbyaddr ((const void *)&addr->sin_addr.s_addr,sizeof (struct in_addr),AF_INET)) == NULL) {
+    snprintf(msg,BUFFERLEN-1,"Could not resolve name for: %s",inet_ntoa(addr->sin_addr));
+    log_master (L_WARNING,msg);
+    return -1;
+  } else {
+    if ((dot = strchr (host->h_name,'.')) != NULL) 
+      *dot = '\0';
+    name = host->h_name;
+  }
 
   semaphore_lock(wdb->semid);	/* I put the lock here so no race condition can appear... */
 
@@ -165,6 +181,7 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp)
   recv_computer_hwinfo (sfd, &hwinfo, MASTER);
 
   memcpy (&wdb->computer[index].hwinfo, &hwinfo, sizeof(hwinfo));
+  strncpy(wdb->computer[index].hwinfo.name,name,MAXNAMELEN);
   wdb->computer[index].hwinfo.id = index;
 
   semaphore_release(wdb->semid);

@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.32 2001/09/01 16:41:34 jorge Exp $ */
+/* $Id: slave.c,v 1.33 2001/09/01 20:00:43 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -60,8 +60,6 @@ int main (int argc,char *argv[])
 
   if (fork() == 0) {
     /* Create the listening process */
-/*      strcpy (argv[0],"DrQueue - slave -> listening process"); */
-/*      argv[0] = "DrQueue - slave -> listening process"; */
     set_signal_handlers_child_listening ();
     slave_listening_process (&sdb);
     exit (0);
@@ -69,7 +67,6 @@ int main (int argc,char *argv[])
 
   while (1) {
     get_computer_status (&sdb.comp->status);
-/*      report_computer_status (&sdb.comp->status); */
 
     while (computer_available(sdb.comp)) {
       if (request_job_available(&sdb)) {
@@ -401,14 +398,32 @@ void set_environment (struct slave_database *sdb)
   char msg[BUFFERLEN];
 
 #ifdef __LINUX
+  /* Padded frame number */
   snprintf (msg,BUFFERLEN,"%04i",sdb->comp->status.task[sdb->itask].frame);
+  if (setenv("PADFRAME",msg,1) == -1) {
+    printf ("ERROR\n");
+    kill(0,SIGINT);
+  }
+  /* Frame number */
+  snprintf (msg,BUFFERLEN,"%i",sdb->comp->status.task[sdb->itask].frame);
   if (setenv("FRAME",msg,1) == -1) {
     printf ("ERROR\n");
     kill(0,SIGINT);
   }
+  /* OS */
+  if (setenv("DRQUEUE_OS","LINUX",1) == -1) {
+    printf ("ERROR\n");
+    kill(0,SIGINT);
+  }
 #else
-  snprintf (msg,BUFFERLEN,"FRAME=%04i",sdb->comp->status.task[sdb->itask].frame);
+  /* Padded frame number */
+  snprintf (msg,BUFFERLEN,"PADFRAME=%04i",sdb->comp->status.task[sdb->itask].frame);
   putenv (msg);
+  /* Frame number */
+  snprintf (msg,BUFFERLEN,"FRAME=%i",sdb->comp->status.task[sdb->itask].frame);
+  putenv (msg);
+  /* OS */
+  putenv ("DRQUEUE_OS=IRIX");
 #endif
 }
 
