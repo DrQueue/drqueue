@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.48 2001/09/18 13:25:10 jorge Exp $ */
+/* $Id: slave.c,v 1.49 2001/09/21 14:42:02 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -38,9 +38,7 @@ int main (int argc,char *argv[])
   sdb.comp = attach_shared_memory_slave (sdb.shmid);
   sdb.semid = get_semaphores_slave ();
 
-  init_tasks (sdb.comp->status.task);
-
-  init_computer_status (&sdb.comp->status);
+  computer_status_init (&sdb.comp->status);
   get_hwinfo (&sdb.comp->hwinfo);
   computer_init_limits (sdb.comp);
 
