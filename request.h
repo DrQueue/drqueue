@@ -1,4 +1,4 @@
-/* $Id: request.h,v 1.15 2001/08/27 08:21:11 jorge Exp $ */
+/* $Id: request.h,v 1.16 2001/08/28 12:59:31 jorge Exp $ */
 /* The request structure is not just used for the requests themselves */
 /* but also for the answers to the requests */
 
@@ -38,7 +38,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp);
 void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp);
 void handle_r_r_listjobs (int sfd,struct database *wdb,int icomp);
 void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp);
-void handle_r_r_deletjob (int sfd,struct database *wdb,int icomp);
+void handle_r_r_deletjob (int sfd,struct database *wdb,int icomp,struct request *req);
 void handle_r_r_stopjob  (int sfd,struct database *wdb,int icomp,struct request *req);
 void handle_r_r_contjob  (int sfd,struct database *wdb,int icomp,struct request *req);
 void handle_r_r_hstopjob (int sfd,struct database *wdb,int icomp,struct request *req);
@@ -52,7 +52,7 @@ void register_slave (struct computer *computer);
 int register_job (struct job *job);
 int request_job_available (struct slave_database *sdb);
 void request_task_finished (struct slave_database *sdb);
-int request_job_delete (struct job *job,int who);
+int request_job_delete (uint32_t ijob,int who);
 int request_job_stop (uint32_t ijob, int who);
 int request_job_hstop (uint32_t ijob, int who);
 int request_job_continue (uint32_t ijob, int who);
