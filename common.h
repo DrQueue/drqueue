@@ -1,4 +1,4 @@
-/* $Id: common.h,v 1.17 2001/11/22 15:05:48 jorge Exp $ */
+/* $Id: common.h,v 1.18 2001/11/23 11:51:13 jorge Exp $ */
 
 #ifndef _COMMON_H_
 #define _COMMON_H_
@@ -26,4 +26,4 @@ char *time_str (uint32_t nseconds);
 void mn_job_finished (struct job *job);
 
 #endif /* _COMMON_H_ */
-2
+
