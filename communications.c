@@ -654,7 +654,7 @@ int send_computer_pools (int sfd, struct computer_limits *cl)
 	uint16_t npools;
 	struct pool *pool;
 
-	fprintf (stderr,"Send npools: %u\n",cl->npools);
+	// fprintf (stderr,"Send npools: %u\n",cl->npools);
 	npools = htons (cl->npools);
 	if (!dr_write (sfd,&npools,sizeof(npools))) {
 		return 0;
@@ -676,7 +676,7 @@ int send_computer_pools (int sfd, struct computer_limits *cl)
 		computer_pool_detach_shared_memory (pool);
 	}
 
-	computer_pool_list (cl);
+	//	computer_pool_list (cl);
 
 	return 1;
 }
@@ -691,7 +691,7 @@ int recv_computer_pools (int sfd, struct computer_limits *cl)
 		return 0;
 	}
 	npools = ntohs (npools);
-	fprintf (stderr,"Recv npools: %u\n",npools);
+	// fprintf (stderr,"Recv npools: %u\n",npools);
 
 	computer_pool_free (cl);
 	for (i=0;i<npools;i++) {
@@ -701,7 +701,7 @@ int recv_computer_pools (int sfd, struct computer_limits *cl)
 		computer_pool_add (cl,pool.name);
 	}
 
-	computer_pool_list (cl);
+	// computer_pool_list (cl);
 
 	return 1;
 }

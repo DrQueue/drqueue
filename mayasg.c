@@ -94,7 +94,10 @@ char *mayasg_create (struct mayasgi *info)
   if (strlen(info->image)) {
     fprintf(f,"set DRQUEUE_IMAGE=%s\n",info->image);
   }
-
+	if (info->mentalray) {
+		fprintf(f,"set MENTALRAY=1");
+	}
+	
   snprintf(fn_etc_maya_sg,BUFFERLEN-1,"%s/maya.sg",getenv("DRQUEUE_ETC"));
 
   fflush (f);
@@ -126,7 +129,7 @@ char *mayasg_default_script_path (void)
   static char buf[BUFFERLEN];
   char *p;
 
-  if (!(p = getenv("DRQUEUE_tmp"))) {
+  if (!(p = getenv("DRQUEUE_TMP"))) {
     return ("/drqueue_tmp/not/set/");
   }
   

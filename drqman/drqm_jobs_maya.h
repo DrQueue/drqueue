@@ -33,6 +33,7 @@ struct drqmj_koji_maya {
   GtkWidget *escript;		/* Entry script location */
   GtkWidget *fsscript;		/* File selectot for the script directory */
   GtkWidget *efile_owner;	/* Owner of the rendered files */
+	GtkWidget *cbmentalray;
 };
 
 struct drqm_jobs_info;

@@ -37,6 +37,7 @@ struct mayasgi {		/* Maya Script Generator Info */
   char camera[BUFFERLEN];
   int  res_x,res_y;		/* Resolution of the frame */
   char format[BUFFERLEN];
+	int  mentalray;  // 1 if we should render with mr
 };
 
 char *mayasg_create (struct mayasgi *info);
