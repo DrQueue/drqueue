@@ -23,7 +23,11 @@
 #
 
 # Begin Script
-set BLOCK=`expr $DRQUEUE_FRAME + $BLOCKSIZE - 1`
+if ($DRQUEUE_OS == "WINDOWS") then
+  set BLOCK=`"$DRQUEUE_BIN/expr.exe" $DRQUEUE_FRAME + $BLOCKSIZE - 1`
+else
+  set BLOCK=`expr $DRQUEUE_FRAME + $BLOCKSIZE - 1`
+endif
 if ($BLOCK > $DRQUEUE_ENDFRAME) then
 	set BLOCK = $DRQUEUE_ENDFRAME;
 endif
@@ -73,7 +77,7 @@ endif
 
 echo "rendrib -frames $DRQUEUE_FRAME $DRQUEUE_BLOCK $crop_args $sample_args $stats_args $verbose_args $radiosity_args $rsamples_args $beep_args $SCENE"
 
-rendrib -frames $DRQUEUE_FRAME $DRQUEUE_BLOCK $crop_args $sample_args $stats_args $verbose_args $radiosity_args $rsamples_args $beep_args $SCENE
+rendrib -frames $DRQUEUE_FRAME $DRQUEUE_BLOCK $crop_args $sample_args $stats_args $verbose_args $radiosity_args $rsamples_args $beep_args "$SCENE"
 
 # This should requeue the frame if failed
 if ( $? != 0 ) then
