@@ -1,4 +1,4 @@
-/* $Id: drerrno.h,v 1.3 2001/08/08 10:52:59 jorge Exp $ */
+/* $Id: drerrno.h,v 1.4 2001/08/22 09:02:49 jorge Exp $ */
 
 #ifndef _DRERRNO_H_
 #define _DRERRNO_H_
@@ -13,6 +13,7 @@ extern int drerrno;		/* global errno */
 #define DRE_ANSWERNOTLISTED 5	/* Answer received not listed */
 #define DRE_ANSWERNOTRIGHT  6	/* Not the right answer to this request */
 #define DRE_ERRORSENDING    7	/* Error sending :) */
+#define DRE_ERRORRECEIVING  8	/* Error receiving */
 
 char *drerrno_str (void);
 
