@@ -1,4 +1,4 @@
-/* $Id: mayasg.c,v 1.2 2001/09/04 23:24:42 jorge Exp $ */
+/* $Id: mayasg.c,v 1.3 2001/09/05 09:54:03 jorge Exp $ */
 
 #include <stdio.h>
 #include <time.h>
@@ -51,8 +51,10 @@ char *mayasg_create (struct mayasgi *info)
     }
   }
 
+  fchmod (fileno(f),0777);
+
   /* So now we have the file open and so we must write to it */
-  fprintf(f,"#!/bin/tcsh\n\n");
+  fprintf(f,"#!/bin/tcsh -x\n\n");
   fprintf(f,"set PROJ=%s\n",info->project);
   fprintf(f,"set SCENE=%s\n",info->scene);
   if (strlen(info->image)) {
