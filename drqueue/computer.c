@@ -16,7 +16,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-/* $Id$ */
+// $Id$
+//
 
 #include <sys/types.h>
 #include <netinet/in.h>
@@ -238,8 +239,9 @@ void computer_init_limits (struct computer *comp)
   comp->limits.nmaxcpus = comp->hwinfo.ncpus;
   comp->limits.maxfreeloadcpu = 80;
   comp->limits.autoenable.h = 21; /* At 21:00 autoenable by default */
-  comp->limits.autoenable.m = 00;
+  comp->limits.autoenable.m = 0;
   comp->limits.autoenable.last = 0; /* Last autoenable on Epoch */
+	comp->limits.autoenable.flags = 0; // No flags set, autoenable disabled
 }
 
 int computer_index_correct_master (struct database *wdb, uint32_t icomp)
@@ -279,26 +281,28 @@ void computer_autoenable_check (struct slave_database *sdb)
 
   time (&now);
 
-  if ((now - sdb->comp->limits.autoenable.last) > AE_DELAY) {
+  if ((sdb->comp->limits.autoenable.flags &= AEF_ACTIVE) 
+			&& ((now - sdb->comp->limits.autoenable.last) > AE_DELAY))
+	{
     /* If more time than AE_DELAY has passed since the last autoenable */
     tm_now = localtime (&now);
     if ((sdb->comp->limits.autoenable.h == tm_now->tm_hour)
-	&& (sdb->comp->limits.autoenable.m == tm_now->tm_min)
-	&& (sdb->comp->limits.nmaxcpus == 0)) /* Only if the computer is completely disabled (?) */
+				&& (sdb->comp->limits.autoenable.m == tm_now->tm_min)
+				&& (sdb->comp->limits.nmaxcpus == 0)) /* Only if the computer is completely disabled (?) */
       {
-	/* Time for autoenable */
-	semaphore_lock (sdb->semid);
-	
-	sdb->comp->limits.autoenable.last = now;
-	sdb->comp->limits.nmaxcpus = sdb->comp->hwinfo.ncpus;
-
-	limits = sdb->comp->limits;
-
-	semaphore_release (sdb->semid);
-
-	log_slave_computer (L_INFO,"Autoenabled %i processor%s",limits.nmaxcpus,(limits.nmaxcpus > 1) ? "s" : "");
-	
-	update_computer_limits (&limits);
+				/* Time for autoenable */
+				semaphore_lock (sdb->semid);
+				
+				sdb->comp->limits.autoenable.last = now;
+				sdb->comp->limits.nmaxcpus = sdb->comp->hwinfo.ncpus;
+				
+				limits = sdb->comp->limits;
+				
+				semaphore_release (sdb->semid);
+				
+				log_slave_computer (L_INFO,"Autoenabled %i processor%s",limits.nmaxcpus,(limits.nmaxcpus > 1) ? "s" : "");
+				
+				update_computer_limits (&limits);
       }
   }
 }

@@ -28,12 +28,16 @@
 #include "computer_info.h"
 #include "computer_status.h"
 
+// Autoenable flags
+#define AEF_ACTIVE (1<<0)
+
 struct computer_limits {
   uint16_t nmaxcpus;		/* Maximum number of cpus running */
   uint16_t maxfreeloadcpu;	/* Maximum load that a cpu can have to be considered free */
   struct autoenable {		/* I put autoenable on limits even */
     time_t last;		/* Time of the last autoenable event happened */
     unsigned char h,m;		/* Hour and minute of wished autoenable */
+		unsigned char flags;	// Autoenable flag
   } autoenable;
 };
 
