@@ -1,7 +1,6 @@
 TO DO:
 -----
 
-* Remove logs when the job is removed from the queue
 * Checks at the beginning of every program for the directories.
 * Master database saved and reloaded from disk.
 * The slave must check that the requests come from the
@@ -13,7 +12,6 @@ TO DO:
 * file locking on logging functions.
 * check file descriptor numbers on connect to see if
   they grow.
-* Silent logging, no output at all.
 * Mail notifications
 * On the registration if the computer ip can not be resolved
   then use the string of the ip address as name.
@@ -27,6 +25,8 @@ NOTES:
 
 * I should use a dynamically allocated structure for the computers' tasks (or not?)
 * Both the frame index and the frame number are uint32 so no negative numbers are supported.
+* Job logs are removed when the job is deleted by user request, if the job is deleted because of a failure
+  they are not removed.
 
 DRQMAN
 ------
