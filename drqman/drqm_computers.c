@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_computers.c,v 1.2 2001/07/19 10:23:44 jorge Exp $
+ * $Id: drqm_computers.c,v 1.3 2001/07/20 08:28:50 jorge Exp $
  */
 
 #include <string.h>
@@ -73,7 +73,7 @@ static GtkWidget *CreateComputersList(struct info_drqm_computers *info)
 
 static GtkWidget *CreateClist (GtkWidget *window)
 {
-  gchar *titles[] = { "Running","Name","Status","Procs" };
+  gchar *titles[] = { "Running","Name","Status","Procs","Load Avg" };
   GtkWidget *clist;
 
   clist = gtk_clist_new_with_titles (5, titles);
@@ -83,7 +83,8 @@ static GtkWidget *CreateClist (GtkWidget *window)
   gtk_clist_set_column_width (GTK_CLIST(clist),0,75);
   gtk_clist_set_column_width (GTK_CLIST(clist),1,100);
   gtk_clist_set_column_width (GTK_CLIST(clist),2,100);
-  gtk_clist_set_column_width (GTK_CLIST(clist),4,45);
+  gtk_clist_set_column_width (GTK_CLIST(clist),3,45);
+  gtk_clist_set_column_width (GTK_CLIST(clist),4,100);
   gtk_widget_show(clist);
 
   return (clist);
@@ -112,12 +113,13 @@ void drqm_update_computerlist (struct info_drqm_computers *info)
   int i;
   char **buff;
   
-  buff = (char**) g_malloc(5 * sizeof(char*));
+  buff = (char**) g_malloc(6 * sizeof(char*));
   buff[0] = (char*) g_malloc (BUFFERLEN);
   buff[1] = (char*) g_malloc (BUFFERLEN);
   buff[2] = (char*) g_malloc (BUFFERLEN);
   buff[3] = (char*) g_malloc (BUFFERLEN);
-  buff[4] = NULL;
+  buff[4] = (char*) g_malloc (BUFFERLEN);
+  buff[5] = NULL;
   
   gtk_clist_freeze(GTK_CLIST(info->clist));
   gtk_clist_clear(GTK_CLIST(info->clist));
@@ -126,6 +128,7 @@ void drqm_update_computerlist (struct info_drqm_computers *info)
     strncpy(buff[1],info->computers[i].hwinfo.name,BUFFERLEN);
     snprintf (buff[2],BUFFERLEN,"REGISTERED");
     snprintf (buff[3],BUFFERLEN,"%i",info->computers[i].hwinfo.numproc);
+    snprintf (buff[4],BUFFERLEN,"%i",info->computers[i].status.loadavg[0]);
     gtk_clist_append(GTK_CLIST(info->clist),buff);
   }
   gtk_clist_thaw(GTK_CLIST(info->clist));
