@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.32 2001/09/16 16:37:09 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.33 2001/09/17 10:46:45 jorge Exp $
  */
 
 #include <string.h>
@@ -1578,5 +1578,6 @@ static void jdd_maya_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *inf
     
     execve(SHELL_PATH,(char*const*)new_argv,environ);
     perror("execve");
+    exit (1);
   }
 }
