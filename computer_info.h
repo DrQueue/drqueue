@@ -1,4 +1,4 @@
-/* $Id: computer_info.h,v 1.2 2001/07/06 13:13:21 jorge Exp $ */
+/* $Id: computer_info.h,v 1.3 2001/08/27 21:16:18 jorge Exp $ */
 
 #ifndef _COMPUTER_INFO_H_
 #define _COMPUTER_INFO_H_
@@ -33,6 +33,7 @@ typedef enum {
   PROCTYPE_PENTIUM,
   PROCTYPE_PENTIUMII,
   PROCTYPE_PENTIUMIII,
+  PROCTYPE_PENTIUM4,
   PROCTYPE_MIPSR5000,
   PROCTYPE_MIPSR10000
 } t_proctype;
