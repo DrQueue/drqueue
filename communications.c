@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.9 2001/07/06 15:07:09 jorge Exp $ */
+/* $Id: communications.c,v 1.10 2001/07/17 10:03:05 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -363,13 +363,17 @@ void recv_job (int sfd, struct job *job,int who)
 
     if ((r == -1) || ((r == 0) && (bleft > 0))) {
       /* if r is error or if there are no more bytes left on the socket but there _SHOULD_ be */
-      if (who == MASTER) {
+      switch (who) {
+      case MASTER:
 	log_master (L_ERROR,"Receiving job");
 	exit (1);
-      } else if (who == SLAVE) {
+      case SLAVE:
 	log_slave_computer (L_ERROR,"Receiving job");
 	kill(0,SIGINT);
-      } else {
+      case CLIENT:
+	fprintf (stderr,"ERROR: receiving request\n");
+	exit (1);
+      default:
 	fprintf (stderr,"ERROR: recv_job: who value not valid !\n");
 	exit (1);
       }
