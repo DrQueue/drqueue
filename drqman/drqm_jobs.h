@@ -40,6 +40,7 @@ struct drqmj_flags {
   GtkWidget *edifemail;					/* Entry for the email */
 	GtkWidget *cbjobdepend;       // Depends on another job
 	GtkWidget *ejobdepend;        // Which one ?
+	GtkWidget *bjobdepend;        // Show a list
 };
 
 struct drqmj_dnji {							/* dialog new job info */
