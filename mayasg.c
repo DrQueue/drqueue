@@ -1,4 +1,4 @@
-/* $Id: mayasg.c,v 1.9 2002/08/02 17:40:21 jorge Exp $ */
+/* $Id: mayasg.c,v 1.10 2002/09/22 19:10:24 jorge Exp $ */
 
 #include <stdio.h>
 #include <time.h>
@@ -21,7 +21,7 @@ char *mayasg_create (struct mayasgi *info)
   FILE *etc_maya_sg; 		/* The maya script generator configuration file */
   int fd_etc_maya_sg,fd_f;
   static char filename[BUFFERLEN];
-  char fn_etc_maya_sg[BUFFERLEN];
+  char fn_etc_maya_sg[BUFFERLEN]; /* File name pointing to DRQUEUE_ROOT/etc/maya.sg */
   char buf[BUFFERLEN];
   char image_arg[BUFFERLEN];
   int size;
@@ -60,11 +60,20 @@ char *mayasg_create (struct mayasgi *info)
   fprintf(f,"set RD=%s\n",info->renderdir);
   fprintf(f,"set SCENE=%s\n",info->scene);
   fprintf(f,"set RF_OWNER=%s\n",info->file_owner);
+  if (strlen(info->format)) {
+    fprintf(f,"set FFORMAT=%s\n",info->format);
+  }
+  if (info->res_x != -1) {
+    fprintf(f,"set RESX=%i\n",info->res_x);
+  }
+  if (info->res_y != -1) {
+    fprintf(f,"set RESY=%i\n",info->res_y);
+  }
+  if (strlen(info->camera)) {
+    fprintf(f,"set CAMERA=%s\n",info->camera);
+  }
   if (strlen(info->image)) {
     fprintf(f,"set IMAGE=%s\n",info->image);
-    snprintf(image_arg,BUFFERLEN-1,"-p $IMAGE");
-  } else {
-    image_arg[0] = 0;
   }
 
   snprintf(fn_etc_maya_sg,BUFFERLEN-1,"%s/etc/maya.sg",getenv("DRQUEUE_ROOT"));
