@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.55 2002/02/26 15:52:05 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.56 2002/06/17 16:27:33 jorge Exp $
  */
 
 #include <string.h>
@@ -84,8 +84,8 @@ static void dnj_koj_combo_changed (GtkWidget *combo, struct drqm_jobs_info *info
 /* KOJ FRAMES */
 /* Maya */
 static GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info);
-static void dnj_koj_frame_maya_project_search (GtkWidget *button, struct drqmj_koji_maya *info);
-static void dnj_koj_frame_maya_project_set (GtkWidget *button, struct drqmj_koji_maya *info);
+static void dnj_koj_frame_maya_renderdir_search (GtkWidget *button, struct drqmj_koji_maya *info);
+static void dnj_koj_frame_maya_renderdir_set (GtkWidget *button, struct drqmj_koji_maya *info);
 static void dnj_koj_frame_maya_script_search (GtkWidget *button, struct drqmj_koji_maya *info);
 static void dnj_koj_frame_maya_script_set (GtkWidget *button, struct drqmj_koji_maya *info);
 static void dnj_koj_frame_maya_scene_search (GtkWidget *button, struct drqmj_koji_maya *info);
@@ -649,7 +649,7 @@ static int dnj_submit (struct drqmj_dnji *info)
     break;
   case KOJ_MAYA:
     strncpy(job.koji.maya.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escene)),BUFFERLEN-1);
-    strncpy(job.koji.maya.project,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eproject)),BUFFERLEN-1);
+    strncpy(job.koji.maya.renderdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.erenderdir)),BUFFERLEN-1);
     strncpy(job.koji.maya.image,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eimage)),BUFFERLEN-1);
     strncpy(job.koji.maya.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eviewcmd)),BUFFERLEN-1);
     break;
@@ -1479,15 +1479,15 @@ static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info)
 }
 
 
-static void dnj_koj_frame_maya_project_search (GtkWidget *button, struct drqmj_koji_maya *info)
+static void dnj_koj_frame_maya_renderdir_search (GtkWidget *button, struct drqmj_koji_maya *info)
 {
   GtkWidget *dialog;
 
-  dialog = gtk_file_selection_new ("Please select a project directory");
-  info->fsproject = dialog;
+  dialog = gtk_file_selection_new ("Please select the output directory");
+  info->fsrenderdir = dialog;
 
   gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
-		      "clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_maya_project_set), info);
+		      "clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_maya_renderdir_set), info);
   gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
 			     "clicked", GTK_SIGNAL_FUNC (gtk_widget_destroy),
 			     (gpointer) dialog);
@@ -1498,16 +1498,16 @@ static void dnj_koj_frame_maya_project_search (GtkWidget *button, struct drqmj_k
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void dnj_koj_frame_maya_project_set (GtkWidget *button, struct drqmj_koji_maya *info)
+static void dnj_koj_frame_maya_renderdir_set (GtkWidget *button, struct drqmj_koji_maya *info)
 {
   char buf[BUFFERLEN];
   char *p;
   
-  strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsproject)),BUFFERLEN-1);
+  strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsrenderdir)),BUFFERLEN-1);
   p = strrchr(buf,'/');
   if (p)
     *p = 0;
-  gtk_entry_set_text (GTK_ENTRY(info->eproject),buf);
+  gtk_entry_set_text (GTK_ENTRY(info->erenderdir),buf);
 }
 
 static void dnj_koj_frame_maya_scene_search (GtkWidget *button, struct drqmj_koji_maya *info)
@@ -1535,8 +1535,11 @@ static void dnj_koj_frame_maya_scene_set (GtkWidget *button, struct drqmj_koji_m
   char *p;
   
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscene)),BUFFERLEN-1);
-  p = strrchr(buf,'/');
-  p = ( p ) ? p+1 : buf;
+  /* This removed the path part of the filename */
+/*    p = strrchr(buf,'/'); */
+/*    p = ( p ) ? p+1 : buf; */
+  /* We need the whole scene path */
+  p = buf;
   gtk_entry_set_text (GTK_ENTRY(info->escene),p);
 }
 
@@ -1545,7 +1548,7 @@ static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_
   struct mayasgi mayasgi;	/* Maya script generator info */
   char *file;
 
-  strncpy (mayasgi.project,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eproject)),BUFFERLEN-1);
+  strncpy (mayasgi.renderdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.erenderdir)),BUFFERLEN-1);
   strncpy (mayasgi.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escene)),BUFFERLEN-1);
   strncpy (mayasgi.image,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eimage)),BUFFERLEN-1);
   strncpy (mayasgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escript)),BUFFERLEN-1);
@@ -1696,18 +1699,18 @@ static GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
   /* Project directory */
   hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
-  label = gtk_label_new ("Project directory:");
+  label = gtk_label_new ("Render directory:");
   gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
   hbox2 = gtk_hbox_new (FALSE,0);
   gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
   entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
-  gtk_tooltips_set_tip(tooltips,entry,"Directory name of the maya project",NULL);
-  info->dnj.koji_maya.eproject = entry;
+  gtk_tooltips_set_tip(tooltips,entry,"Directory where the images should be stored",NULL);
+  info->dnj.koji_maya.erenderdir = entry;
   gtk_box_pack_start (GTK_BOX(hbox2),entry,TRUE,TRUE,2);
   button = gtk_button_new_with_label ("Search");
-  gtk_tooltips_set_tip(tooltips,button,"File selector for the maya project directory",NULL);
+  gtk_tooltips_set_tip(tooltips,button,"File selector for the maya render directory",NULL);
   gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
-  gtk_signal_connect (GTK_OBJECT(button),"clicked",dnj_koj_frame_maya_project_search,&info->dnj.koji_maya);
+  gtk_signal_connect (GTK_OBJECT(button),"clicked",dnj_koj_frame_maya_renderdir_search,&info->dnj.koji_maya);
 
   /* Output Image file name */
   hbox = gtk_hbox_new (TRUE,2);
@@ -2416,9 +2419,9 @@ GtkWidget *jdd_koj_maya_widgets (struct drqm_jobs_info *info)
 
   hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start (GTK_BOX(vbox),hbox,TRUE,FALSE,2);
-  label = gtk_label_new ("Project:");
+  label = gtk_label_new ("Render directory:");
   gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
-  label = gtk_label_new (info->jobs[info->row].koji.maya.project);
+  label = gtk_label_new (info->jobs[info->row].koji.maya.renderdir);
   gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
 
   hbox = gtk_hbox_new (TRUE,2);
