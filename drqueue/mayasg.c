@@ -1,4 +1,4 @@
-/* $Id: mayasg.c,v 1.1 2001/09/04 12:30:42 jorge Exp $ */
+/* $Id: mayasg.c,v 1.2 2001/09/04 23:24:42 jorge Exp $ */
 
 #include <stdio.h>
 #include <time.h>
@@ -10,7 +10,7 @@
 #include "mayasg.h"
 #include "libdrqueue.h"
 
-char *mayasg_create (struct mayasg *info)
+char *mayasg_create (struct mayasgi *info)
 {
   /* This function creates the maya render script based on the information given */
   /* Returns a pointer to a string containing the path of the just created file */
@@ -52,7 +52,7 @@ char *mayasg_create (struct mayasg *info)
   }
 
   /* So now we have the file open and so we must write to it */
-  fprintf(f,"#!/bin/sh\n\n");
+  fprintf(f,"#!/bin/tcsh\n\n");
   fprintf(f,"set PROJ=%s\n",info->project);
   fprintf(f,"set SCENE=%s\n",info->scene);
   if (strlen(info->image)) {
@@ -68,5 +68,7 @@ char *mayasg_create (struct mayasg *info)
 
   return filename;
 }
+
+
 
 
