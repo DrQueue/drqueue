@@ -60,7 +60,7 @@ endif
 
 all: base drqman
 
-base: slave master requeue sendjob
+base: slave master requeue sendjob jobfinfo
 
 install: miniinstall $(systype)_install 
 
@@ -127,12 +127,14 @@ ifeq ($(systype),IRIX)
 	install -root $(PWD) -m 0755 -f /bin -src slave slave.$(systype)
 	install -root $(PWD) -m 0755 -f /bin -src master master.$(systype)
 	install -root $(PWD) -m 0755 -f /bin -src requeue requeue.$(systype)
+	install -root $(PWD) -m 0755 -f /bin -src jobfinfo jobfinfo.$(systype)
 	test -x ./drqman/drqman && install -root $(PWD) -m 0755 -f /bin -src drqman/drqman drqman.$(systype) || test 1
 else
 	install -d -m 0755 bin
 	install -m 0755 -p ./slave bin/slave.$(systype)
 	install -m 0755 -p ./master bin/master.$(systype)
 	install -m 0755 -p ./requeue bin/requeue.$(systype)
+	install -m 0755 -p ./jobfinfo bin/jobfinfo.$(systype)
 	test -x ./drqman/drqman && install -m 0755 -p ./drqman/drqman bin/drqman.$(systype) || exit 0
 endif
 
@@ -143,12 +145,8 @@ tags:
 	etags *.[ch] drqman/*.[ch]
 
 clean:
-	rm -fR *.o *~ libdrqueue.a slave master sendjob requeue TAGS tmp/* logs/* db/* bin/*.$(systype)
+	rm -fR *.o *~ libdrqueue.a slave master sendjob requeue jobinfo TAGS tmp/* logs/* db/* bin/*.$(systype)
 	$(MAKE) -C drqman clean
-
-
-
-
 
 #actual object make targets
 
@@ -158,6 +156,9 @@ slave: slave.o libdrqueue.a
 master: master.o libdrqueue.a
 requeue: requeue.o libdrqueue.a
 requeue.o: requeue.c
+	$(CC) -c $(CFLAGS) -o $@ $<
+jobfinfo: jobfinfo.o libdrqueue.a
+jobfinfo.o: jobfinfo.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 sendjob: sendjob.o libdrqueue.a
