@@ -1,4 +1,5 @@
-/* $Id: slave.c,v 1.36 2001/09/05 12:52:12 jorge Exp $ */
+/* $Id: slave.c,v 1.37 2001/09/05 13:36:39 jorge Exp $ */
+/* $Name:  $ */
 
 #include <stdio.h>
 #include <unistd.h>
