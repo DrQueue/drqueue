@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.61 2002/06/24 08:40:50 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.62 2002/07/23 13:03:53 jorge Exp $
  */
 
 #include <string.h>
@@ -1307,7 +1307,7 @@ static void jdd_requeue_frames (GtkWidget *button,struct drqm_jobs_info *info_dj
   for (;sel;sel = sel->next) {
     rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info_dj->jdd.clist), (gint)sel->data);
     frame = rdata->frame;
-    drqm_request_job_frame_waiting (info_dj->jobs[info_dj->ijob].id,frame);
+    drqm_request_job_frame_waiting (info_dj->jobs[info_dj->row].id,frame);
   }
 }
 
@@ -1346,7 +1346,7 @@ static void jdd_kill_frames (GtkWidget *button,struct drqm_jobs_info *info_dj)
   for (;sel;sel = sel->next) {
     rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info_dj->jdd.clist), (gint)sel->data);
     frame = rdata->frame;
-    drqm_request_job_frame_kill (info_dj->jobs[info_dj->ijob].id,frame);
+    drqm_request_job_frame_kill (info_dj->jobs[info_dj->row].id,frame);
   }
 }
 
@@ -1364,7 +1364,7 @@ static void jdd_finish_frames (GtkWidget *button,struct drqm_jobs_info *info_dj)
   for (;sel;sel = sel->next) {
     rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info_dj->jdd.clist), (gint)sel->data);
     frame = rdata->frame;
-    drqm_request_job_frame_finish (info_dj->jobs[info_dj->ijob].id,frame);
+    drqm_request_job_frame_finish (info_dj->jobs[info_dj->row].id,frame);
   }
 }
 
@@ -1403,7 +1403,7 @@ static void jdd_kill_finish_frames (GtkWidget *button,struct drqm_jobs_info *inf
   for (;sel;sel = sel->next) {
     rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info_dj->jdd.clist), (gint)sel->data);
     frame = rdata->frame;
-    drqm_request_job_frame_kill_finish (info_dj->jobs[info_dj->ijob].id,frame);
+    drqm_request_job_frame_kill_finish (info_dj->jobs[info_dj->row].id,frame);
   }
 }
 
@@ -1560,6 +1560,7 @@ static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_
   strncpy (mayasgi.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escene)),BUFFERLEN-1);
   strncpy (mayasgi.image,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eimage)),BUFFERLEN-1);
   strncpy (mayasgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escript)),BUFFERLEN-1);
+  strncpy (mayasgi.file_owner,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.efile_owner)),BUFFERLEN-1);
 
   if ((file = mayasg_create (&mayasgi)) == NULL) {
     fprintf (stderr,"ERROR: %s\n",drerrno_str());
@@ -1578,6 +1579,7 @@ static void dnj_koj_frame_mayablock_bcreate_pressed (GtkWidget *button, struct d
   strncpy (mayasgi.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escene)),BUFFERLEN-1);
   strncpy (mayasgi.image,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eimage)),BUFFERLEN-1);
   strncpy (mayasgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escript)),BUFFERLEN-1);
+  strncpy (mayasgi.file_owner,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.efile_owner)),BUFFERLEN-1);
 
   if ((file = mayablocksg_create (&mayasgi)) == NULL) {
     fprintf (stderr,"ERROR: %s\n",drerrno_str());
@@ -1700,6 +1702,7 @@ static GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
   GtkWidget *button;
   GtkWidget *bbox;
   GtkTooltips *tooltips;
+  struct passwd *pw;
 
   tooltips = TooltipsNew ();
 
@@ -1754,6 +1757,24 @@ static GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
   info->dnj.koji_maya.eimage = entry;
   gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
 
+  /* File Owner */
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Owner of rendered files:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
+  gtk_tooltips_set_tip(tooltips,entry,"After rendering the ownership of the "
+		       "rendered files will be changed to this. By default it "
+		       "is the same as the owner of the job",NULL);
+  info->dnj.koji_maya.efile_owner = entry;
+  if (!(pw = getpwuid(geteuid()))) {
+    gtk_entry_set_text(GTK_ENTRY(entry),"ERROR");
+  } else {
+    gtk_entry_set_text(GTK_ENTRY(entry),pw->pw_name);
+  }
+  gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
+
+
   /* View command */
   hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
@@ -1794,6 +1815,7 @@ static GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
   gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,TRUE,2);
   switch (info->dnj.koj) {
   case KOJ_GENERAL:
+    fprintf (stderr,"What ?!\n");
     break;
   case KOJ_MAYA:
     gtk_signal_connect (GTK_OBJECT(button),"clicked",
