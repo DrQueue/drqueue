@@ -1,4 +1,4 @@
-/* $Id: sendjob.c,v 1.2 2001/06/05 12:19:45 jorge Exp $ */
+/* $Id: sendjob.c,v 1.3 2001/07/04 10:13:59 jorge Exp $ */
 /* To set up a job from a terminal and send it to the master */
 /* I'd like it to be curses based */
 
@@ -36,8 +36,8 @@ void presentation (void)
 
 void jobinfo_get (struct job *job)
 {
-  input_get_string (job->name,MAXNAMELEN,"Job name ? ");
-  input_get_string (job->cmd,MAXCMDLEN,"Job command ? ");
+  input_get_word (job->name,MAXNAMELEN,"Job name ? ");
+  input_get_line (job->cmd,MAXCMDLEN,"Job command ? ");
   input_get_uint32 (&job->frame_start,"Start frame ? ");
   input_get_uint32 (&job->frame_end,"End frame ? ");
   strncpy (job->owner,getlogin(),MAXNAMELEN-1);
@@ -46,7 +46,7 @@ void jobinfo_get (struct job *job)
   job->frame_info = NULL;
 }
 
-void input_get_string (char *res,int len,char *question)
+void input_get_word (char *res,int len,char *question)
 {
   char buf[len];
   int n;
@@ -61,6 +61,19 @@ void input_get_string (char *res,int len,char *question)
     fgets (buf,len,stdin);
   }
 }
+
+void input_get_line (char *res,int len,char *question)
+{
+  char buf[len];
+  int n;
+
+  do {
+    printf ("%s",question);
+    fgets (buf,len,stdin);
+  } while (n != 1);
+  strncpy(res,buf,len-1);
+}
+
 
 void input_get_uint32 (uint32_t *res,char *question)
 {

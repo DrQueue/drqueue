@@ -1,16 +1,20 @@
-/* $Id: slave.c,v 1.8 2001/06/05 12:45:36 jorge Exp $ */
+/* $Id: slave.c,v 1.9 2001/07/04 10:13:59 jorge Exp $ */
 
 #include <unistd.h>
 #include <signal.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/sem.h>
+#include <errno.h>
+#include <sys/wait.h>
+#include <stdlib.h>
 
 #include "slave.h"
 #include "computer.h"
 #include "logger.h"
 #include "request.h"
 #include "communications.h"
+#include "semaphores.h"
 
 struct slave_database sdb;	/* slave database */
 
@@ -175,6 +179,16 @@ void set_signal_handlers_child_chandler (void)
   sigaction (SIGPIPE, &action_pipe, NULL);
 }
 
+void set_signal_handlers_child_launcher (void)
+{
+  struct sigaction action_dfl;
+
+  action_dfl.sa_sigaction = (void *)SIG_DFL;
+  sigemptyset (&action_dfl.sa_mask);
+  action_dfl.sa_flags = SA_SIGINFO;
+  sigaction (SIGINT, &action_dfl, NULL);
+  sigaction (SIGTERM, &action_dfl, NULL);
+}
 
 void slave_listening_process (struct slave_database *sdb)
 {
@@ -219,9 +233,68 @@ void launch_task (struct slave_database *sdb)
 {
   /* Here we get the job ready in the process task structure */
   /* pointed by sdb->itask */
+  int rc;
+  pid_t task_pid;
+  extern char **environ;
+
+  if (fork() == 0) {
+    /* This child reports the execution of the command itself */
+    set_signal_handlers_child_launcher ();
+    if ((task_pid = fork()) == 0) {
+      /* This child execs the command */
+      const char *new_argv[4];	/* from libc sources */
+      new_argv[0] = SHELL_NAME;
+      new_argv[1] = "-c";
+      new_argv[2] = sdb->comp->status.task[sdb->itask].jobcmd;
+      new_argv[3] = NULL;
+
+      set_environment(sdb);
+
+      execve(SHELL_PATH,(char*const*)new_argv,environ);
+
+      exit(errno);		/* If we arrive here, something happened exec'ing */
+    }
+    
+    /* Then we set the process as running */
+    semaphore_lock(sdb->semid);
+    sdb->comp->status.task[sdb->itask].status = TASKSTATUS_RUNNING;
+    sdb->comp->status.task[sdb->itask].pid = task_pid;
+    semaphore_release(sdb->semid);
+
+    if (waitpid(task_pid,&rc,0) == -1) {
+      /* Some problem exec'ing */
+      log_slave_task(&sdb->comp->status.task[sdb->itask],"ERROR: Exec'ing cmdline (No child on launcher)");
+    } else {
+      /* We have to clean the task and send the info to the master */
+      /* consider WIFSIGNALED(status), WTERMSIG(status), WEXITSTATUS(status) */
+      /* we pass directly the status to the master and he decides what to do with the frame */
+      log_slave_task(&sdb->comp->status.task[sdb->itask],"Info: Frame finished");
+
+      semaphore_lock(sdb->semid);
+
+      semaphore_release(sdb->semid);
+
+      request_task_finished (sdb);
+
+      semaphore_lock(sdb->semid);
+      sdb->comp->status.task[sdb->itask].used = 0; /* We don't need the task anymore */
+      semaphore_release(sdb->semid);
+    }
+
+    exit (0);
+  }
 }
 
+void set_environment (struct slave_database *sdb)
+{
+  char msg[BUFFERLEN];
 
+  snprintf (msg,BUFFERLEN,"%04i",sdb->comp->status.task[sdb->itask].frame);
+  if (setenv("FRAME",msg,1) == -1)
+    printf ("ERROR\n");
+
+  printf ("Environment: %s\n",getenv("FRAME"));
+}
 
 
 

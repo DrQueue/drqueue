@@ -1,4 +1,4 @@
-/* $Id: request.h,v 1.4 2001/05/30 15:11:47 jorge Exp $ */
+/* $Id: request.h,v 1.5 2001/07/04 10:13:59 jorge Exp $ */
 /* The request structure is not just used for the requests themselves */
 /* but also for the answers to the requests */
 
@@ -32,6 +32,7 @@ void update_computer_status (struct computer *computer); /* The slave calls this
 void register_slave (struct computer *computer);
 void register_job (struct job *job);
 int request_job_available (struct slave_database *sdb);
+void request_task_finished (struct slave_database *sdb);
 
 #endif /* _REQUEST_H_ */
 
