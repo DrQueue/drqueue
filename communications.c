@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.26 2001/09/01 20:00:37 jorge Exp $ */
+/* $Id: communications.c,v 1.27 2001/09/06 13:06:58 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -381,6 +381,7 @@ void recv_job (int sfd, struct job *job,int who)
   }
   /* Now we should have the computer hardware info with the values in */
   /* network byte order, so we put them in host byte order */
+  job->id = ntohl (job->id);
   job->nprocs = ntohs (job->nprocs);
   job->status = ntohs (job->status);
   job->frame_start = ntohl (job->frame_start);
@@ -408,6 +409,7 @@ void send_job (int sfd, struct job *job,int who)
   /* We make a copy coz we need to modify the values */
   memcpy (buf,job,sizeof(bswapped));
   /* Prepare for sending */
+  bswapped.id = htonl (bswapped.id);
   bswapped.nprocs = htons (bswapped.nprocs);
   bswapped.status = htons (bswapped.status);
   bswapped.frame_start = htonl (bswapped.frame_start);

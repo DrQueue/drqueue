@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.15 2001/09/05 09:53:27 jorge Exp $ */
+/* $Id: job.h,v 1.16 2001/09/06 13:06:59 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -41,7 +41,7 @@ struct frame_info {
 
 struct job {
   char used;
-  char id;			/* Position in the master's list of jobs */
+  uint32_t id;			/* Id number for the job */
   uint16_t nprocs;		/* Number of procs currently assigned */
   uint16_t status;		/* Status of the job */
   char name[MAXNAMELEN];
