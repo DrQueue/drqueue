@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.27 2001/08/07 13:03:57 jorge Exp $ */
+/* $Id: slave.c,v 1.28 2001/08/08 10:53:51 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -27,10 +27,14 @@ int main (int argc,char *argv[])
   log_slave_computer (L_INFO,"Starting...");
   set_signal_handlers ();
 
-  while ((opt = getopt (argc,argv,"fh")) != -1) {
+  while ((opt = getopt (argc,argv,"fl:h")) != -1) {
     switch (opt) {
     case 'f':
       force = 1;
+      break;
+    case 'l':
+      loglevel = atoi (optarg);
+      printf ("Logging level set to: %i\n",loglevel);
       break;
     case '?':
     case 'h':
@@ -429,5 +433,6 @@ void usage (void)
 {
   fprintf (stderr,"Valid options:\n"
 	  "\t-f to force continuing if shared memory already exists\n"
+	  "\t-l <loglevel> From 0 to 3 (0=errors,1=warnings,2=info,3=debug).\n\t\tDefaults to 1. Each level logs all the previous levels\n"
 	  "\t-h prints this help\n");
 }

@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.14 2001/07/30 12:49:09 jorge Exp $ */
+/* $Id: master.c,v 1.15 2001/08/08 10:53:50 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -30,10 +30,14 @@ int main (int argc, char *argv[])
   log_master (L_INFO,"Starting...");
   set_signal_handlers ();
 
-  while ((opt = getopt (argc,argv,"fh")) != -1) {
+  while ((opt = getopt (argc,argv,"fl:h")) != -1) {
     switch (opt) {
     case 'f':
       force = 1;
+      break;
+    case 'l':
+      loglevel = atoi (optarg);
+      printf ("Logging level set to: %i\n",loglevel);
       break;
     case '?':
     case 'h':
@@ -334,6 +338,7 @@ void usage (void)
 {
   fprintf (stderr,"Valid options:\n"
 	  "\t-f to force continuing if shared memory already exists\n"
+	  "\t-l <loglevel> From 0 to 3 (0=errors,1=warnings,2=info,3=debug).\n\t\tDefaults to 1. Each level logs all the previous levels\n"
 	  "\t-h prints this help\n");
 }
 
