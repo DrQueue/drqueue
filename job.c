@@ -16,7 +16,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-/* $Id$ */
+// $Id$
+//
 
 #ifdef __FREEBSD
 # include <sys/types.h>
@@ -229,7 +230,7 @@ int job_available (struct database *wdb,uint32_t ijob, int *iframe, uint32_t ico
 			return 0;
 		}
 
-	if ((wdb->job[ijob].flags &= JF_JOBDEPEND)
+	if ((wdb->job[ijob].flags & JF_JOBDEPEND)
 			&& (wdb->job[wdb->job[ijob].dependid].status != JOBSTATUS_FINISHED))
 		{
 			// If this job depends on another and that one hasn't finished, job is not available
@@ -860,7 +861,7 @@ int job_available_no_icomp (struct database *wdb,uint32_t ijob, int *iframe)
     return 0;
   }
 
-	if ((wdb->job[ijob].flags &= JF_JOBDEPEND)
+	if ((wdb->job[ijob].flags & JF_JOBDEPEND)
 			&& (wdb->job[wdb->job[ijob].dependid].status != JOBSTATUS_FINISHED))
 		{
 			// If this job depends on another and that one hasn't finished, job is not available
