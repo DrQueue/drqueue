@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.7 2001/06/05 12:19:45 jorge Exp $ */
+/* $Id: slave.c,v 1.8 2001/06/05 12:45:36 jorge Exp $ */
 
 #include <unistd.h>
 #include <signal.h>
@@ -35,6 +35,7 @@ int main (int argc,char *argv[])
   if (fork() == 0) {
     /* Create the listening process */
 /*      strcpy (argv[0],"DrQueue - slave -> listening process"); */
+/*      argv[0] = "DrQueue - slave -> listening process"; */
     set_signal_handlers_child_listening ();
     slave_listening_process (&sdb);
     exit (0);
@@ -216,8 +217,8 @@ void sigpipe_handler (int signal, siginfo_t *info, void *data)
 
 void launch_task (struct slave_database *sdb)
 {
-  /* Ne need to get the possible task */
-  
+  /* Here we get the job ready in the process task structure */
+  /* pointed by sdb->itask */
 }
 
 

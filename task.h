@@ -1,4 +1,4 @@
-/* $Id: task.h,v 1.5 2001/05/30 15:11:47 jorge Exp $ */
+/* $Id: task.h,v 1.6 2001/06/05 12:45:36 jorge Exp $ */
 
 #ifndef _TASK_H_
 #define _TASK_H_
@@ -10,8 +10,7 @@
 typedef enum {
   TASKSTATUS_LOADING,		/* Assigned but not running yet */
   TASKSTATUS_RUNNING,
-  TASKSTATUS_STOPPED,		/* Stopped (?) */
-  TASKSTATUS_FINISHFRAME,
+  TASKSTATUS_STOPPED,
   TASKSTATUS_KILLFRAME
 } t_taskstatus;
 
@@ -30,5 +29,7 @@ struct slave_database;
 
 void init_tasks (struct task *task);
 int task_available (struct slave_database *sdb);
+void task_report (struct task *task);
+char *task_status_string (unsigned char status);
 
 #endif /* _TASK_H_ */
