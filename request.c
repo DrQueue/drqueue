@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.18 2001/07/31 13:10:41 jorge Exp $ */
+/* $Id: request.c,v 1.19 2001/08/02 10:19:03 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -227,7 +227,7 @@ void handle_r_r_ucstatus (int sfd,struct database *wdb,int icomp)
 /*    report_computer_status (&wdb->computer[icomp].status); */
 }
 
-void register_job (struct job *job)
+int register_job (struct job *job)
 {
   /* Some client (control, or whatever itl be called) calls */
   /* function to register a job on the master */
@@ -236,7 +236,7 @@ void register_job (struct job *job)
 
   if ((sfd = connect_to_master ()) == -1) {
     fprintf(stderr,"ERROR: %s\n",drerrno_str());
-    kill(0,SIGINT);
+    return 0;
   }
 
   req.type = R_R_REGISJOB;
@@ -251,22 +251,21 @@ void register_job (struct job *job)
       break;
     case RERR_ALREADY:
       fprintf (stderr,"ERROR: Already registered\n");
-      exit (1);
-      break;
+      return 0;
     case RERR_NOSPACE:
       fprintf (stderr,"ERROR: No space on database\n");
-      exit (1);
-      break;
+      return 0;
     default:
       fprintf (stderr,"ERROR: Error code not listed on answer to R_R_REGISJOB\n");
-      exit (1);
+      return 0;
     }
   } else {
     fprintf (stderr,"ERROR: Not appropiate answer to request R_R_REGISJOB\n");
-    exit(1);
+    return 0;
   }
 
   close (sfd);
+  return 1;
 }
 
 void handle_r_r_regisjob (int sfd,struct database *wdb)
