@@ -1,4 +1,4 @@
-/* $Id: task.h,v 1.16 2001/09/21 14:43:40 jorge Exp $ */
+/* $Id: task.h,v 1.17 2001/10/02 12:40:47 jorge Exp $ */
 
 #ifndef _TASK_H_
 #define _TASK_H_
@@ -25,15 +25,14 @@
 
 typedef enum {
   TASKSTATUS_LOADING,		/* Assigned but not running yet */
-  TASKSTATUS_RUNNING,
-  TASKSTATUS_STOPPED,
-  TASKSTATUS_KILLFRAME
+  TASKSTATUS_RUNNING
 } t_taskstatus;
 
 struct task {
   uint8_t used;
   char jobname[MAXNAMELEN];	/* jobname */
   uint32_t ijob;		/* index to the job in the global db */
+  uint16_t itask;		/* index to the task in the computer !not in the global db! */
   char jobcmd[MAXCMDLEN];	/* string that will be executed */
   char owner[MAXNAMELEN];	/* owner of the job */
   uint32_t frame;		/* current _real_ frame number (!!not index!!) */
