@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.20 2001/09/16 15:36:17 jorge Exp $ */
+/* $Id: job.h,v 1.21 2001/09/21 14:40:40 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -34,6 +34,11 @@ struct frame_info {
   uint16_t itask;		/* Index to task on computer */
 };
 
+/* LIMITS SECTION */
+struct job_limits {
+  uint16_t nmaxcpus;		/* Maximum number of cpus running the job */
+  uint16_t nmaxcpuscomputer;	/* Maximum number of cpus running the job on one single computer */
+};
 
 /* KOJ SECTION */
 /* this union must have the appropiate information for every kind of job */
@@ -82,6 +87,8 @@ struct job {
   time_t est_finish_time;	/* Estimated finish time */
   struct frame_info *frame_info; /* Status of every frame */
   int fishmid;			/* Shared memory id for the frame_info structure */
+
+  struct job_limits limits;
 };
 
 struct database;
@@ -99,6 +106,7 @@ uint32_t job_frame_index_to_number (struct job *job,uint32_t index);
 uint32_t job_frame_number_to_index (struct job *job,uint32_t number);
 int job_frame_number_correct (struct job *job,uint32_t number);
 uint32_t job_nframes (struct job *job);
+void job_copy (struct job *src, struct job *dst);
 int job_available (struct database *wdb,uint32_t ijob, int *iframe);
 int job_first_frame_available (struct database *wdb,uint32_t ijob);
 void job_frame_waiting (struct database *wdb,uint32_t ijob, int iframe);
