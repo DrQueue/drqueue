@@ -484,8 +484,8 @@ int register_job (struct job *job)
     switch (req.data) {
     case RERR_NOERROR:
       if (!send_job (sfd,job)) {
-	close (sfd);
-	return 0;
+				close (sfd);
+				return 0;
       }
       break;
     case RERR_ALREADY:
@@ -505,6 +505,13 @@ int register_job (struct job *job)
     fprintf (stderr,"ERROR: Not appropiate answer to request R_R_REGISJOB\n");
     return 0;
   }
+
+  if (!recv_request (sfd,&req)) {
+    fprintf(stderr,"ERROR: receiving request (register_job)\n");
+    close (sfd);
+    return 0;
+  }
+	job->id = req.data;
 
   close (sfd);
   return 1;
@@ -547,9 +554,17 @@ void handle_r_r_regisjob (int sfd,struct database *wdb)
     job_init (&wdb->job[index]); /* We unassign the reserved space for that job */
     semaphore_release(wdb->semid);
   }
+	
+	// Send job index
+	answer.type = R_R_REGISJOB;
+	answer.data = index;
+	if (!send_request (sfd,&answer,MASTER)) {
+		log_master (L_ERROR,"Sending job index");
+		exit (0);
+	}
+			
 
   job_init_registered (wdb,index,&job);
-
 /*    job_report(&wdb->job[index]); */
 }
 
