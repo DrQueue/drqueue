@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.23 2001/08/31 15:28:13 jorge Exp $ */
+/* $Id: job.c,v 1.24 2001/09/01 16:34:49 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -92,9 +92,8 @@ void job_init (struct job *job)
 
 void job_delete (struct job *job)
 {
-  /* This function is called by the master locked */
-  job->used = 0;
-
+  /* This function is called by the master locked. */
+  /* This functions sets for removal the frame info structure of the job */
   if (job->fishmid != -1) {
     if (shmctl (job->fishmid,IPC_RMID,NULL) == -1) {
       log_master_job(job,L_ERROR,"job_delete: shmctl (job->fishmid,IPC_RMID,NULL)");
@@ -102,7 +101,7 @@ void job_delete (struct job *job)
     job->fishmid = -1;
   }
 
-  job->frame_info = NULL;
+  job_init (job);
 }
 
 char *job_status_string (char status)
@@ -301,6 +300,8 @@ void job_update_info (struct database *wdb,uint32_t ijob)
 
   log_master (L_DEBUG,"Entering job_update_info.");
 
+  semaphore_lock(wdb->semid);
+
   total = job_nframes(&wdb->job[ijob]);
 
   fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
@@ -329,7 +330,6 @@ void job_update_info (struct database *wdb,uint32_t ijob)
   }
   detach_frame_shared_memory(fi);
 
-  semaphore_lock(wdb->semid);
   wdb->job[ijob].nprocs = nprocs;
   wdb->job[ijob].fleft = fleft;
   wdb->job[ijob].fdone = fdone;
@@ -367,7 +367,7 @@ void job_update_info (struct database *wdb,uint32_t ijob)
 
 void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe)
 {
-  /* This function is called by the master, unlocked */
+  /* This function is called by the master, locked */
   /* This function check if the running or loading (in frame_info at job) process is actually */
   /* runnning or not (in task at computer) */
   /* This function is called with the frame info memory ATTACHED <------- */
@@ -382,8 +382,6 @@ void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe
 
 /*    snprintf (msg,BUFFERLEN-1,"Checking iframe %i of ijob %i",iframe,ijob); */
 /*    log_master (L_DEBUG,msg); */
-
-  semaphore_lock(wdb->semid);
 
   fistatus = wdb->job[ijob].frame_info[iframe].status;
   icomp = wdb->job[ijob].frame_info[iframe].icomp;
@@ -417,8 +415,6 @@ void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe
     log_master_job (&wdb->job[ijob],L_WARNING,"Task registered as running not running. Requeued");
     wdb->job[ijob].frame_info[iframe].status = FS_WAITING;
   }
-
-  semaphore_release(wdb->semid);
 
 /*    log_master (L_DEBUG,"Exiting job_check_frame_status."); */
 }
