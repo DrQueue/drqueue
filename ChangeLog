@@ -1,3 +1,82 @@
+2004-10-22 21:12:48  Rev 884    jorge
+
+	* common.h:
+	  New version number on common.h: 0.51.6
+
+2004-10-22 21:08:26  Rev 883    jorge
+
+	* drqman/drqm_jobs_jdd.c:
+	  Added tip to button
+
+2004-10-22 20:57:04  Rev 882    jorge
+
+	* drqman/drqm_jobs_jdd.c drqman/drqm_computers.c:
+	  Code cleanup
+
+2004-10-22 20:39:44  Rev 881    jorge
+
+	* drqman/drqm_jobs_jdd.c:
+	  Refresh button working for the list of hosts
+
+2004-10-22 20:25:51  Rev 880    jorge
+
+	* drqman/drqm_jobs_jdd.c drqman/drqm_computers.c 
+	  drqman/drqm_jobs_jdd.h:
+	  Support for multiple hosts blocked
+
+2004-10-22 20:02:24  Rev 879    jorge
+
+	* drqman/drqm_jobs_jdd.c drqman/drqm_jobs_jdd.h 
+	  drqman/drqm_computers.h:
+	  Dialog to add a host to the blocked list now shows the list of computers.
+
+2004-10-22 19:09:53  Rev 878    jorge
+
+	* drqman/drqm_jobs_jdd.c drqman/drqm_jobs.h drqman/drqm_jobs_jdd.h 
+	  drqman/drqm_computers.h drqman/drqm_jobs_common.h:
+	  More code cleanup
+
+2004-10-22 18:43:19  Rev 877    jorge
+
+	* drqman/drqm_jobs_jdd.c:
+	  More code cleanup
+
+2004-10-22 18:32:59  Rev 876    jorge
+
+	* drqman/drqm_jobs.c drqman/drqm_jobs_jdd.c drqman/drqm_jobs.h 
+	  drqman/drqm_jobs_jdd.h drqman/Makefile:
+	  Code cleanup on drqman
+
+2004-10-22 17:27:11  Rev 875    jorge
+
+	* TODO:
+	  Updated TODO
+
+2004-10-20 21:50:40  Rev 874    jorge
+
+	* slave.h:
+	  Bugfix for compilation problem on Mac OS X
+
+2004-10-20 20:55:16  Rev 873    jorge
+
+	* svn-scripts/build_release.sh:
+	  Another buxfix O:)
+
+2004-10-20 20:51:35  Rev 872    jorge
+
+	* svn-scripts/build_release.sh:
+	  Bugfix
+
+2004-10-20 20:50:29  Rev 871    jorge
+
+	* Revision:
+	  New Revision commited by build_package.sh
+
+2004-10-20 20:49:57  Rev 869    jorge
+
+	* ChangeLog:
+	  Changelog commited by build_package.sh
+
 2004-10-20 20:49:31  Rev 868    jorge
 
 	* common.h:
