@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.6 2001/07/06 13:13:21 jorge Exp $ */
+/* $Id: computer.c,v 1.7 2001/07/06 14:38:01 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -9,6 +9,7 @@
 
 #include "computer.h"
 #include "database.h"
+#include "logger.h"
 
 int computer_index_addr (void *pwdb,struct in_addr addr)
 {
@@ -16,21 +17,28 @@ int computer_index_addr (void *pwdb,struct in_addr addr)
   struct hostent *host;
   char *dot;
   int i=0;
+  char msg[BUFFERLEN];
+  char *name;
 
-  host = gethostbyaddr (&addr,sizeof (struct in_addr),AF_INET);
-  if ((dot = strchr (host->h_name,'.')) != NULL) 
-    *dot = '\0';
-  printf ("Name: %s\n",host->h_name);
-  while (host->h_aliases[i] != NULL) {
-    printf ("Alias: %s\n",host->h_aliases[i]);
-    i++;
-  }
-  while (*host->h_aliases != NULL) {
-    printf ("Alias: %s\n",*host->h_aliases);
-    host->h_aliases++;
+  if ((host = gethostbyaddr (&addr,sizeof (struct in_addr),AF_INET)) == NULL) {
+    snprintf(msg,BUFFERLEN-1,"Could not resolve name for: %s\n",name = inet_ntoa(addr));
+    log_master (L_WARNING,msg);
+  } else {
+    if ((dot = strchr (host->h_name,'.')) != NULL) 
+      *dot = '\0';
+    printf ("Name: %s\n",host->h_name);
+    name = host->h_name;
+    while (host->h_aliases[i] != NULL) {
+      printf ("Alias: %s\n",host->h_aliases[i]);
+      i++;
+    }
+    while (*host->h_aliases != NULL) {
+      printf ("Alias: %s\n",*host->h_aliases);
+      host->h_aliases++;
+    }
   }
 
-  index = computer_index_name (pwdb,host->h_name);
+  index = computer_index_name (pwdb,name);
 
   printf ("Index %i\n", index);
 
