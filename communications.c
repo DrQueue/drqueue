@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.23 2001/08/29 10:14:49 jorge Exp $ */
+/* $Id: communications.c,v 1.24 2001/08/29 12:46:50 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -469,7 +469,7 @@ int recv_task (int sfd, struct task *task)
   }
   /* Now we should have the task info with the values in */
   /* network byte order, so we put them in host byte order */
-  task->jobindex = ntohs (task->jobindex);
+  task->jobindex = ntohl (task->jobindex);
   task->frame = ntohl (task->frame);
   task->pid = ntohl (task->pid);
   task->exitstatus = ntohl (task->exitstatus);
@@ -487,7 +487,7 @@ int send_task (int sfd, struct task *task)
   /* We make a copy coz we need to modify the values */
   memcpy (buf,task,sizeof(bswapped));
   /* Prepare for sending */
-  bswapped.jobindex = htons (bswapped.jobindex);
+  bswapped.jobindex = htonl (bswapped.jobindex);
   bswapped.frame = htonl (bswapped.frame);
   bswapped.pid = htonl (bswapped.pid);
   bswapped.exitstatus = htonl (bswapped.exitstatus);
