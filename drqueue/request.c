@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.51 2001/09/20 10:52:19 jorge Exp $ */
+/* $Id: request.c,v 1.52 2001/09/21 14:41:43 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -681,7 +681,6 @@ void request_task_finished (struct slave_database *sdb)
 
   log_slave_computer(L_DEBUG,"Entering request_task_finished");
 
- begin:
   if ((sfd = connect_to_master ()) == -1) {
     log_slave_computer(L_ERROR,drerrno_str());
     kill(0,SIGINT);
@@ -707,26 +706,28 @@ void request_task_finished (struct slave_database *sdb)
       break;
     case RERR_NOREGIS:
       log_slave_computer(L_ERROR,"Job not registered");
-      exit (0);
+      close (sfd);
+      return;
     case RERR_NOTINRA:
       log_slave_computer(L_ERROR,"Frame out of range");
-      exit (0);
+      close (sfd);
+      return;
     default:
       log_slave_computer(L_ERROR,"Error code not listed on answer to R_R_TASKFINI");
-      exit (0);
+      close (sfd);
+      return;
     }
   } else {
     log_slave_computer (L_ERROR,"Not appropiate answer to request R_R_TASKFINI\n");
-    exit (0);
+    close (sfd);
+    return;
   }
 
   /* So the master is ready to receive the task */
   /* Then we send the task */
   if (!send_task (sfd,&sdb->comp->status.task[sdb->itask])) {
     /* We should retry, but really there should be no errors here */
-    log_slave_computer (L_WARNING,"Retrying R_R_TASKFINI because of error sending the task");
-    close (sfd);
-    goto begin;
+    log_slave_computer (L_ERROR,"Sending task on request_task_finished");
   }
 
   close (sfd);
@@ -843,6 +844,7 @@ void handle_r_r_listjobs (int sfd,struct database *wdb,int icomp)
 
   log_master (L_DEBUG,"Entering handle_r_r_listjobs");
 
+  /* We send the number of active jobs */
   answer.type = R_A_LISTJOBS;
   answer.data = job_njobs_masterdb (wdb);
   
