@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.37 2003/12/18 20:39:41 jorge Exp $ */
+/* $Id: job.h,v 1.38 2004/01/07 21:50:21 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -118,6 +118,7 @@ struct job {
   uint16_t koj;			/* Kind of job */
   union koj_info koji;		/* koj info */
   
+	// FIXME: frames are uint32_t but the function that returns frames available is int 
   uint32_t frame_start,frame_end;
   uint32_t frame_step;
   uint32_t fleft,fdone,ffailed;	/* Frames left,done and failed */
@@ -148,8 +149,12 @@ uint32_t job_frame_number_to_index (struct job *job,uint32_t number);
 int job_frame_number_correct (struct job *job,uint32_t number);
 uint32_t job_nframes (struct job *job);
 void job_copy (struct job *src, struct job *dst);
+
 int job_available (struct database *wdb,uint32_t ijob, int *iframe, uint32_t icomp);
+int job_available_no_icomp (struct database *wdb,uint32_t ijob, int *iframe);
 int job_first_frame_available (struct database *wdb,uint32_t ijob,uint32_t icomp);
+int job_first_frame_available_no_icomp (struct database *wdb,uint32_t ijob);
+
 void job_frame_waiting (struct database *wdb,uint32_t ijob, int iframe);
 void job_update_assigned (struct database *wdb,uint32_t ijob, int iframe, int icomp, int itask);
 void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job);

@@ -1,4 +1,4 @@
-/* $Id: request_codes.h,v 1.21 2002/02/26 15:52:05 jorge Exp $ */
+/* $Id: request_codes.h,v 1.22 2004/01/07 21:50:21 jorge Exp $ */
 
 #ifndef _REQUEST_CODES_H_
 #define _REQUEST_CODES_H_
@@ -34,5 +34,6 @@
 #define RS_R_SETNMAXCPUS        2 /* Request to set limits nmaxcpus */
 #define RS_R_SETMAXFREELOADCPU  3 /* Request to set limits maxfreeloadcpu */
 #define RS_R_SETAUTOENABLE      4 /* Request to set autoenable info */
+#define RS_R_JOBAVAILABLE				5	/* Request indicates master has a job available */
 
 #endif /* _REQUEST_CODES_H_ */

@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.36 2003/12/18 04:11:07 jorge Exp $ */
+/* $Id: computer.c,v 1.37 2004/01/07 21:50:21 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -87,6 +87,11 @@ int computer_available (struct computer *computer)
 {
   int npt;			/* number of possible tasks */
   int t;
+
+	if (computer->used == 0) {
+		return 0;
+	}
+
   /* At the beginning npt is the minimum of the nmaxcpus or ncpus */
   /* This means that never will be assigned more tasks than processors */
   /* This behaviour could be changed in the future */
@@ -98,6 +103,7 @@ int computer_available (struct computer *computer)
   /* Prevent floating point exception */
   if (!computer->limits.maxfreeloadcpu)
     return 0;
+
   /* Care must be taken because we substract the running tasks TWO times */
   /* one because of the load, another one here. */
   /* SOLUTION: we substract maxfreeloadcpu from the load */

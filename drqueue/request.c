@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.77 2003/12/18 04:11:07 jorge Exp $ */
+/* $Id: request.c,v 1.78 2004/01/07 21:50:21 jorge Exp $ */
 #include <unistd.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -45,6 +45,7 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
   case R_R_REGISJOB:
     log_master (L_DEBUG,"Registration of new job request");
     handle_r_r_regisjob (sfd,wdb);
+		request_all_slaves_job_available(wdb);
     break;
   case R_R_AVAILJOB:
     log_master (L_DEBUG,"Request available job");
@@ -53,6 +54,7 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
   case R_R_TASKFINI:
     log_master (L_DEBUG,"Request task finished");
     handle_r_r_taskfini (sfd,wdb,icomp);
+		request_all_slaves_job_available(wdb);
     break;
   case R_R_LISTJOBS:
     log_master (L_DEBUG,"Request list of jobs");
@@ -73,6 +75,7 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
   case R_R_CONTJOB:
     log_master (L_DEBUG,"Request job continue");
     handle_r_r_contjob (sfd,wdb,icomp,&request);
+		request_all_slaves_job_available(wdb);
     break;
   case R_R_HSTOPJOB:
     log_master (L_DEBUG,"Request job hard stop");
@@ -109,6 +112,7 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
   case R_R_UCLIMITS:
     log_master (L_DEBUG,"Update computer limits request");
     handle_r_r_uclimits (sfd,wdb,icomp,&request);
+		request_all_slaves_job_available(wdb);
     break;
   case R_R_SLAVEXIT:
     log_master (L_DEBUG,"Slave exiting");
@@ -117,18 +121,22 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
   case R_R_JOBSESUP:
     log_master (L_DEBUG,"Update job SES");
     handle_r_r_jobsesup (sfd,wdb,icomp,&request);
+		request_all_slaves_job_available(wdb);
     break;
   case R_R_JOBLNMCS:
     log_master (L_DEBUG,"Set job limits nmaxcpus");
     handle_r_r_joblnmcs (sfd,wdb,icomp,&request);
+		request_all_slaves_job_available(wdb);
     break;
   case R_R_JOBLNMCCS:
     log_master (L_DEBUG,"Set job limits nmaxcpuscomputer");
     handle_r_r_joblnmccs (sfd,wdb,icomp,&request);
+		request_all_slaves_job_available(wdb);
     break;
   case R_R_JOBPRIUP:
     log_master (L_DEBUG,"Update priority");
     handle_r_r_jobpriup (sfd,wdb,icomp,&request);
+		request_all_slaves_job_available(wdb);
     break;
   default:
     log_master (L_WARNING,"Unknown request");
@@ -168,6 +176,10 @@ void handle_request_slave (int sfd,struct slave_database *sdb)
     log_slave_computer (L_DEBUG,"Request set autoenable info");
     handle_rs_r_setautoenable (sfd,sdb,&request);
     break;
+	case RS_R_JOBAVAILABLE:
+		log_slave_computer (L_DEBUG,"Request master has an available job");
+		write(phantom[1],"D",1);
+		break;
   default:
     log_slave_computer (L_WARNING,"Unknown request received");
   }
@@ -335,13 +347,14 @@ void register_slave (struct computer *computer)
     switch (req.data) {
     case RERR_NOERROR:
       if (!recv_request (sfd,&req)) {
-	log_slave_computer (L_ERROR,"Receiving request (register_slave)");
-	kill (0,SIGINT);
+				log_slave_computer (L_ERROR,"Receiving request (register_slave)");
+				kill (0,SIGINT);
       }
       computer->hwinfo.id = req.data;
+			computer->used = 1;
       if (!send_computer_hwinfo (sfd,&computer->hwinfo)) {
-	log_slave_computer (L_ERROR,"Sending computer hardware info (register_slave)");
-	kill (0,SIGINT);
+				log_slave_computer (L_ERROR,"Sending computer hardware info (register_slave)");
+				kill (0,SIGINT);
       }
       break;
     case RERR_ALREADY:
@@ -358,7 +371,7 @@ void register_slave (struct computer *computer)
     log_slave_computer (L_ERROR,"Not appropiate answer to request R_R_REGISTER");
     kill (0,SIGINT);
   }
-
+	
   close (sfd);
 }
 
@@ -851,36 +864,36 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
     } else {
       /* Process exited abnormally either killed by us or by itself (SIGSEGV) */
       if (DR_WIFSIGNALED(task.exitstatus)) {
-	int sig = DR_WTERMSIG(task.exitstatus);
-	log_master_job (&wdb->job[task.ijob],L_DEBUG,"Signaled with %i",sig);
-	if ((sig == SIGTERM) || (sig == SIGINT) || (sig == SIGKILL)) {
-	  /* Somebody killed the process, so it should be retried */
-	  log_master_job (&wdb->job[task.ijob],L_INFO,"Retrying frame %i",
-			  job_frame_index_to_number (&wdb->job[task.ijob],task.frame));
-	  switch (fi[task.frame].status) {
-	  case FS_WAITING:
-	    break;
-	  case FS_ASSIGNED:
-	    fi[task.frame].status = FS_WAITING;
-	    break;
-	  case FS_ERROR:
-	  case FS_FINISHED:
-	    break;
-	  }
-	  fi[task.frame].start_time = 0;
-	  fi[task.frame].end_time = 0;
-	} else {
-	  log_master_job (&wdb->job[task.ijob],L_INFO,"Frame %i died signal not catched", 
-			  job_frame_index_to_number (&wdb->job[task.ijob],task.frame));
-	  fi[task.frame].status = FS_ERROR;
-	  time(&fi[task.frame].end_time);
-	}
+				int sig = DR_WTERMSIG(task.exitstatus);
+				log_master_job (&wdb->job[task.ijob],L_DEBUG,"Signaled with %i",sig);
+				if ((sig == SIGTERM) || (sig == SIGINT) || (sig == SIGKILL)) {
+					/* Somebody killed the process, s	o it should be retried */
+					log_master_job (&wdb->job[task.ijob],L_INFO,"Retrying frame %i",
+													job_frame_index_to_number (&wdb->job[task.ijob],task.frame));
+					switch (fi[task.frame].status) {
+					case FS_WAITING:
+						break;
+					case FS_ASSIGNED:
+						fi[task.frame].status = FS_WAITING;
+						break;
+					case FS_ERROR:
+					case FS_FINISHED:
+						break;
+					}
+					fi[task.frame].start_time = 0;
+					fi[task.frame].end_time = 0;
+				} else {
+					log_master_job (&wdb->job[task.ijob],L_INFO,"Frame %i died signal not catched", 
+													job_frame_index_to_number (&wdb->job[task.ijob],task.frame));
+					fi[task.frame].status = FS_ERROR;
+					time(&fi[task.frame].end_time);
+				}
       } else {
-	/* This must be WIFSTOPPED, but I'm not sure */
-	log_master_job (&wdb->job[task.ijob],L_INFO,"Frame %i died abnormally", 
-			job_frame_index_to_number (&wdb->job[task.ijob],task.frame));
-	fi[task.frame].status = FS_ERROR;
-	time(&fi[task.frame].end_time);
+				/* This	 must be WIFSTOPPED, but I'm not sure */
+				log_master_job (&wdb->job[task.ijob],L_INFO,"Frame %i died abnormally", 
+												job_frame_index_to_number (&wdb->job[task.ijob],task.frame));
+				fi[task.frame].status = FS_ERROR;
+				time(&fi[task.frame].end_time);
       }
     }
   } else {
@@ -953,8 +966,8 @@ void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp)
   for (i=0;i<MAXCOMPUTERS;i++) {
     if (computer[i].used) {
       if (!send_computer (sfd,&computer[i])) {
-	log_master (L_ERROR,"Sending computer (handle_r_r_listcomp)");
-	break;
+				log_master (L_ERROR,"Sending computer (handle_r_r_listcomp)");
+				break;
       }
     }
   }
@@ -1015,8 +1028,8 @@ void handle_r_r_deletjob (int sfd,struct database *wdb,int icomp,struct request 
     nframes = job_nframes (&wdb->job[ijob]);
     for (i=0;i<nframes;i++) {
       if (fi[i].status == FS_ASSIGNED) {
-	/* FIXME: We use fi[i].icomp without checking it's value */
-	request_slave_killtask (wdb->computer[fi[i].icomp].hwinfo.name,fi[i].itask,MASTER);
+				/* FIXME: We use fi[i].icomp without checking it's value */
+				request_slave_killtask (wdb->computer[fi[i].icomp].hwinfo.name,fi[i].itask,MASTER);
       }
     }
     detach_frame_shared_memory (fi);
@@ -1180,7 +1193,7 @@ void handle_r_r_hstopjob (int sfd,struct database *wdb,int icomp,struct request 
     nframes = job_nframes (&wdb->job[ijob]);
     for (i=0;i<nframes;i++) {
       if (fi[i].status == FS_ASSIGNED) {
-	request_slave_killtask (wdb->computer[fi[i].icomp].hwinfo.name,fi[i].itask,MASTER);
+				request_slave_killtask (wdb->computer[fi[i].icomp].hwinfo.name,fi[i].itask,MASTER);
       }
     }
     detach_frame_shared_memory (fi);
@@ -2589,4 +2602,70 @@ void handle_r_r_jobpriup (int sfd,struct database *wdb,int icomp,struct request 
   semaphore_release (wdb->semid);
 
   log_master(L_DEBUG,"Exiting handle_r_r_jobpriup");
+}
+
+void request_all_slaves_job_available (struct database *wdb)
+{
+	/* This function checks for an available job. In case it exists it notifies all available slaves */
+	struct tpol pol[MAXJOBS];
+	uint32_t ijob = 0,i;
+	int iframe;
+
+	log_master (L_DEBUG,"Entering request_all_slaves_job_available");
+
+	log_master (L_DEBUG,"Creating priority ordered list of jobs");
+
+	for (i=0;i<MAXJOBS;i++) {
+		pol[i].index = i;
+		pol[i].pri = wdb->job[i].priority;
+	}
+	qsort ((void*)pol,MAXJOBS,sizeof(struct tpol),priority_job_compare);
+
+	for (i=0;i<MAXJOBS;i++) {
+		ijob = pol[i].index;
+		if (job_available_no_icomp(wdb,ijob,&iframe)) {
+			log_master (L_DEBUG,"Job available (%i) for notification to slaves",ijob);
+			break;
+		}
+	}
+
+	if (i==MAXJOBS) {
+		log_master (L_DEBUG,"No job available for notification to slaves");
+		return;
+	}
+
+	// FIXME: This should be an ordered list of computers
+	for (i=0;i<MAXCOMPUTERS;i++) {
+		if (wdb->computer[i].used) {
+		//		if (computer_available(&wdb->computer[i])) {
+			log_master (L_DEBUG,"Notifying slave (%s)",wdb->computer[i].hwinfo.name);
+			request_slave_job_available (wdb->computer[i].hwinfo.name,MASTER);
+		}
+	}
+
+	log_master (L_DEBUG,"Exiting request_all_slaves_job_available");
+}
+
+int request_slave_job_available (char *slave, int who)
+{
+  /* This function is called by the master */
+  /* It just sends a slave a notification that there is a job available */
+  /* Returns 0 on failure */
+  int sfd;
+  struct request request;
+
+  if ((sfd = connect_to_slave (slave)) == -1) {
+    drerrno = DRE_NOCONNECT;
+    return 0;
+  }
+  
+  request.type = RS_R_JOBAVAILABLE;
+  request.data = 0;
+
+  if (!send_request (sfd,&request,who)) {
+    drerrno = DRE_ERRORWRITING;
+    return 0;
+  }
+  
+  return 1;
 }
