@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.31 2001/09/17 14:51:30 jorge Exp $ */
+/* $Id: job.c,v 1.32 2001/09/18 12:38:20 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -386,6 +386,11 @@ void job_update_info (struct database *wdb,uint32_t ijob)
     }
     break;
   case JOBSTATUS_STOPPED:
+    break;
+  case JOBSTATUS_FINISHED:
+    if (fleft > 0) {
+      wdb->job[ijob].status = JOBSTATUS_WAITING;
+    }
   }
   semaphore_release(wdb->semid);
 }
@@ -484,9 +489,9 @@ void job_continue (struct job *job)
   case JOBSTATUS_ACTIVE:
     break;
   case JOBSTATUS_STOPPED:
+  case JOBSTATUS_FINISHED:
     job->status = JOBSTATUS_WAITING;
     break;
-  case JOBSTATUS_FINISHED:
   }
 }
 
