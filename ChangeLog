@@ -1,3 +1,425 @@
+2005-01-31 19:49:42  kraken
+
+	* Changed paths:
+	   M /trunk/drqueue/Makefile
+	   M /trunk/drqueue/README.windows
+	   M /trunk/drqueue/constants.h
+	   D /trunk/drqueue/contrib/windows/Controller/App.ico
+	   M /trunk/drqueue/contrib/windows/Controller/Form1.cs
+	   A /trunk/drqueue/contrib/windows/Controller/drqueue.ico
+	   M /trunk/drqueue/contrib/windows/install_dlls.sh
+	   M /trunk/drqueue/drqman/drqm_jobs_jdd.c
+	   M /trunk/drqueue/drqman/drqm_jobs_maya.h
+	   M /trunk/drqueue/drqman/drqm_jobs_mentalray.h
+	   M /trunk/drqueue/etc/maya.sg
+	   M /trunk/drqueue/master.c
+	   M /trunk/drqueue/semaphores.c
+
+	* IPC correction, drqman fixes for windows version
+
+2005-01-31 15:20:01  kraken
+
+	* Changed paths:
+	   M /trunk/drqueue/Makefile
+	   M /trunk/drqueue/contrib/windows/install_dlls.sh
+	   M /trunk/drqueue/drqman/Makefile
+
+	* Fixes in windows installation
+
+2005-01-31 07:14:26  kraken
+
+	* Changed paths:
+	   M /trunk/drqueue/3delightsg.c
+	   M /trunk/drqueue/Makefile
+	   M /trunk/drqueue/README.windows
+	   M /trunk/drqueue/blendersg.c
+	   M /trunk/drqueue/bmrtsg.c
+	   M /trunk/drqueue/constants.h
+	   M /trunk/drqueue/contrib/windows/Controller/Form1.cs
+	   M /trunk/drqueue/contrib/windows/Controller/ServicesController.Form1.resources
+	   M /trunk/drqueue/contrib/windows/Controller/ServicesController.prjx
+	   M /trunk/drqueue/contrib/windows/Installer/installer.nsi
+	   M /trunk/drqueue/contrib/windows/Services/Service-ipc/Service-ipc.prjx
+	   M /trunk/drqueue/contrib/windows/Services/Service-ipc/Service.cs
+	   M /trunk/drqueue/contrib/windows/Services/Service-master/Service-master.prjx
+	   M /trunk/drqueue/contrib/windows/Services/Service-master/Service.cs
+	   M /trunk/drqueue/contrib/windows/Services/Services.cmbx
+	   M /trunk/drqueue/contrib/windows/build_services.sh
+	   M /trunk/drqueue/contrib/windows/install_dlls.sh
+	   M /trunk/drqueue/drqman/Makefile
+	   M /trunk/drqueue/drqman/drqm_common.c
+	   M /trunk/drqueue/drqman/drqm_common.h
+	   M /trunk/drqueue/drqman/drqm_jobs.c
+	   M /trunk/drqueue/drqman/drqm_jobs_3delight.c
+	   M /trunk/drqueue/drqman/drqm_jobs_blender.c
+	   M /trunk/drqueue/drqman/drqm_jobs_bmrt.c
+	   M /trunk/drqueue/drqman/drqm_jobs_maya.c
+	   M /trunk/drqueue/drqman/drqm_jobs_mentalray.c
+	   M /trunk/drqueue/drqman/drqm_jobs_pixie.c
+	   M /trunk/drqueue/drqman/drqm_request.c
+	   M /trunk/drqueue/drqman/main.c
+	   M /trunk/drqueue/etc/drqman.rc
+	   M /trunk/drqueue/master.c
+	   M /trunk/drqueue/mayasg.c
+	   M /trunk/drqueue/mentalraysg.c
+	   M /trunk/drqueue/pixiesg.c
+	   M /trunk/drqueue/slave.c
+
+	* Native windows gtk version
+
+2005-01-30 21:09:05  kraken
+
+	* Changed paths:
+	   M /trunk/drqueue/Makefile
+	   M /trunk/drqueue/drqman/Makefile
+
+	* Add icon for windows in Makefile
+
+2005-01-30 18:53:36  kraken
+
+	* Changed paths:
+	   M /trunk/drqueue/Makefile
+	   M /trunk/drqueue/contrib/windows/Controller/Form1.cs
+	   M /trunk/drqueue/contrib/windows/Controller/ServicesController.Form1.resources
+	   M /trunk/drqueue/contrib/windows/Installer/installer.nsi
+	   M /trunk/drqueue/contrib/windows/Services/Service-ipc/Service.cs
+	   M /trunk/drqueue/contrib/windows/Services/Service-master/Service.cs
+	   M /trunk/drqueue/drqman/Makefile
+	   M /trunk/drqueue/etc/mentalray.sg
+
+	* Windows services fixes
+
+2005-01-27 18:22:58  kraken
+
+	* Changed paths:
+	   M /trunk/drqueue/common.c
+	   M /trunk/drqueue/contrib/windows/Controller/Form1.cs
+	   M /trunk/drqueue/contrib/windows/Controller/ServicesController.Form1.resources
+	   M /trunk/drqueue/contrib/windows/Installer/installer.nsi
+	   A /trunk/drqueue/contrib/windows/ServiceInstaller
+	   A /trunk/drqueue/contrib/windows/ServiceInstaller/service.cpp
+	   A /trunk/drqueue/contrib/windows/Services
+	   A /trunk/drqueue/contrib/windows/Services/Service-ipc
+	   A /trunk/drqueue/contrib/windows/Services/Service-ipc/AssemblyInfo.cs
+	   A /trunk/drqueue/contrib/windows/Services/Service-ipc/Service-ipc.prjx
+	   A /trunk/drqueue/contrib/windows/Services/Service-ipc/Service.cs
+	   A /trunk/drqueue/contrib/windows/Services/Service-ipc/Services.Service.resources
+	   A /trunk/drqueue/contrib/windows/Services/Service-master
+	   A /trunk/drqueue/contrib/windows/Services/Service-master/AssemblyInfo.cs
+	   A /trunk/drqueue/contrib/windows/Services/Service-master/Service-master.prjx
+	   A /trunk/drqueue/contrib/windows/Services/Service-master/Service.cs
+	   A /trunk/drqueue/contrib/windows/Services/Service-master/Service_master.Service.resources
+	   A /trunk/drqueue/contrib/windows/Services/Services.cmbx
+	   M /trunk/drqueue/contrib/windows/build_services.sh
+	   M /trunk/drqueue/master.h
+
+	* Windows installation fixes (services back for master and ipc)
+
+2005-01-27 17:23:33  kraken
+
+	* Changed paths:
+	   M /trunk/drqueue/etc/maya.sg
+
+	* fix maya sg script for windows
+
+2005-01-27 17:21:37  kraken
+
+	* Changed paths:
+	   M /trunk/drqueue/etc/3delight.sg
+	   M /trunk/drqueue/etc/aqsis.sg
+	   M /trunk/drqueue/etc/blender.sg
+	   M /trunk/drqueue/etc/bmrt.sg
+	   M /trunk/drqueue/etc/drqman.conf
+	   M /trunk/drqueue/etc/master.conf
+	   M /trunk/drqueue/etc/maya.sg
+	   M /trunk/drqueue/etc/mentalray.sg
+	   M /trunk/drqueue/etc/pixie.sg
+	   M /trunk/drqueue/etc/slave.conf
+
+	* fix sg script to work on windows
+
+2005-01-27 13:08:56  kraken
+
+	* Changed paths:
+	   M /trunk/drqueue/drqman/drqm_request.c
+	   M /trunk/drqueue/master.c
+	   M /trunk/drqueue/slave.c
+
+	* fixes for windows version (slave, master, drqman)
+
+2005-01-27 11:27:02  kraken
+
+	* Changed paths:
+	   M /trunk/drqueue/Makefile
+	   M /trunk/drqueue/contrib/windows/Controller/Form1.cs
+	   M /trunk/drqueue/etc/maya.sg
+	   M /trunk/drqueue/slave.c
+
+	* fix in task windows path for execution
+	* fix name of notify icon in windows Controller
+
+2005-01-27 00:59:07  kraken
+
+	* Changed paths:
+	   M /trunk/drqueue/Makefile
+	   M /trunk/drqueue/README.windows
+	   M /trunk/drqueue/communications.c
+	   M /trunk/drqueue/drqman/drqm_request.c
+
+	* Fixes in windows version
+
+2005-01-27 00:21:34  kraken
+
+	* Changed paths:
+	   M /trunk/drqueue/contrib/windows/Installer/installer.nsi
+
+	* Windows installer fixes
+
+2005-01-27 00:09:25  kraken
+
+	* Changed paths:
+	   A /trunk/drqueue/contrib/windows/Controller
+	   A /trunk/drqueue/contrib/windows/Controller/App.ico
+	   A /trunk/drqueue/contrib/windows/Controller/AssemblyInfo.cs
+	   A /trunk/drqueue/contrib/windows/Controller/Form1.cs
+	   A /trunk/drqueue/contrib/windows/Controller/ServicesController.Form1.resources
+	   A /trunk/drqueue/contrib/windows/Controller/ServicesController.cmbx
+	   A /trunk/drqueue/contrib/windows/Controller/ServicesController.prjx
+	   M /trunk/drqueue/contrib/windows/Installer/installer.ini
+	   M /trunk/drqueue/contrib/windows/Installer/installer.nsi
+	   D /trunk/drqueue/contrib/windows/ServiceInstaller
+	   D /trunk/drqueue/contrib/windows/Services
+	   M /trunk/drqueue/contrib/windows/build_services.sh
+
+	* Removed windows services, redesigned windows Controller GUI
+
+2005-01-26 19:53:06  kraken
+
+	* Changed paths:
+	   M /trunk/drqueue/contrib/windows/Installer/installer.ini
+	   M /trunk/drqueue/contrib/windows/Installer/installer.nsi
+	   A /trunk/drqueue/contrib/windows/Installer/installer2.ini
+
+	* fixes in windows installer
+
+2005-01-26 14:03:29  kraken
+
+	* Changed paths:
+	   M /trunk/drqueue/drqman/drqm_request.c
+	   M /trunk/drqueue/request.c
+
+	* bugfixe in requests
+
+2005-01-26 13:19:09  kraken
+
+	* Changed paths:
+	   M /trunk/drqueue/contrib/windows/Installer/installer.nsi
+	   M /trunk/drqueue/contrib/windows/Services/Service-ipc/Service.cs
+	   M /trunk/drqueue/contrib/windows/Services/Service-master/Service.cs
+	   M /trunk/drqueue/contrib/windows/Services/Service-slave/Service.cs
+	   M /trunk/drqueue/contrib/windows/build_services.sh
+
+	* bug fixes in windows installer and service
+
+2005-01-26 12:33:46  kraken
+
+	* Changed paths:
+	   A /trunk/drqueue/contrib/windows/Services/ServicesController/Form1.resources
+
+	* added windows service controller compiled resource file
+
+2005-01-26 12:32:25  kraken
+
+	* Changed paths:
+	   M /trunk/drqueue/Makefile
+	   M /trunk/drqueue/README.windows
+	   A /trunk/drqueue/contrib/windows/Installer
+	   A /trunk/drqueue/contrib/windows/Installer/Service.nsh (from /trunk/drqueue/contrib/windows/Service.nsh:1125)
+	   A /trunk/drqueue/contrib/windows/Installer/WriteEnvStr.nsh (from /trunk/drqueue/contrib/windows/WriteEnvStr.nsh:1125)
+	   A /trunk/drqueue/contrib/windows/Installer/installer.ini (from /trunk/drqueue/contrib/windows/installer.ini:1125)
+	   A /trunk/drqueue/contrib/windows/Installer/installer.nsi (from /trunk/drqueue/contrib/windows/installer.nsi:1125)
+	   A /trunk/drqueue/contrib/windows/Installer/nsis2io.nsh (from /trunk/drqueue/contrib/windows/nsis2io.nsh:1125)
+	   D /trunk/drqueue/contrib/windows/Service.nsh
+	   M /trunk/drqueue/contrib/windows/Services/ServicesController/Form1.cs
+	   D /trunk/drqueue/contrib/windows/WriteEnvStr.nsh
+	   A /trunk/drqueue/contrib/windows/build_services.sh
+	   D /trunk/drqueue/contrib/windows/installer.ini
+	   D /trunk/drqueue/contrib/windows/installer.nsi
+	   D /trunk/drqueue/contrib/windows/nsis2io.nsh
+
+	* Windows version fixes in Makefile and contrib scripts
+
+2005-01-25 18:59:03  kraken
+
+	* Changed paths:
+	   M /trunk/drqueue/Makefile
+	   A /trunk/drqueue/README.windows
+	   A /trunk/drqueue/contrib/windows/ServiceInstaller
+	   A /trunk/drqueue/contrib/windows/ServiceInstaller/service.cpp (from /trunk/drqueue/contrib/windows/service.cpp:1123)
+	   D /trunk/drqueue/contrib/windows/service.cpp
+
+	* fixes in windows installer.
+	* added windows README
+
+2005-01-25 18:40:38  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   A /trunk/drqueue/contrib/windows/Services/ServicesController/App.ico
+
+	* Added binary icon
+
+2005-01-25 18:36:01  kraken
+
+	* Changed paths:
+	   A /trunk/drqueue/contrib/windows/Service.nsh
+	   A /trunk/drqueue/contrib/windows/Services
+	   A /trunk/drqueue/contrib/windows/Services/Service-ipc
+	   A /trunk/drqueue/contrib/windows/Services/Service-ipc/AssemblyInfo.cs
+	   A /trunk/drqueue/contrib/windows/Services/Service-ipc/Service-ipc.csproj
+	   A /trunk/drqueue/contrib/windows/Services/Service-ipc/Service-ipc.csproj.user
+	   A /trunk/drqueue/contrib/windows/Services/Service-ipc/Service.cs
+	   A /trunk/drqueue/contrib/windows/Services/Service-ipc/Service.resx
+	   A /trunk/drqueue/contrib/windows/Services/Service-master
+	   A /trunk/drqueue/contrib/windows/Services/Service-master/AssemblyInfo.cs
+	   A /trunk/drqueue/contrib/windows/Services/Service-master/Service-master.csproj
+	   A /trunk/drqueue/contrib/windows/Services/Service-master/Service-master.csproj.user
+	   A /trunk/drqueue/contrib/windows/Services/Service-master/Service.cs
+	   A /trunk/drqueue/contrib/windows/Services/Service-master/Service.resx
+	   A /trunk/drqueue/contrib/windows/Services/Service-slave
+	   A /trunk/drqueue/contrib/windows/Services/Service-slave/AssemblyInfo.cs
+	   A /trunk/drqueue/contrib/windows/Services/Service-slave/Service-slave.csproj
+	   A /trunk/drqueue/contrib/windows/Services/Service-slave/Service-slave.csproj.user
+	   A /trunk/drqueue/contrib/windows/Services/Service-slave/Service.cs
+	   A /trunk/drqueue/contrib/windows/Services/Service-slave/Service.resx
+	   A /trunk/drqueue/contrib/windows/Services/Services.sln
+	   A /trunk/drqueue/contrib/windows/Services/ServicesController
+	   A /trunk/drqueue/contrib/windows/Services/ServicesController/AssemblyInfo.cs
+	   A /trunk/drqueue/contrib/windows/Services/ServicesController/Form1.cs
+	   A /trunk/drqueue/contrib/windows/Services/ServicesController/Form1.resx
+	   A /trunk/drqueue/contrib/windows/Services/ServicesController/ServicesController.csproj
+	   A /trunk/drqueue/contrib/windows/Services/ServicesController/ServicesController.csproj.user
+	   A /trunk/drqueue/contrib/windows/WriteEnvStr.nsh
+	   A /trunk/drqueue/contrib/windows/install_dlls.sh
+	   A /trunk/drqueue/contrib/windows/installer.nsi
+	   A /trunk/drqueue/contrib/windows/nsis2io.nsh
+	   A /trunk/drqueue/contrib/windows/service.cpp
+
+	* Initial windows installer and service
+
+2005-01-25 18:23:36  kraken
+
+	* Changed paths:
+	   A /trunk/drqueue/contrib/windows/installer.ini
+
+	* Windows installer gui
+
+2005-01-25 18:08:21  kraken
+
+	* Changed paths:
+	   A /trunk/drqueue/contrib/windows
+
+	* contrib fixup for windows version
+
+2005-01-25 17:46:47  kraken
+
+	* Changed paths:
+	   D /trunk/drqueue/contrib/Service.nsh
+	   D /trunk/drqueue/contrib/WriteEnvStr.nsh
+	   D /trunk/drqueue/contrib/install_dlls.sh
+	   D /trunk/drqueue/contrib/installer.ini
+	   D /trunk/drqueue/contrib/installer.nsi
+	   D /trunk/drqueue/contrib/nsis2io.nsh
+	   D /trunk/drqueue/contrib/service-ipc
+	   D /trunk/drqueue/contrib/service-master
+	   D /trunk/drqueue/contrib/service-slave
+	   D /trunk/drqueue/contrib/service.cpp
+
+	* cleaning contrib
+
+2005-01-25 15:21:45  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/COPYING
+	   M /trunk/drqueue/Makefile
+	   M /trunk/drqueue/bin/chown_block
+	   M /trunk/drqueue/bin/master
+	   M /trunk/drqueue/bin/slave
+	   M /trunk/drqueue/common.c
+	   A /trunk/drqueue/computer_info.cygwin.c
+	   A /trunk/drqueue/contrib/Service.nsh
+	   A /trunk/drqueue/contrib/WriteEnvStr.nsh
+	   A /trunk/drqueue/contrib/install_dlls.sh
+	   A /trunk/drqueue/contrib/installer.ini
+	   A /trunk/drqueue/contrib/installer.nsi
+	   A /trunk/drqueue/contrib/nsis2io.nsh
+	   A /trunk/drqueue/contrib/service-ipc
+	   A /trunk/drqueue/contrib/service-ipc/AssemblyInfo.vb
+	   A /trunk/drqueue/contrib/service-ipc/ProjectInstaller.resx
+	   A /trunk/drqueue/contrib/service-ipc/ProjectInstaller.vb
+	   A /trunk/drqueue/contrib/service-ipc/Servicer.resx
+	   A /trunk/drqueue/contrib/service-ipc/Servicer.vb
+	   A /trunk/drqueue/contrib/service-ipc/servicer.sln
+	   A /trunk/drqueue/contrib/service-ipc/servicer.vbproj
+	   A /trunk/drqueue/contrib/service-ipc/servicer.vbproj.user
+	   A /trunk/drqueue/contrib/service-master
+	   A /trunk/drqueue/contrib/service-master/AssemblyInfo.vb
+	   A /trunk/drqueue/contrib/service-master/ProjectInstaller.resx
+	   A /trunk/drqueue/contrib/service-master/ProjectInstaller.vb
+	   A /trunk/drqueue/contrib/service-master/Servicer.resx
+	   A /trunk/drqueue/contrib/service-master/Servicer.vb
+	   A /trunk/drqueue/contrib/service-master/servicer.sln
+	   A /trunk/drqueue/contrib/service-master/servicer.vbproj
+	   A /trunk/drqueue/contrib/service-master/servicer.vbproj.user
+	   A /trunk/drqueue/contrib/service-slave
+	   A /trunk/drqueue/contrib/service-slave/AssemblyInfo.vb
+	   A /trunk/drqueue/contrib/service-slave/ProjectInstaller.resx
+	   A /trunk/drqueue/contrib/service-slave/ProjectInstaller.vb
+	   A /trunk/drqueue/contrib/service-slave/Servicer.resx
+	   A /trunk/drqueue/contrib/service-slave/Servicer.vb
+	   A /trunk/drqueue/contrib/service-slave/servicer.sln
+	   A /trunk/drqueue/contrib/service-slave/servicer.vbproj
+	   A /trunk/drqueue/contrib/service-slave/servicer.vbproj.user
+	   A /trunk/drqueue/contrib/service.cpp
+	   M /trunk/drqueue/drqman/Makefile
+	   M /trunk/drqueue/drqman/drqm_request.c
+
+	* More on cygwin installer
+
+2005-01-21 19:56:29  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/Revision
+
+	* New Revision commited by build_package.sh
+
+2005-01-21 19:55:52  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/ChangeLog
+
+	* ChangeLog commited by build_package.sh
+
+2005-01-21 19:55:47  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/common.h
+
+	* New version number on common.h: 0.59.1
+
+2005-01-21 19:53:32  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/slave.c
+
+	* Bug fix from Kraken
+
+2005-01-21 19:45:14  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/Revision
+
+	* New Revision commited by build_package.sh
+
 2005-01-21 19:45:07  Jorge Daza <jorge@drqueue.org>
 
 	* Changed paths:
