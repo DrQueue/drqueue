@@ -53,6 +53,8 @@ int main (int argc,char *argv[])
 	for (i=0;i<nblocked;i++) {
 		printf ("%s\n",bh[i].name);
 	}
+	fprintf (stderr,"About to add host 1\n");
+	request_job_add_blocked_host (0,1,CLIENT);
 	fprintf (stderr,"About to add host 0 again\n");
 	request_job_add_blocked_host (0,0,CLIENT);
 	fprintf (stderr,"About requesting listing again\n");
