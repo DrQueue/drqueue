@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqman.h,v 1.3 2001/09/04 23:28:53 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqman.h,v 1.4 2001/09/07 09:16:51 jorge Exp $
  */
 
 #ifndef _DRQMAN_H_
@@ -9,7 +9,7 @@
 #include "drqm_computers.h"
 
 struct info_drqm {
-  struct info_drqm_computers idc; /* Computers tab */
+  struct drqm_computers_info idc; /* Computers tab */
   struct drqm_jobs_info idj;	/* Jobs tab */
 };
 

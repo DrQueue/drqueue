@@ -1,4 +1,4 @@
-/* $Id: drqm_request.c,v 1.14 2001/09/06 23:03:25 jorge Exp $ */
+/* $Id: drqm_request.c,v 1.15 2001/09/07 09:16:51 jorge Exp $ */
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -38,7 +38,7 @@ void drqm_request_joblist (struct drqm_jobs_info *info)
     goto end;			/* Should I use gotos ? It seems like a reasonable option for this case */
   }
 
-  clean_joblist (info);
+  drqm_clean_joblist (info);
   if ((info->jobs = malloc (sizeof (struct job) * info->njobs)) == NULL) {
     fprintf (stderr,"Not enough memory for job structures\n");
     goto end;
@@ -53,7 +53,7 @@ void drqm_request_joblist (struct drqm_jobs_info *info)
   close (sfd);
 }
 
-void clean_joblist (struct drqm_jobs_info *info)
+void drqm_clean_joblist (struct drqm_jobs_info *info)
 {
   if (info->jobs) {
     free (info->jobs);
@@ -61,7 +61,7 @@ void clean_joblist (struct drqm_jobs_info *info)
   }
 }
 
-void drqm_request_computerlist (struct info_drqm_computers *info)
+void drqm_request_computerlist (struct drqm_computers_info *info)
 {
   /* This function is called non-blocked */
   /* This function is called from inside drqman */
@@ -93,7 +93,7 @@ void drqm_request_computerlist (struct info_drqm_computers *info)
     goto end;			/* Should I use gotos ? It seems like a reasonable option for this case */
   }
 
-  clean_computerlist (info);
+  drqm_clean_computerlist (info);
   if ((info->computers = malloc (sizeof (struct computer) * info->ncomputers)) == NULL) {
     fprintf (stderr,"Not enough memory for job structures\n");
     goto end;
@@ -108,7 +108,7 @@ void drqm_request_computerlist (struct info_drqm_computers *info)
   close (sfd);
 }
 
-void clean_computerlist (struct info_drqm_computers *info)
+void drqm_clean_computerlist (struct drqm_computers_info *info)
 {
   if (info->computers) {
     free (info->computers);

@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_computers.c,v 1.11 2001/09/03 09:17:15 jorge Exp $
+ * $Id: drqm_computers.c,v 1.12 2001/09/07 09:16:51 jorge Exp $
  */
 
 #include <stdlib.h>
@@ -10,16 +10,16 @@
 #include "drqm_computers.h"
 
 /* Static functions declaration */
-static GtkWidget *CreateComputersList(struct info_drqm_computers *info);
+static GtkWidget *CreateComputersList(struct drqm_computers_info *info);
 static GtkWidget *CreateClist (GtkWidget *window);
-static GtkWidget *CreateButtonRefresh (struct info_drqm_computers *info);
-static void PressedButtonRefresh (GtkWidget *b, struct info_drqm_computers *info);
-static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct info_drqm_computers *info);
-static GtkWidget *CreateMenu (struct info_drqm_computers *info);
+static GtkWidget *CreateButtonRefresh (struct drqm_computers_info *info);
+static void PressedButtonRefresh (GtkWidget *b, struct drqm_computers_info *info);
+static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_computers_info *info);
+static GtkWidget *CreateMenu (struct drqm_computers_info *info);
 
-static void ComputerDetails(GtkWidget *menu_item, struct info_drqm_computers *info);
-static GtkWidget *ComputerDetailsDialog (struct info_drqm_computers *info);
-static int cdd_update (GtkWidget *w, struct info_drqm_computers *info);
+static void ComputerDetails(GtkWidget *menu_item, struct drqm_computers_info *info);
+static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info);
+static int cdd_update (GtkWidget *w, struct drqm_computers_info *info);
 static GtkWidget *CreateTasksClist (void);
 
 
@@ -59,7 +59,7 @@ void CreateComputersPage (GtkWidget *notebook,struct info_drqm *info)
   gtk_widget_show(container);
 }
 
-static GtkWidget *CreateComputersList(struct info_drqm_computers *info)
+static GtkWidget *CreateComputersList(struct drqm_computers_info *info)
 {
   GtkWidget *window;
 
@@ -93,7 +93,7 @@ static GtkWidget *CreateClist (GtkWidget *window)
   return (clist);
 }
 
-static GtkWidget *CreateButtonRefresh (struct info_drqm_computers *info)
+static GtkWidget *CreateButtonRefresh (struct drqm_computers_info *info)
 {
   GtkWidget *b;
   
@@ -105,13 +105,13 @@ static GtkWidget *CreateButtonRefresh (struct info_drqm_computers *info)
   return b;
 }
 
-static void PressedButtonRefresh (GtkWidget *b, struct info_drqm_computers *info)
+static void PressedButtonRefresh (GtkWidget *b, struct drqm_computers_info *info)
 {
   drqm_request_computerlist (info);
   drqm_update_computerlist (info);
 }
 
-void drqm_update_computerlist (struct info_drqm_computers *info)
+void drqm_update_computerlist (struct drqm_computers_info *info)
 {
   int i;
   char **buff;
@@ -142,7 +142,7 @@ void drqm_update_computerlist (struct info_drqm_computers *info)
     g_free (buff[i]);
 }
 
-static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct info_drqm_computers *info)
+static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_computers_info *info)
 {
   if (event->type == GDK_BUTTON_PRESS) {
     GdkEventButton *bevent = (GdkEventButton *) event;
@@ -158,7 +158,7 @@ static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct info_drqm_comput
   return FALSE;
 }
 
-static GtkWidget *CreateMenu (struct info_drqm_computers *info)
+static GtkWidget *CreateMenu (struct drqm_computers_info *info)
 {
   GtkWidget *menu;
   GtkWidget *menu_item;
@@ -176,7 +176,7 @@ static GtkWidget *CreateMenu (struct info_drqm_computers *info)
   return (menu);
 }
 
-static void ComputerDetails(GtkWidget *menu_item, struct info_drqm_computers *info)
+static void ComputerDetails(GtkWidget *menu_item, struct drqm_computers_info *info)
 {
   GtkWidget *dialog;
 
@@ -188,7 +188,7 @@ static void ComputerDetails(GtkWidget *menu_item, struct info_drqm_computers *in
     gtk_grab_add(dialog);
 }
 
-static GtkWidget *ComputerDetailsDialog (struct info_drqm_computers *info)
+static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
 {
   GtkWidget *window;
   GtkWidget *frame;
@@ -330,7 +330,7 @@ static GtkWidget *CreateTasksClist (void)
 
 }
 
-static int cdd_update (GtkWidget *w, struct info_drqm_computers *info)
+static int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
 {
   /* This function depends on info->icomp properly set */
   char msg[BUFFERLEN];
