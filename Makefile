@@ -1,6 +1,6 @@
-# $Id: Makefile,v 1.26 2001/09/05 09:43:53 jorge Exp $
+# $Id: Makefile,v 1.27 2001/09/06 22:37:44 jorge Exp $
 
-CC = gcc
+CC = cc
 OBJS_LIBDRQUEUE = computer_info.o computer_status.o task.o logger.o communications.o \
 			computer.o request.o semaphores.o job.o drerrno.o database.o common.o \
 			mayasg.o
@@ -20,7 +20,7 @@ else
  endif
 endif
 
-.PHONY: clean irix linux tags irix_install
+.PHONY: clean irix linux tags irix_install doc
 
 linux: 
 	$(MAKE) systype=linux all
@@ -46,6 +46,9 @@ linux_miniinstall: linux
 irix_miniinstall: irix
 	install -d -m 0777 ./bin
 	install -p -m 0777 ./slave ./master ./drqman/drqman ./bin/
+
+doc:
+	cxref *.[ch] drqman/*.[ch] -all-comments -xref-all -index-all -R/home/jorge/prog/drqueue -O/home/jorge/prog/drqueue/doc -html32 -D__LINUX
 
 all: slave master sendjob
 
