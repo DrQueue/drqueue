@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.38 2001/10/08 12:32:03 jorge Exp $ */
+/* $Id: job.c,v 1.39 2001/10/08 14:13:47 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -427,42 +427,51 @@ void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe
   uint16_t icomp,itask;
   t_taskstatus tstatus;
 
-/*    char msg[BUFFERLEN]; */
 
 /*    log_master (L_DEBUG,"Entering job_check_frame_status."); */
-
-/*    snprintf (msg,BUFFERLEN-1,"Checking iframe %i of ijob %i",iframe,ijob); */
-/*    log_master (L_DEBUG,msg); */
-
   fistatus = wdb->job[ijob].frame_info[iframe].status;
   icomp = wdb->job[ijob].frame_info[iframe].icomp;
   itask = wdb->job[ijob].frame_info[iframe].itask;
 
-/*    snprintf (msg,BUFFERLEN-1,"Checking iframe %i of ijob %i. icomp: %i itask: %i", */
-/*  	    iframe,ijob,icomp,itask); */
-/*    log_master (L_DEBUG,msg); */
-
   if (fistatus == FS_ASSIGNED) {
-    if (wdb->computer[icomp].used == 0) {
+    if (!computer_index_correct_master(wdb,icomp)) {
+      log_master (L_DEBUG,"Index not correct");
       running = 0;
     } else if (wdb->computer[icomp].status.task[itask].used == 0) {
+      log_master (L_DEBUG,"Task in the computer is not being used");
       running = 0;
     } else {
       tstatus = wdb->computer[icomp].status.task[itask].status;
       
       /* check if the task status is running */
-      if ((tstatus != TASKSTATUS_RUNNING) && (tstatus != TASKSTATUS_LOADING))
+      if ((tstatus != TASKSTATUS_RUNNING) && (tstatus != TASKSTATUS_LOADING)) {
+	log_master (L_DEBUG,"Task status is not running or loading");
 	running = 0;
+      }
+
       /* check if the job is the same in index */
-      if (wdb->computer[icomp].status.task[itask].ijob != ijob)
+      if (wdb->computer[icomp].status.task[itask].ijob != ijob) {
+	log_master (L_DEBUG,"Job indices between task and frame info differ");
 	running = 0;
+      }
       /* check if the job is the same in name */
-      if (strcmp (wdb->computer[icomp].status.task[itask].jobname,wdb->job[ijob].name) != 0)
+      if (!job_index_correct_master (wdb,ijob)) {
+	log_master (L_DEBUG,"Job index is not correct");
 	running = 0;
+      } else if (strcmp (wdb->computer[icomp].status.task[itask].jobname,wdb->job[ijob].name) != 0) {
+	log_master (L_DEBUG,"Job names are different between task and job");
+	running = 0;
+      }
     }
   }
 
   if (!running) {
+    char msg[BUFFERLEN];
+
+    snprintf (msg,BUFFERLEN-1,"Checking iframe %i of ijob %i. icomp: %i itask: %i",
+	      iframe,ijob,icomp,itask);
+    log_master (L_DEBUG,msg);
+
     log_master_job (&wdb->job[ijob],L_WARNING,"Task registered as running not running. Requeued");
     wdb->job[ijob].frame_info[iframe].status = FS_WAITING;
   }
