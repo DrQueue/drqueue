@@ -700,7 +700,9 @@ int recv_computer_pools (int sfd, struct computer_limits *cl)
 		if (!dr_read(sfd,&pool,sizeof(pool))) {
 			return 0;
 		}
-		computer_pool_add (cl,pool.name);
+		if (!computer_pool_add (cl,pool.name)) {
+			log_master(L_WARNING,"Could not add computer pool: %s",drerrno_str());
+		}	
 	}
 
 	// computer_pool_list (cl);
