@@ -2151,6 +2151,8 @@ int request_job_list_blocked_host (uint32_t ijob, struct blocked_host **bh, uint
 	struct blocked_host *tbh;
 	int i;
 
+	*nblocked = 0;
+
 	if ((sfd = connect_to_master ()) == -1) {
 		drerrno = DRE_NOCONNECT;
 		return 0;
