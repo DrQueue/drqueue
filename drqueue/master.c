@@ -325,7 +325,7 @@ void clean_out (int signal, siginfo_t *info, void *data)
 
   kill(0,SIGINT);		/* Kill all the children (Wow, I don't really want to do that...) */
   while ((child_pid = wait (&rc)) != -1) {
-    printf ("Child arrived ! %i\n",(int)child_pid); 
+		//    printf ("Child arrived ! %i\n",(int)child_pid); 
   }
 
   log_master (L_INFO,"Saving...");
@@ -335,6 +335,9 @@ void clean_out (int signal, siginfo_t *info, void *data)
   for (i=0;i<MAXJOBS;i++) {
     job_delete(&wdb->job[i]);
   }
+	for (i=0;i<MAXCOMPUTERS;i++) {
+		computer_free (&wdb->computer[i]);
+	}
 
   if (semctl (wdb->semid,0,IPC_RMID,NULL) == -1) {
     perror ("wdb->semid");
