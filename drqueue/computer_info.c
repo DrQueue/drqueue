@@ -1,4 +1,4 @@
-/* $Id: computer_info.c,v 1.4 2001/07/17 10:24:32 jorge Exp $ */
+/* $Id: computer_info.c,v 1.5 2001/08/27 21:16:17 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -42,7 +42,9 @@ t_proctype get_proctype (void)
   while (!(found || feof (cpuinfo))) {
     fgets (buf,BUFFERLEN-1,cpuinfo);
     if (strstr(buf,"model name") != NULL) {
-      if (strstr(buf,"Pentium III") != NULL) {
+      if (strstr(buf,"Pentium(R) 4") != NULL) {
+	proctype = PROCTYPE_PENTIUM4;
+      } else if (strstr(buf,"Pentium III") != NULL) {
 	proctype = PROCTYPE_PENTIUMIII;
       } else if (strstr(buf,"Pentium II") != NULL) {
 	proctype = PROCTYPE_PENTIUMII;
@@ -194,7 +196,6 @@ char *osstring (t_os os)
   default:
     strncpy (osstring,"DEFAULT (?!)",BUFFERLEN-1);
     fprintf (stderr,"os == DEFAULT\n");
-    exit (1);
   }
 
   return osstring;
@@ -218,7 +219,6 @@ char *archstring (t_arch arch)
   default:
     strncpy (archstring,"DEFAULT (?!)",BUFFERLEN-1);
     fprintf (stderr,"arch == DEFAULT\n");
-    exit (1);
   }
 
   return archstring;
@@ -242,6 +242,9 @@ char *proctypestring (t_proctype proctype)
   case PROCTYPE_PENTIUMIII:
     strncpy (proctypestring,"Pentium III",BUFFERLEN-1);
     break;
+  case PROCTYPE_PENTIUM4:
+    strncpy (proctypestring,"Pentium 4",BUFFERLEN-1);
+    break;
   case PROCTYPE_MIPSR5000:
     strncpy (proctypestring,"R5000",BUFFERLEN-1);
     break;
@@ -251,7 +254,6 @@ char *proctypestring (t_proctype proctype)
   default:
     strncpy (proctypestring,"DEFAULT (?!)",BUFFERLEN-1);
     fprintf (stderr,"proctype == DEFAULT\n");
-    exit (1);
   }
 
   return proctypestring;
