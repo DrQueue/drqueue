@@ -1,4 +1,4 @@
-/* $Id: computer_info.h,v 1.3 2001/08/27 21:16:18 jorge Exp $ */
+/* $Id: computer_info.h,v 1.4 2001/08/28 08:59:19 jorge Exp $ */
 
 #ifndef _COMPUTER_INFO_H_
 #define _COMPUTER_INFO_H_
@@ -40,6 +40,7 @@ typedef enum {
 
 struct computer_hwinfo {
   char name[MAXNAMELEN];	/* Name of the computer */
+  uint32_t id;			/* Identification number */
   unsigned char arch;		/* type of architecture */
   unsigned char os;		/* type of operating system */
   unsigned char proctype;	/* type of processors */
