@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.9 2001/07/17 15:01:52 jorge Exp $ */
+/* $Id: computer.c,v 1.10 2001/07/19 09:03:50 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -82,7 +82,7 @@ int computer_index_free (void *pwdb)
 int computer_available (struct computer *computer)
 {
   /* Returns 1 or 0 if the computer is or not available for rendering */
-  if (computer->status.numtasks >= (computer->hwinfo.numproc*10)) {
+  if (computer->status.ntasks >= (computer->hwinfo.numproc*10)) {
     /* If we already have all the processors running... */
     return 0;
   }
@@ -115,3 +115,18 @@ void computer_init (struct computer *computer)
 {
   computer->used = 0;
 }
+
+int computer_ncomputers_masterdb (struct database *wdb)
+{
+  /* Returns the number of computers that are registered in the master database */
+  int i,c=0;
+
+  for (i=0;i<MAXCOMPUTERS;i++) {
+    if (wdb->computer[i].used) {
+      c++;
+    }
+  }
+
+  return c;
+}
+
