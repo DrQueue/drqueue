@@ -2172,7 +2172,7 @@ static GtkWidget *jdd_sesframes_change_dialog (struct drqm_jobs_info *info)
   GtkWidget *button;
   char msg[BUFFERLEN];
 
-  window = gtk_window_new (GTK_WINDOW_POPUP);
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW(window),"Change start, end, step frames");
   gtk_window_set_policy(GTK_WINDOW(window),FALSE,FALSE,TRUE);
   vbox = gtk_vbox_new (FALSE,2);
@@ -2265,7 +2265,7 @@ GtkWidget *jdd_nmc_dialog (struct drqm_jobs_info *info)
   GtkWidget *button;
   char msg[BUFFERLEN];
 
-  window = gtk_window_new (GTK_WINDOW_POPUP);
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW(window),"New maximum number of cpus");
   gtk_window_set_policy(GTK_WINDOW(window),FALSE,FALSE,TRUE);
   vbox = gtk_vbox_new (FALSE,2);
@@ -2339,7 +2339,7 @@ GtkWidget *jdd_nmcc_dialog (struct drqm_jobs_info *info)
   GtkWidget *button;
   char msg[BUFFERLEN];
 
-  window = gtk_window_new (GTK_WINDOW_POPUP);
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW(window),"New maximum number of cpus in a single computer");
   gtk_window_set_policy(GTK_WINDOW(window),FALSE,FALSE,TRUE);
   vbox = gtk_vbox_new (FALSE,2);
@@ -2414,7 +2414,7 @@ GtkWidget *jdd_priority_change_dialog (struct drqm_jobs_info *info)
   GList *items = NULL;
   char msg[BUFFERLEN];
 
-  window = gtk_window_new (GTK_WINDOW_POPUP);
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW(window),"New priority");
   gtk_window_set_policy(GTK_WINDOW(window),FALSE,FALSE,TRUE);
   vbox = gtk_vbox_new (FALSE,2);
