@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.15 2003/12/18 20:39:41 jorge Exp $
+# $Id: Makefile,v 1.16 2003/12/19 17:26:23 jorge Exp $
 #
 
 CC = gcc
@@ -7,8 +7,8 @@ OBJS = main.o notebook.o drqm_jobs.o drqm_request.o drqm_computers.o drqm_common
 				drqm_jobs_maya.o drqm_jobs_blender.o drqm_jobs_bmrt.o
 
 ifeq ($(systype),linux)
-	CFLAGS = -Wall -I.. -D__LINUX -g `pkg-config --cflags gtk+` -O2
-	LDFLAGS = `pkg-config --libs gtk+`
+	CFLAGS = -Wall -I.. -D__LINUX -g `pkg-config --cflags gtk+-2.0` -O2
+	LDFLAGS = `pkg-config --libs gtk+-2.0`
 	MAKE = make
 else 
  ifeq ($(systype),irix)
