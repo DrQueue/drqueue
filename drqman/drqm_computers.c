@@ -131,10 +131,10 @@ static GtkWidget *CreateComputersList(struct drqm_computers_info *info)
 
 static GtkWidget *CreateClist (GtkWidget *window)
 {
-  gchar *titles[] = { "ID","Running","Name","OS","CPUs","Load Avg" };
+  gchar *titles[] = { "ID","Running","Name","OS","CPUs","Load Avg", "Pools" };
   GtkWidget *clist;
 
-  clist = gtk_clist_new_with_titles (6, titles);
+  clist = gtk_clist_new_with_titles (7, titles);
   gtk_container_add(GTK_CONTAINER(window),clist);
   gtk_clist_column_titles_show(GTK_CLIST(clist));
   gtk_clist_column_titles_passive(GTK_CLIST(clist));
@@ -144,6 +144,7 @@ static GtkWidget *CreateClist (GtkWidget *window)
   gtk_clist_set_column_width (GTK_CLIST(clist),3,100);
   gtk_clist_set_column_width (GTK_CLIST(clist),4,45);
   gtk_clist_set_column_width (GTK_CLIST(clist),5,100);
+  gtk_clist_set_column_width (GTK_CLIST(clist),6,100);
   gtk_widget_show(clist);
 
   return (clist);
@@ -164,9 +165,9 @@ static GtkWidget *CreateButtonRefresh (struct drqm_computers_info *info)
 
 void drqm_update_computerlist (struct drqm_computers_info *info)
 {
-  int i;
+  int i, j;
   char **buff;
-  int ncols = 6;
+  int ncols = 7;
   
   buff = (char**) g_malloc((ncols+1) * sizeof(char*));
   for (i=0;i<ncols;i++)
@@ -185,6 +186,25 @@ void drqm_update_computerlist (struct drqm_computers_info *info)
 	      info->computers[i].status.loadavg[0],
 	      info->computers[i].status.loadavg[1],
 	      info->computers[i].status.loadavg[2]);
+    if (info->computers[i].limits.npools)
+    {
+	struct pool *pool;
+	char *tmp = malloc(BUFFERLEN);
+	if ((pool = computer_pool_attach_shared_memory(info->computers[i].limits.poolshmid)) != (void*)-1)
+	{
+		snprintf(buff[6],BUFFERLEN,"%s",pool[0].name);
+		for (j=1;j<info->computers[i].limits.npools;j++)
+		{
+			snprintf(tmp,BUFFERLEN,"%s,%s",buff[6],pool[j].name);
+			strncpy(buff[6],tmp,BUFFERLEN-1);
+		}
+		computer_pool_detach_shared_memory(pool);
+	}
+    	else
+		buff[6] = "Cannot attach shared memory";
+    }
+    else
+	buff[6] = "No pools";
     gtk_clist_append(GTK_CLIST(info->clist),buff);
 		gtk_clist_set_row_data (GTK_CLIST(info->clist),i,(gpointer)info->computers[i].hwinfo.id);
 		
