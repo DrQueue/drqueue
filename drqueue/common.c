@@ -1,4 +1,6 @@
-/* $Id: common.c,v 1.1 2001/09/02 12:18:45 jorge Exp $ */
+/* $Id: common.c,v 1.2 2001/09/02 14:16:54 jorge Exp $ */
+
+#include <stdlib.h>
 
 #include "common.h"
 #include "drerrno.h"
