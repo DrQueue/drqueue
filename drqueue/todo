@@ -1,7 +1,6 @@
 TO DO:
 -----
 
-* Mail notifications
 * Checks at the beginning of every program for the directories.
 * The slave must check that the requests come from the
   master.
