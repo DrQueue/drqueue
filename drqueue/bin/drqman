@@ -1,0 +1,24 @@
+#!/bin/sh
+#
+# $Id: requeue,v 1.3 2002/06/20 15:28:48 jorge Exp $
+#
+
+if [ ! $DRQUEUE_ROOT ]; then
+  echo ERROR: DRQUEUE_ROOT not set in environment
+  exit 1
+fi
+
+if [ ! $DRQUEUE_MASTER ]; then
+  echo ERROR: DRQUEUE_MASTER not set in environment
+  exit 2
+fi
+
+DQM_CMD=$DRQUEUE_ROOT/bin/drqman.`uname -s`
+
+if [ ! -x $DQM_CMD ]; then
+  echo ERROR: drqman for your platform \(master.`uname -s`\) does not exist in $DRQUEUE_ROOT/bin.
+  echo Perhaps you did not install it \(make miniinstall or make install\).
+  exit 3
+fi
+
+$DQM_CMD $*
