@@ -1,4 +1,4 @@
-/* $Id: computer_info.c,v 1.10 2001/11/16 15:48:18 jorge Exp $ */
+/* $Id: computer_info.c,v 1.11 2002/05/17 16:02:38 jorge Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -44,7 +44,9 @@ t_proctype get_proctype (void)
   while (!(found || feof (cpuinfo))) {
     fgets (buf,BUFFERLEN-1,cpuinfo);
     if (strstr(buf,"model name") != NULL) {
-      if (strstr(buf,"Pentium(R) 4") != NULL) {
+      if (strstr(buf,"AMD Athlon(tm)")) {
+	proctype = PROCTYPE_ATHLON;
+      } else if (strstr(buf,"Pentium(R) 4") != NULL) {
 	proctype = PROCTYPE_PENTIUM4;
       } else if (strstr(buf,"Pentium III") != NULL) {
 	proctype = PROCTYPE_PENTIUMIII;
@@ -304,6 +306,9 @@ char *proctypestring (t_proctype proctype)
     break;
   case PROCTYPE_PENTIUM4:
     msg = "Pentium 4";
+    break;
+  case PROCTYPE_ATHLON:
+    msg = "Athlon";
     break;
   case PROCTYPE_MIPSR5000:
     msg = "R5000";
