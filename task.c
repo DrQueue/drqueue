@@ -1,6 +1,7 @@
-/* $Id: task.c,v 1.5 2001/09/16 15:39:39 jorge Exp $ */
+/* $Id: task.c,v 1.6 2001/09/16 16:36:50 jorge Exp $ */
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "task.h"
 #include "slave.h"
