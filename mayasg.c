@@ -1,4 +1,4 @@
-/* $Id: mayasg.c,v 1.5 2001/09/20 10:52:02 jorge Exp $ */
+/* $Id: mayasg.c,v 1.6 2001/11/21 10:15:49 jorge Exp $ */
 
 #include <stdio.h>
 #include <time.h>
@@ -18,9 +18,14 @@ char *mayasg_create (struct mayasgi *info)
   /* Returns a pointer to a string containing the path of the just created file */
   /* Returns NULL on failure and sets drerrno */
   FILE *f;
+  FILE *etc_maya_sg; 		/* The maya script generator configuration file */
+  int fd_etc_maya_sg,fd_f;
   static char filename[BUFFERLEN];
+  char fn_etc_maya_sg[BUFFERLEN];
+  char buf[BUFFERLEN];
   char image_arg[BUFFERLEN];
-   
+  int size;
+  
   /* Check the parameters */
   if ((!strlen(info->project)) || (!strlen(info->scene))) {
     drerrno = DRE_NOTCOMPLETE;
@@ -48,7 +53,7 @@ char *mayasg_create (struct mayasgi *info)
   fchmod (fileno(f),0777);
 
   /* So now we have the file open and so we must write to it */
-  fprintf(f,"#!/bin/tcsh -x\n\n");
+  fprintf(f,"#!/bin/tcsh\n\n");
   fprintf(f,"set PROJ=%s\n",info->project);
   fprintf(f,"set SCENE=%s\n",info->scene);
   if (strlen(info->image)) {
@@ -57,8 +62,26 @@ char *mayasg_create (struct mayasgi *info)
   } else {
     image_arg[0] = 0;
   }
-  fprintf(f,"\nsetupenv -ver 4.0 maya\n");
-  fprintf(f,"Render -s $FRAME -e $FRAME -proj $PROJ %s $PROJ/scenes/$SCENE\n\n",image_arg);
+
+  snprintf(fn_etc_maya_sg,BUFFERLEN-1,"%s/etc/maya.sg",getenv("DRQUEUE_ROOT"));
+
+  fflush (f);
+
+  if ((etc_maya_sg = fopen (fn_etc_maya_sg,"r")) == NULL) {
+    fprintf(f,"\necho -------------------------------------------------\n");
+    fprintf(f,"echo ATTENTION ! There was a problem opening: %s\n",fn_etc_maya_sg);
+    fprintf(f,"echo So the default configuration will be used\n");
+    fprintf(f,"echo -------------------------------------------------\n");
+    fprintf(f,"\n\nsetupenv -ver 4.0 maya\n");
+    fprintf(f,"Render -s $FRAME -e $FRAME -proj $PROJ %s $PROJ/scenes/$SCENE\n\n",image_arg);
+  } else {
+    fd_etc_maya_sg = fileno (etc_maya_sg);
+    fd_f = fileno (f);
+    while ((size = read (fd_etc_maya_sg,buf,BUFFERLEN)) != 0) {
+      write (fd_f,buf,size);
+    }
+    fclose(etc_maya_sg);
+  }
 
   fclose(f);
 
