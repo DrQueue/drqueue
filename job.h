@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.29 2001/11/19 09:45:29 jorge Exp $ */
+/* $Id: job.h,v 1.30 2001/11/22 14:43:59 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -40,6 +40,7 @@ struct frame_info {
 struct job_limits {
   uint16_t nmaxcpus;		/* Maximum number of cpus running the job */
   uint16_t nmaxcpuscomputer;	/* Maximum number of cpus running the job on one single computer */
+  uint16_t os_flags;		/* In which OS will it run */
 };
 
 /* KOJ SECTION */
@@ -71,6 +72,10 @@ typedef enum {
 /* JOB FLAGS */
 #define JF_MAILNOTIFY     (1<<0) /* Mail notifications on events */
 #define JF_MNDIFEMAIL	  (1<<1) /* Email address for notifications specified on "email" field */
+
+/* OS FLAGS */
+#define OSF_IRIX          (1<<0) /* If set will run on Irix */
+#define OSF_LINUX         (1<<1) /* If set will run on Linux */
 
 /* THE JOB ITSELF */
 struct job {

@@ -1,5 +1,5 @@
 /*
- * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.25 2001/11/16 15:51:57 jorge Exp $
+ * $Header: /root/cvs/drqueue/drqman/drqm_jobs.h,v 1.26 2001/11/22 14:44:29 jorge Exp $
  */
 
 #ifndef _DRQM_JOBS_H_
@@ -19,6 +19,8 @@ struct drqmj_limits {
   GtkWidget *enmaxcpuscomputer;
   GtkWidget *lnmaxcpus;		/* Labels*/
   GtkWidget *lnmaxcpuscomputer;
+  GtkWidget *cb_irix;		/* Check buttons */
+  GtkWidget *cb_linux;
 };
 
 struct drqmj_flags {
