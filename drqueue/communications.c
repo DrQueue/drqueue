@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.38 2001/10/08 15:02:18 jorge Exp $ */
+/* $Id: communications.c,v 1.39 2001/10/29 16:25:07 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -743,4 +743,91 @@ int send_computer_limits (int sfd, struct computer_limits *cl)
 
   return 1;
 }
+
+int write_32b (int sfd, void *data)
+{
+  uint32_t bswapped;
+  int w;
+  int bleft;
+  void *buf = &bswapped;
+
+  bswapped = htonl (*((uint32_t *)data));
+  bleft = sizeof (bswapped);
+  while ((w = write (sfd,buf,bleft)) < bleft) {
+    bleft -= w;
+    buf += w;
+    if ((w == -1) || ((w == 0) && (bleft > 0))) {
+      drerrno = DRE_ERRORSENDING;
+      return 0;
+    }
+  }
+
+  return 1;
+}
+
+int write_16b (int sfd, void *data)
+{
+  uint16_t bswapped;
+  int w;
+  int bleft;
+  void *buf = &bswapped;
+
+  bswapped = htons (*((uint16_t *)data));
+  bleft = sizeof (bswapped);
+  while ((w = write (sfd,buf,bleft)) < bleft) {
+    bleft -= w;
+    buf += w;
+    if ((w == -1) || ((w == 0) && (bleft > 0))) {
+      drerrno = DRE_ERRORSENDING;
+      return 0;
+    }
+  }
+
+  return 1;
+}
+
+int read_32b (int sfd, void *data)
+{
+  int r;
+  int bleft;
+  void *buf;
+
+  buf = cl;
+  bleft = sizeof (uint32_t);
+  while ((r = read (sfd,buf,bleft)) < bleft) {
+    if ((r == -1) || ((r == 0) && (bleft > 0))) {
+      drerrno = DRE_ERRORRECEIVING;
+      return 0;
+    }
+    bleft -= r;
+    buf += r;
+  }
+
+  *(uint32_t *)data = ntohl (*((uint32_t *)data));
+
+  return 1;
+}
+
+int read_16b (int sfd, void *data)
+{
+  int r;
+  int bleft;
+  void *buf;
+
+  buf = cl;
+  bleft = sizeof (uint16_t);
+  while ((r = read (sfd,buf,bleft)) < bleft) {
+    if ((r == -1) || ((r == 0) && (bleft > 0))) {
+      drerrno = DRE_ERRORRECEIVING;
+      return 0;
+    }
+    bleft -= r;
+    buf += r;
+  }
+
+  *(uint16_t *)data = ntohl (*((uint16_t *)data));
+
+  return 1;
+}
+
 
