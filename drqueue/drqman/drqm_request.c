@@ -101,6 +101,8 @@ void drqm_request_computerlist (struct drqm_computers_info *info)
   struct computer *tcomputer;	
   int i;
 
+  drqm_clean_computerlist (info);
+
   if ((sfd = connect_to_master ()) == -1) {
     fprintf(stderr,"%s\n",drerrno_str());
     return;
@@ -126,8 +128,6 @@ void drqm_request_computerlist (struct drqm_computers_info *info)
     close (sfd);
     return;
   }
-
-  drqm_clean_computerlist (info);
 	
 	if (info->ncomputers) {
 		if ((info->computers = g_malloc (sizeof (struct computer) * info->ncomputers)) == NULL) {
@@ -142,7 +142,6 @@ void drqm_request_computerlist (struct drqm_computers_info *info)
 				fprintf (stderr,"ERROR: Receiving computer structure (drqm_request_computerlist) [%i]\n",i);
 				exit (1);  // FIXME: should free pool shared memory from other received computers
 			}
-			computer_pool_init(&tcomputer->limits);
 			tcomputer++;
 		}
 	}
@@ -156,10 +155,10 @@ void drqm_clean_computerlist (struct drqm_computers_info *info)
 
   if (info->computers) {
 		for (i=0;i<info->ncomputers;i++) {
-			fprintf (stderr,"Freeing computer %i\n",i);
+			fprintf (stderr,"drqm_clean_computerlist: Freeing computer %i\n",i);
 			computer_free(&info->computers[i]);
 		}
-    free (info->computers);
+    g_free (info->computers);
     info->computers = NULL;
   }
 }
