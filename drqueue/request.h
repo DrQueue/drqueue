@@ -16,9 +16,11 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-/* $Id$ */
-/* The request structure is not just used for the requests themselves */
-/* but also for the answers to the requests */
+// $Id$
+// 
+// The request structure is not just used for the requests themselves
+// but also for the answers to the requests
+// 
 
 #ifndef _REQUEST_H_
 #define _REQUEST_H_
