@@ -1,4 +1,4 @@
-/* $Id: request.h,v 1.30 2001/10/24 14:52:29 jorge Exp $ */
+/* $Id: request.h,v 1.31 2002/02/26 15:52:05 jorge Exp $ */
 /* The request structure is not just used for the requests themselves */
 /* but also for the answers to the requests */
 
@@ -86,11 +86,13 @@ int request_job_priority_update (uint32_t ijob, uint32_t priority, int who);
 int request_slave_killtask (char *slave,uint16_t itask,int who);
 int request_slave_limits_nmaxcpus_set (char *slave, uint32_t nmaxcpus, int who);
 int request_slave_limits_maxfreeloadcpu_set (char *slave, uint32_t maxfreeloadcpu, int who);
+int request_slave_limits_autoenable_set (char *slave, uint32_t h, uint32_t m, int who);
 
 /* handled by SLAVE */
 void handle_rs_r_killtask (int sfd,struct slave_database *sdb,struct request *req);
 void handle_rs_r_setnmaxcpus (int sfd,struct slave_database *sdb,struct request *req);
 void handle_rs_r_setmaxfreeloadcpu (int sfd,struct slave_database *sdb,struct request *req);
+void handle_rs_r_setautoenable (int sfd,struct slave_database *sdb,struct request *req);
 
 #endif /* _REQUEST_H_ */
 

@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.71 2001/11/26 12:19:50 jorge Exp $ */
+/* $Id: request.c,v 1.72 2002/02/26 15:52:04 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -163,6 +163,10 @@ void handle_request_slave (int sfd,struct slave_database *sdb)
   case RS_R_SETMAXFREELOADCPU:
     log_slave_computer (L_DEBUG,"Request set limits maximum free load for cpu");
     handle_rs_r_setmaxfreeloadcpu (sfd,sdb,&request);
+    break;
+  case RS_R_SETAUTOENABLE:
+    log_slave_computer (L_DEBUG,"Request set autoenable info");
+    handle_rs_r_setautoenable (sfd,sdb,&request);
     break;
   default:
     log_slave_computer (L_WARNING,"Unknown request received");
@@ -1950,6 +1954,35 @@ int request_slave_limits_nmaxcpus_set (char *slave, uint32_t nmaxcpus, int who)
   return 1;
 }
 
+int request_slave_limits_autoenable_set (char *slave, uint32_t h, uint32_t m, int who)
+{
+  int sfd;
+  struct request req;
+
+  if ((sfd = connect_to_slave (slave)) == -1) {
+    drerrno = DRE_NOCONNECT;
+    return 0;
+  }
+  
+  req.type = RS_R_SETAUTOENABLE;
+  req.data = h;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORWRITING;
+    return 0;
+  }
+  
+  req.type = RS_R_SETAUTOENABLE;
+  req.data = m;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORWRITING;
+    return 0;
+  }
+
+  return 1;
+}
+
 void handle_rs_r_setnmaxcpus (int sfd,struct slave_database *sdb,struct request *req)
 {
   char msg[BUFFERLEN];
@@ -1968,6 +2001,51 @@ void handle_rs_r_setnmaxcpus (int sfd,struct slave_database *sdb,struct request 
   sdb->comp->limits.nmaxcpus = (req->data < sdb->comp->hwinfo.ncpus) ? req->data : sdb->comp->hwinfo.ncpus;
 
   snprintf(msg,BUFFERLEN-1,"Set maximum cpus: %i",sdb->comp->limits.nmaxcpus);
+  log_slave_computer(L_DEBUG,msg);
+
+  memcpy (&limits,&sdb->comp->limits,sizeof(struct computer_limits));
+
+  semaphore_release(sdb->semid);
+
+  update_computer_limits (&limits);
+
+  log_slave_computer(L_DEBUG,"Exiting handle_rs_r_setnmaxcpus");
+}
+
+void handle_rs_r_setautoenable (int sfd,struct slave_database *sdb,struct request *req)
+{
+  char msg[BUFFERLEN];
+  struct computer_limits limits;
+  uint32_t h,m;
+
+  log_slave_computer(L_DEBUG,"Entering handle_rs_r_setautoenable");
+
+  h = req->data % 24;		/* Take care in case it exceeds the limits */
+
+  if (!recv_request (sfd,req)) {
+    log_slave_computer (L_ERROR,"Receiving request (update_computer_limits)");
+    kill(0,SIGINT);
+  }
+  
+  m = req->data % 60;		/* Take care in case it exceeds the limits */
+
+  snprintf(msg,BUFFERLEN-1,"Received autoenable hour: %i:%02i",h,m);
+  log_slave_computer(L_DEBUG,msg);
+
+  semaphore_lock(sdb->semid);
+
+  snprintf(msg,BUFFERLEN-1,"Previous autoenable hour: %i:%02i",
+	   sdb->comp->limits.autoenable.h,
+	   sdb->comp->limits.autoenable.m);
+  log_slave_computer(L_DEBUG,msg);
+
+  sdb->comp->limits.autoenable.h = h;
+  sdb->comp->limits.autoenable.m = m;
+  sdb->comp->limits.autoenable.last = time(NULL) - AE_DELAY;
+
+  snprintf(msg,BUFFERLEN-1,"Set autoenable hour: %i:%02i",
+	   sdb->comp->limits.autoenable.h,
+	   sdb->comp->limits.autoenable.m);
   log_slave_computer(L_DEBUG,msg);
 
   memcpy (&limits,&sdb->comp->limits,sizeof(struct computer_limits));

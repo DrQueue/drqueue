@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.30 2001/10/08 14:57:43 jorge Exp $ */
+/* $Id: computer.c,v 1.31 2002/02/26 15:52:04 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -180,7 +180,8 @@ void computer_init (struct computer *computer)
 {
   computer->used = 0;
   computer_status_init(&computer->status);
-/*    computer_init_limits(&computer); */
+  /* We do not call computer_init_limits because it depends on */
+  /* the hardware information properly set */
 }
 
 int computer_ncomputers_masterdb (struct database *wdb)
@@ -214,8 +215,12 @@ int computer_ntasks (struct computer *comp)
 
 void computer_init_limits (struct computer *comp)
 {
+  /* FIXME: This function uses constants that should be #define(d) */
   comp->limits.nmaxcpus = comp->hwinfo.ncpus;
   comp->limits.maxfreeloadcpu = 80;
+  comp->limits.autoenable.h = 21; /* At 21:00 autoenable by default */
+  comp->limits.autoenable.m = 00;
+  comp->limits.autoenable.last = 0; /* Last autoenable on Epoch */
 }
 
 int computer_index_correct_master (struct database *wdb, uint32_t icomp)
