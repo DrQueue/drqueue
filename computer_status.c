@@ -1,4 +1,4 @@
-/* $Id: computer_status.c,v 1.9 2001/09/03 10:33:12 jorge Exp $ */
+/* $Id: computer_status.c,v 1.10 2001/09/05 09:48:40 jorge Exp $ */
 
 #include <stdio.h>
 #include <signal.h>
@@ -95,7 +95,7 @@ void get_loadavg (uint16_t *loadavg)
 
     while (fgets (buf,BUFFERLEN,uptime) != NULL) {
       if ((fd = strstr(buf,"average:")) != NULL) {
-	while (!isdigit(*fd))
+	while (!isdigit((int)*fd))
 	  fd++;
 	if (sscanf (fd,"%f, %f, %f",&f1,&f2,&f3) != 3) {
 	  log_slave_computer (L_WARNING,"Problems on get_loadavg\n");
