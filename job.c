@@ -229,7 +229,7 @@ int job_available (struct database *wdb,uint32_t ijob, int *iframe, uint32_t ico
 			return 0;
 		}
 
-	if ((wdb->job[ijob].flags &= JF_DEPEND)
+	if ((wdb->job[ijob].flags &= JF_JOBDEPEND)
 			&& (wdb->job[wdb->job[ijob].dependid].status != JOBSTATUS_FINISHED))
 		{
 			semaphore_release(wdb->semid);
