@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.48 2002/06/20 15:28:48 jorge Exp $ */
+/* $Id: communications.c,v 1.49 2002/06/26 13:33:54 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -287,45 +287,41 @@ int send_request (int sfd, struct request *request,int who)
 int send_computer_status (int sfd, struct computer_status *status)
 {
   struct computer_status bswapped;
-  int w;
-  int bleft;
   void *buf = &bswapped;
   uint16_t i;
   
   /* We make a copy coz we need to modify the values */
   memcpy (buf,status,sizeof(bswapped));
-  /* Prepare for sending */
-  for (i=0;i<3;i++)
-    bswapped.loadavg[i] = htons (bswapped.loadavg[i]);
 
+  /* Prepare for sending */
+  if (!write_16b (sfd,&status->loadavg[0])) {
+    drerrno = DRE_ERRORWRITING;
+    return 0;
+  }
+  if (!write_16b (sfd,&status->loadavg[1])) {
+    drerrno = DRE_ERRORWRITING;
+    return 0;
+  }
+  if (!write_16b (sfd,&status->loadavg[2])) {
+    drerrno = DRE_ERRORWRITING;
+    return 0;
+  }
+
+  /* Count the tasks. (Shouldn't be necessary) */
   bswapped.ntasks = 0;
   for (i=0;i<MAXTASKS;i++) {
     if (bswapped.task[i].used)
       bswapped.ntasks++;
   }
-
-  bswapped.ntasks = htons (bswapped.ntasks);
-
-  bleft = sizeof (uint16_t) * 20; /* 20 * 2 just in case */
-  while ((w = write(sfd,buf,bleft)) < bleft) {
-    bleft -= w;
-    buf += w;
-    if ((w == -1) || ((w == 0) && (bleft > 0))) {
-      /* if w is error or if there are no more bytes are written but they _SHOULD_ be */
-      drerrno = DRE_ERRORWRITING;
-      return 0;
-    }
-#ifdef COMM_REPORT
-    bsent += w;
-#endif
+  /* Send the number of tasks */
+  if (!write_16b (sfd,&bswapped.ntasks)) {
+    drerrno = DRE_ERRORWRITING;
+    return 0;
   }
-#ifdef COMM_REPORT
-  bsent += w;
-#endif
 
   /* We just send the used tasks */
   for (i=0;i<MAXTASKS;i++) {
-    if (status->task[i].used) {
+    if (bswapped.task[i].used) {
       if (!send_task(sfd,&bswapped.task[i]))
 	return 0;
     }
@@ -336,8 +332,6 @@ int send_computer_status (int sfd, struct computer_status *status)
 
 int recv_computer_status (int sfd, struct computer_status *status)
 {
-  int r;
-  int bleft;
   void *buf;
   int i;
   struct task task;
@@ -345,27 +339,22 @@ int recv_computer_status (int sfd, struct computer_status *status)
   computer_status_init (status);
 
   buf = status;
-  bleft = sizeof (uint16_t) * 20; /* 20 * 2, just in case */
-  while ((r = read (sfd,buf,bleft)) < bleft) {
-    if ((r == -1) || ((r == 0) && (bleft > 0))) {
-      /* if r is error or if there are no more bytes left on the socket but there _SHOULD_ be */
-      drerrno = DRE_ERRORREADING;
-      return 0;
-    }
-    bleft -= r;
-    buf += r;
-#ifdef COMM_REPORT
-    brecv += r;
-#endif
+  if (!read_16b (sfd,&status->loadavg[0])) {
+    drerrno = DRE_ERRORREADING;
+    return 0;
   }
-#ifdef COMM_REPORT
-  brecv += r;
-#endif
-  /* Now we should have the computer hardware info with the values in */
-  /* network byte order, so we put them in host byte order */
-  for (i=0;i<3;i++)
-    status->loadavg[i] = ntohs (status->loadavg[i]);
-  status->ntasks = ntohs (status->ntasks);
+  if (!read_16b (sfd,&status->loadavg[1])) {
+    drerrno = DRE_ERRORREADING;
+    return 0;
+  }
+  if (!read_16b (sfd,&status->loadavg[2])) {
+    drerrno = DRE_ERRORREADING;
+    return 0;
+  }
+  if (!read_16b (sfd,&status->ntasks)) {
+    drerrno = DRE_ERRORREADING;
+    return 0;
+  }
 
   for (i=0;i<status->ntasks;i++) {
     if (!recv_task(sfd,&task)) {
@@ -529,13 +518,14 @@ int recv_task (int sfd, struct task *task)
   /* Now we should have the task info with the values in */
   /* network byte order, so we put them in host byte order */
   task->ijob = ntohl (task->ijob);
+  task->itask = ntohs (task->itask);
+
   task->frame = ntohl (task->frame);
   task->frame_start = ntohl (task->frame_start);
   task->frame_end = ntohl (task->frame_end);
   task->frame_step = ntohl (task->frame_step);
   task->pid = ntohl (task->pid);
   task->exitstatus = ntohl (task->exitstatus);
-  task->itask = ntohs (task->itask);
 
   return 1;
 }
@@ -551,14 +541,14 @@ int send_task (int sfd, struct task *task)
   memcpy (buf,task,sizeof(bswapped));
   /* Prepare for sending */
   bswapped.ijob = htonl (bswapped.ijob);
+  bswapped.itask = htons (bswapped.itask);
   bswapped.frame = htonl (bswapped.frame);
   bswapped.frame_start = htonl (bswapped.frame_start);
   bswapped.frame_end = htonl (bswapped.frame_end);
   bswapped.frame_step = htonl (bswapped.frame_step);
   bswapped.pid = htonl (bswapped.pid);
   bswapped.exitstatus = htonl (bswapped.exitstatus);
-  bswapped.itask = htons (bswapped.itask);
-
+ 
   bleft = sizeof (bswapped);
   while ((w = write(sfd,buf,bleft)) < bleft) {
     bleft -= w;
@@ -896,4 +886,54 @@ int recv_autoenable (int sfd, struct autoenable *ae)
   ae->last = ntohl (ae->last);
 
   return 1;
+}
+
+int dr_read (int fd, void *buf, uint32_t len)
+{
+  int r;
+  int bleft;
+
+  bleft = len;
+  while ((r = read (fd,buf,bleft)) < bleft) {
+    if ((r == -1) || ((r == 0) && (bleft > 0))) {
+      /* if r is error or if there are no more bytes left on the socket but there _SHOULD_ be */
+      drerrno = DRE_ERRORREADING;
+      return 0;
+    }
+    bleft -= r;
+    buf += r;
+#ifdef COMM_REPORT
+    brecv += r;
+#endif
+  }
+#ifdef COMM_REPORT
+  brecv += r;
+#endif
+
+  return len;
+}
+
+int dr_write (int fd, void *buf, uint32_t len)
+{
+  int w;
+  int bleft;
+
+  bleft = len;
+  while ((w = write(fd,buf,bleft)) < bleft) {
+    bleft -= w;
+    buf += w;
+    if ((w == -1) || ((w == 0) && (bleft > 0))) {
+      /* if w is error or if no more bytes are written but they _SHOULD_ be */
+      drerrno = DRE_ERRORWRITING;
+      return 0;
+    }
+#ifdef COMM_REPORT
+    bsent += w;
+#endif
+  }
+#ifdef COMM_REPORT
+  bsent += w;
+#endif
+
+  return len;
 }
