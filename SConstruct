@@ -13,7 +13,7 @@ elif sys.platform == "darwin":
 	env.Append (CCFLAGS = '-D__OSX')
 
 env.Append (CXXFLAGS='-D__CPLUSPLUS')
-env.Append (CPPFLAGS='-I.')
+env.Append (CPPPATH='.')
 
 #
 # libdrqueue.a
