@@ -238,7 +238,6 @@ void config_parse (char *cfg)
 	FILE *f_conf;
 	char buffer[BUFFERLEN];
 	char *token;
-	char *cr;
 	char renv[BUFFERLEN], *penv;
 
 	if ((f_conf = fopen (cfg,"r")) == NULL) {
