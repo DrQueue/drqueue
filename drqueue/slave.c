@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.9 2001/07/04 10:13:59 jorge Exp $ */
+/* $Id: slave.c,v 1.10 2001/07/05 10:53:24 jorge Exp $ */
 
 #include <unistd.h>
 #include <signal.h>
@@ -21,7 +21,7 @@ struct slave_database sdb;	/* slave database */
 int main (int argc,char *argv[])
 {
 
-  log_slave_computer ("Starting...");
+  log_slave_computer (L_INFO,"Starting...");
   set_signal_handlers ();
 
   sdb.shmid = get_shared_memory_slave ();
@@ -88,7 +88,7 @@ void clean_out (int signal, siginfo_t *info, void *data)
 {
 
   kill (0,SIGINT);
-  log_slave_computer ("Cleaning...");
+  log_slave_computer (L_INFO,"Cleaning...");
 
   if (semctl (sdb.semid,0,IPC_RMID,NULL) == -1) {
     perror ("semid");
@@ -195,7 +195,7 @@ void slave_listening_process (struct slave_database *sdb)
   int sfd,csfd;
 
   if ((sfd = get_socket(SLAVEPORT)) == -1) {
-    log_slave_computer ("Error: unable to open socket");
+    log_slave_computer (L_ERROR,"Unable to open socket");
     kill(0,SIGINT);
   }
   printf ("Waiting for connections...\n");
@@ -210,7 +210,8 @@ void slave_listening_process (struct slave_database *sdb)
 	close (csfd);
 	exit (0);
       } else {
-	close (sfd);
+	/* Father */
+	close (csfd);
 	printf ("csfd: %i\n",csfd);
       }
     }
@@ -219,13 +220,15 @@ void slave_listening_process (struct slave_database *sdb)
 
 void sigalarm_handler (int signal, siginfo_t *info, void *data)
 {
-  log_slave_computer ("Connection time exceeded");
+  /* This is not an error because it only happens on a connection handler */
+  log_slave_computer (L_WARNING,"Connection time exceeded");
   exit (1);
 }
 
 void sigpipe_handler (int signal, siginfo_t *info, void *data)
 {
-  log_slave_computer ("Broken connection while reading or writing");
+  /* This is not an error because it only happens on a connection handler */
+  log_slave_computer (L_WARNING,"Broken connection while reading or writing");
   exit (1);
 }
 
@@ -263,15 +266,15 @@ void launch_task (struct slave_database *sdb)
 
     if (waitpid(task_pid,&rc,0) == -1) {
       /* Some problem exec'ing */
-      log_slave_task(&sdb->comp->status.task[sdb->itask],"ERROR: Exec'ing cmdline (No child on launcher)");
+      log_slave_task(&sdb->comp->status.task[sdb->itask],L_ERROR,"Exec'ing cmdline (No child on launcher)");
     } else {
       /* We have to clean the task and send the info to the master */
       /* consider WIFSIGNALED(status), WTERMSIG(status), WEXITSTATUS(status) */
       /* we pass directly the status to the master and he decides what to do with the frame */
-      log_slave_task(&sdb->comp->status.task[sdb->itask],"Info: Frame finished");
+      log_slave_task(&sdb->comp->status.task[sdb->itask],L_INFO,"Frame finished");
 
       semaphore_lock(sdb->semid);
-
+      sdb->comp->status.task[sdb->itask].exitstatus = rc; /* We set the exitstatus as the return code */
       semaphore_release(sdb->semid);
 
       request_task_finished (sdb);
