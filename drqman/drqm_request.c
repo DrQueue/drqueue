@@ -1,4 +1,4 @@
-/* $Id: drqm_request.c,v 1.15 2001/09/07 09:16:51 jorge Exp $ */
+/* $Id: drqm_request.c,v 1.16 2001/09/08 21:41:51 jorge Exp $ */
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -168,5 +168,9 @@ void drqm_request_job_frame_kill_finish (uint32_t jobid,uint32_t frame)
   request_job_frame_kill_finish (jobid,frame,CLIENT);
 }
 
+void drqm_request_slave_limits_nmaxcpus_set (char *slave,uint32_t nmaxcpus)
+{
+  request_slave_limits_nmaxcpus_set (slave,nmaxcpus,CLIENT);
+}
 
 
