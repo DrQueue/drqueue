@@ -1,4 +1,4 @@
-/* $Id: task.h,v 1.1 2001/04/25 10:45:41 jorge Exp $ */
+/* $Id: task.h,v 1.2 2001/04/26 14:20:55 jorge Exp $ */
 
 #ifndef _TASK_H_
 #define _TASK_H_
@@ -13,6 +13,7 @@ typedef enum {
 } t_taskstatus;
 
 struct t_task {
+  int used;
   char jobname[MAXNAMELEN];	/* jobname */
   int jobindex;			/* index to the job in the global db */
   char jobcmd[MAXCMDLEN];	/* string the is being executed */
@@ -21,5 +22,7 @@ struct t_task {
   int pid;			/* pid */
   t_taskstatus status;		/* status */
 };
+
+void init_tasks (struct t_task *task);
 
 #endif /* _TASK_H_ */
