@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.20 2001/08/06 12:31:25 jorge Exp $ */
+/* $Id: request.c,v 1.21 2001/08/06 12:40:08 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -718,7 +718,7 @@ void handle_r_r_deletjob (int sfd,struct database *wdb,int icomp)
     detach_frame_shared_memory (fi);
   }
 
-  wdb->job[(int)job.id].used = 0;
+  job_delete (&wdb->job[(int)job.id]);
 
   semaphore_release (wdb->semid);
 }
