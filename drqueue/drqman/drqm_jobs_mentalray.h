@@ -22,7 +22,11 @@
 
 #include <gtk/gtk.h>
 
+#ifdef __CYGWIN
+#define KOJ_MENTALRAY_DFLT_VIEWCMD "imf_disp $DRQUEUE_RD\\\\$DRQUEUE_IMAGE.$DRQUEUE_FRAME.iff"
+#else
 #define KOJ_MENTALRAY_DFLT_VIEWCMD "imf_disp $DRQUEUE_RD/$DRQUEUE_IMAGE.$DRQUEUE_FRAME.iff"
+#endif
 
 struct drqmj_koji_mentalray {
   GtkWidget *escene;
