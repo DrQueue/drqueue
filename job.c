@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.61 2003/12/18 21:11:43 jorge Exp $ */
+/* $Id: job.c,v 1.62 2003/12/18 23:08:58 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -569,12 +569,12 @@ void job_frame_waiting (struct database *wdb,uint32_t ijob, int iframe)
 
 uint32_t job_frame_index_to_number (struct job *job,uint32_t index)
 {
-  return (job->frame_start + (index * job->frame_step)); 
+  return (job->frame_start + (index * job->block_size)); 
 }
 
 uint32_t job_frame_number_to_index (struct job *job,uint32_t number)
 {
-  return ((number - job->frame_start) / job->frame_step); 
+  return ((number - job->frame_start) / job->block_size); 
 }
 
 int job_frame_number_correct (struct job *job,uint32_t number)
@@ -583,7 +583,7 @@ int job_frame_number_correct (struct job *job,uint32_t number)
     return 0;
   if (number < job->frame_start)
     return 0;
-  if (((number - job->frame_start) % job->frame_step) != 0)
+  if (((number - job->frame_start) % job->block_size) != 0)
     return 0;
 
   return 1;
@@ -737,6 +737,7 @@ char *job_koj_string (struct job *job)
     break;
 	case KOJ_BMRT:
 		msg = "Bmrt";
+		break;
   default:
     msg = "DEFAULT (ERROR)";
   }
