@@ -1,13 +1,13 @@
-# $Id: Makefile,v 1.40 2004/01/22 17:48:24 jorge Exp $
+# $Id: Makefile,v 1.41 2004/03/09 18:53:22 jorge Exp $
 
 CC = gcc
 CPP = g++-2.95
 OBJS_LIBDRQUEUE = computer_info.o computer_status.o task.o logger.o communications.o \
 			computer.o request.o semaphores.o job.o drerrno.o database.o common.o \
-			mayasg.o blendersg.o bmrtsg.o
+			mayasg.o blendersg.o bmrtsg.o pixiesg.o
 LDFLAGS =
 
-INSTROOT = /lot/s800/HOME/RENDUSR/drqueue
+INSTROOT = /DG/Tool/DrQueue
 
 ifeq ($(systype),linux)
 	CFLAGS = -DCOMM_REPORT -Wall -I. -D__LINUX -g -O2
@@ -25,7 +25,7 @@ else
  endif	
 endif
 
-.PHONY: clean irix linux tags irix_install doc
+.PHONY: clean irix linux osx tags irix_install doc
 
 linux: 
 	$(MAKE) systype=linux all

@@ -1,4 +1,4 @@
-/* $Id: job.c,v 1.63 2004/01/07 21:50:21 jorge Exp $ */
+/* $Id: job.c,v 1.64 2004/03/09 18:53:22 jorge Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -689,10 +689,17 @@ int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp)
 
 #ifdef __LINUX
   if (!(wdb->job[ijob].limits.os_flags & OSF_LINUX))
-    return 0;
+		return 0;
 #else
+# ifdef __IRIX	
   if (!(wdb->job[ijob].limits.os_flags & OSF_IRIX))
     return 0;
+# else
+#  ifdef __OSX
+  if (!(wdb->job[ijob].limits.os_flags & OSF_OSX))
+    return 0;
+#  endif
+# endif
 #endif
 
   return 1;
@@ -738,6 +745,9 @@ char *job_koj_string (struct job *job)
 	case KOJ_BMRT:
 		msg = "Bmrt";
 		break;
+  case KOJ_PIXIE:
+    msg = "Pixie";
+    break;
   default:
     msg = "DEFAULT (ERROR)";
   }
