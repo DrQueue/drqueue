@@ -1,4 +1,4 @@
-/* $Id: request.h,v 1.7 2001/07/06 13:13:21 jorge Exp $ */
+/* $Id: request.h,v 1.8 2001/07/17 10:42:20 jorge Exp $ */
 /* The request structure is not just used for the requests themselves */
 /* but also for the answers to the requests */
 
@@ -35,6 +35,7 @@ void handle_r_r_ucstatus (int sfd,struct database *wdb,int icomp);
 void handle_r_r_regisjob (int sfd,struct database *wdb);
 void handle_r_r_availjob (int sfd,struct database *wdb,int icomp);
 void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp);
+void handle_r_r_listjobs (int sfd,struct database *wdb,int icomp);
 
 void update_computer_status (struct computer *computer); /* The slave calls this function to update the */
                                                         /* information that the master has about him */
