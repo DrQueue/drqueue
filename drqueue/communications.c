@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.17 2001/08/22 09:02:25 jorge Exp $ */
+/* $Id: communications.c,v 1.18 2001/08/23 13:22:30 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -380,7 +380,7 @@ void recv_job (int sfd, struct job *job,int who)
   job->frame_start = ntohl (job->frame_start);
   job->frame_end = ntohl (job->frame_end);
   job->avg_frame_time = ntohl (job->avg_frame_time);
-  job->est_finish_time = ntohl (job->avg_frame_time);
+  job->est_finish_time = ntohl (job->est_finish_time);
 
   job->fleft = ntohl (job->fleft);
   job->fdone = ntohl (job->fdone);
