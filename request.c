@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.46 2001/09/08 16:21:18 jorge Exp $ */
+/* $Id: request.c,v 1.47 2001/09/08 20:42:43 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -104,6 +104,10 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
     log_master (L_DEBUG,"Request job frame kill and finished");
     handle_r_r_jobfkfin (sfd,wdb,icomp,&request);
     break;
+  case R_R_UCLIMITS:
+    log_master (L_DEBUG,"Update computer limits request");
+    handle_r_r_uclimits (sfd,wdb,icomp,&request);
+    break;
   default:
     log_master (L_WARNING,"Unknown request");
   }
@@ -129,6 +133,10 @@ void handle_request_slave (int sfd,struct slave_database *sdb)
   case RS_R_KILLTASK:
     log_slave_computer (L_DEBUG,"Request kill task");
     handle_rs_r_killtask (sfd,sdb,&request);
+    break;
+  case RS_R_SETNMAXCPUS:
+    log_slave_computer (L_DEBUG,"Request set limits maximum number of usable cpus");
+    handle_rs_r_setnmaxcpus (sfd,sdb,&request);
     break;
   default:
     log_slave_computer (L_WARNING,"Unknown request received");
@@ -910,7 +918,7 @@ void handle_r_r_deletjob (int sfd,struct database *wdb,int icomp,struct request 
   nframes = job_nframes (&wdb->job[ijob]);
   for (i=0;i<nframes;i++) {
     if (fi[i].status == FS_ASSIGNED) {
-      request_slave_killtask (wdb->computer[fi[i].icomp].hwinfo.name,fi[i].itask);
+      request_slave_killtask (wdb->computer[fi[i].icomp].hwinfo.name,fi[i].itask,MASTER);
     }
   }
   detach_frame_shared_memory (fi);
@@ -922,7 +930,7 @@ void handle_r_r_deletjob (int sfd,struct database *wdb,int icomp,struct request 
   log_master (L_DEBUG,"Exiting handle_r_r_deletjob");
 }
 
-int request_slave_killtask (char *slave,uint16_t itask)
+int request_slave_killtask (char *slave,uint16_t itask,int who)
 {
   /* This function is called by the master */
   /* It just sends a slave a request to kill a particular task */
@@ -938,7 +946,7 @@ int request_slave_killtask (char *slave,uint16_t itask)
   request.type = RS_R_KILLTASK;
   request.data = itask;
 
-  if (!send_request (sfd,&request,MASTER)) {
+  if (!send_request (sfd,&request,who)) {
     drerrno = DRE_ERRORSENDING;
     return 0;
   }
@@ -1067,7 +1075,7 @@ void handle_r_r_hstopjob (int sfd,struct database *wdb,int icomp,struct request 
   nframes = job_nframes (&wdb->job[ijob]);
   for (i=0;i<nframes;i++) {
     if (fi[i].status == FS_ASSIGNED) {
-      request_slave_killtask (wdb->computer[fi[i].icomp].hwinfo.name,fi[i].itask);
+      request_slave_killtask (wdb->computer[fi[i].icomp].hwinfo.name,fi[i].itask,MASTER);
     }
   }
   detach_frame_shared_memory (fi);
@@ -1549,7 +1557,7 @@ void handle_r_r_jobfkill (int sfd,struct database *wdb,int icomp,struct request 
   case FS_WAITING:
     break;
   case FS_ASSIGNED:
-    request_slave_killtask (wdb->computer[fi[iframe].icomp].hwinfo.name,fi[iframe].itask);
+    request_slave_killtask (wdb->computer[fi[iframe].icomp].hwinfo.name,fi[iframe].itask,MASTER);
     break;
   case FS_ERROR:
   case FS_FINISHED:
@@ -1729,7 +1737,7 @@ void handle_r_r_jobfkfin (int sfd,struct database *wdb,int icomp,struct request 
     break;
   case FS_ASSIGNED:
     fi[iframe].status = FS_FINISHED;
-    request_slave_killtask (wdb->computer[fi[iframe].icomp].hwinfo.name,fi[iframe].itask);
+    request_slave_killtask (wdb->computer[fi[iframe].icomp].hwinfo.name,fi[iframe].itask,MASTER);
     break;
   case FS_ERROR:
   case FS_FINISHED:
@@ -1742,4 +1750,134 @@ void handle_r_r_jobfkfin (int sfd,struct database *wdb,int icomp,struct request 
 }
 
 
+int request_slave_limits_nmaxcpus_set (char *slave, uint32_t nmaxcpus, int who)
+{
+  int sfd;
+  struct request req;
 
+  if ((sfd = connect_to_slave (slave)) == -1) {
+    drerrno = DRE_NOCONNECT;
+    return 0;
+  }
+  
+  req.type = RS_R_SETNMAXCPUS;
+  req.data = nmaxcpus;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORSENDING;
+    return 0;
+  }
+  
+  return 1;
+}
+
+void handle_rs_r_setnmaxcpus (int sfd,struct slave_database *sdb,struct request *req)
+{
+  char msg[BUFFERLEN];
+  struct computer_limits limits;
+
+  log_slave_computer(L_DEBUG,"Entering handle_rs_r_setnmaxcpus");
+
+  snprintf(msg,BUFFERLEN-1,"Received maximum cpus: %i",req->data);
+  log_slave_computer(L_DEBUG,msg);
+
+  semaphore_lock(sdb->semid);
+
+  snprintf(msg,BUFFERLEN-1,"Previous maximum cpus: %i",sdb->comp->limits.nmaxcpus);
+  log_slave_computer(L_DEBUG,msg);
+
+  sdb->comp->limits.nmaxcpus = (req->data < sdb->comp->hwinfo.ncpus) ? req->data : sdb->comp->hwinfo.ncpus;
+
+  snprintf(msg,BUFFERLEN-1,"Set maximum cpus: %i",sdb->comp->limits.nmaxcpus);
+  log_slave_computer(L_DEBUG,msg);
+
+  memcpy (&limits,&sdb->comp->limits,sizeof(struct computer_limits));
+
+  semaphore_release(sdb->semid);
+
+  update_computer_limits (&limits);
+
+  log_slave_computer(L_DEBUG,"Exiting handle_rs_r_setnmaxcpus");
+}
+
+void update_computer_limits (struct computer_limits *limits)
+{
+  /* The slave calls this function to update the information about */
+  /* its limits structure when it is changed */
+  struct request req;
+  int sfd;
+
+  if ((sfd = connect_to_master ()) == -1) {
+    log_slave_computer(L_ERROR,drerrno_str());
+    kill(0,SIGINT);
+  }
+
+  req.type = R_R_UCLIMITS;
+  if (!send_request (sfd,&req,SLAVE)) {
+    log_slave_computer (L_ERROR,"Sending request (update_computer_limits)");
+    kill(0,SIGINT);
+  }
+  if (!recv_request (sfd,&req)) {
+    log_slave_computer (L_ERROR,"Receiving request (update_computer_limits)");
+    kill(0,SIGINT);
+  }
+
+  if (req.type == R_A_UCLIMITS) {
+    switch (req.data) {
+    case RERR_NOERROR:
+      if (!send_computer_limits (sfd,limits)) {
+	log_slave_computer (L_ERROR,"Sending computer limits (update_computer_limits)");
+	kill(0,SIGINT);
+      }
+      break;
+    case RERR_NOREGIS:
+      log_slave_computer (L_ERROR,"Computer not registered");
+      kill (0,SIGINT);
+    default:
+      log_slave_computer (L_ERROR,"Error code not listed on answer to R_R_UCLIMITS");
+      kill (0,SIGINT);
+    }
+  } else {
+    log_slave_computer (L_ERROR,"Not appropiate answer to request R_R_UCLIMITS");
+    kill (0,SIGINT);
+  }
+  close (sfd);
+}
+
+void handle_r_r_uclimits (int sfd,struct database *wdb,int icomp, struct request *req)
+{
+  /* The master handles this type of packages */
+  struct computer_limits limits;
+
+  log_master (L_DEBUG,"Entering handle_r_r_uclimits");
+
+  if (icomp == -1) {
+    log_master (L_WARNING,"Not registered computer requesting update of computer limits");
+    req->type = R_A_UCLIMITS;
+    req->data = RERR_NOREGIS;
+    if (!send_request (sfd,req,MASTER)) {
+      log_master (L_ERROR,"Receiving request (handle_r_r_uclimits)");
+    }
+    exit (0);
+  }
+
+  /* No errors, we (master) can receive the status from the remote */
+  /* computer already registered */
+  req->type = R_A_UCLIMITS;
+  req->data = RERR_NOERROR;
+  if (!send_request (sfd,req,MASTER)) {
+    log_master (L_ERROR,"Receiving request (handle_r_r_uclimits)");
+    exit (0);
+  }
+
+  if (!recv_computer_limits (sfd, &limits)) {
+    log_master (L_ERROR,"Receiving request (handle_r_r_uclimits)");
+    exit (0);
+  }
+
+  semaphore_lock(wdb->semid);
+  memcpy (&wdb->computer[icomp].limits, &limits, sizeof(limits));
+  semaphore_release(wdb->semid);
+
+  log_master (L_DEBUG,"Exiting handle_r_r_uclimits");
+}
