@@ -1304,6 +1304,7 @@ void dnj_flags_jdepend_refresh_job_list (GtkWidget *bclicked, struct drqm_jobs_i
 	GtkTreeIter iter;
 	int i;
 
+	gtk_list_store_clear (GTK_LIST_STORE(store));
 	update_joblist(bclicked,info);
 	for (i=0; i < info->njobs; i++) {
 		gtk_list_store_append (store,&iter);
