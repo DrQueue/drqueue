@@ -1,4 +1,4 @@
-/* $Id: communications.c,v 1.50 2002/06/26 17:22:29 jorge Exp $ */
+/* $Id: communications.c,v 1.51 2002/06/27 09:23:30 jorge Exp $ */
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -280,12 +280,13 @@ int recv_computer_status (int sfd, struct computer_status *status)
   status->ntasks = ntohs(status->ntasks);
 
   if (status->ntasks > MAXTASKS) {
-    printf ("WARNING: ntasks > MAXTASKS (%i)\n",status->ntasks);
+    fprintf (stderr,"WARNING: ntasks > MAXTASKS (%i)\n",status->ntasks);
     status->ntasks = 0;
   }
 
   for (i=0;i<status->ntasks;i++) {
     if (!recv_task(sfd,&task)) {
+      fprintf (stderr,"ERROR: receiving task\n");
       return 0;
     }
     memcpy(&status->task[task.itask],&task,sizeof(task));
@@ -419,30 +420,13 @@ int send_job (int sfd, struct job *job)
 
 int recv_task (int sfd, struct task *task)
 {
-  int r;
-  int bleft;
   void *buf;
 
   buf = task;			/* So when copying to buf we're really copying into job */
-  bleft = sizeof (struct task);
-  while ((r = read (sfd,buf,bleft)) < bleft) {
-    bleft -= r;
-    buf += r;
-
-    if ((r == -1) || ((r == 0) && (bleft > 0))) {
-      /* if w is error or if no more bytes are read but they _SHOULD_ be */
-      drerrno = DRE_ERRORREADING;
-      return 0;
-    }
-    bleft -= r;
-    buf += r;
-#ifdef COMM_REPORT
-    brecv += r;
-#endif
+  if (!dr_read(sfd,buf,sizeof(struct task))) {
+    return 0;
   }
-#ifdef COMM_REPORT
-  brecv += r;
-#endif
+
   /* Now we should have the task info with the values in */
   /* network byte order, so we put them in host byte order */
   task->ijob = ntohl (task->ijob);
@@ -461,8 +445,6 @@ int recv_task (int sfd, struct task *task)
 int send_task (int sfd, struct task *task)
 {
   struct task bswapped;
-  int w;
-  int bleft;
   void *buf = &bswapped;
   
   /* We make a copy coz we need to modify the values */
@@ -477,57 +459,97 @@ int send_task (int sfd, struct task *task)
   bswapped.pid = htonl (bswapped.pid);
   bswapped.exitstatus = htonl (bswapped.exitstatus);
  
-  bleft = sizeof (bswapped);
-  while ((w = write(sfd,buf,bleft)) < bleft) {
-    bleft -= w;
-    buf += w;
-    if ((w == -1) || ((w == 0) && (bleft > 0))) {
-      /* if w is error or if no more bytes are written but they _SHOULD_ be */
-      drerrno = DRE_ERRORWRITING;
-      return 0;
-    }
-#ifdef COMM_REPORT
-    bsent += w;
-#endif
+  if (!dr_write (sfd,buf,sizeof(struct task))) {
+    return 0;
   }
-#ifdef COMM_REPORT
-  bsent += w;
-#endif
 
   return 1;
 }
 
 int send_computer (int sfd, struct computer *computer)
 {
+  uint16_t check = 0x0f0f;
+
+  /* Check point */
+  if (!write_16b(sfd,&check)) {
+    printf ("error sending check 0\n");
+    return 0;
+  }
+
   if (!send_computer_status (sfd,&computer->status)) {
     printf ("error send_computer_status\n");
     return 0;
   }
+  /* Check point */
+  if (!write_16b(sfd,&check)) {
+    printf ("error sending check 1\n");
+    return 0;
+  }
+
   if (!send_computer_hwinfo (sfd,&computer->hwinfo)) {
     printf ("error send_computer_hwinfo\n");
     return 0;
   }
+
+  /* Check point */
+  if (!write_16b(sfd,&check)) {
+    printf ("error sending check 2\n");
+    return 0;
+  }
+
   if (!send_computer_limits (sfd,&computer->limits)) {
     printf ("error send_computer_limits\n");
     return 0;
   }
+
+  /* Check point */
+  if (!write_16b(sfd,&check)) {
+    printf ("error sending check 3\n");
+    return 0;
+  }
+
   return 1;
 }
 
 int recv_computer (int sfd, struct computer *computer)
 {
+  uint16_t  check;
+
+  if ((!read_16b(sfd,&check)) || (check != 0x0f0f)) {
+    printf ("error receiving check 0\n");
+    return 0;
+  }
+
   if (!recv_computer_status (sfd,&computer->status)) {
     printf ("error recv_computer_status\n");
     return 0;
   }
+
+  if ((!read_16b(sfd,&check)) || (check != 0x0f0f)) {
+    printf ("error receiving check 1\n");
+    return 0;
+  }
+
   if (!recv_computer_hwinfo (sfd,&computer->hwinfo)) {
     printf ("error recv_computer_hwinfo\n");
     return 0;
   }
+
+  if ((!read_16b(sfd,&check)) || (check != 0x0f0f)) {
+    printf ("error receiving check 2\n");
+    return 0;
+  }
+
   if (!recv_computer_limits (sfd,&computer->limits)) {
     printf ("error recv_computer_limits\n");
     return 0;
   }
+
+  if ((!read_16b(sfd,&check)) || (check != 0x0f0f)) {
+    printf ("error receiving check 3\n");
+    return 0;
+  }
+
   return 1;
 }
 
