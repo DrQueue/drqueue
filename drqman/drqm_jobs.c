@@ -976,9 +976,9 @@ static void djd_bok_pressed (GtkWidget *button, struct drqm_jobs_info *info)
 	// number 0000001 of the bug tracker
 	if (info->jdd.dialog) {
 		drqm_request_job_delete (info->jdd.job.id);
+		update_joblist(button,info->jdd.oldinfo);
 		gtk_widget_destroy (info->jdd.dialog);
 		info->jdd.dialog = NULL;
-		update_joblist(button,info->jdd.oldinfo);
 	} else {
 		drqm_request_job_delete (info->jobs[info->row].id);
 		update_joblist(button,info);
