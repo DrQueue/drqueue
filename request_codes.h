@@ -1,4 +1,4 @@
-/* $Id: request_codes.h,v 1.13 2001/09/06 14:00:25 jorge Exp $ */
+/* $Id: request_codes.h,v 1.14 2001/09/06 23:02:07 jorge Exp $ */
 
 #ifndef _REQUEST_CODES_H_
 #define _REQUEST_CODES_H_
@@ -31,12 +31,14 @@
 #define R_A_JOBXFERFI  26
 #define R_R_COMPXFER   27	/* Computer info transfer by index (identification) */
 #define R_A_COMPXFER   28
-#define R_R_JOBFWAIT   29	/* Job frame waiting */
+#define R_R_JOBFWAIT   29	/* Job frame waiting (only non-running frames) */
 #define R_A_JOBFWAIT   30
-#define R_R_JOBFKILL   31	/* Job frame kill */
+#define R_R_JOBFKILL   31	/* Job frame kill (kills only [it's later set to waiting because of the usual handling]) */
 #define R_A_JOBFKILL   32
 #define R_R_JOBFFINI   33	/* Job frame finished (only waiting frames) */
 #define R_A_JOBFFINI   34
+#define R_R_JOBFKFIN   35	/* Job frame kill and finished (only running frames) */
+#define R_A_JOBFKFIN   36
 
 /* Requests to the slave */
 #define RS_R_KILLTASK 1		/* Request to slave to kill a task */
