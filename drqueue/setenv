@@ -1,0 +1,2 @@
+export DRQUEUE_ROOT=.
+export DRQUEUE_MASTER=ludwig

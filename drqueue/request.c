@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.6 2001/07/04 10:13:59 jorge Exp $ */
+/* $Id: request.c,v 1.7 2001/07/05 10:53:24 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -25,23 +25,29 @@ void handle_request_master (int sfd,struct database *wdb,int icomp)
   recv_request (sfd,&request,MASTER);
   switch (request.type) {
   case R_R_REGISTER:
-    log_master ("Info: Registration of new slave request");
+    log_master (L_INFO,"Registration of new slave request");
     handle_r_r_register (sfd,wdb,icomp);
     break;
   case R_R_UCSTATUS:
-    log_master ("Info: Update computer status request");
+    log_master (L_INFO,"Update computer status request");
     handle_r_r_ucstatus (sfd,wdb,icomp);
     break;
   case R_R_REGISJOB:
-    log_master ("Info: Registration of new job request");
+    log_master (L_INFO,"Registration of new job request");
     handle_r_r_regisjob (sfd,wdb);
+    exit (0);			/* Because we don't want to update the lastconn time */
+				/* The process that sends this request is not a slave */
     break;
   case R_R_AVAILJOB:
-    log_master ("Info: Request of available job");
+    log_master (L_INFO,"Request of available job");
     handle_r_r_availjob (sfd,wdb,icomp);
     break;
+  case R_R_TASKFINI:
+    log_master (L_INFO:"Request task finished");
+    handle_r_r_taskfini (sfd,wdb,icomp);
+    break;
   default:
-    log_master ("Warning: Unknown request");
+    log_master (L_WARNING,"Unknown request");
   }
   if (icomp != -1) {
     semaphore_lock (wdb->semid);
@@ -61,16 +67,15 @@ void handle_request_slave (int sfd,struct slave_database *sdb)
 
 void handle_r_r_register (int sfd,struct database *wdb,int icomp)
 {
-  /* The master handles this type of packages */
+  /* The master handles this type of requests */
   struct request answer;
   struct computer_hwinfo hwinfo;
   int index;
 
   if (icomp != -1) {
-    log_master ("Info: Already registered computer requesting registration");
+    log_master (L_INFO,"Already registered computer requesting registration");
     answer.type = R_A_REGISTER;
     answer.data_s = RERR_ALREADY;
-    answer.slave = 0;
     send_request (sfd,&answer,MASTER);
     exit (0);
   }
@@ -78,7 +83,7 @@ void handle_r_r_register (int sfd,struct database *wdb,int icomp)
   semaphore_lock(wdb->semid);	/* I put the lock here so no race condition can appear... */
   if ((index = computer_index_free(wdb)) == -1) {
     /* No space left on database */
-    log_master ("Warning: No space left for computer");
+    log_master (L_WARNING,"No space left for computer");
     answer.type = R_A_REGISTER;
     answer.data_s = RERR_NOSPACE;
     answer.slave = 0;
@@ -109,12 +114,10 @@ void update_computer_status (struct computer *computer)
   /* The slave calls this function to update the information about */
   /* his own status on the master */
   struct request req;
-  char msg[BUFFERLEN];
   int sfd;
 
   if ((sfd = connect_to_master ()) == -1) {
-    snprintf(msg,BUFFERLEN-1,"ERROR: %s",drerrno_str());
-    log_slave_computer(msg);
+    log_slave_computer(L_ERROR,drerrno_str());
     kill(0,SIGINT);
   }
 
@@ -129,14 +132,14 @@ void update_computer_status (struct computer *computer)
       send_computer_status (sfd,&computer->status,SLAVE);
       break;
     case RERR_NOREGIS:
-      log_slave_computer ("ERROR: Computer not registered");
+      log_slave_computer (L_ERROR,"Computer not registered");
       break;
     default:
-      log_slave_computer ("ERROR: Error code not listed on answer to R_R_UCSTATUS");
+      log_slave_computer (L_ERROR,"Error code not listed on answer to R_R_UCSTATUS");
       kill (0,SIGINT);
     }
   } else {
-    log_slave_computer ("ERROR: Not appropiate answer to request R_R_UCSTATUS");
+    log_slave_computer (L_ERROR,"Not appropiate answer to request R_R_UCSTATUS");
     kill (0,SIGINT);
   }
   close (sfd);
@@ -146,12 +149,10 @@ void register_slave (struct computer *computer)
 {
   /* The slave calls this function to register himself on the master */
   struct request req;
-  char msg[BUFFERLEN];
   int sfd;
 
   if ((sfd = connect_to_master ()) == -1) {
-    snprintf(msg,BUFFERLEN-1,"ERROR: %s",drerrno_str());
-    log_slave_computer(msg);
+    log_slave_computer(L_ERROR,drerrno_str());
     kill(0,SIGINT);
   }
 
@@ -165,19 +166,19 @@ void register_slave (struct computer *computer)
       send_computer_hwinfo (sfd,&computer->hwinfo,SLAVE);
       break;
     case RERR_ALREADY:
-      log_slave_computer ("ERROR: Already registered");
+      log_slave_computer (L_ERROR,"Already registered");
       kill (0,SIGINT);
       break;
     case RERR_NOSPACE:
-      log_slave_computer ("ERROR: No space on database");
+      log_slave_computer (L_ERROR,"No space on database");
       kill (0,SIGINT);
       break;
     default:
-      log_slave_computer ("ERROR: Error code not listed on answer to R_R_REGISTER");
+      log_slave_computer (L_ERROR,"Error code not listed on answer to R_R_REGISTER");
       kill (0,SIGINT);
     }
   } else {
-    log_slave_computer ("ERROR: Not appropiate answer to request R_R_REGISTER");
+    log_slave_computer (L_ERROR,"Not appropiate answer to request R_R_REGISTER");
     kill (0,SIGINT);
   }
 
@@ -191,7 +192,7 @@ void handle_r_r_ucstatus (int sfd,struct database *wdb,int icomp)
   struct computer_status status;
 
   if (icomp == -1) {
-    log_master ("Info: Not registered computer requesting update of computer status");
+    log_master (L_WARNING,"Not registered computer requesting update of computer status");
     answer.type = R_A_UCSTATUS;
     answer.data_s = RERR_NOREGIS;
     answer.slave = 0;
@@ -248,7 +249,7 @@ void register_job (struct job *job)
       exit (1);
     }
   } else {
-    fprintf (stderr,"ERROR: Not appropiate answer to request R_R_REGISJOB\n-");
+    fprintf (stderr,"ERROR: Not appropiate answer to request R_R_REGISJOB\n");
     exit(1);
   }
 
@@ -269,7 +270,7 @@ void handle_r_r_regisjob (int sfd,struct database *wdb)
   semaphore_lock(wdb->semid);	/* I put the lock here so no race condition can appear... */
   if ((index = job_index_free(wdb)) == -1) {
     /* No space left on database */
-    log_master ("Warning: No space left for job");
+    log_master (L_WARNING,"No space left for job");
     answer.type = R_A_REGISJOB;
     answer.data_s = RERR_NOSPACE;
     send_request (sfd,&answer,MASTER);
@@ -279,8 +280,8 @@ void handle_r_r_regisjob (int sfd,struct database *wdb)
   semaphore_release(wdb->semid);
 
   /* Debug */
-  snprintf(msg,BUFFERLEN,"DEBUG: Job index %i free",index);
-  log_master(msg);
+  snprintf(msg,BUFFERLEN,"Job index %i free",index);
+  log_master(L_DEBUG,msg);
 
   /* No errors, we (master) can receive the job from the remote */
   /* computer to be registered */
@@ -305,7 +306,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
   char msg[BUFFERLEN];
 
   if (icomp == -1) {
-    log_master ("Info: Not registered computer requesting available job");
+    log_master (L_WARNING,"Not registered computer requesting available job");
     answer.type = R_A_AVAILJOB;
     answer.data_s = RERR_NOREGIS;
     send_request (sfd,&answer,MASTER);
@@ -314,14 +315,14 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
 
   for (ijob=0;ijob<MAXJOBS;ijob++) {
     if (job_available(wdb,ijob,&iframe)) {
-      snprintf(msg,BUFFERLEN,"Info: Frame %i assigned",iframe);
-      log_master_job(&wdb->job[ijob],msg);
+      snprintf(msg,BUFFERLEN,"Frame %i assigned",iframe);
+      log_master_job(&wdb->job[ijob],L_INFO,msg);
       break;
     }
   }
 
   if (ijob==MAXJOBS) {
-    log_master("DEBUG: No available job");
+    log_master(L_DEBUG,"No available job");
     answer.type = R_A_AVAILJOB;
     answer.data_s = RERR_NOAVJOB;
     send_request (sfd,&answer,MASTER);
@@ -338,27 +339,27 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
     switch (answer.data_s) {
     case RERR_NOERROR:
       /* We continue processing the matter */
-      log_master_computer(&wdb->computer[icomp],"DEBUG: Task space available");
+      log_master_computer(&wdb->computer[icomp],L_DEBUG,"Task space available");
       break;
     case RERR_NOSPACE:
-      log_master_computer(&wdb->computer[icomp],"Warning: No space for task");
+      log_master_computer(&wdb->computer[icomp],L_WARNING,"No space for task");
       exit (0);
     default:
-      log_master_computer(&wdb->computer[icomp],"ERROR: Error code not listed expecting task error code");
+      log_master_computer(&wdb->computer[icomp],L_ERROR,"Error code not listed expecting task error code");
       exit(0);
     }
   } else {
-    log_master_computer (&wdb->computer[icomp],"ERROR: Not appropiate answer, expecting task error code");
+    log_master_computer (&wdb->computer[icomp],L_ERROR,"Not appropiate answer, expecting task error code");
     exit(0);
   }
   /* If there is a task structure available (we are here) then we receive the index of that task */
   recv_request (sfd,&answer,MASTER);
   if (answer.type == R_A_AVAILJOB) {
     itask = answer.data_s;
-    snprintf(msg,BUFFERLEN,"DEBUG: Task index %i on computer %i",itask,icomp);
-    log_master_computer(&wdb->computer[icomp],msg);
+    snprintf(msg,BUFFERLEN,"Task index %i on computer %i",itask,icomp);
+    log_master_computer(&wdb->computer[icomp],L_DEBUG,msg);
   } else {
-    log_master_computer (&wdb->computer[icomp],"ERROR: Not appropiate answer, expecting task index");
+    log_master_computer (&wdb->computer[icomp],L_ERROR,"Not appropiate answer, expecting task index");
     exit (0);
   }
 
@@ -381,12 +382,10 @@ int request_job_available (struct slave_database *sdb)
 
   struct request req;
   int sfd;
-  char emsg[BUFFERLEN];
   struct task ttask;		/* Temporary task structure */
 
   if ((sfd = connect_to_master ()) == -1) {
-    snprintf(emsg,BUFFERLEN-1,"ERROR: %s",drerrno_str());
-    log_slave_computer(emsg);
+    log_slave_computer(L_ERROR,drerrno_str());
     kill(0,SIGINT);
   }
 
@@ -399,29 +398,29 @@ int request_job_available (struct slave_database *sdb)
     switch (req.data_s) {
     case RERR_NOERROR: 
       /* We continue processing the matter */
-      log_slave_computer("DEBUG: Available job");
+      log_slave_computer(L_DEBUG,"Available job");
       break;
     case RERR_NOAVJOB:
-      log_slave_computer("Info: No available job");
+      log_slave_computer(L_INFO,"No available job");
       close (sfd);
       return 0;
       break;
     case RERR_NOREGIS:
-      log_slave_computer("ERROR: Computer not registered");
+      log_slave_computer(L_ERROR,"Computer not registered");
       kill (0,SIGINT);
       break;
     default:
-      log_slave_computer("ERROR: Error code not listed on answer to R_R_AVAILJOB");
+      log_slave_computer(L_ERROR,"Error code not listed on answer to R_R_AVAILJOB");
       kill (0,SIGINT);
     }
   } else {
-    fprintf (stderr,"ERROR: Not appropiate answer to request R_R_REGISJOB\n-");
+    fprintf (stderr,"ERROR: Not appropiate answer to request R_R_REGISJOB\n");
     kill (0,SIGINT);
   }
 
   if ((sdb->itask = task_available (sdb)) == -1) {
     /* No task structure available */
-    log_slave_computer("Warning: No task available for job");
+    log_slave_computer(L_WARNING,"No task available for job");
     req.type = R_A_AVAILJOB;
     req.data_s = RERR_NOSPACE;
     send_request(sfd,&req,SLAVE);
@@ -454,7 +453,82 @@ int request_job_available (struct slave_database *sdb)
 
 void request_task_finished (struct slave_database *sdb)
 {
+  /* This function is called non-blocked */
+  /* This function is called from inside a slave launcher process */
+  /* It sends the information to the master about a finished task */
+  /* FIXME: It doesn't check if the computer is not registered, should we ? */
+  /* We are just sending a finished task, so it does not really matter if the computer */
+  /* is not registered anymore */
+  struct request req;
+  int sfd;
+
+
+  log_slave_computer(L_DEBUG,"Entering request_task_finished");
+
+  if ((sfd = connect_to_master ()) == -1) {
+    log_slave_computer(L_ERROR,drerrno_str());
+    kill(0,SIGINT);
+  }
+
+  req.type = R_R_TASKFINI;
+
+  send_request (sfd,&req,SLAVE_LAUNCHER);
+  recv_request (sfd,&req,SLAVE_LAUNCHER);
+
+  if (req.type == R_A_TASKFINI) {
+    switch (req.data_s) {
+    case RERR_NOERROR: 
+      /* We continue processing the matter */
+      log_slave_computer(L_DEBUG,"Master ready to receive the task");
+      break;
+    case RERR_NOREGIS:
+      log_slave_computer(L_ERROR,"Job not registered");
+      exit (0);
+      break;
+    case RERR_NOTINRA:
+      log_slave_computer(L_ERROR,"Frame out of range");
+      exit (0);
+      break;
+    default:
+      log_slave_computer(L_ERROR,"Error code not listed on answer to R_R_TASKFINI");
+      exit (0);
+    }
+  } else {
+    fprintf (stderr,"ERROR: Not appropiate answer to request R_R_TASKFINI\n");
+    exit (0);
+  }
+
+  /* So the master is ready to receive the task */
+  /* Then we send the task */
+  send_task (sfd,&sdb->comp->status.task[sdb->itask],SLAVE_LAUNCHER);
+
+  close (sfd);
+}
+
+void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
+{
+  /* The master handles this type of requests */
+  /* This funtion is called by the master, non-blocked */
+  struct request answer;
+  struct task task;
+  int index;
+  char msg[BUFFERLEN];
+
+  if (icomp == -1) {
+    /* We log and continue */
+    log_master (L_WARNING,"Not registered computer requesting task finished");
+  }
+
+  /* Alway send RERR_NOERR */
+  answer.type = R_A_TASKFINI;
+  answer.data_s = RERR_NOERR;
+  send_request (sfd,&answer,MASTER);
+
+  /* Receive task */
+  recv_task(sfd,&task,MASTER);
+
 
 }
+
 
 

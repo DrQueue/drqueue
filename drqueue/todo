@@ -1,10 +1,11 @@
 TO DO:
 -----
 
-* Frame_info memory allocation and deallocation
+* Frame_info memory allocation and deallocation		[DONE]
 * file locking on logging functions
 * limit structures for jobs and computers
 * Negative and backwards frame numbers
+* Master database saved and reloaded from disk
 
 BUGS:
 ----
