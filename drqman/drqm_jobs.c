@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.39 2001/09/28 08:43:18 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.40 2001/09/28 14:59:30 jorge Exp $
  */
 
 #include <string.h>
@@ -244,10 +244,12 @@ static GtkWidget *CreateMenu (struct drqm_jobs_info *info)
   GtkTooltips *tooltips;
 
   tooltips = TooltipsNew ();
+
   menu = gtk_menu_new ();
   menu_item = gtk_menu_item_new_with_label("Details");
   gtk_menu_append(GTK_MENU(menu),menu_item);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(JobDetails),info);
+  gtk_tooltips_set_tip(tooltips,menu_item,"Open detailed information window for the selected job",NULL);
 
   menu_item = gtk_menu_item_new();
   gtk_menu_append(GTK_MENU(menu),menu_item);
@@ -255,7 +257,7 @@ static GtkWidget *CreateMenu (struct drqm_jobs_info *info)
   menu_item = gtk_menu_item_new_with_label("New Job");
   gtk_menu_append(GTK_MENU(menu),menu_item);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(NewJob),info);
-  gtk_widget_show(menu_item);
+  gtk_tooltips_set_tip(tooltips,menu_item,"Send a new job to the queue",NULL);
 
   menu_item = gtk_menu_item_new();
   gtk_menu_append(GTK_MENU(menu),menu_item);
@@ -703,18 +705,18 @@ static void ContinueJob (GtkWidget *menu_item, struct drqm_jobs_info *info)
 static void HStopJob (GtkWidget *menu_item, struct drqm_jobs_info *info)
 {
   GtkWidget *dialog;
-  static GList *cbs = NULL ;	/* callbacks */
+  GList *cbs = NULL ;		/* callbacks */
 
   if (!info->selected)
     return;
   
-  if (!cbs) {
-    cbs = g_list_append (cbs,job_hstop_cb);
-    cbs = g_list_append (cbs,dnj_destroyed);
-  }
+  cbs = g_list_append (cbs,job_hstop_cb);
+  cbs = g_list_append (cbs,dnj_destroyed);
 
   dialog = ConfirmDialog ("Do you really want to hard stop the job?\n(This will kill all current running processes)",
 			  cbs,info);
+
+  g_list_free (cbs);
 
   gtk_grab_add(dialog);
 }
@@ -1112,27 +1114,43 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info)
 {
   GtkWidget *menu;
   GtkWidget *menu_item;
+  GtkTooltips *tooltips;
+
+  tooltips = TooltipsNew ();
 
   menu = gtk_menu_new ();
   menu_item = gtk_menu_item_new_with_label("Set Waiting (requeue finished)");
   gtk_menu_append(GTK_MENU(menu),menu_item);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_requeue_frames),info);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_update),info);
-
+  gtk_tooltips_set_tip(tooltips,menu_item,"This option will requeue al selected frames that are "
+		       "currently finished. Those finished frames will be rerendered.\n"
+		       "This option has no effect on frames that are not finished.",NULL);
+  
   menu_item = gtk_menu_item_new_with_label("Kill + Wait (requeue running)");
   gtk_menu_append(GTK_MENU(menu),menu_item);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_kill_frames),info);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_update),info);
+  gtk_tooltips_set_tip(tooltips,menu_item,"This option will kill and requeue al selected frames that are "
+		       "currently running. Those running frames will start rendering again.\n"
+		       "This option has no effect on frames that are not running.",NULL);
 
   menu_item = gtk_menu_item_new_with_label("Set Finished (skip waiting)");
   gtk_menu_append(GTK_MENU(menu),menu_item);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_finish_frames),info);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_update),info);
+  gtk_tooltips_set_tip(tooltips,menu_item,"This option will set as finished those selected frames "
+		       "that are currently waiting. So those frames won't start rendering and will be skipped.\n"
+		       "This option has no effect on frames that are not waiting.", NULL);
 
   menu_item = gtk_menu_item_new_with_label("Kill + Finished (skip running)");
   gtk_menu_append(GTK_MENU(menu),menu_item);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_kill_finish_frames),info);
   gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_update),info);
+  gtk_tooltips_set_tip(tooltips,menu_item,"This option will kill and set as finished those selected frames "
+		       "that are currently running. So the render will stop and won't be requeued again (unless "
+		       "manually requeued).\n"
+		       "This option has no effect on frames that are not running.", NULL);
 
   /* Separation bar */
   menu_item = gtk_menu_item_new ();
@@ -1441,6 +1459,7 @@ static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info)
   combo = gtk_combo_new();
   gtk_tooltips_set_tip(tooltips,GTK_COMBO(combo)->entry,"Selector for the kind of job",NULL);
   gtk_combo_set_popdown_strings (GTK_COMBO(combo),items);
+  g_list_free (items);
   gtk_box_pack_start (GTK_BOX(hbox2),combo,TRUE,TRUE,2);
   gtk_entry_set_editable (GTK_ENTRY(GTK_COMBO(combo)->entry),FALSE);
   info->dnj.ckoj = combo;
