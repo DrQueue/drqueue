@@ -1,4 +1,4 @@
-/* $Id: computer_status.c,v 1.3 2001/06/05 12:19:45 jorge Exp $ */
+/* $Id: computer_status.c,v 1.4 2001/06/05 12:45:36 jorge Exp $ */
 
 #include <stdio.h>
 #include <signal.h>
@@ -77,13 +77,9 @@ void report_computer_status (struct computer_status *status)
   printf ("Number of tasks running: %i\n",status->numtasks);
   for (i=0;i<MAXTASKS;i++) {
     if (status->task[i].used) {
-      printf ("Task record: %i\n",i);
-      printf ("Job name: %s\n",status->task[i].jobname);
-      printf ("Job index: %i\n",status->task[i].jobindex);
-      printf ("Job command: %s\n",status->task[i].jobcmd);
-      printf ("Current frame: %i\n",status->task[i].frame);
-      printf ("Task pid: %i\n",status->task[i].pid);
-      printf ("Task status: %i\n",status->task[i].status);
+      printf ("\nTask record:\t%i\n",i);
+      printf ("------------\n");
+      task_report (&status->task[i]);
     }
   }
 }
