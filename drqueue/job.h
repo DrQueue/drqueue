@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.36 2003/12/18 04:11:07 jorge Exp $ */
+/* $Id: job.h,v 1.37 2003/12/18 20:39:41 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -56,6 +56,21 @@ union koj_info {		/* Kind of job information */
     char scene[BUFFERLEN];
     char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
   } blender;
+	struct koji_bmrt {
+		char scene[BUFFERLEN];
+		char viewcmd[BUFFERLEN];
+		char custom_crop;
+		uint32_t xmin,xmax,ymin,ymax;
+		char custom_samples;
+		uint32_t xsamples,ysamples;
+		char disp_stats;
+		char verbose;
+		char custom_beep;
+		char custom_radiosity;
+		uint32_t radiosity_samples;
+		char custom_raysamples;
+		uint32_t raysamples;
+	} bmrt;
 };
 
 /* Koj types */
@@ -69,6 +84,7 @@ union koj_info {		/* Kind of job information */
 /* koj constants */
 #define KOJ_MAYA_DFLT_VIEWCMD "fcheck $RD/$IMAGE.$PADFRAME.sgi"
 #define KOJ_BLENDER_DFLT_VIEWCMD "display image.$FRAME.sgi"
+#define KOJ_BMRT_DFLT_VIEWCMD "display image.$FRAME.sgi"
 
 /* JOB SECTION */
 typedef enum {
