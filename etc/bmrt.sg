@@ -25,36 +25,36 @@
 # Begin Script
 set BLOCK=`expr $FRAME + $BLOCKSIZE - 1`
 if ($BLOCK > $ENDFRAME) then
-	BLOCK = $ENDFRAME;
+	set BLOCK = $ENDFRAME;
 endif
 
 if ( $CUSTOM_CROP ) then
-	crop_args="-crop $CROP_XMIN $CROP_XMAX $CROP_YMIN $CROP_YMAX"
-fi
+	set crop_args = "-crop $CROP_XMIN $CROP_XMAX $CROP_YMIN $CROP_YMAX";
+endif
 
 if ( $CUSTOM_SAMPLES ) then
-	sample_args="-samples $XSAMPLES $YSAMPLES"
-fi
+	set sample_args = "-samples $XSAMPLES $YSAMPLES";
+endif
 
 if ( $DISP_STATS ) then
-	stats_args="-stats"
-fi
+	set stats_args = "-stats";
+endif
 
 if ( $VERBOSE ) then
-	verbose_args="-v"
-fi
+	set verbose_args = "-v";
+endif
 
 if ( $CUSTOM_RADIOSITY ) then
-	radiosity_args="-radio $RADIOSITY_SAMPLES"
-fi
+	set radiosity_args="-radio $RADIOSITY_SAMPLES";
+endif
 
 if ( $CUSTOM_RAYSAMPLES ) then
-	rsamples_args="-rsamples $RAYSAMPLES"
-fi
+	set rsamples_args="-rsamples $RAYSAMPLES";
+endif
 
 if ( $CUSTOM_BEEP ) then
-	beep_args="-beep"
-fi
+	set beep_args="-beep";
+endif
 
 
 echo "rendrib -frames $FRAME $BLOCK $crop_args $sample_args $stats_args $verbose_args $radiosity_args $rsamples_args $beep_args $SCENE"

@@ -24,7 +24,7 @@
 
 set BLOCK=`expr $FRAME + $BLOCKSIZE - 1`
 if ($BLOCK > $ENDFRAME) then
-	BLOCK = $ENDFRAME;
+  set BLOCK = $ENDFRAME;
 endif
 
 if ($?IMAGE) then
