@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.20 2001/07/24 10:42:34 jorge Exp $ */
+/* $Id: slave.c,v 1.21 2001/07/24 13:56:09 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -278,12 +278,19 @@ void launch_task (struct slave_database *sdb)
       /* This child execs the command */
       /* This child also creates the directory for logging if it doesn't exist */
       /* and prepares the file descriptors so every output will be logged */
-      const char *new_argv[4];	/* from libc sources */
+      const char *new_argv[64];
       int lfd;			/* logger fd */
-      new_argv[0] = SHELL_NAME;
-      new_argv[1] = "-c";
-      new_argv[2] = sdb->comp->status.task[sdb->itask].jobcmd;
-      new_argv[3] = NULL;
+      int i;
+      const char *targ;
+      
+      set_signal_handlers_task_exec ();
+      for (i=0;i<64;i++) {
+	if ((targ = parse_arg(sdb->comp->status.task[sdb->itask].jobcmd,i)) != NULL)
+	  new_argv[i] = targ;
+	else
+	  break;
+      }
+      new_argv[i] = NULL;
 
       if ((lfd = log_dumptask_open (&sdb->comp->status.task[sdb->itask])) != -1) {
 	dup2 (lfd,STDOUT_FILENO);
@@ -291,7 +298,6 @@ void launch_task (struct slave_database *sdb)
 	close (lfd);
       }
 
-      set_signal_handlers_task_exec ();
       set_environment(sdb);
 
       execve(SHELL_PATH,(char*const*)new_argv,environ);
@@ -315,16 +321,16 @@ void launch_task (struct slave_database *sdb)
       
       semaphore_lock(sdb->semid);
       sdb->comp->status.task[sdb->itask].exitstatus = 0;
-      if (WIFEXITED(rc)) {
-	printf ("\n\nEXITED with %i\n",WEXITSTATUS(rc));
-	sdb->comp->status.task[sdb->itask].exitstatus |= DR_EXITEDFLAG ;
-	sdb->comp->status.task[sdb->itask].exitstatus |= (WEXITSTATUS(rc)&&0xff);
-      } else {
+      if (WIFSIGNALED(rc)) {
 	/* Process exited abnormally either killed by us or by itself (SIGSEGV) */
-	if (WIFSIGNALED(rc)) {
-	  printf ("\n\nSIGNALED with %i\n",WTERMSIG(rc));
+	printf ("\n\nSIGNALED with %i\n",WTERMSIG(rc));
+	sdb->comp->status.task[sdb->itask].exitstatus |= DR_EXITEDFLAG ;
+	sdb->comp->status.task[sdb->itask].exitstatus |= (WTERMSIG(rc)&&0xff);
+      } else {
+	if (WIFEXITED(rc)) {
+	  printf ("\n\nEXITED with %i\n",WEXITSTATUS(rc));
 	  sdb->comp->status.task[sdb->itask].exitstatus |= DR_EXITEDFLAG ;
-	  sdb->comp->status.task[sdb->itask].exitstatus |= (WTERMSIG(rc)&&0xff);
+	  sdb->comp->status.task[sdb->itask].exitstatus |= (WEXITSTATUS(rc)&&0xff);
 	}
       }
       semaphore_release(sdb->semid);
