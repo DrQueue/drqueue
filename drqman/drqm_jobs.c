@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.31 2001/09/16 15:40:06 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.32 2001/09/16 16:37:09 jorge Exp $
  */
 
 #include <string.h>
@@ -26,6 +26,8 @@ static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *
 static GtkWidget *CreateMenu (struct drqm_jobs_info *info);
 static int pri_cmp_clist (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
 
+
+
 static void JobDetails(GtkWidget *menu_item, struct drqm_jobs_info *info);
 static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info);
 static GtkWidget *CreateFrameInfoClist (void);
@@ -39,7 +41,8 @@ static void jdd_kill_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
 static void jdd_finish_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
 static void jdd_kill_finish_frames (GtkWidget *button,struct drqm_jobs_info *info_dj);
 static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info);
-
+/* Koj viewers */
+static void jdd_maya_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 
 
 static void NewJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
@@ -53,8 +56,6 @@ static void dnj_destroyed (GtkWidget *dialog, struct drqm_jobs_info *info);
 /* Basic koj handling */
 static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info);
 static void dnj_koj_combo_changed (GtkWidget *combo, struct drqm_jobs_info *info);
-/* Koj viewers */
-static void jdd_maya_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 /* KOJ FRAMES */
 /* Maya */
 static GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info);
@@ -65,6 +66,7 @@ static void dnj_koj_frame_maya_script_set (GtkWidget *button, struct drqmj_koji_
 static void dnj_koj_frame_maya_scene_search (GtkWidget *button, struct drqmj_koji_maya *info);
 static void dnj_koj_frame_maya_scene_set (GtkWidget *button, struct drqmj_koji_maya *info);
 static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info);
+
 
 static void DeleteJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
 static GtkWidget *DeleteJobDialog (struct drqm_jobs_info *info);
