@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.14 2001/07/19 09:05:31 jorge Exp $ */
+/* $Id: request.c,v 1.15 2001/07/20 08:27:59 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -79,6 +79,8 @@ void handle_r_r_register (int sfd,struct database *wdb,int icomp)
   struct request answer;
   struct computer_hwinfo hwinfo;
   int index;
+
+  log_master (L_DEBUG,"Entering handle_r_r_register");
 
   if (icomp != -1) {
     log_master (L_INFO,"Already registered computer requesting registration");
