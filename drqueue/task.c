@@ -1,18 +1,32 @@
-/* $Id: task.c,v 1.7 2001/09/17 14:53:58 jorge Exp $ */
+/* $Id: task.c,v 1.8 2001/09/21 14:43:39 jorge Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "task.h"
 #include "slave.h"
 #include "semaphores.h"
 
-void init_tasks (struct task *task)
+void task_init_all (struct task *task)
 {
   int i;
 
   for (i=0;i < MAXTASKS; i++)
-    task[i].used = 0;
+    task_init (&task[i]);
+}
+
+void task_init (struct task *task)
+{
+  task->used = 0;
+  strcpy(task->jobname,"EMPTY");
+  task->ijob = 0;
+  strcpy(task->jobcmd,"NONE");
+  strcpy(task->owner,"NOBODY");
+  task->frame = 0;
+  task->pid = 0;
+  task->exitstatus = 0;
+  task->status = 0;
 }
 
 int task_available (struct slave_database *sdb)
