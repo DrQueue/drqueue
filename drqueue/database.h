@@ -1,4 +1,4 @@
-/* $Id: database.h,v 1.5 2001/09/20 10:51:33 jorge Exp $ */
+/* $Id: database.h,v 1.6 2001/10/29 16:25:16 jorge Exp $ */
 
 #ifndef _DATABASE_H_
 #define _DATABASE_H_
@@ -6,6 +6,9 @@
 #include "constants.h"
 #include "job.h"
 #include "computer.h"
+
+#define DB_VERSION 1		/* Database version */
+#define DB_MAGIC   0xDEADBEEF	/* magics number */
 
 struct database {
   struct computer computer[MAXCOMPUTERS]; /* computers */
@@ -16,6 +19,13 @@ struct database {
   long int bsent;
   long int brecv;
 #endif
+};
+
+struct database_hdr {		/* Database header for the saved database */
+  uint32_t magic;		/* Magics number */
+  uint32_t version;		/* Version number for the saved database */
+  uint16_t job_size;		/* Number of total (used and empty) jobs in the jobs structure */
+  uint16_t computer_size;	/* Number of total (used and empty) computers in the computers structure */
 };
 
 void database_init (struct database *wdb);

@@ -1,4 +1,4 @@
-/* $Id: database.c,v 1.4 2001/09/20 10:51:32 jorge Exp $ */
+/* $Id: database.c,v 1.5 2001/10/29 16:25:09 jorge Exp $ */
 
 #include "database.h"
 #include "computer.h"
@@ -18,5 +18,10 @@ void database_init (struct database *wdb)
 #ifdef COMM_REPORT
   wdb->bsent = wdb->brecv = 0;
 #endif
+
+}
+
+int database_load (struct database *wdb)
+{
 
 }
