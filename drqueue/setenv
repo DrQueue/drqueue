@@ -1,4 +1,4 @@
 export DRQUEUE_ROOT=.
-export DRQUEUE_MASTER=ludwig
+export DRQUEUE_MASTER=render1
 setenv DRQUEUE_ROOT .
-setenv DRQUEUE_MASTER ludwig
+setenv DRQUEUE_MASTER render1
