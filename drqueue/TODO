@@ -7,7 +7,6 @@ TO DO:
 * functions that return void in communications should
   return int. And error checking should be coded 
   extensively.
-* There are no consistency checks in the slave. Should be.
 * License control
 * User defined shell for script generators
 * Renice options
