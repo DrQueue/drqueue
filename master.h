@@ -1,9 +1,11 @@
-/* $Id: master.h,v 1.6 2001/09/02 14:19:12 jorge Exp $ */
+/* $Id: master.h,v 1.7 2002/08/04 21:19:34 jorge Exp $ */
 
 #ifndef _MASTER_H_
 #define _MASTER_H_
 
 #include "database.h"
+
+#define KEY "%s/bin/master"	/* Key for shared memory and semaphores */
 
 void master_get_options (int *argc,char ***argv, int *force);
 void usage (void);

@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.57 2002/05/17 16:05:59 jorge Exp $ */
+/* $Id: slave.c,v 1.58 2002/08/04 21:19:35 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -161,7 +161,7 @@ int get_shared_memory_slave (int force)
   char *root;
 
   root = getenv("DRQUEUE_ROOT");
-  snprintf (file,BUFFERLEN-1,"%s/bin/slave.sh",root);
+  snprintf (file,BUFFERLEN-1,KEY,root);
 
   if ((key = ftok (file,'A')) == -1) {
     perror ("Getting key for shared memory");
@@ -193,7 +193,7 @@ int get_semaphores_slave (void)
   char *root;
 
   root = getenv("DRQUEUE_ROOT");
-  snprintf (file,BUFFERLEN-1,"%s/bin/slave.sh",root);
+  snprintf (file,BUFFERLEN-1,KEY,root);
 
   if ((key = ftok (file,'A')) == -1) {
     perror ("Getting key for semaphores");
