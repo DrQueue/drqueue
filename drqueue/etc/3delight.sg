@@ -40,10 +40,10 @@ if [ $CUSTOM_BEEP ]; then
 fi
 
 
-echo "renderdl -frames $DRQUEUE_FRAME $DRQUEUE_FRAME $crop_args $progress_args $stats_args $beep_args $RIBFILE"
+echo "renderdl -frames $DRQUEUE_FRAME $DRQUEUE_FRAME $crop_args $progress_args $stats_args $beep_args $DRQUEUE_SCENE"
 
 
-renderdl -frames $DRQUEUE_FRAME $DRQUEUE_FRAME $crop_args $progress_args $stats_args $beep_args $RIBFILE
+renderdl -frames $DRQUEUE_FRAME $DRQUEUE_FRAME $crop_args $progress_args $stats_args $beep_args $DRQUEUE_SCENE
 # This should requeue the frame if failed
 if ( $? != 0 ) then
   echo "Requeueing frame..."
