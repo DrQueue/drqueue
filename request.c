@@ -1,4 +1,4 @@
-/* $Id: request.c,v 1.43 2001/09/07 09:36:43 jorge Exp $ */
+/* $Id: request.c,v 1.44 2001/09/07 09:41:08 jorge Exp $ */
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
@@ -786,6 +786,7 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
 	  case FS_FINISHED:
 	  }
 	  fi[task.frame].start_time = 0;
+	  fi[task.frame].end_time = 0;
 	} else {
 	  snprintf(msg,BUFFERLEN-1,"Frame %i died signal not catched", 
 		   job_frame_index_to_number (&wdb->job[task.ijob],task.frame));
