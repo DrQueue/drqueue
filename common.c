@@ -1,4 +1,4 @@
-/* $Id: common.c,v 1.9 2001/11/21 10:15:20 jorge Exp $ */
+/* $Id: common.c,v 1.10 2001/11/23 15:50:47 jorge Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -94,7 +94,7 @@ void mn_job_finished (struct job *job)
   uint32_t total;
   char total_str[BUFFERLEN];
 
-  snprintf (command,BUFFERLEN-1,"mail -s 'Your job (%s) is finished' %s",job->name,job->email);
+  snprintf (command,BUFFERLEN-1,"Mail -s 'Your job (%s) is finished' %s",job->name,job->email);
 
   if ((mail = popen (command,"w")) == NULL) {
     /* There was a problem creating the piped command */
