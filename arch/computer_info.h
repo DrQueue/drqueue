@@ -1,7 +1,9 @@
-/* $Id: computer_info.h,v 1.1 2001/04/25 10:45:41 jorge Exp $ */
+/* $Id: computer_info.h,v 1.2 2001/04/25 15:55:24 jorge Exp $ */
 
 #ifndef _COMPUTER_INFO_H_
 #define _COMPUTER_INFO_H_
+
+#include "constants.h"
 
 typedef enum {
   ARCH_UNKNOWN,
@@ -26,8 +28,8 @@ typedef enum {
 } t_proctype;
 
 struct computer_hwinfo {
-  char computername 
-  t_arch architecture;		/* type of architecture */
+  char name[MAXNAMELEN];	/* Name of the computer */
+  t_arch arch;			/* type of architecture */
   t_os os;			/* type of operating system */
   t_proctype proctype;		/* type of processors */
   int procspeed;		/* speed of the processors */
@@ -35,7 +37,12 @@ struct computer_hwinfo {
   int speedindex;		/* global speed index for making comparisons between different computers */
 };
 
-int get_hwinfo (struct computer_hwinfo *hwinfo);
+void get_hwinfo (struct computer_hwinfo *hwinfo);
+t_proctype get_proctype (void);
+void report_hwinfo (struct computer_hwinfo *hwinfo);
+char *osstring (t_os os);
+char *archstring (t_arch arch);
+char *proctypestring (t_proctype proctype);
 
 #endif /* _COMPUTER_INFO_H_ */
 
