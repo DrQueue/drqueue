@@ -37,6 +37,10 @@ char conf[PATH_MAX];
 
 #define DRQMAN_CONF_FILE "/etc/drqueue/drqman.conf"
 
+#ifdef __CYGWIN
+FILE *file_null;
+#endif
+
 int main (int argc, char *argv[])
 {
   GtkWidget *window;
@@ -57,6 +61,7 @@ int main (int argc, char *argv[])
   gtk_init(&argc,&argv);
 #ifdef __CYGWIN
   snprintf(rc_file,MAXCMDLEN-1,"%s/drqman-windows.rc",getenv("DRQUEUE_ETC"));
+  file_null = fopen("/dev/null", "r+");
 #else
   snprintf(rc_file,MAXCMDLEN-1,"%s/drqman.rc",getenv("DRQUEUE_ETC"));
 #endif
@@ -91,7 +96,11 @@ int main (int argc, char *argv[])
   gtk_widget_show(window);
 
   gtk_main();
-  
+ 
+#ifdef __CYGWIN
+  fclose(file_null);
+#endif
+
   return (0);
 }
 
