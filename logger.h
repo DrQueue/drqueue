@@ -1,4 +1,4 @@
-/* $Id: logger.h,v 1.6 2001/07/05 10:53:24 jorge Exp $ */
+/* $Id: logger.h,v 1.7 2001/07/20 15:27:34 jorge Exp $ */
 
 #ifndef _LOGGER_H_
 #define _LOGGER_H_
@@ -27,6 +27,8 @@ void log_master_computer (struct computer *computer, int level, char *msg);
 FILE *log_master_open (void);
 
 char *log_level_str (int level);
+
+int log_dumptask_open (struct task *t);
 
 #endif 
 
