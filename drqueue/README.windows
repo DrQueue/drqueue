@@ -1,0 +1,34 @@
+to compil drqueue under windows you need do all this steps :
+
+.download cygwin from
+http://www.cygwin.com/setup.exe
+
+.run cygwin setup and choose install for devel category (click on devel)
+
+.run again cygwin setup with default settings to be sure verything is installed
+
+.run again cygwin setup and add this server 
+http://web.sfc.keio.ac.jp/~s01397ms/cygwin 
+choose gtk+-win32 in package list (show full list to find it)
+installation may crach at the end, but it is not a problem as file are copied.
+
+.install nullsoft installation system from 
+http://nsis.sourceforge.net/download
+
+.install windows dotnet SDK
+
+.compil Services solutions in contrib/windows/Services
+
+.compil ServiceInstaller in contrib/windows/ServiceInstaller with
+gcc -mno-cygwin service.cpp -o service.exe
+
+.copy all services and service installer exe in contrib/ directory (important)
+
+.type make install in drqueue directory
+
+.go where file are installed (/usr/local/drqueue by default)
+
+.compil contrib/installer.nsi with nullsoft installer system (right click on nsi file and choose compil)
+
+.you get installer.exe with contains everything needed, just install it as any windows application
+ 
