@@ -518,6 +518,7 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
   GtkWidget *button;
   GtkWidget *combo;
   GtkWidget *bbox;
+	GtkWidget *notebook;
   GList *items = NULL;
   GtkTooltips *tooltips;
 
@@ -532,9 +533,16 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
   gtk_container_set_border_width (GTK_CONTAINER(window),5);
   info->dnj.dialog = window;
 
+	// Notebook
+	label = gtk_label_new ("Main info");
+	notebook = gtk_notebook_new ();
+	gtk_container_add (GTK_CONTAINER(window),GTK_WIDGET(notebook));
+
+
   /* Frame */
   frame = gtk_frame_new ("Give job information");
-  gtk_container_add (GTK_CONTAINER(window),frame);
+	gtk_notebook_append_page (GTK_NOTEBOOK(notebook),GTK_WIDGET(frame),GTK_WIDGET(label));
+
 
   /* Main vbox */
   vbox = gtk_vbox_new (FALSE,2);
@@ -665,8 +673,9 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
   gtk_box_pack_start(GTK_BOX(vbox),frame,TRUE,TRUE,5);
 
   /* KOJ STUFF */
+	label = gtk_label_new ("Kind of Job");
   frame = dnj_koj_widgets (info);
-  gtk_box_pack_start(GTK_BOX(vbox),frame,TRUE,TRUE,5);
+	gtk_notebook_append_page (GTK_NOTEBOOK(notebook),GTK_WIDGET(frame),GTK_WIDGET(label));
 
   /* Buttons */
   /* submit */
@@ -978,6 +987,12 @@ static GtkWidget *DeleteJobDialog (struct drqm_jobs_info *info)
 
 static void djd_bok_pressed (GtkWidget *button, struct drqm_jobs_info *info)
 {
+	// README <- Crashes after deleting jobs from the jdd
+	// This function is called at the time of this writing 13.10.2004
+	// by two different callbacks: one from the popup menu on main 
+	// job window, and another one from the job's detail dialog.
+	// So we need to treat the differently. Is also commented on bug
+	// number 0000001 of the bug tracker
 	if (info->jdd.dialog) {
 		drqm_request_job_delete (info->jdd.job.id);
 		gtk_widget_destroy (info->jdd.dialog);
@@ -1789,6 +1804,7 @@ static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info)
   frame = gtk_frame_new ("Kind of job");
   vbox = gtk_vbox_new (FALSE,2);
   gtk_container_add (GTK_CONTAINER(frame),vbox);
+	info->dnj.vbkoj = vbox;
 
   /* Kind of job selector */
   hbox = gtk_hbox_new (TRUE,2);
@@ -1848,19 +1864,19 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
       break;
     case KOJ_MAYA:
       info->dnj.fkoj = dnj_koj_frame_maya (info);
-      gtk_box_pack_start(GTK_BOX(info->dnj.vbox),info->dnj.fkoj,TRUE,TRUE,2);
+      gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
       break;
     case KOJ_BLENDER:
       info->dnj.fkoj = dnj_koj_frame_blender (info);
-      gtk_box_pack_start(GTK_BOX(info->dnj.vbox),info->dnj.fkoj,TRUE,TRUE,2);
+      gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
       break;
 		case KOJ_BMRT:
 			info->dnj.fkoj = dnj_koj_frame_bmrt (info);
-      gtk_box_pack_start(GTK_BOX(info->dnj.vbox),info->dnj.fkoj,TRUE,TRUE,2);
+      gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
       break;
     case KOJ_PIXIE:
       info->dnj.fkoj = dnj_koj_frame_pixie (info);
-      gtk_box_pack_start(GTK_BOX(info->dnj.vbox),info->dnj.fkoj,TRUE,TRUE,2);
+      gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
       break;
     }
   }
