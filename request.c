@@ -28,13 +28,7 @@
 #include <signal.h>
 #include <time.h>
 #include <string.h>
-//#ifndef __OSX
-//# ifdef __FREEBSD
-#  include <sys/wait.h>
-//# else
-//#  include <wait.h>
-//# endif
-//#endif
+#include <sys/wait.h>
 #include <stdlib.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
@@ -751,7 +745,7 @@ int request_job_available (struct slave_database *sdb)
     req.type = R_R_AVAILJOB;
     req.data = RERR_NOSPACE;
     if (!send_request(sfd,&req,SLAVE)) {
-      log_slave_computer (L_ERROR,drerrno_str());
+      log_slave_computer (L_ERROR,"Sending request: %s",drerrno_str());
       kill (0,SIGINT);
     }
     close (sfd);		/* Finish */
@@ -763,7 +757,7 @@ int request_job_available (struct slave_database *sdb)
   req.type = R_R_AVAILJOB;
   req.data = RERR_NOERROR;
   if (!send_request(sfd,&req,SLAVE)) {
-    log_slave_computer (L_ERROR,drerrno_str());
+    log_slave_computer (L_ERROR,"Sending request: %s",drerrno_str());
     kill (0,SIGINT);
   }
 
@@ -903,6 +897,14 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
     log_master (L_WARNING,"frame finished of non-existing job");
     return;
   }
+
+	if (task.frame == (uint32_t) -1) {
+		// The frame just finished was the cmd_on_finished
+		wdb->job[task.ijob].flags |= JF_COFDONE;
+		semaphore_release(wdb->semid);
+		log_master (L_INFO,"Command on finished executed for job %i",task.ijob);
+		return;
+	}
 
   /* Once we have the task struct we need to update the information */
   /* on the job struct */
