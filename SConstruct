@@ -1,7 +1,9 @@
 import sys
+import glob
+import os
 
 env = Environment (CC = 'gcc', 
-										CCFLAGS=Split ('-DCOMM_REPORT -Wall -g -O2'))
+										CCFLAGS=Split ('-DCOMM_REPORT -Wall -g -O2 -I.'))
 
 
 print "Platform is: ",sys.platform
@@ -10,21 +12,26 @@ if sys.platform == "linux2":
 elif sys.platform == "darwin":
 	env.Append (CCFLAGS = '-D__OSX')
 
-env_c = env.Copy ()
-env_cpp = env.Copy ()
-env_cpp.Append (CCFLAGS='-D__CPLUSPLUS')
+env.Append (CXXFLAGS='-D__CPLUSPLUS')
 
 libdrqueue = Split ("""computer_info.c computer_status.c task.c logger.c communications.c
       computer.c request.c semaphores.c job.c drerrno.c database.c common.c
       mayasg.c blendersg.c bmrtsg.c pixiesg.c""")
-env_c.Library ('libdrqueue.a', libdrqueue)
+env.Library ('libdrqueue.a', libdrqueue)
 
+drqman_c = glob.glob ("drqman/*.c")
+gtkcflags = os.popen('pkg-config --cflags gtk+-2.0').read()
+gtklibs = os.popen('pkg-config --libs gtk+-2.0').read()
+env_gtkstuff = env.Copy ()
+env_gtkstuff.Append (CCFLAGS = Split(gtkcflags))
+env_gtkstuff.Append (LINKFLAGS = Split(gtklibs))
+drqman = env_gtkstuff.Program ('drqman/drqman',drqman_c, LIBS=['libdrqueue.a'], LIBPATH=['.'])
 
-env_c.Program ('master.c', LIBS=['libdrqueue.a'], LIBPATH=['.'])
-env_c.Program ('slave.c', LIBS=['libdrqueue.a'], LIBPATH=['.'])
-env_c.Program ('jobfinfo.c', LIBS=['libdrqueue.a'], LIBPATH=['.'])
-env_c.Program ('requeue.c', LIBS=['libdrqueue.a'], LIBPATH=['.'])
-env_c.Program ('cjob.c', LIBS=['libdrqueue.a'], LIBPATH=['.'])
-env_c.Program ('blockhost.c', LIBS=['libdrqueue.a'], LIBPATH=['.'])
+env.Program ('master.c', LIBS=['libdrqueue.a'], LIBPATH=['.'])
+env.Program ('slave.c', LIBS=['libdrqueue.a'], LIBPATH=['.'])
+env.Program ('jobfinfo.c', LIBS=['libdrqueue.a'], LIBPATH=['.'])
+env.Program ('requeue.c', LIBS=['libdrqueue.a'], LIBPATH=['.'])
+env.Program ('cjob.c', LIBS=['libdrqueue.a'], LIBPATH=['.'])
+env.Program ('blockhost.c', LIBS=['libdrqueue.a'], LIBPATH=['.'])
 
-env_cpp.Program ('sendjob.cpp', LIBS=['libdrqueue.a'], LIBPATH=['.'])
+env.Program ('sendjob.cpp', LIBS=['libdrqueue.a'], LIBPATH=['.'])
