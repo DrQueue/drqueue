@@ -34,6 +34,7 @@
 #define ACTION_HSTOP  2
 #define ACTION_CONT   3
 #define ACTION_DEL    4
+#define ACTION_STATUS	5
 
 void usage (void);
 
@@ -42,8 +43,9 @@ int main (int argc,char *argv[])
   int opt;
   uint32_t ijob = -1;
 	int action = ACTION_NONE;
-	
-  while ((opt = getopt (argc,argv,"sdckj:vh")) != -1) {
+	struct job job;
+
+  while ((opt = getopt (argc,argv,"sdcktj:vh")) != -1) {
     switch (opt) {
     case 's':
 			action = ACTION_STOP;
@@ -56,6 +58,9 @@ int main (int argc,char *argv[])
 			break;
 		case 'k':
 			action = ACTION_HSTOP;
+			break;
+		case 't':
+			action = ACTION_STATUS;
 			break;
     case 'j':
       ijob = atoi (optarg);
@@ -75,24 +80,34 @@ int main (int argc,char *argv[])
     exit (1);
   }
 
+	set_default_env();
+
   if (!common_environment_check()) {
     fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
     exit (1);
   }
-
+	
 	switch (action) {
-		case ACTION_STOP:
-			request_job_stop(ijob,CLIENT);
-			break;
-		case ACTION_HSTOP:
-			request_job_hstop(ijob,CLIENT);
-			break;
-		case ACTION_DEL:
-			request_job_delete(ijob,CLIENT);
-			break;
-		case ACTION_CONT:
-			request_job_continue(ijob,CLIENT);
-			break;
+	case ACTION_STOP:
+		printf ("Stopping job: %i\n",ijob);
+		request_job_stop(ijob,CLIENT);
+		break;
+	case ACTION_HSTOP:
+		printf ("Hard stopping job: %i\n",ijob);
+		request_job_hstop(ijob,CLIENT);
+		break;
+	case ACTION_DEL:
+		printf ("Deleting job: %i\n",ijob);
+		request_job_delete(ijob,CLIENT);
+		break;
+	case ACTION_CONT:
+		printf ("Continue job: %i\n",ijob);
+		request_job_continue(ijob,CLIENT);
+		break;
+	case ACTION_STATUS:
+		request_job_xfer(ijob,&job,CLIENT);
+		printf ("%s\n",job_status_string(job.status));
+		break;
 	}
 
   exit (0);
@@ -100,13 +115,14 @@ int main (int argc,char *argv[])
 
 void usage (void)
 {
-    fprintf (stderr,"Usage: blockhost [-vh] -[s|k|d|c] -j <job_id>\n"
-	     "Valid options:\n"
-	     "\t-s will do a soft stop\n"
-			 "\t-k will do a hard stop\n"
-	     "\t-d will delete the job (be careful, no confirmation asked)\n"
-	     "\t-c will continue a previously stopped job\n"
-	     "\t-j <job_id>\n"
-	     "\t-v print version\n"
-	     "\t-h print this help\n");
+    fprintf (stderr,"Usage: blockhost [-vh] -[s|k|d|c|s] -j <job_id>\n"
+						 "Valid options:\n"
+						 "\t-s will do a soft stop\n"
+						 "\t-k 	will do a hard stop\n"
+						 "\t-d will de	lete the job (be careful, no confirmation asked)\n"
+						 "\t-c will continue a	 previously stopped job\n"
+						 "\t-t show the status of the job\n"
+						 "\t-j 	<job_id>\n"
+						 "\t-v print v	ersion\n"
+						 "\t-h print this help	\n");
 }
