@@ -176,6 +176,7 @@ void computer_update_assigned (struct database *wdb,uint32_t ijob,int iframe,int
   task->status = TASKSTATUS_LOADING; /* Not yet running */
   strncpy(task->jobname,job->name,MAXNAMELEN-1);
   task->ijob = ijob;
+	task->icomp = icomp;
   strncpy(task->jobcmd,job->cmd,MAXCMDLEN-1);
   strncpy(task->owner,job->owner,MAXNAMELEN-1);
   task->frame = job_frame_index_to_number (&wdb->job[ijob],iframe);
