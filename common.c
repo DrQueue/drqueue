@@ -273,6 +273,51 @@ void config_parse (char *cfg)
 			} else {
 				fprintf (stderr,"Warning parsing config file. No value for tmp. Using default.\n");
 			}
+		} else if (strcmp(token,"bin") == 0) {
+			if ((token = strtok (NULL,"=\n")) != NULL) {
+				fprintf (stderr,"Bin on: '%s'\n",token);
+				snprintf (renv,BUFFERLEN,"DRQUEUE_BIN=%s",token);
+				if ((penv = (char*) malloc (strlen(renv)+1)) == NULL) {
+					fprintf (stderr,"ERROR allocating memory for DRQUEUE_BIN.\n");
+					exit (1);
+				}
+				strncpy(penv,renv,strlen(renv)+1);
+				if (putenv (penv) != 0) {
+					fprintf (stderr,"ERROR seting the environment: '%s'\n",penv);
+				}
+			} else {
+				fprintf (stderr,"Warning parsing config file. No value for bin. Using default.\n");
+			}
+		} else if (strcmp(token,"etc") == 0) {
+			if ((token = strtok (NULL,"=\n")) != NULL) {
+				fprintf (stderr,"Etc on: '%s'\n",token);
+				snprintf (renv,BUFFERLEN,"DRQUEUE_ETC=%s",token);
+				if ((penv = (char*) malloc (strlen(renv)+1)) == NULL) {
+					fprintf (stderr,"ERROR allocating memory for DRQUEUE_ETC.\n");
+					exit (1);
+				}
+				strncpy(penv,renv,strlen(renv)+1);
+				if (putenv (penv) != 0) {
+					fprintf (stderr,"ERROR seting the environment: '%s'\n",penv);
+				}
+			} else {
+				fprintf (stderr,"Warning parsing config file. No value for etc. Using default.\n");
+			}
+		} else if (strcmp(token,"db") == 0) {
+			if ((token = strtok (NULL,"=\n")) != NULL) {
+				fprintf (stderr,"Db on: '%s'\n",token);
+				snprintf (renv,BUFFERLEN,"DRQUEUE_DB=%s",token);
+				if ((penv = (char*) malloc (strlen(renv)+1)) == NULL) {
+					fprintf (stderr,"ERROR allocating memory for DRQUEUE_DB.\n");
+					exit (1);
+				}
+				strncpy(penv,renv,strlen(renv)+1);
+				if (putenv (penv) != 0) {
+					fprintf (stderr,"ERROR seting the environment: '%s'\n",penv);
+				}
+			} else {
+				fprintf (stderr,"Warning parsing config file. No value for db. Using default.\n");
+			}
 		} else {
 			fprintf (stderr,"ERROR parsing config file. Unknown token: '%s'\n",token);
 			exit (1);
