@@ -836,6 +836,8 @@ static GtkWidget *jdd_add_blocked_host_dialog (struct drqm_jobs_info *info)
 	// Button to refresh the list
 	button = gtk_button_new_with_label ("Refresh");
 	gtk_box_pack_start (GTK_BOX(vbox),button,FALSE,FALSE,2);
+	g_signal_connect_swapped(G_OBJECT(button),"clicked",G_CALLBACK(drqm_request_computerlist),&info->jdd.bhdi_computers_info);
+	g_signal_connect_swapped(G_OBJECT(button),"clicked",G_CALLBACK(drqm_update_computerlist),&info->jdd.bhdi_computers_info);
 
 	hbox = gtk_hbox_new (FALSE,2);
 	gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
