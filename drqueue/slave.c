@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.30 2001/08/22 10:15:27 jorge Exp $ */
+/* $Id: slave.c,v 1.31 2001/08/31 09:19:01 jorge Exp $ */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -70,7 +70,7 @@ int main (int argc,char *argv[])
 
   while (1) {
     get_computer_status (&sdb.comp->status);
-    report_computer_status (&sdb.comp->status);
+/*      report_computer_status (&sdb.comp->status); */
 
     while (computer_available(sdb.comp)) {
       if (request_job_available(&sdb)) {
