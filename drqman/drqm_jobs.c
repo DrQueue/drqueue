@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_jobs.c,v 1.77 2004/03/09 18:53:22 jorge Exp $
+ * $Id: drqm_jobs.c,v 1.78 2004/10/06 16:16:57 jorge Exp $
  */
 
 #include <string.h>
@@ -893,6 +893,9 @@ static int dnj_submit (struct drqmj_dnji *info)
   if (GTK_TOGGLE_BUTTON(info->limits.cb_osx)->active) {
     job.limits.os_flags |= (OSF_OSX);
   }
+	if (GTK_TOGGLE_BUTTON(info->limits.cb_freebsd)->active) {
+		job.limits.os_flags |= (OSF_FREEBSD);
+	}
 
   /* Flags */
   job.flags = 0;
@@ -2027,10 +2030,18 @@ static GtkWidget *dnj_limits_widgets (struct drqm_jobs_info *info)
   gtk_tooltips_set_tip (tooltips,cbutton,"If set this job will try to be executed on OS X "
 			"computers. If not set it won't.", NULL);
 
+  gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
+  cbutton = gtk_check_button_new_with_label ("FreeBSD");
+  gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
+  info->dnj.limits.cb_freebsd = cbutton;
+  gtk_tooltips_set_tip (tooltips,cbutton,"If set this job will try to be executed on FreeBSD "
+			"computers. If not set it won't.", NULL);
+
 
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.limits.cb_irix),TRUE);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.limits.cb_linux),TRUE);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.limits.cb_osx),TRUE);
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.limits.cb_freebsd),TRUE);
 
   return (frame);
 }
