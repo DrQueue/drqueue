@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.23 2001/09/08 17:00:10 jorge Exp $ */
+/* $Id: computer.c,v 1.24 2001/09/10 09:15:50 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -92,7 +92,7 @@ int computer_index_free (void *pwdb)
 int computer_available (struct computer *computer)
 {
   int npt;			/* number of possible tasks */
-
+  int t;
   /* At the beginning npt is the minimum of the nmaxcpus or ncpus */
   /* This means that never will be assigned more tasks than processors */
   /* This behaviour could be changed in the future */
@@ -106,8 +106,15 @@ int computer_available (struct computer *computer)
   /* Prevent floating point exception */
   if (!computer->limits.maxfreeloadcpu)
     return 0;
+  /* Care must be taken because we substract the running tasks TWO times */
+  /* one because of the load, another one here. */
+  /* SOLUTION: we substract maxfreeloadcpu from the load */
+  /* CONS: At the beggining of a frame it is not represented on the load average */
+  /*       If we substract then we are probably substracting from another task's load */
   /* Number of cpus charged based on the load */
-  npt -= (computer->status.loadavg[0] / computer->limits.maxfreeloadcpu);
+  t = (computer->status.loadavg[0] / computer->limits.maxfreeloadcpu) - computer->status.ntasks;
+  t = ( t < 0 ) ? 0 : t;
+  npt -= t;
 /*    printf ("3) npt: %i\n",npt); */
 
   /* Number of current working tasks */
