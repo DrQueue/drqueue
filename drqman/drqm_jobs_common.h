@@ -37,6 +37,8 @@ struct drqmj_limits {
   GtkWidget *enmaxcpuscomputer;
   GtkWidget *lnmaxcpus;		/* Labels*/
   GtkWidget *lnmaxcpuscomputer;
+	GtkWidget *lmemory;
+	GtkWidget *ememory;
   GtkWidget *cb_irix;		/* Check buttons */
   GtkWidget *cb_linux;
 	GtkWidget *cb_osx;
