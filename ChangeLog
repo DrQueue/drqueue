@@ -1,3 +1,172 @@
+2004-11-14 13:58:54  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /branches/0.55.x/sendjob.cpp
+
+	* Missing limit on bugfix
+
+2004-11-14 13:57:41  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /branches/0.55.x/drqman/drqm_jobs.c
+	   M /branches/0.55.x/sendjob.cpp
+
+	* Merged from trunk 1011:1025. Bug fixes.
+
+2004-11-14 12:57:32  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /branches/0.55.x/job.c
+	   M /branches/0.55.x/master.c
+	   M /branches/0.55.x/request.c
+
+	* Working on slave pools.
+
+2004-11-14 12:43:37  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /branches/0.55.x/communications.c
+	   M /branches/0.55.x/computer.c
+	   M /branches/0.55.x/computer.h
+	   M /branches/0.55.x/drerrno.c
+	   M /branches/0.55.x/drerrno.h
+	   M /branches/0.55.x/drqman/drqm_request.c
+	   M /branches/0.55.x/job.c
+	   M /branches/0.55.x/request.c
+	   M /branches/0.55.x/slave.c
+
+	* Pool communications seem to work now. I'm using more shared memory.
+
+2004-11-14 02:54:29  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /branches/0.55.x/communications.c
+	   M /branches/0.55.x/computer.c
+	   M /branches/0.55.x/slave.c
+
+	* More work on slave pools.
+
+2004-11-14 02:29:16  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /branches/0.55.x/communications.c
+	   M /branches/0.55.x/computer.c
+
+	* Working on slave pools.
+
+2004-11-14 02:25:44  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /branches/0.55.x/communications.c
+
+	* Working on slave pools
+
+2004-11-14 01:43:42  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /branches/0.55.x/communications.c
+	   M /branches/0.55.x/communications.h
+	   M /branches/0.55.x/computer.c
+	   M /branches/0.55.x/computer.h
+
+	* Working on slave pools
+
+2004-11-14 00:50:10  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /branches/0.55.x/communications.c
+	   M /branches/0.55.x/computer.c
+	   M /branches/0.55.x/computer.h
+	   M /branches/0.55.x/master.c
+	   M /branches/0.55.x/slave.c
+
+	* Working on the slave pools.
+
+2004-11-13 22:29:22  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /branches/0.55.x/communications.c
+	   M /branches/0.55.x/computer.c
+	   M /branches/0.55.x/computer.h
+	   M /branches/0.55.x/computer_status.c
+	   M /branches/0.55.x/request.c
+	   M /branches/0.55.x/slave.c
+
+	* Basic computer pool routines working.
+
+2004-11-13 16:43:46  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /branches/0.55.x/SConstruct
+
+	* Some other minor changes to SConstruct.
+
+2004-11-13 16:38:34  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /branches/0.55.x/SConstruct
+
+	* SConstruct working for building
+
+2004-11-13 15:51:01  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /branches/0.55.x/SConstruct
+
+	* Added tools to SConstruct
+
+2004-11-13 14:26:54  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /branches/0.55.x/drerrno.h
+
+	* Minor change
+
+2004-11-13 03:08:07  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   A /branches/0.55.x/SConstruct
+
+	* Preliminary SConstruct.
+
+2004-11-12 16:13:26  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   A /branches/0.55.x (from /trunk/drqueue:1010)
+	   M /branches/0.55.x/communications.c
+	   M /branches/0.55.x/constants.h
+	   M /branches/0.55.x/master.c
+
+	* Prefork test.
+
+2004-11-04 06:02:40  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/README
+
+	* Fixed typo
+
+2004-11-03 22:33:03  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/Revision
+
+	* New Revision commited by build_package.sh
+
+2004-11-03 22:32:42  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/ChangeLog
+
+	* ChangeLog commited by build_package.sh
+
+2004-11-03 22:32:22  Jorge Daza <jorge@drqueue.org>
+
+	* Changed paths:
+	   M /trunk/drqueue/common.h
+
+	* New version number on common.h: 0.54.0
+
 2004-11-03 00:09:28  Jorge Daza <jorge@drqueue.org>
 
 	* Changed paths:
