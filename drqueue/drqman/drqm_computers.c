@@ -1,5 +1,5 @@
 /*
- * $Id: drqm_computers.c,v 1.9 2001/08/30 13:17:27 jorge Exp $
+ * $Id: drqm_computers.c,v 1.10 2001/08/31 19:35:01 jorge Exp $
  */
 
 #include <stdlib.h>
@@ -208,7 +208,7 @@ static GtkWidget *ComputerDetailsDialog (struct info_drqm_computers *info)
   }
 
   /* Dialog */
-  window = gtk_window_new (GTK_WINDOW_DIALOG);
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW(window),"Computer Details");
   gtk_signal_connect_object(GTK_OBJECT(window),"destroy",GTK_SIGNAL_FUNC(gtk_widget_destroy),
 			    (GtkObject*)window);
