@@ -1,4 +1,4 @@
-/* $Id: job.h,v 1.27 2001/11/13 08:38:32 jorge Exp $ */
+/* $Id: job.h,v 1.28 2001/11/16 15:50:12 jorge Exp $ */
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -70,6 +70,7 @@ typedef enum {
 
 /* JOB FLAGS */
 #define JF_MAILNOTIFY     (1<<0) /* Mail notifications on events */
+#define JF_MNDIFEMAIL	  (1<<1) /* Email address for notifications specified on "email" field */
 
 /* THE JOB ITSELF */
 struct job {
@@ -82,6 +83,7 @@ struct job {
   char name[MAXNAMELEN];
   char cmd[MAXCMDLEN];
   char owner[MAXNAMELEN];
+  char email[MAXNAMELEN];	/* Specific email address for email notifications */
 
   uint16_t koj;			/* Kind of job */
   union koj_info koji;		/* koj info */
