@@ -1,4 +1,4 @@
-/* $Id: computer.c,v 1.21 2001/09/08 15:55:35 jorge Exp $ */
+/* $Id: computer.c,v 1.22 2001/09/08 16:58:43 jorge Exp $ */
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -93,27 +93,37 @@ int computer_available (struct computer *computer)
 {
   int npt;			/* number of possible tasks */
 
-  /* Returns 1 or 0 if the computer is or not available for rendering */
-  if (computer->status.ntasks >= (computer->limits.nmaxcpus)) {
-    /* If we already have all the processors running... */
+  /* At the beginning npt is the minimum of the nmaxcpus or ncpus */
+  /* This means that never will be assigned more tasks than processors */
+  /* This behaviour could be changed in the future */
+  npt = (computer->limits.nmaxcpus < computer->hwinfo.ncpus) ? computer->limits.nmaxcpus : computer->hwinfo.ncpus;
+/*    printf ("1) npt: %i\n",npt); */
+
+  /* then npt is the minimum of npt or the number of free tasks structures */
+  npt = (npt < (MAXTASKS - computer->status.ntasks)) ? npt : (MAXTASKS - computer->status.ntasks);
+/*    printf ("2) npt: %i\n",npt); */
+
+  /* Prevent floating point exception */
+  if (!computer->limits.maxfreeloadcpu)
     return 0;
+  /* Number of cpus charged based on the load */
+  npt -= (computer->status.loadavg[0] / computer->limits.maxfreeloadcpu);
+/*    printf ("3) npt: %i\n",npt); */
+
+  /* Number of current working tasks */
+  npt -= computer->status.ntasks;
+/*    printf ("4) npt: %i\n",npt); */
+
+  if (computer->status.ntasks > MAXTASKS) {
+    /* This should never happen, btw */
+    fprintf (stderr,"CRITICAL ERROR: the computer has exceeded the MAXTASKS limit\n");
+    kill (0,SIGINT);
   }
 
-  
-
-  if (computer->status.ntasks >= MAXTASKS) {
-    /* We have all task structures full */
-    if (computer->status.ntasks > MAXTASKS) {
-      /* This should never happen, btw */
-      fprintf (stderr,"CRITICAL ERROR: the computer has exceeded the MAXTASKS limit\n");
-      kill (0,SIGINT);
-    }
-    return 0;
-  } 
+  printf ("Number of possible tasks: %i\n",npt);
     
-/*    if (computer->status.loadavg[0] >= (computer->hwinfo.numproc * MAXLOADAVG)) { */
-/*      return 0; */
-/*    } */
+  if (npt <= 0)
+    return 0;
 
   return 1;
 }
