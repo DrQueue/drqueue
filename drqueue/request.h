@@ -1,4 +1,4 @@
-/* $Id: request.h,v 1.26 2001/09/18 13:24:04 jorge Exp $ */
+/* $Id: request.h,v 1.27 2001/10/04 08:19:52 jorge Exp $ */
 /* The request structure is not just used for the requests themselves */
 /* but also for the answers to the requests */
 
@@ -53,7 +53,7 @@ void handle_r_r_uclimits (int sfd,struct database *wdb,int icomp,struct request 
 void handle_r_r_slavexit (int sfd,struct database *wdb,int icomp,struct request *req);
 
 /* sent TO MASTER */
-void update_computer_status (struct computer *computer); /* The slave calls this function to update the */
+void update_computer_status (struct slave_database *database); /* The slave calls this function to update the */
                                                         /* information that the master has about him */
 void update_computer_limits (struct computer_limits *limits);
 
