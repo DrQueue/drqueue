@@ -6,7 +6,7 @@
 usage () {
 	cat <<END
 DrQueue .tgz builder. Jorge Daza Garcia-Blanes
-echo "Usage: $0 <version>
+Usage: $0 <version>
 
 Example: $0 0.50rc4
 END
