@@ -1,4 +1,4 @@
-/* $Id: slave.c,v 1.11 2001/07/05 15:19:39 jorge Exp $ */
+/* $Id: slave.c,v 1.12 2001/07/06 09:14:11 jorge Exp $ */
 
 #include <unistd.h>
 #include <signal.h>
@@ -86,9 +86,14 @@ void set_signal_handlers (void)
 
 void clean_out (int signal, siginfo_t *info, void *data)
 {
+  int rc;
+  pid_t child_pid;
 
   kill (0,SIGINT);
   log_slave_computer (L_INFO,"Cleaning...");
+  while ((child_pid = wait (&rc)) != -1) {
+    printf ("Child arrived ! %i\n",child_pid); 
+  }
 
   if (semctl (sdb.semid,0,IPC_RMID,NULL) == -1) {
     perror ("semid");
@@ -181,6 +186,16 @@ void set_signal_handlers_child_chandler (void)
 
 void set_signal_handlers_child_launcher (void)
 {
+  struct sigaction action_ignore;
+
+  action_ignore.sa_handler = SIG_IGN;
+  sigemptyset (&action_ignore.sa_mask);
+  sigaction (SIGINT, &action_ignore, NULL);
+  sigaction (SIGTERM, &action_ignore, NULL);
+}
+
+void set_signal_handlers_task_exec (void)
+{
   struct sigaction action_dfl;
 
   action_dfl.sa_sigaction = (void *)SIG_DFL;
@@ -188,6 +203,7 @@ void set_signal_handlers_child_launcher (void)
   action_dfl.sa_flags = SA_SIGINFO;
   sigaction (SIGINT, &action_dfl, NULL);
   sigaction (SIGTERM, &action_dfl, NULL);
+  sigaction (SIGCLD, &action_dfl, NULL);
 }
 
 void slave_listening_process (struct slave_database *sdb)
@@ -251,13 +267,13 @@ void launch_task (struct slave_database *sdb)
       new_argv[2] = sdb->comp->status.task[sdb->itask].jobcmd;
       new_argv[3] = NULL;
 
+      set_signal_handlers_task_exec ();
       set_environment(sdb);
 
       execve(SHELL_PATH,(char*const*)new_argv,environ);
 
       exit(errno);		/* If we arrive here, something happened exec'ing */
     }
-    
     /* Then we set the process as running */
     semaphore_lock(sdb->semid);
     sdb->comp->status.task[sdb->itask].status = TASKSTATUS_RUNNING;

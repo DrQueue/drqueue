@@ -1,4 +1,4 @@
-/* $Id: master.c,v 1.6 2001/07/05 10:53:24 jorge Exp $ */
+/* $Id: master.c,v 1.7 2001/07/06 09:14:11 jorge Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -216,7 +216,7 @@ void clean_out (int signal, siginfo_t *info, void *data)
     perror ("wdb->shmid");
   }
 
-  fprintf (stderr,"PID,Signal: %i,%i\n",getpid(),signal);
+  fprintf (stderr,"PID,Signal that caused death: %i,%i\n",getpid(),signal);
 
   exit (1);
 }
