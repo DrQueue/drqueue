@@ -1,4 +1,4 @@
-/* $Id: common.c,v 1.5 2001/11/13 15:50:24 jorge Exp $ */
+/* $Id: common.c,v 1.6 2001/11/14 14:23:37 jorge Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -46,6 +46,8 @@ void mn_job_finished (struct job *job)
 {
   FILE *mail;
   char command[BUFFERLEN];
+  uint32_t total;
+  char total_str[BUFFERLEN];
 
   snprintf (command,BUFFERLEN-1,"mail -s 'Your job (%s) is finished' %s",job->name,job->owner);
 
@@ -54,10 +56,14 @@ void mn_job_finished (struct job *job)
     return;
   }
 
+  total = job->avg_frame_time*job_nframes(job);
+  snprintf (total_str,BUFFERLEN-1,"%s",time_str(total));
+
   fprintf (mail,"\n"
+	   "Total number of frames: %i\n"
 	   "The average time per frame was: %s\n"
-	   "And the total rendering time was: %s\n"
-	   "\n.\n\n");
+	   "And the total rendering time: %s\n"
+	   "\n.\n\n",job_nframes(job),time_str(job->avg_frame_time),total_str);
 
   pclose (mail);
 }
