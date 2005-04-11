@@ -346,11 +346,19 @@ void update_computer_status (struct slave_database *sdb)
   req.type = R_R_UCSTATUS;
   if (!send_request (sfd,&req,SLAVE)) {
     log_slave_computer (L_WARNING,"Error sending request (update_computer_status)");
-    kill(0,SIGINT);
+#ifdef __CYGWIN
+    return;
+#else
+    kill (0,SIGINT);
+#endif
   }
   if (!recv_request (sfd,&req)) {
     log_slave_computer (L_WARNING,"Error receiving request (update_computer_status)");
-    kill(0,SIGINT);
+#ifdef __CYGWIN
+    return;
+#else
+    kill (0,SIGINT);
+#endif
   }
 
   if (req.type == R_R_UCSTATUS) {
@@ -392,11 +400,19 @@ void register_slave (struct computer *computer)
 
   if (!send_request (sfd,&req,SLAVE)) {
     log_slave_computer (L_ERROR,"Sending request (register_slave)");
+#ifdef __CYGWIN
+    return;
+#else
     kill (0,SIGINT);
+#endif
   }
   if (!recv_request (sfd,&req)) {
     log_slave_computer (L_ERROR,"Receiving request (register_slave)");
+#ifdef __CYGWIN
+    return;
+#else
     kill (0,SIGINT);
+#endif
   }
 
   if (req.type == R_R_REGISTER) {
@@ -404,13 +420,21 @@ void register_slave (struct computer *computer)
     case RERR_NOERROR:
       if (!recv_request (sfd,&req)) {
 				log_slave_computer (L_ERROR,"Receiving request (register_slave)");
+#ifdef __CYGWIN
+				return;
+#else
 				kill (0,SIGINT);
+#endif
       }
       computer->hwinfo.id = req.data;
 			computer->used = 1;
       if (!send_computer_hwinfo (sfd,&computer->hwinfo)) {
 				log_slave_computer (L_ERROR,"Sending computer hardware info (register_slave)");
-				kill (0,SIGINT);
+#ifdef __CYGWIN
+    				return;
+#else
+    				kill (0,SIGINT);
+#endif
       }
       break;
     case RERR_ALREADY:
@@ -799,11 +823,19 @@ int request_job_available (struct slave_database *sdb)
 
   if (!send_request (sfd,&req,SLAVE)) {
     log_slave_computer (L_ERROR,drerrno_str());
+#ifdef __CYGWIN
+    return 0;
+#else
     kill (0,SIGINT);
+#endif
   }
   if (!recv_request (sfd,&req)) {
     log_slave_computer (L_ERROR,drerrno_str());
+#ifdef __CYGWIN
+    return 0;
+#else
     kill (0,SIGINT);
+#endif
   }
 
   if (req.type == R_R_AVAILJOB) {
@@ -822,7 +854,11 @@ int request_job_available (struct slave_database *sdb)
       break;
     default:
       log_slave_computer(L_ERROR,"Error code not listed on answer to R_R_AVAILJOB");
-      kill (0,SIGINT);
+#ifdef __CYGWIN
+    return 0;
+#else
+    kill (0,SIGINT);
+#endif
     }
   } else {
     fprintf (stderr,"ERROR: Not appropiate answer to request R_R_REGISJOB\n");
@@ -902,12 +938,20 @@ void request_task_finished (struct slave_database *sdb)
 
   if (!send_request (sfd,&req,SLAVE_LAUNCHER)) {
     log_slave_computer (L_ERROR,"sending request (request_task_finished)");
-    kill(0,SIGINT);
+#ifdef __CYGWIN
+    return;
+#else
+    kill (0,SIGINT);
+#endif
   }
 
   if (!recv_request (sfd,&req)) {
     log_slave_computer (L_ERROR,"receiving request (request_task_finished)");
-    kill(0,SIGINT);
+#ifdef __CYGWIN
+    return;
+#else
+    kill (0,SIGINT);
+#endif
   }
     
   if (req.type == R_R_TASKFINI) {
@@ -2645,7 +2689,11 @@ void handle_rs_r_setautoenable (int sfd,struct slave_database *sdb,struct reques
 
   if (!recv_request (sfd,req)) {
     log_slave_computer (L_ERROR,"Receiving request (update_computer_limits)");
-    kill(0,SIGINT);
+#ifdef __CYGWIN
+    return;
+#else
+    kill (0,SIGINT);
+#endif
   }
   
   m = req->data % 60;		/* Take care in case it exceeds the limits */
@@ -2654,7 +2702,11 @@ void handle_rs_r_setautoenable (int sfd,struct slave_database *sdb,struct reques
 
   if (!recv_request (sfd,req)) {
     log_slave_computer (L_ERROR,"Receiving request (update_computer_limits)");
-    kill(0,SIGINT);
+#ifdef __CYGWIN
+    return;
+#else
+    kill (0,SIGINT);
+#endif
   }
 
 	flags = req->data;
@@ -2698,11 +2750,19 @@ void update_computer_limits (struct computer_limits *limits)
   req.type = R_R_UCLIMITS;
   if (!send_request (sfd,&req,SLAVE)) {
     log_slave_computer (L_ERROR,"Sending request (update_computer_limits)");
-    kill(0,SIGINT);
+#ifdef __CYGWIN
+    return;
+#else
+    kill (0,SIGINT);
+#endif
   }
   if (!recv_request (sfd,&req)) {
     log_slave_computer (L_ERROR,"Receiving request (update_computer_limits)");
-    kill(0,SIGINT);
+#ifdef __CYGWIN
+    return;
+#else
+    kill (0,SIGINT);
+#endif
   }
 
   if (req.type == R_R_UCLIMITS) {
