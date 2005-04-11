@@ -51,7 +51,7 @@ void get_computer_status (struct computer_status *cstatus, int semid)
   /* it sets the task record to unused (used = 0) */
 #ifdef __CYGWIN
   if (cstatus->ntasks > 0)
-	cstatus->loadavg[0] = 100;
+	cstatus->loadavg[0] = 1;
   else
 	cstatus->loadavg[0] = 0;
 #else
