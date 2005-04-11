@@ -29,10 +29,6 @@ void semaphore_lock (int semid)
 {
   struct sembuf op;
 
-  #ifdef __CYGWIN
-	return;
-  #endif
-
   op.sem_num = 0;
   op.sem_op = -1;
   op.sem_flg = SEM_UNDO;
@@ -49,10 +45,6 @@ void semaphore_lock (int semid)
 void semaphore_release (int semid)
 {
   struct sembuf op;
-
-  #ifdef __CYGWIN
-	return;
-  #endif
 
 /*    fprintf (stderr,"Unlocking... semval: %i semid: %i\n",semctl (semid,0,GETVAL),semid); */
   op.sem_num = 0;
