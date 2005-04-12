@@ -110,6 +110,7 @@ void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job)
 
   wdb->job[ijob].nprocs = 0;
 
+	wdb->job[ijob].submit_time = time (NULL);
   wdb->job[ijob].avg_frame_time = DFLTAVGFTIME;
   wdb->job[ijob].est_finish_time = time (NULL) + (DFLTAVGFTIME * nframes);
 
@@ -588,6 +589,10 @@ int priority_job_compare (const void *a,const void *b)
     return -1;
   else if (apt->pri < bpt->pri)
     return 1;
+	else if (apt->submit_time < bpt->submit_time)
+		return -1;
+	else if (apt->submit_time > bpt->submit_time)
+		return 1;
   else if (apt->index > bpt->index)
     return 1;
   else if (apt->index < bpt->index)
@@ -778,7 +783,7 @@ void job_environment_set (struct job *job, uint32_t iframe)
     putenv (renderdir);
     snprintf (configdir,BUFFERLEN-1,"DRQUEUE_CD=%s",job->koji.lightwave.configdir);
     putenv (renderdir);
-	break;
+		break;
   }
 }
 
