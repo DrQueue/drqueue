@@ -627,8 +627,9 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
   log_master (L_DEBUG,"Creating priority ordered list of jobs");
 
   for (i=0;i<MAXJOBS;i++) {
-    pol[i].index = i;
-    pol[i].pri = wdb->job[i].priority;
+		pol[i].index = i;
+		pol[i].pri = wdb->job[i].priority;
+		pol[i].submit_time = wdb->job[i].submit_time;
   }
   qsort ((void*)pol,MAXJOBS,sizeof(struct tpol),priority_job_compare);
 
@@ -648,6 +649,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
 		for (i=0;i<MAXJOBS;i++) {
 			wdb->lb.pol[i].index = pol[i].index;
 			wdb->lb.pol[i].pri = pol[i].pri;
+			wdb->lb.pol[i].submit_time = pol[i].submit_time;
 		}
 		// Then we search for the first available job
 		counter = 0;
@@ -1682,6 +1684,12 @@ void handle_r_r_jobfinfo (int sfd,struct database *wdb,int icomp,struct request 
 	}
 	
 	frame = req->data;
+
+	if (!job_frame_number_correct(&wdb->job[ijob],frame)) {
+		semaphore_release(wdb->semid);
+		log_master (L_INFO,"Frame asked to be transfered does not exist");
+		return;
+	}
 
   if ((fi = attach_frame_shared_memory (wdb->job[ijob].fishmid)) == (void*)-1) {
     job_delete(&wdb->job[ijob]);
