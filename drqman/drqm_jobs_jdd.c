@@ -400,6 +400,9 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
 	   info->jdd.job.ffailed);
   gtk_label_set_text (GTK_LABEL(info->jdd.lfrldf),msg);
 
+	char *submit_time = ctime(&info->jdd.job.submit_time);
+	submit_time[strlen(submit_time)-1]=0;
+	gtk_label_set_text (GTK_LABEL(info->jdd.lsubmitt),submit_time);
   gtk_label_set_text (GTK_LABEL(info->jdd.lavgt),time_str(info->jdd.job.avg_frame_time));
   
   snprintf(msg,BUFFERLEN-1,"%s",ctime(&info->jdd.job.est_finish_time));
@@ -744,17 +747,23 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
 	newinfo->jdd.lbs = label2;
 	jdd_table_pack (table, label, label2, NULL, 7);
 
+	// Job submission time
+	label = gtk_label_new ("Submission time");
+	label2 = gtk_label_new (NULL);
+	newinfo->jdd.lsubmitt = label2;
+	jdd_table_pack (table,label, label2, NULL, 8);
+
   /* Average time per frame */
   label = gtk_label_new ("Average frame time:");
   label2 = gtk_label_new (NULL);
   newinfo->jdd.lavgt = label2;
-  jdd_table_pack (table, label, label2, NULL, 8);
+  jdd_table_pack (table, label, label2, NULL, 9);
 
   /* Estimated finish time */
   label = gtk_label_new ("Estimated finish time:");
   label2 = gtk_label_new (NULL);
   newinfo->jdd.lestf = label2;
-  jdd_table_pack (table, label, label2, NULL, 9);
+  jdd_table_pack (table, label, label2, NULL, 10);
 
   /* KOJ */
   frame = jdd_koj_widgets (newinfo);

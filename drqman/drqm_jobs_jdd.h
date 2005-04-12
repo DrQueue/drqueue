@@ -39,6 +39,7 @@ struct drqmj_jddi {							/* job details dialog info*/
   GtkWidget *epri;							/* entry priority when changing */
   GtkWidget *lfrldf;						/* frames left, done and failed */
 	GtkWidget *lbs;								/* block size */
+	GtkWidget *lsubmitt;          // label for submission time
   GtkWidget *lavgt;							/* average time per frame */
   GtkWidget *lestf;							/* estimated finish time */
 

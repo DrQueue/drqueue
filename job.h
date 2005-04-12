@@ -179,6 +179,7 @@ struct job {
   uint32_t frame_step;
   uint32_t fleft,fdone,ffailed;	/* Frames left,done and failed */
 	uint32_t block_size;
+	time_t submit_time;     // Time when the job was submitted
   time_t avg_frame_time;	/* Average frame time */
   time_t est_finish_time;	/* Estimated finish time */
   struct frame_info *frame_info; /* Status of every frame */
@@ -201,6 +202,7 @@ struct database;
 struct tpol {			/* Priority ordered list of jobs */
   uint32_t index;		/* index to unordered list */
   uint32_t pri;			/* priority of that job */
+	time_t submit_time; // submission time of the job
 };
 
 int job_index_free (void *pwdb);

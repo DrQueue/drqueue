@@ -16,7 +16,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-/* $Id$ */
+// $Id$
+//
 
 #ifndef _DATABASE_H_
 #define _DATABASE_H_
@@ -25,7 +26,7 @@
 #include "job.h"
 #include "computer.h"
 
-#define DB_VERSION 6		/* Database version. This version must change when we change the job structure */
+#define DB_VERSION 7		/* Database version. This version must change when we change the job structure */
 #define DB_MAGIC   0xADDEEFBE	/* magic number */
 
 struct load_balancing {
