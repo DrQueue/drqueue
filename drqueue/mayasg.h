@@ -30,6 +30,7 @@ extern "C" {
 
 struct mayasgi {		/* Maya Script Generator Info */
   char renderdir[BUFFERLEN];
+	char projectdir[BUFFERLEN];
   char scene[BUFFERLEN];
   char image[BUFFERLEN];
   char scriptdir[BUFFERLEN];

@@ -129,6 +129,7 @@ int RegisterMayaJobFromFile (std::ifstream &infile)
   int resX,resY;
   std::string scenePath;
   std::string renderDir;
+	std::string projectDir;
   std::string fileFormat;
   std::string image;
   char *pathToScript;
@@ -144,6 +145,7 @@ int RegisterMayaJobFromFile (std::ifstream &infile)
   getline(infile,scenePath);	//
   getline(infile,scenePath);	// Get two times because '>>' leaves the pointer before \n 
   getline(infile,renderDir);
+	getline(infile,projectDir);
   getline(infile,fileFormat);
   getline(infile,image);
 
@@ -153,7 +155,8 @@ int RegisterMayaJobFromFile (std::ifstream &infile)
   mayaSgi.res_y = resY;
   strncpy(mayaSgi.scene,scenePath.c_str(),BUFFERLEN-1);
   strncpy(mayaSgi.renderdir,renderDir.c_str(),BUFFERLEN-1);
-  strncpy(mayaSgi.format,fileFormat.c_str(),BUFFERLEN-1);
+	strncpy(mayaSgi.projectdir,projectDir.c_str(),BUFFERLEN-1);
+	strncpy(mayaSgi.format,fileFormat.c_str(),BUFFERLEN-1);
   snprintf(mayaSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
   strncpy(mayaSgi.image,image.c_str(),BUFFERLEN-1);
 
@@ -174,6 +177,7 @@ int RegisterMayaJobFromFile (std::ifstream &infile)
   job.koj = KOJ_MAYA;
   strncpy (job.koji.maya.scene,scenePath.c_str(),BUFFERLEN-1);
   strncpy (job.koji.maya.renderdir,renderDir.c_str(),BUFFERLEN-1);
+	strncpy (job.koji.maya.projectdir,projectDir.c_str(),BUFFERLEN-1);
   strncpy (job.koji.maya.image,"",BUFFERLEN-1);
   strncpy (job.koji.maya.viewcmd,"",BUFFERLEN-1);
 
