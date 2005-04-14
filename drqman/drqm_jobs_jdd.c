@@ -617,6 +617,7 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   GtkWidget *window;
   GtkWidget *frame;
   GtkWidget *vbox;
+	GtkWidget *vbox_buttons;
   GtkWidget *hbox;
   GtkWidget *table;
   GtkWidget *label, *label2;
@@ -680,9 +681,12 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
  	frame = gtk_frame_new ("Main Info");
 	gtk_notebook_append_page(GTK_NOTEBOOK(notebook),GTK_WIDGET(frame),GTK_WIDGET(label));
 
+	vbox_buttons = gtk_vbox_new (FALSE,2);
+	gtk_container_add (GTK_CONTAINER(frame),vbox_buttons);
+
   swin = gtk_scrolled_window_new (NULL,NULL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(swin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-	gtk_container_add (GTK_CONTAINER(frame),swin);
+	gtk_box_pack_start(GTK_BOX(vbox_buttons),swin,TRUE,TRUE,2);
 
   /* vbox for the main info */
   vbox = gtk_vbox_new (FALSE,2);
@@ -824,7 +828,7 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   /* Buttons */
   /* Stop */
   hbox = gtk_hbutton_box_new ();
-  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,5);
+  gtk_box_pack_start (GTK_BOX(vbox_buttons),hbox,FALSE,FALSE,5);
   button = gtk_button_new_with_label ("Stop");
   gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
   g_signal_connect (G_OBJECT(button),"clicked",
