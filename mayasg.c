@@ -52,21 +52,27 @@ char *mayasg_create (struct mayasgi *info)
   char *p;			/* Scene filename without path */
   char *scene;
   char *renderdir;
+	char *projectdir;
 
   /* Check the parameters */
-  if ((!info->renderdir) || (!info->scene) || (!strlen(info->renderdir)) || (!strlen(info->scene))) {
-    drerrno = DRE_NOTCOMPLETE;
-    return NULL;
-  }
+  if ((!info->renderdir) || (!info->scene) || (!info->projectdir)
+			|| (!strlen(info->renderdir)) || (!strlen(info->scene)) || (!strlen(info->projectdir))) 
+		{
+			drerrno = DRE_NOTCOMPLETE;
+			return NULL;
+		}
 
 #ifdef __CYGWIN
   if ((scene = malloc(MAXCMDLEN)) == NULL) return (NULL);
   if ((renderdir = malloc(MAXCMDLEN)) == NULL) return (NULL);
+  if ((projectdir = malloc(MAXCMDLEN)) == NULL) return (NULL);
   cygwin_conv_to_posix_path(info->scene, scene);
   cygwin_conv_to_posix_path(info->renderdir, renderdir);
+  cygwin_conv_to_posix_path(info->projectdir, projectdir);
 #else
   scene = info->scene;
   renderdir = info->renderdir;
+	projectdir = info->projectdir;
 #endif
 
   p = strrchr(scene,'/');
@@ -94,6 +100,7 @@ char *mayasg_create (struct mayasgi *info)
   /* So now we have the file open and so we must write to it */
   fprintf(f,"#!/bin/tcsh\n\n");
   fprintf(f,"set DRQUEUE_RD=\"%s\"\n",info->renderdir);
+	fprintf(f,"set DRQUEUE_PD=\"%s\"\n",info->projectdir);
   fprintf(f,"set DRQUEUE_SCENE=\"%s\"\n",info->scene);
   fprintf(f,"set RF_OWNER=%s\n",info->file_owner);
   if (strlen(info->format)) {
@@ -125,7 +132,7 @@ char *mayasg_create (struct mayasgi *info)
     fprintf(f,"echo So the default configuration will be used\n");
     fprintf(f,"echo -------------------------------------------------\n");
     fprintf(f,"\n\n");
-    fprintf(f,"Render -s $DRQUEUE_FRAME -e $DRQUEUE_FRAME -rd $DRQUEUE_RD %s $DRQUEUE_SCENE\n\n",image_arg);
+    fprintf(f,"Render -s $DRQUEUE_FRAME -e $DRQUEUE_FRAME -rd $DRQUEUE_RD -proj $DRQUEUE_PD %s $DRQUEUE_SCENE\n\n",image_arg);
   } else {
     fd_etc_maya_sg = fileno (etc_maya_sg);
     fd_f = fileno (f);
