@@ -647,7 +647,7 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW(window),"Job Details");
 	g_signal_connect (G_OBJECT(window),"destroy",G_CALLBACK(jdd_destroy),newinfo);
-  // gtk_window_set_default_size(GTK_WINDOW(window),800,900);
+  gtk_window_set_default_size(GTK_WINDOW(window),600,500);
   gtk_window_set_policy(GTK_WINDOW(window), FALSE, TRUE, FALSE);
   gtk_container_set_border_width (GTK_CONTAINER(window),5);
   newinfo->jdd.dialog = window;
@@ -677,12 +677,16 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
 
 	// First notebook page
 	label = gtk_label_new ("Main Info");
-	frame = gtk_frame_new ("Main Info");
+ 	frame = gtk_frame_new ("Main Info");
 	gtk_notebook_append_page(GTK_NOTEBOOK(notebook),GTK_WIDGET(frame),GTK_WIDGET(label));
+
+  swin = gtk_scrolled_window_new (NULL,NULL);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(swin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+	gtk_container_add (GTK_CONTAINER(frame),swin);
 
   /* vbox for the main info */
   vbox = gtk_vbox_new (FALSE,2);
-	gtk_container_add (GTK_CONTAINER(frame),GTK_WIDGET(vbox));
+	gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW(swin),GTK_WIDGET(vbox));
 
   /* Label */
   label = gtk_label_new ("Detailed job information");
