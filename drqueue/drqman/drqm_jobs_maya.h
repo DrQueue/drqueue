@@ -34,6 +34,8 @@ struct drqmj_koji_maya {
   GtkWidget *fsscene;		/* File selector for the scene */
   GtkWidget *erenderdir;
   GtkWidget *fsrenderdir;	/* File selector for the output directory */
+	GtkWidget *eprojectdir;
+	GtkWidget *fsprojectdir;
   GtkWidget *eimage;
   GtkWidget *eviewcmd;
   GtkWidget *escript;		/* Entry script location */

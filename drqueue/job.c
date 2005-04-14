@@ -753,6 +753,8 @@ void job_environment_set (struct job *job, uint32_t iframe)
     putenv (scene);
     snprintf (renderdir,BUFFERLEN-1,"DRQUEUE_RD=%s",job->koji.maya.renderdir);
     putenv (renderdir);
+		snprintf (projectdir,BUFFERLEN-1,"DRQUEUE_PD=%s",job->koji.maya.projectdir);
+		putenv (projectdir);
     snprintf (image,BUFFERLEN-1,"DRQUEUE_IMAGE=%s",job->koji.maya.image);
     putenv (image);
     break;
