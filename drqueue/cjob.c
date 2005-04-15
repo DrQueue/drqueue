@@ -116,7 +116,7 @@ int main (int argc,char *argv[])
 
 void usage (void)
 {
-    fprintf (stderr,"Usage: blockhost [-vh] -[s|k|d|c|s] -j <job_id>\n"
+    fprintf (stderr,"Usage: cjob [-vh] -[s|k|d|c|s] -j <job_id>\n"
 						 "Valid options:\n"
 						 "\t-s will do a soft stop\n"
 						 "\t-k will do a hard stop (be careful, running tasks will be killed)\n"

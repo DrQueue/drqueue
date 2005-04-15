@@ -330,7 +330,7 @@ void config_parse (char *cfg)
 				fprintf (stderr,"Pools are: '%s'\n",token);
 				snprintf (renv,BUFFERLEN,"DRQUEUE_POOL=%s",token);
 				if ((penv = (char*) malloc (strlen(renv)+1)) == NULL) {
-					fprintf (stderr,"ERROR allocating memory for DRQUEUE_DB.\n");
+					fprintf (stderr,"ERROR allocating memory for DRQUEUE_POOL.\n");
 					exit (1);
 				}
 				strncpy(penv,renv,strlen(renv)+1);
