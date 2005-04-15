@@ -228,7 +228,7 @@ void computer_pool_set_from_environment (struct computer_limits *cl)
 		log_slave_computer (L_WARNING,"DRQUEUE_POOL not set, joining \"Default\"");
 		computer_pool_add (cl,DEFAULT_POOL);
 	} else {
-		if ((pool = strtok (buf,": ,=\n")) != NULL) {
+		if ((pool = strtok (buf,": ,=\r\n")) != NULL) {
 			computer_pool_add (cl,pool);
 			log_slave_computer (L_INFO,"Joining pool: \"%s\"",pool);
 			while ((pool = strtok (NULL,": ,=\n")) != NULL) {
