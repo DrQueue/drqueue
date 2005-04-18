@@ -45,6 +45,8 @@ static int cdd_update (GtkWidget *w, struct drqm_computers_info *info);
 static GtkWidget *CreateTasksClist (void);
 static GtkWidget *CreateMenuTasks (struct drqm_computers_info *info);
 static gint PopupMenuTasks (GtkWidget *clist, GdkEvent *event, struct drqm_computers_info *info);
+// enabled
+static void cdd_limits_enabled_bcp (GtkWidget *button, struct drqm_computers_info *info);
 /* nmaxcpus */
 static void cdd_limits_nmaxcpus_bcp (GtkWidget *button, struct drqm_computers_info *info);
 static GtkWidget *nmc_dialog (struct drqm_computers_info *info);
@@ -370,6 +372,23 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
   gtk_box_pack_start(GTK_BOX(vbox),frame,FALSE,FALSE,2);
   vbox2 = gtk_vbox_new (FALSE,2);
   gtk_container_add (GTK_CONTAINER(frame),vbox2);
+	// Enabled
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start(GTK_BOX(vbox2),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Enabled:");
+	gtk_misc_set_alignment (GTK_MISC(label), 0, .5);
+  gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  hbox2 = gtk_hbox_new (FALSE,0);
+  gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
+  label = gtk_label_new ("Yes");
+	gtk_misc_set_alignment (GTK_MISC(label), 1, .5);
+  info->cdd.limits.lenabled = label;
+  gtk_box_pack_start (GTK_BOX(hbox2),label,TRUE,TRUE,2);
+  button = gtk_button_new_with_label ("Change");
+  gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
+	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(cdd_limits_enabled_bcp),info);
+	// Maximum number of cpus:
   hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start(GTK_BOX(vbox2),hbox,FALSE,FALSE,2);
   label = gtk_label_new ("Maximum number of cpus:");
@@ -533,6 +552,13 @@ int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
   gtk_label_set_text (GTK_LABEL(info->cdd.lntasks),msg);
 
   /* Limits */
+	if (info->computers[info->row].limits.enabled) {
+		snprintf(msg,BUFFERLEN,"Yes");
+	} else {
+		snprintf(msg,BUFFERLEN,"No");
+	}
+  gtk_label_set_text (GTK_LABEL(info->cdd.limits.lenabled),msg);
+	// Nmaxcpus
   snprintf(msg,BUFFERLEN-1,"%i",
 	   info->computers[info->row].limits.nmaxcpus);
   gtk_label_set_text (GTK_LABEL(info->cdd.limits.lnmaxcpus),msg);
@@ -603,6 +629,20 @@ int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
     g_free (buff[i]);
 
   return 1;
+}
+
+void cdd_limits_enabled_bcp (GtkWidget *button, struct drqm_computers_info *info)
+{
+  /* Computer Details Dialog Limits enabled Button Change Pressed */
+	if (info->computers[info->row].limits.enabled) {
+		drqm_request_slave_limits_enabled_set(info->computers[info->row].hwinfo.name,0);
+		info->computers[info->row].limits.enabled = 0;
+		gtk_label_set_text (GTK_LABEL(info->cdd.limits.lenabled),"No");
+	} else {
+		drqm_request_slave_limits_enabled_set(info->computers[info->row].hwinfo.name,1);
+		info->computers[info->row].limits.enabled = 1;
+		gtk_label_set_text (GTK_LABEL(info->cdd.limits.lenabled),"Yes");
+	}
 }
 
 void cdd_limits_nmaxcpus_bcp (GtkWidget *button, struct drqm_computers_info *info)

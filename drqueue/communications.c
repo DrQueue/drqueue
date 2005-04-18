@@ -312,7 +312,7 @@ int send_computer_status (int sfd, struct computer_status *status)
   if (!dr_write(sfd,buf,sizeof(uint16_t) * 4)) { // Send the first 4 uint16_t that are loadavg and ntasks
     return 0;
   }
-  
+
   /* We just send the used tasks */
   for (i=0;i<MAXTASKS;i++) {
     if (bswapped.task[i].used) {
@@ -712,9 +712,6 @@ int recv_computer_pools (int sfd, struct computer_limits *cl)
 int recv_computer_limits (int sfd, struct computer_limits *cl)
 {
   void *buf;
-
-	// Pool must be freed before receiving
-	// computer_pool_free(cl);
 
   buf = cl;
   if (!dr_read (sfd,buf,sizeof(struct computer_limits))) {

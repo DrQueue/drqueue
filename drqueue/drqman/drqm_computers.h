@@ -36,11 +36,12 @@ struct drqmc_cddi {					 /* computer details dialog information */
   GtkWidget *lname;							/* label name */
   GtkWidget *los;								/* OS */
   GtkWidget *lcpuinfo;					/* cpu info */
-  GtkWidget *lmemory;		// Memory label
+  GtkWidget *lmemory;		        // Memory label
   GtkWidget *lloadavg;					/* load average */
   GtkWidget *lntasks;						/* Number of tasks running */
 
-  struct cdd_li {						 /* Computer details dialog limits info */
+  struct cdd_li {						    /* Computer details dialog limits info */
+		GtkWidget *lenabled;        // Enabled label
     GtkWidget *lnmaxcpus;				/* Label maximum number of cpus */
     GtkWidget *enmaxcpus;				/* Entry */
     GtkWidget *lmaxfreeloadcpu;	/* Label maximum free load cpu */
@@ -51,7 +52,7 @@ struct drqmc_cddi {					 /* computer details dialog information */
     GtkWidget *eautoenabletime_m; /* Entry for the minutes */
 		GtkWidget *lpools;          // Label Pools
 		GtkWidget *epool;           // Entry pool
-		GtkListStore *pool_store;	// List of pools
+		GtkListStore *pool_store;	  // List of pools
 		GtkTreeView *pool_view;
   } limits;
 

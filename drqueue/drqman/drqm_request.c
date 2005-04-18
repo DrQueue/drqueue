@@ -267,3 +267,8 @@ void drqm_request_slave_limits_pool_remove (char *slave,char *pool)
 {
 	request_slave_limits_pool_remove (slave,pool,CLIENT);
 }
+
+void drqm_request_slave_limits_enabled_set (char *slave, uint8_t enabled)
+{
+  request_slave_limits_enabled_set (slave,enabled,CLIENT);
+}

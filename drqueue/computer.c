@@ -116,6 +116,10 @@ int computer_available (struct computer *computer)
 		return 0;
 	}
 
+	if (!computer->limits.enabled) {
+		return 0;
+	}
+
   /* At the beginning npt is the minimum of the nmaxcpus or ncpus */
   /* This means that never will be assigned more tasks than processors */
   /* This behaviour could be changed in the future */
@@ -469,6 +473,7 @@ int computer_ntasks (struct computer *comp)
 
 void computer_init_limits (struct computer *comp)
 {
+	comp->limits.enabled = 1;
   comp->limits.nmaxcpus = comp->hwinfo.ncpus;
   comp->limits.maxfreeloadcpu = MAXLOADAVG;
   comp->limits.autoenable.h = AE_HOUR; /* At AE_HOUR:AE_MIN autoenable by default */
@@ -522,19 +527,19 @@ void computer_autoenable_check (struct slave_database *sdb)
     tm_now = localtime (&now);
     if ((sdb->comp->limits.autoenable.h == tm_now->tm_hour)
 				&& (sdb->comp->limits.autoenable.m == tm_now->tm_min)
-				&& (sdb->comp->limits.nmaxcpus == 0)) /* Only if the computer is completely disabled (?) */
+				&& (sdb->comp->limits.enabled == 0)) /* Only if the computer is completely disabled (?) */
       {
 				/* Time for autoenable */
 				semaphore_lock (sdb->semid);
 				
 				sdb->comp->limits.autoenable.last = now;
-				sdb->comp->limits.nmaxcpus = sdb->comp->hwinfo.ncpus;
+				sdb->comp->limits.enabled = 1;
 				
 				limits = sdb->comp->limits;
 				
 				semaphore_release (sdb->semid);
 				
-				log_slave_computer (L_INFO,"Autoenabled %i processor%s",limits.nmaxcpus,(limits.nmaxcpus > 1) ? "s" : "");
+				log_slave_computer (L_INFO,"Autoenabled at %i:%02i",tm_now->tm_hour,tm_now->tm_min);
 				
 				update_computer_limits (&limits);
       }
