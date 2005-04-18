@@ -129,6 +129,7 @@ int request_job_list_blocked_host (uint32_t ijob, struct blocked_host **bh, uint
 
 /* sent TO SLAVE */
 int request_slave_killtask (char *slave,uint16_t itask,int who);
+int request_slave_limits_enabled_set (char *slave, uint8_t enabled, int who);
 int request_slave_limits_nmaxcpus_set (char *slave, uint32_t nmaxcpus, int who);
 int request_slave_limits_maxfreeloadcpu_set (char *slave, uint32_t maxfreeloadcpu, int who);
 int request_slave_limits_autoenable_set (char *slave, uint32_t h, uint32_t m, unsigned char flags, int who);
@@ -144,6 +145,7 @@ void handle_rs_r_setmaxfreeloadcpu (int sfd,struct slave_database *sdb,struct re
 void handle_rs_r_setautoenable (int sfd,struct slave_database *sdb,struct request *req);
 void handle_rs_r_limitspooladd (int sfd,struct slave_database *sdb,struct request *req);
 void handle_rs_r_limitspoolremove (int sfd,struct slave_database *sdb,struct request *req);
+void handle_rs_r_setenabled (int sfd,struct slave_database *sdb,struct request *req);
 
 #ifdef __CPLUSPLUS
 }

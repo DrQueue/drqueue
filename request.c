@@ -216,6 +216,10 @@ void handle_request_slave (int sfd,struct slave_database *sdb)
     log_slave_computer (L_DEBUG,"Request set limits maximum number of usable cpus");
     handle_rs_r_setnmaxcpus (sfd,sdb,&request);
     break;
+  case RS_R_SETENABLED:
+    log_slave_computer (L_DEBUG,"Request set limits enabled");
+    handle_rs_r_setenabled (sfd,sdb,&request);
+    break;
   case RS_R_SETMAXFREELOADCPU:
     log_slave_computer (L_DEBUG,"Request set limits maximum free load for cpu");
     handle_rs_r_setmaxfreeloadcpu (sfd,sdb,&request);
@@ -2627,6 +2631,27 @@ int request_slave_limits_nmaxcpus_set (char *slave, uint32_t nmaxcpus, int who)
   return 1;
 }
 
+int request_slave_limits_enabled_set (char *slave, uint8_t enabled, int who)
+{
+  int sfd;
+  struct request req;
+
+  if ((sfd = connect_to_slave (slave)) == -1) {
+    drerrno = DRE_NOCONNECT;
+    return 0;
+  }
+  
+  req.type = RS_R_SETENABLED;
+  req.data = enabled;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORWRITING;
+    return 0;
+  }
+  
+  return 1;
+}
+
 int request_slave_limits_autoenable_set (char *slave, uint32_t h, uint32_t m, unsigned char flags, int who)
 {
   int sfd;
@@ -2683,6 +2708,27 @@ void handle_rs_r_setnmaxcpus (int sfd,struct slave_database *sdb,struct request 
   update_computer_limits (&limits);
 
   log_slave_computer(L_DEBUG,"Exiting handle_rs_r_setnmaxcpus");
+}
+
+void handle_rs_r_setenabled (int sfd,struct slave_database *sdb,struct request *req)
+{
+  struct computer_limits limits;
+
+  log_slave_computer(L_DEBUG,"Entering handle_rs_r_setenabled");
+  log_slave_computer(L_DEBUG,"Received enabled: %i",req->data);
+
+  semaphore_lock(sdb->semid);
+
+  log_slave_computer(L_DEBUG,"Previous enabled value: %i",sdb->comp->limits.enabled);
+  sdb->comp->limits.enabled = (uint8_t) req->data;
+  log_slave_computer(L_DEBUG,"Set enabled: %i",sdb->comp->limits.enabled);
+  memcpy (&limits,&sdb->comp->limits,sizeof(struct computer_limits));
+
+  semaphore_release(sdb->semid);
+
+  update_computer_limits (&limits);
+
+  log_slave_computer(L_DEBUG,"Exiting handle_rs_r_setenabled");
 }
 
 void handle_rs_r_setautoenable (int sfd,struct slave_database *sdb,struct request *req)

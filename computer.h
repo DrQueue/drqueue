@@ -37,12 +37,13 @@ struct pool {
 };
 
 struct computer_limits {
-  uint16_t nmaxcpus;		/* Maximum number of cpus running */
+	uint8_t enabled;          // Computer enabled for rendering
+  uint16_t nmaxcpus;		    /* Maximum number of cpus running */
   uint16_t maxfreeloadcpu;	/* Maximum load that a cpu can have to be considered free */
-  struct autoenable {		/* I put autoenable on limits even */
-    time_t last;		/* Time of the last autoenable event happened */
-    unsigned char h,m;		/* Hour and minute of wished autoenable */
-		unsigned char flags;	// Autoenable flag
+  struct autoenable {		    /* I put autoenable on limits even */
+    time_t last;		        /* Time of the last autoenable event happened */
+    uint8_t h,m;	      	  /* Hour and minute of wished autoenable */
+		uint8_t flags;	        // Autoenable flag
   } autoenable;
 	struct pool *pool;
 	uint16_t npools;
