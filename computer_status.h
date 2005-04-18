@@ -51,7 +51,7 @@
 
 struct computer_status {
   uint16_t loadavg[3];		/* load average last minute, last 5, and last 15 */
-  uint16_t ntasks;		/* number of tasks (processes) being run at this time */
+  uint16_t ntasks;		    /* number of tasks (processes) being run at this time */
   struct task task[MAXTASKS];
 };
 

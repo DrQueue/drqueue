@@ -62,5 +62,6 @@
 #define RS_R_JOBAVAILABLE				5	/* Request indicates master has a job available */
 #define RS_R_LIMITSPOOLADD			6 // Add pool
 #define RS_R_LIMITSPOOLREMOVE		7 // Remove pool
+#define RS_R_SETENABLED         8 // Enable/disable slave
 
 #endif /* _REQUEST_CODES_H_ */
