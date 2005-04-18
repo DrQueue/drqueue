@@ -133,20 +133,21 @@ static GtkWidget *CreateComputersList(struct drqm_computers_info *info)
 
 static GtkWidget *CreateClist (GtkWidget *window)
 {
-  gchar *titles[] = { "ID","Running","Name","OS","CPUs","Load Avg", "Pools" };
+  gchar *titles[] = { "ID","Enabled","Running","Name","OS","CPUs","Load Avg", "Pools" };
   GtkWidget *clist;
 
-  clist = gtk_clist_new_with_titles (7, titles);
+  clist = gtk_clist_new_with_titles (8, titles);
   gtk_container_add(GTK_CONTAINER(window),clist);
   gtk_clist_column_titles_show(GTK_CLIST(clist));
   gtk_clist_column_titles_passive(GTK_CLIST(clist));
-  gtk_clist_set_column_width (GTK_CLIST(clist),0,75);
-  gtk_clist_set_column_width (GTK_CLIST(clist),1,100);
+  gtk_clist_set_column_width (GTK_CLIST(clist),0,50);
+	gtk_clist_set_column_width (GTK_CLIST(clist),1,50);
   gtk_clist_set_column_width (GTK_CLIST(clist),2,100);
   gtk_clist_set_column_width (GTK_CLIST(clist),3,100);
-  gtk_clist_set_column_width (GTK_CLIST(clist),4,45);
-  gtk_clist_set_column_width (GTK_CLIST(clist),5,100);
+  gtk_clist_set_column_width (GTK_CLIST(clist),4,100);
+  gtk_clist_set_column_width (GTK_CLIST(clist),5,45);
   gtk_clist_set_column_width (GTK_CLIST(clist),6,100);
+  gtk_clist_set_column_width (GTK_CLIST(clist),7,100);
   gtk_widget_show(clist);
 
   return (clist);
@@ -169,7 +170,7 @@ void drqm_update_computerlist (struct drqm_computers_info *info)
 {
   int i, j;
   char **buff;
-  int ncols = 7;
+  int ncols = 8;
   
   buff = (char**) g_malloc((ncols+1) * sizeof(char*));
   for (i=0;i<ncols;i++)
@@ -180,33 +181,38 @@ void drqm_update_computerlist (struct drqm_computers_info *info)
   gtk_clist_clear(GTK_CLIST(info->clist));
   for (i=0; i < info->ncomputers; i++) {
     snprintf (buff[0],BUFFERLEN,"%u",info->computers[i].hwinfo.id);
-    snprintf (buff[1],BUFFERLEN,"%i",info->computers[i].status.ntasks);
-    strncpy(buff[2],info->computers[i].hwinfo.name,BUFFERLEN);
-    snprintf (buff[3],BUFFERLEN,osstring(info->computers[i].hwinfo.os));
-    snprintf (buff[4],BUFFERLEN,"%i",info->computers[i].hwinfo.ncpus);
-    snprintf (buff[5],BUFFERLEN,"%i,%i,%i",
+		if (info->computers[i].limits.enabled) {
+			snprintf (buff[1],BUFFERLEN,"Yes");
+		} else {
+			snprintf (buff[1],BUFFERLEN,"No");
+		}
+    snprintf (buff[2],BUFFERLEN,"%i",info->computers[i].status.ntasks);
+    strncpy(buff[3],info->computers[i].hwinfo.name,BUFFERLEN);
+    snprintf (buff[4],BUFFERLEN,osstring(info->computers[i].hwinfo.os));
+    snprintf (buff[5],BUFFERLEN,"%i",info->computers[i].hwinfo.ncpus);
+    snprintf (buff[6],BUFFERLEN,"%i,%i,%i",
 	      info->computers[i].status.loadavg[0],
 	      info->computers[i].status.loadavg[1],
 	      info->computers[i].status.loadavg[2]);
     if (info->computers[i].limits.npools)
-    {
-	struct pool *pool;
-	char *tmp = malloc(BUFFERLEN);
-	if ((pool = computer_pool_attach_shared_memory(info->computers[i].limits.poolshmid)) != (void*)-1)
-	{
-		snprintf(buff[6],BUFFERLEN,"%s",pool[0].name);
-		for (j=1;j<info->computers[i].limits.npools;j++)
-		{
-			snprintf(tmp,BUFFERLEN,"%s,%s",buff[6],pool[j].name);
-			strncpy(buff[6],tmp,BUFFERLEN-1);
-		}
-		computer_pool_detach_shared_memory(pool);
-	}
-    	else
-		buff[6] = "Cannot attach shared memory";
-    }
+			{
+				struct pool *pool;
+				char *tmp = malloc(BUFFERLEN);
+				if ((pool = computer_pool_attach_shared_memory(info->computers[i].limits.poolshmid)) != (void*)-1)
+					{
+						snprintf(buff[7],BUFFERLEN,"%s",pool[0].name);
+						for (j=1;j<info->computers[i].limits.npools;j++)
+							{
+								snprintf(tmp,BUFFERLEN,"%s,%s",buff[7],pool[j].name);
+								strncpy(buff[7],tmp,BUFFERLEN-1);
+							}
+						computer_pool_detach_shared_memory(pool);
+					}
+				else
+					buff[7] = "Cannot attach shared memory";
+			}
     else
-	buff[6] = "No pools";
+			buff[7] = "NO POOLS !!";
     gtk_clist_append(GTK_CLIST(info->clist),buff);
 		gtk_clist_set_row_data (GTK_CLIST(info->clist),i,(gpointer)info->computers[i].hwinfo.id);
 		
