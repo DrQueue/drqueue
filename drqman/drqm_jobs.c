@@ -975,6 +975,7 @@ static void update_joblist (GtkWidget *widget, struct drqm_jobs_info *info)
 
 static void dnj_destroyed (GtkWidget *dialog, struct drqm_jobs_info *info)
 {
+	info->dnj.fkoj = NULL;
 	update_joblist (dialog,info);
 }
 
@@ -1187,10 +1188,12 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
     return;
   }
 
+	
+
   if (new_koj != info->dnj.koj) {
     if (info->dnj.fkoj) {
-      //gtk_widget_destroy (info->dnj.fkoj);
-      info->dnj.fkoj = NULL;
+			gtk_widget_destroy (info->dnj.fkoj);
+			info->dnj.fkoj = NULL;
     }
     info->dnj.koj = (uint16_t) new_koj;
     switch (info->dnj.koj) {
