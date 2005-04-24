@@ -25,6 +25,7 @@
 
 #include <gtk/gtk.h>
 #include "libdrqueue.h"
+#include "drqm_autorefresh.h"
 
 enum {
 	CDD_POOL_COL_NAME = 0,
@@ -72,6 +73,7 @@ struct drqm_computers_info {
   uint32_t icomp;								/* id of the selected computer */
   struct computer *computers;		/* The computer list */
   struct drqmc_cddi cdd;
+	struct drqm_autorefresh_info ari; // Autorefresh infox
 };
 
 struct info_drqm;

@@ -27,6 +27,7 @@
 #include "drqm_request.h"
 #include "drqm_computers.h"
 #include "drqm_common.h"
+#include "drqm_autorefresh.h"
 
 #include "slave_icon.h"
 
@@ -36,7 +37,7 @@ static GtkWidget *CreateClist (GtkWidget *window);
 static GtkWidget *CreateButtonRefresh (struct drqm_computers_info *info);
 static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_computers_info *info);
 static GtkWidget *CreateMenu (struct drqm_computers_info *info);
-
+static gboolean AutoRefreshUpdate (gpointer info);
 
 /* COMPUTER DETAILS */
 static void ComputerDetails(GtkWidget *menu_item, struct drqm_computers_info *info);
@@ -79,9 +80,12 @@ void CreateComputersPage (GtkWidget *notebook,struct info_drqm *info)
 	GtkWidget *hbox;
 	GtkWidget *image;
 	GdkPixbuf *slave_icon_pb;
+	GtkWidget *autorefreshWidgets;
+	GtkWidget *hbox2;
 
   /* Label */
   label = gtk_label_new ("Computers");
+	gtk_widget_show (label);
   container = gtk_frame_new ("Computer status");
   gtk_container_border_width (GTK_CONTAINER(container),2);
   vbox = gtk_vbox_new(FALSE,2);
@@ -99,9 +103,17 @@ void CreateComputersPage (GtkWidget *notebook,struct info_drqm *info)
   clist = CreateComputersList (&info->idc);
   gtk_box_pack_start(GTK_BOX(vbox),clist,TRUE,TRUE,2);
   
+	// Refresh stuff
+	hbox2 = gtk_hbox_new(FALSE,2);
+  gtk_box_pack_end(GTK_BOX(vbox),hbox2,FALSE,FALSE,2);
   /* Button refresh */
   buttonRefresh = CreateButtonRefresh (&info->idc);
-  gtk_box_pack_end(GTK_BOX(vbox),buttonRefresh,FALSE,FALSE,2);
+  gtk_box_pack_start(GTK_BOX(hbox2),buttonRefresh,TRUE,TRUE,2);
+	// Auto refresh
+	info->idc.ari.callback = AutoRefreshUpdate;
+	info->idc.ari.data = &info->idc;
+	autorefreshWidgets = CreateAutoRefreshWidgets (&info->idc.ari);
+	gtk_box_pack_start(GTK_BOX(hbox2),autorefreshWidgets,FALSE,FALSE,2);
 
   /* Append the page */
   gtk_notebook_append_page (GTK_NOTEBOOK(notebook), container, hbox);
@@ -110,10 +122,15 @@ void CreateComputersPage (GtkWidget *notebook,struct info_drqm *info)
   drqm_request_computerlist (&info->idc);
   drqm_update_computerlist (&info->idc);
 
-  gtk_widget_show(clist);
-  gtk_widget_show(vbox);
-  gtk_widget_show(label);
-  gtk_widget_show(container);
+  gtk_widget_show_all(container);
+}
+
+static gboolean AutoRefreshUpdate (gpointer info)
+{
+  drqm_request_computerlist (info);
+  drqm_update_computerlist (info);
+
+	return TRUE;
 }
 
 static GtkWidget *CreateComputersList(struct drqm_computers_info *info)
