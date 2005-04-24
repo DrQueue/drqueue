@@ -192,6 +192,11 @@ void drqm_request_job_continue (uint32_t jobid)
 	request_job_continue (jobid,CLIENT);
 }
 
+void drqm_request_job_rerun (uint32_t jobid)
+{
+	request_job_rerun (jobid,CLIENT);
+}
+
 void drqm_request_job_frame_waiting (uint32_t jobid,uint32_t frame)
 {
   request_job_frame_waiting (jobid,frame,CLIENT);

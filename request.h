@@ -71,6 +71,7 @@ void handle_r_r_deletjob (int sfd,struct database *wdb,int icomp,struct request 
 void handle_r_r_stopjob  (int sfd,struct database *wdb,int icomp,struct request *req);
 void handle_r_r_contjob  (int sfd,struct database *wdb,int icomp,struct request *req);
 void handle_r_r_hstopjob (int sfd,struct database *wdb,int icomp,struct request *req);
+void handle_r_r_rerunjob (int sfd,struct database *wdb,int icomp,struct request *req);
 void handle_r_r_jobxfer (int sfd,struct database *wdb,int icomp,struct request *req);
 void handle_r_r_jobxferfi (int sfd,struct database *wdb,int icomp,struct request *req);
 void handle_r_r_compxfer (int sfd,struct database *wdb,int icomp,struct request *req);
@@ -106,6 +107,7 @@ int request_job_delete (uint32_t ijob,int who);
 int request_job_stop (uint32_t ijob, int who);
 int request_job_hstop (uint32_t ijob, int who);
 int request_job_continue (uint32_t ijob, int who);
+int request_job_rerun (uint32_t ijob, int who);
 int request_job_xfer (uint32_t ijob, struct job *job, int who);
 int request_job_xferfi (uint32_t ijob, struct frame_info *fi, int nframes, int who);
 int request_comp_xfer (uint32_t icomp, struct computer *comp, int who);
