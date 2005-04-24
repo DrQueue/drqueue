@@ -34,6 +34,7 @@
 #include "drqm_common.h"
 #include "drqm_request.h"
 #include "drqm_jobs.h"
+#include "drqm_autorefresh.h"
 
 #ifdef __CYGWIN
 #include "drqm_cygwin.h"
@@ -43,6 +44,7 @@
 static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info);
 static void jdd_destroy (GtkWidget *w, struct drqm_jobs_info *info);
 static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info);
+static gboolean AutoRefreshUpdate (gpointer info);
 // Frame's clist
 static GtkWidget *CreateFrameInfoClist (void);
 static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info);
@@ -554,6 +556,13 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
   return 1;
 }
 
+static gboolean AutoRefreshUpdate (gpointer info)
+{
+	jdd_update (NULL,info);
+	
+	return TRUE;
+}
+
 static void jdd_add_blocked_host (GtkWidget *button, struct drqm_jobs_info *info)
 {
   GList *sel;
@@ -608,6 +617,10 @@ static void jdd_destroy (GtkWidget *w, struct drqm_jobs_info *info)
 		free (info->jdd.job.blocked_host);
 		info->jdd.job.blocked_host = NULL;
 	}
+
+	if (GTK_TOGGLE_BUTTON(info->ari.cbenabled)->active) {
+		g_source_remove (info->ari.sourceid);
+	}
 	
 	g_free (info);
 }
@@ -627,6 +640,7 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
 	GtkWidget *main_vbox;
 	GtkWidget *notebook;
   GtkTooltips *tooltips;
+	GtkWidget *autorefreshWidgets;
   struct drqm_jobs_info *newinfo;
 
   if (!info->njobs) {
@@ -869,11 +883,20 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   gtk_widget_set_name (GTK_WIDGET(button),"danger");
 
 	// Out of the notebook
+	// Refresh stuff
+	hbox = gtk_hbox_new(FALSE,2);
+  gtk_box_pack_start(GTK_BOX(main_vbox),hbox,FALSE,FALSE,2);
   /* Button Refresh */
   button = gtk_button_new_with_label ("Refresh");
   gtk_container_border_width (GTK_CONTAINER(button),5);
   gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_update),newinfo);
-  gtk_box_pack_start (GTK_BOX(main_vbox),button,FALSE,FALSE,2);
+  gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
+	// Auto refresh
+	newinfo->ari.callback = AutoRefreshUpdate;
+	newinfo->ari.data = newinfo;
+	autorefreshWidgets = CreateAutoRefreshWidgets (&newinfo->ari);
+	gtk_box_pack_start(GTK_BOX(hbox),autorefreshWidgets,FALSE,FALSE,2);
+
 
   gtk_widget_show_all(window);
 
