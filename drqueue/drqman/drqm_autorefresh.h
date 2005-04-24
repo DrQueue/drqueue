@@ -20,6 +20,9 @@
 // $Id$
 //
 
+#ifndef _DRQM_AUTOREFRESH_H_
+#define _DRQM_AUTOREFRESH_H_
+
 #include <gtk/gtk.h>
 
 struct drqm_autorefresh_info {
@@ -35,3 +38,4 @@ GtkWidget *CreateAutoRefreshWidgets (struct drqm_autorefresh_info *ari);
 void AutoRefreshCheckButtonToggled (GtkWidget *cbutton, struct drqm_autorefresh_info *ari);
 void AutoRefreshEntryChanged (GtkWidget *entry, struct drqm_autorefresh_info *ari);
 
+#endif

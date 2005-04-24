@@ -25,6 +25,7 @@
 
 #include "drqm_jobs_common.h"
 #include "drqm_computers.h"
+#include "drqm_autorefresh.h"
 
 struct drqmj_jddi {							/* job details dialog info*/
   GtkWidget *dialog;						/* Main dialog */
@@ -59,6 +60,7 @@ struct drqmj_jddi {							/* job details dialog info*/
   struct drqmj_limits limits;		/* Limits info */
   struct drqmj_sesframes sesframes;	/* Info about start, end, step frames */
 	struct drqm_jobs_info *oldinfo; // Pointer to the previous info, so we can update the joblist
+	struct drqm_autorefresh_info ari; // Autorefresh info
 };
 
 struct idle_info {
