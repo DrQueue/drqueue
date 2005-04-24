@@ -27,6 +27,7 @@
 #include "libdrqueue.h"
 #include "drqm_jobs_common.h"
 #include "drqm_jobs_jdd.h"
+#include "drqm_autorefresh.h"
 
 // Script generators
 #include "drqm_jobs_maya.h"
@@ -82,17 +83,11 @@ struct drqmj_dnji {							/* dialog new job info */
 	int submitstopped;						/* Set if the job has to be stopped just after submission */
 };
 
-struct drqmj_autorefresh {
-	guint sourceid;               // id for the autorefresh source 
-	GtkWidget *cbenabled;         // AutoRefresh cbutton
-	GtkWidget *eseconds;          // AutoRefresh text entry
-};
-
 struct drqm_jobs_info {
   GtkWidget *clist;							/* main clist */
   gint row, column;							/* selected job */
   GtkWidget *menu;							/* Popup menu */
-	struct drqmj_autorefresh ari; // AutoRefresh info
+	struct drqm_autorefresh_info ari;  // AutoRefresh info
   int selected;									/* if a job is selected */
   int ijob;											/* index to the selected job */
   uint32_t njobs;								/* Number of jobs in the list */

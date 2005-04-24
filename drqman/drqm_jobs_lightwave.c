@@ -17,7 +17,7 @@
 // USA
 // 
 /* 
- * $Id: drqm_jobs_lightwave.c 1174 2005-03-03 11:43:01Z kraken $ 
+ * $Id$ 
  */
 
 #include <string.h>
