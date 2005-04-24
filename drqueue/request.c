@@ -101,6 +101,10 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
     log_master (L_DEBUG,"Request job hard stop");
     handle_r_r_hstopjob (sfd,wdb,icomp,&request);
     break;
+  case R_R_RERUNJOB:
+    log_master (L_DEBUG,"Request job rerun");
+    handle_r_r_rerunjob (sfd,wdb,icomp,&request);
+    break;
   case R_R_JOBXFER:
     log_master (L_DEBUG,"Request job transfer");
     handle_r_r_jobxfer (sfd,wdb,icomp,&request);
@@ -1439,6 +1443,75 @@ int request_job_hstop (uint32_t ijob, int who)
 
   close (sfd);
   return 1;
+}
+
+int request_job_rerun (uint32_t ijob, int who)
+{
+  /* On error returns 0, error otherwise drerrno is set to the error */
+  int sfd;
+  struct request req;
+
+  if ((sfd = connect_to_master ()) == -1) {
+    drerrno = DRE_NOCONNECT;
+    return 0;
+  }
+
+  req.type = R_R_RERUNJOB;
+  req.data = ijob;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORWRITING;
+    close (sfd);
+    return 0;
+  }
+
+  close (sfd);
+  return 1;
+}
+
+void handle_r_r_rerunjob (int sfd,struct database *wdb,int icomp,struct request *req)
+{
+  /* The master handles this type of packages */
+  /* This function is called unlocked */
+  /* This function is called by the master */
+  int i;
+  uint32_t ijob;
+  struct frame_info *fi;
+  int nframes;
+
+  ijob = req->data;
+
+  log_master (L_DEBUG,"Entering handle_r_r_rerunjob");
+
+  semaphore_lock (wdb->semid);
+  
+  if (!job_index_correct_master(wdb,ijob)) {
+    log_master (L_INFO,"Request for reruning of an unused job index");
+    return;
+  }
+
+  fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
+  if (fi != (struct frame_info *)-1) {
+    nframes = job_nframes (&wdb->job[ijob]);
+    for (i=0;i<nframes;i++) {
+      if (fi[i].status == FS_ASSIGNED) {
+				request_slave_killtask (wdb->computer[fi[i].icomp].hwinfo.name,fi[i].itask,MASTER);
+      } else {
+				fi[i].status = FS_WAITING;
+				fi[i].start_time = 0;
+				fi[i].requeued++;
+			}
+    }
+    detach_frame_shared_memory (fi);
+  } else {
+    /* Couldn't attach the frame memory */
+    log_master (L_WARNING,"Could not attach frame shared memory in handle_r_r_rerunjob. Deleting problematic job.");
+    job_delete(&wdb->job[ijob]);
+  }
+
+  semaphore_release (wdb->semid);
+
+  log_master (L_DEBUG,"Exiting handle_r_r_rerunjob");
 }
 
 int request_job_xfer (uint32_t ijob, struct job *job, int who)

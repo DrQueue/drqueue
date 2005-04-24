@@ -32,6 +32,7 @@ void drqm_request_job_delete (uint32_t jobid);
 void drqm_request_job_stop (uint32_t jobid);
 void drqm_request_job_hstop (uint32_t jobid);
 void drqm_request_job_continue (uint32_t jobid);
+void drqm_request_job_rerun (uint32_t jobid);
 void drqm_request_job_frame_waiting (uint32_t jobid,uint32_t frame);
 void drqm_request_job_frame_kill (uint32_t jobid,uint32_t frame);
 void drqm_request_job_frame_finish (uint32_t jobid,uint32_t frame);
