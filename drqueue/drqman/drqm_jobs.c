@@ -92,6 +92,7 @@ static void dnj_flags_jdepend_accept (GtkWidget *bclicked, struct drqm_jobs_info
 static GtkWidget *DeleteJobDialog (struct drqm_jobs_info *info);
 static void djd_bok_pressed (GtkWidget *button, struct drqm_jobs_info *info);
 static void job_hstop_cb (GtkWidget *button, struct drqm_jobs_info *info);
+static void job_rerun_cb (GtkWidget *button, struct drqm_jobs_info *info);
 
 void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info)
 {
@@ -114,10 +115,14 @@ void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info)
   clist = CreateJobsList (&info->idj);
   gtk_box_pack_start(GTK_BOX(vbox),clist,TRUE,TRUE,2);
   
+	// Refresh stuff
+	hbox = gtk_hbox_new(FALSE,2);
+  gtk_box_pack_end(GTK_BOX(vbox),hbox,FALSE,FALSE,2);
   /* Button refresh */
   buttonRefresh = CreateButtonRefresh (&info->idj);
-  gtk_box_pack_end(GTK_BOX(vbox),buttonRefresh,FALSE,FALSE,2);
-
+  gtk_box_pack_start(GTK_BOX(hbox),buttonRefresh,TRUE,TRUE,2);
+	// Auto refresh
+	
 
 	// Label
   label = gtk_label_new ("Jobs");
@@ -305,6 +310,11 @@ static GtkWidget *CreateMenu (struct drqm_jobs_info *info)
   /* Line */
   menu_item = gtk_menu_item_new();
   gtk_menu_append(GTK_MENU(menu),menu_item);
+
+  menu_item = gtk_menu_item_new_with_label("Re-Run");
+  gtk_menu_append(GTK_MENU(menu),menu_item);
+  g_signal_connect(G_OBJECT(menu_item),"activate",G_CALLBACK(ReRunJob),info);
+  gtk_tooltips_set_tip (tooltips,menu_item,"Requeue all frames again, running frames will be killed",NULL);
 
   menu_item = gtk_menu_item_new_with_label("Stop");
   gtk_menu_append(GTK_MENU(menu),menu_item);
@@ -1084,6 +1094,37 @@ void ContinueJob (GtkWidget *menu_item, struct drqm_jobs_info *info)
 		drqm_request_job_continue (info->jobs[info->row].id);
 	}
   update_joblist(menu_item,info); /* Updates the list */
+}
+
+void ReRunJob (GtkWidget *menu_item, struct drqm_jobs_info *info)
+{
+  GtkWidget *dialog;
+  GList *cbs = NULL ;		/* callbacks, pairs (function, argument)*/
+
+  if (!info->selected)
+    return;
+  
+  cbs = g_list_append (cbs,job_rerun_cb);
+	cbs = g_list_append (cbs,info);
+  cbs = g_list_append (cbs,update_joblist);
+	cbs = g_list_append (cbs,info);
+
+  dialog = ConfirmDialog ("Do you really want to Re-Run the job?\n(This will kill all current running processes)",
+													cbs);
+
+  g_list_free (cbs);
+
+  gtk_grab_add(dialog);
+}
+
+static void job_rerun_cb (GtkWidget *button, struct drqm_jobs_info *info)
+{
+  /* job hstop in the for of a gtk signal func callback */
+  if (info->jdd.dialog) {
+		drqm_request_job_rerun (info->jdd.job.id);
+	} else {
+		drqm_request_job_rerun (info->jobs[info->row].id);
+	}
 }
 
 void HStopJob (GtkWidget *menu_item, struct drqm_jobs_info *info)
