@@ -17,7 +17,7 @@
 // USA
 // 
 //
-// $Id: drqm_cygwin.h 1101 2005-01-02 01:04:12Z jorge $
+// $Id$
 //
 
 #ifndef _DRQM_CYGWIN_H_
