@@ -17,7 +17,7 @@
 // USA
 // 
 //
-// $Id: drqm_cygwin.c 1141 2005-01-31 06:14:26Z kraken $
+// $Id$
 //
 
 #ifdef __CYGWIN

@@ -58,10 +58,6 @@ static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *
 static GtkWidget *CreateMenu (struct drqm_jobs_info *info);
 static int pri_cmp_clist (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
 static void update_joblist (GtkWidget *widget, struct drqm_jobs_info *info);
-// AutoRefresh
-static GtkWidget *CreateAutoRefreshWidgets (struct drqm_jobs_info *info);
-static void AutoRefreshCheckButtonToggled (GtkWidget *cbutton, struct drqm_jobs_info *info);
-static void AutoRefreshEntryChanged (GtkWidget *entry, struct drqm_jobs_info *info);
 static gboolean AutoRefreshUpdate (gpointer info);
 
 /* NEW JOB */
@@ -128,7 +124,9 @@ void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info)
   buttonRefresh = CreateButtonRefresh (&info->idj);
   gtk_box_pack_start(GTK_BOX(hbox),buttonRefresh,TRUE,TRUE,2);
 	// Auto refresh
-	autorefreshWidgets = CreateAutoRefreshWidgets (&info->idj);
+	info->idj.ari.callback = AutoRefreshUpdate;
+	info->idj.ari.data = &info->idj;
+	autorefreshWidgets = CreateAutoRefreshWidgets (&info->idj.ari);
 	gtk_box_pack_start(GTK_BOX(hbox),autorefreshWidgets,FALSE,FALSE,2);
 
 	// Label
@@ -207,60 +205,12 @@ static GtkWidget *CreateButtonRefresh (struct drqm_jobs_info *info)
   return b;
 }
 
-static GtkWidget *CreateAutoRefreshWidgets (struct drqm_jobs_info *info)
-{
-	GtkWidget *hbox;
-  GtkWidget *cbutton;
-	GtkWidget *entry;
-	GtkWidget *label;
-  
-	hbox = gtk_hbox_new (FALSE,2);
-  cbutton = gtk_check_button_new_with_label ("AutoRefresh every");
-	g_signal_connect(G_OBJECT(cbutton),"clicked",G_CALLBACK(AutoRefreshCheckButtonToggled),info);
-	gtk_box_pack_start(GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
-	info->ari.cbenabled = cbutton;
-	entry = gtk_entry_new ();
-	// g_signal_connect(G_OBJECT(entry),"changed",G_CALLBACK(AutoRefreshEntryChanged),info);
-	gtk_entry_set_text (GTK_ENTRY(entry),"5");
-	gtk_widget_set_size_request (GTK_WIDGET(entry),30,20);
-	info->ari.eseconds = entry;
-	gtk_box_pack_start(GTK_BOX(hbox),entry,FALSE,FALSE,2);
-	label = gtk_label_new ("seconds");
-	gtk_box_pack_start(GTK_BOX(hbox),label,FALSE,FALSE,2);
-
-  return hbox;
-}
-
-static void AutoRefreshCheckButtonToggled (GtkWidget *cbutton, struct drqm_jobs_info *info)
-{
-	int delay;
-	// uint = g_timeout_add (timeout,func,data);
-	// g_source_remove (uint);
-	if (GTK_TOGGLE_BUTTON(info->ari.cbenabled)->active) {
-		gtk_entry_set_editable(GTK_ENTRY(info->ari.eseconds),FALSE);
-	  delay = atoi(gtk_entry_get_text(GTK_ENTRY(info->ari.eseconds)));
-		if (delay <= 0) {
-			delay = 5;
-			gtk_entry_set_text(GTK_ENTRY(info->ari.eseconds),"5");
-		}
-		info->ari.sourceid = g_timeout_add(delay * 1000,AutoRefreshUpdate,info);
-  } else {
-		g_source_remove(info->ari.sourceid);
-		gtk_entry_set_editable(GTK_ENTRY(info->ari.eseconds),TRUE);
-  }
-}
-
 static gboolean AutoRefreshUpdate (gpointer info)
 {
 	drqm_request_joblist (info);
 	drqm_update_joblist (info);
 	
 	return TRUE;
-}
-
-static void AutoRefreshEntryChanged (GtkWidget *entry, struct drqm_jobs_info *info)
-{
-	// Not necessary at the moment
 }
 
 static void PressedButtonRefresh (GtkWidget *b, struct drqm_jobs_info *info)

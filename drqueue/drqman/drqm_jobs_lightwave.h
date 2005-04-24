@@ -16,7 +16,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-/* $Id: drqm_jobs_lightwave.h 1165 2005-02-18 16:10:06Z kraken $ */
+/* $Id$ */
 
 #ifndef _DRQM_JOBS_LIGTHWAVE_H_
 #define _DRQM_JOBS_LIGTHWAVE_H_
