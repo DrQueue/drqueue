@@ -104,6 +104,7 @@ void DeleteJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
 void StopJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
 void HStopJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
 void ContinueJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
+void ReRunJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
 
 
 #endif /* _DRQM_JOBS_H */

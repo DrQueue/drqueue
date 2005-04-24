@@ -826,9 +826,17 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
   }
 
   /* Buttons */
-  /* Stop */
   hbox = gtk_hbutton_box_new ();
   gtk_box_pack_start (GTK_BOX(vbox_buttons),hbox,FALSE,FALSE,5);
+  /* ReRun */
+  button = gtk_button_new_with_label ("Re-Run");
+  gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
+  g_signal_connect (G_OBJECT(button),"clicked",
+										G_CALLBACK(ReRunJob),newinfo);
+  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_update),newinfo);
+  gtk_tooltips_set_tip (tooltips,button,"Will restart this job again, killing all currently running frames",NULL);
+
+  /* Stop */
   button = gtk_button_new_with_label ("Stop");
   gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
   g_signal_connect (G_OBJECT(button),"clicked",
