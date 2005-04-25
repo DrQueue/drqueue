@@ -38,6 +38,8 @@ static GtkWidget *CreateButtonRefresh (struct drqm_computers_info *info);
 static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_computers_info *info);
 static GtkWidget *CreateMenu (struct drqm_computers_info *info);
 static gboolean AutoRefreshUpdate (gpointer info);
+static void EnableComputers (GtkWidget *button,struct drqm_computers_info *info);
+static void DisableComputers (GtkWidget *button,struct drqm_computers_info *info);
 
 /* COMPUTER DETAILS */
 static void ComputerDetails(GtkWidget *menu_item, struct drqm_computers_info *info);
@@ -169,6 +171,8 @@ static GtkWidget *CreateClist (GtkWidget *window)
   gtk_clist_set_column_width (GTK_CLIST(clist),7,100);
   gtk_widget_show(clist);
 
+  gtk_clist_set_selection_mode(GTK_CLIST(clist),GTK_SELECTION_EXTENDED);
+
   return (clist);
 }
 
@@ -233,7 +237,7 @@ void drqm_update_computerlist (struct drqm_computers_info *info)
     else
 			buff[7] = "NO POOLS !!";
     gtk_clist_append(GTK_CLIST(info->clist),buff);
-		gtk_clist_set_row_data (GTK_CLIST(info->clist),i,(gpointer)info->computers[i].hwinfo.id);
+		gtk_clist_set_row_data (GTK_CLIST(info->clist),i,(gpointer)info->computers[i].hwinfo.name);
 		
 		// We don't need the pool any more
 		computer_pool_free(&info->computers[i].limits);
@@ -270,7 +274,20 @@ static GtkWidget *CreateMenu (struct drqm_computers_info *info)
   menu = gtk_menu_new ();
   menu_item = gtk_menu_item_new_with_label("Details");
   gtk_menu_append(GTK_MENU(menu),menu_item);
-  gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(ComputerDetails),info);
+  g_signal_connect(G_OBJECT(menu_item),"activate",G_CALLBACK(ComputerDetails),info);
+
+	// Line
+	menu_item = gtk_menu_item_new();
+	gtk_menu_append(GTK_MENU(menu),menu_item);
+	// Enable
+	menu_item = gtk_menu_item_new_with_label("Enable");
+	gtk_menu_append(GTK_MENU(menu),menu_item);
+	g_signal_connect(G_OBJECT(menu_item),"activate",G_CALLBACK(EnableComputers),info);
+	// Disable
+	menu_item = gtk_menu_item_new_with_label("Disable");
+	gtk_menu_append(GTK_MENU(menu),menu_item);
+	g_signal_connect(G_OBJECT(menu_item),"activate",G_CALLBACK(DisableComputers),info);
+
 
   gtk_signal_connect(GTK_OBJECT((info->clist)),"event",GTK_SIGNAL_FUNC(PopupMenu),info);
 
@@ -1156,3 +1173,38 @@ void aecd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info)
 	   info->computers[info->row].limits.autoenable.m);
   gtk_label_set_text (GTK_LABEL(info->cdd.limits.lautoenabletime),msg);
 }
+
+static void EnableComputers (GtkWidget *button,struct drqm_computers_info *info)
+{
+  GList *sel;
+  char *name;
+
+  if (!(sel = GTK_CLIST(info->clist)->selection)) {
+    return;
+  }
+
+  for (;sel;sel = sel->next) {
+		name = (char*) gtk_clist_get_row_data(GTK_CLIST(info->clist),(gint)sel->data);
+		drqm_request_slave_limits_enabled_set(name,1);
+  }
+
+	AutoRefreshUpdate(info);
+}
+
+static void DisableComputers (GtkWidget *button,struct drqm_computers_info *info)
+{
+  GList *sel;
+  char *name;
+
+  if (!(sel = GTK_CLIST(info->clist)->selection)) {
+    return;
+  }
+
+  for (;sel;sel = sel->next) {
+		name = (char*) gtk_clist_get_row_data(GTK_CLIST(info->clist),(gint)sel->data);
+		drqm_request_slave_limits_enabled_set(name,0);
+  }
+
+	AutoRefreshUpdate(info);
+}
+
