@@ -41,6 +41,8 @@ struct drqmc_cddi {					 /* computer details dialog information */
   GtkWidget *lloadavg;					/* load average */
   GtkWidget *lntasks;						/* Number of tasks running */
 
+	struct drqm_autorefresh_info ari; // Autorefresh stuff
+
   struct cdd_li {						    /* Computer details dialog limits info */
 		GtkWidget *lenabled;        // Enabled label
     GtkWidget *lnmaxcpus;				/* Label maximum number of cpus */

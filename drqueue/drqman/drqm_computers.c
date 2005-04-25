@@ -42,7 +42,9 @@ static gboolean AutoRefreshUpdate (gpointer info);
 /* COMPUTER DETAILS */
 static void ComputerDetails(GtkWidget *menu_item, struct drqm_computers_info *info);
 static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info);
+static void cdd_destroy (GtkWidget *w, struct drqm_computers_info *info);
 static int cdd_update (GtkWidget *w, struct drqm_computers_info *info);
+static gboolean cdd_autorefreshupdate (gpointer info);
 static GtkWidget *CreateTasksClist (void);
 static GtkWidget *CreateMenuTasks (struct drqm_computers_info *info);
 static gint PopupMenuTasks (GtkWidget *clist, GdkEvent *event, struct drqm_computers_info *info);
@@ -289,6 +291,13 @@ static void ComputerDetails(GtkWidget *menu_item, struct drqm_computers_info *in
     gtk_grab_add(dialog);
 }
 
+static void cdd_destroy (GtkWidget *w, struct drqm_computers_info *info)
+{
+	if (GTK_TOGGLE_BUTTON(info->ari.cbenabled)->active) {
+		g_source_remove (info->ari.sourceid);
+	}
+}
+
 static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
 {
   GtkWidget *window;
@@ -300,6 +309,7 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
   GtkWidget *swin;
   GtkWidget *button;
   char *buf;
+	GtkWidget *autorefreshWidgets;
 
   if (info->ncomputers) {
     gtk_clist_get_text(GTK_CLIST(info->clist),info->row,0,&buf);
@@ -311,8 +321,7 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
   /* Dialog */
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW(window),"Computer Details");
-  gtk_signal_connect_object(GTK_OBJECT(window),"destroy",GTK_SIGNAL_FUNC(gtk_widget_destroy),
-			    (GtkObject*)window);
+	g_signal_connect (G_OBJECT(window),"destroy",G_CALLBACK(cdd_destroy),info);
   gtk_window_set_default_size(GTK_WINDOW(window),1000,500);
   gtk_container_set_border_width (GTK_CONTAINER(window),5);
   info->cdd.dialog = window;
@@ -493,15 +502,30 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
     return NULL;
   }
 
+	// Refresh stuff
+	hbox = gtk_hbox_new(FALSE,2);
+  gtk_box_pack_end(GTK_BOX(vbox),hbox,FALSE,FALSE,2);
   /* Button Refresh */
   button = gtk_button_new_with_label ("Refresh");
   gtk_container_border_width (GTK_CONTAINER(button),5);
   g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(cdd_update),info);
-  gtk_box_pack_start (GTK_BOX(vbox),button,FALSE,FALSE,2);
+  gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
+	// Auto refresh
+	info->ari.callback = cdd_autorefreshupdate;
+	info->ari.data = info;
+	autorefreshWidgets = CreateAutoRefreshWidgets (&info->ari);
+	gtk_box_pack_start(GTK_BOX(hbox),autorefreshWidgets,FALSE,FALSE,2);
 
   gtk_widget_show_all(window);
 
   return window;
+}
+
+static gboolean cdd_autorefreshupdate (gpointer info)
+{
+	cdd_update (NULL,info);
+
+	return TRUE;
 }
 
 GtkWidget *CreateTasksClist (void)
