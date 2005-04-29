@@ -1,5 +1,5 @@
 // 
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005 Jorge Daza Garcia-Blanes
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,31 +28,36 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "blendersg.h"
+#include "aftereffectssg.h"
 #include "libdrqueue.h"
 
-char *blendersg_create (struct blendersgi *info)
+char *aftereffectssg_create (struct aftereffectssgi *info)
 {
   /* This function creates the blender render script based on the information given */
   /* Returns a pointer to a string containing the path of the just created file */
   /* Returns NULL on failure and sets drerrno */
   FILE *f;
-  FILE *etc_blender_sg; 		/* The blender script generator configuration file */
-  int fd_etc_blender_sg,fd_f;
+  FILE *etc_aftereffects_sg; 		/* The after effects script generator configuration file */
+  int fd_etc_aftereffects_sg,fd_f;
   static char filename[BUFFERLEN];
-  char fn_etc_blender_sg[BUFFERLEN]; /* File name pointing to DRQUEUE_ETC/blender.sg */
+  char fn_etc_aftereffects_sg[BUFFERLEN]; /* File name pointing to DRQUEUE_ETC/aftereffects.sg */
   char buf[BUFFERLEN];
 	int size;
   char *p;			/* Scene filename without path */
 
   /* Check the parameters */
-  if (!strlen(info->scene)) {
+  if (!strlen(info->project)) {
     drerrno = DRE_NOTCOMPLETE;
     return NULL;
   }
 
-  p = strrchr(info->scene,'/');
-  p = ( p ) ? p+1 : info->scene;
+	if (!strlen(info->comp)) {
+		drerrno = DRE_NOTCOMPLETE;
+		return NULL;
+	}
+
+  p = strrchr(info->project,'/');
+  p = ( p ) ? p+1 : info->project;
   snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
   if ((f = fopen (filename, "a")) == NULL) {
@@ -75,26 +80,28 @@ char *blendersg_create (struct blendersgi *info)
 
   /* So now we have the file open and so we must write to it */
   fprintf(f,"#!/bin/tcsh\n\n");
-  fprintf(f,"set SCENE=\"%s\"\n",info->scene);
+  fprintf(f,"set DRQUEUE_PROJECT=\"%s\"\n",info->project);
+  fprintf(f,"set DRQUEUE_COMP=\"%s\"\n",info->comp);
 
-  snprintf(fn_etc_blender_sg,BUFFERLEN-1,"%s/blender.sg",getenv("DRQUEUE_ETC"));
+  snprintf(fn_etc_aftereffects_sg,BUFFERLEN-1,"%s/aftereffects.sg",getenv("DRQUEUE_ETC"));
 
   fflush (f);
 
-  if ((etc_blender_sg = fopen (fn_etc_blender_sg,"r")) == NULL) {
+  if ((etc_aftereffects_sg = fopen (fn_etc_aftereffects_sg,"r")) == NULL) {
     fprintf(f,"\necho -------------------------------------------------\n");
-    fprintf(f,"echo ATTENTION ! There was a problem opening: %s\n",fn_etc_blender_sg);
+    fprintf(f,"echo ATTENTION ! There was a problem opening: %s\n",fn_etc_aftereffects_sg);
     fprintf(f,"echo So the default configuration will be used\n");
     fprintf(f,"echo -------------------------------------------------\n");
     fprintf(f,"\n\n");
-    fprintf(f,"blender -b $SCENE -f $FRAME\n\n");
+    fprintf(f,"aerender -project \"$DRQUEUE_PROJECT\" -comp \"$DRQUEUE_COMP\" -OMtemplate \"Multi-Machine Sequence\""
+						" -s $DRQUEUE_FRAME -e $DRQUEUE_FRAME\n\n");
   } else {
-    fd_etc_blender_sg = fileno (etc_blender_sg);
+    fd_etc_aftereffects_sg = fileno (etc_aftereffects_sg);
     fd_f = fileno (f);
-    while ((size = read (fd_etc_blender_sg,buf,BUFFERLEN)) != 0) {
+    while ((size = read (fd_etc_aftereffects_sg,buf,BUFFERLEN)) != 0) {
       write (fd_f,buf,size);
     }
-    fclose(etc_blender_sg);
+    fclose(etc_aftereffects_sg);
   }
 
   fclose(f);
@@ -103,7 +110,7 @@ char *blendersg_create (struct blendersgi *info)
 }
 
 
-char *blendersg_default_script_path (void)
+char *aftereffectssg_default_script_path (void)
 {
   static char buf[BUFFERLEN];
   char *p;

@@ -19,38 +19,26 @@
 // $Id$
 //
 
-#ifndef _LIBDRQUEUE_H_
-#define _LIBDRQUEUE_H_
+#ifndef _AFTEREFFECTSSG_H_
+#define _AFTEREFFECTSSG_H_
+
+#include "constants.h"
 
 #ifdef __CPLUSPLUS
 extern "C" {
 #endif 
 
-#include "computer.h"
-#include "job.h"
-#include "task.h"
-#include "logger.h"
-#include "communications.h"
-#include "request.h"
-#include "drerrno.h"
-#include "database.h"
-#include "semaphores.h"
-#include "common.h"
+struct aftereffectssgi {		// After Effects Script Generator Info
+	char project[BUFFERLEN];
+	char comp[BUFFERLEN];
+	char scriptdir[BUFFERLEN];
+};
 
-/* Script generators */
-#include "mayasg.h"
-#include "mentalraysg.h"
-#include "blendersg.h"
-#include "bmrtsg.h"
-#include "pixiesg.h"
-#include "3delightsg.h"
-#include "lightwavesg.h"
-#include "aftereffectssg.h"
-
-int phantom[2];									/* FIXME: This should be local to the slave */
+char *aftereffectssg_create (struct aftereffectssgi *info);
+char *aftereffectssg_default_script_path (void);
 
 #ifdef __CPLUSPLUS
 }
 #endif 
 
-#endif /* _libdrqueue_h_ */
+#endif // _AFTEREFFECTSSG_H_

@@ -34,7 +34,6 @@ struct blendersgi {		/* Blender Script Generator Info */
 };
 
 char *blendersg_create (struct blendersgi *info);
-
 char *blendersg_default_script_path (void);
 
 #ifdef __CPLUSPLUS

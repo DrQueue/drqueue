@@ -71,9 +71,9 @@ echo "Building package"
 make clean > /dev/null
 (
 cd ..
-mv drqueue drqueue-$VERSION
+svn co https://ssl.drqueue.org/svn/tags/$VERSION drqueue-$VERSION
 tar zcvf drqueue.$VERSION.tgz --exclude="*/.svn" drqueue-$VERSION
-mv drqueue-$VERSION drqueue
+rm -fR drqueue-$VERSION
 ) > /dev/null
 
 # Package ChangeLog
