@@ -16,41 +16,27 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-// $Id$
-//
+/* $Id$ */
 
-#ifndef _LIBDRQUEUE_H_
-#define _LIBDRQUEUE_H_
+#ifndef _DRQM_JOBS_AFTEREFFECTS_H_
+#define _DRQM_JOBS_AFTEREFFECTS_H_
 
-#ifdef __CPLUSPLUS
-extern "C" {
-#endif 
+#include <gtk/gtk.h>
 
-#include "computer.h"
-#include "job.h"
-#include "task.h"
-#include "logger.h"
-#include "communications.h"
-#include "request.h"
-#include "drerrno.h"
-#include "database.h"
-#include "semaphores.h"
-#include "common.h"
+#define KOJ_AFTEREFFECTS_DFLT_VIEWCMD "IF YOU HAVE A SOLUTION FOR THIS SUBMIT A BUG REPORT"
 
-/* Script generators */
-#include "mayasg.h"
-#include "mentalraysg.h"
-#include "blendersg.h"
-#include "bmrtsg.h"
-#include "pixiesg.h"
-#include "3delightsg.h"
-#include "lightwavesg.h"
-#include "aftereffectssg.h"
+struct drqmj_koji_aftereffects {
+  GtkWidget *eproject;
+  GtkWidget *fsproject;		// File selector for the scene
+  GtkWidget *ecomp;
+  GtkWidget *eviewcmd;
+  GtkWidget *escript;		  // Entry script location
+  GtkWidget *fsscript;		// File selectot for the script directory
+};
 
-int phantom[2];									/* FIXME: This should be local to the slave */
+struct drqm_jobs_info;
 
-#ifdef __CPLUSPLUS
-}
-#endif 
+GtkWidget *jdd_koj_aftereffects_widgets (struct drqm_jobs_info *info);
+GtkWidget *dnj_koj_frame_aftereffects (struct drqm_jobs_info *info);
 
-#endif /* _libdrqueue_h_ */
+#endif // _DRQM_JOBS_AFTEREFFECTS_H_

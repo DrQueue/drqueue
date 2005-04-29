@@ -384,6 +384,7 @@ int recv_job (int sfd, struct job *job)
   case KOJ_MAYA:
   case KOJ_MENTALRAY:
 	case KOJ_BLENDER:
+	case KOJ_AFTEREFFECTS:
 		break;
 	case KOJ_BMRT:
 		job->koji.bmrt.xmin = ntohl (job->koji.bmrt.xmin);
