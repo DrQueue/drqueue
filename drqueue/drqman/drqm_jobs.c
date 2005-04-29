@@ -538,6 +538,15 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info)
 											 info->jobs[info->row].koji.lightwave.configdir);
     gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_lightwave.eviewcmd),
 											 info->jobs[info->row].koji.lightwave.viewcmd);
+  case KOJ_AFTEREFFECTS:
+		gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(info->dnj.ckoj)->entry),
+											 "After Effects");
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_aftereffects.eproject),
+											 info->jobs[info->row].koji.aftereffects.project);
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_aftereffects.ecomp),
+											 info->jobs[info->row].koji.aftereffects.comp);
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_aftereffects.eviewcmd),
+											 info->jobs[info->row].koji.aftereffects.viewcmd);
     break;
   }
 }
@@ -1195,6 +1204,7 @@ static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info)
 	items = g_list_append (items,"Pixie");
 	items = g_list_append (items,"3delight");
 	items = g_list_append (items,"Lightwave");
+	items = g_list_append (items,"After Effects");
   combo = gtk_combo_new();
   gtk_tooltips_set_tip(tooltips,GTK_COMBO(combo)->entry,"Selector for the kind of job",NULL);
   gtk_combo_set_popdown_strings (GTK_COMBO(combo),items);
@@ -1230,6 +1240,8 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
     new_koj = KOJ_3DELIGHT;
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Lightwave") == 0) {
     new_koj = KOJ_LIGHTWAVE;
+  } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"After Effects") == 0) {
+    new_koj = KOJ_AFTEREFFECTS;
   } else {
 /*     fprintf (stderr,"dnj_koj_combo_changed: koj not listed!\n"); */
 /* 		fprintf (stderr,"entry: %s\n",gtk_entry_get_text(GTK_ENTRY(entry))); */
@@ -1273,6 +1285,10 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
       break;
     case KOJ_LIGHTWAVE:
       info->dnj.fkoj = dnj_koj_frame_lightwave (info);
+      gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
+      break;
+    case KOJ_AFTEREFFECTS:
+      info->dnj.fkoj = dnj_koj_frame_aftereffects (info);
       gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
       break;
     }

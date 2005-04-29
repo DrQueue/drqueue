@@ -251,7 +251,7 @@ static void dnj_koj_frame_maya_projectdir_search (GtkWidget *button, struct drqm
   GtkWidget *dialog;
   char dir[BUFFERLEN];
 
-  dialog = gtk_file_selection_new ("Please select the output directory");
+  dialog = gtk_file_selection_new ("Please select the project directory");
   info->fsprojectdir = dialog;
 
   if (strlen(gtk_entry_get_text(GTK_ENTRY(info->eprojectdir)))) {
@@ -430,12 +430,17 @@ static void dnj_koj_frame_maya_script_search (GtkWidget *button, struct drqmj_ko
 
 static void dnj_koj_frame_maya_script_set (GtkWidget *button, struct drqmj_koji_maya *info)
 {
+  struct stat s;
+
   char buf[BUFFERLEN];
   char *p;
   
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscript)),BUFFERLEN-1);
-  p = strrchr(buf,'/');
-  if (p)
-    *p = 0;
+  stat(buf, &s);
+  if (!S_ISDIR(s.st_mode)) {
+    p = strrchr(buf,'/');
+    if (p)
+      *p = 0;
+  }
   gtk_entry_set_text (GTK_ENTRY(info->escript),buf);
 }

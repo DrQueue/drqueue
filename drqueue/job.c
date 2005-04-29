@@ -706,6 +706,8 @@ void job_environment_set (struct job *job, uint32_t iframe)
   static char endframe[BUFFERLEN];
   static char stepframe[BUFFERLEN];
 	static char blocksize[BUFFERLEN];
+	static char project[BUFFERLEN];
+	static char comp[BUFFERLEN];
 
   frame = job_frame_index_to_number (job,iframe);
 
@@ -785,6 +787,12 @@ void job_environment_set (struct job *job, uint32_t iframe)
     putenv (renderdir);
     snprintf (configdir,BUFFERLEN-1,"DRQUEUE_CD=%s",job->koji.lightwave.configdir);
     putenv (renderdir);
+		break;
+  case KOJ_AFTEREFFECTS:
+		snprintf (project,BUFFERLEN-1,"DRQUEUE_PROJECT=%s",job->koji.aftereffects.project);
+		putenv (project);
+		snprintf (comp,BUFFERLEN-1,"DRQUEUE_COMP=%s",job->koji.aftereffects.comp);
+		putenv (comp);
 		break;
   }
 }
@@ -907,8 +915,11 @@ char *job_koj_string (struct job *job)
 		msg = "3delight";
 		break;
   case KOJ_LIGHTWAVE:
-	msg = "Lightwave";
-	break;
+		msg = "Lightwave";
+		break;
+	case KOJ_AFTEREFFECTS:
+		msg = "After Effects";
+		break;
   default:
     msg = "DEFAULT (ERROR)";
   }

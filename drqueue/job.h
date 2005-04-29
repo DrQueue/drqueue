@@ -127,17 +127,23 @@ union koj_info {		/* Kind of job information */
     char configdir[BUFFERLEN];	/* Config directory */
     char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
   } lightwave;
+	struct koji_aftereffects {
+		char project[BUFFERLEN];
+		char comp[BUFFERLEN];
+		char viewcmd[BUFFERLEN];
+	} aftereffects;
 };
 
 /* Koj types */
-#define KOJ_GENERAL     0	/* Not specific koj */
-#define KOJ_MAYA        1	/* Maya koj */
-#define KOJ_BLENDER     2	/* Blender koj */
-#define KOJ_BMRT        3	/* BMRT koj */
-#define KOJ_3DELIGHT    4	/* 3delight koj */
-#define KOJ_PIXIE       5	/* Pixie koj */
-#define KOJ_MENTALRAY   6	/* Mental Ray koj */
-#define KOJ_LIGHTWAVE   7 // Lightwave koj
+#define KOJ_GENERAL        0	/* Not specific koj */
+#define KOJ_MAYA           1	/* Maya koj */
+#define KOJ_BLENDER        2	/* Blender koj */
+#define KOJ_BMRT           3	/* BMRT koj */
+#define KOJ_3DELIGHT       4	/* 3delight koj */
+#define KOJ_PIXIE          5	/* Pixie koj */
+#define KOJ_MENTALRAY      6	/* Mental Ray koj */
+#define KOJ_LIGHTWAVE      7  // Lightwave koj
+#define KOJ_AFTEREFFECTS   8  // After Effects koj
 
 /* JOB SECTION */
 typedef enum {
@@ -157,7 +163,7 @@ typedef enum {
 #define OSF_LINUX         (1<<1) /* If set will run on Linux */
 #define OSF_OSX						(1<<2) /* If set will run on OSX */
 #define OSF_FREEBSD				(1<<3) /* If set will run on FreeBSD */
-#define OSF_CYGWIN	(1<<4) /* If set will run on Windows */
+#define OSF_CYGWIN	      (1<<4) /* If set will run on Windows */
 
 /* THE JOB ITSELF */
 struct job {
