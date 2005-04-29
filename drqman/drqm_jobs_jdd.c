@@ -113,6 +113,8 @@ static void jdd_blender_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *
 static void jdd_bmrt_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 static void jdd_pixie_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 static void jdd_3delight_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
+static void jdd_lightwave_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
+static void jdd_aftereffects_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 
 
 struct row_data {
@@ -278,6 +280,20 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info)
     menu_item = gtk_menu_item_new_with_label("Watch image");
     gtk_menu_append(GTK_MENU(menu),menu_item);
     gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_3delight_viewcmd_exec),info);
+    break;
+  case KOJ_LIGHTWAVE:
+    menu_item = gtk_menu_item_new ();
+    gtk_menu_append(GTK_MENU(menu),menu_item);
+    menu_item = gtk_menu_item_new_with_label("Watch image");
+    gtk_menu_append(GTK_MENU(menu),menu_item);
+    gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_lightwave_viewcmd_exec),info);
+    break;
+  case KOJ_AFTEREFFECTS:
+    menu_item = gtk_menu_item_new ();
+    gtk_menu_append(GTK_MENU(menu),menu_item);
+    menu_item = gtk_menu_item_new_with_label("Watch image");
+    gtk_menu_append(GTK_MENU(menu),menu_item);
+    gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_aftereffects_viewcmd_exec),info);
     break;
   }
 
@@ -1447,7 +1463,6 @@ static void jdd_pixie_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *in
 
 static void jdd_3delight_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info)
 {
-  /* Sets the waiting frames as finished */
   GList *sel;
   uint32_t frame,iframe;
   const char *new_argv[4];
@@ -2378,4 +2393,70 @@ int jdd_framelist_cmp_end_time (GtkCList *clist, gconstpointer ptr1, gconstpoint
   }
 
   return 0;
+}
+
+static void jdd_lightwave_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info)
+{
+  GList *sel;
+  uint32_t frame,iframe;
+  const char *new_argv[4];
+  extern char **environ;
+  struct row_data *rdata;
+  char *exec_path;
+  
+  if (!(sel = GTK_CLIST(info->jdd.clist)->selection)) {
+    return;
+  }
+
+  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+  frame = rdata->frame;
+  
+  iframe = job_frame_number_to_index (&info->jdd.job,frame);
+
+  if (fork() == 0) {
+    new_argv[0] = SHELL_NAME;
+    new_argv[1] = "-c";
+    new_argv[2] = info->jdd.job.koji.lightwave.viewcmd;
+    new_argv[3] = NULL;    
+    
+    job_environment_set(&info->jdd.job,iframe);
+    
+    exec_path = SHELL_PATH;
+    execve(exec_path ,(char*const*)new_argv,environ);
+    perror("execve");
+    exit (1);
+  }
+}
+
+static void jdd_aftereffects_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info)
+{
+  GList *sel;
+  uint32_t frame,iframe;
+  const char *new_argv[4];
+  extern char **environ;
+  struct row_data *rdata;
+  char *exec_path;
+  
+  if (!(sel = GTK_CLIST(info->jdd.clist)->selection)) {
+    return;
+  }
+
+  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+  frame = rdata->frame;
+  
+  iframe = job_frame_number_to_index (&info->jdd.job,frame);
+
+  if (fork() == 0) {
+    new_argv[0] = SHELL_NAME;
+    new_argv[1] = "-c";
+    new_argv[2] = info->jdd.job.koji.aftereffects.viewcmd;
+    new_argv[3] = NULL;    
+    
+    job_environment_set(&info->jdd.job,iframe);
+    
+    exec_path = SHELL_PATH;
+    execve(exec_path ,(char*const*)new_argv,environ);
+    perror("execve");
+    exit (1);
+  }
 }
