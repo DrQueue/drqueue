@@ -23,7 +23,11 @@
 
 #include <gtk/gtk.h>
 
+#if defined (__OSX)
+#define KOJ_AFTEREFFECTS_DFLT_VIEWCMD "/Applications/Preview.app/Contents/MacOS/Preview <YOUR_IMAGE>.$DRQUEUE_PADFRAME.<YOUR_FORMAT>"
+#else 
 #define KOJ_AFTEREFFECTS_DFLT_VIEWCMD "IF YOU HAVE A SOLUTION FOR THIS SUBMIT A BUG REPORT"
+#endif
 
 struct drqmj_koji_aftereffects {
   GtkWidget *eproject;
