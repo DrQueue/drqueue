@@ -183,7 +183,7 @@ static void dnj_koj_frame_shake_shakescript_search (GtkWidget *button, struct dr
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 #else
-	gtk_entry_set_text (GTK_ENTRY(info->eshakescript), cygwin_dir_dialog(NULL));
+	gtk_entry_set_text (GTK_ENTRY(info->eshakescript), cygwin_file_dialog(NULL, NULL, NULL, 0));
 #endif
 }
 
