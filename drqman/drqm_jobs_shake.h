@@ -16,19 +16,28 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-//
+// 
 // $Id$
 //
 
-#ifndef _DRQM_CYGWIN_H_
-#define _DRQM_CYGWIN_H_
+#ifndef _DRQM_JOBS_SHAKE_H_
+#define _DRQM_JOBS_SHAKE_H_
 
-void cygwin_shell_execute(char *verb, char *path);
-char *cygwin_file_dialog(char *fname, char *pat, char *message, char save);
-char *cygwin_dir_dialog(char *message);
-//char *conv_to_posix_path(char *win32_path);
-//char *conv_to_win32_path(char *posix_path);
+#include <gtk/gtk.h>
 
-#endif /* _DRQM_CYGWIN_H */
+#define KOJ_SHAKE_DFLT_VIEWCMD "display image.$DRQUEUE_FRAME.jpg"
 
+struct drqmj_koji_shake {
+  GtkWidget *eshakescript;
+  GtkWidget *fsshakescript;						/* File selector for the shake script */
+  GtkWidget *eviewcmd;
+  GtkWidget *escript;						/* Entry script location */
+  GtkWidget *fsscript;		/* File selectot for the script directory */
+};
 
+struct drqm_jobs_info;
+
+GtkWidget *dnj_koj_frame_shake (struct drqm_jobs_info *info);
+GtkWidget *jdd_koj_shake_widgets (struct drqm_jobs_info *info);
+
+#endif // _DRQM_JOBS_SHAKE_H_

@@ -1,5 +1,5 @@
 // 
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005 Jorge Daza Garcia-Blanes
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,19 +16,28 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-//
 // $Id$
 //
 
-#ifndef _DRQM_CYGWIN_H_
-#define _DRQM_CYGWIN_H_
+#ifndef _SHAKESG_H_
+#define _SHAKESG_H_
 
-void cygwin_shell_execute(char *verb, char *path);
-char *cygwin_file_dialog(char *fname, char *pat, char *message, char save);
-char *cygwin_dir_dialog(char *message);
-//char *conv_to_posix_path(char *win32_path);
-//char *conv_to_win32_path(char *posix_path);
+#include "constants.h"
 
-#endif /* _DRQM_CYGWIN_H */
+#ifdef __CPLUSPLUS
+extern "C" {
+#endif 
 
+struct shakesgi {		// Shake script generator information
+  char script[BUFFERLEN];       // This is the shake script, has nothing to do with the render script
+  char scriptdir[BUFFERLEN];
+};
 
+char *shakesg_create (struct shakesgi *info);
+char *shakesg_default_script_path (void);
+
+#ifdef __CPLUSPLUS
+}
+#endif 
+
+#endif // _SHAKESG_H_

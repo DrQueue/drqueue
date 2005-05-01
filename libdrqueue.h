@@ -46,6 +46,7 @@ extern "C" {
 #include "3delightsg.h"
 #include "lightwavesg.h"
 #include "aftereffectssg.h"
+#include "shakesg.h"
 
 int phantom[2];									/* FIXME: This should be local to the slave */
 
