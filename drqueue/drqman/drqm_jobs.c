@@ -548,6 +548,14 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info)
     gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_aftereffects.eviewcmd),
 											 info->jobs[info->row].koji.aftereffects.viewcmd);
     break;
+  case KOJ_SHAKE:
+		gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(info->dnj.ckoj)->entry),
+											 "Shake");
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_shake.eshakescript),
+											 info->jobs[info->row].koji.shake.script);
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_shake.eviewcmd),
+											 info->jobs[info->row].koji.shake.viewcmd);
+    break;
   }
 }
 
@@ -941,6 +949,10 @@ static int dnj_submit (struct drqmj_dnji *info)
     strncpy(job.koji.lightwave.configdir,gtk_entry_get_text(GTK_ENTRY(info->koji_lightwave.econfigdir)),BUFFERLEN-1);
     strncpy(job.koji.lightwave.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_lightwave.eviewcmd)),BUFFERLEN-1);
     break;
+  case KOJ_SHAKE:
+    strncpy(job.koji.shake.script,gtk_entry_get_text(GTK_ENTRY(info->koji_shake.eshakescript)),BUFFERLEN-1);
+    strncpy(job.koji.shake.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_shake.eviewcmd)),BUFFERLEN-1);
+    break;
   }
 
   /* Limits */
@@ -1205,6 +1217,7 @@ static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info)
 	items = g_list_append (items,"3delight");
 	items = g_list_append (items,"Lightwave");
 	items = g_list_append (items,"After Effects");
+	items = g_list_append (items,"Shake");
   combo = gtk_combo_new();
   gtk_tooltips_set_tip(tooltips,GTK_COMBO(combo)->entry,"Selector for the kind of job",NULL);
   gtk_combo_set_popdown_strings (GTK_COMBO(combo),items);
@@ -1242,6 +1255,8 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
     new_koj = KOJ_LIGHTWAVE;
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"After Effects") == 0) {
     new_koj = KOJ_AFTEREFFECTS;
+  } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Shake") == 0) {
+    new_koj = KOJ_SHAKE;
   } else {
 /*     fprintf (stderr,"dnj_koj_combo_changed: koj not listed!\n"); */
 /* 		fprintf (stderr,"entry: %s\n",gtk_entry_get_text(GTK_ENTRY(entry))); */
@@ -1289,6 +1304,10 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
       break;
     case KOJ_AFTEREFFECTS:
       info->dnj.fkoj = dnj_koj_frame_aftereffects (info);
+      gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
+      break;
+    case KOJ_SHAKE:
+      info->dnj.fkoj = dnj_koj_frame_shake (info);
       gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
       break;
     }

@@ -31,6 +31,7 @@ if ($DRQUEUE_OS == "WINDOWS") then
 else
   set BLOCK=`expr $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
 endif
+
 if ($BLOCK > $DRQUEUE_ENDFRAME) then
   set BLOCK = $DRQUEUE_ENDFRAME;
 endif
