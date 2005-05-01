@@ -43,13 +43,11 @@ else
 fi
 
 # Create Changelog
-read -p "Do you want to recreate and commit the ChangeLog ? (y/n) " CHLG
+read -p "Do you want to recreate the ChangeLog ? (y/n) " CHLG
 if [ "$CHLG" != "n" ]; then
-	echo "Creating ChangeLog"
+	echo -n "Creating ChangeLog... "
 	svn log -v | ./svn-scripts/svn2cl.pl > ChangeLog # Dump log to ChangeLog
 	echo "Created !"
-	echo "Commiting ChangeLog"
-	svn ci -m "ChangeLog commited by build_package.sh" ChangeLog
 fi
 
 # Creating tag
