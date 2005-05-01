@@ -1,5 +1,5 @@
 // 
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005 Jorge Daza Garcia-Blanes
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,9 +16,9 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-/* 
- * $Id$ 
- */
+// 
+// $Id$ 
+//
 
 #include <string.h>
 #include <unistd.h>
@@ -164,6 +164,7 @@ static void dnj_koj_frame_shake_shakescript_search (GtkWidget *button, struct dr
 {
   GtkWidget *dialog;
 
+#ifndef __CYGWIN
   dialog = gtk_file_selection_new ("Please select a shake script file");
   info->fsshakescript = dialog;
   
@@ -181,6 +182,9 @@ static void dnj_koj_frame_shake_shakescript_search (GtkWidget *button, struct dr
 			     (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
+#else
+	gtk_entry_set_text (GTK_ENTRY(info->eshakescript), cygwin_dir_dialog(NULL));
+#endif
 }
 
 static void dnj_koj_frame_shake_shakescript_set (GtkWidget *button, struct drqmj_koji_shake *info)
