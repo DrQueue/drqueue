@@ -44,15 +44,22 @@ char *shakesg_create (struct shakesgi *info)
   char buf[BUFFERLEN];
 	int size;
   char *p;			/* Script filename without path */
+	char *script;
 
   /* Check the parameters */
   if (!strlen(info->script)) {
     drerrno = DRE_NOTCOMPLETE;
     return NULL;
   }
+#ifdef __CYGWIN
+  if ((script = malloc(MAXCMDLEN)) == NULL) return (NULL);
+  cygwin_conv_to_posix_path(script, scene);
+#else
+  script = info->script;
+#endif
 
-  p = strrchr(info->script,'/');
-  p = ( p ) ? p+1 : info->script;
+  p = strrchr(script,'/');
+  p = ( p ) ? p+1 : script;
   snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
   if ((f = fopen (filename, "a")) == NULL) {

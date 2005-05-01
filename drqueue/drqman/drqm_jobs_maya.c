@@ -396,7 +396,6 @@ static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_
     return;
   } else {
     gtk_entry_set_text(GTK_ENTRY(info->ecmd),file);
-
   } 
 }
 
