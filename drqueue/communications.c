@@ -384,7 +384,9 @@ int recv_job (int sfd, struct job *job)
   case KOJ_MAYA:
   case KOJ_MENTALRAY:
 	case KOJ_BLENDER:
+	case KOJ_LIGHTWAVE:
 	case KOJ_AFTEREFFECTS:
+	case KOJ_SHAKE:
 		break;
 	case KOJ_BMRT:
 		job->koji.bmrt.xmin = ntohl (job->koji.bmrt.xmin);
@@ -446,6 +448,9 @@ int send_job (int sfd, struct job *job)
   case KOJ_MAYA:
   case KOJ_MENTALRAY:
 	case KOJ_BLENDER:
+	case KOJ_LIGHTWAVE:
+	case KOJ_AFTEREFFECTS:
+	case KOJ_SHAKE:
 		break;
 	case KOJ_BMRT:
 		bswapped.koji.bmrt.xmin = htonl (bswapped.koji.bmrt.xmin);

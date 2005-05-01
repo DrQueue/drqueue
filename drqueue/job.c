@@ -708,7 +708,8 @@ void job_environment_set (struct job *job, uint32_t iframe)
 	static char blocksize[BUFFERLEN];
 	static char project[BUFFERLEN];
 	static char comp[BUFFERLEN];
-
+	static char script[BUFFERLEN];
+	
   frame = job_frame_index_to_number (job,iframe);
 
   /* Padded frame number */
@@ -770,15 +771,19 @@ void job_environment_set (struct job *job, uint32_t iframe)
     break;
   case KOJ_BLENDER:
     snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.blender.scene);
+		putenv (scene);
     break;
   case KOJ_BMRT:
     snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.bmrt.scene);
+		putenv (scene);
     break;
   case KOJ_PIXIE:
     snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.pixie.scene);
+		putenv (scene);
     break;
   case KOJ_3DELIGHT:
     snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.threedelight.scene);
+		putenv (scene);
     break;
   case KOJ_LIGHTWAVE:
     snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.lightwave.scene);
@@ -794,6 +799,10 @@ void job_environment_set (struct job *job, uint32_t iframe)
 		snprintf (comp,BUFFERLEN-1,"DRQUEUE_COMP=%s",job->koji.aftereffects.comp);
 		putenv (comp);
 		break;
+  case KOJ_SHAKE:
+    snprintf (script,BUFFERLEN-1,"DRQUEUE_SCRIPT=%s",job->koji.shake.script);
+		putenv (script);
+    break;
   }
 }
 
@@ -919,6 +928,9 @@ char *job_koj_string (struct job *job)
 		break;
 	case KOJ_AFTEREFFECTS:
 		msg = "After Effects";
+		break;
+	case KOJ_SHAKE:
+		msg = "Shake";
 		break;
   default:
     msg = "DEFAULT (ERROR)";

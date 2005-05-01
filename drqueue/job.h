@@ -132,6 +132,10 @@ union koj_info {		/* Kind of job information */
 		char comp[BUFFERLEN];
 		char viewcmd[BUFFERLEN];
 	} aftereffects;
+  struct koji_shake {
+    char script[BUFFERLEN];
+    char viewcmd[BUFFERLEN];
+  } shake;
 };
 
 /* Koj types */
@@ -144,6 +148,7 @@ union koj_info {		/* Kind of job information */
 #define KOJ_MENTALRAY      6	/* Mental Ray koj */
 #define KOJ_LIGHTWAVE      7  // Lightwave koj
 #define KOJ_AFTEREFFECTS   8  // After Effects koj
+#define KOJ_SHAKE          9  // Shake koj
 
 /* JOB SECTION */
 typedef enum {
