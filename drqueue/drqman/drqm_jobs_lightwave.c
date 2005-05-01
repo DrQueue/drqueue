@@ -378,7 +378,6 @@ static void dnj_koj_frame_lightwave_bcreate_pressed (GtkWidget *button, struct d
     return;
   } else {
     gtk_entry_set_text(GTK_ENTRY(info->ecmd),file);
-
   } 
 }
 
