@@ -64,6 +64,7 @@ var InstallationSlave
 var MasterName
 var TempDir
 var LogsDir
+var EtcDir
 
 Function .onInit
 #  !insertmacro MUI_LANGDLL_DISPLAY
@@ -145,6 +146,19 @@ hostname_ok:
   push $R0
   pop $LogsDir
 
+  !insertmacro MUI_INSTALLOPTIONS_READ $R0 "installer.ini" "Field 12" "State"
+  StrCmp $R0 "" 0 +3
+    MessageBox MB_ICONEXCLAMATION|MB_OK "Please enter your etc directory."
+    Abort
+  Push $R0
+  Call Nsis2Io
+  Pop $0
+  StrCpy $0 $0 2
+  ;StrCmp $0 "\\" 0 +3
+  ;MessageBox MB_ICONEXCLAMATION|MB_OK "Etc directory must be x:\ form, unc path are not supported (\\computer\path). Please enter your logs directory again."
+  ;Abort
+  push $R0
+  pop $EtcDir
 FunctionEnd
 
 Section "SectionPrincipale" SEC01
@@ -222,7 +236,7 @@ Section -Post
   Push "$INSTDIR\db"
   Call WriteEnvStr
   Push "DRQUEUE_ETC"
-  Push "$INSTDIR\etc"
+  Push "$EtcDir"
   Call WriteEnvStr
   Push "DRQUEUE_MASTER"
   Push "$MasterName"
