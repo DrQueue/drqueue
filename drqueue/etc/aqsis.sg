@@ -21,6 +21,11 @@
 #
 #
 
+# Begin Script
+if [ $CUSTOM_CROP ]; then
+	crop_args="-crop $CROP_XMIN $CROP_XMAX $CROP_YMIN $CROP_YMAX"
+fi
+
 if ($DRQUEUE_OS == "WINDOWS") then
   set BLOCK=`"$DRQUEUE_BIN/expr.exe" $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
   set DRQUEUE_SCENE=`"$DRQUEUE_BIN/cygpath.exe" -w $DRQUEUE_SCENE`
@@ -35,6 +40,17 @@ endif
 echo "aqsis -frames $DRQUEUE_FRAME $BLOCK \"$RIBFILE\""
 aqsis -frames $DRQUEUE_FRAME $BLOCK "$DRQUEUE_SCENE"
 
+if [ $CUSTOM_BEEP ]; then
+	beep_args="-beep"
+fi
+
+
+echo "aqsis -frames $FRAME $FRAME $crop_args $progress_args $stats_args $beep_args $RIBFILE"
+#echo "aqsis $progress_args $stats_args $RIBFILE"
+
+
+aqsis -frames $FRAME $FRAME $crop_args $progress_args $stats_args $beep_args $RIBFILE
+#aqsis $progress_args $stats_args "$RIBFILE"
 # This should requeue the frame if failed
 if ( $? != 0 ) then
   echo "Requeueing frame..."

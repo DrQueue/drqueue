@@ -120,19 +120,23 @@ union koj_info {		/* Kind of job information */
 	struct kojo_3delight {
     char scene[BUFFERLEN];
     char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
-	} threedelight;
-  struct koji_lightwave {
+  } threedelight;
+	struct koji_lightwave {
     char scene[BUFFERLEN];
     char projectdir[BUFFERLEN];	/* Project directory */
     char configdir[BUFFERLEN];	/* Config directory */
     char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
   } lightwave;
+	struct kojo_aqsis {
+    char scene[BUFFERLEN];
+    char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
+  } aqsis;
 	struct koji_aftereffects {
-		char project[BUFFERLEN];
-		char comp[BUFFERLEN];
-		char viewcmd[BUFFERLEN];
-	} aftereffects;
-  struct koji_shake {
+	char project[BUFFERLEN];
+	char comp[BUFFERLEN];
+	char viewcmd[BUFFERLEN];
+  } aftereffects;
+	struct koji_shake {
     char script[BUFFERLEN];
     char viewcmd[BUFFERLEN];
   } shake;
@@ -149,6 +153,7 @@ union koj_info {		/* Kind of job information */
 #define KOJ_LIGHTWAVE      7  // Lightwave koj
 #define KOJ_AFTEREFFECTS   8  // After Effects koj
 #define KOJ_SHAKE          9  // Shake koj
+#define KOJ_AQSIS		   10   /* Aqsis koj */
 
 /* JOB SECTION */
 typedef enum {
