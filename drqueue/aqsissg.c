@@ -45,6 +45,7 @@ char *aqsissg_create (struct aqsissgi *info)
   char buf[BUFFERLEN];
   int size;
   char *p;			/* Scene filename without path */
+	char *scene;
 
   /* Check the parameters */
   if (!strlen(info->scene)) {
@@ -52,8 +53,16 @@ char *aqsissg_create (struct aqsissgi *info)
     return NULL;
   }
 
-  p = strrchr(info->scene,'/');
-  p = ( p ) ? p+1 : info->scene;
+#ifdef __CYGWIN
+  if ((scene = malloc(MAXCMDLEN)) == NULL) return (NULL);
+  cygwin_conv_to_posix_path(info->scene, scene);
+#else
+  scene = info->scene;
+#endif
+
+
+  p = strrchr(scene,'/');
+  p = ( p ) ? p+1 : scene;
   snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
   if ((f = fopen (filename, "a")) == NULL) {
