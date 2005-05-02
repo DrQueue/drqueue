@@ -37,8 +37,7 @@ static void dnj_koj_frame_aqsis_script_set (GtkWidget *button, struct drqmj_koji
 static void dnj_koj_frame_aqsis_scene_search (GtkWidget *button, struct drqmj_koji_aqsis *info);
 static void dnj_koj_frame_aqsis_scene_set (GtkWidget *button, struct drqmj_koji_aqsis *info);
 static void dnj_koj_frame_aqsis_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info);
-
-static void dnj_flags_cbcrop_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info);
+static void dnj_koj_frame_aqsis_cbcrop_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info);
 
 GtkWidget *dnj_koj_frame_aqsis (struct drqm_jobs_info *info)
 {
@@ -84,29 +83,29 @@ GtkWidget *dnj_koj_frame_aqsis (struct drqm_jobs_info *info)
   hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
   cbutton = gtk_check_button_new_with_label ("Crop (xmin,xmax,ymin,ymax):");
-  info->dnj.koji_bmrt.cbcrop = cbutton;
+  info->dnj.koji_aqsis.cbcrop = cbutton;
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(cbutton),FALSE);
-  g_signal_connect (G_OBJECT(cbutton),"toggled",G_CALLBACK(dnj_flags_cbcrop_toggled),info);
+  g_signal_connect (G_OBJECT(cbutton),"toggled",G_CALLBACK(dnj_koj_frame_aqsis_cbcrop_toggled),info);
   gtk_box_pack_start(GTK_BOX(hbox),cbutton,FALSE,FALSE,2);
   
   entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
   gtk_widget_set_sensitive(GTK_WIDGET(entry),FALSE);
-  info->dnj.koji_bmrt.ecropxmin = entry;
+  info->dnj.koji_aqsis.ecropxmin = entry;
   gtk_box_pack_start(GTK_BOX(hbox),entry,TRUE,TRUE,2);
   
   entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
   gtk_widget_set_sensitive(GTK_WIDGET(entry),FALSE);
-  info->dnj.koji_bmrt.ecropxmax = entry;
+  info->dnj.koji_aqsis.ecropxmax = entry;
   gtk_box_pack_start(GTK_BOX(hbox),entry,TRUE,TRUE,2);
   
   entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
   gtk_widget_set_sensitive(GTK_WIDGET(entry),FALSE);
-  info->dnj.koji_bmrt.ecropymin = entry;
+  info->dnj.koji_aqsis.ecropymin = entry;
   gtk_box_pack_start(GTK_BOX(hbox),entry,TRUE,TRUE,2);
   
   entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
   gtk_widget_set_sensitive(GTK_WIDGET(entry),FALSE);
-  info->dnj.koji_bmrt.ecropymax = entry;
+  info->dnj.koji_aqsis.ecropymax = entry;
   gtk_box_pack_start(GTK_BOX(hbox),entry,TRUE,TRUE,2);
   
   
@@ -181,7 +180,7 @@ GtkWidget *dnj_koj_frame_aqsis (struct drqm_jobs_info *info)
   return frame;
 }
 
-void dnj_flags_cbcrop_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info)
+void dnj_koj_frame_aqsis_cbcrop_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info)
 {
 	if (GTK_TOGGLE_BUTTON(info->dnj.koji_aqsis.cbcrop)->active) {
 		gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.koji_aqsis.ecropxmin),TRUE);
@@ -233,6 +232,7 @@ static void dnj_koj_frame_aqsis_scene_search (GtkWidget *button, struct drqmj_ko
 {
   GtkWidget *dialog;
 
+#ifndef __CYGWIN
   dialog = gtk_file_selection_new ("Please select a scene file");
   info->fsscene = dialog;
 
@@ -250,17 +250,17 @@ static void dnj_koj_frame_aqsis_scene_search (GtkWidget *button, struct drqmj_ko
 			     (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
+#else
+	gtk_entry_set_text (GTK_ENTRY(info->escene), cygwin_file_dialog(NULL, NULL, NULL, 0));
+#endif
 }
 
 static void dnj_koj_frame_aqsis_scene_set (GtkWidget *button, struct drqmj_koji_aqsis *info)
 {
   char buf[BUFFERLEN];
-  char *p;
   
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscene)),BUFFERLEN-1);
-  /* We need the whole scene path */
-  p = buf;
-  gtk_entry_set_text (GTK_ENTRY(info->escene),p);
+  gtk_entry_set_text (GTK_ENTRY(info->escene),buf);
 }
 
 static void dnj_koj_frame_aqsis_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info)
@@ -270,7 +270,7 @@ static void dnj_koj_frame_aqsis_bcreate_pressed (GtkWidget *button, struct drqmj
 
   strncpy (aqsissgi.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_aqsis.escene)),BUFFERLEN-1);
   strncpy (aqsissgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->koji_aqsis.escript)),BUFFERLEN-1);
-/*
+
   aqsissgi.custom_crop = GTK_TOGGLE_BUTTON(info->koji_aqsis.cbcrop)->active;
   if (aqsissgi.custom_crop) {
 	  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_aqsis.ecropxmin)),"%u",&aqsissgi.xmin) != 1)
@@ -282,7 +282,7 @@ static void dnj_koj_frame_aqsis_bcreate_pressed (GtkWidget *button, struct drqmj
 	  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_aqsis.ecropymax)),"%u",&aqsissgi.ymax) != 1)
 		  return;
   }
-  */
+
   strncpy (aqsissgi.file_owner,gtk_entry_get_text(GTK_ENTRY(info->koji_aqsis.efile_owner)),BUFFERLEN-1);
 
   if ((file = aqsissg_create (&aqsissgi)) == NULL) {
@@ -297,14 +297,13 @@ static void dnj_koj_frame_aqsis_script_search (GtkWidget *button, struct drqmj_k
 {
   GtkWidget *dialog;
 
+#ifndef __CYGWIN
   dialog = gtk_file_selection_new ("Please select a script directory");
   info->fsscript = dialog;
 
-#ifndef __CYGWIN
   if (strlen(gtk_entry_get_text(GTK_ENTRY(info->escript)))) {
     gtk_file_selection_set_filename (GTK_FILE_SELECTION(dialog),gtk_entry_get_text(GTK_ENTRY(info->escript)));
   }
-#endif
 
   gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
 		      "clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_aqsis_script_set), info);
@@ -316,6 +315,9 @@ static void dnj_koj_frame_aqsis_script_search (GtkWidget *button, struct drqmj_k
 			     (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
+#else
+	gtk_entry_set_text (GTK_ENTRY(info->escript), cygwin_file_dialog(NULL, NULL, NULL, 0));
+#endif
 }
 
 static void dnj_koj_frame_aqsis_script_set (GtkWidget *button, struct drqmj_koji_aqsis *info)
