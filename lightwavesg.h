@@ -16,7 +16,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-// $Id: lightwavesg.h 1064 2004-11-21 18:26:50Z jorge $
+// $Id$
 //
 
 #ifndef _LIGHTWAVESG_H_
