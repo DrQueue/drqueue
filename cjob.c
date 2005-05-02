@@ -16,7 +16,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-// $Id: requeue.c 771 2004-10-14 18:32:12Z jorge $
+// $Id$
 //
 
 #include <stdio.h>
