@@ -153,7 +153,7 @@ union koj_info {		/* Kind of job information */
 #define KOJ_LIGHTWAVE      7  // Lightwave koj
 #define KOJ_AFTEREFFECTS   8  // After Effects koj
 #define KOJ_SHAKE          9  // Shake koj
-#define KOJ_AQSIS		   10   /* Aqsis koj */
+#define KOJ_AQSIS          10 // Aqsis koj
 
 /* JOB SECTION */
 typedef enum {
