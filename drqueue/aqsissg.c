@@ -16,6 +16,9 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
+//
+// $Id$
+//
 
 #include <stdio.h>
 #include <time.h>
@@ -75,7 +78,13 @@ char *aqsissg_create (struct aqsissgi *info)
   fprintf(f,"#!/bin/tcsh\n\n");
   fprintf(f,"set DRQUEUE_SCENE=%s\n",info->scene);
   fprintf(f,"set RF_OWNER=%s\n",info->file_owner);
-
+	if (info->custom_crop) {
+		fprintf (f,"set CUSTOM_CROP=yes\n");
+		fprintf (f,"set CROP_XMIN=%u\n",info->xmin);
+		fprintf (f,"set CROP_XMAX=%u\n",info->xmax);
+		fprintf (f,"set CROP_YMIN=%u\n",info->ymin);
+		fprintf (f,"set CROP_YMAX=%u\n",info->ymax);
+	}
   fflush (f);
 
   snprintf(fn_etc_aqsis_sg,BUFFERLEN-1,"%s/aqsis.sg",getenv("DRQUEUE_ETC"));
