@@ -16,7 +16,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-// $Id: computer_info.linux.c 1064 2004-11-21 18:26:50Z jorge $
+// $Id$
 //
 
 #include <stdio.h>

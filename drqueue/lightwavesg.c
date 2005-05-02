@@ -16,7 +16,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-// $Id: lightwavesg.c 1141 2005-01-31 06:14:26Z kraken $
+// $Id$
 //
 
 #include <stdio.h>
