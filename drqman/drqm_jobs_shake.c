@@ -190,12 +190,9 @@ static void dnj_koj_frame_shake_shakescript_search (GtkWidget *button, struct dr
 static void dnj_koj_frame_shake_shakescript_set (GtkWidget *button, struct drqmj_koji_shake *info)
 {
   char buf[BUFFERLEN];
-  char *p;
   
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsshakescript)),BUFFERLEN-1);
-  /* We need the whole shake script path */
-  p = buf;
-  gtk_entry_set_text (GTK_ENTRY(info->eshakescript),p);
+  gtk_entry_set_text (GTK_ENTRY(info->eshakescript),buf);
 }
 
 static void dnj_koj_frame_shake_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info)
@@ -243,11 +240,7 @@ static void dnj_koj_frame_shake_script_search (GtkWidget *button, struct drqmj_k
 static void dnj_koj_frame_shake_script_set (GtkWidget *button, struct drqmj_koji_shake *info)
 {
   char buf[BUFFERLEN];
-  char *p;
   
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscript)),BUFFERLEN-1);
-  p = strrchr(buf,'/');
-  if (p)
-    *p = 0;
   gtk_entry_set_text (GTK_ENTRY(info->escript),buf);
 }
