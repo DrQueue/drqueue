@@ -146,7 +146,7 @@ hostname_ok:
   push $R0
   pop $LogsDir
 
-  !insertmacro MUI_INSTALLOPTIONS_READ $R0 "installer.ini" "Field 12" "State"
+  !insertmacro MUI_INSTALLOPTIONS_READ $R0 "installer.ini" "Field 11" "State"
   StrCmp $R0 "" 0 +3
     MessageBox MB_ICONEXCLAMATION|MB_OK "Please enter your etc directory."
     Abort
