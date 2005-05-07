@@ -47,6 +47,7 @@ extern "C" {
 #include "lightwavesg.h"
 #include "aftereffectssg.h"
 #include "shakesg.h"
+#include "terragensg.h"
 
 int phantom[2];									/* FIXME: This should be local to the slave */
 
