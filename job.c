@@ -700,6 +700,9 @@ void job_environment_set (struct job *job, uint32_t iframe)
   static char renderdir[BUFFERLEN];
   static char projectdir[BUFFERLEN];
   static char configdir[BUFFERLEN];
+	static char scriptfile[BUFFERLEN];
+	static char worldfile[BUFFERLEN];
+	static char terrainfile[BUFFERLEN];
   static char image[BUFFERLEN];
   static char owner[BUFFERLEN];
   static char startframe[BUFFERLEN];
@@ -803,6 +806,14 @@ void job_environment_set (struct job *job, uint32_t iframe)
     snprintf (script,BUFFERLEN-1,"DRQUEUE_SCRIPT=%s",job->koji.shake.script);
 		putenv (script);
     break;
+  case KOJ_TERRAGEN:
+    snprintf (scriptfile,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.terragen.scriptfile);
+    putenv (scriptfile);
+    snprintf (worldfile,BUFFERLEN-1,"DRQUEUE_WF=%s",job->koji.terragen.worldfile);
+    putenv (worldfile);
+    snprintf (terrainfile,BUFFERLEN-1,"DRQUEUE_CD=%s",job->koji.terragen.terrainfile);
+    putenv (terrainfile);
+		break;
   }
 }
 
@@ -925,6 +936,9 @@ char *job_koj_string (struct job *job)
 		break;
   case KOJ_LIGHTWAVE:
 		msg = "Lightwave";
+		break;
+  case KOJ_TERRAGEN:
+		msg = "Terragen";
 		break;
 	case KOJ_AFTEREFFECTS:
 		msg = "After Effects";

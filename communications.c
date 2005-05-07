@@ -385,6 +385,7 @@ int recv_job (int sfd, struct job *job)
   case KOJ_MENTALRAY:
 	case KOJ_BLENDER:
 	case KOJ_LIGHTWAVE:
+	case KOJ_TERRAGEN:
 	case KOJ_AFTEREFFECTS:
 	case KOJ_SHAKE:
 		break;
@@ -449,6 +450,7 @@ int send_job (int sfd, struct job *job)
   case KOJ_MENTALRAY:
 	case KOJ_BLENDER:
 	case KOJ_LIGHTWAVE:
+	case KOJ_TERRAGEN:
 	case KOJ_AFTEREFFECTS:
 	case KOJ_SHAKE:
 		break;
