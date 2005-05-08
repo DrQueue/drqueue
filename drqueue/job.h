@@ -127,6 +127,10 @@ union koj_info {		/* Kind of job information */
     char configdir[BUFFERLEN];	/* Config directory */
     char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
   } lightwave;
+	struct koji_nuke {
+    char scene[BUFFERLEN];
+    char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
+  } nuke;
 	struct koji_terragen {
     char scriptfile[BUFFERLEN];
     char worldfile[BUFFERLEN];	/* World File */
@@ -161,6 +165,7 @@ union koj_info {		/* Kind of job information */
 #define KOJ_SHAKE          9  // Shake koj
 #define KOJ_AQSIS          10 // Aqsis koj
 #define KOJ_TERRAGEN      11  // Terragen koj
+#define KOJ_NUKE      12  // Nuke koj
 
 /* JOB SECTION */
 typedef enum {

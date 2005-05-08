@@ -796,6 +796,10 @@ void job_environment_set (struct job *job, uint32_t iframe)
     snprintf (configdir,BUFFERLEN-1,"DRQUEUE_CD=%s",job->koji.lightwave.configdir);
     putenv (renderdir);
 		break;
+  case KOJ_NUKE:
+    snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.nuke.scene);
+    putenv (scene);
+		break;
   case KOJ_AFTEREFFECTS:
 		snprintf (project,BUFFERLEN-1,"DRQUEUE_PROJECT=%s",job->koji.aftereffects.project);
 		putenv (project);
@@ -936,6 +940,9 @@ char *job_koj_string (struct job *job)
 		break;
   case KOJ_LIGHTWAVE:
 		msg = "Lightwave";
+		break;
+  case KOJ_NUKE:
+		msg = "Nuke";
 		break;
   case KOJ_TERRAGEN:
 		msg = "Terragen";
