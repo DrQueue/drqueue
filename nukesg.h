@@ -16,44 +16,35 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-// $Id$
+// $Id: nukesg.h 1251 2005-05-02 02:35:47Z jorge $
 //
 
-#ifndef _LIBDRQUEUE_H_
-#define _LIBDRQUEUE_H_
+#ifndef _NUKESG_H_
+#define _NUKESG_H_
+
+#include "constants.h"
 
 #ifdef __CPLUSPLUS
 extern "C" {
 #endif 
 
-#include "computer.h"
-#include "job.h"
-#include "task.h"
-#include "logger.h"
-#include "communications.h"
-#include "request.h"
-#include "drerrno.h"
-#include "database.h"
-#include "semaphores.h"
-#include "common.h"
+struct nukesgi {		/* Maya Script Generator Info */
+  char scene[BUFFERLEN];
+  char image[BUFFERLEN];
+  char scriptdir[BUFFERLEN];
+  char file_owner[BUFFERLEN];
+  char camera[BUFFERLEN];
+  int  res_x,res_y;		/* Resolution of the frame */
+  char format[BUFFERLEN];
+	int  mentalray;  // 1 if we should render with mr
+};
 
-/* Script generators */
-#include "mayasg.h"
-#include "mentalraysg.h"
-#include "blendersg.h"
-#include "bmrtsg.h"
-#include "pixiesg.h"
-#include "3delightsg.h"
-#include "lightwavesg.h"
-#include "aftereffectssg.h"
-#include "shakesg.h"
-#include "terragensg.h"
-#include "nukesg.h"
+char *nukesg_create (struct nukesgi *info);
 
-int phantom[2];									/* FIXME: This should be local to the slave */
+char *nukesg_default_script_path (void);
 
 #ifdef __CPLUSPLUS
 }
 #endif 
 
-#endif /* _libdrqueue_h_ */
+#endif /* _NUKESG_H_ */

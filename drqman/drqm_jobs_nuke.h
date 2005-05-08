@@ -16,44 +16,31 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-// $Id$
-//
+/* $Id: drqm_jobs_nuke.h 1242 2005-05-01 12:11:22Z jorge $ */
 
-#ifndef _LIBDRQUEUE_H_
-#define _LIBDRQUEUE_H_
+#ifndef _DRQM_JOBS_NUKE_H_
+#define _DRQM_JOBS_NUKE_H_
 
-#ifdef __CPLUSPLUS
-extern "C" {
-#endif 
+#include <gtk/gtk.h>
 
-#include "computer.h"
-#include "job.h"
-#include "task.h"
-#include "logger.h"
-#include "communications.h"
-#include "request.h"
-#include "drerrno.h"
-#include "database.h"
-#include "semaphores.h"
-#include "common.h"
+#ifdef __CYGWIN
+#define KOJ_NUKE_DFLT_VIEWCMD "tif"
+#else
+#define KOJ_NUKE_DFLT_VIEWCMD "fcheck $DRQUEUE_RD/$DRQUEUE_IMAGE.$DRQUEUE_PADFRAME.tif"
+#endif
 
-/* Script generators */
-#include "mayasg.h"
-#include "mentalraysg.h"
-#include "blendersg.h"
-#include "bmrtsg.h"
-#include "pixiesg.h"
-#include "3delightsg.h"
-#include "lightwavesg.h"
-#include "aftereffectssg.h"
-#include "shakesg.h"
-#include "terragensg.h"
-#include "nukesg.h"
+struct drqmj_koji_nuke {
+  GtkWidget *escene;
+  GtkWidget *fsscene;		/* File selector for the scene */
+  GtkWidget *eviewcmd;
+  GtkWidget *escript;		/* Entry script location */
+  GtkWidget *fsscript;		/* File selectot for the script directory */
+  GtkWidget *efile_owner;	/* Owner of the rendered files */
+};
 
-int phantom[2];									/* FIXME: This should be local to the slave */
+struct drqm_jobs_info;
 
-#ifdef __CPLUSPLUS
-}
-#endif 
+GtkWidget *jdd_koj_nuke_widgets (struct drqm_jobs_info *info);
+GtkWidget *dnj_koj_frame_nuke (struct drqm_jobs_info *info);
 
-#endif /* _libdrqueue_h_ */
+#endif /* _DRQM_JOBS_NUKE_H_ */
