@@ -21,6 +21,7 @@ my %hackers = (
     "kraken"	=> "Vincent Dedun <kraken+spam\@smousseland.com>",
     "ender"	=> "David Martínez Moreno <ender\@debian.org>",
 		"cgTobi" => "Tobias Sauerwein <cgTobi\@gmail.com>"
+		"heimlich" => "Oliver Hotz <oliver\@heimlich.net>"
 );
 
 my $parse_next_line = 0;
