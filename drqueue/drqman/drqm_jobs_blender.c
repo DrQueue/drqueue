@@ -164,6 +164,7 @@ static void dnj_koj_frame_blender_scene_search (GtkWidget *button, struct drqmj_
 {
   GtkWidget *dialog;
 
+#ifndef __CYGWIN
   dialog = gtk_file_selection_new ("Please select a scene file");
   info->fsscene = dialog;
   
@@ -181,6 +182,9 @@ static void dnj_koj_frame_blender_scene_search (GtkWidget *button, struct drqmj_
 			     (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
+#else
+	gtk_entry_set_text (GTK_ENTRY(info->escene), cygwin_file_dialog(NULL, NULL, NULL, 0));
+#endif
 }
 
 static void dnj_koj_frame_blender_scene_set (GtkWidget *button, struct drqmj_koji_blender *info)
@@ -213,14 +217,13 @@ static void dnj_koj_frame_blender_script_search (GtkWidget *button, struct drqmj
 {
   GtkWidget *dialog;
 
+#ifndef __CYGWIN
   dialog = gtk_file_selection_new ("Please select a script directory");
   info->fsscript = dialog;
 
-#ifndef __CYGWIN
   if (strlen(gtk_entry_get_text(GTK_ENTRY(info->escript)))) {
     gtk_file_selection_set_filename (GTK_FILE_SELECTION(dialog),gtk_entry_get_text(GTK_ENTRY(info->escript)));
   }
-#endif
 
   gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
 		      "clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_blender_script_set), info);
@@ -232,6 +235,9 @@ static void dnj_koj_frame_blender_script_search (GtkWidget *button, struct drqmj
 			     (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
+#else
+	gtk_entry_set_text (GTK_ENTRY(info->escript), cygwin_dir_dialog(NULL));
+#endif
 }
 
 static void dnj_koj_frame_blender_script_set (GtkWidget *button, struct drqmj_koji_blender *info)
