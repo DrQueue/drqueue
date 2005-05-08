@@ -316,7 +316,7 @@ static void dnj_koj_frame_aqsis_script_search (GtkWidget *button, struct drqmj_k
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 #else
-	gtk_entry_set_text (GTK_ENTRY(info->escript), cygwin_file_dialog(NULL, NULL, NULL, 0));
+	gtk_entry_set_text (GTK_ENTRY(info->escript), cygwin_dir_dialog(NULL));
 #endif
 }
 
