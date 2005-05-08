@@ -16,7 +16,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-// $Id: terragensg.h 1251 2005-05-02 02:35:47Z jorge $
+// $Id$
 //
 
 #ifndef _TERRAGENSG_H_
