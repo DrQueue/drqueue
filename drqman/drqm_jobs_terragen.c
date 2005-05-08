@@ -17,7 +17,7 @@
 // USA
 // 
 /* 
- * $Id: drqm_jobs_terragen.c 1245 2005-05-01 18:39:50Z jorge $ 
+ * $Id$ 
  */
 
 #include <string.h>
