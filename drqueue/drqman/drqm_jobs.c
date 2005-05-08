@@ -47,6 +47,7 @@
 #include "drqm_jobs_3delight.h"
 #include "drqm_jobs_lightwave.h"
 #include "drqm_jobs_terragen.h"
+#include "drqm_jobs_nuke.h"
 
 // Icon includes
 #include "job_icon.h"
@@ -549,6 +550,14 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info)
     gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_lightwave.eviewcmd),
 											 info->jobs[info->row].koji.lightwave.viewcmd);
 	  break;
+  case KOJ_NUKE:
+		gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(info->dnj.ckoj)->entry),
+											 "Nuke");
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_nuke.escene),
+											 info->jobs[info->row].koji.nuke.scene);
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_nuke.eviewcmd),
+											 info->jobs[info->row].koji.nuke.viewcmd);
+	  break;
   case KOJ_AFTEREFFECTS:
 		gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(info->dnj.ckoj)->entry),
 											 "After Effects");
@@ -977,6 +986,10 @@ static int dnj_submit (struct drqmj_dnji *info)
     strncpy(job.koji.lightwave.configdir,gtk_entry_get_text(GTK_ENTRY(info->koji_lightwave.econfigdir)),BUFFERLEN-1);
     strncpy(job.koji.lightwave.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_lightwave.eviewcmd)),BUFFERLEN-1);
     break;
+  case KOJ_NUKE:
+    strncpy(job.koji.nuke.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_nuke.escene)),BUFFERLEN-1);
+    strncpy(job.koji.nuke.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_nuke.eviewcmd)),BUFFERLEN-1);
+    break;
   case KOJ_TERRAGEN:
     strncpy(job.koji.terragen.scriptfile,gtk_entry_get_text(GTK_ENTRY(info->koji_terragen.escriptfile)),BUFFERLEN-1);
     strncpy(job.koji.terragen.worldfile,gtk_entry_get_text(GTK_ENTRY(info->koji_terragen.eworldfile)),BUFFERLEN-1);
@@ -1254,6 +1267,7 @@ static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info)
 	items = g_list_append (items,"After Effects");
 	items = g_list_append (items,"Shake");
 	items = g_list_append (items,"Terragen");
+	items = g_list_append (items,"Nuke");
   combo = gtk_combo_new();
   gtk_tooltips_set_tip(tooltips,GTK_COMBO(combo)->entry,"Selector for the kind of job",NULL);
   gtk_combo_set_popdown_strings (GTK_COMBO(combo),items);
@@ -1291,6 +1305,8 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
     new_koj = KOJ_3DELIGHT;
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Lightwave") == 0) {
     new_koj = KOJ_LIGHTWAVE;
+  } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Nuke") == 0) {
+    new_koj = KOJ_NUKE;
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Terragen") == 0) {
     new_koj = KOJ_TERRAGEN;
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"After Effects") == 0) {
@@ -1344,6 +1360,10 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
       break;
     case KOJ_LIGHTWAVE:
       info->dnj.fkoj = dnj_koj_frame_lightwave (info);
+      gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
+      break;
+    case KOJ_NUKE:
+      info->dnj.fkoj = dnj_koj_frame_nuke (info);
       gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
       break;
     case KOJ_AFTEREFFECTS:
