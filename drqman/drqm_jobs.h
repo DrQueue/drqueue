@@ -41,6 +41,7 @@
 #include "drqm_jobs_aftereffects.h"
 #include "drqm_jobs_shake.h"
 #include "drqm_jobs_terragen.h"
+#include "drqm_jobs_nuke.h"
 
 enum {
 	DNJ_FLAGS_DEPEND_COL_ID = 0,
@@ -82,6 +83,7 @@ struct drqmj_dnji {							/* dialog new job info */
   struct drqmj_koji_pixie koji_pixie; /* koj info for pixie */
   struct drqmj_koji_3delight koji_3delight;
   struct drqmj_koji_lightwave koji_lightwave;
+  struct drqmj_koji_nuke koji_nuke;
 	struct drqmj_koji_aftereffects koji_aftereffects;
 	struct drqmj_koji_shake koji_shake;
   struct drqmj_koji_terragen koji_terragen;
