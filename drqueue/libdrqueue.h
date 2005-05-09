@@ -49,6 +49,7 @@ extern "C" {
 #include "shakesg.h"
 #include "terragensg.h"
 #include "nukesg.h"
+#include "aqsissg.h"
 
 int phantom[2];									/* FIXME: This should be local to the slave */
 
