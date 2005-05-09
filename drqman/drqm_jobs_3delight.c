@@ -49,7 +49,7 @@ GtkWidget *dnj_koj_frame_3delight (struct drqm_jobs_info *info)
   tooltips = TooltipsNew ();
 
   /* Frame */
-  frame = gtk_frame_new ("Mental Ray (Standalone) job information");
+  frame = gtk_frame_new ("3Delight job information");
 
   /* Main vbox */
   vbox = gtk_vbox_new (FALSE,2);
