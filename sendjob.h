@@ -24,19 +24,34 @@
 #include <fstream>
 #include "job.h"
 
-#define TOJ_NONE		0
-#define TOJ_MAYA		1
-#define	TOJ_BLENDER		2
-/*
- ...
- */
-#define TOJ_MENTALRAY		6
+#define TOJ_NONE				 0
+#define TOJ_MAYA				 1
+#define	TOJ_BLENDER			 2
+#define TOJ_BMRT         3	/* BMRT koj */
+#define TOJ_THREEDELIGHT 4	/* 3delight koj */
+#define TOJ_PIXIE        5 	/* Pixie koj */
+#define TOJ_MENTALRAY		 6
+#define TOJ_LIGHTWAVE    7  // Lightwave koj
+#define TOJ_AFTEREFFECTS 8  // After Effects koj
+#define TOJ_SHAKE        9  // Shake koj
+#define TOJ_AQSIS        10 // Aqsis koj
+#define TOJ_TERRAGEN     11  // Terragen koj
+#define TOJ_NUKE      	 12  // Nuke koj
 
 void presentation (void);
 
 int RegisterMayaJobFromFile (std::ifstream &infile);
 int RegisterMentalrayJobFromFile (std::ifstream &infile);
 int RegisterBlenderJobFromFile (std::ifstream &infile);
+int RegisterBmrtJobFromFile (std::ifstream &infile);
+int RegisterThreedelightJobFromFile (std::ifstream &infile);
+int RegisterPixieJobFromFile (std::ifstream &infile);
+int RegisterLightwaveJobFromFile (std::ifstream &infile);
+int RegisterAftereffectsJobFromFile (std::ifstream &infile);
+int RegisterShakeJobFromFile (std::ifstream &infile);
+int RegisterAqsisJobFromFile (std::ifstream &infile);
+int RegisterTerragenJobFromFile (std::ifstream &infile);
+int RegisterNukeJobFromFile (std::ifstream &infile);
 
 int str2toj (char *str);
 
