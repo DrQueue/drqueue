@@ -792,10 +792,58 @@ int RegisterAftereffectsJobFromFile (std::ifstream &infile)
 
 int RegisterAqsisJobFromFile (std::ifstream &infile)
 {
+  // Job variables for the script generator
+  struct job job;
+  struct aqsissgi aqsisSgi;
 
-    std::cerr << "Not supported yet\n";
-    return 0;
- 
+  std::string owner;
+  std::string jobName;
+  int frameStart,frameEnd,frameStep;
+  std::string scenePath;
+  char *pathToScript;
+
+  getline(infile,owner);
+  getline(infile,jobName);
+  infile >> frameStart;
+  infile >> frameEnd;
+  infile >> frameStep;
+  getline(infile,scenePath);	//
+  getline(infile,scenePath);	// Get two times because '>>' leaves the pointer before \n 
+
+//  strncpy(aqsisSgi.file_owner,owner.c_str(),BUFFERLEN-1);
+  strncpy(aqsisSgi.scene,scenePath.c_str(),BUFFERLEN-1);
+  snprintf(aqsisSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
+
+  if (!(pathToScript = aqsissg_create(&aqsisSgi))) {
+    std::cerr << "Error creating script file\n";
+    return 1;
+  }
+
+  strncpy (job.name,jobName.c_str(),MAXNAMELEN-1);
+  strncpy (job.cmd,pathToScript,MAXCMDLEN-1);
+  strncpy (job.owner,owner.c_str(),MAXNAMELEN-1);
+  strncpy (job.email,owner.c_str(),MAXNAMELEN-1);
+  job.frame_start = frameStart;
+  job.frame_end = frameEnd;
+  job.frame_step = frameStep;
+  job.priority = 500;
+
+  job.koj = KOJ_AQSIS;
+  strncpy (job.koji.aqsis.scene,scenePath.c_str(),BUFFERLEN-1);
+  strncpy (job.koji.aqsis.viewcmd,"",BUFFERLEN-1);
+
+  job.limits.os_flags = OSF_LINUX;
+  job.limits.nmaxcpus = (uint16_t)-1;
+  job.limits.nmaxcpuscomputer = (uint16_t)-1;
+	job.limits.memory = 0;
+	strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
+
+  if (!register_job(&job)) {
+    std::cerr << "Error sending job to the queue\n";
+    return 1;
+  }
+
+  return 0;
 }
 
 int RegisterBmrtJobFromFile (std::ifstream &infile)
