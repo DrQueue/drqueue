@@ -792,9 +792,9 @@ void job_environment_set (struct job *job, uint32_t iframe)
     snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.lightwave.scene);
     putenv (scene);
     snprintf (projectdir,BUFFERLEN-1,"DRQUEUE_PD=%s",job->koji.lightwave.projectdir);
-    putenv (renderdir);
+    putenv (projectdir);
     snprintf (configdir,BUFFERLEN-1,"DRQUEUE_CD=%s",job->koji.lightwave.configdir);
-    putenv (renderdir);
+    putenv (configdir);
 		break;
   case KOJ_NUKE:
     snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.nuke.scene);
@@ -809,6 +809,10 @@ void job_environment_set (struct job *job, uint32_t iframe)
   case KOJ_SHAKE:
     snprintf (script,BUFFERLEN-1,"DRQUEUE_SCRIPT=%s",job->koji.shake.script);
 		putenv (script);
+    break;
+  case KOJ_AQSIS:
+    snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCRIPT=%s",job->koji.aqsis.scene);
+		putenv (scene);
     break;
   case KOJ_TERRAGEN:
     snprintf (scriptfile,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.terragen.scriptfile);
