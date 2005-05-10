@@ -27,6 +27,8 @@ if ($DRQUEUE_OS == "WINDOWS") then
   set DRQUEUE_SCENE=`"$DRQUEUE_BIN/cygpath.exe" -w $DRQUEUE_SCENE`
   set DRQUEUE_RD=`"$DRQUEUE_BIN/cygpath.exe" -w $DRQUEUE_RD`
 	set DRQUEUE_PD=`"$DRQUEUE_BIN/cygpath.exe" -w $DRQUEUE_PD`
+	set DRQUEUE_PRE=`"$DRQUEUE_BIN/cygpath.exe" -w $DRQUEUE_PRE`
+	set DRQUEUE_POST=`"$DRQUEUE_BIN/cygpath.exe" -w $DRQUEUE_POST`
 else
   set BLOCK=`expr $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
 endif
@@ -70,12 +72,25 @@ else
 	set MENTALRAY = ""
 endif
 
+if ($?DRQUEUE_PRE) then
+	set DRQUEUE_PRE = "-preRender $DRQUEUE_PRE"
+else
+	set DRQUEUE_PRE = ""
+endif
+
+if ($?DRQUEUE_POST) then
+	set DRQUEUE_POST = "-postRender $DRQUEUE_POST"
+else
+	set DRQUEUE_POST = ""
+endif
+
+
 echo render -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT -rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" $MENTALRAY $CIMAGE $CAMERA "$DRQUEUE_SCENE"
 
 if ($DRQUEUE_OS == "WINDOWS") then
-  render -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT -rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" $MENTALRAY $CIMAGE $CAMERA "$DRQUEUE_SCENE"
+  render $DRQUEUE_PRE $DRQUEUE_POST -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT -rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" $MENTALRAY $CIMAGE $CAMERA "$DRQUEUE_SCENE"
 else
-  Render -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT -rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" $MENTALRAY $CIMAGE $CAMERA "$DRQUEUE_SCENE"
+  Render $DRQUEUE_PRE $DRQUEUE_POST -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT -rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" $MENTALRAY $CIMAGE $CAMERA "$DRQUEUE_SCENE"
 endif
 
 # This should requeue the frame if failed
