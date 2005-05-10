@@ -157,7 +157,7 @@ GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
   gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
   entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
   gtk_tooltips_set_tip(tooltips,entry,"Mel script that will be executed after rendering the Frame",NULL);
-  info->dnj.koji_maya.eprecommand = entry;
+  info->dnj.koji_maya.epostcommand = entry;
   gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
 
   /* File Owner */
@@ -397,24 +397,6 @@ static void dnj_koj_frame_maya_scene_set (GtkWidget *button, struct drqmj_koji_m
   /* We need the whole scene path */
   p = buf;
   gtk_entry_set_text (GTK_ENTRY(info->escene),p);
-}
-
-static void dnj_koj_frame_maya_precommand_set (GtkWidget *button, struct drqmj_koji_maya *info)
-{
-  char buf[BUFFERLEN];
-  char *p;
-	
-	strncpy(buf,gtk_entry_get_text(GTK_ENTRY(info->eprecommand)),BUFFERLEN-1);	
-  gtk_entry_set_text (GTK_ENTRY(info->eprecommand),buf);
-}
-
-static void dnj_koj_frame_maya_postcommand_set (GtkWidget *button, struct drqmj_koji_maya *info)
-{
-  char buf[BUFFERLEN];
-  char *p;
-	
-	strncpy(buf,gtk_entry_get_text(GTK_ENTRY(info->epostcommand)),BUFFERLEN-1);
-  gtk_entry_set_text (GTK_ENTRY(info->epostcommand),buf);
 }
 
 static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info)
