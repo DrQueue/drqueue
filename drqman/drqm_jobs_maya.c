@@ -35,6 +35,8 @@
 #include "drqm_cygwin.h"
 #endif
 
+static void dnj_koj_frame_maya_precommand_set (GtkWidget *button, struct drqmj_koji_maya *info);
+static void dnj_koj_frame_maya_postcommand_set (GtkWidget *button, struct drqmj_koji_maya *info);
 static void dnj_koj_frame_maya_projectdir_search (GtkWidget *button, struct drqmj_koji_maya *info);
 static void dnj_koj_frame_maya_projectdir_set (GtkWidget *button, struct drqmj_koji_maya *info);
 static void dnj_koj_frame_maya_renderdir_search (GtkWidget *button, struct drqmj_koji_maya *info);
@@ -138,6 +140,26 @@ GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
   info->dnj.koji_maya.eimage = entry;
   gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
 
+  /* Pre command */
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Pre command Mel Script:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
+  gtk_tooltips_set_tip(tooltips,entry,"Mel script that will be executed before rendering the Frame",NULL);
+  info->dnj.koji_maya.eprecommand = entry;
+  gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
+
+  /* Post command */
+  hbox = gtk_hbox_new (TRUE,2);
+  gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+  label = gtk_label_new ("Post command Mel Script:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+  entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
+  gtk_tooltips_set_tip(tooltips,entry,"Mel script that will be executed after rendering the Frame",NULL);
+  info->dnj.koji_maya.eprecommand = entry;
+  gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
+
   /* File Owner */
   hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
@@ -219,6 +241,8 @@ GtkWidget *jdd_koj_maya_widgets (struct drqm_jobs_info *info)
 										 "Project directory:", info->jdd.job.koji.maya.projectdir,
 										 "Render directory:", info->jdd.job.koji.maya.renderdir,
 										 "Output image:", info->jdd.job.koji.maya.image,
+										 "Pre Command:", info->jdd.job.koji.maya.precommand,
+										 "Post Command:", info->jdd.job.koji.maya.postcommand,
 										 "View command:", info->jdd.job.koji.maya.viewcmd,
 										 NULL };
   char **cur;
@@ -375,6 +399,24 @@ static void dnj_koj_frame_maya_scene_set (GtkWidget *button, struct drqmj_koji_m
   gtk_entry_set_text (GTK_ENTRY(info->escene),p);
 }
 
+static void dnj_koj_frame_maya_precommand_set (GtkWidget *button, struct drqmj_koji_maya *info)
+{
+  char buf[BUFFERLEN];
+  char *p;
+	
+	strncpy(buf,gtk_entry_get_text(GTK_ENTRY(info->eprecommand)),BUFFERLEN-1);	
+  gtk_entry_set_text (GTK_ENTRY(info->eprecommand),buf);
+}
+
+static void dnj_koj_frame_maya_postcommand_set (GtkWidget *button, struct drqmj_koji_maya *info)
+{
+  char buf[BUFFERLEN];
+  char *p;
+	
+	strncpy(buf,gtk_entry_get_text(GTK_ENTRY(info->epostcommand)),BUFFERLEN-1);
+  gtk_entry_set_text (GTK_ENTRY(info->epostcommand),buf);
+}
+
 static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info)
 {
   struct mayasgi mayasgi;	/* Maya script generator info */
@@ -384,6 +426,8 @@ static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_
   strncpy (mayasgi.renderdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.erenderdir)),BUFFERLEN-1);
   strncpy (mayasgi.projectdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eprojectdir)),BUFFERLEN-1);
   strncpy (mayasgi.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escene)),BUFFERLEN-1);
+  strncpy (mayasgi.precommand,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eprecommand)),BUFFERLEN-1);
+  strncpy (mayasgi.postcommand,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.epostcommand)),BUFFERLEN-1);  
   strncpy (mayasgi.image,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eimage)),BUFFERLEN-1);
   strncpy (mayasgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escript)),BUFFERLEN-1);
   strncpy (mayasgi.file_owner,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.efile_owner)),BUFFERLEN-1);

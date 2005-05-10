@@ -39,6 +39,9 @@ struct mayasgi {		/* Maya Script Generator Info */
   int  res_x,res_y;		/* Resolution of the frame */
   char format[BUFFERLEN];
 	int  mentalray;  // 1 if we should render with mr
+  char precommand[BUFFERLEN]; // allows a prerender command (mel script) to be executed before the render
+  char postcommand[BUFFERLEN]; // allows a postrender command (mel script to be executed after the render
+	
 };
 
 char *mayasg_create (struct mayasgi *info);

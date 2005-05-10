@@ -700,6 +700,8 @@ void job_environment_set (struct job *job, uint32_t iframe)
   static char renderdir[BUFFERLEN];
   static char projectdir[BUFFERLEN];
   static char configdir[BUFFERLEN];
+  static char precommand[BUFFERLEN];
+  static char postcommand[BUFFERLEN];
 	static char scriptfile[BUFFERLEN];
 	static char worldfile[BUFFERLEN];
 	static char terrainfile[BUFFERLEN];
@@ -761,6 +763,10 @@ void job_environment_set (struct job *job, uint32_t iframe)
     putenv (renderdir);
 		snprintf (projectdir,BUFFERLEN-1,"DRQUEUE_PD=%s",job->koji.maya.projectdir);
 		putenv (projectdir);
+		snprintf (precommand,BUFFERLEN-1,"DRQUEUE_PRE=%s",job->koji.maya.precommand);
+		putenv (precommand);
+		snprintf (postcommand,BUFFERLEN-1,"DRQUEUE_POST=%s",job->koji.maya.postcommand);
+		putenv (postcommand);		
     snprintf (image,BUFFERLEN-1,"DRQUEUE_IMAGE=%s",job->koji.maya.image);
     putenv (image);
     break;
