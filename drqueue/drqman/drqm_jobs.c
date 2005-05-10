@@ -451,6 +451,10 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info)
 											 info->jobs[info->row].koji.maya.renderdir);
     gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_maya.eprojectdir),
 											 info->jobs[info->row].koji.maya.projectdir);
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_maya.eprecommand),
+											 info->jobs[info->row].koji.maya.precommand);
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_maya.epostcommand),
+											 info->jobs[info->row].koji.maya.postcommand);											 											 
     gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_maya.eimage),
 											 info->jobs[info->row].koji.maya.image);
     gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_maya.eviewcmd),
@@ -915,6 +919,8 @@ static int dnj_submit (struct drqmj_dnji *info)
     strncpy(job.koji.maya.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escene)),BUFFERLEN-1);
     strncpy(job.koji.maya.renderdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.erenderdir)),BUFFERLEN-1);
 		strncpy(job.koji.maya.projectdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eprojectdir)),BUFFERLEN-1);
+		strncpy(job.koji.maya.precommand,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eprecommand)),BUFFERLEN-1);
+		strncpy(job.koji.maya.precommand,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eprecommand)),BUFFERLEN-1);				
     strncpy(job.koji.maya.image,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eimage)),BUFFERLEN-1);
     strncpy(job.koji.maya.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eviewcmd)),BUFFERLEN-1);
     break;
