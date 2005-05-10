@@ -85,7 +85,9 @@ union koj_info {		/* Kind of job information */
     char scene[BUFFERLEN];
     char renderdir[BUFFERLEN];	/* Output directory for the images */
 		char projectdir[BUFFERLEN];
-    char image[BUFFERLEN];
+		char precommand[BUFFERLEN];
+		char postcommand[BUFFERLEN];				
+		char image[BUFFERLEN];
     char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
   } maya;
   struct koji_mentalray {
