@@ -41,9 +41,9 @@ if ($BLOCK > $DRQUEUE_ENDFRAME) then
 	BLOCK = $DRQUEUE_ENDFRAME;
 endif
 
-echo shake -v -t $DRQUEUE_FRAME-${BLOCK}x$DRQUEUE_STEPFRAME -exec $DRQUEUE_SCRIPT
+echo shake -v -t $DRQUEUE_FRAME-${BLOCK}x$DRQUEUE_STEPFRAME -exec \"$DRQUEUE_SCRIPT\"
 
-shake -v -t $DRQUEUE_FRAME-${BLOCK}x$DRQUEUE_STEPFRAME -exec $DRQUEUE_SCRIPT
+shake -v -t $DRQUEUE_FRAME-${BLOCK}x$DRQUEUE_STEPFRAME -exec "$DRQUEUE_SCRIPT"
 
 # This should requeue the frame if failed
 if ( $? != 0 ) then
