@@ -24,7 +24,7 @@
 # Begin Script
 if ($DRQUEUE_OS == "WINDOWS") then
 		set BLOCK=`"$DRQUEUE_BIN/expr.exe" $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
-		set DRQUEUE_SCENE=`"$DRQUEUE_BIN/cygpath.exe" -w $DRQUEUE_SCENE`
+		set DRQUEUE_SCENE=`"$DRQUEUE_BIN/cygpath.exe" -w "$DRQUEUE_SCENE"`
 else
 		set BLOCK=`expr $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
 endif
