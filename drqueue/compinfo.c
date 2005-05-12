@@ -81,8 +81,8 @@ int main (int argc,char *argv[])
     exit (1);
   }
 
-  if ((njobs = request_job_list (&job,CLIENT)) == -1) {
-    fprintf (stderr,"ERROR: While trying to request the job list: %s\n",drerrno_str());
+  if ((ncomputers = request_computer_list (&computer,CLIENT)) == -1) {
+    fprintf (stderr,"ERROR: While trying to request the computer list: %s\n",drerrno_str());
     exit (1);
   }
 
@@ -91,35 +91,35 @@ int main (int argc,char *argv[])
 		printf ("OP_NONE\n");
 		break;
 	case OP_LIST:
-		print_jobs (job,njobs);
+		print_computers (computer,ncomputers);
 		break;
 	case OP_NUMBER:
-		printf ("%i\n",njobs);
+		printf ("%i\n",ncomputers);
 		break;
 	}
 
   exit (0);
 }
 
-void print_jobs (struct job *job, int njobs)
+void print_computers (struct computer *computer, int ncomputers)
 {
 	int i;
-	for (i=0;i<njobs;i++) {
-		print_job (&job[i]);
+	for (i=0;i<ncomputers;i++) {
+		print_computer (&computer[i]);
 	}
 }
 
-void print_job (struct job *job)
+void print_computer (struct computer *computer)
 {
-	printf ("ID: %i Name: %s\n",job->id,job->name);
+	printf ("ID: %i Name: %s\n",computer->hwinfo.id,computer->hwinfo.name);
 }
 
 void usage (void)
 {
-    fprintf (stderr,"Usage: jobinfo [-vh] -l\n"
+    fprintf (stderr,"Usage: compinfo [-vh] -l\n"
 						 "Valid options:\n"
-						 "\t-l list jobs\n"
-						 "\t-j <job_id>\n"
+						 "\t-l list computers\n"
+						 "\t-j <computer_id>\n"
 						 "\t-v print version\n"
 						 "\t-h print this help\n");
 }
