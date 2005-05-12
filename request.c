@@ -3823,26 +3823,26 @@ int request_computer_list (struct computer **computer, int who)
     return -1;
   }
 
-	if (njobs) {
-		if ((*job = malloc (sizeof (struct job) * njobs)) == NULL) {
+	if (ncomputers) {
+		if ((*computer = malloc (sizeof (struct computer) * ncomputers)) == NULL) {
 			drerrno = DRE_NOMEMORY;
 			close (sfd);
 			return -1;
 		}
 
-		tjob = *job;
-		for (i=0;i<njobs;i++) {
-			if (!recv_job (sfd,tjob)) {
-				fprintf (stderr,"ERROR: Receiving job (drqm_request_joblist)\n");
+		tcomputer = *computer;
+		for (i=0;i<ncomputers;i++) {
+			if (!recv_computer (sfd,tcomputer)) {
+				fprintf (stderr,"ERROR: Receiving computer (request_computer_list)\n");
 				break;
 			}
-			tjob++;
+			tcomputer++;
 		}
 	} else {
-		*job = NULL;
+		*computer = NULL;
 	}
 
   close (sfd);
 
-	return njobs;
+	return ncomputers;
 }
