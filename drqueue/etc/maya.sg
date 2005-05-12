@@ -22,13 +22,21 @@
 #
 #
 
+# Set these, if the environment variables are not already set on the system
+#
+#setenv MAYA_FILE_ICON_PATH Z:/_APPLICATIONS/AliasWavefront/Maya6.5/icons
+#setenv MAYA_PLUG_IN_PATH Z:/_APPLICATIONS/AliasWavefront/Maya6.5/bin/plug-ins
+#setenv MAYA_SCRIPT_PATH Z:/_APPLICATIONS/AliasWavefront/Maya6.5/scripts
+#setenv MAYA_LOCATION Z:/_APPLICATIONS/AliasWavefront/Maya6.5
+#setenv XBMLANGPATH Z:/_APPLICATIONS/AliasWavefront/Maya6.5/icons
+
+
+
 if ($DRQUEUE_OS == "WINDOWS") then
   set BLOCK=`"$DRQUEUE_BIN/expr.exe" $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
   set DRQUEUE_SCENE=`"$DRQUEUE_BIN/cygpath.exe" -w $DRQUEUE_SCENE`
   set DRQUEUE_RD=`"$DRQUEUE_BIN/cygpath.exe" -w $DRQUEUE_RD`
 	set DRQUEUE_PD=`"$DRQUEUE_BIN/cygpath.exe" -w $DRQUEUE_PD`
-	set DRQUEUE_PRE=`"$DRQUEUE_BIN/cygpath.exe" -w $DRQUEUE_PRE`
-	set DRQUEUE_POST=`"$DRQUEUE_BIN/cygpath.exe" -w $DRQUEUE_POST`
 else
   set BLOCK=`expr $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
 endif
