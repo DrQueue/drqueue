@@ -35,8 +35,6 @@
 #include "drqm_cygwin.h"
 #endif
 
-static void dnj_koj_frame_maya_precommand_set (GtkWidget *button, struct drqmj_koji_maya *info);
-static void dnj_koj_frame_maya_postcommand_set (GtkWidget *button, struct drqmj_koji_maya *info);
 static void dnj_koj_frame_maya_projectdir_search (GtkWidget *button, struct drqmj_koji_maya *info);
 static void dnj_koj_frame_maya_projectdir_set (GtkWidget *button, struct drqmj_koji_maya *info);
 static void dnj_koj_frame_maya_renderdir_search (GtkWidget *button, struct drqmj_koji_maya *info);
