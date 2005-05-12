@@ -60,7 +60,7 @@ char *aftereffectssg_create (struct aftereffectssgi *info)
 #ifdef __CYGWIN
   cygwin_conv_to_posix_path(info->project, project);
 #else
-  strcpy(project,info->project,MAXCMDLEN-1);
+  strncpy(project,info->project,MAXCMDLEN-1);
 #endif
 
   p = strrchr(project,'/');
