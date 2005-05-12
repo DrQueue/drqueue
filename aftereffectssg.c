@@ -44,6 +44,7 @@ char *aftereffectssg_create (struct aftereffectssgi *info)
   char buf[BUFFERLEN];
 	int size;
   char *p;			/* Scene filename without path */
+	char project[MAXCMDLEN];
 
   /* Check the parameters */
   if (!strlen(info->project)) {
@@ -56,8 +57,14 @@ char *aftereffectssg_create (struct aftereffectssgi *info)
 		return NULL;
 	}
 
-  p = strrchr(info->project,'/');
-  p = ( p ) ? p+1 : info->project;
+#ifdef __CYGWIN
+  cygwin_conv_to_posix_path(info->project, project);
+#else
+  strcpy(project,info->project,MAXCMDLEN-1);
+#endif
+
+  p = strrchr(project,'/');
+  p = ( p ) ? p+1 : project;
   snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
   if ((f = fopen (filename, "a")) == NULL) {
