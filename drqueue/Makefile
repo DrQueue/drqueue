@@ -77,7 +77,7 @@ endif
 
 all: base drqman
 
-base: slave master requeue sendjob jobfinfo blockhost cjob jobinfo
+base: slave master requeue sendjob jobfinfo blockhost cjob jobinfo compinfo
 
 install: miniinstall $(systype)_install 
 
@@ -257,6 +257,9 @@ blockhost.o: blockhost.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 cjob: cjob.o libdrqueue.a
 cjob.o: cjob.c
+	$(CC) -c $(CFLAGS) -o $@ $<
+compinfo: compinfo.o libdrqueue.a
+compinfo.o: compinfo.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 sendjob: sendjob.o libdrqueue.a

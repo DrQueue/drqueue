@@ -142,9 +142,6 @@ void drqm_request_computerlist (struct drqm_computers_info *info)
 			if (!recv_computer (sfd,tcomputer)) {
 				fprintf (stderr,"ERROR: Receiving computer structure (drqm_request_computerlist) [%i]\n",i);
 				fflush(stderr);
-				//tcomputer--;
-				//info->ncomputers--;
-				//i--;
 				exit (1);  // FIXME: should free pool shared memory from other received computers
 			}
 			tcomputer++;
