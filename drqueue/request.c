@@ -3787,3 +3787,62 @@ int request_job_list (struct job **job, int who)
 
 	return njobs;
 }
+
+int request_computer_list (struct computer **computer, int who)
+{
+  struct request req;
+  int sfd;
+  struct computer *tcomputer;
+	int ncomputers;
+  int i;
+
+  if ((sfd = connect_to_master ()) == -1) {
+		drerrno = DRE_NOCONNECT;
+    return -1;
+  }
+
+  req.type = R_R_LISTCOMP;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORWRITING;
+		close (sfd);
+    return -1;
+  }
+
+  if (!recv_request (sfd,&req)) {
+		drerrno = DRE_ERRORREADING;
+    close (sfd);
+    return -1;
+  }
+
+  if (req.type == R_R_LISTCOMP) {
+    ncomputers = req.data;
+  } else {
+		drerrno = DRE_ANSWERNOTRIGHT;
+    close (sfd);
+    return -1;
+  }
+
+	if (njobs) {
+		if ((*job = malloc (sizeof (struct job) * njobs)) == NULL) {
+			drerrno = DRE_NOMEMORY;
+			close (sfd);
+			return -1;
+		}
+
+		tjob = *job;
+		for (i=0;i<njobs;i++) {
+			if (!recv_job (sfd,tjob)) {
+				fprintf (stderr,"ERROR: Receiving job (drqm_request_joblist)\n");
+				break;
+			}
+			tjob++;
+		}
+	} else {
+		*job = NULL;
+	}
+
+  close (sfd);
+
+	return njobs;
+}
