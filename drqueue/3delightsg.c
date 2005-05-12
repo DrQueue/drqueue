@@ -53,7 +53,7 @@ char *threedelightsg_create (struct threedelightsgi *info)
 #ifdef __CYGWIN
   cygwin_conv_to_posix_path(info->scene, scene);
 #else
-  strcpy(scene,info->scene,MAXCMDLEN-1);
+  strncpy(scene,info->scene,MAXCMDLEN-1);
 #endif
 
   p = strrchr(scene,'/');
