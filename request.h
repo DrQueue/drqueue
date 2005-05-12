@@ -99,6 +99,7 @@ void update_computer_status (struct slave_database *database); /* The slave call
 void update_computer_limits (struct computer_limits *limits);
 
 void register_slave (struct computer *computer);
+int request_computer_list (struct computer **computer, int who);
 int register_job (struct job *job);
 int request_job_available (struct slave_database *sdb);
 void request_task_finished (struct slave_database *sdb);
