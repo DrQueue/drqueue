@@ -7,11 +7,11 @@
 #
 # IMPORTANT: Shake variables to be set
 #
-NR_SHAKE_LOCATION= (location of the shake executable)
-NR_INCLUDE_PATH= (location of the includes)
-NR_ICON_PATH= (location of the icons)
-LM_LICENSE_FILE= (location of the license file)
-USERPROFILE= this could be any temp directory, but has to exist for shake to render
+#setenv NR_SHAKE_LOCATION= (location of the shake executable)
+#setenv NR_INCLUDE_PATH= (location of the includes)
+#setenv NR_ICON_PATH= (location of the icons)
+#setenv LM_LICENSE_FILE= (location of the license file)
+#setenv USERPROFILE= (this could be any temp directory, but has to exist for shake to render)
 
 #
 # For platform dependend environment setting a form like this
