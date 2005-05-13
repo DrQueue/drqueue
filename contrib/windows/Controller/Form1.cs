@@ -258,6 +258,8 @@ namespace ServicesController
 			int windowStyle = GetWindowLong(Handle, GWL_EXSTYLE);
 			SetWindowLong(Handle, GWL_EXSTYLE, windowStyle | WS_EX_TOOLWINDOW);
 
+					Activate(SLAVE, "-f");
+
 			if ((IsSlave == "1") && !IsActive(SLAVE))
 			{
 				try
@@ -266,13 +268,14 @@ namespace ServicesController
 					{
 						serviceControllerIpc.Start();
 						System.Threading.Thread.Sleep(1000);
+						Activate(SLAVE, "-f");
 					}
+					Activate(SLAVE, "-f");
 				}
 				catch(System.Exception ex)
 				{
 					//statusBar1.Text = ex.Message;
 				}
-				//Activate(SLAVE, "-f");
 			}
 			timer1.Start();
 		}
