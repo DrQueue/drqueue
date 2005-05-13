@@ -495,6 +495,8 @@ void job_update_info (struct database *wdb,uint32_t ijob)
 				wdb->job[ijob].est_finish_time = time(NULL);
 				if (wdb->job[ijob].flags & JF_MAILNOTIFY)
 					mn_job_finished (&wdb->job[ijob]); /* Mail no	tification */
+				if (wdb->job[ijob].flags & JF_JOBDELETE)
+					job_delete (&wdb->job[ijob]);
       } else {
 				wdb->job[ijob].status = JOBSTATUS_WAITING;
       }

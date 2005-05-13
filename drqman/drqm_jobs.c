@@ -436,7 +436,9 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info)
 		snprintf(buf,BUFFERLEN,"%i",info->jobs[info->row].dependid);
 		gtk_entry_set_text (GTK_ENTRY(info->dnj.flags.ejobdepend),buf);
 	}
-
+	if (info->jobs[info->row].flags & JF_JOBDELETE) {
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.flags.cbjobdelete),TRUE);
+	}
 
   /* KOJ */
   switch (info->jobs[info->row].koj) {
@@ -592,7 +594,6 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info)
     gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_terragen.eviewcmd),
 											 info->jobs[info->row].koji.terragen.viewcmd);
 	  break;
-
   }
 }
 
@@ -979,9 +980,9 @@ static int dnj_submit (struct drqmj_dnji *info)
     strncpy(job.koji.pixie.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_pixie.eviewcmd)),BUFFERLEN-1);
     break;  
   case KOJ_AQSIS:
-	strncpy(job.koji.aqsis.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_aqsis.escene)),BUFFERLEN-1);
-	strncpy(job.koji.aqsis.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_aqsis.eviewcmd)),BUFFERLEN-1);
-	break;
+		strncpy(job.koji.aqsis.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_aqsis.escene)),BUFFERLEN-1);
+		strncpy(job.koji.aqsis.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_aqsis.eviewcmd)),BUFFERLEN-1);
+		break;
   case KOJ_3DELIGHT:
     strncpy(job.koji.threedelight.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_3delight.escene)),BUFFERLEN-1);
     strncpy(job.koji.threedelight.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_3delight.eviewcmd)),BUFFERLEN-1);
@@ -1052,7 +1053,10 @@ static int dnj_submit (struct drqmj_dnji *info)
 		job.flags |= JF_JOBDEPEND;
 		job.dependid = atoi (gtk_entry_get_text(GTK_ENTRY(info->flags.ejobdepend)));
 	}
-
+	if (GTK_TOGGLE_BUTTON(info->flags.cbjobdelete)->active) {
+		job.flags |= JF_JOBDELETE;
+	}
+	
   if (!register_job (&job))
     return 0;
 
@@ -1348,14 +1352,14 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
       info->dnj.fkoj = dnj_koj_frame_blender (info);
       gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
       break;
-	case KOJ_BMRT:
-	  info->dnj.fkoj = dnj_koj_frame_bmrt (info);
+		case KOJ_BMRT:
+			info->dnj.fkoj = dnj_koj_frame_bmrt (info);
       gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
       break;
-	case KOJ_AQSIS:
-	  info->dnj.fkoj = dnj_koj_frame_aqsis (info);
-	  gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
-	  break;
+		case KOJ_AQSIS:
+			info->dnj.fkoj = dnj_koj_frame_aqsis (info);
+			gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
+			break;
     case KOJ_PIXIE:
       info->dnj.fkoj = dnj_koj_frame_pixie (info);
       gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
@@ -1568,6 +1572,21 @@ GtkWidget *dnj_flags_widgets (struct drqm_jobs_info *info)
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.flags.cbjobdepend),FALSE);
   gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.flags.ejobdepend),FALSE);
 	gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.flags.bjobdepend),FALSE);
+
+	// Delete job when finished
+	hbox = gtk_hbox_new (TRUE,2);
+	gtk_box_pack_start (GTK_BOX(vbox),hbox,TRUE,FALSE,2);
+	
+	cbutton = gtk_check_button_new_with_label ("Delete job when finished");
+	gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
+	gtk_tooltips_set_tip(tooltips,cbutton,"If you set this flag the job will be deleted once all frames are processed. Be careful, "
+											 "that doesn't mean that they are properly rendered.", NULL);
+	info->dnj.flags.cbjobdelete = cbutton;
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(info->dnj.flags.cbjobdelete),FALSE);
+	cbutton = gtk_label_new(NULL);
+	gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
+	cbutton = gtk_label_new(NULL);
+	gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
 
   return (frame);
 }

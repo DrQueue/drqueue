@@ -2133,6 +2133,14 @@ GtkWidget *jdd_flags_widgets (struct drqm_jobs_info *info)
 		gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
 	}
 
+	// Job deleted when finished
+	if (info->jdd.job.flags & JF_JOBDELETE) {
+		hbox = gtk_hbox_new (TRUE,2);
+		gtk_box_pack_start (GTK_BOX(vbox),hbox,TRUE,FALSE,2);
+		label = gtk_label_new ("Job will be deleted when finished");
+		gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+	}
+
   return (frame);
 }
 
