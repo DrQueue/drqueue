@@ -99,6 +99,7 @@ void update_computer_status (struct slave_database *database); /* The slave call
 void update_computer_limits (struct computer_limits *limits);
 
 void register_slave (struct computer *computer);
+int request_comp_xfer (uint32_t icomp, struct computer *comp, int who);
 int request_computer_list (struct computer **computer, int who);
 int register_job (struct job *job);
 int request_job_available (struct slave_database *sdb);
@@ -111,7 +112,6 @@ int request_job_continue (uint32_t ijob, int who);
 int request_job_rerun (uint32_t ijob, int who);
 int request_job_xfer (uint32_t ijob, struct job *job, int who);
 int request_job_xferfi (uint32_t ijob, struct frame_info *fi, int nframes, int who);
-int request_comp_xfer (uint32_t icomp, struct computer *comp, int who);
 int request_job_frame_waiting (uint32_t ijob, uint32_t frame, int who);
 int request_job_frame_kill (uint32_t ijob, uint32_t frame, int who);
 int request_job_frame_finish (uint32_t ijob, uint32_t frame, int who);
