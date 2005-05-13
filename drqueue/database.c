@@ -76,7 +76,7 @@ database_load (struct database *wdb)
 #ifdef __CYGWIN
 	snprintf (filename, BUFFERLEN - 1, "%s/drqueue.db", basedir);
 #else
-	snprintf (filename, BUFFERLEN - 1, "%s\drqueue.db", basedir);
+	snprintf (filename, BUFFERLEN - 1, "%s\\drqueue.db", basedir);
 #endif
 
 	if ((fd = open (filename, O_RDONLY)) == -1) {
@@ -160,7 +160,7 @@ database_save (struct database *wdb)
 #ifdef __CYGWIN
 	snprintf (filename, BUFFERLEN - 1, "%s/drqueue.db", dir);
 #else
-	snprintf (filename, BUFFERLEN - 1, "%s\drqueue.db", dir);
+	snprintf (filename, BUFFERLEN - 1, "%s\\drqueue.db", dir);
 #endif
 	if ((fd = open (filename, O_CREAT | O_TRUNC | O_RDWR, 0664)) == -1) {
 		if (errno == ENOENT) {
