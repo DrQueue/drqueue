@@ -58,6 +58,7 @@ struct drqmj_flags {
 	GtkWidget *bjobdepend;        // Show a list
 	GtkListStore *store;					// List of jobs
 	GtkTreeView *view;
+	GtkWidget *cbjobdelete;       // Delete job when finished
 };
 
 struct drqmj_dnji {							/* dialog new job info */
