@@ -67,11 +67,20 @@ database_load (struct database *wdb)
 	struct frame_info *fi;
 	int nframes;
 
+#ifdef __CYGWIN
+	char posix_path[BUFFERLEN];
+#endif
+
 	if ((basedir = getenv ("DRQUEUE_DB")) == NULL) {
 		/* This should never happen because we check it at the beginning of the program */
 		drerrno = DRE_NOENVROOT;
 		return 0;
 	}
+
+#ifdef __CYGWIN
+	cygwin_conv_to_posix_path (basedir,posix_path);
+	basedir = posix_path;
+#endif
 
 	snprintf (filename, BUFFERLEN - 1, "%s/drqueue.db", basedir);
 	if ((fd = open (filename, O_RDONLY)) == -1) {
@@ -145,11 +154,20 @@ database_save (struct database *wdb)
 	int c;
 	struct frame_info *fi;
 
+#ifdef __CYGWIN
+	char posix_path[BUFFERLEN];
+#endif
+
 	if ((basedir = getenv ("DRQUEUE_DB")) == NULL) {
 		/* This should never happen because we check it at the beginning of the program */
 		drerrno = DRE_NOENVROOT;
 		return 0;
 	}
+
+#ifdef __CYGWIN
+	cygwin_conv_to_posix_path (basedir,posix_path);
+	basedir = posix_path;
+#endif
 
 	snprintf (dir, BUFFERLEN - 1, "%s", basedir);
 	snprintf (filename, BUFFERLEN - 1, "%s/drqueue.db", dir);
