@@ -67,10 +67,6 @@ database_load (struct database *wdb)
 	struct frame_info *fi;
 	int nframes;
 
-#ifdef __CYGWIN
-	char posix_path[BUFFERLEN];
-#endif
-
 	if ((basedir = getenv ("DRQUEUE_DB")) == NULL) {
 		/* This should never happen because we check it at the beginning of the program */
 		drerrno = DRE_NOENVROOT;
@@ -78,11 +74,11 @@ database_load (struct database *wdb)
 	}
 
 #ifdef __CYGWIN
-	cygwin_conv_to_posix_path (basedir,posix_path);
-	basedir = posix_path;
+	snprintf (filename, BUFFERLEN - 1, "%s/drqueue.db", basedir);
+#else
+	snprintf (filename, BUFFERLEN - 1, "%s\drqueue.db", basedir);
 #endif
 
-	snprintf (filename, BUFFERLEN - 1, "%s/drqueue.db", basedir);
 	if ((fd = open (filename, O_RDONLY)) == -1) {
 		drerrno = DRE_ERROROPENING;
 		return 0;
@@ -154,23 +150,18 @@ database_save (struct database *wdb)
 	int c;
 	struct frame_info *fi;
 
-#ifdef __CYGWIN
-	char posix_path[BUFFERLEN];
-#endif
-
 	if ((basedir = getenv ("DRQUEUE_DB")) == NULL) {
 		/* This should never happen because we check it at the beginning of the program */
 		drerrno = DRE_NOENVROOT;
 		return 0;
 	}
 
-#ifdef __CYGWIN
-	cygwin_conv_to_posix_path (basedir,posix_path);
-	basedir = posix_path;
-#endif
-
 	snprintf (dir, BUFFERLEN - 1, "%s", basedir);
+#ifdef __CYGWIN
 	snprintf (filename, BUFFERLEN - 1, "%s/drqueue.db", dir);
+#else
+	snprintf (filename, BUFFERLEN - 1, "%s\drqueue.db", dir);
+#endif
 	if ((fd = open (filename, O_CREAT | O_TRUNC | O_RDWR, 0664)) == -1) {
 		if (errno == ENOENT) {
 			/* If its because the directory does not exist we try creating it first */
