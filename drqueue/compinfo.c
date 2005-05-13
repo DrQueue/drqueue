@@ -33,11 +33,13 @@
 void usage (void);
 void print_computers (struct computer *computer, int ncomputers);
 void print_computer (struct computer *computer);
+void print_computer_details (struct computer *computer);
 
 enum operation {
 	OP_NONE,
 	OP_NUMBER,
-	OP_LIST
+	OP_LIST,
+	OP_DETAILS
 };
 
 int main (int argc,char *argv[])
@@ -48,8 +50,11 @@ int main (int argc,char *argv[])
 	int ncomputers;
 	enum operation op = OP_NONE;
 
-  while ((opt = getopt (argc,argv,"lnc:vh")) != -1) {
+  while ((opt = getopt (argc,argv,"lndc:vh")) != -1) {
     switch (opt) {
+		case 'd':
+			op = OP_DETAILS;
+			break;
     case 'c':
       icomp = atoi (optarg);
       break;
@@ -81,21 +86,41 @@ int main (int argc,char *argv[])
     exit (1);
   }
 
-  if ((ncomputers = request_computer_list (&computer,CLIENT)) == -1) {
-    fprintf (stderr,"ERROR: While trying to request the computer list: %s\n",drerrno_str());
-    exit (1);
-  }
-
 	switch (op) {
 	case OP_NONE:
 		printf ("OP_NONE\n");
 		break;
 	case OP_LIST:
+		if ((ncomputers = request_computer_list (&computer,CLIENT)) == -1) {
+			fprintf (stderr,"ERROR: While trying to request the computer list: %s\n",drerrno_str());
+			exit (1);
+		}
 		print_computers (computer,ncomputers);
 		break;
 	case OP_NUMBER:
+		if ((ncomputers = request_computer_list (&computer,CLIENT)) == -1) {
+			fprintf (stderr,"ERROR: While trying to request the computer list: %s\n",drerrno_str());
+			exit (1);
+		}
 		printf ("%i\n",ncomputers);
 		break;
+	case OP_DETAILS:
+		if (icomp != -1) {
+			computer = (struct computer *) malloc (sizeof (struct computer));
+			computer_init(computer);
+			if (!computer) {
+				fprintf (stderr,"ERROR: Not enough memory\n");
+				exit (1);
+			}
+			if (!request_comp_xfer(icomp,computer,CLIENT)) {
+				fprintf (stderr,"ERROR: While trying to request the computer transfer: %s\n",drerrno_str());
+				exit (1);
+			}
+			print_computer_details (computer);
+		} else {
+			fprintf (stderr,"You need to specify the computer id using -c <computer_id>\n");
+			exit(1);
+		}
 	}
 
   exit (0);
@@ -114,12 +139,19 @@ void print_computer (struct computer *computer)
 	printf ("ID: %i Name: %s\n",computer->hwinfo.id,computer->hwinfo.name);
 }
 
+void print_computer_details (struct computer *computer)
+{
+	printf ("ID: %i Name: %s\n",computer->hwinfo.id,computer->hwinfo.name);
+}
+
 void usage (void)
 {
-    fprintf (stderr,"Usage: compinfo [-vh] -l\n"
+    fprintf (stderr,"Usage: compinfo [-vh] -l|-n\n"
 						 "Valid options:\n"
 						 "\t-l list computers\n"
-						 "\t-j <computer_id>\n"
+						 "\t-d single computer details (needs -c)\n"
+						 "\t-n returns the number of computers\n"
+						 "\t-c <computer_id>\n"
 						 "\t-v print version\n"
 						 "\t-h print this help\n");
 }
