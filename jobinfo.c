@@ -119,6 +119,7 @@ void usage (void)
     fprintf (stderr,"Usage: jobinfo [-vh] -l\n"
 						 "Valid options:\n"
 						 "\t-l list jobs\n"
+						 "\t-n returns the number of jobs\n"
 						 "\t-j <job_id>\n"
 						 "\t-v print version\n"
 						 "\t-h print this help\n");
