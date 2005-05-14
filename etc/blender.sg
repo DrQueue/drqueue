@@ -1,0 +1,52 @@
+#
+# THIS IS A TCSH SCRIPT FILE
+# 
+# Default configuration for Blender script generator
+# You can set the environment variables here (csh style)
+
+#
+# For platform dependend environment setting a form like this
+# can be used :
+#
+#
+# if ($DRQUEUE_OS == "LINUX") then
+#    # Environment for Linux
+# else if ($DRQUEUE_OS == "IRIX") then
+#    # Environment for Irix
+# else
+#    # Some error messages
+# endif
+#
+# The same structure can be used with the Render command
+#
+#
+
+if ($DRQUEUE_OS == "WINDOWS") then
+  set BLOCK=`"$DRQUEUE_BIN/expr.exe" $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
+  set SCENE=`"$DRQUEUE_BIN/cygpath.exe" -w "$SCENE"`
+else
+  set BLOCK=`expr $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
+endif
+if ($BLOCK > $DRQUEUE_ENDFRAME) then
+	BLOCK = $DRQUEUE_ENDFRAME;
+endif
+
+echo blender -b \"$SCENE\" -s $DRQUEUE_FRAME -e $BLOCK -a
+
+blender -b "$SCENE" -s $DRQUEUE_FRAME -e $BLOCK -a
+
+# This should requeue the frame if failed
+if ( $? != 0 ) then
+  echo "Requeueing frame..."
+  kill -INT $$
+else
+  #if ($DRQUEUE_OS != "WINDOWS") then
+    # The frame was rendered properly
+    # We don't know the output image name. If we knew we could set this correctly
+    # chown_block $RF_OWNER $RD/$IMAGE $DRQUEUE_FRAME $BLOCK 
+  #endif
+endif
+
+#
+# Notice that the exit code of the last command is received by DrQueue
+#

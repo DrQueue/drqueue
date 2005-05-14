@@ -1,0 +1,30 @@
+DrQueue - The Open Source Distributed Render Queue
+--------------------------------------------------
+
+DrQueue is the Open Source Distributed Render Queue. It is the Open
+Source alternative to other comercial products. It has been tested on
+renderfarms with more 200 processors and mixed architectures.
+
+DrQueue has been coded and is maintained by Jorge Daza <jorge@drqueue.org>
+though you can find a list of contributors on the CREDITS file.
+
+DrQueue runs on Linux, Irix, FreeBSD, Mac OS X and Windows at the time of this
+writing. Also has scripts generators for Maya, Blender, BMRT, Pixie, Lightwave,
+3Delight and mental ray.  But it can handle any other renderer or application
+that supports command line.
+
+DrQueue if fully scriptable, through it's API one can code complex
+distributed systems but out of the box is easily managed by advanced end
+users.
+
+You can find everything you might need in it's web site:
+http://www.drqueue.org/
+
+Also there is an anonymous svn repository where you can get the latest
+development version. Please give feedback through the forums, email or
+bug tracker, regarding any issue that might arise.
+
+You can also find some of us at #drqueue in irc.freenode.net 
+
+Happy Hacking.
+

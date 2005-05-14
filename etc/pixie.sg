@@ -1,0 +1,44 @@
+#
+# THIS IS A TCSH SCRIPT FILE
+# 
+# Default configuration for Pixie script generator
+# You can set the environment variables here (csh style)
+
+#
+# For platform dependend environment setting a form like this
+# can be used :
+#
+#
+# if ($DRQUEUE_OS == "LINUX") then
+#    # Environment for Linux
+# else if ($DRQUEUE_OS == "IRIX") then
+#    # Environment for Irix
+# else
+#    # Some error messages
+# endif
+#
+# The same structure can be used with the render command
+#
+#
+
+# Begin Script
+
+echo "rndr -f $DRQUEUE_FRAME $RIBFILE"
+
+set RIBFILE_TMP = "$RIBFILE"'-'$DRQUEUE_FRAME
+
+awk '{if ($1 == "FrameBegin" && $2 == frame) x=1}; {if (x==1) print}; {if ($1 == "FrameEnd") x=0}' frame=$DRQUEUE_FRAME "$RIBFILE" > "$RIBFILE_TMP"
+
+rndr "$RIBFILE_TMP"
+
+rm $RIBFILE_TMP
+
+# This should requeue the frame if failed
+if ( $? != 0 ) then
+  echo "Requeueing frame..."
+  kill -INT $$
+endif
+
+#
+# Notice that the exit code of the last command is received by DrQueue
+#
