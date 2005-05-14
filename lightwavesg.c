@@ -16,7 +16,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
-// $Id: nukesg.c 1251 2005-05-02 02:35:47Z jorge $
+// $Id$
 //
 
 #include <stdio.h>
@@ -28,7 +28,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "nukesg.h"
+#include "lightwavesg.h"
 #include "libdrqueue.h"
 
 #ifdef __CYGWIN
@@ -36,20 +36,22 @@
 #endif
 
 
-char *nukesg_create (struct nukesgi *info)
+char *lightwavesg_create (struct lightwavesgi *info)
 {
-  /* This function creates the nuke render script based on the information given */
+  /* This function creates the lightwave render script based on the information given */
   /* Returns a pointer to a string containing the path of the just created file */
   /* Returns NULL on failure and sets drerrno */
   FILE *f;
-  FILE *etc_nuke_sg; 		/* The nuke script generator configuration file */
-  int fd_etc_nuke_sg,fd_f;
+  FILE *etc_lightwave_sg; 		/* The lightwave script generator configuration file */
+  int fd_etc_lightwave_sg,fd_f;
   static char filename[BUFFERLEN];
-  char fn_etc_nuke_sg[BUFFERLEN]; /* File name pointing to DRQUEUE_ETC/nuke.sg */
+  char fn_etc_lightwave_sg[BUFFERLEN]; /* File name pointing to DRQUEUE_ETC/lightwave.sg */
   char buf[BUFFERLEN];
   int size;
   char *p;			/* Scene filename without path */
   char *scene;
+  char *projectdir;
+  char *configdir;
 
   /* Check the parameters */
   if ((!strlen(info->scene))) {
@@ -59,9 +61,15 @@ char *nukesg_create (struct nukesgi *info)
 
 #ifdef __CYGWIN
   if ((scene = malloc(MAXCMDLEN)) == NULL) return (NULL);
+  if ((projectdir = malloc(MAXCMDLEN)) == NULL) return (NULL);
+  if ((configdir = malloc(MAXCMDLEN)) == NULL) return (NULL);
   cygwin_conv_to_posix_path(info->scene, scene);
+  cygwin_conv_to_posix_path(info->projectdir, projectdir);
+  cygwin_conv_to_posix_path(info->configdir, configdir);
 #else
   scene = info->scene;
+  projectdir = info->projectdir;
+  configdir = info->configdir;
 #endif
 
   p = strrchr(scene,'/');
@@ -88,6 +96,8 @@ char *nukesg_create (struct nukesgi *info)
 
   /* So now we have the file open and so we must write to it */
   fprintf(f,"#!/bin/tcsh\n\n");
+  fprintf(f,"set DRQUEUE_PD=\"%s\"\n",info->projectdir);
+  fprintf(f,"set DRQUEUE_CD=\"%s\"\n",info->configdir);
   fprintf(f,"set DRQUEUE_SCENE=\"%s\"\n",info->scene);
   fprintf(f,"set RF_OWNER=%s\n",info->file_owner);
   if (strlen(info->format)) {
@@ -103,24 +113,24 @@ char *nukesg_create (struct nukesgi *info)
     fprintf(f,"set CAMERA=%s\n",info->camera);
   }
 	
-  snprintf(fn_etc_nuke_sg,BUFFERLEN-1,"%s/nuke.sg",getenv("DRQUEUE_ETC"));
+  snprintf(fn_etc_lightwave_sg,BUFFERLEN-1,"%s/lightwave.sg",getenv("DRQUEUE_ETC"));
 
   fflush (f);
 
-  if ((etc_nuke_sg = fopen (fn_etc_nuke_sg,"r")) == NULL) {
+  if ((etc_lightwave_sg = fopen (fn_etc_lightwave_sg,"r")) == NULL) {
     fprintf(f,"\necho -------------------------------------------------\n");
-    fprintf(f,"echo ATTENTION ! There was a problem opening: %s\n",fn_etc_nuke_sg);
+    fprintf(f,"echo ATTENTION ! There was a problem opening: %s\n",fn_etc_lightwave_sg);
     fprintf(f,"echo So the default configuration will be used\n");
     fprintf(f,"echo -------------------------------------------------\n");
     fprintf(f,"\n\n");
-    fprintf(f,"nuke -x $DRQUEUE_SCENE $DRQUEUE_FRAME-$DRQUEUE_FRAME\n\n");
+    fprintf(f,"lwsn -3 -d$DRQUEUE_PD -q$DRQUEUE_SCENE $DRQUEUE_FRAME $DRQUEUE_FRAME 1\n\n");
   } else {
-    fd_etc_nuke_sg = fileno (etc_nuke_sg);
+    fd_etc_lightwave_sg = fileno (etc_lightwave_sg);
     fd_f = fileno (f);
-    while ((size = read (fd_etc_nuke_sg,buf,BUFFERLEN)) != 0) {
+    while ((size = read (fd_etc_lightwave_sg,buf,BUFFERLEN)) != 0) {
       write (fd_f,buf,size);
     }
-    fclose(etc_nuke_sg);
+    fclose(etc_lightwave_sg);
   }
 
   fclose(f);
@@ -129,7 +139,7 @@ char *nukesg_create (struct nukesgi *info)
 }
 
 
-char *nukesg_default_script_path (void)
+char *lightwavesg_default_script_path (void)
 {
   static char buf[BUFFERLEN];
   char *p;
@@ -138,17 +148,10 @@ char *nukesg_default_script_path (void)
     return ("/drqueue_tmp/not/set/");
   }
  
-#ifdef __CYGWIN	 
-  if (p[strlen(p)-1] == '\\')
-		snprintf (buf,BUFFERLEN-1,"%s",p);
-	else
-		snprintf (buf,BUFFERLEN-1,"%s\\",p);
-#else
   if (p[strlen(p)-1] == '/')
 		snprintf (buf,BUFFERLEN-1,"%s",p);
 	else
 		snprintf (buf,BUFFERLEN-1,"%s/",p);
-#endif
 
   return buf;
 }

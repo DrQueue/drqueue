@@ -28,43 +28,32 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "shakesg.h"
+#include "pixiesg.h"
 #include "libdrqueue.h"
 
-#ifdef __CYGWIN
-void cygwin_conv_to_posix_path(const char *path, char *posix_path);
-#endif
-
-char *shakesg_create (struct shakesgi *info)
+char *pixiesg_create (struct pixiesgi *info)
 {
-  /* This function creates the shake render script based on the information given */
+	/* This function creates the pixie render script based on the information given */
   /* Returns a pointer to a string containing the path of the just created file */
   /* Returns NULL on failure and sets drerrno */
   FILE *f;
-  FILE *etc_shake_sg; 		/* The shake script generator configuration file */
-  int fd_etc_shake_sg,fd_f;
+  FILE *etc_pixie_sg; 		/* The pixie script generator configuration file */
+  int fd_etc_pixie_sg,fd_f;
   static char filename[BUFFERLEN];
-  char fn_etc_shake_sg[BUFFERLEN]; /* File name pointing to DRQUEUE_ETC/shake.sg */
+  char fn_etc_pixie_sg[BUFFERLEN]; /* File name pointing to DRQUEUE_ETC/pixie.sg */
   char buf[BUFFERLEN];
 	int size;
-  char *p;			/* Script filename without path */
-	char *script;
+  char *p;			/* Scene filename without path */
 
   /* Check the parameters */
-  if (!strlen(info->script)) {
+  if (!strlen(info->scene)) {
     drerrno = DRE_NOTCOMPLETE;
     return NULL;
   }
-#ifdef __CYGWIN
-  if ((script = malloc(MAXCMDLEN)) == NULL) return (NULL);
-  cygwin_conv_to_posix_path(info->script, script);
-#else
-  script = info->script;
-#endif
 
-  p = strrchr(script,'/');
-  p = ( p ) ? p+1 : script;
-  snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
+  p = strrchr(info->scene,'/');
+  p = ( p ) ? p+1 : info->scene;
+  snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,time(NULL));
 
   if ((f = fopen (filename, "a")) == NULL) {
     if (errno == ENOENT) {
@@ -86,26 +75,52 @@ char *shakesg_create (struct shakesgi *info)
 
   /* So now we have the file open and so we must write to it */
   fprintf(f,"#!/bin/tcsh\n\n");
-  fprintf(f,"set DRQUEUE_SCRIPT=\"%s\"\n",info->script);
+  fprintf(f,"set RIBFILE=%s\n",info->scene);
+  /*
+	fprintf(f,"set CUSTOM_CROP=%u\n",info->custom_crop);
+	if (info->custom_crop) {
+		fprintf(f,"set CROP_XMIN=%u\n",info->xmin);
+		fprintf(f,"set CROP_XMAX=%u\n",info->xmax);
+		fprintf(f,"set CROP_YMIN=%u\n",info->ymin);
+		fprintf(f,"set CROP_YMAX=%u\n",info->ymax);
+	}
+	fprintf(f,"set CUSTOM_SAMPLES=%u\n",info->custom_samples);
+	if (info->custom_samples) {
+		fprintf(f,"set XSAMPLES=%u\n",info->xsamples);
+		fprintf(f,"set YSAMPLES=%u\n",info->ysamples);
+	}
+	fprintf(f,"set DISP_STATS=%u\n",info->disp_stats);
+	fprintf(f,"set VERBOSE=%u\n",info->verbose);
+	fprintf(f,"set CUSTOM_BEEP=%u\n",info->custom_beep);
+	fprintf(f,"set CUSTOM_RADIOSITY=%u\n",info->custom_radiosity);
+	if (info->custom_radiosity) {
+		fprintf(f,"set RADIOSITY_SAMPLES=%u\n",info->radiosity_samples);
+	}
+	fprintf(f,"set CUSTOM_RAYSAMPLES=%u\n",info->custom_raysamples);
+	if (info->custom_raysamples) {
+		fprintf(f,"set RAYSAMPLES=%u\n",info->raysamples);
+	}
+  */
+	
+	
 
-  snprintf(fn_etc_shake_sg,BUFFERLEN-1,"%s/shake.sg",getenv("DRQUEUE_ETC"));
+  snprintf(fn_etc_pixie_sg,BUFFERLEN-1,"%s/pixie.sg",getenv("DRQUEUE_ETC"));
 
   fflush (f);
 
-  if ((etc_shake_sg = fopen (fn_etc_shake_sg,"r")) == NULL) {
+  if ((etc_pixie_sg = fopen (fn_etc_pixie_sg,"r")) == NULL) {
     fprintf(f,"\necho -------------------------------------------------\n");
-    fprintf(f,"echo ATTENTION ! There was a problem opening: %s\n",fn_etc_shake_sg);
+    fprintf(f,"echo ATTENTION ! There was a problem opening: %s\n",fn_etc_pixie_sg);
     fprintf(f,"echo So the default configuration will be used\n");
     fprintf(f,"echo -------------------------------------------------\n");
     fprintf(f,"\n\n");
-    fprintf(f,"shake -v -t $DRQUEUE_FRAME-${DRQUEUE_FRAME}x$DRQUEUE_STEPFRAME -exec $DRQUEUE_SCRIPT\n\n");
   } else {
-    fd_etc_shake_sg = fileno (etc_shake_sg);
+    fd_etc_pixie_sg = fileno (etc_pixie_sg);
     fd_f = fileno (f);
-    while ((size = read (fd_etc_shake_sg,buf,BUFFERLEN)) != 0) {
+    while ((size = read (fd_etc_pixie_sg,buf,BUFFERLEN)) != 0) {
       write (fd_f,buf,size);
     }
-    fclose(etc_shake_sg);
+    fclose(etc_pixie_sg);
   }
 
   fclose(f);
@@ -114,27 +129,23 @@ char *shakesg_create (struct shakesgi *info)
 }
 
 
-char *shakesg_default_script_path (void)
+char *pixiesg_default_script_path (void)
 {
   static char buf[BUFFERLEN];
   char *p;
 
   if (!(p = getenv("DRQUEUE_TMP"))) {
-    return ("/drqueue_tmp/not/set/report/bug/please/");
+    return ("/drqueue_tmp/not/set/");
   }
-
-#ifdef __CYGWIN	 
-  if (p[strlen(p)-1] == '\\')
-		snprintf (buf,BUFFERLEN-1,"%s",p);
-	else
-		snprintf (buf,BUFFERLEN-1,"%s\\",p);
-#else
+  
   if (p[strlen(p)-1] == '/')
 		snprintf (buf,BUFFERLEN-1,"%s",p);
 	else
 		snprintf (buf,BUFFERLEN-1,"%s/",p);
-#endif
-
 
   return buf;
 }
+
+
+
+

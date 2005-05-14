@@ -167,17 +167,10 @@ char *mayasg_default_script_path (void)
     return ("/drqueue_tmp/not/set/");
   }
  
-#ifdef __CYGWIN	 
-  if (p[strlen(p)-1] == '\\')
-		snprintf (buf,BUFFERLEN-1,"%s",p);
-	else
-		snprintf (buf,BUFFERLEN-1,"%s\\",p);
-#else
   if (p[strlen(p)-1] == '/')
 		snprintf (buf,BUFFERLEN-1,"%s",p);
 	else
 		snprintf (buf,BUFFERLEN-1,"%s/",p);
-#endif
 
   return buf;
 }

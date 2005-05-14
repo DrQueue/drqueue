@@ -16,6 +16,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 // 
+// $Id$
+//
 
 #include <stdio.h>
 #include <time.h>
@@ -26,23 +28,23 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "3delightsg.h"
+#include "blendersg.h"
 #include "libdrqueue.h"
 
-char *threedelightsg_create (struct threedelightsgi *info)
+char *blendersg_create (struct blendersgi *info)
 {
-  /* This function creates the 3delight render script based on the information given */
+  /* This function creates the blender render script based on the information given */
   /* Returns a pointer to a string containing the path of the just created file */
   /* Returns NULL on failure and sets drerrno */
   FILE *f;
-  FILE *etc_3delight_sg; 		/* The 3delight script generator configuration file */
-  int fd_etc_3delight_sg,fd_f;
+  FILE *etc_blender_sg; 		/* The blender script generator configuration file */
+  int fd_etc_blender_sg,fd_f;
   static char filename[BUFFERLEN];
-  char fn_etc_3delight_sg[BUFFERLEN]; /* File name pointing to DRQUEUE_ETC/3delight.sg */
+  char fn_etc_blender_sg[BUFFERLEN]; /* File name pointing to DRQUEUE_ETC/blender.sg */
   char buf[BUFFERLEN];
-  int size;
+	int size;
   char *p;			/* Scene filename without path */
-	char scene[MAXCMDLEN];
+	char *scene;
 
   /* Check the parameters */
   if (!strlen(info->scene)) {
@@ -51,9 +53,10 @@ char *threedelightsg_create (struct threedelightsgi *info)
   }
 
 #ifdef __CYGWIN
+  if ((scene = malloc(MAXCMDLEN)) == NULL) return (NULL);
   cygwin_conv_to_posix_path(info->scene, scene);
 #else
-  strncpy(scene,info->scene,MAXCMDLEN-1);
+  scene = info->scene;
 #endif
 
   p = strrchr(scene,'/');
@@ -64,11 +67,11 @@ char *threedelightsg_create (struct threedelightsgi *info)
     if (errno == ENOENT) {
       /* If its because the directory does not exist we try creating it first */
       if (mkdir (info->scriptdir,0775) == -1) {
-        drerrno = DRE_COULDNOTCREATE;
-        return NULL;
+				drerrno = DRE_COULDNOTCREATE;
+				return NULL;
       } else if ((f = fopen (filename, "a")) == NULL) {
-        drerrno = DRE_COULDNOTCREATE;
-        return NULL;
+				drerrno = DRE_COULDNOTCREATE;
+				return NULL;
       }
     } else {
       drerrno = DRE_COULDNOTCREATE;
@@ -80,25 +83,26 @@ char *threedelightsg_create (struct threedelightsgi *info)
 
   /* So now we have the file open and so we must write to it */
   fprintf(f,"#!/bin/tcsh\n\n");
-  fprintf(f,"set DRQUEUE_SCENE=%s\n",info->scene);
-  fprintf(f,"set RF_OWNER=%s\n",info->file_owner);
+  fprintf(f,"set SCENE=\"%s\"\n",info->scene);
+
+  snprintf(fn_etc_blender_sg,BUFFERLEN-1,"%s/blender.sg",getenv("DRQUEUE_ETC"));
 
   fflush (f);
 
-  snprintf(fn_etc_3delight_sg,BUFFERLEN-1,"%s/3delight.sg",getenv("DRQUEUE_ETC"));
-  if ((etc_3delight_sg = fopen (fn_etc_3delight_sg,"r")) == NULL) {
+  if ((etc_blender_sg = fopen (fn_etc_blender_sg,"r")) == NULL) {
     fprintf(f,"\necho -------------------------------------------------\n");
-    fprintf(f,"echo ATTENTION ! There was a problem opening: %s\n",fn_etc_3delight_sg);
-    fprintf(f,"echo Please correct the problem\n");
+    fprintf(f,"echo ATTENTION ! There was a problem opening: %s\n",fn_etc_blender_sg);
+    fprintf(f,"echo So the default configuration will be used\n");
     fprintf(f,"echo -------------------------------------------------\n");
     fprintf(f,"\n\n");
+    fprintf(f,"blender -b $SCENE -f $FRAME\n\n");
   } else {
-    fd_etc_3delight_sg = fileno (etc_3delight_sg);
+    fd_etc_blender_sg = fileno (etc_blender_sg);
     fd_f = fileno (f);
-    while ((size = read (fd_etc_3delight_sg,buf,BUFFERLEN)) != 0) {
+    while ((size = read (fd_etc_blender_sg,buf,BUFFERLEN)) != 0) {
       write (fd_f,buf,size);
     }
-    fclose(etc_3delight_sg);
+    fclose(etc_blender_sg);
   }
 
   fclose(f);
@@ -107,29 +111,19 @@ char *threedelightsg_create (struct threedelightsgi *info)
 }
 
 
-char *threedelightsg_default_script_path (void)
+char *blendersg_default_script_path (void)
 {
   static char buf[BUFFERLEN];
   char *p;
 
   if (!(p = getenv("DRQUEUE_TMP"))) {
-    return ("/drqueue_tmp/not/set/");
+    return ("/drqueue_tmp/not/set/report/bug/please/");
   }
 
-#ifdef __CYGWIN	 
-  if (p[strlen(p)-1] == '\\')
-		snprintf (buf,BUFFERLEN-1,"%s",p);
-	else
-		snprintf (buf,BUFFERLEN-1,"%s\\",p);
-#else
   if (p[strlen(p)-1] == '/')
 		snprintf (buf,BUFFERLEN-1,"%s",p);
 	else
 		snprintf (buf,BUFFERLEN-1,"%s/",p);
-#endif
 
   return buf;
 }
-
-
-
