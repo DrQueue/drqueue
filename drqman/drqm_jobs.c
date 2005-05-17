@@ -637,8 +637,12 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
   info->dnj.vbox = vbox;
   gtk_container_add (GTK_CONTAINER(frame),vbox);
 
+  /* KOJ STUFF */
+  frame = dnj_koj_widgets (info);
+	gtk_box_pack_start(GTK_BOX(vbox),GTK_WIDGET (frame),FALSE,FALSE,2);
+
   /* Label */
-  label = gtk_label_new ("Information to be show here");
+  label = gtk_label_new ("General Job Information");
   gtk_label_set_pattern (GTK_LABEL(label),"________________________________");
   gtk_box_pack_start (GTK_BOX(vbox),label,FALSE,FALSE,4);
   gtk_widget_show (label);
@@ -759,10 +763,6 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
   /* Flags STUFF */
   frame = dnj_flags_widgets (info);
   gtk_box_pack_start(GTK_BOX(vbox),frame,TRUE,TRUE,5);
-
-  /* KOJ STUFF */
-  frame = dnj_koj_widgets (info);
-	gtk_box_pack_start(GTK_BOX(vbox),GTK_WIDGET (frame),FALSE,FALSE,2);
 
   /* Buttons */
   /* submit */
