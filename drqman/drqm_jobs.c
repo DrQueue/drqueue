@@ -608,7 +608,7 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
   GtkWidget *button;
   GtkWidget *combo;
   GtkWidget *bbox;
-	GtkWidget *notebook;
+	GtkWidget *swin;
   GList *items = NULL;
   GtkTooltips *tooltips;
 
@@ -619,20 +619,18 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
   gtk_window_set_title (GTK_WINDOW(window),"New Job");
   g_signal_connect_swapped(G_OBJECT(window),"destroy",G_CALLBACK(gtk_widget_destroy),
 													 (GtkObject*)window);
-  gtk_window_set_default_size(GTK_WINDOW(window),600,200);
+  gtk_window_set_default_size(GTK_WINDOW(window),800,500);
   gtk_container_set_border_width (GTK_CONTAINER(window),5);
   info->dnj.dialog = window;
 
-	// Notebook
-	label = gtk_label_new ("Main info");
-	notebook = gtk_notebook_new ();
-	gtk_container_add (GTK_CONTAINER(window),GTK_WIDGET(notebook));
-
+	// Scrolled window
+  swin = gtk_scrolled_window_new (NULL,NULL);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(swin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+	gtk_container_add (GTK_CONTAINER(window),GTK_WIDGET(swin));
 
   /* Frame */
   frame = gtk_frame_new ("Give job information");
-	gtk_notebook_append_page (GTK_NOTEBOOK(notebook),GTK_WIDGET(frame),GTK_WIDGET(label));
-
+	gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW(swin),GTK_WIDGET(frame));
 
   /* Main vbox */
   vbox = gtk_vbox_new (FALSE,2);
@@ -763,9 +761,8 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
   gtk_box_pack_start(GTK_BOX(vbox),frame,TRUE,TRUE,5);
 
   /* KOJ STUFF */
-	label = gtk_label_new ("Kind of Job");
   frame = dnj_koj_widgets (info);
-	gtk_notebook_append_page (GTK_NOTEBOOK(notebook),GTK_WIDGET(frame),GTK_WIDGET(label));
+	gtk_box_pack_start(GTK_BOX(vbox),GTK_WIDGET (frame),FALSE,FALSE,2);
 
   /* Buttons */
   /* submit */
