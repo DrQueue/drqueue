@@ -1,7 +1,7 @@
 to run drqueue under windows
 ----------------------------
 .install GTK2 from 
-http://prdownloads.sourceforge.net/gimp-win/gtk%2B-2.4.14-setup.zip?download
+http://prdownloads.sourceforge.net/gimp-win/gtk%2B-2.6.7-setup.zip?download
 .install drqueue and run drqueue-services
 
 to compil drqueue under windows you need do all this steps
@@ -18,7 +18,7 @@ and tcsh (used by drqueue)
 .run again cygwin setup with default settings to be sure verything is installed
 
 .get win32 gtk development environment at 
-http://prdownloads.sourceforge.net/gladewin32/gtk-win32-2.4.14-rc3.exe
+http://prdownloads.sourceforge.net/gladewin32/gtk-win32-devel-2.6.7-rc1.exe
 Install it in c:\cygwin\usr\local\gtk (uncheck register environment..)
 
 .Add /usr/local/gtk/bin to PATH environment variable in cygwin with command 
