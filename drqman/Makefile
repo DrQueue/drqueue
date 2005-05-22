@@ -83,5 +83,5 @@ endif
 .PHONY: clean
 
 clean:
-	rm -f *.o *.so *~ drqman
+	rm -f *.o *.so *.exe *~ drqman
 
