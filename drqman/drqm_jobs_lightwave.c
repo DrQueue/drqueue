@@ -349,6 +349,7 @@ static void dnj_koj_frame_lightwave_scene_set (GtkWidget *button, struct drqmj_k
 {
   char buf[BUFFERLEN];
   char *p;
+
   
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscene)),BUFFERLEN-1);
   /* This removed the path part of the filename */
@@ -357,6 +358,9 @@ static void dnj_koj_frame_lightwave_scene_set (GtkWidget *button, struct drqmj_k
   /* We need the whole scene path */
   p = buf;
   gtk_entry_set_text (GTK_ENTRY(info->escene),p);
+
+
+ 
 }
 
 static void dnj_koj_frame_lightwave_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info)
@@ -377,7 +381,40 @@ static void dnj_koj_frame_lightwave_bcreate_pressed (GtkWidget *button, struct d
     fprintf (stderr,"ERROR: %s\n",drerrno_str());
     return;
   } else {
+		FILE *scene_file;
+		char buffer[BUFFERLEN]; 
+		int counter = 0;
     gtk_entry_set_text(GTK_ENTRY(info->ecmd),file);
+
+		scene_file=fopen(lightwavesgi.scene,"r");
+    if (!scene_file)
+			return;
+    while ((fgets(buffer,BUFFERLEN,scene_file)!=NULL)  && (counter < 10))
+			{
+				char *t = buffer;
+				if (strncmp (t,"StartFrame",10) == 0)
+					{
+						t += 11;
+						snprintf (buffer,BUFFERLEN,"%i",atoi(t));
+						gtk_entry_set_text (GTK_ENTRY(info->esf),buffer);
+						counter++;
+					}
+				if (strncmp (t,"LastFrame",9) == 0)
+					{
+						t += 10;
+						snprintf (buffer,BUFFERLEN,"%i",atoi(t));
+						gtk_entry_set_text (GTK_ENTRY(info->eef),buffer);
+						counter++;
+					}
+				if (strncmp (t,"FrameStep",9) == 0)
+					{
+						t += 10;
+						snprintf (buffer,BUFFERLEN,"%i",atoi(t));
+						gtk_entry_set_text (GTK_ENTRY(info->estf),buffer);
+						counter++;					
+					}				
+			}
+		fclose(scene_file);
   } 
 }
 
