@@ -49,9 +49,9 @@ char *lightwavesg_create (struct lightwavesgi *info)
   char buf[BUFFERLEN];
   int size;
   char *p;			/* Scene filename without path */
-  char *scene;
-  char *projectdir;
-  char *configdir;
+  char scene[MAXCMDLEN];
+  char projectdir[MAXCMDLEN];
+  char configdir[MAXCMDLEN];
 
   /* Check the parameters */
   if ((!strlen(info->scene))) {
@@ -60,16 +60,13 @@ char *lightwavesg_create (struct lightwavesgi *info)
   }
 
 #ifdef __CYGWIN
-  if ((scene = malloc(MAXCMDLEN)) == NULL) return (NULL);
-  if ((projectdir = malloc(MAXCMDLEN)) == NULL) return (NULL);
-  if ((configdir = malloc(MAXCMDLEN)) == NULL) return (NULL);
   cygwin_conv_to_posix_path(info->scene, scene);
   cygwin_conv_to_posix_path(info->projectdir, projectdir);
   cygwin_conv_to_posix_path(info->configdir, configdir);
 #else
-  scene = info->scene;
-  projectdir = info->projectdir;
-  configdir = info->configdir;
+  strncpy(scene,info->scene,MAXCMDLEN-1);
+  strncpy(projectdir,info->projectdir,MAXCMDLEN-1);
+  strncpy(configdir,info->configdir,MAXCMDLEN-1);  
 #endif
 
   p = strrchr(scene,'/');

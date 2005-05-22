@@ -48,7 +48,7 @@ char *shakesg_create (struct shakesgi *info)
   char buf[BUFFERLEN];
 	int size;
   char *p;			/* Script filename without path */
-	char *script;
+	char script[MAXCMDLEN];
 
   /* Check the parameters */
   if (!strlen(info->script)) {
@@ -56,10 +56,9 @@ char *shakesg_create (struct shakesgi *info)
     return NULL;
   }
 #ifdef __CYGWIN
-  if ((script = malloc(MAXCMDLEN)) == NULL) return (NULL);
   cygwin_conv_to_posix_path(info->script, script);
 #else
-  script = info->script;
+  strncpy(script,info->script,MAXCMDLEN-1);
 #endif
 
   p = strrchr(script,'/');

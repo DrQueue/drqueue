@@ -49,9 +49,9 @@ char *terragensg_create (struct terragensgi *info)
   char buf[BUFFERLEN];
   int size;
   char *p;			/* Scene filename without path */
-  char *scriptfile;
-  char *worldfile;
-  char *terrainfile;
+  char scriptfile[MAXCMDLEN];
+  char worldfile[MAXCMDLEN];
+  char terrainfile[MAXCMDLEN];
 
   /* Check the parameters */
   if ((!strlen(info->scriptfile))) {
@@ -60,16 +60,13 @@ char *terragensg_create (struct terragensgi *info)
   }
 
 #ifdef __CYGWIN
-  if ((scriptfile = malloc(MAXCMDLEN)) == NULL) return (NULL);
-  if ((worldfile = malloc(MAXCMDLEN)) == NULL) return (NULL);
-  if ((terrainfile = malloc(MAXCMDLEN)) == NULL) return (NULL);
   cygwin_conv_to_posix_path(info->scriptfile, scriptfile);
   cygwin_conv_to_posix_path(info->worldfile, worldfile);
   cygwin_conv_to_posix_path(info->terrainfile, terrainfile);
 #else
-  scriptfile = info->scriptfile;
-  worldfile = info->worldfile;
-  terrainfile = info->terrainfile;
+  strncpy(scriptfile,info->scriptfile,MAXCMDLEN-1);
+  strncpy(worldfile,info->worldfile,MAXCMDLEN-1);
+  strncpy(terrainfile,info->terrainfile,MAXCMDLEN-1);
 #endif
 
   p = strrchr(scriptfile,'/');
