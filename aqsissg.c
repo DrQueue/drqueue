@@ -45,7 +45,7 @@ char *aqsissg_create (struct aqsissgi *info)
   char buf[BUFFERLEN];
   int size;
   char *p;			/* Scene filename without path */
-	char *scene;
+	char scene[MAXCMDLEN];
 
   /* Check the parameters */
   if (!strlen(info->scene)) {
@@ -54,10 +54,9 @@ char *aqsissg_create (struct aqsissgi *info)
   }
 
 #ifdef __CYGWIN
-  if ((scene = malloc(MAXCMDLEN)) == NULL) return (NULL);
   cygwin_conv_to_posix_path(info->scene, scene);
 #else
-  scene = info->scene;
+  strncpy(scene,info->scene,MAXCMDLEN-1);
 #endif
 
 

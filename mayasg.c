@@ -50,11 +50,11 @@ char *mayasg_create (struct mayasgi *info)
   char image_arg[BUFFERLEN];
   int size;
   char *p;			/* Scene filename without path */
-  char *scene;
-  char *renderdir;
-	char *projectdir;
-	char *precommand;
-	char *postcommand;
+  char scene[MAXCMDLEN];
+  char renderdir[MAXCMDLEN];
+	char projectdir[MAXCMDLEN];
+	char precommand[MAXCMDLEN];
+	char postcommand[MAXCMDLEN];
 
   /* Check the parameters */
   if ((!info->renderdir) || (!info->scene) || (!info->projectdir)
@@ -65,22 +65,17 @@ char *mayasg_create (struct mayasgi *info)
 		}
 
 #ifdef __CYGWIN
-  if ((scene = malloc(MAXCMDLEN)) == NULL) return (NULL);
-  if ((renderdir = malloc(MAXCMDLEN)) == NULL) return (NULL);
-  if ((projectdir = malloc(MAXCMDLEN)) == NULL) return (NULL);
-  if ((precommand = malloc(MAXCMDLEN)) == NULL) return (NULL);
-  if ((postcommand = malloc(MAXCMDLEN)) == NULL) return (NULL);
   cygwin_conv_to_posix_path(info->scene, scene);
   cygwin_conv_to_posix_path(info->renderdir, renderdir);
   cygwin_conv_to_posix_path(info->projectdir, projectdir);
   cygwin_conv_to_posix_path(info->precommand, precommand);
   cygwin_conv_to_posix_path(info->postcommand, postcommand);
 #else
-  scene = info->scene;
-  renderdir = info->renderdir;
-	projectdir = info->projectdir;
-	precommand = info->postcommand;
-	postcommand = info->postcommand;
+  strncpy(scene,info->scene,MAXCMDLEN-1);
+  strncpy(renderdir,info->renderdir,MAXCMDLEN-1);
+  strncpy(projectdir,info->projectdir,MAXCMDLEN-1);
+  strncpy(precommand,info->precommand,MAXCMDLEN-1);
+  strncpy(postcommand,info->postcommand,MAXCMDLEN-1);
 #endif
 
   p = strrchr(scene,'/');
