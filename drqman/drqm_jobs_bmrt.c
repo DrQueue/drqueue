@@ -30,6 +30,10 @@
 #include "drqm_common.h"
 #include "drqm_jobs_bmrt.h"
 
+#ifdef __CYGWIN
+#include "drqm_cygwin.h"
+#endif
+
 static void dnj_koj_frame_bmrt_script_search (GtkWidget *button, struct drqmj_koji_bmrt *info);
 static void dnj_koj_frame_bmrt_script_set (GtkWidget *button, struct drqmj_koji_bmrt *info);
 static void dnj_koj_frame_bmrt_scene_search (GtkWidget *button, struct drqmj_koji_bmrt *info);
