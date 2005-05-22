@@ -389,6 +389,7 @@ static void dnj_koj_frame_bmrt_scene_search (GtkWidget *button, struct drqmj_koj
 {
   GtkWidget *dialog;
 
+#ifndef __CYGWIN
   dialog = gtk_file_selection_new ("Please select a scene file");
   info->fsscene = dialog;
 
@@ -406,6 +407,9 @@ static void dnj_koj_frame_bmrt_scene_search (GtkWidget *button, struct drqmj_koj
 			     (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
+#else
+  gtk_entry_set_text (GTK_ENTRY(info->escene), cygwin_file_dialog(NULL, NULL, NULL, 0));
+#endif
 }
 
 static void dnj_koj_frame_bmrt_scene_set (GtkWidget *button, struct drqmj_koji_bmrt *info)
