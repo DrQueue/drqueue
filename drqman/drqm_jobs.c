@@ -190,6 +190,8 @@ static GtkWidget *CreateClist (GtkWidget *window)
   gtk_clist_set_sort_type (GTK_CLIST(clist),GTK_SORT_ASCENDING);
   gtk_clist_set_compare_func (GTK_CLIST(clist),pri_cmp_clist);
 
+  gtk_clist_set_selection_mode(GTK_CLIST(clist),GTK_SELECTION_EXTENDED);
+
   gtk_widget_show(clist);
 
   return (clist);
@@ -1147,7 +1149,15 @@ static void djd_bok_pressed (GtkWidget *button, struct drqm_jobs_info *info)
 		gtk_widget_destroy (info->jdd.dialog);
 		info->jdd.dialog = NULL;
 	} else {
-		drqm_request_job_delete (info->jobs[info->row].id);
+		GList *sel;
+		
+		if (!(sel = GTK_CLIST(info->clist)->selection))	{
+			drqm_request_job_delete (info->jobs[info->row].id);
+		}	else {
+			for (;sel;sel = sel->next) {
+				drqm_request_job_delete (info->jobs[(uint32_t)sel->data].id);
+			}
+		}
 		update_joblist(button,info);
 	}
 }
