@@ -181,6 +181,7 @@ static void dnj_koj_frame_aftereffects_project_search (GtkWidget *button, struct
   GtkWidget *dialog;
   char dir[BUFFERLEN];
 
+#ifndef __CYGWIN
   dialog = gtk_file_selection_new ("Please select the project file");
   info->fsproject = dialog;
 
@@ -199,6 +200,10 @@ static void dnj_koj_frame_aftereffects_project_search (GtkWidget *button, struct
                              (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
+#else
+  gtk_entry_set_text (GTK_ENTRY(info->eproject), cygwin_file_dialog(NULL, NULL, NULL, 0));
+#endif
+
 }
 
 static void dnj_koj_frame_aftereffects_project_set (GtkWidget *button, struct drqmj_koji_aftereffects *info)
