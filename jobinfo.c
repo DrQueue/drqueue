@@ -33,25 +33,28 @@
 void usage (void);
 void print_jobs (struct job *job, int njobs);
 void print_job (struct job *job);
+void show_job (struct job *job);
 
 enum operation {
 	OP_NONE,
-	OP_NUMBER,
-	OP_LIST
+	OP_NUMBER,     // Returns the number of jobs in the queue
+	OP_LIST,       // List basic info about all jobs in the queue
+	OP_SHOWONE     // Should give more detailed information on a single job
 };
 
 int main (int argc,char *argv[])
 {
   int opt;
   uint32_t ijob = -1;
-	struct job *job;
-	int njobs;
+	struct job *job = NULL;
+	int njobs = 0;
 	enum operation op = OP_NONE;
 
   while ((opt = getopt (argc,argv,"lnj:vh")) != -1) {
     switch (opt) {
     case 'j':
       ijob = atoi (optarg);
+			op = OP_SHOWONE;
       break;
     case 'v':
       show_version (argv);
@@ -81,11 +84,20 @@ int main (int argc,char *argv[])
     exit (1);
   }
 
-  if ((njobs = request_job_list (&job,CLIENT)) == -1) {
-    fprintf (stderr,"ERROR: While trying to request the job list: %s\n",drerrno_str());
-    exit (1);
-  }
-
+	switch (op) {
+	case OP_NONE:
+		break;
+	case OP_LIST:
+	case OP_NUMBER:
+		if ((njobs = request_job_list (&job,CLIENT)) == -1) {
+			fprintf (stderr,"ERROR: While trying to request the job list: %s\n",drerrno_str());
+			exit (1);
+		}
+		break;
+	case OP_SHOWONE:
+		break;
+	}
+	
 	switch (op) {
 	case OP_NONE:
 		printf ("OP_NONE\n");
@@ -95,6 +107,16 @@ int main (int argc,char *argv[])
 		break;
 	case OP_NUMBER:
 		printf ("%i\n",njobs);
+		break;
+	case OP_SHOWONE:
+		job = (struct job *) malloc (sizeof (struct job));
+		if (!request_job_xfer(ijob,job,CLIENT)) {
+			fprintf (stderr,"ERROR: Could not receive job information for ID (%i) : %s\n",ijob,drerrno_str());
+			exit (1);
+		}
+		show_job (job);
+		free (job);
+		job = NULL;
 		break;
 	}
 
@@ -114,13 +136,18 @@ void print_job (struct job *job)
 	printf ("ID: %i Name: %s\n",job->id,job->name);
 }
 
+void show_job (struct job *job)
+{
+	printf ("ID: %i Name: %s\n",job->id,job->name);
+}
+
 void usage (void)
 {
     fprintf (stderr,"Usage: jobinfo [-vh] -l\n"
 						 "Valid options:\n"
 						 "\t-l list jobs\n"
 						 "\t-n returns the number of jobs\n"
-						 "\t-j <job_id>\n"
+						 "\t-j <job_id> shows detailed information about a single job\n"
 						 "\t-v print version\n"
 						 "\t-h print this help\n");
 }
