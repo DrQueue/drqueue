@@ -138,8 +138,12 @@ int computer_available (struct computer *computer)
   /* CONS: At the beggining of a frame it is not represented on the load average */
   /*       If we substract then we are probably substracting from another task's load */
   /* Number of cpus charged based on the load */
-  t = (computer->status.loadavg[0] / computer->limits.maxfreeloadcpu) - computer->status.ntasks;
-  t = ( t < 0 ) ? 0 : t;
+	if (computer->limits.maxfreeloadcpu > 0) {
+		t = (computer->status.loadavg[0] / computer->limits.maxfreeloadcpu) - computer->status.ntasks;
+		t = ( t < 0 ) ? 0 : t;
+	} else {
+		t = npt;
+	}
   npt -= t;
 
   /* Number of current working tasks */
@@ -147,7 +151,7 @@ int computer_available (struct computer *computer)
 
   if (computer->status.ntasks > MAXTASKS) {
     /* This should never happen, btw */
-    fprintf (stderr,"CRITICAL ERROR: the computer has exceeded the MAXTASKS limit\n");
+    log_slave_computer (L_ERROR,"The computer has exceeded the MAXTASKS limit");
     kill (0,SIGINT);
   }
     
