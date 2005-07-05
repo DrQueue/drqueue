@@ -8,15 +8,15 @@
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
-// $Id$
+// $Id: /drqueue/remote/trunk/requeue.c 2252 2005-05-02T02:35:47.989705Z jorge	$
 //
 
 #include <stdio.h>
@@ -34,56 +34,56 @@ void usage (void);
 
 int main (int argc,char *argv[])
 {
-  int opt;
-  uint32_t frame = -1;
-  uint32_t ijob = -1;
+	int opt;
+	uint32_t frame = -1;
+	uint32_t ijob = -1;
 
-  while ((opt = getopt (argc,argv,"j:f:vh")) != -1) {
-    switch (opt) {
-    case 'f':
-      frame = atoi (optarg);
-      break;
-    case 'j':
-      ijob = atoi (optarg);
-      break;
-    case 'v':
-      show_version (argv);
-      exit (0);
-    case '?':
-    case 'h':
-      usage();
-      exit (1);
-    }
-  }
+	while ((opt = getopt (argc,argv,"j:f:vh")) != -1) {
+		switch (opt) {
+		case 'f':
+			frame = atoi (optarg);
+			break;
+		case 'j':
+			ijob = atoi (optarg);
+			break;
+		case 'v':
+			show_version (argv);
+			exit (0);
+		case '?':
+		case 'h':
+			usage();
+			exit (1);
+		}
+	}
 
-  if ((frame == -1) || (ijob == -1)) {
-    usage ();
-    exit (1);
-  }
+	if ((frame == -1) || (ijob == -1)) {
+		usage ();
+		exit (1);
+	}
 	
 	set_default_env();
 
-  if (!common_environment_check()) {
-    fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
-    exit (1);
-  }
+	if (!common_environment_check()) {
+		fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
+		exit (1);
+	}
 
-  if (! request_job_frame_waiting (ijob,frame,CLIENT)) {
-    fprintf (stderr,"ERROR: While trying to requeue: %s\n",drerrno_str());
-    exit (1);
-  }
+	if (! request_job_frame_waiting (ijob,frame,CLIENT)) {
+		fprintf (stderr,"ERROR: While trying to requeue: %s\n",drerrno_str());
+		exit (1);
+	}
 
-  printf ("Frame requeued successfully\n");
+	printf ("Frame requeued successfully\n");
 
-  exit (0);
+	exit (0);
 }
 
 void usage (void)
 {
-    fprintf (stderr,"Usage: requeue [-vh] -f <frame_number> -j <job_id>\n"
-	     "Valid options:\n"
-	     "\t-f <frame_number>\n"
-	     "\t-j <job_id>\n"
-	     "\t-v print version\n"
-	     "\t-h print this help\n");
+		fprintf (stderr,"Usage: requeue [-vh] -f <frame_number> -j <job_id>\n"
+			 "Valid options:\n"
+			 "\t-f <frame_number>\n"
+			 "\t-j <job_id>\n"
+			 "\t-v print version\n"
+			 "\t-h print this help\n");
 }

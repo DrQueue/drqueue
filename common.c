@@ -8,12 +8,12 @@
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
 // $Id$
@@ -32,76 +32,76 @@
 
 int common_environment_check (void)
 {
-  /* This function checks the environment AND the directory structure */
-  char *buf;
-  struct stat s_stat;
-  char dir_str[BUFFERLEN];
+	/* This function checks the environment AND the directory structure */
+	char *buf;
+	struct stat s_stat;
+	char dir_str[BUFFERLEN];
 
-  if ((buf = getenv("DRQUEUE_MASTER")) == NULL) {
-    drerrno = DRE_NOENVMASTER;
-    return 0;
-  }
+	if ((buf = getenv("DRQUEUE_MASTER")) == NULL) {
+		drerrno = DRE_NOENVMASTER;
+		return 0;
+	}
 
-  if ((buf = getenv("DRQUEUE_ROOT")) == NULL) {
-    drerrno = DRE_NOENVROOT;
-    return 0;
-  }
+	if ((buf = getenv("DRQUEUE_ROOT")) == NULL) {
+		drerrno = DRE_NOENVROOT;
+		return 0;
+	}
 
 #ifndef __CYGWIN
-  snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_TMP"));
-  if (stat (dir_str,&s_stat) == -1) {
-    drerrno = DRE_NOTMPDIR;
-    return 0;
-  }
-  else
-  {
-    if ((!S_ISDIR(s_stat.st_mode)) || (!(S_IWOTH & s_stat.st_mode)))
-    {
-      drerrno = DRE_NOTMPDIR;
-      return 0;
-    }
-  }
+	snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_TMP"));
+	if (stat (dir_str,&s_stat) == -1) {
+		drerrno = DRE_NOTMPDIR;
+		return 0;
+	}
+	else
+	{
+		if ((!S_ISDIR(s_stat.st_mode)) || (!(S_IWOTH & s_stat.st_mode)))
+		{
+			drerrno = DRE_NOTMPDIR;
+			return 0;
+		}
+	}
 #endif
 
-  snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_DB"));
-  if (stat (dir_str,&s_stat) == -1) {
-    drerrno = DRE_NODBDIR;
-    return 0;
-  } else if ((!S_ISDIR(s_stat.st_mode)) || (!(S_IWUSR & s_stat.st_mode))) {
-    drerrno = DRE_NODBDIR;
-    return 0;
-  }
+	snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_DB"));
+	if (stat (dir_str,&s_stat) == -1) {
+		drerrno = DRE_NODBDIR;
+		return 0;
+	} else if ((!S_ISDIR(s_stat.st_mode)) || (!(S_IWUSR & s_stat.st_mode))) {
+		drerrno = DRE_NODBDIR;
+		return 0;
+	}
 
-  snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_LOGS"));
-  if (stat (dir_str,&s_stat) == -1) {
-    drerrno = DRE_NOLOGDIR;
-    return 0;
-  } else if ((!S_ISDIR(s_stat.st_mode)) || (!(S_IWUSR & s_stat.st_mode))) {
-    drerrno = DRE_NOLOGDIR;
-    return 0;
-  }
+	snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_LOGS"));
+	if (stat (dir_str,&s_stat) == -1) {
+		drerrno = DRE_NOLOGDIR;
+		return 0;
+	} else if ((!S_ISDIR(s_stat.st_mode)) || (!(S_IWUSR & s_stat.st_mode))) {
+		drerrno = DRE_NOLOGDIR;
+		return 0;
+	}
 
-  snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_BIN"));
-  if (stat (dir_str,&s_stat) == -1) {
-    drerrno = DRE_NOBINDIR;
-    return 0;
-  }
+	snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_BIN"));
+	if (stat (dir_str,&s_stat) == -1) {
+		drerrno = DRE_NOBINDIR;
+		return 0;
+	}
 
-  snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_ETC"));
-  if (stat (dir_str,&s_stat) == -1) {
-    drerrno = DRE_NOETCDIR;
-    return 0;
-  }
+	snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_ETC"));
+	if (stat (dir_str,&s_stat) == -1) {
+		drerrno = DRE_NOETCDIR;
+		return 0;
+	}
 
-  return 1;
+	return 1;
 }
 
 void show_version (char **argv)
 {
-  printf ("\nDistributed Rendering Queue\n");
-  printf ("by Jorge Daza Garcia Blanes\n\n");
-  printf ("%s version: %s\n",argv[0],VERSION);
-  printf ("\n");
+	printf ("\nDistributed Rendering Queue\n");
+	printf ("by Jorge Daza Garcia Blanes\n\n");
+	printf ("%s version: %s\n",argv[0],VERSION);
+	printf ("\n");
 }
 
 int rmdir_check_str (char *path)
@@ -112,7 +112,7 @@ int rmdir_check_str (char *path)
 	if (strstr(path,"/../") != NULL)
 		return 1;
 	if (strchr(path,'"') != NULL)
-		return 1;	
+		return 1; 
 	if (strchr(path,'\'') != NULL)
 		return 1;
 
@@ -121,77 +121,77 @@ int rmdir_check_str (char *path)
 
 int remove_dir (char *dir)
 {
-  /* Removes a directory recursively */
-  char cmd[BUFFERLEN];
+	/* Removes a directory recursively */
+	char cmd[BUFFERLEN];
 
 	if (rmdir_check_str (dir)) // Check the path. If wrong don't remove
 		return 0;
 
-  snprintf (cmd,BUFFERLEN,"rm -fR '%s'",dir);
+	snprintf (cmd,BUFFERLEN,"rm -fR '%s'",dir);
 
-  return system (cmd);
+	return system (cmd);
 }
 
 void mn_job_finished (struct job *job)
 {
-  FILE *mail;
-  char command[BUFFERLEN];
-  uint32_t total;
-  char total_str[BUFFERLEN];
+	FILE *mail;
+	char command[BUFFERLEN];
+	uint32_t total;
+	char total_str[BUFFERLEN];
 
-  snprintf (command,BUFFERLEN-1,"Mail -s 'Your job (%s) is finished' %s",job->name,job->email);
+	snprintf (command,BUFFERLEN-1,"Mail -s 'Your job (%s) is finished' %s",job->name,job->email);
 
-  if ((mail = popen (command,"w")) == NULL) {
-    /* There was a problem creating the piped command */
-    return;
-  }
+	if ((mail = popen (command,"w")) == NULL) {
+		/* There was a problem creating the piped command */
+		return;
+	}
 
-  total = job->avg_frame_time*job_nframes(job);
-  snprintf (total_str,BUFFERLEN-1,"%s",time_str(total));
+	total = job->avg_frame_time*job_nframes(job);
+	snprintf (total_str,BUFFERLEN-1,"%s",time_str(total));
 
-  fprintf (mail,"\n"
-	   "Total number of frames: %i\n"
-	   "The average time per frame was: %s\n"
-	   "And the total rendering time: %s\n"
-	   "\n.\n\n",job_nframes(job),time_str(job->avg_frame_time),total_str);
+	fprintf (mail,"\n"
+		 "Total number of frames: %i\n"
+		 "The average time per frame was: %s\n"
+		 "And the total rendering time: %s\n"
+		 "\n.\n\n",job_nframes(job),time_str(job->avg_frame_time),total_str);
 
-  pclose (mail);
+	pclose (mail);
 }
 
 char *time_str (uint32_t nseconds)
 {
-  static char msg[BUFFERLEN];
+	static char msg[BUFFERLEN];
 
-  if ((nseconds / 3600) > 0) {
-    snprintf(msg,BUFFERLEN-1,"%i hours %i minutes %i seconds",
-	     nseconds / 3600,
-	     (nseconds % 3600) / 60,
-	     (nseconds % 3600) % 60);
-  } else if ((nseconds / 60) > 0) {
-    snprintf(msg,BUFFERLEN-1,"%i minutes %i seconds",
-	     nseconds / 60,
-	     nseconds % 60);
-  } else {
-    snprintf(msg,BUFFERLEN-1,"%i seconds",nseconds);
-  }
+	if ((nseconds / 3600) > 0) {
+		snprintf(msg,BUFFERLEN-1,"%i hours %i minutes %i seconds",
+			 nseconds / 3600,
+			 (nseconds % 3600) / 60,
+			 (nseconds % 3600) % 60);
+	} else if ((nseconds / 60) > 0) {
+		snprintf(msg,BUFFERLEN-1,"%i minutes %i seconds",
+			 nseconds / 60,
+			 nseconds % 60);
+	} else {
+		snprintf(msg,BUFFERLEN-1,"%i seconds",nseconds);
+	}
 
-  return msg;
+	return msg;
 }
 
 int common_date_check (void)
 {
-  time_t now;
-  struct tm *tm_now;
+	time_t now;
+	struct tm *tm_now;
 
-  time(&now);
-  tm_now = localtime (&now);
-  
-/*    fprintf (stderr,"Date: %i.%i.%u\n",tm_now->tm_mday,tm_now->tm_mon,tm_now->tm_year); */
-  if (((tm_now->tm_mon >= 4) && (tm_now->tm_year == 102))
-      || (tm_now->tm_year > 102))
-    return 0;
-  
-  return 1;
+	time(&now);
+	tm_now = localtime (&now);
+	
+/*		fprintf (stderr,"Date: %i.%i.%u\n",tm_now->tm_mday,tm_now->tm_mon,tm_now->tm_year); */
+	if (((tm_now->tm_mon >= 4) && (tm_now->tm_year == 102))
+			|| (tm_now->tm_year > 102))
+		return 0;
+	
+	return 1;
 }
 
 void set_default_env(void)

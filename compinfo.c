@@ -8,12 +8,12 @@
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
 // $Id$
@@ -44,47 +44,47 @@ enum operation {
 
 int main (int argc,char *argv[])
 {
-  int opt;
-  uint32_t icomp = -1;
+	int opt;
+	uint32_t icomp = -1;
 	struct computer *computer;
 	int ncomputers;
 	enum operation op = OP_NONE;
 
-  while ((opt = getopt (argc,argv,"lndc:vh")) != -1) {
-    switch (opt) {
+	while ((opt = getopt (argc,argv,"lndc:vh")) != -1) {
+		switch (opt) {
 		case 'd':
 			op = OP_DETAILS;
 			break;
-    case 'c':
-      icomp = atoi (optarg);
-      break;
-    case 'v':
-      show_version (argv);
-      exit (0);
+		case 'c':
+			icomp = atoi (optarg);
+			break;
+		case 'v':
+			show_version (argv);
+			exit (0);
 		case 'l':
 			op = OP_LIST;
 			break;
 		case 'n':
 			op = OP_NUMBER;
 			break;
-    case '?':
-    case 'h':
-      usage();
-      exit (1);
-    }
-  }
+		case '?':
+		case 'h':
+			usage();
+			exit (1);
+		}
+	}
 
-  if ((op == OP_NONE)) {
-    usage ();
-    exit (1);
-  }
+	if ((op == OP_NONE)) {
+		usage ();
+		exit (1);
+	}
 
 	set_default_env();
 
-  if (!common_environment_check()) {
-    fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
-    exit (1);
-  }
+	if (!common_environment_check()) {
+		fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
+		exit (1);
+	}
 
 	switch (op) {
 	case OP_NONE:
@@ -123,7 +123,7 @@ int main (int argc,char *argv[])
 		}
 	}
 
-  exit (0);
+	exit (0);
 }
 
 void print_computers (struct computer *computer, int ncomputers)
@@ -146,7 +146,7 @@ void print_computer_details (struct computer *computer)
 
 void usage (void)
 {
-    fprintf (stderr,"Usage: compinfo [-vh] -l|-n\n"
+		fprintf (stderr,"Usage: compinfo [-vh] -l|-n\n"
 						 "Valid options:\n"
 						 "\t-l list computers\n"
 						 "\t-d single computer details (needs -c)\n"

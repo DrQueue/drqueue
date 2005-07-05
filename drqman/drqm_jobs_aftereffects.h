@@ -8,15 +8,15 @@
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
-/* $Id$ */
+/* $Id: /drqueue/remote/trunk/drqman/drqm_jobs_aftereffects.h 2243 2005-05-01T12:11:22.084926Z jorge	$ */
 
 #ifndef _DRQM_JOBS_AFTEREFFECTS_H_
 #define _DRQM_JOBS_AFTEREFFECTS_H_
@@ -30,12 +30,12 @@
 #endif
 
 struct drqmj_koji_aftereffects {
-  GtkWidget *eproject;
-  GtkWidget *fsproject;		// File selector for the scene
-  GtkWidget *ecomp;
-  GtkWidget *eviewcmd;
-  GtkWidget *escript;		  // Entry script location
-  GtkWidget *fsscript;		// File selectot for the script directory
+	GtkWidget *eproject;
+	GtkWidget *fsproject;		// File selector for the scene
+	GtkWidget *ecomp;
+	GtkWidget *eviewcmd;
+	GtkWidget *escript;			// Entry script location
+	GtkWidget *fsscript;		// File selectot for the script directory
 };
 
 struct drqm_jobs_info;

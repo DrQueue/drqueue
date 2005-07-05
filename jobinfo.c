@@ -8,15 +8,15 @@
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
-// $Id$
+// $Id: /drqueue/remote/trunk/jobinfo.c 2332 2005-07-04T20:04:12.897480Z jorge	$
 //
 
 #include <stdio.h>
@@ -37,52 +37,52 @@ void show_job (struct job *job);
 
 enum operation {
 	OP_NONE,
-	OP_NUMBER,     // Returns the number of jobs in the queue
-	OP_LIST,       // List basic info about all jobs in the queue
-	OP_SHOWONE     // Should give more detailed information on a single job
+	OP_NUMBER,		 // Returns the number of jobs in the queue
+	OP_LIST,			 // List basic info about all jobs in the queue
+	OP_SHOWONE		 // Should give more detailed information on a single job
 };
 
 int main (int argc,char *argv[])
 {
-  int opt;
-  uint32_t ijob = -1;
+	int opt;
+	uint32_t ijob = -1;
 	struct job *job = NULL;
 	int njobs = 0;
 	enum operation op = OP_NONE;
 
-  while ((opt = getopt (argc,argv,"lnj:vh")) != -1) {
-    switch (opt) {
-    case 'j':
-      ijob = atoi (optarg);
+	while ((opt = getopt (argc,argv,"lnj:vh")) != -1) {
+		switch (opt) {
+		case 'j':
+			ijob = atoi (optarg);
 			op = OP_SHOWONE;
-      break;
-    case 'v':
-      show_version (argv);
-      exit (0);
+			break;
+		case 'v':
+			show_version (argv);
+			exit (0);
 		case 'l':
 			op = OP_LIST;
 			break;
 		case 'n':
 			op = OP_NUMBER;
 			break;
-    case '?':
-    case 'h':
-      usage();
-      exit (1);
-    }
-  }
+		case '?':
+		case 'h':
+			usage();
+			exit (1);
+		}
+	}
 
-  if ((op == OP_NONE)) {
-    usage ();
-    exit (1);
-  }
+	if ((op == OP_NONE)) {
+		usage ();
+		exit (1);
+	}
 
 	set_default_env();
 
-  if (!common_environment_check()) {
-    fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
-    exit (1);
-  }
+	if (!common_environment_check()) {
+		fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
+		exit (1);
+	}
 
 	switch (op) {
 	case OP_NONE:
@@ -120,7 +120,7 @@ int main (int argc,char *argv[])
 		break;
 	}
 
-  exit (0);
+	exit (0);
 }
 
 void print_jobs (struct job *job, int njobs)
@@ -143,7 +143,7 @@ void show_job (struct job *job)
 
 void usage (void)
 {
-    fprintf (stderr,"Usage: jobinfo [-vh] -l\n"
+		fprintf (stderr,"Usage: jobinfo [-vh] -l\n"
 						 "Valid options:\n"
 						 "\t-l list jobs\n"
 						 "\t-n returns the number of jobs\n"

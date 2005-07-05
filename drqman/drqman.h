@@ -8,12 +8,12 @@
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
 /*
@@ -27,9 +27,9 @@
 #include "drqm_computers.h"
 
 struct info_drqm {
-  struct drqm_computers_info idc; /* Computers tab */
-  struct drqm_jobs_info idj;	/* Jobs tab */
-  GtkWidget *main_window;
+	struct drqm_computers_info idc; /* Computers tab */
+	struct drqm_jobs_info idj;	/* Jobs tab */
+	GtkWidget *main_window;
 };
 
 #endif /* _DRQMAN_H */

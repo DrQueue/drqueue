@@ -8,59 +8,59 @@
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
-// $Id$
+// $Id: /drqueue/remote/trunk/computer_info.freebsd.c 2252 2005-05-02T02:35:47.989705Z jorge	$
 //
 
 void get_hwinfo (struct computer_hwinfo *hwinfo)
 {
-  size_t bl;
-  unsigned long long int sysctl_data;
-  char buffer[128];
+	size_t bl;
+	unsigned long long int sysctl_data;
+	char buffer[128];
 
-  if (gethostname (hwinfo->name,MAXNAMELEN-1) == -1) {
-    perror ("get_hwinfo: gethostname");
-    kill(0,SIGINT);
-  }
+	if (gethostname (hwinfo->name,MAXNAMELEN-1) == -1) {
+		perror ("get_hwinfo: gethostname");
+		kill(0,SIGINT);
+	}
 #if defined(__i386__)
-  hwinfo->arch = ARCH_INTEL;
-  bl=128;
-  sysctlbyname("hw.model", &buffer,&bl,NULL,0);
+	hwinfo->arch = ARCH_INTEL;
+	bl=128;
+	sysctlbyname("hw.model", &buffer,&bl,NULL,0);
 
-  if (strstr(buffer,"Pentium 4")) {
-    hwinfo->proctype = PROCTYPE_PENTIUM4;
-  } else if (strstr(buffer,"Pentium III")) {
-    hwinfo->proctype = PROCTYPE_PENTIUMIII;
-  } else if (strstr(buffer,"Pentium II")) {
-    hwinfo->proctype = PROCTYPE_PENTIUMII;
-  } else if (strstr(buffer,"K6")) {
-    hwinfo->proctype = PROCTYPE_ATHLON;
-  } else {
-    hwinfo->proctype = PROCTYPE_PENTIUM;
-  }
+	if (strstr(buffer,"Pentium 4")) {
+		hwinfo->proctype = PROCTYPE_PENTIUM4;
+	} else if (strstr(buffer,"Pentium III")) {
+		hwinfo->proctype = PROCTYPE_PENTIUMIII;
+	} else if (strstr(buffer,"Pentium II")) {
+		hwinfo->proctype = PROCTYPE_PENTIUMII;
+	} else if (strstr(buffer,"K6")) {
+		hwinfo->proctype = PROCTYPE_ATHLON;
+	} else {
+		hwinfo->proctype = PROCTYPE_PENTIUM;
+	}
 #else
-  //Since BSD Runs on Aplhas and a variety of other architectures
-  hwinfo->arch = ARCH_UNKNOWN;
-  hwinfo->proctype = PROCTYPE_UNKNOWN;
+	//Since BSD Runs on Aplhas and a variety of other architectures
+	hwinfo->arch = ARCH_UNKNOWN;
+	hwinfo->proctype = PROCTYPE_UNKNOWN;
 #endif
-  hwinfo->os = OS_FREEBSD;
+	hwinfo->os = OS_FREEBSD;
 
-  bl=8;
-  sysctlbyname("machdep.tsc_freq", &sysctl_data,&bl,NULL,0);
+	bl=8;
+	sysctlbyname("machdep.tsc_freq", &sysctl_data,&bl,NULL,0);
 	if (bl < 8) sysctl_data &= (2LL << (8*bl))-1;
-  hwinfo->procspeed = (sysctl_data+500000)/1000000;
+	hwinfo->procspeed = (sysctl_data+500000)/1000000;
 
-  bl=8;
-  sysctlbyname("hw.ncpu", &sysctl_data,&bl,NULL,0);
-  hwinfo->ncpus = sysctl_data;
-  hwinfo->speedindex = get_speedindex (hwinfo);
+	bl=8;
+	sysctlbyname("hw.ncpu", &sysctl_data,&bl,NULL,0);
+	hwinfo->ncpus = sysctl_data;
+	hwinfo->speedindex = get_speedindex (hwinfo);
 	hwinfo->memory = get_memory ();
 }
 

@@ -8,15 +8,15 @@
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
-// $Id$
+// $Id: /drqueue/remote/trunk/slave.h 2252 2005-05-02T02:35:47.989705Z jorge	$
 //
 
 #ifndef _SLAVE_H_
@@ -40,13 +40,13 @@
 
 #define SLAVE_CONF_FILE "/etc/drqueue/slave.conf"
 
-#define SDBF_SETMAXCPUS	(1<<0) // Set if we have to change the maximum number of CPUs at start.
+#define SDBF_SETMAXCPUS (1<<0) // Set if we have to change the maximum number of CPUs at start.
 
 struct slave_database {
-  struct computer *comp;
-  int shmid;
-  int semid;
-  int itask;			/* Index to current process task */
+	struct computer *comp;
+	int shmid;
+	int semid;
+	int itask;			/* Index to current process task */
 	struct computer_limits limits;
 	uint16_t flags;
 	char conf[PATH_MAX];
@@ -59,7 +59,7 @@ void usage (void);
 
 void set_signal_handlers (void);
 void set_signal_handlers_child_listening (void); /* For the accepting process */
-void set_signal_handlers_child_chandler (void);	/* Once accepted the connection */
+void set_signal_handlers_child_chandler (void); /* Once accepted the connection */
 void set_signal_handlers_child_launcher (void); /* For the child that forks and then keeps waiting */
 void set_signal_handlers_task_exec (void); /* For the child of the previous that actually execs (and get substituted) */
 

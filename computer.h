@@ -8,12 +8,12 @@
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
 // $Id$
@@ -37,31 +37,31 @@ struct pool {
 };
 
 struct computer_limits {
-	uint8_t enabled;          // Computer enabled for rendering
-  uint16_t nmaxcpus;		    /* Maximum number of cpus running */
-  uint16_t maxfreeloadcpu;	/* Maximum load that a cpu can have to be considered free */
-  struct autoenable {		    /* I put autoenable on limits even */
-    time_t last;		        /* Time of the last autoenable event happened */
-    uint8_t h,m;	      	  /* Hour and minute of wished autoenable */
-		uint8_t flags;	        // Autoenable flag
-  } autoenable;
+	uint8_t enabled;					// Computer enabled for rendering
+	uint16_t nmaxcpus;				/* Maximum number of cpus running */
+	uint16_t maxfreeloadcpu;	/* Maximum load that a cpu can have to be considered free */
+	struct autoenable {				/* I put autoenable on limits even */
+		time_t last;						/* Time of the last autoenable event happened */
+		uint8_t h,m;						/* Hour and minute of wished autoenable */
+		uint8_t flags;					// Autoenable flag
+	} autoenable;
 	struct pool *pool;
 	uint16_t npools;
 	int poolshmid; // Pool's shared memory id
 };
 
 struct computer {
-  struct computer_hwinfo hwinfo;
-  struct computer_status status;
-  struct computer_limits limits;
-  time_t lastconn;		/* Time of last connection to the master */
-  unsigned char used;		/* If the record is being used or not */
+	struct computer_hwinfo hwinfo;
+	struct computer_status status;
+	struct computer_limits limits;
+	time_t lastconn;		/* Time of last connection to the master */
+	unsigned char used;		/* If the record is being used or not */
 };
 
 struct database;
 
 int computer_index_addr (void *pwdb,struct in_addr addr); /* I use pointers to void instead to struct database */
-int computer_index_name (void *pwdb,char *name);          /* because if I did I would have to create a dependency loop */
+int computer_index_name (void *pwdb,char *name);					/* because if I did I would have to create a dependency loop */
 int computer_index_free (void *pwdb);
 int computer_available (struct computer *computer);
 int computer_ntasks (struct computer *comp);

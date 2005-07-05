@@ -8,15 +8,15 @@
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
-// $Id$
+// $Id: /drqueue/remote/trunk/constants.h 2252 2005-05-02T02:35:47.989705Z jorge	$
 //
 
 #ifndef _CONSTANTS_H_
@@ -31,13 +31,13 @@
 #endif
 
 // Pools
-#define	DEFAULT_POOL "Default"
+#define DEFAULT_POOL "Default"
 
 /* Possible who values */
 #define MASTER 0
 #define SLAVE 10
-#define SLAVE_CHANDLER 11	/* Connection handler */
-#define SLAVE_LAUNCHER 12	/* Child that launches the task and waits for it to finish */
+#define SLAVE_CHANDLER 11 /* Connection handler */
+#define SLAVE_LAUNCHER 12 /* Child that launches the task and waits for it to finish */
 #define CLIENT 20		/* General to clients, like sendjob or drqman or so */
 
 /* Sizes */
@@ -56,14 +56,14 @@
 #ifdef __CYGWIN
 #define SLAVEDELAY 10		/* Delay between each loop on the slave */
 #define MAXTIMECONNECTION 30	/* Maximum time that can take to handle a request */
-#define MASTERCCHECKSDELAY 10	/* Delay between every consistency check */
+#define MASTERCCHECKSDELAY 10 /* Delay between every consistency check */
 #else
 #define SLAVEDELAY 15		/* Delay between each loop on the slave */
 #define MAXTIMECONNECTION 60	/* Maximum time that can take to handle a request */
-#define MASTERCCHECKSDELAY 10	/* Delay between every consistency check */
+#define MASTERCCHECKSDELAY 10 /* Delay between every consistency check */
 #endif
-#define MAXTIMENOCONN 120	/* If this time is exceeded without connecting to the */
-                                /* master the computer is erased from the db */
+#define MAXTIMENOCONN 120 /* If this time is exceeded without connecting to the */
+																/* master the computer is erased from the db */
 
 /* Others */
 #define MAXLISTEN 100		/* Maximum number of connections waiting to be accepted */
@@ -78,8 +78,8 @@
 
 // Autoenable
 #define AE_DELAY 120		/* The time between possible autoenables */
-#define AE_HOUR	21
-#define AE_MIN  00
+#define AE_HOUR 21
+#define AE_MIN	00
 
 #endif /* _CONSTANTS_H_ */
 

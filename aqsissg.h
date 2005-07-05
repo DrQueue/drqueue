@@ -8,16 +8,16 @@
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
 //
-// $Id$
+// $Id: /drqueue/remote/trunk/aqsissg.h 2253 2005-05-02T03:55:54.970636Z jorge	$
 //
 
 #ifndef _AQSISSG_H_
@@ -27,21 +27,21 @@
 #include <stdint.h>
 #else
 # ifdef __IRIX
-#  include <sys/types.h>
+#	 include <sys/types.h>
 # else
-#  ifdef __OSX
-#   include <stdint.h>
-#  else
-#   ifdef __FREEBSD
-#    include <stdint.h>
-#   else
-#    ifdef __CYGWIN
-#     include <stdint.h>
-#    else
-#     error You need to define the OS, or OS defined not supported
-#    endif
-#   endif
-#  endif
+#	 ifdef __OSX
+#		include <stdint.h>
+#	 else
+#		ifdef __FREEBSD
+#		 include <stdint.h>
+#		else
+#		 ifdef __CYGWIN
+#			include <stdint.h>
+#		 else
+#			error You need to define the OS, or OS defined not supported
+#		 endif
+#		endif
+#	 endif
 # endif
 #endif
 
@@ -52,16 +52,16 @@ extern "C" {
 #endif 
 
 struct aqsissgi {		/* Aqsis Script Generator Info */
-  char scene[BUFFERLEN];
-  char scriptdir[BUFFERLEN];
-  char file_owner[BUFFERLEN];
-  char custom_crop;
-  uint32_t xmin,xmax,ymin,ymax;
-  char custom_samples;
-//   uint32_t xsamples,ysamples;
-  char disp_stats;
-  char verbose;
-  char custom_beep;
+	char scene[BUFFERLEN];
+	char scriptdir[BUFFERLEN];
+	char file_owner[BUFFERLEN];
+	char custom_crop;
+	uint32_t xmin,xmax,ymin,ymax;
+	char custom_samples;
+//	 uint32_t xsamples,ysamples;
+	char disp_stats;
+	char verbose;
+	char custom_beep;
 };
 
 char *aqsissg_create (struct aqsissgi *info);

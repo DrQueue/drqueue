@@ -8,12 +8,12 @@
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
 // $Id$
@@ -30,27 +30,27 @@
 
 #include "libdrqueue.h"
 
-#define ACTION_NONE   0
-#define ACTION_STOP   1
-#define ACTION_HSTOP  2
-#define ACTION_CONT   3
-#define ACTION_DEL    4
-#define ACTION_STATUS	5
+#define ACTION_NONE		0
+#define ACTION_STOP		1
+#define ACTION_HSTOP	2
+#define ACTION_CONT		3
+#define ACTION_DEL		4
+#define ACTION_STATUS 5
 
 void usage (void);
 
 int main (int argc,char *argv[])
 {
-  int opt;
-  uint32_t ijob = -1;
+	int opt;
+	uint32_t ijob = -1;
 	int action = ACTION_NONE;
 	struct job job;
 
-  while ((opt = getopt (argc,argv,"sdcktj:vh")) != -1) {
-    switch (opt) {
-    case 's':
+	while ((opt = getopt (argc,argv,"sdcktj:vh")) != -1) {
+		switch (opt) {
+		case 's':
 			action = ACTION_STOP;
-      break;
+			break;
 		case 'd':
 			action = ACTION_DEL;
 			break;
@@ -63,30 +63,30 @@ int main (int argc,char *argv[])
 		case 't':
 			action = ACTION_STATUS;
 			break;
-    case 'j':
-      ijob = atoi (optarg);
-      break;
-    case 'v':
-      show_version (argv);
-      exit (0);
-    case '?':
-    case 'h':
-      usage();
-      exit (1);
-    }
-  }
+		case 'j':
+			ijob = atoi (optarg);
+			break;
+		case 'v':
+			show_version (argv);
+			exit (0);
+		case '?':
+		case 'h':
+			usage();
+			exit (1);
+		}
+	}
 
-  if ((ijob == -1) || (action == ACTION_NONE)) {
-    usage ();
-    exit (1);
-  }
+	if ((ijob == -1) || (action == ACTION_NONE)) {
+		usage ();
+		exit (1);
+	}
 
 	set_default_env();
 
-  if (!common_environment_check()) {
-    fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
-    exit (1);
-  }
+	if (!common_environment_check()) {
+		fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
+		exit (1);
+	}
 	
 	switch (action) {
 	case ACTION_STOP:
@@ -111,12 +111,12 @@ int main (int argc,char *argv[])
 		break;
 	}
 
-  exit (0);
+	exit (0);
 }
 
 void usage (void)
 {
-    fprintf (stderr,"Usage: cjob [-vh] -[s|k|d|c|s] -j <job_id>\n"
+		fprintf (stderr,"Usage: cjob [-vh] -[s|k|d|c|s] -j <job_id>\n"
 						 "Valid options:\n"
 						 "\t-s will do a soft stop\n"
 						 "\t-k will do a hard stop (be careful, running tasks will be killed)\n"
