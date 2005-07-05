@@ -354,19 +354,11 @@ void update_computer_status (struct slave_database *sdb)
   req.type = R_R_UCSTATUS;
   if (!send_request (sfd,&req,SLAVE)) {
     log_slave_computer (L_WARNING,"Error sending request (update_computer_status)");
-#ifdef __CYGWIN
-    return;
-#else
     kill (0,SIGINT);
-#endif
   }
   if (!recv_request (sfd,&req)) {
     log_slave_computer (L_WARNING,"Error receiving request (update_computer_status)");
-#ifdef __CYGWIN
-    return;
-#else
     kill (0,SIGINT);
-#endif
   }
 
   if (req.type == R_R_UCSTATUS) {
@@ -408,19 +400,11 @@ void register_slave (struct computer *computer)
 
   if (!send_request (sfd,&req,SLAVE)) {
     log_slave_computer (L_ERROR,"Sending request (register_slave)");
-#ifdef __CYGWIN
-    return;
-#else
     kill (0,SIGINT);
-#endif
   }
   if (!recv_request (sfd,&req)) {
     log_slave_computer (L_ERROR,"Receiving request (register_slave)");
-#ifdef __CYGWIN
-    return;
-#else
     kill (0,SIGINT);
-#endif
   }
 
   if (req.type == R_R_REGISTER) {
@@ -428,21 +412,13 @@ void register_slave (struct computer *computer)
     case RERR_NOERROR:
       if (!recv_request (sfd,&req)) {
 				log_slave_computer (L_ERROR,"Receiving request (register_slave)");
-#ifdef __CYGWIN
-				return;
-#else
 				kill (0,SIGINT);
-#endif
       }
       computer->hwinfo.id = req.data;
 			computer->used = 1;
       if (!send_computer_hwinfo (sfd,&computer->hwinfo)) {
 				log_slave_computer (L_ERROR,"Sending computer hardware info (register_slave)");
-#ifdef __CYGWIN
-    				return;
-#else
-    				kill (0,SIGINT);
-#endif
+				kill (0,SIGINT);
       }
       break;
     case RERR_ALREADY:
@@ -825,27 +801,19 @@ int request_job_available (struct slave_database *sdb)
   log_slave_computer (L_DEBUG,"Entering request_job_available");
 
   if ((sfd = connect_to_master ()) == -1) {
-    log_slave_computer(L_ERROR,drerrno_str());
+    log_slave_computer(L_ERROR,"Connecting to master (request_job_available) : %s",drerrno_str());
     kill(0,SIGINT);
   }
 
   req.type = R_R_AVAILJOB;
 
   if (!send_request (sfd,&req,SLAVE)) {
-    log_slave_computer (L_ERROR,drerrno_str());
-#ifdef __CYGWIN
-    return 0;
-#else
+    log_slave_computer (L_ERROR,"Sending request for available job: %s",drerrno_str());
     kill (0,SIGINT);
-#endif
   }
   if (!recv_request (sfd,&req)) {
-    log_slave_computer (L_ERROR,drerrno_str());
-#ifdef __CYGWIN
-    return 0;
-#else
+    log_slave_computer (L_ERROR,"Receiving request for available job: %s",drerrno_str());
     kill (0,SIGINT);
-#endif
   }
 
   if (req.type == R_R_AVAILJOB) {
@@ -864,14 +832,10 @@ int request_job_available (struct slave_database *sdb)
       break;
     default:
       log_slave_computer(L_ERROR,"Error code not listed on answer to R_R_AVAILJOB");
-#ifdef __CYGWIN
-    return 0;
-#else
-    kill (0,SIGINT);
-#endif
+			kill (0,SIGINT);
     }
   } else {
-    fprintf (stderr,"ERROR: Not appropiate answer to request R_R_REGISJOB\n");
+    log_slave_computer (L_ERROR,"Not appropiate answer to request R_R_REGISJOB");
     kill (0,SIGINT);
   }
 
@@ -881,7 +845,7 @@ int request_job_available (struct slave_database *sdb)
     req.type = R_R_AVAILJOB;
     req.data = RERR_NOSPACE;
     if (!send_request(sfd,&req,SLAVE)) {
-      log_slave_computer (L_ERROR,"Sending request: %s",drerrno_str());
+      log_slave_computer (L_ERROR,"Sending request (request_job_available) : %s",drerrno_str());
       kill (0,SIGINT);
     }
     close (sfd);		/* Finish */
@@ -893,7 +857,7 @@ int request_job_available (struct slave_database *sdb)
   req.type = R_R_AVAILJOB;
   req.data = RERR_NOERROR;
   if (!send_request(sfd,&req,SLAVE)) {
-    log_slave_computer (L_ERROR,"Sending request: %s",drerrno_str());
+    log_slave_computer (L_ERROR,"Sending request (request_job_available) : %s",drerrno_str());
     kill (0,SIGINT);
   }
 
@@ -901,14 +865,14 @@ int request_job_available (struct slave_database *sdb)
   /* So then we send the index */
   req.data = sdb->itask;
   if (!send_request(sfd,&req,SLAVE)) {
-    log_slave_computer (L_ERROR,drerrno_str());
+    log_slave_computer (L_ERROR,"Sending request (request_job_available) : %s",drerrno_str());
     kill (0,SIGINT);
   }
   
   log_slave_computer (L_DEBUG,"Receiving the task");
   /* Then we receive the task */
   if (!recv_task(sfd,&ttask)) {
-    log_slave_computer (L_ERROR,drerrno_str());
+    log_slave_computer (L_ERROR,"Receiving the task (request_job_available) : %s",drerrno_str());
     kill (0,SIGINT);
   }
 
@@ -940,28 +904,20 @@ void request_task_finished (struct slave_database *sdb)
   log_slave_computer(L_DEBUG,"Entering request_task_finished");
 
   if ((sfd = connect_to_master ()) == -1) {
-    log_slave_computer(L_ERROR,drerrno_str());
+    log_slave_computer(L_ERROR,"Connecting to master (request_task_finished) : %s",drerrno_str());
     kill(0,SIGINT);
   }
 
   req.type = R_R_TASKFINI;
 
   if (!send_request (sfd,&req,SLAVE_LAUNCHER)) {
-    log_slave_computer (L_ERROR,"sending request (request_task_finished)");
-#ifdef __CYGWIN
-    return;
-#else
+    log_slave_computer (L_ERROR,"sending request (request_task_finished) : %s", drerrno_str());
     kill (0,SIGINT);
-#endif
   }
 
   if (!recv_request (sfd,&req)) {
-    log_slave_computer (L_ERROR,"receiving request (request_task_finished)");
-#ifdef __CYGWIN
-    return;
-#else
+    log_slave_computer (L_ERROR,"receiving request (request_task_finished) : %s", drerrno_str());
     kill (0,SIGINT);
-#endif
   }
     
   if (req.type == R_R_TASKFINI) {
@@ -993,7 +949,7 @@ void request_task_finished (struct slave_database *sdb)
   /* Then we send the task */
   if (!send_task (sfd,&sdb->comp->status.task[sdb->itask])) {
     /* We should retry, but really there should be no errors here */
-    log_slave_computer (L_ERROR,"Sending task on request_task_finished");
+    log_slave_computer (L_ERROR,"Sending task on request_task_finished : %s",drerrno_str());
   }
 
   close (sfd);
@@ -1170,7 +1126,7 @@ void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp)
   semaphore_release(wdb->semid);
   
   if (!send_request (sfd,&answer,MASTER)) {
-    log_master (L_ERROR,"Receiving request (handle_r_r_listcomp)");
+    log_master (L_ERROR,"Receiving request (handle_r_r_listcomp) : %s",drerrno_str());
     return;
   }
 
@@ -1178,7 +1134,7 @@ void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp)
     if (computer[i].used) {
 			log_master(L_DEBUG,"Send computer");
       if (!send_computer (sfd,&computer[i])) {
-				log_master (L_ERROR,"Sending computer (handle_r_r_listcomp)");
+				log_master (L_ERROR,"Sending computer (handle_r_r_listcomp) : %s",drerrno_str());
 				break;
       }
     }
@@ -2815,12 +2771,8 @@ void handle_rs_r_setautoenable (int sfd,struct slave_database *sdb,struct reques
   h = req->data % 24;		/* Take care in case it exceeds the limits */
 
   if (!recv_request (sfd,req)) {
-    log_slave_computer (L_ERROR,"Receiving request (update_computer_limits)");
-#ifdef __CYGWIN
-    return;
-#else
+    log_slave_computer (L_ERROR,"Receiving request (update_computer_limits) : %s",drerrno_str());
     kill (0,SIGINT);
-#endif
   }
   
   m = req->data % 60;		/* Take care in case it exceeds the limits */
@@ -2828,12 +2780,8 @@ void handle_rs_r_setautoenable (int sfd,struct slave_database *sdb,struct reques
   log_slave_computer(L_DEBUG,"Received autoenable hour: %i:%02i",h,m);
 
   if (!recv_request (sfd,req)) {
-    log_slave_computer (L_ERROR,"Receiving request (update_computer_limits)");
-#ifdef __CYGWIN
-    return;
-#else
+    log_slave_computer (L_ERROR,"Receiving request (update_computer_limits) : %s",drerrno_str());
     kill (0,SIGINT);
-#endif
   }
 
 	flags = req->data;
@@ -2870,33 +2818,25 @@ void update_computer_limits (struct computer_limits *limits)
   int sfd;
 
   if ((sfd = connect_to_master ()) == -1) {
-    log_slave_computer(L_ERROR,drerrno_str());
+    log_slave_computer(L_ERROR,"Connecting to master (update_computer_limits) : %s",drerrno_str());
     kill(0,SIGINT);
   }
 
   req.type = R_R_UCLIMITS;
   if (!send_request (sfd,&req,SLAVE)) {
-    log_slave_computer (L_ERROR,"Sending request (update_computer_limits)");
-#ifdef __CYGWIN
-    return;
-#else
-    kill (0,SIGINT);
-#endif
+    log_slave_computer (L_ERROR,"Sending request (update_computer_limits) : %s",drerrno_str());
+		kill (0,SIGINT);
   }
   if (!recv_request (sfd,&req)) {
-    log_slave_computer (L_ERROR,"Receiving request (update_computer_limits)");
-#ifdef __CYGWIN
-    return;
-#else
+    log_slave_computer (L_ERROR,"Receiving request (update_computer_limits) : %s",drerrno_str());
     kill (0,SIGINT);
-#endif
   }
 
   if (req.type == R_R_UCLIMITS) {
     switch (req.data) {
     case RERR_NOERROR:
       if (!send_computer_limits (sfd,limits)) {
-				log_slave_computer (L_ERROR,"Sending computer limits (update_computer_limits)");
+				log_slave_computer (L_ERROR,"Sending computer limits (update_computer_limits) : %s",drerrno_str());
 				kill(0,SIGINT);
       }
       break;

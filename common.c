@@ -62,6 +62,7 @@ int common_environment_check (void)
     }
   }
 #endif
+
   snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_DB"));
   if (stat (dir_str,&s_stat) == -1) {
     drerrno = DRE_NODBDIR;
