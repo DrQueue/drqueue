@@ -8,12 +8,12 @@
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
 // $Id$
@@ -26,21 +26,21 @@
 #include <stdint.h>
 #else
 # ifdef __IRIX
-#  include <sys/types.h>
+#	 include <sys/types.h>
 # else
-#  ifdef __OSX
-#   include <stdint.h>
-#  else
-#   ifdef __FREEBSD
-#    include <stdint.h>
-#   else
-#    ifdef __CYGWIN
-#     include <stdint.h>
-#    else
-#     error You need to define the OS, or OS defined not supported
-#    endif
-#   endif
-#  endif
+#	 ifdef __OSX
+#		include <stdint.h>
+#	 else
+#		ifdef __FREEBSD
+#		 include <stdint.h>
+#		else
+#		 ifdef __CYGWIN
+#			include <stdint.h>
+#		 else
+#			error You need to define the OS, or OS defined not supported
+#		 endif
+#		endif
+#	 endif
 # endif
 #endif
 
@@ -49,31 +49,31 @@
 #define DR_EXITEDFLAG (0x0100)
 #define DR_SIGNALEDFLAG (0x0200)
 
-#define DR_WIFEXITED(stat)   ((stat)&DR_EXITEDFLAG)
+#define DR_WIFEXITED(stat)	 ((stat)&DR_EXITEDFLAG)
 #define DR_WEXITSTATUS(stat) ((stat)&0xff)
 #define DR_WIFSIGNALED(stat) ((stat)&DR_SIGNALEDFLAG)
-#define DR_WTERMSIG(stat)    ((stat)&0xff)
+#define DR_WTERMSIG(stat)		 ((stat)&0xff)
 
 typedef enum {
-  TASKSTATUS_LOADING,		/* Assigned but not running yet */
-  TASKSTATUS_RUNNING
+	TASKSTATUS_LOADING,		/* Assigned but not running yet */
+	TASKSTATUS_RUNNING
 } t_taskstatus;
 
 struct task {
-  uint8_t used;
-  char jobname[MAXNAMELEN];	/* jobname */
-  uint32_t ijob;		/* index to the job in the global db */
+	uint8_t used;
+	char jobname[MAXNAMELEN]; /* jobname */
+	uint32_t ijob;		/* index to the job in the global db */
 	uint32_t icomp;		// Index to the computer that renders this frame
-  uint16_t itask;		/* index to the task in the computer !not in the global db! */
-  char jobcmd[MAXCMDLEN];	/* string that will be executed */
-  char owner[MAXNAMELEN];	/* owner of the job */
-  uint32_t frame;		/* current _real_ frame number (!!not index!!) */
-  uint32_t frame_start,frame_end;
-  uint32_t frame_step;
+	uint16_t itask;		/* index to the task in the computer !not in the global db! */
+	char jobcmd[MAXCMDLEN]; /* string that will be executed */
+	char owner[MAXNAMELEN]; /* owner of the job */
+	uint32_t frame;		/* current _real_ frame number (!!not index!!) */
+	uint32_t frame_start,frame_end;
+	uint32_t frame_step;
 	uint32_t block_size;
-  int32_t pid;			/* pid */
-  int32_t exitstatus;		/* exit status */
-  uint8_t status;		/* status */
+	int32_t pid;			/* pid */
+	int32_t exitstatus;		/* exit status */
+	uint8_t status;		/* status */
 };
 
 struct slave_database;

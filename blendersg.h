@@ -8,15 +8,15 @@
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
-// $Id$
+// $Id: /drqueue/remote/trunk/blendersg.h 2252 2005-05-02T02:35:47.989705Z jorge	$
 //
 
 #ifndef _BLENDERSG_H_
@@ -29,8 +29,8 @@ extern "C" {
 #endif 
 
 struct blendersgi {		/* Blender Script Generator Info */
-  char scene[BUFFERLEN];
-  char scriptdir[BUFFERLEN];
+	char scene[BUFFERLEN];
+	char scriptdir[BUFFERLEN];
 };
 
 char *blendersg_create (struct blendersgi *info);

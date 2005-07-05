@@ -8,16 +8,16 @@
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
 //
-// $Id$
+// $Id: /drqueue/remote/trunk/drqman/drqm_autorefresh.c 2243 2005-05-01T12:11:22.084926Z jorge	$
 //
 
 #include <string.h>
@@ -32,12 +32,12 @@
 GtkWidget *CreateAutoRefreshWidgets (struct drqm_autorefresh_info *ari)
 {
 	GtkWidget *hbox;
-  GtkWidget *cbutton;
+	GtkWidget *cbutton;
 	GtkWidget *entry;
 	GtkWidget *label;
-  
+	
 	hbox = gtk_hbox_new (FALSE,2);
-  cbutton = gtk_check_button_new_with_label ("AutoRefresh every");
+	cbutton = gtk_check_button_new_with_label ("AutoRefresh every");
 	g_signal_connect(G_OBJECT(cbutton),"clicked",G_CALLBACK(AutoRefreshCheckButtonToggled),ari);
 	gtk_box_pack_start(GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
 	ari->cbenabled = cbutton;
@@ -50,7 +50,7 @@ GtkWidget *CreateAutoRefreshWidgets (struct drqm_autorefresh_info *ari)
 	label = gtk_label_new ("seconds");
 	gtk_box_pack_start(GTK_BOX(hbox),label,FALSE,FALSE,2);
 
-  return hbox;
+	return hbox;
 }
 
 void AutoRefreshCheckButtonToggled (GtkWidget *cbutton, struct drqm_autorefresh_info *ari)
@@ -59,16 +59,16 @@ void AutoRefreshCheckButtonToggled (GtkWidget *cbutton, struct drqm_autorefresh_
 
 	if (GTK_TOGGLE_BUTTON(ari->cbenabled)->active) {
 		gtk_entry_set_editable(GTK_ENTRY(ari->eseconds),FALSE);
-	  delay = atoi(gtk_entry_get_text(GTK_ENTRY(ari->eseconds)));
+		delay = atoi(gtk_entry_get_text(GTK_ENTRY(ari->eseconds)));
 		if (delay <= 0) {
 			delay = 5;
 			gtk_entry_set_text(GTK_ENTRY(ari->eseconds),"5");
 		}
 		ari->sourceid = g_timeout_add(delay * 1000,ari->callback,ari->data);
-  } else {
+	} else {
 		g_source_remove(ari->sourceid);
 		gtk_entry_set_editable(GTK_ENTRY(ari->eseconds),TRUE);
-  }
+	}
 }
 
 void AutoRefreshEntryChanged (GtkWidget *entry, struct drqm_autorefresh_info *ari)

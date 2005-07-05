@@ -8,15 +8,15 @@
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
-// $Id$
+// $Id: /drqueue/remote/trunk/pixiesg.h 2252 2005-05-02T02:35:47.989705Z jorge	$
 //
 
 #ifndef _PIXIESG_H_
@@ -26,21 +26,21 @@
 #include <stdint.h>
 #else
 # ifdef __IRIX
-#  include <sys/types.h>
+#	 include <sys/types.h>
 # else
-#  ifdef __OSX
-#   include <stdint.h>
-#  else
-#   ifdef __FREEBSD
-#    include <stdint.h>
-#   else
-#    ifdef __CYGWIN
-#     include <stdint.h>
-#    else
-#     error You need to define the OS, or OS defined not supported
-#    endif
-#   endif
-#  endif
+#	 ifdef __OSX
+#		include <stdint.h>
+#	 else
+#		ifdef __FREEBSD
+#		 include <stdint.h>
+#		else
+#		 ifdef __CYGWIN
+#			include <stdint.h>
+#		 else
+#			error You need to define the OS, or OS defined not supported
+#		 endif
+#		endif
+#	 endif
 # endif
 #endif
 
@@ -51,9 +51,9 @@ extern "C" {
 #endif 
 
 struct pixiesgi {		/* Pixie Script Generator Info */
-  char renderdir[BUFFERLEN];
-  char scene[BUFFERLEN];
-  char scriptdir[BUFFERLEN];
+	char renderdir[BUFFERLEN];
+	char scene[BUFFERLEN];
+	char scriptdir[BUFFERLEN];
 /*
 	char custom_crop;
 	uint32_t xmin,xmax,ymin,ymax;

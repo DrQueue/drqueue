@@ -8,12 +8,12 @@
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
 //
@@ -50,62 +50,62 @@ enum {
 };
 
 struct drqmj_flags {
-  GtkWidget *cbmailnotify;			/* Check button */
-  GtkWidget *cbdifemail;	/* Specific email for mail notification ? */
-  GtkWidget *edifemail;					/* Entry for the email */
-	GtkWidget *cbjobdepend;       // Depends on another job
-	GtkWidget *ejobdepend;        // Which one ?
-	GtkWidget *bjobdepend;        // Show a list
+	GtkWidget *cbmailnotify;			/* Check button */
+	GtkWidget *cbdifemail;	/* Specific email for mail notification ? */
+	GtkWidget *edifemail;					/* Entry for the email */
+	GtkWidget *cbjobdepend;				// Depends on another job
+	GtkWidget *ejobdepend;				// Which one ?
+	GtkWidget *bjobdepend;				// Show a list
 	GtkListStore *store;					// List of jobs
 	GtkTreeView *view;
-	GtkWidget *cbjobdelete;       // Delete job when finished
+	GtkWidget *cbjobdelete;				// Delete job when finished
 };
 
 struct drqmj_dnji {							/* dialog new job info */
-  GtkWidget *dialog;
-  GtkWidget *vbox;
-  GtkWidget *ename;
-  GtkWidget *ecmd;
-  GtkWidget *esf,*eef,*estf; /* entry start frame, entry end frame, entry step frames */
+	GtkWidget *dialog;
+	GtkWidget *vbox;
+	GtkWidget *ename;
+	GtkWidget *ecmd;
+	GtkWidget *esf,*eef,*estf; /* entry start frame, entry end frame, entry step frames */
 	GtkWidget *ebs;								/* entry block_size */
-  GtkWidget *cpri,*epri;				/* combo priority, entry priority */
-  GtkWidget *fs;								/* File selector */
+	GtkWidget *cpri,*epri;				/* combo priority, entry priority */
+	GtkWidget *fs;								/* File selector */
 
-  /* koj */
-  GtkWidget *ckoj;							/* combo koj */
-  GtkWidget *fkoj;							/* frame koj */
-	GtkWidget *vbkoj;        			/* vbox inside the koj's tab */
-  uint16_t koj;									/* koj */
-  struct drqmj_koji_maya koji_maya; /* koj info for maya */
-  struct drqmj_koji_mentalray koji_mentalray; /* koj info for mentalray */
-  struct drqmj_koji_blender koji_blender; /* koj info for blender */
-  struct drqmj_koji_bmrt koji_bmrt; /* koj info for bmrt */
-  struct drqmj_koji_aqsis koji_aqsis; /* koj info for aqsis */
-  struct drqmj_koji_pixie koji_pixie; /* koj info for pixie */
-  struct drqmj_koji_3delight koji_3delight;
-  struct drqmj_koji_lightwave koji_lightwave;
-  struct drqmj_koji_nuke koji_nuke;
+	/* koj */
+	GtkWidget *ckoj;							/* combo koj */
+	GtkWidget *fkoj;							/* frame koj */
+	GtkWidget *vbkoj;							/* vbox inside the koj's tab */
+	uint16_t koj;									/* koj */
+	struct drqmj_koji_maya koji_maya; /* koj info for maya */
+	struct drqmj_koji_mentalray koji_mentalray; /* koj info for mentalray */
+	struct drqmj_koji_blender koji_blender; /* koj info for blender */
+	struct drqmj_koji_bmrt koji_bmrt; /* koj info for bmrt */
+	struct drqmj_koji_aqsis koji_aqsis; /* koj info for aqsis */
+	struct drqmj_koji_pixie koji_pixie; /* koj info for pixie */
+	struct drqmj_koji_3delight koji_3delight;
+	struct drqmj_koji_lightwave koji_lightwave;
+	struct drqmj_koji_nuke koji_nuke;
 	struct drqmj_koji_aftereffects koji_aftereffects;
 	struct drqmj_koji_shake koji_shake;
-  struct drqmj_koji_terragen koji_terragen;
+	struct drqmj_koji_terragen koji_terragen;
 
-  struct drqmj_limits limits;		/* limits info */
-  struct drqmj_flags flags;			/* flags info */
+	struct drqmj_limits limits;		/* limits info */
+	struct drqmj_flags flags;			/* flags info */
 	
 	int submitstopped;						/* Set if the job has to be stopped just after submission */
 };
 
 struct drqm_jobs_info {
-  GtkWidget *clist;							/* main clist */
-  gint row, column;							/* selected job */
-  GtkWidget *menu;							/* Popup menu */
-	struct drqm_autorefresh_info ari;  // AutoRefresh info
-  int selected;									/* if a job is selected */
-  int ijob;											/* index to the selected job */
-  uint32_t njobs;								/* Number of jobs in the list */
-  struct job *jobs;							/* The job list */
-  struct drqmj_dnji dnj;				/* dialog new job */
-  struct drqmj_jddi jdd;				/* job details dialog */
+	GtkWidget *clist;							/* main clist */
+	gint row, column;							/* selected job */
+	GtkWidget *menu;							/* Popup menu */
+	struct drqm_autorefresh_info ari;	 // AutoRefresh info
+	int selected;									/* if a job is selected */
+	int ijob;											/* index to the selected job */
+	uint32_t njobs;								/* Number of jobs in the list */
+	struct job *jobs;							/* The job list */
+	struct drqmj_dnji dnj;				/* dialog new job */
+	struct drqmj_jddi jdd;				/* job details dialog */
 };
 
 

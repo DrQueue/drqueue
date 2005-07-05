@@ -8,12 +8,12 @@
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
 // $Id$
@@ -29,126 +29,126 @@
 
 void task_init_all (struct task *task)
 {
-  int i;
+	int i;
 
-  for (i=0;i < MAXTASKS; i++)
-    task_init (&task[i]);
+	for (i=0;i < MAXTASKS; i++)
+		task_init (&task[i]);
 }
 
 void task_init (struct task *task)
 {
-  task->used = 0;
-  strcpy(task->jobname,"EMPTY");
-  task->ijob = 0;
+	task->used = 0;
+	strcpy(task->jobname,"EMPTY");
+	task->ijob = 0;
 	task->icomp = 0;
-  strcpy(task->jobcmd,"NONE");
-  strcpy(task->owner,"NOBODY");
-  task->frame = 0;
-  task->pid = 0;
-  task->itask = 0;
-  task->exitstatus = 0;
-  task->status = 0;
+	strcpy(task->jobcmd,"NONE");
+	strcpy(task->owner,"NOBODY");
+	task->frame = 0;
+	task->pid = 0;
+	task->itask = 0;
+	task->exitstatus = 0;
+	task->status = 0;
 }
 
 int task_available (struct slave_database *sdb)
 {
-  int i;
-  int r = -1;
+	int i;
+	int r = -1;
 
-  semaphore_lock(sdb->semid);
-  for (i=0;i<MAXTASKS;i++) {
-    if (sdb->comp->status.task[i].used == 0) {
-      r = i;
-      sdb->comp->status.task[i].used = 1;
-      sdb->comp->status.task[i].itask = (uint16_t) i;
-      sdb->comp->status.task[i].status = TASKSTATUS_LOADING;
-      break;
-    }
-  }
-  semaphore_release(sdb->semid);
+	semaphore_lock(sdb->semid);
+	for (i=0;i<MAXTASKS;i++) {
+		if (sdb->comp->status.task[i].used == 0) {
+			r = i;
+			sdb->comp->status.task[i].used = 1;
+			sdb->comp->status.task[i].itask = (uint16_t) i;
+			sdb->comp->status.task[i].status = TASKSTATUS_LOADING;
+			break;
+		}
+	}
+	semaphore_release(sdb->semid);
 
-  return r;
+	return r;
 }
 
 void task_report (struct task *task)
 {
-  printf ("Job name:\t%s\n",task->jobname);
-  printf ("Job index:\t%i\n",task->ijob);
-  printf ("Job command:\t%s\n",task->jobcmd);
-  printf ("Frame:\t\t%i\n",task->frame);
-  printf ("Task pid:\t%i\n",task->pid);
-  printf ("Task index:\t%i\n",task->itask);
-  printf ("Task status:\t%s\n",task_status_string(task->status));
+	printf ("Job name:\t%s\n",task->jobname);
+	printf ("Job index:\t%i\n",task->ijob);
+	printf ("Job command:\t%s\n",task->jobcmd);
+	printf ("Frame:\t\t%i\n",task->frame);
+	printf ("Task pid:\t%i\n",task->pid);
+	printf ("Task index:\t%i\n",task->itask);
+	printf ("Task status:\t%s\n",task_status_string(task->status));
 }
 
 char *task_status_string (unsigned char status)
 {
-  char *st_string;
-  switch (status) {
-  case TASKSTATUS_LOADING:
-    st_string = "Loading";
-    break;
-  case TASKSTATUS_RUNNING:
-    st_string = "Running";
-    break;
-  default:
-    st_string = "UNKNOWN";
-  }
+	char *st_string;
+	switch (status) {
+	case TASKSTATUS_LOADING:
+		st_string = "Loading";
+		break;
+	case TASKSTATUS_RUNNING:
+		st_string = "Running";
+		break;
+	default:
+		st_string = "UNKNOWN";
+	}
 
-  return st_string;
+	return st_string;
 }
 
 void task_environment_set (struct task *task)
 {
-  static char padframe[BUFFERLEN];
-  static char frame[BUFFERLEN];
-  static char owner[BUFFERLEN];
-  static char frame_start[BUFFERLEN];
-  static char frame_end[BUFFERLEN];
-  static char frame_step[BUFFERLEN];
-  static char block_size[BUFFERLEN];
-  static char ijob[BUFFERLEN];
-  static char icomp[BUFFERLEN];
+	static char padframe[BUFFERLEN];
+	static char frame[BUFFERLEN];
+	static char owner[BUFFERLEN];
+	static char frame_start[BUFFERLEN];
+	static char frame_end[BUFFERLEN];
+	static char frame_step[BUFFERLEN];
+	static char block_size[BUFFERLEN];
+	static char ijob[BUFFERLEN];
+	static char icomp[BUFFERLEN];
 
-  /* Padded frame number */
-  /* TODO: make padding length user defined */
-  snprintf (padframe,BUFFERLEN,"DRQUEUE_PADFRAME=%04i",task->frame);
-  putenv (padframe);
-  /* Frame number */
-  snprintf (frame,BUFFERLEN,"DRQUEUE_FRAME=%u",task->frame);
-  putenv (frame);
-  /* Owner of the job */
-  snprintf (owner,BUFFERLEN-1,"DRQUEUE_OWNER=%s",task->owner);
-  putenv (owner);
-  /* Start, end and step frame numbers */
-  snprintf (frame_start,BUFFERLEN-1,"DRQUEUE_STARTFRAME=%u",task->frame_start);
-  putenv (frame_start);
-  snprintf (frame_end,BUFFERLEN-1,"DRQUEUE_ENDFRAME=%u",task->frame_end);
-  putenv (frame_end);
-  snprintf (frame_step,BUFFERLEN-1,"DRQUEUE_STEPFRAME=%u",task->frame_step);
-  putenv (frame_step);
+	/* Padded frame number */
+	/* TODO: make padding length user defined */
+	snprintf (padframe,BUFFERLEN,"DRQUEUE_PADFRAME=%04i",task->frame);
+	putenv (padframe);
+	/* Frame number */
+	snprintf (frame,BUFFERLEN,"DRQUEUE_FRAME=%u",task->frame);
+	putenv (frame);
+	/* Owner of the job */
+	snprintf (owner,BUFFERLEN-1,"DRQUEUE_OWNER=%s",task->owner);
+	putenv (owner);
+	/* Start, end and step frame numbers */
+	snprintf (frame_start,BUFFERLEN-1,"DRQUEUE_STARTFRAME=%u",task->frame_start);
+	putenv (frame_start);
+	snprintf (frame_end,BUFFERLEN-1,"DRQUEUE_ENDFRAME=%u",task->frame_end);
+	putenv (frame_end);
+	snprintf (frame_step,BUFFERLEN-1,"DRQUEUE_STEPFRAME=%u",task->frame_step);
+	putenv (frame_step);
 	/* Block size */
-  snprintf (block_size,BUFFERLEN-1,"DRQUEUE_BLOCKSIZE=%u",task->block_size);
-  putenv (block_size);
+	snprintf (block_size,BUFFERLEN-1,"DRQUEUE_BLOCKSIZE=%u",task->block_size);
+	putenv (block_size);
 
-  /* Job Index */
-  snprintf (ijob,BUFFERLEN-1,"DRQUEUE_JOBID=%i",task->ijob);
-  putenv (ijob);
+	/* Job Index */
+	snprintf (ijob,BUFFERLEN-1,"DRQUEUE_JOBID=%i",task->ijob);
+	putenv (ijob);
 	// Computer Index
 	snprintf (icomp,BUFFERLEN-1,"DRQUEUE_COMPID=%i",task->icomp);
 	putenv (icomp);
 
-  /* OS */
+	/* OS */
 #if defined(__LINUX)
-  putenv ("DRQUEUE_OS=LINUX");
+	putenv ("DRQUEUE_OS=LINUX");
 #elif defined(__FREEBSD)
-  putenv ("DRQUEUE_OS=FREEBSD");
+	putenv ("DRQUEUE_OS=FREEBSD");
 #elif defined(__OSX)
-  putenv ("DRQUEUE_OS=OSX");
+	putenv ("DRQUEUE_OS=OSX");
 #elif defined(__CYGWIN)
-  putenv ("DRQUEUE_OS=WINDOWS");
+	putenv ("DRQUEUE_OS=WINDOWS");
 #else
-  putenv ("DRQUEUE_OS=IRIX");
+	putenv ("DRQUEUE_OS=IRIX");
 #endif
 
 }

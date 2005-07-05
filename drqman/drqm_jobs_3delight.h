@@ -8,12 +8,12 @@
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
 
@@ -25,12 +25,12 @@
 #define KOJ_3DELIGHT_DFLT_VIEWCMD "imf_disp $DRQUEUE_RD/$DRQUEUE_IMAGE.$DRQUEUE_FRAME.iff"
 
 struct drqmj_koji_3delight {
-  GtkWidget *escene;
-  GtkWidget *fsscene;		         /* File selector for the scene */
-  GtkWidget *eviewcmd;
-  GtkWidget *escript;            /* Entry script location */
-  GtkWidget *fsscript;		       /* File selectot for the script directory */
-  GtkWidget *efile_owner;	       /* Owner of the rendered files */
+	GtkWidget *escene;
+	GtkWidget *fsscene;						 /* File selector for the scene */
+	GtkWidget *eviewcmd;
+	GtkWidget *escript;						 /* Entry script location */
+	GtkWidget *fsscript;					 /* File selectot for the script directory */
+	GtkWidget *efile_owner;				 /* Owner of the rendered files */
 };
 
 struct drqm_jobs_info;

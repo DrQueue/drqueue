@@ -8,12 +8,12 @@
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
 // $Id$
@@ -29,16 +29,16 @@ extern "C" {
 #endif 
 
 struct terragensgi {		/* Maya Script Generator Info */
-  char worldfile[BUFFERLEN];
-  char terrainfile[BUFFERLEN];
-  char scriptfile[BUFFERLEN];
-  char image[BUFFERLEN];
-  char scriptdir[BUFFERLEN];
-  char file_owner[BUFFERLEN];
-  char camera[BUFFERLEN];
-  int  res_x,res_y;		/* Resolution of the frame */
-  char format[BUFFERLEN];
-	int  mentalray;  // 1 if we should render with mr
+	char worldfile[BUFFERLEN];
+	char terrainfile[BUFFERLEN];
+	char scriptfile[BUFFERLEN];
+	char image[BUFFERLEN];
+	char scriptdir[BUFFERLEN];
+	char file_owner[BUFFERLEN];
+	char camera[BUFFERLEN];
+	int	 res_x,res_y;		/* Resolution of the frame */
+	char format[BUFFERLEN];
+	int	 mentalray;	 // 1 if we should render with mr
 };
 
 char *terragensg_create (struct terragensgi *info);

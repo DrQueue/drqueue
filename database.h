@@ -8,12 +8,12 @@
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
 // $Id$
@@ -27,30 +27,30 @@
 #include "computer.h"
 
 #define DB_VERSION 7		/* Database version. This version must change when we change the job structure */
-#define DB_MAGIC   0xADDEEFBE	/* magic number */
+#define DB_MAGIC	 0xADDEEFBE /* magic number */
 
 struct load_balancing {
 	struct tpol pol[MAXJOBS]; // Priority ordered list of jobs
-	uint32_t next_i;          // Variables used for load balancing
-	uint32_t last_priority;   //
+	uint32_t next_i;					// Variables used for load balancing
+	uint32_t last_priority;		//
 };
 
 struct database {
-  struct computer computer[MAXCOMPUTERS]; /* computers */
-  struct job job[MAXJOBS];	/* jobs */
+	struct computer computer[MAXCOMPUTERS]; /* computers */
+	struct job job[MAXJOBS];	/* jobs */
 	struct load_balancing lb; // Load balancing info
-  int semid;			/* semaphores id */
-  int shmid;			/* shared memory id */
+	int semid;			/* semaphores id */
+	int shmid;			/* shared memory id */
 #ifdef COMM_REPORT
-  long int bsent;
-  long int brecv;
+	long int bsent;
+	long int brecv;
 #endif
 };
 
 struct database_hdr {		/* Database header for the saved database */
-  uint32_t magic;		/* Magics number */
-  uint32_t version;		/* Version number for the saved database */
-  uint16_t job_size;		/* Number of total (used and empty) jobs in the jobs structure */
+	uint32_t magic;		/* Magics number */
+	uint32_t version;		/* Version number for the saved database */
+	uint16_t job_size;		/* Number of total (used and empty) jobs in the jobs structure */
 				/* We only save the jobs, because the computers' slaves need to be restarted */
 };
 

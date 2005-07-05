@@ -8,15 +8,15 @@
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
-// $Id$
+// $Id: /drqueue/remote/trunk/request.h 2299 2005-05-13T01:01:43.946387Z jorge	$
 // 
 // The request structure is not just used for the requests themselves
 // but also for the answers to the requests
@@ -51,9 +51,9 @@ extern "C" {
 #endif 
 
 struct request {
-  unsigned char type;		/* Kind of request */
-  unsigned char who;		/* who sends this request, a master, a client, a slave... (constants.h) */
-  uint32_t data;		/* Data number that might be needed for the request */
+	unsigned char type;		/* Kind of request */
+	unsigned char who;		/* who sends this request, a master, a client, a slave... (constants.h) */
+	uint32_t data;		/* Data number that might be needed for the request */
 };
 
 void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockaddr_in *addr);
@@ -68,8 +68,8 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp);
 void handle_r_r_listjobs (int sfd,struct database *wdb,int icomp);
 void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp);
 void handle_r_r_deletjob (int sfd,struct database *wdb,int icomp,struct request *req);
-void handle_r_r_stopjob  (int sfd,struct database *wdb,int icomp,struct request *req);
-void handle_r_r_contjob  (int sfd,struct database *wdb,int icomp,struct request *req);
+void handle_r_r_stopjob	 (int sfd,struct database *wdb,int icomp,struct request *req);
+void handle_r_r_contjob	 (int sfd,struct database *wdb,int icomp,struct request *req);
 void handle_r_r_hstopjob (int sfd,struct database *wdb,int icomp,struct request *req);
 void handle_r_r_rerunjob (int sfd,struct database *wdb,int icomp,struct request *req);
 void handle_r_r_jobxfer (int sfd,struct database *wdb,int icomp,struct request *req);
@@ -95,7 +95,7 @@ void handle_r_r_joblps (int sfd,struct database *wdb,int icomp,struct request *r
 
 /* sent TO MASTER */
 void update_computer_status (struct slave_database *database); /* The slave calls this function to update the */
-                                                        /* information that the master has about him */
+																												/* information that the master has about him */
 void update_computer_limits (struct computer_limits *limits);
 
 void register_slave (struct computer *computer);

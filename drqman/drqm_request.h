@@ -8,15 +8,15 @@
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
-/* $Id$ */
+/* $Id: /drqueue/remote/trunk/drqman/drqm_request.h 2243 2005-05-01T12:11:22.084926Z jorge	$ */
 
 #ifndef _DRQM_REQUEST_H_
 #define _DRQM_REQUEST_H_
@@ -38,7 +38,7 @@ void drqm_request_job_frame_kill (uint32_t jobid,uint32_t frame);
 void drqm_request_job_frame_finish (uint32_t jobid,uint32_t frame);
 void drqm_request_job_frame_kill_finish (uint32_t jobid,uint32_t frame);
 void drqm_request_job_sesupdate (uint32_t jobid,uint32_t frame_start,uint32_t frame_end,
-								                uint32_t frame_step, uint32_t block_size);
+																uint32_t frame_step, uint32_t block_size);
 void drqm_request_job_limits_nmaxcpus_set (uint32_t jobid, uint16_t nmaxcpus);
 void drqm_request_job_limits_nmaxcpuscomputer_set (uint32_t jobid, uint16_t nmaxcpuscomputer);
 void drqm_request_job_priority_update (uint32_t jobid, uint32_t priority);
