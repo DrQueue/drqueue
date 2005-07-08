@@ -131,8 +131,8 @@ void CreateComputersPage (GtkWidget *notebook,struct info_drqm *info)
 
 static gboolean AutoRefreshUpdate (gpointer info)
 {
-	drqm_request_computerlist (info);
-	drqm_update_computerlist (info);
+	drqm_request_computerlist ((struct drqm_computers_info *)info);
+	drqm_update_computerlist ((struct drqm_computers_info *)info);
 
 	return TRUE;
 }
@@ -211,7 +211,7 @@ void drqm_update_computerlist (struct drqm_computers_info *info)
 		}
 		snprintf (buff[2],BUFFERLEN,"%i",info->computers[i].status.ntasks);
 		strncpy(buff[3],info->computers[i].hwinfo.name,BUFFERLEN);
-		snprintf (buff[4],BUFFERLEN,osstring(info->computers[i].hwinfo.os));
+		snprintf (buff[4],BUFFERLEN,osstring((t_os)info->computers[i].hwinfo.os));
 		snprintf (buff[5],BUFFERLEN,"%i",info->computers[i].hwinfo.ncpus);
 		snprintf (buff[6],BUFFERLEN,"%i,%i,%i",
 				info->computers[i].status.loadavg[0],
@@ -220,7 +220,7 @@ void drqm_update_computerlist (struct drqm_computers_info *info)
 		if (info->computers[i].limits.npools)
 			{
 				struct pool *pool;
-				char *tmp = malloc(BUFFERLEN);
+				char *tmp = (char *)malloc(BUFFERLEN);
 				if ((pool = computer_pool_attach_shared_memory(info->computers[i].limits.poolshmid)) != (void*)-1)
 					{
 						snprintf(buff[7],BUFFERLEN,"%s",pool[0].name);
@@ -540,7 +540,7 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
 
 static gboolean cdd_autorefreshupdate (gpointer info)
 {
-	cdd_update (NULL,info);
+	cdd_update (NULL,(struct drqm_computers_info *) info);
 
 	return TRUE;
 }
@@ -593,11 +593,11 @@ int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
 	}
 
 	gtk_label_set_text (GTK_LABEL(info->cdd.lname),info->computers[info->row].hwinfo.name);
-	gtk_label_set_text (GTK_LABEL(info->cdd.los),osstring(info->computers[info->row].hwinfo.os));
+	gtk_label_set_text (GTK_LABEL(info->cdd.los),osstring((t_os)info->computers[info->row].hwinfo.os));
 
 	snprintf(msg,BUFFERLEN-1,"%i %s %i MHz",
 		 info->computers[info->row].hwinfo.ncpus,
-		 proctypestring(info->computers[info->row].hwinfo.proctype),
+		 proctypestring((t_proctype)info->computers[info->row].hwinfo.proctype),
 		 info->computers[info->row].hwinfo.procspeed);
 	gtk_label_set_text (GTK_LABEL(info->cdd.lcpuinfo),msg);
 
@@ -866,9 +866,9 @@ static void KillTask (GtkWidget *menu_item, struct drqm_computers_info *info)
 		return;
 
 	if (!cbs) {
-		cbs = g_list_append (cbs,dtk_bok_pressed);
+		cbs = g_list_append (cbs,(void*)dtk_bok_pressed);
 		cbs = g_list_append (cbs,info);
-		cbs = g_list_append (cbs,cdd_update);
+		cbs = g_list_append (cbs,(void*)cdd_update);
 		cbs = g_list_append (cbs,info);
 	}
 

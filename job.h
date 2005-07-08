@@ -272,12 +272,12 @@ void job_environment_set (struct job *job, uint32_t iframe);
 void job_logs_remove (struct job *job);
 
 int get_frame_shared_memory (int nframes); /* ipc shared memory */
-void *attach_frame_shared_memory (int shmid);
+struct frame_info *attach_frame_shared_memory (int shmid);
 void detach_frame_shared_memory (struct frame_info *fishp);
 
 // Blocked hosts
 int get_blocked_host_shared_memory (int nframes); /* ipc shared memory */
-void *attach_blocked_host_shared_memory (int shmid);
+struct blocked_host *attach_blocked_host_shared_memory (int shmid);
 void detach_blocked_host_shared_memory (struct blocked_host *bhshp);
 
 int priority_job_compare (const void *a,const void *b);

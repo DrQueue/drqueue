@@ -69,8 +69,8 @@ int write_16b (int sfd, void *data);
 int read_32b (int sfd, void *data);
 int read_16b (int sfd, void *data);
 
-int dr_read (int fd, void *buf, uint32_t len);
-int dr_write (int fd, void *buf, uint32_t len);
+int dr_read (int fd, char *buf, uint32_t len);
+int dr_write (int fd, char *buf, uint32_t len);
 
 
 #endif /* _COMMUNICATIONS_H_ */

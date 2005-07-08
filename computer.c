@@ -273,16 +273,17 @@ int computer_pool_get_shared_memory (int npools)
 	return shmid;
 }
 
-void *computer_pool_attach_shared_memory (int shmid)
+struct pool *computer_pool_attach_shared_memory (int shmid)
 {
 	void *rv;			/* return value */
 
 	if ((rv = shmat (shmid,0,0)) == (void *)-1) {
 		drerrno = DRE_ATTACHSHMEM;
-		return rv;
+	} else {
+		drerrno = DRE_NOERROR;
 	}
-	drerrno = DRE_NOERROR;
-	return rv;
+
+	return (struct pool *)rv;
 }
 
 void computer_pool_detach_shared_memory (struct pool *cpshp)
@@ -295,7 +296,7 @@ void computer_pool_detach_shared_memory (struct pool *cpshp)
 
 int computer_pool_add (struct computer_limits *cl, char *pool)
 {
-	struct pool *opool = (void*)-1;
+	struct pool *opool = (struct pool *)-1;
 	struct pool *npool;
 	int npoolshmid;
 
@@ -308,7 +309,7 @@ int computer_pool_add (struct computer_limits *cl, char *pool)
 
 	
 	if (cl->npools && 
-			((opool = computer_pool_attach_shared_memory(cl->poolshmid)) == (void *) -1))
+			((opool = (struct pool *)computer_pool_attach_shared_memory(cl->poolshmid)) == (void *) -1))
 	{
 		fprintf (stderr,"Could not attach old shared memory\n");
 		return 0;
@@ -319,7 +320,7 @@ int computer_pool_add (struct computer_limits *cl, char *pool)
 		return 0;
 	}
 
-	if ((npool = computer_pool_attach_shared_memory(npoolshmid)) == (void *) -1) {
+	if ((npool = (struct pool *)computer_pool_attach_shared_memory(npoolshmid)) == (void *) -1) {
 		fprintf (stderr,"Could not attach new shared memory\n");
 		return 0;
 	}
@@ -345,7 +346,7 @@ int computer_pool_add (struct computer_limits *cl, char *pool)
 
 void computer_pool_remove (struct computer_limits *cl, char *pool)
 {
-	struct pool *opool = (void*)-1;
+	struct pool *opool = (struct pool *)-1;
 	struct pool *npool;
 	int npoolshmid;
 	int i,j;
@@ -359,7 +360,7 @@ void computer_pool_remove (struct computer_limits *cl, char *pool)
 		return;
 
 	if (cl->npools && 
-			((opool = computer_pool_attach_shared_memory(cl->poolshmid)) == (void *) -1))
+			((opool = (struct pool *) computer_pool_attach_shared_memory(cl->poolshmid)) == (void *) -1))
 	{
 		return;
 	}
@@ -368,7 +369,7 @@ void computer_pool_remove (struct computer_limits *cl, char *pool)
 		return;
 	}
 
-	if ((npool = computer_pool_attach_shared_memory(npoolshmid)) == (void *) -1) {
+	if ((npool = (struct pool *) computer_pool_attach_shared_memory(npoolshmid)) == (void *) -1) {
 		return;
 	}
 	
@@ -397,7 +398,7 @@ void computer_pool_list (struct computer_limits *cl)
 	struct pool *pool;
 
 	if (cl->poolshmid != -1) {
-		pool = computer_pool_attach_shared_memory (cl->poolshmid);
+		pool = (struct pool *) computer_pool_attach_shared_memory (cl->poolshmid);
 		printf ("Pools: \n");
 		for (i = 0; i < cl->npools; i++) {
 			printf (" \t%i - %s\n",i,pool[i].name);
@@ -415,7 +416,7 @@ int computer_pool_exists (struct computer_limits *cl,char *pool)
 	if (!cl->npools)
 		return 0;
 
-	if ((npool = computer_pool_attach_shared_memory (cl->poolshmid)) == (void *)-1) {
+	if ((npool = (struct pool *) computer_pool_attach_shared_memory (cl->poolshmid)) == (void *)-1) {
 		return 0;
 	}
 

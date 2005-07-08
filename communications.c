@@ -84,7 +84,7 @@ int get_socket (short port)
 int accept_socket (int sfd,struct database *wdb,struct sockaddr_in *addr)
 {
 	int fd;
-	int len = sizeof (struct sockaddr_in);
+	socklen_t len = sizeof (struct sockaddr_in);
 
 	if ((fd = accept (sfd,(struct sockaddr *)addr,&len)) == -1) {
 		log_master (L_ERROR,"Accepting connection.");
@@ -114,7 +114,7 @@ int accept_socket_slave (int sfd)
 {
 	int fd;
 	struct sockaddr_in addr;
-	int len;
+	socklen_t len;
 
 	if ((fd = accept (sfd,(struct sockaddr *)&addr,&len)) == -1) {
 		log_slave_computer (L_ERROR,"Accepting connection.");
@@ -217,7 +217,7 @@ int recv_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo)
 	void *buf;
 
 	buf = hwinfo;
-	if (!dr_read (sfd,buf,sizeof(struct computer_hwinfo))) {
+	if (!dr_read (sfd,(char *)buf,sizeof(struct computer_hwinfo))) {
 		return 0;
 	}
 
@@ -247,7 +247,7 @@ int send_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo)
 	bswapped.speedindex = htonl (bswapped.speedindex);
 	bswapped.memory = htonl (bswapped.memory);
 
-	if (!dr_write (sfd, buf, sizeof (struct computer_hwinfo))) {
+	if (!dr_write (sfd, (char *) buf, sizeof (struct computer_hwinfo))) {
 		return 0;
 	}
 	
@@ -260,7 +260,7 @@ int recv_request (int sfd, struct request *request)
 	/* Returns 0 on failure */
 	void *buf = request;
 
-	if (!dr_read(sfd,buf,sizeof(struct request))) {
+	if (!dr_read(sfd,(char *)buf,sizeof(struct request))) {
 		return 0;
 	}
 
@@ -277,7 +277,7 @@ int send_request (int sfd, struct request *request,int who)
 	request->data = htonl (request->data);
 	request->who = who;
 
-	if (!dr_write (sfd,buf,sizeof(struct request))) {
+	if (!dr_write (sfd,(char*)buf,sizeof(struct request))) {
 		return 0;
 	}
 
@@ -309,7 +309,7 @@ int send_computer_status (int sfd, struct computer_status *status)
 
 	bswapped.ntasks = htons (bswapped.ntasks);
 
-	if (!dr_write(sfd,buf,sizeof(uint16_t) * 4)) { // Send the first 4 uint16_t that are loadavg and ntasks
+	if (!dr_write(sfd,(char*)buf,sizeof(uint16_t) * 4)) { // Send the first 4 uint16_t that are loadavg and ntasks
 		return 0;
 	}
 
@@ -333,7 +333,7 @@ int recv_computer_status (int sfd, struct computer_status *status)
 	computer_status_init (status);
 
 	buf = status;
-	if (!dr_read(sfd,buf,sizeof(uint16_t) * 4)) {
+	if (!dr_read(sfd,(char*)buf,sizeof(uint16_t) * 4)) {
 		return 0;
 	}
 	status->loadavg[0] = ntohs(status->loadavg[0]);
@@ -359,7 +359,7 @@ int recv_computer_status (int sfd, struct computer_status *status)
 
 int recv_job (int sfd, struct job *job)
 {
-	if (!dr_read(sfd,job,sizeof (struct job))) {
+	if (!dr_read(sfd,(char*)job,sizeof (struct job))) {
 		return 0;
 	}
 	
@@ -493,7 +493,7 @@ int send_job (int sfd, struct job *job)
 	bswapped.limits.os_flags = htons (bswapped.limits.os_flags);
 	bswapped.limits.memory = htonl (bswapped.limits.memory);
 
-	if (!dr_write (sfd,buf,sizeof(bswapped))) {
+	if (!dr_write (sfd,(char*)buf,sizeof(bswapped))) {
 		return 0;
 	}
 	
@@ -505,7 +505,7 @@ int recv_task (int sfd, struct task *task)
 	void *buf;
 
 	buf = task;			/* So when copying to buf we're really copying into job */
-	if (!dr_read(sfd,buf,sizeof(struct task))) {
+	if (!dr_read(sfd,(char*)buf,sizeof(struct task))) {
 		return 0;
 	}
 
@@ -545,7 +545,7 @@ int send_task (int sfd, struct task *task)
 	bswapped.pid = htonl (bswapped.pid);
 	bswapped.exitstatus = htonl (bswapped.exitstatus);
  
-	if (!dr_write (sfd,buf,sizeof(struct task))) {
+	if (!dr_write (sfd,(char*)buf,sizeof(struct task))) {
 		return 0;
 	}
 
@@ -593,7 +593,7 @@ int recv_frame_info (int sfd, struct frame_info *fi)
 	void *buf;
 
 	buf = fi;
-	if (!dr_read (sfd,buf,sizeof (struct frame_info))) {
+	if (!dr_read (sfd,(char*)buf,sizeof (struct frame_info))) {
 		return 0;
 	}
 
@@ -622,7 +622,7 @@ int send_frame_info (int sfd, struct frame_info *fi)
 	bswapped.requeued = htons (bswapped.requeued);
 	bswapped.flags = htons (bswapped.flags);
 
-	if (!dr_write (sfd,buf,sizeof (struct frame_info))) {
+	if (!dr_write (sfd,(char*)buf,sizeof (struct frame_info))) {
 		return 0;
 	}
 
@@ -635,10 +635,10 @@ int send_string (int sfd, char *str)
 
 	len = strlen (str)+1;
 	lensw = htons (len);
-	if (!dr_write (sfd,&lensw,sizeof (len)))
+	if (!dr_write (sfd,(char*)&lensw,sizeof (lensw)))
 		return 0;
 
-	if (!dr_write (sfd,str,len))
+	if (!dr_write (sfd,(char*)str,len))
 		return 0;
 
 	return 1;
@@ -648,7 +648,7 @@ int recv_string (int sfd, char **str)
 {
 	uint16_t len;
 
-	if (!dr_read (sfd,&len,sizeof(len)))
+	if (!dr_read (sfd,(char*)&len,sizeof(len)))
 		return 0;
 
 	len = ntohs (len);
@@ -668,19 +668,19 @@ int send_computer_pools (int sfd, struct computer_limits *cl)
 
 	// fprintf (stderr,"Send npools: %u\n",cl->npools);
 	npools = htons (cl->npools);
-	if (!dr_write (sfd,&npools,sizeof(npools))) {
+	if (!dr_write (sfd,(char*)&npools,sizeof(npools))) {
 		return 0;
 	}
 	
 	if (cl->npools) {
-		if ((pool = computer_pool_attach_shared_memory(cl->poolshmid)) == (void*)-1) {
+		if ((pool = (struct pool *) computer_pool_attach_shared_memory(cl->poolshmid)) == (void*)-1) {
 			perror ("Attaching");
 			fprintf (stderr,"ERROR attaching memory %d shmid\n", cl->poolshmid);
 			return 0;
 		}
 
 		for (i=0;i<cl->npools;i++) {
-			if (!dr_write(sfd,&pool[i],sizeof(struct pool))) {
+			if (!dr_write(sfd,(char*)&pool[i],sizeof(struct pool))) {
 				return 0;
 			}
 		}
@@ -700,7 +700,7 @@ int recv_computer_pools (int sfd, struct computer_limits *cl)
 	uint16_t npools;
 	struct pool pool;
 
-	if (!dr_read (sfd,&npools,sizeof(npools))) {
+	if (!dr_read (sfd,(char*)&npools,sizeof(npools))) {
 		return 0;
 	}
 	npools = ntohs (npools);
@@ -708,7 +708,7 @@ int recv_computer_pools (int sfd, struct computer_limits *cl)
 
 	computer_pool_free (cl);
 	for (i=0;i<npools;i++) {
-		if (!dr_read(sfd,&pool,sizeof(pool))) {
+		if (!dr_read(sfd,(char*)&pool,sizeof(pool))) {
 			return 0;
 		}
 		computer_pool_add (cl,pool.name);
@@ -724,7 +724,7 @@ int recv_computer_limits (int sfd, struct computer_limits *cl)
 	void *buf;
 
 	buf = cl;
-	if (!dr_read (sfd,buf,sizeof(struct computer_limits))) {
+	if (!dr_read (sfd,(char*)buf,sizeof(struct computer_limits))) {
 		return 0;
 	}
 
@@ -759,7 +759,7 @@ int send_computer_limits (int sfd, struct computer_limits *cl)
 	/* Autoenable stuff */
 	bswapped.autoenable.last = htonl (bswapped.autoenable.last);
 
-	if (!dr_write(sfd,buf,sizeof(struct computer_limits))) {
+	if (!dr_write(sfd,(char*)buf,sizeof(struct computer_limits))) {
 		return 0;
 	}
 
@@ -777,7 +777,7 @@ int write_32b (int sfd, void *data)
 	void *buf = &bswapped;
 
 	bswapped = htonl (*(uint32_t *)data);
-	if (!dr_write (sfd,buf,sizeof (uint32_t))) {
+	if (!dr_write (sfd,(char*)buf,sizeof (uint32_t))) {
 		return 0;
 	}
 
@@ -790,7 +790,7 @@ int write_16b (int sfd, void *data)
 	void *buf = &bswapped;
 
 	bswapped = htons (*(uint16_t *)data);
-	if (!dr_write (sfd,buf,sizeof (uint16_t))) {
+	if (!dr_write (sfd,(char*)buf,sizeof (uint16_t))) {
 		return 0;
 	}
 
@@ -802,7 +802,7 @@ int read_32b (int sfd, void *data)
 	void *buf;
 
 	buf = data;
-	if (!dr_read (sfd,buf,sizeof(uint32_t))) {
+	if (!dr_read (sfd,(char*)buf,sizeof(uint32_t))) {
 		return 0;
 	}
 
@@ -816,7 +816,7 @@ int read_16b (int sfd, void *data)
 	void *buf;
 
 	buf = data;
-	if (!dr_read (sfd,buf,sizeof(uint16_t))) {
+	if (!dr_read (sfd,(char*)buf,sizeof(uint16_t))) {
 		return 0;
 	}
 
@@ -835,7 +835,7 @@ int send_autoenable (int sfd, struct autoenable *ae)
 	/* Prepare for sending */
 	bswapped.last = htonl (bswapped.last);
 
-	if (!dr_write(sfd,buf,sizeof(struct autoenable))) {
+	if (!dr_write(sfd,(char*)buf,sizeof(struct autoenable))) {
 		return 0;
 	}
 
@@ -844,7 +844,7 @@ int send_autoenable (int sfd, struct autoenable *ae)
 
 int recv_autoenable (int sfd, struct autoenable *ae)
 {
-	if (!dr_read(sfd,ae,sizeof(struct autoenable))) {
+	if (!dr_read(sfd,(char*)ae,sizeof(struct autoenable))) {
 		return 0;
 	}
 
@@ -857,7 +857,7 @@ int recv_autoenable (int sfd, struct autoenable *ae)
 
 int send_blocked_host (int sfd, struct blocked_host *bh)
 {
-	if (!dr_write(sfd,bh,sizeof (struct blocked_host))) {
+	if (!dr_write(sfd,(char*)bh,sizeof (struct blocked_host))) {
 		return 0;
 	}
 
@@ -866,14 +866,14 @@ int send_blocked_host (int sfd, struct blocked_host *bh)
 
 int recv_blocked_host (int sfd, struct blocked_host *bh)
 {
-	if (!dr_read (sfd,bh,sizeof (struct blocked_host))) {
+	if (!dr_read (sfd,(char*)bh,sizeof (struct blocked_host))) {
 		return 0;
 	}
 
 	return 1;
 }
 
-int dr_read (int fd, void *buf, uint32_t len)
+int dr_read (int fd, char *buf, uint32_t len)
 {
 	int r;
 	int bleft;
@@ -898,7 +898,7 @@ int dr_read (int fd, void *buf, uint32_t len)
 	return len;
 }
 
-int dr_write (int fd, void *buf, uint32_t len)
+int dr_write (int fd, char *buf, uint32_t len)
 {
 	int w;
 	int bleft;

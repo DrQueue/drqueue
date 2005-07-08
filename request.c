@@ -45,6 +45,8 @@
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
 
+int phantom[2];
+
 void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockaddr_in *addr)
 {
 	struct request request;
@@ -2266,7 +2268,7 @@ void handle_r_r_jobdelblkhost (int sfd, struct database *wdb, int icomp, struct 
 	uint32_t ihost;
 	struct blocked_host *nbh,*obh = NULL,*tnbh;
 	int nbhshmid;
-	int i;
+	uint32_t i;
 
 	log_master(L_DEBUG,"Entering handle_r_r_jobdelblkhost");
 
@@ -2302,7 +2304,7 @@ void handle_r_r_jobdelblkhost (int sfd, struct database *wdb, int icomp, struct 
 		tnbh = nbh;
 		for (i=0; i < wdb->job[ijob].nblocked; i++) {
 			if (i != ihost) {
-				memcpy (tnbh,&obh[i],sizeof(struct blocked_host));
+				memcpy ((void*)tnbh,(void*)&obh[i],sizeof(struct blocked_host));
 				tnbh++;
 			} else {
 				log_master_job(&wdb->job[ijob],L_INFO,"Deleted host %s from block list.",obh[i].name);
@@ -2364,7 +2366,7 @@ int request_job_list_blocked_host (uint32_t ijob, struct blocked_host **bh, uint
 
 	*nblocked = req.data;
 
-	if ((*bh = malloc (sizeof (struct blocked_host)* (*nblocked))) == NULL) {
+	if ((*bh = (struct blocked_host *) malloc (sizeof (struct blocked_host)* (*nblocked))) == NULL) {
 		// FIXME error handlind
 		return 0;
 	}
@@ -2968,8 +2970,6 @@ void handle_r_r_slavexit (int sfd,struct database *wdb,int icomp,struct request 
 	/* This function is called by the master */
 	uint32_t icomp2;
 
-
-	/* FIXME: Check if icomp2 != icomp... that shouldn't be */
 
 	log_master (L_DEBUG,"Entering handle_r_r_slavexit");
 
@@ -3705,7 +3705,7 @@ int request_job_list (struct job **job, int who)
 	}
 
 	if (njobs) {
-		if ((*job = malloc (sizeof (struct job) * njobs)) == NULL) {
+		if ((*job = (struct job *) malloc (sizeof (struct job) * njobs)) == NULL) {
 			drerrno = DRE_NOMEMORY;
 			close (sfd);
 			return -1;
@@ -3764,7 +3764,7 @@ int request_computer_list (struct computer **computer, int who)
 	}
 
 	if (ncomputers) {
-		if ((*computer = malloc (sizeof (struct computer) * ncomputers)) == NULL) {
+		if ((*computer = (struct computer *) malloc (sizeof (struct computer) * ncomputers)) == NULL) {
 			drerrno = DRE_NOMEMORY;
 			close (sfd);
 			return -1;
