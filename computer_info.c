@@ -63,9 +63,9 @@ void report_hwinfo (struct computer_hwinfo *hwinfo)
 {
 	printf ("HWINFO Report\n");
 	printf ("Name:\t\t\t%s\n",hwinfo->name);
-	printf ("Architecture:\t\t%s\n",archstring(hwinfo->arch));
-	printf ("OS:\t\t\t%s\n",osstring(hwinfo->os));
-	printf ("Processor type:\t\t%s\n",proctypestring(hwinfo->proctype));
+	printf ("Architecture:\t\t%s\n",archstring((t_arch)hwinfo->arch));
+	printf ("OS:\t\t\t%s\n",osstring((t_os)hwinfo->os));
+	printf ("Processor type:\t\t%s\n",proctypestring((t_proctype)hwinfo->proctype));
 	printf ("Processor speed:\t%i MHz\n",hwinfo->procspeed);
 	printf ("Number of processors:\t%i\n",hwinfo->ncpus);
 	printf ("Speed index:\t\t%i\n",hwinfo->speedindex);

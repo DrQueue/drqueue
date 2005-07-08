@@ -36,15 +36,17 @@ struct pool {
 	char name[MAXNAMELEN];
 };
 
+struct autoenable {				/* I put autoenable on limits even */
+	time_t last;						/* Time of the last autoenable event happened */
+	uint8_t h,m;						/* Hour and minute of wished autoenable */
+	uint8_t flags;					// Autoenable flag
+};
+
 struct computer_limits {
 	uint8_t enabled;					// Computer enabled for rendering
 	uint16_t nmaxcpus;				/* Maximum number of cpus running */
 	uint16_t maxfreeloadcpu;	/* Maximum load that a cpu can have to be considered free */
-	struct autoenable {				/* I put autoenable on limits even */
-		time_t last;						/* Time of the last autoenable event happened */
-		uint8_t h,m;						/* Hour and minute of wished autoenable */
-		uint8_t flags;					// Autoenable flag
-	} autoenable;
+	struct autoenable autoenable;
 	struct pool *pool;
 	uint16_t npools;
 	int poolshmid; // Pool's shared memory id
@@ -76,7 +78,7 @@ void computer_autoenable_check (struct slave_database *sdb);
 
 // Pools
 int computer_pool_get_shared_memory (int npools);
-void *computer_pool_attach_shared_memory (int shmid);
+struct pool *computer_pool_attach_shared_memory (int shmid);
 void computer_pool_detach_shared_memory (struct pool *cpshp);
 void computer_pool_init (struct computer_limits *cl);
 int computer_pool_add (struct computer_limits *cl, char *pool);

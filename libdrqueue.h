@@ -51,7 +51,7 @@ extern "C" {
 #include "nukesg.h"
 #include "aqsissg.h"
 
-int phantom[2];									/* FIXME: This should be local to the slave */
+extern int phantom[2];									/* FIXME: This should be local to the slave */
 
 #ifdef __CPLUSPLUS
 }

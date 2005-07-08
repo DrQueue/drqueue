@@ -107,9 +107,9 @@ void get_loadavg (uint16_t *loadavg)
 
 	fscanf (f_loadavg,"%f %f %f",&a,&b,&c);
 	
-	loadavg[0] = a * 100;
-	loadavg[1] = b * 100;
-	loadavg[2] = c * 100;
+	loadavg[0] = (uint16_t) a * 100;
+	loadavg[1] = (uint16_t) b * 100;
+	loadavg[2] = (uint16_t) c * 100;
 
 	fclose (f_loadavg);
 

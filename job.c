@@ -344,7 +344,7 @@ int get_blocked_host_shared_memory (int nhosts)
 	return shmid;
 }
 
-void *attach_blocked_host_shared_memory (int shmid)
+struct blocked_host *attach_blocked_host_shared_memory (int shmid)
 {
 	void *rv;			/* return value */
 
@@ -353,7 +353,7 @@ void *attach_blocked_host_shared_memory (int shmid)
 		perror ("blocked host shmat");
 	}
 
-	return rv;
+	return (struct blocked_host *) rv;
 }
 
 void detach_blocked_host_shared_memory (struct blocked_host *bhshp)
@@ -376,17 +376,16 @@ int get_frame_shared_memory (int nframes)
 	return shmid;
 }
 
-void *attach_frame_shared_memory (int shmid)
+struct frame_info *attach_frame_shared_memory (int shmid)
 {
 	void *rv;			/* return value */
 
 	if ((rv = shmat (shmid,0,0)) == (void *)-1) {
 		log_master (L_ERROR,"attach_frame_shared_memory: shmat");
 		perror ("frame shmat");
-		return rv;
 	}
 
-	return rv;
+	return (struct frame_info *) rv;
 }
 
 void detach_frame_shared_memory (struct frame_info *fishp)
@@ -527,7 +526,7 @@ void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe
 
 	log_master (L_DEBUG,"Entering job_check_frame_status.");
 
-	fistatus = wdb->job[ijob].frame_info[iframe].status;
+	fistatus = (t_framestatus) wdb->job[ijob].frame_info[iframe].status;
 	icomp = wdb->job[ijob].frame_info[iframe].icomp;
 	itask = wdb->job[ijob].frame_info[iframe].itask;
 
@@ -541,7 +540,7 @@ void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe
 				log_master (L_WARNING,"Task in computer (%s:%i) is not being used",wdb->computer[icomp].hwinfo.name,icomp);
 				running = 0;
 			} else {
-				tstatus = wdb->computer[icomp].status.task[itask].status;
+				tstatus = (t_taskstatus) wdb->computer[icomp].status.task[itask].status;
 	
 				/* check if the task status is running */
 				if ((tstatus != TASKSTATUS_RUNNING) && (tstatus != TASKSTATUS_LOADING)) {
