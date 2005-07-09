@@ -37,7 +37,7 @@
 #include "job.h"
 #include "computer.h"
 
-int loglevel = L_WARNING;
+int loglevel = L_INFO;
 int logonscreen = 0;
 
 /* One important detail about the logger functions is that all of them */
