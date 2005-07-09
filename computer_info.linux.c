@@ -163,7 +163,7 @@ int get_numproc (void)
 
 	while (!feof (cpuinfo)) {
 		fgets (buf,BUFFERLEN-1,cpuinfo);
-		if (strstr(buf,"processor") != NULL) {
+		if (strstr(buf,"model name") != NULL) {
 			numproc++;
 		}
 	}

@@ -424,18 +424,18 @@ void check_lastconn_times (struct database *wdb)
 
 	time(&now);
 	for (i=0;i<MAXCOMPUTERS;i++) {
+		semaphore_lock(wdb->semid);
 		if (wdb->computer[i].used) {
 			if ((now - wdb->computer[i].lastconn) > MAXTIMENOCONN) {
 				log_master_computer (&wdb->computer[i],L_WARNING,
 														 "Maximum time without connecting exceeded. Deleting. (Time not connected: %i)",
 														 (int) (now - wdb->computer[i].lastconn));
-				semaphore_lock(wdb->semid);
 				/* We only need to remove it this	 way, without requeueing its frames because */
-				/* the frames will be requeued on the co	nsistency checks (job_update_info) */
+				/* the frames will be requeued on the consistency checks (job_update_info) */
 				wdb->computer[i].used = 0;
-				semaphore_release(wdb->semid);
 			}
 		}
+		semaphore_release(wdb->semid);
 	}
 }
 
