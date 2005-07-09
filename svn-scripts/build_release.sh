@@ -54,7 +54,7 @@ fi
 read -p "Do you want to create a tag for this package ? (y/n) " CRTTAG
 if [ "$CRTTAG" = "y" ]; then
 	echo "Creating tag $VERSION"
-	(cd ..; svn cp -m "Tag $VERSION created by build_release.sh" https://ssl.drqueue.org/svn/trunk/drqueue \
+	(cd ..; svn cp -m "Tag $VERSION created by build_release.sh" https://ssl.drqueue.org/svn/trunk \
                                                                https://ssl.drqueue.org/svn/tags/$VERSION)
 	echo "Created !"
   # Update Revision
