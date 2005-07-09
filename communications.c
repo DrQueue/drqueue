@@ -114,9 +114,10 @@ int accept_socket_slave (int sfd)
 {
 	int fd;
 	struct sockaddr_in addr;
-	socklen_t len;
+	socklen_t len = sizeof (struct sockaddr_in);
 
 	if ((fd = accept (sfd,(struct sockaddr *)&addr,&len)) == -1) {
+		perror ("accept");
 		log_slave_computer (L_ERROR,"Accepting connection.");
 		exit (1);
 	}
