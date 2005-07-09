@@ -73,7 +73,7 @@ database_load (struct database *wdb)
 		return 0;
 	}
 
-#ifdef __CYGWIN
+#ifndef __CYGWIN
 	snprintf (filename, BUFFERLEN - 1, "%s/drqueue.db", basedir);
 #else
 	snprintf (filename, BUFFERLEN - 1, "%s\\drqueue.db", basedir);
@@ -157,7 +157,7 @@ database_save (struct database *wdb)
 	}
 
 	snprintf (dir, BUFFERLEN - 1, "%s", basedir);
-#ifdef __CYGWIN
+#ifndef __CYGWIN
 	snprintf (filename, BUFFERLEN - 1, "%s/drqueue.db", dir);
 #else
 	snprintf (filename, BUFFERLEN - 1, "%s\\drqueue.db", dir);

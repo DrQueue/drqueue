@@ -275,26 +275,28 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
 	semaphore_lock(wdb->semid); /* I put the lock here so no race condition can appear... */
 
 	if (icomp != -1) {
-		semaphore_release(wdb->semid);
+/* 		semaphore_release(wdb->semid); */
 		log_master (L_INFO,"Already registered computer requesting registration (%s)",name);
-		answer.type = R_R_REGISTER;
-		answer.data = RERR_ALREADY;
-		if (!send_request (sfd,&answer,MASTER)) {
-			log_master (L_ERROR,"Sending request handle_r_r_register.RERR_ALREADY to host : '%s'",name);
+		log_master (L_WARNING,"Registering again !! (%s)",name);
+/* 		answer.type = R_R_REGISTER; */
+/* 		answer.data = RERR_ALREADY; */
+/* 		if (!send_request (sfd,&answer,MASTER)) { */
+/* 			log_master (L_ERROR,"Sending request handle_r_r_register.RERR_ALREADY to host : '%s'",name); */
+/* 		} */
+/* 		return -1; */
+		index = icomp;
+	} else {
+		if ((index = computer_index_free(wdb)) == -1) {
+			semaphore_release(wdb->semid);
+			/* No space left on database */
+			log_master (L_WARNING,"No space left for computer: '%s'",name);
+			answer.type = R_R_REGISTER;
+			answer.data = RERR_NOSPACE;
+			if (!send_request (sfd,&answer,MASTER)) {
+				log_master (L_ERROR,"Sending request handle_r_r_register.RERR_NOSPACE to host : '%s'",name);
+			}
+			return -1;
 		}
-		return -1;
-	}
-
-	if ((index = computer_index_free(wdb)) == -1) {
-		semaphore_release(wdb->semid);
-		/* No space left on database */
-		log_master (L_WARNING,"No space left for computer: '%s'",name);
-		answer.type = R_R_REGISTER;
-		answer.data = RERR_NOSPACE;
-		if (!send_request (sfd,&answer,MASTER)) {
-			log_master (L_ERROR,"Sending request handle_r_r_register.RERR_NOSPACE to host : '%s'",name);
-		}
-		return -1;
 	}
 
 	computer_init(&wdb->computer[index]);
@@ -334,8 +336,10 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
 
 	semaphore_release(wdb->semid);
 
-	log_master (L_DEBUG,"Exiting handle_r_r_register. Computer %s registered with id %i.",
-				wdb->computer[index].hwinfo.name,index);
+	log_master_computer	(&wdb->computer[index],L_INFO,"Computer %s registered with id %i.",
+											 wdb->computer[index].hwinfo.name,index);
+
+	log_master (L_DEBUG,"Exiting handle_r_r_register");
 
 	return index;
 }
@@ -2982,7 +2986,7 @@ void handle_r_r_slavexit (int sfd,struct database *wdb,int icomp,struct request 
 		return;
 	}
 	if (wdb->computer[icomp2].hwinfo.id == icomp) {
-		log_master (L_DEBUG,"Exiting computer: %i", icomp2);
+		log_master (L_INFO,"Slave quitting: %s (%i)", wdb->computer[icomp2].hwinfo.name, icomp2);
 		computer_free (&wdb->computer[icomp2]);
 	}
 
