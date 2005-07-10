@@ -1098,10 +1098,12 @@ static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info)
 		char msg[] = "Couldn't open log file";
 		gtk_text_buffer_set_text (buffer,msg,-1);
 	} else {
+		guint sourceid;
 		iinfo->fd = fd;
 		iinfo->text = text;
-		g_idle_add (show_log,iinfo);
+		sourceid = g_timeout_add (100,show_log,iinfo);
 		g_signal_connect_swapped (G_OBJECT(window),"destroy",G_CALLBACK(close),(gpointer)fd);
+		g_signal_connect_swapped (G_OBJECT(window),"destroy",G_CALLBACK(g_source_remove),(gpointer)sourceid);
 	}
 	g_signal_connect_swapped (G_OBJECT(window),"destroy",G_CALLBACK(gtk_widget_destroy),(GtkObject*)window);
 
@@ -1121,13 +1123,11 @@ static gboolean show_log (gpointer data)
 	GtkTextBuffer *buffer;
 
 
-	if ((n = read (fd,buf,BUFFERLEN)) != 0) {
+	while ((n = read (fd,buf,BUFFERLEN)) > 0)	{
 		buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW(text));
 		gtk_text_buffer_insert_at_cursor (buffer,buf,n);
 		mark = gtk_text_buffer_get_insert (buffer);
 		gtk_text_view_scroll_mark_onscreen (GTK_TEXT_VIEW(text),mark);
-	} else {
-		sleep (1);
 	}
 
 	return TRUE;
