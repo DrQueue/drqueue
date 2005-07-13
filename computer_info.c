@@ -151,6 +151,12 @@ char *proctypestring (t_proctype proctype)
 	case PROCTYPE_INTELXEON:
 		msg = "Xeon";
 		break;
+	case PROCTYPE_INTELIA64:
+		msg = "IA-64";
+		break;
+	case PROCTYPE_PENTIUMM:
+		msg = "Pentium M";
+		break;
 	case PROCTYPE_ATHLON:
 		msg = "Athlon";
 		break;

@@ -94,6 +94,8 @@ t_proctype get_proctype (void)
 				proctype = PROCTYPE_INTELXEON;
 			} else if (strstr(buf,"Pentium(R) 4") != NULL) {
 				proctype = PROCTYPE_PENTIUM4;
+			} else if (strstr(buf,"Pentium(R) M") != NULL) {
+				proctype = PROCTYPE_PENTIUMM;
 			} else if (strstr(buf,"Pentium III") != NULL) {
 				proctype = PROCTYPE_PENTIUMIII;
 			} else if (strstr(buf,"Pentium II") != NULL) {
@@ -102,6 +104,10 @@ t_proctype get_proctype (void)
 				proctype = PROCTYPE_PENTIUM;
 			}
 			found = 1;
+		} else if (strstr(buf,"model :") != NULL) {
+			if (strstr(buf,"IA-64") != NULL) {
+				proctype = PROCTYPE_INTELIA64;
+			}
 		}
 	}
 
