@@ -104,10 +104,8 @@ t_proctype get_proctype (void)
 				proctype = PROCTYPE_PENTIUM;
 			}
 			found = 1;
-		} else if (strstr(buf,"model :") != NULL) {
-			if (strstr(buf,"IA-64") != NULL) {
-				proctype = PROCTYPE_INTELIA64;
-			}
+		} else if ((strstr(buf,"arch") != NULL) &&  (strstr(buf,"IA-64") != NULL)) {
+			proctype = PROCTYPE_INTELIA64;
 			found = 1;
 		}
 	}
