@@ -168,7 +168,7 @@ int get_numproc (void)
 
 	while (!feof (cpuinfo)) {
 		fgets (buf,BUFFERLEN-1,cpuinfo);
-		if (strstr(buf,"model name") != NULL) {
+		if (strstr(buf,"BogoMIPS") != NULL) {
 			numproc++;
 		}
 	}
