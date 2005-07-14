@@ -108,6 +108,7 @@ t_proctype get_proctype (void)
 			if (strstr(buf,"IA-64") != NULL) {
 				proctype = PROCTYPE_INTELIA64;
 			}
+			found = 1;
 		}
 	}
 
