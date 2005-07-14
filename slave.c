@@ -186,12 +186,23 @@ void clean_out (int signal, siginfo_t *info, void *data)
 	pid_t child_pid;
 	int i;
 	struct sigaction ignore;
+	struct sigaction action_dfl;
 
 	/* Ignore new int signals that could arrive during clean up */
 	ignore.sa_handler = SIG_IGN;
 	sigemptyset (&ignore.sa_mask);
 	ignore.sa_flags = 0;
 	sigaction (SIGINT, &ignore, NULL);
+
+	// Handle SIGCLD properly
+	action_dfl.sa_handler = (void *)SIG_DFL;
+	sigemptyset (&action_dfl.sa_mask);
+#ifdef __OSX
+	sigaction (SIGCHLD, &action_dfl, NULL);
+#else
+	sigaction (SIGCLD, &action_dfl, NULL);
+#endif
+
 
 	log_slave_computer (L_INFO,"Cleaning...");
 
