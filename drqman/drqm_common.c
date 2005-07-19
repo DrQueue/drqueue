@@ -20,9 +20,9 @@
  * $Id$
  */
 
-#include <gtk/gtk.h>
-
 #include "drqm_common.h"
+
+#include <gtk/gtk.h>
 
 GtkWidget *ConfirmDialog (char *text, GList *callbacks)
 {
