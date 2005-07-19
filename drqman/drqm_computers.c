@@ -22,6 +22,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "drqman.h"
 #include "drqm_request.h"

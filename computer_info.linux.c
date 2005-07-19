@@ -20,6 +20,7 @@
 //
 
 #include <stdio.h>
+#define _GNU_SOURCE
 #include <string.h>
 #include <stdlib.h>
 
@@ -168,7 +169,7 @@ int get_numproc (void)
 
 	while (!feof (cpuinfo)) {
 		fgets (buf,BUFFERLEN-1,cpuinfo);
-		if (strstr(buf,"BogoMIPS") != NULL) {
+		if (strcasestr(buf,"BogoMIPS") != NULL) {
 			numproc++;
 		}
 	}

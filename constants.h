@@ -62,7 +62,7 @@
 #define MAXTIMECONNECTION 60	/* Maximum time that can take to handle a request */
 #define MASTERCCHECKSDELAY 10 /* Delay between every consistency check */
 #endif
-#define MAXTIMENOCONN 120 /* If this time is exceeded without connecting to the */
+#define MAXTIMENOCONN 240 /* If this time is exceeded without connecting to the */
 																/* master the computer is erased from the db */
 
 /* Others */

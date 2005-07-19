@@ -22,11 +22,11 @@
 #ifndef _SLAVE_H_
 #define _SLAVE_H_
 
-#include <signal.h>
-#include <limits.h>
-
 #include "computer.h"
 #include "job.h"
+
+#include <limits.h>
+#include <signal.h>
 
 #if defined (__CYGWIN)
 #define KEY_SLAVE "%s/slave.exe"/* Key file for shared memory and semaphores */

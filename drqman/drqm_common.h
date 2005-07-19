@@ -23,8 +23,8 @@
 #ifndef _DRQM_COMMON_H_
 #define _DRQM_COMMON_H_
 
-#include <gtk/gtk.h>
 #include "libdrqueue.h"
+#include <gtk/gtk.h>
 
 #ifdef __CYGWIN
 extern FILE *file_null;

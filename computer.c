@@ -33,6 +33,7 @@
 #include <sys/shm.h>
 
 #include "libdrqueue.h"
+#include "slave.h"
 
 int computer_index_addr (void *pwdb,struct in_addr addr)
 {

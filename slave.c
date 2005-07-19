@@ -124,6 +124,7 @@ int main (int argc,char *argv[])
 		while (computer_available(sdb.comp)) {
 			if (request_job_available(&sdb)) {
 				launch_task(&sdb);
+				update_computer_status (&sdb);
 			} else {
 				break;			/* The while */
 			}
