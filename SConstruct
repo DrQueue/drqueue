@@ -3,7 +3,7 @@ import glob
 import os
 
 env = Environment (CC = 'gcc', 
-										CCFLAGS=Split ('-DCOMM_REPORT -Wall -g -O2'))
+										CCFLAGS=Split ('-DCOMM_REPORT -D_GNU_SOURCE -Wall -g -O2'))
 
 
 print "Platform is: ",sys.platform
