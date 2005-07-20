@@ -36,7 +36,7 @@ endif
 
 ifeq ($(systype),Linux)
  CFLAGS = -DCOMM_REPORT -Wall -I. -D__LINUX -g -O2
- CPPFLAGS = -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__LINUX -g -O2
+ CPPFLAGS = -D__CPLUSPLUS -D_GNU_SOURCE -DCOMM_REPORT -Wall -I. -D__LINUX -g -O2
  MAKE = make
 else 
  ifeq ($(systype),IRIX)
