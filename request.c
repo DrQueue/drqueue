@@ -780,8 +780,6 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
 	computer_update_assigned (wdb,ijob,iframe,icomp,itask);
 	semaphore_release(wdb->semid);
 
-	job_update_info(wdb,ijob);
-
 	log_master_computer (&wdb->computer[icomp],L_DEBUG,"Sending updated task");
 	if (!send_task (sfd,&wdb->computer[icomp].status.task[itask])) {
 		log_master_computer (&wdb->computer[icomp],L_ERROR,drerrno_str());
@@ -1007,13 +1005,15 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
 	/* Once we have the task struct we need to update the information */
 	/* on the job struct */
 	if ((fi = attach_frame_shared_memory(wdb->job[task.ijob].fishmid)) == (struct frame_info *)-1) {
-		/* We are locked */
-		printf ("Problematic fishmid: %i\n",wdb->job[task.ijob].fishmid);
 		job_delete(&wdb->job[task.ijob]);
 		semaphore_release(wdb->semid);
 		log_master (L_ERROR,"Couldn't attach frame shared memory on r_r_taskfini. Deleting job.");
 		return;
 	}
+
+	// In any case
+	if (wdb->job[task.ijob].nprocs)
+		wdb->job[task.ijob].nprocs--;
 
 	if (job_frame_number_correct (&wdb->job[task.ijob],task.frame)) {
 		log_master (L_DEBUG,"Frame number correct");
@@ -1025,10 +1025,12 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
 				fi[task.frame].status = FS_WAITING;
 				fi[task.frame].start_time = 0;
 				fi[task.frame].requeued++;
+				wdb->job[task.ijob].fleft++;
 			} else {
 				fi[task.frame].status = FS_FINISHED;
 				fi[task.frame].exitcode = DR_WEXITSTATUS(task.exitstatus);
 				time(&fi[task.frame].end_time);
+				wdb->job[task.ijob].fdone++;
 			}
 		} else {
 			/* Process exited abnormally either killed by us or by itself (SIGSEGV) */
@@ -1046,6 +1048,7 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
 						fi[task.frame].status = FS_WAITING;
 						fi[task.frame].start_time = 0;
 						fi[task.frame].requeued++;
+						wdb->job[task.ijob].fleft++;
 						break;
 					case FS_ERROR:
 					case FS_FINISHED:
@@ -1058,6 +1061,7 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
 													job_frame_index_to_number (&wdb->job[task.ijob],task.frame));
 					fi[task.frame].status = FS_ERROR;
 					time(&fi[task.frame].end_time);
+					wdb->job[task.ijob].ffailed++;
 				}
 			} else {
 				/* This	 must be WIFSTOPPED, but I'm not sure */
@@ -1072,11 +1076,7 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
 	}
 	semaphore_release(wdb->semid);
 	
-	log_master (L_DEBUG,"Everything right. Calling job_update_info.");
-
 	detach_frame_shared_memory(fi);
-
-	job_update_info(wdb,task.ijob);
 
 	log_master (L_DEBUG,"Exiting handle_r_r_taskfini");
 }

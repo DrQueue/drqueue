@@ -260,7 +260,7 @@ void job_frame_info_init (struct frame_info *fi);
 void job_delete (struct job *job);
 int job_njobs_masterdb (struct database *wdb);
 void job_update_info (struct database *wdb,uint32_t ijob);
-void job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe);
+int job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe, struct frame_info *fi);
 void job_stop (struct job *job);
 void job_continue (struct job *job);
 int job_index_correct_master (struct database *wdb,uint32_t ijob);

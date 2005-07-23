@@ -297,13 +297,19 @@ void set_signal_handlers_child_conn_handler (void)
 void set_signal_handlers_child_cchecks (void)
 {
 	struct sigaction action_dfl;
+	struct sigaction action_sigsegv;
 
 	action_dfl.sa_sigaction = (void *)SIG_DFL;
 	sigemptyset (&action_dfl.sa_mask);
 	action_dfl.sa_flags = SA_SIGINFO;
 	sigaction (SIGINT, &action_dfl, NULL);
 	sigaction (SIGTERM, &action_dfl, NULL);
-	sigaction (SIGSEGV, &action_dfl, NULL);
+
+	// segv
+	action_sigsegv.sa_sigaction = sigsegv_handler;
+	sigemptyset (&action_sigsegv.sa_mask);
+	action_sigsegv.sa_flags = SA_SIGINFO;
+	sigaction (SIGSEGV, &action_sigsegv, NULL);
 }
 
 void clean_out (int signal, siginfo_t *info, void *data)
@@ -404,6 +410,7 @@ void master_consistency_checks (struct database *wdb)
 	uint32_t i;
 
 	while (1) {
+		log_master (L_DEBUG,"Master consistency checks loop");
 		check_lastconn_times (wdb);
 
 		for (i=0;i<MAXJOBS;i++) {
