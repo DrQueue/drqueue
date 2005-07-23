@@ -42,6 +42,10 @@
 #include "slave.h"
 #include "libdrqueue.h"
 
+#ifndef PATH_MAX
+# define PATH_MAX 4096
+#endif
+
 struct slave_database sdb;			/* slave database */
 fd_set read_set;
 

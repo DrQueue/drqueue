@@ -40,6 +40,10 @@
 #include "master.h"
 #include "libdrqueue.h"
 
+#ifndef PATH_MAX
+# define PATH_MAX 4096
+#endif
+
 struct database *wdb;						/* whole database */
 int icomp;			/* index to accepted computer, local to every child */
 char conf[PATH_MAX];

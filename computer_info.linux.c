@@ -33,6 +33,7 @@ void get_hwinfo (struct computer_hwinfo *hwinfo)
 	hwinfo->os = OS_LINUX;
 	hwinfo->proctype = get_proctype();
 	hwinfo->procspeed = get_procspeed();
+	//	hwinfo->ncpus = MAXTASKS;
 	hwinfo->ncpus = get_numproc();
 	hwinfo->speedindex = get_speedindex (hwinfo);
 	hwinfo->memory = get_memory ();
