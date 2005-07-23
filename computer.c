@@ -205,7 +205,6 @@ void computer_update_assigned (struct database *wdb,uint32_t ijob,int iframe,int
 	/* until it has exited the launching loop. And we need this information for the limits */
 	/* tests */
 	wdb->computer[icomp].status.ntasks++;
-
 }
 
 void computer_init (struct computer *computer)

@@ -20,7 +20,6 @@
 //
 
 #include <stdio.h>
-#define _GNU_SOURCE
 #include <string.h>
 #include <stdlib.h>
 
