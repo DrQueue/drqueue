@@ -687,6 +687,7 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
 	GtkWidget *button;
 	GtkWidget *main_vbox;
 	GtkWidget *notebook;
+	GtkWidget *image;
 	GtkTooltips *tooltips;
 	GtkWidget *autorefreshWidgets;
 	struct drqm_jobs_info *newinfo;
@@ -726,6 +727,8 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
 	{
 		case KOJ_MAYA :
 			button = gtk_button_new_with_label ("Open render directory");
+			image = gtk_image_new_from_stock (GTK_STOCK_DIRECTORY,GTK_ICON_SIZE_BUTTON);
+			gtk_button_set_image (GTK_BUTTON(button),GTK_WIDGET(image));
 			gtk_container_border_width (GTK_CONTAINER(button),1);
 			gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_shellopen_exec), (char *) newinfo->jdd.job.koji.maya.renderdir);
 			gtk_box_pack_start (GTK_BOX(main_vbox),button,FALSE,FALSE,2);
@@ -892,6 +895,8 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
 	gtk_box_pack_start (GTK_BOX(vbox_buttons),hbox,FALSE,FALSE,5);
 	/* ReRun */
 	button = gtk_button_new_with_label ("Re-Run");
+	image = gtk_image_new_from_stock (GTK_STOCK_MEDIA_REWIND,GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image (GTK_BUTTON(button),GTK_WIDGET(image));
 	gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
 	g_signal_connect (G_OBJECT(button),"clicked",
 										G_CALLBACK(ReRunJob),newinfo);
@@ -900,6 +905,8 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
 
 	/* Stop */
 	button = gtk_button_new_with_label ("Stop");
+	image = gtk_image_new_from_stock (GTK_STOCK_MEDIA_NEXT,GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image (GTK_BUTTON(button),GTK_WIDGET(image));
 	gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
 	g_signal_connect (G_OBJECT(button),"clicked",
 										G_CALLBACK(StopJob),newinfo);
@@ -908,6 +915,8 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
 
 	/* Hard Stop */
 	button = gtk_button_new_with_label ("Hard Stop");
+	image = gtk_image_new_from_stock (GTK_STOCK_MEDIA_PAUSE,GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image (GTK_BUTTON(button),GTK_WIDGET(image));
 	gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
 	g_signal_connect (G_OBJECT(button),"clicked",
 										G_CALLBACK(HStopJob),newinfo);
@@ -917,6 +926,8 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
 
 	/* Continue */
 	button = gtk_button_new_with_label ("Continue");
+	image = gtk_image_new_from_stock (GTK_STOCK_MEDIA_PLAY,GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image (GTK_BUTTON(button),GTK_WIDGET(image));
 	gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
 	g_signal_connect (G_OBJECT(button),"clicked",
 										G_CALLBACK(ContinueJob),newinfo);
@@ -925,6 +936,8 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
 
 	/* Delete */
 	button = gtk_button_new_with_label ("Delete");
+	image = gtk_image_new_from_stock (GTK_STOCK_DELETE,GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image (GTK_BUTTON(button),GTK_WIDGET(image));
 	gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
 	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(DeleteJob),newinfo);
 	gtk_tooltips_set_tip (tooltips,button,"Delete the job from the queue killing running frames",NULL);
@@ -936,6 +949,8 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
 	gtk_box_pack_start(GTK_BOX(main_vbox),hbox,FALSE,FALSE,2);
 	/* Button Refresh */
 	button = gtk_button_new_with_label ("Refresh");
+	image = gtk_image_new_from_stock (GTK_STOCK_REFRESH,GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image (GTK_BUTTON(button),GTK_WIDGET(image));
 	gtk_container_border_width (GTK_CONTAINER(button),5);
 	gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_update),newinfo);
 	gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
@@ -978,6 +993,7 @@ static GtkWidget *jdd_add_blocked_host_dialog (struct drqm_jobs_info *info)
 	GtkWidget *button;
 	GtkWidget *swindow;
 	GtkWidget *clist;
+	GtkWidget *image;
 	GtkTooltips *tooltips;
 
 	tooltips = TooltipsNew();
@@ -1002,6 +1018,8 @@ static GtkWidget *jdd_add_blocked_host_dialog (struct drqm_jobs_info *info)
 	drqm_update_computerlist (&info->jdd.bhdi_computers_info);
 	// Button to refresh the list
 	button = gtk_button_new_with_label ("Refresh");
+	image = gtk_image_new_from_stock (GTK_STOCK_REFRESH,GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image (GTK_BUTTON(button),GTK_WIDGET(image));
 	gtk_box_pack_start (GTK_BOX(vbox),button,FALSE,FALSE,2);
 	g_signal_connect_swapped(G_OBJECT(button),"clicked",G_CALLBACK(drqm_request_computerlist),&info->jdd.bhdi_computers_info);
 	g_signal_connect_swapped(G_OBJECT(button),"clicked",G_CALLBACK(drqm_update_computerlist),&info->jdd.bhdi_computers_info);
@@ -1009,12 +1027,16 @@ static GtkWidget *jdd_add_blocked_host_dialog (struct drqm_jobs_info *info)
 	hbox = gtk_hbox_new (FALSE,2);
 	gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
 	button = gtk_button_new_with_label ("Add");
+	image = gtk_image_new_from_stock (GTK_STOCK_ADD,GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image (GTK_BUTTON(button),GTK_WIDGET(image));
 	gtk_tooltips_set_tip (tooltips,button,"Add selected host(s) to the blocked list",NULL);
 	gtk_box_pack_start (GTK_BOX(hbox),button, TRUE, TRUE, 2);
 	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(jdd_add_blocked_host),info);
 	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(jdd_update),info);
 	g_signal_connect_swapped (G_OBJECT(button),"clicked",G_CALLBACK(gtk_widget_destroy),window);
 	button = gtk_button_new_with_label ("Cancel");
+	image = gtk_image_new_from_stock (GTK_STOCK_CANCEL,GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image (GTK_BUTTON(button),GTK_WIDGET(image));
 	gtk_box_pack_start (GTK_BOX(hbox),button, TRUE, TRUE, 2);
 	g_signal_connect_swapped (G_OBJECT(button),"clicked",G_CALLBACK(gtk_widget_destroy),window);
 
@@ -1634,6 +1656,7 @@ static void jdd_limits_lmemory_bcp (GtkWidget *bclicked, struct drqm_jobs_info *
 	GtkWidget *label;
 	GtkWidget *entry;
 	GtkWidget *button;
+	GtkWidget *image;
 	char buf[BUFFERLEN];
 
 	dialog = gtk_dialog_new ();
@@ -1652,6 +1675,8 @@ static void jdd_limits_lmemory_bcp (GtkWidget *bclicked, struct drqm_jobs_info *
 	
 	// The buttons
 	button = gtk_button_new_with_label ("Ok");
+	image = gtk_image_new_from_stock (GTK_STOCK_OK,GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image (GTK_BUTTON(button),GTK_WIDGET(image));
 	gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->action_area), button, TRUE, TRUE, 2);
 	GTK_WIDGET_SET_FLAGS(button,GTK_CAN_DEFAULT);
 	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(jdd_limits_lmemory_bcp_bokp),info);
@@ -1659,6 +1684,8 @@ static void jdd_limits_lmemory_bcp (GtkWidget *bclicked, struct drqm_jobs_info *
 	g_signal_connect_swapped (G_OBJECT(button),"clicked",G_CALLBACK(gtk_widget_destroy),dialog);
 
 	button = gtk_button_new_with_label ("Cancel");
+	image = gtk_image_new_from_stock (GTK_STOCK_CANCEL,GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image (GTK_BUTTON(button),GTK_WIDGET(image));
 	gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->action_area), button, TRUE, TRUE, 2);
 	g_signal_connect_swapped (G_OBJECT(button),"clicked",G_CALLBACK(gtk_widget_destroy),dialog);
 
@@ -1674,6 +1701,7 @@ static void jdd_limits_lpool_bcp (GtkWidget *bclicked, struct drqm_jobs_info *in
 	GtkWidget *label;
 	GtkWidget *entry;
 	GtkWidget *button;
+	GtkWidget *image;
 	char buf[BUFFERLEN];
 
 	dialog = gtk_dialog_new ();
@@ -1692,6 +1720,8 @@ static void jdd_limits_lpool_bcp (GtkWidget *bclicked, struct drqm_jobs_info *in
 	
 	// The buttons
 	button = gtk_button_new_with_label ("Ok");
+	image = gtk_image_new_from_stock (GTK_STOCK_OK,GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image (GTK_BUTTON(button),GTK_WIDGET(image));
 	gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->action_area), button, TRUE, TRUE, 2);
 	GTK_WIDGET_SET_FLAGS(button,GTK_CAN_DEFAULT);
 	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(jdd_limits_lpool_bcp_bokp),info);
@@ -1699,6 +1729,8 @@ static void jdd_limits_lpool_bcp (GtkWidget *bclicked, struct drqm_jobs_info *in
 	g_signal_connect_swapped (G_OBJECT(button),"clicked",G_CALLBACK(gtk_widget_destroy),dialog);
 
 	button = gtk_button_new_with_label ("Cancel");
+	image = gtk_image_new_from_stock (GTK_STOCK_CANCEL,GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image (GTK_BUTTON(button),GTK_WIDGET(image));
 	gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->action_area), button, TRUE, TRUE, 2);
 	g_signal_connect_swapped (G_OBJECT(button),"clicked",G_CALLBACK(gtk_widget_destroy),dialog);
 
@@ -1749,6 +1781,7 @@ static GtkWidget *jdd_sesframes_change_dialog (struct drqm_jobs_info *info)
 	GtkWidget *label;
 	GtkWidget *entry;
 	GtkWidget *button;
+	GtkWidget *image;
 	char msg[BUFFERLEN];
 
 	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -1800,6 +1833,8 @@ static GtkWidget *jdd_sesframes_change_dialog (struct drqm_jobs_info *info)
 	hbox = gtk_hbutton_box_new ();
 	gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
 	button = gtk_button_new_with_label ("Submit");
+	image = gtk_image_new_from_stock (GTK_STOCK_OK,GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image (GTK_BUTTON(button),GTK_WIDGET(image));
 	gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
 	gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_sesframes_cd_bsumbit_pressed),info);
 /*		gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(cdd_update),info); */
@@ -1808,6 +1843,8 @@ static GtkWidget *jdd_sesframes_change_dialog (struct drqm_jobs_info *info)
 					 (gpointer) window);
 
 	button = gtk_button_new_with_label ("Cancel");
+	image = gtk_image_new_from_stock (GTK_STOCK_CANCEL,GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image (GTK_BUTTON(button),GTK_WIDGET(image));
 	gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
 	gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
 					 GTK_SIGNAL_FUNC(gtk_widget_destroy),
@@ -1854,6 +1891,7 @@ GtkWidget *jdd_nmc_dialog (struct drqm_jobs_info *info)
 	GtkWidget *label;
 	GtkWidget *entry;
 	GtkWidget *button;
+	GtkWidget *image;
 	char msg[BUFFERLEN];
 
 	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -1875,6 +1913,8 @@ GtkWidget *jdd_nmc_dialog (struct drqm_jobs_info *info)
 	hbox = gtk_hbutton_box_new ();
 	gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
 	button = gtk_button_new_with_label ("Submit");
+	image = gtk_image_new_from_stock (GTK_STOCK_OK,GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image (GTK_BUTTON(button),GTK_WIDGET(image));
 	gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
 	gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_nmcd_bsumbit_pressed),info);
 /*		gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(cdd_update),info); */
@@ -1883,6 +1923,8 @@ GtkWidget *jdd_nmc_dialog (struct drqm_jobs_info *info)
 					 (gpointer) window);
 
 	button = gtk_button_new_with_label ("Cancel");
+	image = gtk_image_new_from_stock (GTK_STOCK_CANCEL,GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image (GTK_BUTTON(button),GTK_WIDGET(image));
 	gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
 	gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
 					 GTK_SIGNAL_FUNC(gtk_widget_destroy),
@@ -1928,6 +1970,7 @@ GtkWidget *jdd_nmcc_dialog (struct drqm_jobs_info *info)
 	GtkWidget *label;
 	GtkWidget *entry;
 	GtkWidget *button;
+	GtkWidget *image;
 	char msg[BUFFERLEN];
 
 	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -1949,6 +1992,8 @@ GtkWidget *jdd_nmcc_dialog (struct drqm_jobs_info *info)
 	hbox = gtk_hbutton_box_new ();
 	gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
 	button = gtk_button_new_with_label ("Submit");
+	image = gtk_image_new_from_stock (GTK_STOCK_OK,GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image (GTK_BUTTON(button),GTK_WIDGET(image));
 	gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
 	gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_nmccd_bsumbit_pressed),info);
 	gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
@@ -1956,6 +2001,8 @@ GtkWidget *jdd_nmcc_dialog (struct drqm_jobs_info *info)
 					 (gpointer) window);
 
 	button = gtk_button_new_with_label ("Cancel");
+	image = gtk_image_new_from_stock (GTK_STOCK_CANCEL,GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image (GTK_BUTTON(button),GTK_WIDGET(image));
 	gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
 	gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
 					 GTK_SIGNAL_FUNC(gtk_widget_destroy),
@@ -2002,6 +2049,7 @@ GtkWidget *jdd_priority_change_dialog (struct drqm_jobs_info *info)
 	GtkWidget *entry;
 	GtkWidget *button;
 	GtkWidget *combo;
+	GtkWidget *image;
 	GList *items = NULL;
 	char msg[BUFFERLEN];
 
@@ -2043,6 +2091,8 @@ GtkWidget *jdd_priority_change_dialog (struct drqm_jobs_info *info)
 	hbox = gtk_hbutton_box_new ();
 	gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
 	button = gtk_button_new_with_label ("Submit");
+	image = gtk_image_new_from_stock (GTK_STOCK_OK,GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image (GTK_BUTTON(button),GTK_WIDGET(image));
 	gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
 	g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(jdd_pcd_bsumbit_pressed),info);
 	gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
@@ -2050,6 +2100,8 @@ GtkWidget *jdd_priority_change_dialog (struct drqm_jobs_info *info)
 														 (gpointer) window);
 
 	button = gtk_button_new_with_label ("Cancel");
+	image = gtk_image_new_from_stock (GTK_STOCK_CANCEL,GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image (GTK_BUTTON(button),GTK_WIDGET(image));
 	gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
 	gtk_signal_connect_object (GTK_OBJECT(button),"clicked",
 														 GTK_SIGNAL_FUNC(gtk_widget_destroy),

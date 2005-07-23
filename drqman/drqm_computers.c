@@ -180,8 +180,11 @@ static GtkWidget *CreateClist (GtkWidget *window)
 static GtkWidget *CreateButtonRefresh (struct drqm_computers_info *info)
 {
 	GtkWidget *b;
+	GtkWidget *i;
 	
 	b = gtk_button_new_with_label ("Refresh");
+	i = gtk_image_new_from_stock (GTK_STOCK_REFRESH,GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image (GTK_BUTTON(b),GTK_WIDGET(i));
 	gtk_container_border_width (GTK_CONTAINER(b),5);
 	gtk_widget_show (GTK_WIDGET(b));
 	g_signal_connect_swapped(G_OBJECT(b),"clicked",G_CALLBACK(drqm_request_computerlist),info);
