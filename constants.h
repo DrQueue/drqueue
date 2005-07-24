@@ -67,7 +67,7 @@
 
 /* Others */
 #define MAXLISTEN 100		/* Maximum number of connections waiting to be accepted */
-#define MAXLOADAVG 80		/* Load average from which we consider a computer unavailable */
+#define MAXLOADAVG 160		/* Load average from which we consider a computer unavailable */
 #define DFLTAVGFTIME 120	/* Default average frame time in seconds */
 
 #ifdef __CYGWIN
