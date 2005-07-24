@@ -887,7 +887,7 @@ int request_job_available (struct slave_database *sdb)
 	sdb->comp->status.ntasks = computer_ntasks (sdb->comp);
 	/* We update the computer load because, at the beginning it does not reflect the load */
 	/* of this task */
-	sdb->comp->status.loadavg[0] += sdb->comp->limits.maxfreeloadcpu;
+	//sdb->comp->status.loadavg[0] += sdb->comp->limits.maxfreeloadcpu;
 	semaphore_release(sdb->semid);
 
 	close (sfd);

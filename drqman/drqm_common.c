@@ -29,6 +29,7 @@ GtkWidget *ConfirmDialog (char *text, GList *callbacks)
 	GtkWidget *dialog;
 	GtkWidget *label;
 	GtkWidget *button;
+	GtkWidget *image;
 	GList *cb2;
 	gpointer data;
 
@@ -46,6 +47,8 @@ GtkWidget *ConfirmDialog (char *text, GList *callbacks)
  
 	/* Buttons */
 	button = gtk_button_new_with_label ("Yes");
+	image = gtk_image_new_from_stock (GTK_STOCK_YES,GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image (GTK_BUTTON(button), GTK_WIDGET(image));
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->action_area),button, TRUE, TRUE, 5);
 	for (;callbacks;callbacks = cb2->next) {
 		cb2 = callbacks->next;
@@ -56,6 +59,8 @@ GtkWidget *ConfirmDialog (char *text, GList *callbacks)
 					(GtkObject*)dialog);
 
 	button = gtk_button_new_with_label ("No");
+	image = gtk_image_new_from_stock (GTK_STOCK_NO,GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image (GTK_BUTTON(button), GTK_WIDGET(image));
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->action_area),button, TRUE, TRUE, 5);
 	gtk_signal_connect_object(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(gtk_widget_destroy),
 					(GtkObject*)dialog);
