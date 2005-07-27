@@ -1129,6 +1129,16 @@ void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp)
 	answer.type = R_R_LISTCOMP;
 	answer.data = computer_ncomputers_masterdb (wdb);
 	memcpy (computer,wdb->computer,sizeof(struct computer) * MAXCOMPUTERS);
+
+	// We attach shared memory and copy it
+	for (i=0;i<MAXCOMPUTERS;i++) {
+		if (computer[i].used) {
+			if (!computer_attach(&computer[i])) {
+				log_master (L_WARNING,"Could not attach computer pool's shared memory. Setting npools = 0.");
+				computer[i].limits.npools = 0;
+			}
+		}
+	}
 	semaphore_release(wdb->semid);
 	
 	if (!send_request (sfd,&answer,MASTER)) {
@@ -1139,10 +1149,16 @@ void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp)
 	for (i=0;i<MAXCOMPUTERS;i++) {
 		if (computer[i].used) {
 			log_master(L_DEBUG,"Send computer");
-			if (!send_computer (sfd,&computer[i])) {
+			if (!send_computer (sfd,&computer[i],1)) {
 				log_master (L_ERROR,"Sending computer (handle_r_r_listcomp) : %s",drerrno_str());
 				break;
 			}
+		}
+	}
+
+	for (i=0;i<MAXCOMPUTERS;i++) {
+		if (computer[i].used) {
+			computer_detach (&computer[i]);
 		}
 	}
 
@@ -1833,7 +1849,10 @@ void handle_r_r_compxfer (int sfd,struct database *wdb,int icomp,struct request 
 	}
 
 	memcpy(&comp,&wdb->computer[icomp2],sizeof(struct computer));
-
+	if (!computer_attach(&comp)) {
+		log_master (L_WARNING,"Could not attach computer shared memory (handle_r_r_compxfer)");
+		return;
+	}
 	semaphore_release(wdb->semid);
 
 	req->type = R_R_COMPXFER;
@@ -1842,7 +1861,8 @@ void handle_r_r_compxfer (int sfd,struct database *wdb,int icomp,struct request 
 		return;
 
 	log_master (L_DEBUG,"Sending computer");
-	send_computer (sfd,&comp);
+	send_computer (sfd,&comp,1);
+	computer_detach (&comp);
 }
 
 int request_job_frame_info (uint32_t ijob, uint32_t frame, struct frame_info *fi, int who)
@@ -2841,7 +2861,7 @@ void update_computer_limits (struct computer_limits *limits)
 	if (req.type == R_R_UCLIMITS) {
 		switch (req.data) {
 		case RERR_NOERROR:
-			if (!send_computer_limits (sfd,limits)) {
+			if (!send_computer_limits (sfd,limits,0)) {
 				log_slave_computer (L_ERROR,"Sending computer limits (update_computer_limits) : %s",drerrno_str());
 				kill(0,SIGINT);
 			}
