@@ -80,13 +80,13 @@ else
 	set MENTALRAY = ""
 endif
 
-if ($DRQUEUE_POST != "") then
+if ($?DRQUEUE_PRE) then
 	set DRQUEUE_PRE = "-preRender $DRQUEUE_PRE"
 else
 	set DRQUEUE_PRE = ""
 endif
 
-if ($DRQUEUE_POST != "") then
+if ($?DRQUEUE_POST) then
 	set DRQUEUE_POST = "-postRender $DRQUEUE_POST"
 else
 	set DRQUEUE_POST = ""
