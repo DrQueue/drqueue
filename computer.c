@@ -551,3 +551,31 @@ void computer_autoenable_check (struct slave_database *sdb)
 	}
 }
 
+int computer_attach (struct computer *computer)
+{
+	struct pool *pool;
+
+	if (computer->limits.npools) {
+		if ((pool = (struct pool *) computer_pool_attach_shared_memory(computer->limits.poolshmid)) == (void*)-1) {
+			computer->limits.npools = 0;
+			return 0;
+		}
+		
+		computer->limits.pool = (struct pool *) malloc (sizeof (struct pool) * computer->limits.npools);
+		memcpy (computer->limits.pool,pool,sizeof (struct pool) * computer->limits.npools);
+
+		computer_pool_detach_shared_memory (pool);
+	}
+
+	return 1;
+}
+
+int computer_detach (struct computer *computer)
+{
+	if (computer->limits.pool) {
+		free (computer->limits.pool);
+		computer->limits.pool = NULL;
+	}
+
+	return 1;
+}

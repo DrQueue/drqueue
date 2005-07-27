@@ -76,6 +76,9 @@ void computer_init_limits (struct computer *comp);
 int computer_index_correct_master (struct database *wdb, uint32_t icomp);
 void computer_autoenable_check (struct slave_database *sdb);
 
+int computer_attach (struct computer *computer);
+int computer_detach (struct computer *computer);
+
 // Pools
 int computer_pool_get_shared_memory (int npools);
 struct pool *computer_pool_attach_shared_memory (int shmid);

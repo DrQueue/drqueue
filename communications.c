@@ -553,7 +553,7 @@ int send_task (int sfd, struct task *task)
 	return 1;
 }
 
-int send_computer (int sfd, struct computer *computer)
+int send_computer (int sfd, struct computer *computer, int attached)
 {
 	if (!send_computer_status (sfd,&computer->status)) {
 		printf ("error send_computer_status\n");
@@ -563,7 +563,7 @@ int send_computer (int sfd, struct computer *computer)
 		printf ("error send_computer_hwinfo\n");
 		return 0;
 	}
-	if (!send_computer_limits (sfd,&computer->limits)) {
+	if (!send_computer_limits (sfd,&computer->limits,attached)) {
 		printf ("error send_computer_limits\n");
 		return 0;
 	}
@@ -661,7 +661,7 @@ int recv_string (int sfd, char **str)
 	return 1;
 }
 
-int send_computer_pools (int sfd, struct computer_limits *cl)
+int send_computer_pools (int sfd, struct computer_limits *cl, int attached)
 {
 	int i;
 	uint16_t npools;
@@ -674,10 +674,14 @@ int send_computer_pools (int sfd, struct computer_limits *cl)
 	}
 	
 	if (cl->npools) {
-		if ((pool = (struct pool *) computer_pool_attach_shared_memory(cl->poolshmid)) == (void*)-1) {
-			perror ("Attaching");
-			fprintf (stderr,"ERROR attaching memory %d shmid\n", cl->poolshmid);
-			return 0;
+		if (attached) {
+			pool = cl->pool;
+		} else {
+			if ((pool = (struct pool *) computer_pool_attach_shared_memory(cl->poolshmid)) == (void*)-1) {
+				perror ("Attaching");
+				fprintf (stderr,"ERROR attaching memory %d shmid\n", cl->poolshmid);
+				return 0;
+			}
 		}
 
 		for (i=0;i<cl->npools;i++) {
@@ -686,7 +690,8 @@ int send_computer_pools (int sfd, struct computer_limits *cl)
 			}
 		}
 
-		computer_pool_detach_shared_memory (pool);
+		if (!attached)
+			computer_pool_detach_shared_memory (pool);
 	}
 
 	//	fprintf (stderr,"communications.c\n");
@@ -747,7 +752,7 @@ int recv_computer_limits (int sfd, struct computer_limits *cl)
 	return 1;
 }
 
-int send_computer_limits (int sfd, struct computer_limits *cl)
+int send_computer_limits (int sfd, struct computer_limits *cl, int attached)
 {
 	struct computer_limits bswapped;
 	void *buf = &bswapped;
@@ -765,7 +770,7 @@ int send_computer_limits (int sfd, struct computer_limits *cl)
 	}
 
 	// Pools
-	if (!send_computer_pools(sfd,cl)) {
+	if (!send_computer_pools(sfd,cl,attached)) {
 		return 0;
 	}
 

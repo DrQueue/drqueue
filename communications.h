@@ -40,14 +40,14 @@ int connect_to_slave (char *slave);
 
 int recv_request (int sfd, struct request *request);
 int send_request (int sfd, struct request *request,int who);
-int send_computer (int sfd, struct computer *computer);
+int send_computer (int sfd, struct computer *computer,int attached);
 int recv_computer (int sfd, struct computer *computer);
 int recv_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo);
 int send_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo);
 int recv_computer_status (int sfd, struct computer_status *status);
 int send_computer_status (int sfd, struct computer_status *status);
 int recv_computer_limits (int sfd, struct computer_limits *cl);
-int send_computer_limits (int sfd, struct computer_limits *cl);
+int send_computer_limits (int sfd, struct computer_limits *cl,int attached);
 int recv_job (int sfd, struct job *job);
 int send_job (int sfd, struct job *job);
 int recv_task (int sfd, struct task *task);
@@ -58,7 +58,7 @@ int recv_autoenable (int sfd, struct autoenable *ae);
 int send_autoenable (int sfd, struct autoenable *ae);
 int send_blocked_host (int sdf, struct blocked_host *bh);
 int recv_blocked_host (int sdf, struct blocked_host *bh);
-int send_computer_pools (int sfd, struct computer_limits *cl);
+int send_computer_pools (int sfd, struct computer_limits *cl,int attached);
 int recv_computer_pools (int sfd, struct computer_limits *cl);
 
 int send_string (int sfd, char *str);
