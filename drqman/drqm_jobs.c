@@ -74,7 +74,7 @@ static void dnj_cpri_changed (GtkWidget *entry, struct drqmj_dnji *info);
 static void dnj_bsubmit_pressed (GtkWidget *button, struct drqmj_dnji *info);
 static void dnj_bsubmitstopped_pressed (GtkWidget *button, struct drqmj_dnji *info);
 static int dnj_submit (struct drqmj_dnji *info);
-static void dnj_destroyed (GtkWidget *dialog, struct drqm_jobs_info *info);
+static gboolean dnj_deleted (GtkWidget *dialog, GdkEvent *event, struct drqm_jobs_info *info);
 
 /* KOJ STUFF */
 /* Basic koj handling */
@@ -367,12 +367,23 @@ static GtkWidget *CreateMenu (struct drqm_jobs_info *info)
 }
 
 
+static GtkWidget *GetNewJobDialog (struct drqm_jobs_info *info)
+{
+	static GtkWidget *dialog = NULL;
+
+	if (!dialog)
+		dialog = NewJobDialog(info);
+
+	return dialog;
+}
+
+
 static void NewJob (GtkWidget *menu_item, struct drqm_jobs_info *info)
 {
 	GtkWidget *dialog;
-	dialog = NewJobDialog(info);
-	g_signal_connect (G_OBJECT(dialog),"destroy",
-										G_CALLBACK(dnj_destroyed),info);
+
+	dialog = GetNewJobDialog(info);
+	gtk_widget_show (dialog);
 	gtk_grab_add(dialog);
 }
 
@@ -383,10 +394,9 @@ static void CopyJob (GtkWidget *menu_item, struct drqm_jobs_info *info)
 	if (!info->selected)
 		return;
 
-	dialog = NewJobDialog(info);
+	dialog = GetNewJobDialog(info);
 	CopyJob_CloneInfo (info);
-	g_signal_connect (G_OBJECT(dialog),"destroy",
-										G_CALLBACK(dnj_destroyed),info);
+	gtk_widget_show(dialog);
 	gtk_grab_add(dialog);
 }
 
@@ -623,8 +633,8 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
 	/* Dialog */
 	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title (GTK_WINDOW(window),"New Job");
-	g_signal_connect_swapped(G_OBJECT(window),"destroy",G_CALLBACK(gtk_widget_destroy),
-													 (GtkObject*)window);
+	g_signal_connect (G_OBJECT(window),"delete_event",G_CALLBACK(dnj_deleted),
+										(GtkObject*)info);
 	gtk_window_set_default_size(GTK_WINDOW(window),800,500);
 	gtk_container_set_border_width (GTK_CONTAINER(window),5);
 	info->dnj.dialog = window;
@@ -805,7 +815,10 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
 	gtk_tooltips_set_tip(tooltips,button,"Close without sending any information",NULL);
 	gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,TRUE,2);
 	g_signal_connect_swapped (G_OBJECT(button),"clicked",
-														G_CALLBACK(gtk_widget_destroy),
+														G_CALLBACK(gtk_widget_hide),
+														(gpointer) window);
+	g_signal_connect_swapped (G_OBJECT(button),"clicked",
+														G_CALLBACK(gtk_grab_remove),
 														(gpointer) window);
 
 	gtk_widget_show_all(window);
@@ -824,6 +837,9 @@ static void dnj_psearch (GtkWidget *button, struct drqmj_dnji *info)
 
 	dialog = gtk_file_selection_new ("Please select a file as job command");
 	info->fs = dialog;
+
+	// Set previous path
+	gtk_file_selection_set_filename (GTK_FILE_SELECTION(dialog), gtk_entry_get_text(GTK_ENTRY(info->ecmd)));
 
 	gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
 					"clicked", GTK_SIGNAL_FUNC (dnj_set_cmd), info);
@@ -895,7 +911,8 @@ static void dnj_bsubmit_pressed (GtkWidget *button, struct drqmj_dnji *info)
 
 		gtk_widget_show_all (dialog);
 	} else {
-		gtk_widget_destroy (info->dialog);
+		gtk_widget_hide (info->dialog);
+		gtk_grab_remove (info->dialog);
 	}
 }
 
@@ -1055,8 +1072,8 @@ static int dnj_submit (struct drqmj_dnji *info)
 		job.limits.os_flags |= (OSF_FREEBSD);
 	}
 	if (GTK_TOGGLE_BUTTON(info->limits.cb_cygwin)->active) {
-				job.limits.os_flags |= (OSF_CYGWIN);
-		}
+		job.limits.os_flags |= (OSF_CYGWIN);
+	}
 
 	/* Flags */
 	job.flags = 0;
@@ -1094,10 +1111,12 @@ static void update_joblist (GtkWidget *widget, struct drqm_jobs_info *info)
 	drqm_update_joblist (info);
 }
 
-static void dnj_destroyed (GtkWidget *dialog, struct drqm_jobs_info *info)
+static gboolean dnj_deleted (GtkWidget *dialog, GdkEvent *event, struct drqm_jobs_info *info)
 {
-	info->dnj.fkoj = NULL;
-	update_joblist (dialog,info);
+	gtk_widget_hide (dialog);
+	gtk_grab_remove (dialog);
+
+	return TRUE;
 }
 
 static int pri_cmp_clist (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
