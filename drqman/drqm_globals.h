@@ -1,5 +1,5 @@
 // 
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005 Jorge Daza Garcia-Blanes
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,23 +16,20 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
-/*
- * $Header: /root/cvs/drqueue/drqman/drqman.h,v 1.5 2001/11/08 11:47:42 jorge Exp $
- */
+//
+// $Id$
+//
 
-#ifndef _DRQMAN_H_
-#define _DRQMAN_H_
+#ifndef _DRQM_GLOBALS_H_
+#define _DRQM_GLOBALS_H_
 
-#include "drqm_jobs.h"
-#include "drqm_computers.h"
-#include "drqm_globals.h"
+#include "job.h"
 
-struct info_drqm {
-	struct drqm_computers_info idc; /* Computers tab */
-	struct drqm_jobs_info idj;	/* Jobs tab */
-	GtkWidget *main_window;
+#include <limits.h>
+
+// Global information for the use of the whole interface
+struct globals {
+	
 };
 
-#endif /* _DRQMAN_H */
-
-
+#endif
