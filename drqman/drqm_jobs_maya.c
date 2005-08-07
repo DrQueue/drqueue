@@ -271,14 +271,12 @@ GtkWidget *jdd_koj_maya_widgets (struct drqm_jobs_info *info)
 static void dnj_koj_frame_maya_projectdir_search (GtkWidget *button, struct drqmj_koji_maya *info)
 {
 	GtkWidget *dialog;
-	char dir[BUFFERLEN];
 
 	dialog = gtk_file_selection_new ("Please select the project directory");
 	info->fsprojectdir = dialog;
 
 	if (strlen(gtk_entry_get_text(GTK_ENTRY(info->eprojectdir)))) {
-		strncpy (dir,gtk_entry_get_text(GTK_ENTRY(info->eprojectdir)),BUFFERLEN-1);
-		gtk_file_selection_set_filename (GTK_FILE_SELECTION(dialog),strcat(dir,"/"));
+		gtk_file_selection_set_filename (GTK_FILE_SELECTION(dialog),gtk_entry_get_text(GTK_ENTRY(info->eprojectdir)));
 	}
 
 	gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
@@ -297,6 +295,7 @@ static void dnj_koj_frame_maya_projectdir_set (GtkWidget *button, struct drqmj_k
 {
 	struct stat s;
 	char buf[BUFFERLEN];
+	char buf2[BUFFERLEN];
 	char *p;
 
 	strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsprojectdir)),BUFFERLEN-1);
@@ -307,20 +306,28 @@ static void dnj_koj_frame_maya_projectdir_set (GtkWidget *button, struct drqmj_k
 			*p = 0;
 	}
 	gtk_entry_set_text (GTK_ENTRY(info->eprojectdir),buf);
+#ifdef __CYGWIN
+	snprintf(buf2,BUFFERLEN,"%s\\images\\",buf);
+	gtk_entry_set_text (GTK_ENTRY(info->erenderdir),buf2);
+	snprintf(buf2,BUFFERLEN,"%s\\scenes\\",buf);
+	gtk_entry_set_text (GTK_ENTRY(info->escene),buf2);
+#else
+	snprintf(buf2,BUFFERLEN,"%s/images/",buf);
+	gtk_entry_set_text (GTK_ENTRY(info->erenderdir),buf2);
+	snprintf(buf2,BUFFERLEN,"%s/scenes/",buf);
+	gtk_entry_set_text (GTK_ENTRY(info->escene),buf2);
+#endif
 }
 
 static void dnj_koj_frame_maya_renderdir_search (GtkWidget *button, struct drqmj_koji_maya *info)
 {
 	GtkWidget *dialog;
-	char dir[BUFFERLEN];
 
-#ifndef __CYGWIN
 	dialog = gtk_file_selection_new ("Please select the output directory");
 	info->fsrenderdir = dialog;
 
 	if (strlen(gtk_entry_get_text(GTK_ENTRY(info->erenderdir)))) {
-		strncpy (dir,gtk_entry_get_text(GTK_ENTRY(info->erenderdir)),BUFFERLEN-1);
-		gtk_file_selection_set_filename (GTK_FILE_SELECTION(dialog),strcat(dir,"/"));
+		gtk_file_selection_set_filename (GTK_FILE_SELECTION(dialog),gtk_entry_get_text(GTK_ENTRY(info->erenderdir)));
 	}
 
 	gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
@@ -333,10 +340,6 @@ static void dnj_koj_frame_maya_renderdir_search (GtkWidget *button, struct drqmj
 					 (gpointer) dialog);
 	gtk_widget_show (dialog);
 	gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-#else
-	gtk_entry_set_text (GTK_ENTRY(info->erenderdir), cygwin_dir_dialog(NULL));
-#endif
-
 }
 
 
@@ -360,7 +363,6 @@ static void dnj_koj_frame_maya_scene_search (GtkWidget *button, struct drqmj_koj
 {
 	GtkWidget *dialog;
 
-#ifndef __CYGWIN
 	dialog = gtk_file_selection_new ("Please select a scene file");
 	info->fsscene = dialog;
 
@@ -378,23 +380,14 @@ static void dnj_koj_frame_maya_scene_search (GtkWidget *button, struct drqmj_koj
 					 (gpointer) dialog);
 	gtk_widget_show (dialog);
 	gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-#else
-	gtk_entry_set_text (GTK_ENTRY(info->escene), cygwin_file_dialog(NULL, NULL, NULL, 0));
-#endif
 }
 
 static void dnj_koj_frame_maya_scene_set (GtkWidget *button, struct drqmj_koji_maya *info)
 {
 	char buf[BUFFERLEN];
-	char *p;
 	
 	strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscene)),BUFFERLEN-1);
-	/* This removed the path part of the filename */
-/*		p = strrchr(buf,'/'); */
-/*		p = ( p ) ? p+1 : buf; */
-	/* We need the whole scene path */
-	p = buf;
-	gtk_entry_set_text (GTK_ENTRY(info->escene),p);
+	gtk_entry_set_text (GTK_ENTRY(info->escene),buf);
 }
 
 static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info)
@@ -427,7 +420,6 @@ static void dnj_koj_frame_maya_script_search (GtkWidget *button, struct drqmj_ko
 {
 	GtkWidget *dialog;
 
-#ifndef __CYGWIN
 	dialog = gtk_file_selection_new ("Please select a script directory");
 	info->fsscript = dialog;
 
@@ -445,25 +437,12 @@ static void dnj_koj_frame_maya_script_search (GtkWidget *button, struct drqmj_ko
 					 (gpointer) dialog);
 	gtk_widget_show (dialog);
 	gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-#else
-	gtk_entry_set_text (GTK_ENTRY(info->escript), cygwin_dir_dialog(NULL));
-#endif
-
 }
 
 static void dnj_koj_frame_maya_script_set (GtkWidget *button, struct drqmj_koji_maya *info)
 {
-	struct stat s;
-
 	char buf[BUFFERLEN];
-	char *p;
 	
 	strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscript)),BUFFERLEN-1);
-	stat(buf, &s);
-	if (!S_ISDIR(s.st_mode)) {
-		p = strrchr(buf,'/');
-		if (p)
-			*p = 0;
-	}
 	gtk_entry_set_text (GTK_ENTRY(info->escript),buf);
 }
