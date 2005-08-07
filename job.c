@@ -423,7 +423,7 @@ void job_update_info (struct database *wdb,uint32_t ijob)
 	struct frame_info *fi;
 	int fleft=0,fdone=0,ffailed=0;
 	int total;
-	time_t avg_frame_time = 0;
+	uint64_t avg_frame_time = 0;
 	static int old_fdone = 0; /* Old frames done to update or not the estimated finish time */
 	static int old_nprocs = 0;	/* Same that old_fdone */
 	struct job job;
@@ -496,7 +496,7 @@ void job_update_info (struct database *wdb,uint32_t ijob)
 	wdb->job[ijob].ffailed = ffailed;
 
 	if (fdone)
-		wdb->job[ijob].avg_frame_time = avg_frame_time;
+		wdb->job[ijob].avg_frame_time = (uint32_t) avg_frame_time;
 
 	/* If we do not check old_fdone and old_nprocs, the est_finish_time is being updated every time */
 	/* this function is called. In this way it is only updated when it must, that is when a frame is */
