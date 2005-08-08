@@ -300,7 +300,7 @@ int computer_pool_add (struct computer_limits *cl, char *pool)
 	struct pool *npool;
 	int npoolshmid;
 
-	//	fprintf (stderr,"computer_pool_add (cl=%x,cl->poolshmid=%i)\n",cl,cl->poolshmid);
+	// fprintf (stderr,"computer_pool_add (cl=%x,cl->poolshmid=%i) : %s\n",cl,cl->poolshmid,pool);
 
 	if (computer_pool_exists (cl,pool)) {
 		// It is already on the list
@@ -337,9 +337,10 @@ int computer_pool_add (struct computer_limits *cl, char *pool)
 
 	cl->poolshmid = npoolshmid;
 	strncpy (npool[cl->npools].name,pool,MAXNAMELEN-1);
+	// fprintf(stderr,"Added pool : %s\n",npool[cl->npools].name);
 	cl->npools++;
 
-	//	fprintf(stderr,"New number of pools: %i\n",cl->npools);
+	// fprintf(stderr,"New number of pools: %i\n",cl->npools);
 	computer_pool_detach_shared_memory(npool);
 	return 1;
 }

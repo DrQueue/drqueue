@@ -1,0 +1,30 @@
+import sys
+import glob
+import os
+
+env = Environment (CC = 'gcc', 
+										CCFLAGS=Split ('-DCOMM_REPORT -D_GNU_SOURCE -O2'))
+
+
+print "Platform is: ",sys.platform
+if sys.platform == "linux2":
+	env.Append (CCFLAGS = '-D__LINUX')
+elif sys.platform == "darwin":
+	env.Append (CCFLAGS = '-D__OSX')
+
+env.Append (CXXFLAGS='-D__CPLUSPLUS')
+env.Append (CPPPATH=['/usr/include/python2.4',".."])
+env.Append (SWIGFLAGS="-python -I..")
+
+libdrqueue = Split ("""../computer_info.c ../computer_status.c ../task.c ../logger.c ../communications.c
+      ../computer.c ../request.c ../semaphores.c ../job.c ../drerrno.c ../database.c ../common.c
+      ../mayasg.c ../mentalraysg.c ../blendersg.c ../bmrtsg.c ../pixiesg.c ../3delightsg.c ../lightwavesg.c ../aftereffectssg.c
+			../shakesg.c ../aqsissg.c ../terragensg.c ../nukesg.c""")
+
+#
+# libdrqueue.a
+#
+drqueue_i = glob.glob("*.i")
+drqueue_all = drqueue_i + libdrqueue
+
+drqueue = env.SharedLibrary ('drqueue.so', drqueue_all)
