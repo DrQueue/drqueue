@@ -10,11 +10,36 @@
 %include "task.h"
 %include "request.h"
 %include "constants.h"
+%include "job.h"
 
 typedef unsigned int time_t;
 typedef unsigned short int uint16_t;
 typedef unsigned long int uint32_t;
 typedef unsigned char uint8_t;
+
+
+%extend job {
+	%exception job {
+		$action
+		if (!result) {
+			PyErr_SetString(PyExc_MemoryError,"Not enough memory");
+			return NULL;
+		}
+	}
+	job ()
+	{
+		struct job *j;
+		j = malloc (sizeof(struct job));
+		if (j)
+			job_init (j);
+		return j;
+	}
+
+	~job ()
+	{
+		free (self);
+	}
+}
 
 %pythoncode %{
 def get_computer_list (who):
@@ -42,6 +67,29 @@ def get_computer_list (who):
 	}
 %}
 
+// COMPUTER
+%extend computer {
+	%exception computer {
+		$action
+		if (!result) {
+			PyErr_SetString(PyExc_MemoryError,"Not enough memory");
+			return NULL;
+		}
+	}
+	computer ()
+	{
+		struct computer *c;
+		c = malloc (sizeof(struct computer));
+		if (c)
+			computer_init(c);
+		return c;
+	}
+
+	~computer ()
+	{
+		free (self);
+	}
+}
 
 /* COMPUTER LIMITS */
 %extend computer_limits {

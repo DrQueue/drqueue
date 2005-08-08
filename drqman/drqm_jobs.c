@@ -922,6 +922,7 @@ static int dnj_submit (struct drqmj_dnji *info)
 	struct job job;
 	struct passwd *pw;
 
+	job_init(&job);
 	strncpy(job.name,gtk_entry_get_text(GTK_ENTRY(info->ename)),MAXNAMELEN-1);
 	if (strlen(job.name) == 0)
 		return 0;
