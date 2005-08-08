@@ -166,14 +166,14 @@ union koj_info {		/* Kind of job information */
 #define KOJ_AFTEREFFECTS	 8	// After Effects koj
 #define KOJ_SHAKE					 9	// Shake koj
 #define KOJ_AQSIS					 10 // Aqsis koj
-#define KOJ_TERRAGEN			11	// Terragen koj
-#define KOJ_NUKE			12	// Nuke koj
+#define KOJ_TERRAGEN			 11	// Terragen koj
+#define KOJ_NUKE			     12	// Nuke koj
 
 /* JOB SECTION */
 typedef enum {
 	JOBSTATUS_WAITING,						/* Waiting to be dispatched */
 	JOBSTATUS_ACTIVE,							/* Already dispatched */
-	JOBSTATUS_STOPPED, /* Stopped, waiting for current frames to finish */
+	JOBSTATUS_STOPPED,            /* Stopped, waiting for current frames to finish */
 	JOBSTATUS_FINISHED
 } t_jobstatus;
 
