@@ -27,4 +27,7 @@ libdrqueue = Split ("""../computer_info.c ../computer_status.c ../task.c ../logg
 drqueue_i = glob.glob("*.i")
 drqueue_all = drqueue_i + libdrqueue
 
-drqueue = env.SharedLibrary ('drqueue.so', drqueue_all)
+env["SHLIBPREFIX"] = "_"
+drqueue = env.SharedLibrary ("drqueue", drqueue_all)
+#drqueue_copy = env.Command ("_drqueue.so",drqueue,"cp -f libdrqueue.so _drqueue.so")
+#Depends(drqueue_copy,drqueue)
