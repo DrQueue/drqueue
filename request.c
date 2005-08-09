@@ -1671,45 +1671,50 @@ void handle_r_r_jobxferfi (int sfd,struct database *wdb,int icomp,struct request
 		return;
 	}
 	
-	if ((fi = attach_frame_shared_memory (wdb->job[ijob].fishmid)) == (void*)-1) {
-		job_delete(&wdb->job[ijob]);
-		/* We send a not registered message because we have deleted the problematic job */
-		req->type = R_R_JOBXFERFI;
-		req->data = RERR_NOREGIS;
-		send_request(sfd,req,MASTER);
-		semaphore_release(wdb->semid);
-		log_master (L_WARNING,"Could not attach frame shared memory in handle_r_r_jobxferfi. Deleting problematic job.");
-		return;
-	}
-	
 	nframes = job_nframes (&wdb->job[ijob]);
-	fi_start = fi_copy = (struct frame_info *) malloc (sizeof(struct frame_info) * nframes);
-	if (!fi_copy) {
-		semaphore_release(wdb->semid);
-		log_master (L_ERROR,"Allocating memory on handle_r_r_jobxferfi");
-		return;			/* The lock should be released automatically and the end of the process */
-	}
-	memcpy(fi_copy,fi,sizeof(struct frame_info) * nframes);
-	detach_frame_shared_memory(fi);
-	semaphore_release(wdb->semid);
-
-	/* We make a copy so we don't have the master locked during a network transfer */
-
-	req->type = R_R_JOBXFERFI;
-	req->data = RERR_NOERROR;
-	if (!send_request(sfd,req,MASTER))
-		return;
-
-	log_master (L_DEBUG,"Sending frame info");
-	for (i=0;i<nframes;i++) {
-		if (!send_frame_info (sfd,fi_copy)) {
-			log_master (L_ERROR,"Sending frame info");
+	
+	if (nframes) {
+		if ((fi = attach_frame_shared_memory (wdb->job[ijob].fishmid)) == (void*)-1) {
+			job_delete(&wdb->job[ijob]);
+			/* We send a not registered message because we have deleted the problematic job */
+			req->type = R_R_JOBXFERFI;
+			req->data = RERR_NOREGIS;
+			send_request(sfd,req,MASTER);
+			semaphore_release(wdb->semid);
+			log_master (L_WARNING,"Could not attach frame shared memory in handle_r_r_jobxferfi. Deleting problematic job.");
 			return;
 		}
-		fi_copy++;
-	}
+	
+		fi_start = fi_copy = (struct frame_info *) malloc (sizeof(struct frame_info) * nframes);
+		if (!fi_copy) {
+			semaphore_release(wdb->semid);
+			log_master (L_ERROR,"Allocating memory on handle_r_r_jobxferfi");
+			return;			/* The lock should be released automatically and the end of the process */
+		}
+		memcpy(fi_copy,fi,sizeof(struct frame_info) * nframes);
+		detach_frame_shared_memory(fi);
+		semaphore_release(wdb->semid);
 
-	free (fi_start);
+		/* We make a copy so we don't have the master locked during a network transfer */
+
+		req->type = R_R_JOBXFERFI;
+		req->data = RERR_NOERROR;
+		if (!send_request(sfd,req,MASTER))
+			return;
+
+		log_master (L_DEBUG,"Sending frame info");
+		for (i=0;i<nframes;i++) {
+			if (!send_frame_info (sfd,fi_copy)) {
+				log_master (L_ERROR,"Sending frame info");
+				return;
+			}
+			fi_copy++;
+		}
+
+		free (fi_start);
+	} else {
+		semaphore_release(wdb->semid);
+	}
 
 	log_master (L_DEBUG,"Exiting handle_r_r_jobxferfi");
 }

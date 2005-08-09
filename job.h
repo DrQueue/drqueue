@@ -52,9 +52,9 @@ typedef enum {
 
 /* Struct that holds information about a single frame */
 struct frame_info {
-	char status;			/* Status */
+	uint8_t status;			/* Status */
 	time_t start_time,end_time; /* Time of start and ending of the frame (32 bit integer) */
-	char exitcode;		/* Exit code of the process */
+	uint8_t exitcode;		/* Exit code of the process */
 	uint32_t icomp;		/* Index to computer */
 	uint16_t itask;		/* Index to task on computer */
 	uint16_t requeued; // Number of times that this frame has been requeued, starts at 0
