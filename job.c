@@ -85,23 +85,25 @@ void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job)
 	/* We allocate the memory for the frame_info */
 	nframes = job_nframes (&wdb->job[ijob]);
 
-	if ((wdb->job[ijob].fishmid = get_frame_shared_memory (nframes)) == -1) {
-		job_init (&wdb->job[ijob]);
-		semaphore_release(wdb->semid);
-		log_master(L_ERROR,"Getting frame shared memory. New job could not be registered.");
-		return;
-	}
+	if (nframes) {
+		if ((wdb->job[ijob].fishmid = get_frame_shared_memory (nframes)) == -1) {
+			job_init (&wdb->job[ijob]);
+			semaphore_release(wdb->semid);
+			log_master(L_ERROR,"Getting frame shared memory. New job could not be registered.");
+			return;
+		}
 
-	if ((wdb->job[ijob].frame_info = attach_frame_shared_memory (wdb->job[ijob].fishmid)) == (void *)-1) {
-		job_init (&wdb->job[ijob]);
-		semaphore_release(wdb->semid);
-		log_master(L_ERROR,"Attaching frame shared memory. New job could not be registered.");
-		return;
-	}
+		if ((wdb->job[ijob].frame_info = attach_frame_shared_memory (wdb->job[ijob].fishmid)) == (void *)-1) {
+			job_init (&wdb->job[ijob]);
+			semaphore_release(wdb->semid);
+			log_master(L_ERROR,"Attaching frame shared memory. New job could not be registered.");
+			return;
+		}
 
-	/* Set done frames to NONE */
-	for (i=0;i<nframes;i++) {
-		job_frame_info_init (&wdb->job[ijob].frame_info[i]);
+		/* Set done frames to NONE */
+		for (i=0;i<nframes;i++) {
+			job_frame_info_init (&wdb->job[ijob].frame_info[i]);
+		}
 	}
 
 	wdb->job[ijob].fleft = nframes;
@@ -114,7 +116,8 @@ void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job)
 	wdb->job[ijob].avg_frame_time = DFLTAVGFTIME;
 	wdb->job[ijob].est_finish_time = time (NULL) + (DFLTAVGFTIME * nframes);
 
-	detach_frame_shared_memory(wdb->job[ijob].frame_info);
+	if (nframes)
+		detach_frame_shared_memory(wdb->job[ijob].frame_info);
 
 	semaphore_release(wdb->semid);
 
@@ -123,11 +126,16 @@ void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job)
 
 void job_init (struct job *job)
 {
+	memset (job,0,sizeof (struct job));
+
 	job->used = 0;
 	job->frame_info = NULL;
 	job->fishmid = -1;		/* -1 when not reserved */
 	job->bhshmid = -1;		// -1 when not reserved 
 	job->nblocked = 0;
+
+	job->frame_step = 1;
+	job->block_size = 1;
 
 	job->flags = 0;
 }
@@ -206,10 +214,14 @@ char *job_frame_status_string (char status)
 
 uint32_t job_nframes (struct job *job)
 {
-	uint32_t n_step,n;
-	
-	n_step = (job->frame_end - job->frame_start + job->frame_step) / job->frame_step;
-	n = (n_step + job->block_size - 1) / job->block_size;
+	uint32_t n_step,n = 0;
+
+	if (job->frame_step) {
+		n_step = (job->frame_end - job->frame_start + job->frame_step) / job->frame_step;
+		if (job->block_size) {
+			n = (n_step + job->block_size - 1) / job->block_size;
+		} 
+	}
 
 	return n;
 }
@@ -271,22 +283,24 @@ int job_first_frame_available (struct database *wdb,uint32_t ijob,uint32_t icomp
 	struct frame_info *fi;
 
 	nframes = job_nframes (&wdb->job[ijob]);
-	fi = attach_frame_shared_memory(wdb->job[ijob].fishmid);
-	if (fi == (void *) -1)
-	return (-1);
-	for (i=0;i<nframes;i++) {
-		if (fi[i].status == FS_WAITING) {
-			r = i;			/* return = current */
-			fi[i].status = FS_ASSIGNED; /* Change the status to assigned */
-			fi[i].icomp = icomp;	/* Assign the computer */
-			fi[i].itask = -1;		/* Doesn't have a task yet */
-			/* This is temporary and will be set correctly in job_update_info */
-			wdb->job[ijob].nprocs++;	/* Add 1 to the number of running processes */
-			wdb->job[ijob].fleft--;
-			break;
+	if (nframes) {
+		fi = attach_frame_shared_memory(wdb->job[ijob].fishmid);
+		if (fi == (void *) -1)
+			return (-1);
+		for (i=0;i<nframes;i++) {
+			if (fi[i].status == FS_WAITING) {
+				r = i;			/* return = current */
+				fi[i].status = FS_ASSIGNED; /* Change the status to assigned */
+				fi[i].icomp = icomp;	/* Assign the computer */
+				fi[i].itask = -1;		/* Doesn't have a task yet */
+				/* This is temporary and will be set correctly in job_update_info */
+				wdb->job[ijob].nprocs++;	/* Add 1 to the number of running processes */
+				wdb->job[ijob].fleft--;
+				break;
+			}
 		}
+		detach_frame_shared_memory(fi);
 	}
-	detach_frame_shared_memory(fi);
 
 	return r;
 }
@@ -439,16 +453,17 @@ void job_update_info (struct database *wdb,uint32_t ijob)
 	}
 
 	job_copy (&wdb->job[ijob],&job);
-	fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
-	if (fi == (void *) -1) {
-		semaphore_release (wdb->semid);
-		return;
-	}
 	total = job_nframes(&job);
-	job.frame_info = (struct frame_info *) malloc (sizeof(struct frame_info)*total);
-	memcpy(job.frame_info,fi,sizeof(struct frame_info)*total);
-	detach_frame_shared_memory(fi);
-
+	if (total) {
+		fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
+		if (fi == (void *) -1) {
+			semaphore_release (wdb->semid);
+			return;
+		}
+		job.frame_info = (struct frame_info *) malloc (sizeof(struct frame_info)*total);
+		memcpy(job.frame_info,fi,sizeof(struct frame_info)*total);
+		detach_frame_shared_memory(fi);
+	}
 	semaphore_release(wdb->semid);
 	///
 
@@ -475,8 +490,9 @@ void job_update_info (struct database *wdb,uint32_t ijob)
 			break;
 		}
 	}
-
-	free (job.frame_info);
+	
+	if (total)
+		free (job.frame_info);
 
 	if (fdone) {
 		avg_frame_time /= fdone;
@@ -900,6 +916,8 @@ void job_init_limits (struct job *job)
 	job->limits.nmaxcpus = -1;	/* No limit or 65535 */
 	job->limits.nmaxcpuscomputer = -1; /* the same */
 	job->limits.os_flags = -1;	/* All operating systems */
+	job->limits.memory = 0;
+	strncpy (job->limits.pool,DEFAULT_POOL,MAXNAMELEN-1);
 }
 
 int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp)
@@ -1071,16 +1089,18 @@ int job_first_frame_available_no_icomp (struct database *wdb,uint32_t ijob)
 	struct frame_info *fi;
 
 	nframes = job_nframes (&wdb->job[ijob]);
-	fi = attach_frame_shared_memory(wdb->job[ijob].fishmid);
-	if (fi == (void *) -1)
-		return -1;
-	for (i=0;i<nframes;i++) {
-		if (fi[i].status == FS_WAITING) {
-			r = i;										/* return = current */
-			break;
+	if (nframes) {
+		fi = attach_frame_shared_memory(wdb->job[ijob].fishmid);
+		if (fi == (void *) -1)
+			return -1;
+		for (i=0;i<nframes;i++) {
+			if (fi[i].status == FS_WAITING) {
+				r = i;										/* return = current */
+				break;
+			}
 		}
+		detach_frame_shared_memory(fi);
 	}
-	detach_frame_shared_memory(fi);
 
 	return r;
 }
