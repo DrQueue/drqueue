@@ -411,7 +411,7 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
 
 	nframes = job_nframes (&info->jdd.job);
 
-	if (!info->jdd.job.frame_info) {
+	if ((!info->jdd.job.frame_info) && nframes) {
 		if (!(fi = g_malloc(sizeof (struct frame_info) * nframes))) {
 			fprintf (stderr,"Error allocating memory for frame information\n");
 			return 0;
@@ -422,7 +422,7 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
 			g_free (fi);
 			return 0;
 		}
-
+		
 		info->jdd.job.frame_info = fi;
 	}
 
