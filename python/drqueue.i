@@ -1,4 +1,9 @@
-%module drqueue
+%define DOCSTRING
+"The drqueue module allows the access to the libdrqueue library responsible
+of all major operations that can be applied remotely to drqueue master and
+slaves. Also provides access to all data structures of DrQueue."
+%enddef
+%module (docstring=DOCSTRING) drqueue
 %{
 #include "libdrqueue.h"
 %}
@@ -50,18 +55,35 @@ def get_computer_list (who):
 		result.append(_drqueue.get_computer_from_list(computer_list,i))
 	_drqueue.free_computerpp(computer_list)
 	return result
+def get_job_list (who):
+	job_list = _drqueue.new_jobpp()
+	njobs = _drqueue.request_job_list (job_list,who)
+	result = []
+	for i in range (njobs):
+		result.append(_drqueue.get_job_from_list(job_list,i))
+	_drqueue.free_jobpp(job_list)
+	return result
 %}
 
 %inline %{
+	struct job **new_jobpp () {
+		struct job **r = malloc (sizeof (struct job **));
+		return r;
+	}
+	void free_jobpp (struct job **p) {
+		free (p);
+	}
+	struct job *get_job_from_list (struct job **job,int n) {
+		return job[n];
+	}
+
 	struct computer **new_computerpp () {
 		struct computer **r = malloc (sizeof (struct computer **));
 		return r;
 	}
-	
 	void free_computerpp (struct computer **p) {
 		free (p);
 	}
-
 	struct computer *get_computer_from_list (struct computer **computer,int n) {
 		return computer[n];
 	}
