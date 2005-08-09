@@ -134,10 +134,14 @@ void job_init (struct job *job)
 	job->bhshmid = -1;		// -1 when not reserved 
 	job->nblocked = 0;
 
+	job->frame_start = 1;
+	job->frame_end = 1;
 	job->frame_step = 1;
 	job->block_size = 1;
 
 	job->flags = 0;
+
+	job_init_limits (job);
 }
 
 void job_delete (struct job *job)
