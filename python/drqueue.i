@@ -1,3 +1,27 @@
+// 
+// Copyright (C) 2001,2002,2003,2004,2005 Jorge Daza Garcia-Blanes
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
+// USA
+// 
+// $Id: /drqueue/remote/trunk/jobfinfo.c 2334 2005-07-05T03:50:01.502018Z jorge  $
+//
+// This program returns the number of times a frame has been requeued.
+// Useful for avoiding endless loops
+//
+
 %define DOCSTRING
 "The drqueue module allows the access to the libdrqueue library responsible
 of all major operations that can be applied remotely to drqueue master and
@@ -63,9 +87,40 @@ def get_job_list (who):
 		result.append(_drqueue.get_job_from_list(job_list,i))
 	_drqueue.free_jobpp(job_list)
 	return result
+import copy
+def get_job_frame_list (job,who):
+	nframes = _drqueue.job_nframes (job)
+	result = {}
+	if nframes:
+		frame_list = _drqueue.new_frame_info_p (job)
+		_drqueue.request_job_xferfi (job.id,frame_list,nframes,who)
+		for i in range(nframes):
+			frame = _drqueue.get_frame_from_list(frame_list,i)
+			frame_copy = copy.copy (frame)
+			frame_number = _drqueue.job_frame_index_to_number (job,i)
+			result[frame_number] = frame_copy
+	return result	
 %}
 
 %inline %{
+	struct frame_info *get_frame_from_list (struct frame_info *fi, int index)
+	{
+		return &fi[index];
+	}
+	struct frame_info *new_frame_info_p (struct job *job)
+	{
+		int nframes = job_nframes (job);
+		struct frame_info *fi = NULL;
+
+		if (nframes) {
+			fi = malloc (sizeof(struct frame_info)*nframes);
+		}
+		return fi;
+	}
+	void free_frame_info_p (struct frame_info *p)
+	{
+		free (p);
+	}
 	struct job **new_jobpp () {
 		struct job **r = malloc (sizeof (struct job **));
 		return r;
