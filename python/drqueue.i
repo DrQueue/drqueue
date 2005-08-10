@@ -32,6 +32,45 @@ slaves. Also provides access to all data structures of DrQueue."
 #include "libdrqueue.h"
 %}
 
+
+%include "typemaps.i"
+
+%typemap(in,numinputs=0) struct computer **computer (struct computer *computer) {
+	$1 = &computer;
+}
+%typemap(argout) struct computer **computer {
+	int i;
+	PyObject *l = PyList_New(0);
+	struct computer *c = malloc (sizeof(struct computer)*result);
+	struct computer *tc = c;
+	memcpy (c,*$1,sizeof(struct computer)*result);
+	for (i=0; i<result; i++) {
+		PyObject *o = SWIG_NewPointerObj((void*)(tc), SWIGTYPE_p_computer, 0);
+		PyList_Append(l,o);
+		tc++;
+	}
+	//free (c);
+	$result = l;
+}
+
+%typemap(in,numinputs=0) struct job **job (struct job *job) {
+	$1 = &job;
+}
+%typemap(argout) struct job **job {
+	int i;
+	PyObject *l = PyList_New(0);
+	struct job *j = malloc (sizeof(struct job)*result);
+	struct job *tj = j;
+	memcpy (j,*$1,sizeof(struct job)*result);
+	for (i=0; i<result; i++) {
+		PyObject *o = SWIG_NewPointerObj((void*)(tj), SWIGTYPE_p_job, 0);
+		PyList_Append(l,o);
+		tj++;
+	}
+	//free (j);
+	$result = l;
+}
+
 %include "libdrqueue.h"
 %include "computer.h"
 %include "computer_info.h"
@@ -47,6 +86,7 @@ typedef unsigned long int uint32_t;
 typedef unsigned char uint8_t;
 
 
+// JOB
 %extend job {
 	%exception job {
 		$action
@@ -68,81 +108,31 @@ typedef unsigned char uint8_t;
 	{
 		free (self);
 	}
+
+	PyObject *request_frame_list (int who)
+	{
+		PyObject *l = PyList_New(0);
+		int nframes = job_nframes(self);
+		int i;
+		if (nframes) {
+			struct frame_info *fi = malloc (sizeof(struct frame_info) * nframes);
+			if (!request_job_xferfi (self->id,fi,nframes,who))
+				return NULL;
+			for (i=0; i<nframes; i++) {
+				PyObject *o = SWIG_NewPointerObj((void*)(&fi[i]), SWIGTYPE_p_frame_info, 0);
+				PyList_Append(l,o);
+			}
+			//free (fi);
+		}
+		return l;
+	}
+
+	int job_frame_index_to_number (int index)
+	{
+		return job_frame_index_to_number (self,index);
+	}
 }
 
-%pythoncode %{
-def get_computer_list (who):
-	computer_list = _drqueue.new_computerpp()
-	ncomputers = _drqueue.request_computer_list (computer_list,who)
-	result = []
-	for i in range (ncomputers):
-		result.append(_drqueue.get_computer_from_list(computer_list,i))
-	_drqueue.free_computerpp(computer_list)
-	return result
-def get_job_list (who):
-	job_list = _drqueue.new_jobpp()
-	njobs = _drqueue.request_job_list (job_list,who)
-	result = []
-	for i in range (njobs):
-		result.append(_drqueue.get_job_from_list(job_list,i))
-	_drqueue.free_jobpp(job_list)
-	return result
-import copy
-def get_job_frame_list (job,who):
-	nframes = _drqueue.job_nframes (job)
-	result = {}
-	if nframes:
-		frame_list = _drqueue.new_frame_info_p (job)
-		_drqueue.request_job_xferfi (job.id,frame_list,nframes,who)
-		for i in range(nframes):
-			frame = _drqueue.get_frame_from_list(frame_list,i)
-			frame_copy = copy.copy (frame)
-			frame_number = _drqueue.job_frame_index_to_number (job,i)
-			result[frame_number] = frame_copy
-	return result	
-%}
-
-%inline %{
-	struct frame_info *get_frame_from_list (struct frame_info *fi, int index)
-	{
-		return &fi[index];
-	}
-	struct frame_info *new_frame_info_p (struct job *job)
-	{
-		int nframes = job_nframes (job);
-		struct frame_info *fi = NULL;
-
-		if (nframes) {
-			fi = malloc (sizeof(struct frame_info)*nframes);
-		}
-		return fi;
-	}
-	void free_frame_info_p (struct frame_info *p)
-	{
-		free (p);
-	}
-	struct job **new_jobpp () {
-		struct job **r = malloc (sizeof (struct job **));
-		return r;
-	}
-	void free_jobpp (struct job **p) {
-		free (p);
-	}
-	struct job *get_job_from_list (struct job **job,int n) {
-		return job[n];
-	}
-
-	struct computer **new_computerpp () {
-		struct computer **r = malloc (sizeof (struct computer **));
-		return r;
-	}
-	void free_computerpp (struct computer **p) {
-		free (p);
-	}
-	struct computer *get_computer_from_list (struct computer **computer,int n) {
-		return computer[n];
-	}
-%}
 
 // COMPUTER
 %extend computer {
