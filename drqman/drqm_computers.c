@@ -519,11 +519,6 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
 
 	info->cdd.menu = CreateMenuTasks(info);
 
-	if (!cdd_update (window,info)) {
-		gtk_widget_destroy (GTK_WIDGET(window));
-		return NULL;
-	}
-
 	// Refresh stuff
 	hbox = gtk_hbox_new(FALSE,2);
 	gtk_box_pack_end(GTK_BOX(vbox),hbox,FALSE,FALSE,2);
@@ -535,10 +530,15 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
 	g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(cdd_update),info);
 	gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
 	// Auto refresh
-	info->ari.callback = cdd_autorefreshupdate;
-	info->ari.data = info;
-	autorefreshWidgets = CreateAutoRefreshWidgets (&info->ari);
+	info->cdd.ari.callback = cdd_autorefreshupdate;
+	info->cdd.ari.data = info;
+	autorefreshWidgets = CreateAutoRefreshWidgets (&info->cdd.ari);
 	gtk_box_pack_start(GTK_BOX(hbox),autorefreshWidgets,FALSE,FALSE,2);
+
+	if (!cdd_update (window,info)) {
+		gtk_widget_destroy (GTK_WIDGET(window));
+		return NULL;
+	}
 
 	gtk_widget_show_all(window);
 
@@ -589,7 +589,6 @@ int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
 	int ncols = 9;
 	int i,row;
 	
-
 	if (!request_comp_xfer(info->icomp,&info->computers[info->row],CLIENT)) {
 		if (drerrno == DRE_NOTREGISTERED) {
 			fprintf (stderr,"Not registered anymore !\n");
@@ -677,7 +676,7 @@ int cdd_update (GtkWidget *w, struct drqm_computers_info *info)
 		if (info->computers[info->row].status.task[i].used) {
 			snprintf (buff[0],BUFFERLEN-1,"%i",info->computers[info->row].status.task[i].itask);
 			snprintf (buff[1],BUFFERLEN-1,"%s",
-		task_status_string(info->computers[info->row].status.task[i].status));
+								task_status_string(info->computers[info->row].status.task[i].status));
 			snprintf (buff[2],BUFFERLEN-1,"%s",info->computers[info->row].status.task[i].jobname);
 			snprintf (buff[3],BUFFERLEN-1,"%i",info->computers[info->row].status.task[i].ijob);
 			snprintf (buff[4],BUFFERLEN-1,"%s",info->computers[info->row].status.task[i].owner);
