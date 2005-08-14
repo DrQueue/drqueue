@@ -314,8 +314,8 @@ static void ComputerDetails(GtkWidget *menu_item, struct drqm_computers_info *in
 
 static void cdd_destroy (GtkWidget *w, struct drqm_computers_info *info)
 {
-	if (GTK_TOGGLE_BUTTON(info->ari.cbenabled)->active) {
-		g_source_remove (info->ari.sourceid);
+	if (GTK_TOGGLE_BUTTON(info->cdd.ari.cbenabled)->active) {
+		g_source_remove (info->cdd.ari.sourceid);
 	}
 }
 
