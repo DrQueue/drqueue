@@ -162,6 +162,15 @@ typedef unsigned char uint8_t;
 		return 1;
 	}
 
+	int request_rerun (int who)
+	{
+		if (!request_job_rerun (self->id,who)) {
+			PyErr_SetString(PyExc_IOError,drerrno_str());
+			return 0;
+		}
+		return 1;
+	}
+
 	int request_hard_stop (int who)
 	{
 		if (!request_job_hstop (self->id,who)) {
@@ -183,6 +192,24 @@ typedef unsigned char uint8_t;
 	int request_continue (int who)
 	{
 		if (!request_job_continue (self->id,who)) {
+			PyErr_SetString(PyExc_IOError,drerrno_str());
+			return 0;
+		}
+		return 1;
+	}
+
+	int send_to_queue (void)
+	{
+		if (!register_job (self)) {
+			PyErr_SetString(PyExc_IOError,drerrno_str());
+			return 0;
+		}
+		return 1;
+	}
+
+	int update (int who)
+	{
+		if (!request_job_xfer(self->id,self,who)) {
 			PyErr_SetString(PyExc_IOError,drerrno_str());
 			return 0;
 		}
