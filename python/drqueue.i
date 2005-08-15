@@ -39,36 +39,52 @@ slaves. Also provides access to all data structures of DrQueue."
 	$1 = &computer;
 }
 %typemap(argout) struct computer **computer {
-	int i;
-	PyObject *l = PyList_New(0);
-	struct computer *c = malloc (sizeof(struct computer)*result);
-	struct computer *tc = c;
-	memcpy (c,*$1,sizeof(struct computer)*result);
-	for (i=0; i<result; i++) {
-		PyObject *o = SWIG_NewPointerObj((void*)(tc), SWIGTYPE_p_computer, 0);
-		PyList_Append(l,o);
-		tc++;
+	if (result < 0) {
+		PyErr_SetString(PyExc_IOError,drerrno_str());
+		$result = NULL;
+	} else {
+		int i;
+		PyObject *l = PyList_New(0);
+		struct computer *c = malloc (sizeof(struct computer)*result);
+		if (!c)
+			return PyErr_NoMemory();
+		struct computer *tc = c;
+		memcpy (c,*$1,sizeof(struct computer)*result);
+		for (i=0; i<result; i++) {
+			PyObject *o = SWIG_NewPointerObj((void*)(tc), SWIGTYPE_p_computer, 0);
+			PyList_Append(l,o);
+			tc++;
+		}
+		//free (c);
+		free (*$1);
+		$result = l;
 	}
-	//free (c);
-	$result = l;
 }
 
 %typemap(in,numinputs=0) struct job **job (struct job *job) {
 	$1 = &job;
 }
 %typemap(argout) struct job **job {
-	int i;
-	PyObject *l = PyList_New(0);
-	struct job *j = malloc (sizeof(struct job)*result);
-	struct job *tj = j;
-	memcpy (j,*$1,sizeof(struct job)*result);
-	for (i=0; i<result; i++) {
-		PyObject *o = SWIG_NewPointerObj((void*)(tj), SWIGTYPE_p_job, 0);
-		PyList_Append(l,o);
-		tj++;
+	if (result < 0) {
+		PyErr_SetString(PyExc_IOError,drerrno_str());
+		$result = NULL;
+	} else {
+		int i;
+		PyObject *l = PyList_New(0);
+		struct job *j = malloc (sizeof(struct job)*result);
+		if (!j)
+			return PyErr_NoMemory();
+		struct job *tj = j;
+		memcpy (j,*$1,sizeof(struct job)*result);
+		for (i=0; i<result; i++) {
+			PyObject *o = SWIG_NewPointerObj((void*)(tj), SWIGTYPE_p_job, 0);
+			PyList_Append(l,o);
+			tj++;
+		}
+		//free (j);
+		free(*$1);
+		$result = l;
 	}
-	//free (j);
-	$result = l;
 }
 
 %include "libdrqueue.h"
@@ -88,19 +104,14 @@ typedef unsigned char uint8_t;
 
 // JOB
 %extend job {
-	%exception job {
-		$action
-		if (!result) {
-			PyErr_SetString(PyExc_MemoryError,"Not enough memory");
-			return NULL;
-		}
-	}
 	job ()
 	{
 		struct job *j;
 		j = malloc (sizeof(struct job));
-		if (j)
-			job_init (j);
+		if (!j)
+			return (struct job *)PyErr_NoMemory();
+
+		job_init (j);
 		return j;
 	}
 
@@ -116,8 +127,13 @@ typedef unsigned char uint8_t;
 		int i;
 		if (nframes) {
 			struct frame_info *fi = malloc (sizeof(struct frame_info) * nframes);
-			if (!request_job_xferfi (self->id,fi,nframes,who))
+			if (!fi) {
+				return PyErr_NoMemory();
+			}
+			if (!request_job_xferfi (self->id,fi,nframes,who)) {
+				PyErr_SetString(PyExc_IOError,drerrno_str());
 				return NULL;
+			}
 			for (i=0; i<nframes; i++) {
 				PyObject *o = SWIG_NewPointerObj((void*)(&fi[i]), SWIGTYPE_p_frame_info, 0);
 				PyList_Append(l,o);
@@ -129,32 +145,81 @@ typedef unsigned char uint8_t;
 
 	int job_frame_index_to_number (int index)
 	{
+		if ((index < 0) || (index >= job_nframes(self))) {
+			PyErr_SetString(PyExc_IndexError,"frame index out of range");
+			return -1;
+		}
+
 		return job_frame_index_to_number (self,index);
+	}
+
+	int request_stop (int who)
+	{
+		if (!request_job_stop (self->id,who)) {
+			PyErr_SetString(PyExc_IOError,drerrno_str());
+			return 0;
+		}
+		return 1;
+	}
+
+	int request_hard_stop (int who)
+	{
+		if (!request_job_hstop (self->id,who)) {
+			PyErr_SetString(PyExc_IOError,drerrno_str());
+			return 0;
+		}
+		return 1;
+	}
+
+	int request_delete (int who)
+	{
+		if (!request_job_delete (self->id,who)) {
+			PyErr_SetString(PyExc_IOError,drerrno_str());
+			return 0;
+		}
+		return 1;
+	}
+
+	int request_continue (int who)
+	{
+		if (!request_job_continue (self->id,who)) {
+			PyErr_SetString(PyExc_IOError,drerrno_str());
+			return 0;
+		}
+		return 1;
 	}
 }
 
 
 // COMPUTER
 %extend computer {
-	%exception computer {
-		$action
-		if (!result) {
-			PyErr_SetString(PyExc_MemoryError,"Not enough memory");
-			return NULL;
-		}
-	}
 	computer ()
 	{
 		struct computer *c;
 		c = malloc (sizeof(struct computer));
-		if (c)
-			computer_init(c);
+		if (!c)
+			return (struct computer *)PyErr_NoMemory();
+		computer_init(c);
 		return c;
 	}
 
 	~computer ()
 	{
 		free (self);
+	}
+
+	void request_enable (int who)
+	{
+		if (!request_slave_limits_enabled_set (self->hwinfo.name,1,who)) {
+			PyErr_SetString(PyExc_IOError,drerrno_str());
+		}
+	}
+
+	void request_disable (int who)
+	{
+		if (!request_slave_limits_enabled_set (self->hwinfo.name,0,who)) {
+			PyErr_SetString(PyExc_IOError,drerrno_str());
+		}
 	}
 }
 
@@ -179,6 +244,9 @@ typedef unsigned char uint8_t;
 		}
 
 		pool = (struct pool *) malloc (sizeof (struct pool));
+		if (!pool)
+			return (struct pool *)PyErr_NoMemory();
+
 		if (self->npools) {
 			if ((self->pool = (struct pool *) computer_pool_attach_shared_memory(self->poolshmid)) == (void*)-1) {
 				perror ("Attaching");
@@ -196,7 +264,6 @@ typedef unsigned char uint8_t;
 
 /* COMPUTER STATUS */
 %extend computer_status {
-
 	%exception get_loadavg {
 		$action
 		if (result == (uint16_t)-1) {
