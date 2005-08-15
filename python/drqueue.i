@@ -248,6 +248,13 @@ typedef unsigned char uint8_t;
 			PyErr_SetString(PyExc_IOError,drerrno_str());
 		}
 	}
+
+	void update (int who)
+	{
+		if (!request_comp_xfer(self->hwinfo.id,self,who)) {
+			PyErr_SetString(PyExc_IOError,drerrno_str());
+		}
+	}
 }
 
 /* COMPUTER LIMITS */
