@@ -466,11 +466,10 @@ void launch_task (struct slave_database *sdb)
 
 #ifdef __CYGWIN
 			new_argv[0] = SHELL_NAME;
-			new_argv[1] = "-c";
-			if ((new_argv[2] = malloc(MAXCMDLEN)) == NULL)
+			if ((new_argv[1] = malloc(MAXCMDLEN)) == NULL)
 				return;
-			cygwin_conv_to_posix_path(sdb->comp->status.task[sdb->itask].jobcmd,(char*)new_argv[2]);
-			new_argv[3] = NULL;
+			cygwin_conv_to_posix_path(sdb->comp->status.task[sdb->itask].jobcmd,(char*)new_argv[1]);
+			new_argv[2] = NULL;
 #else
 			new_argv[0] = SHELL_NAME;
 			new_argv[1] = "-c";
