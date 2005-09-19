@@ -1,5 +1,5 @@
 // 
-// Copyright (C) 2001,2002,2003,2004,2005 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -254,7 +254,7 @@ void drqm_update_joblist (struct drqm_jobs_info *info)
 
 		gtk_clist_append(GTK_CLIST(info->clist),buff);
 
-		gtk_clist_set_row_data(GTK_CLIST(info->clist),i,(gpointer)&info->jobs[i]);
+		gtk_clist_set_row_data(GTK_CLIST(info->clist),i,(gpointer)info->jobs[i].priority);
 	}
 
 	gtk_clist_sort (GTK_CLIST(info->clist));
@@ -1123,8 +1123,8 @@ static int pri_cmp_clist (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr
 {
 	uint32_t a,b;
 
-	a = (uint32_t) ((struct job *)((GtkCListRow*)ptr1)->data)->priority;
-	b = (uint32_t) ((struct job *)((GtkCListRow*)ptr2)->data)->priority;
+	a = (uint32_t) ((GtkCListRow*)ptr1)->data;
+	b = (uint32_t) ((GtkCListRow*)ptr2)->data;
 
 	if (a > b) {
 		return -1;
@@ -1200,8 +1200,7 @@ static void djd_bok_pressed (GtkWidget *button, struct drqm_jobs_info *info)
 			drqm_request_job_delete (info->jobs[info->row].id);
 		} else {
 			for (;sel;sel = sel->next) {
-				struct job *job = (struct job *)gtk_clist_get_row_data(GTK_CLIST(info->clist),(uint32_t)sel->data);
-				drqm_request_job_delete (job->id);
+				drqm_request_job_delete (info->jobs[(uint32_t)sel->data].id);
 			}
 		}
 		update_joblist(button,info);
