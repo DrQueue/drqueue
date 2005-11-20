@@ -71,6 +71,8 @@ struct drqmj_envvars {
 	GtkListStore *store;
 	GtkTreeView *view;
 	struct envvars envvars;
+	GtkWidget *ename;
+	GtkWidget *evalue;
 };
 
 struct drqmj_dnji {							/* dialog new job info */

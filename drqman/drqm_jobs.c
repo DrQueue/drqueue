@@ -94,6 +94,7 @@ static void dnj_flags_jdepend_accept (GtkWidget *bclicked, struct drqm_jobs_info
 
 // Environment variables
 static GtkWidget *dnj_envvars_widgets (struct drqm_jobs_info *info);
+static void dnj_envvars_list (GtkWidget *bclicked, struct drqmj_envvars *info);
 
 /* JOB ACTIONS */
 static GtkWidget *DeleteJobDialog (struct drqm_jobs_info *info);
@@ -633,6 +634,8 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
 	GtkTooltips *tooltips;
 
 	tooltips = TooltipsNew ();
+
+	envvars_init (&info->dnj.envvars.envvars);
 
 	/* Dialog */
 	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -1560,6 +1563,103 @@ static GtkWidget *dnj_limits_widgets (struct drqm_jobs_info *info)
 	return (frame);
 }
 
+void dnj_envvars_add_accept (GtkWidget *bpressed, gpointer userdata)
+{
+	struct drqmj_envvars *info = (struct drqmj_envvars *)userdata;
+
+	envvars_variable_add(&info->envvars,
+											 (char *)gtk_entry_get_text(GTK_ENTRY(info->ename)),
+											 (char *)gtk_entry_get_text(GTK_ENTRY(info->evalue)));
+}
+
+void dnj_envvars_add (GtkWidget *menuitem, gpointer userdata)
+{
+	GtkWidget *dialog;
+	GtkWidget *button;
+	GtkWidget *image;
+	GtkWidget *hbox;
+	GtkWidget *label;
+	GtkWidget *entry;
+
+	struct drqmj_envvars *info = &((struct drqm_jobs_info *)userdata)->dnj.envvars;
+	userdata = (gpointer) info;
+
+	dialog = gtk_dialog_new();
+	gtk_window_set_title (GTK_WINDOW(dialog),"Add environment variable");
+
+	hbox = gtk_hbox_new (TRUE,2);
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),hbox,FALSE,FALSE,2);
+	label = gtk_label_new ("Name:");
+	gtk_box_pack_start(GTK_BOX(hbox),label,FALSE,FALSE,2);
+	entry = gtk_entry_new_with_max_length(MAXNAMELEN-1);
+	gtk_box_pack_start(GTK_BOX(hbox),entry,FALSE,FALSE,2);
+	info->ename = entry;
+
+	hbox = gtk_hbox_new (TRUE,2);
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),hbox,FALSE,FALSE,2);
+	label = gtk_label_new ("Value:");
+	gtk_box_pack_start(GTK_BOX(hbox),label,FALSE,FALSE,2);
+	entry = gtk_entry_new_with_max_length(MAXNAMELEN-1);
+	gtk_box_pack_start(GTK_BOX(hbox),entry,FALSE,FALSE,2);
+	info->evalue = entry;
+
+	// Accept
+	button = gtk_button_new_with_label ("Accept");
+	image = gtk_image_new_from_stock (GTK_STOCK_OK,GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image (GTK_BUTTON(button),GTK_WIDGET(image));
+	gtk_box_pack_end(GTK_BOX(GTK_DIALOG(dialog)->action_area),button,TRUE,TRUE,2);
+	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(dnj_envvars_add_accept),userdata);
+	g_signal_connect (G_OBJECT(button),"clicked",G_CALLBACK(dnj_envvars_list),userdata);
+	g_signal_connect_swapped(G_OBJECT(button),"clicked",G_CALLBACK(gtk_widget_destroy),dialog);
+	// Cancel
+	button = gtk_button_new_with_label ("Cancel");
+	image = gtk_image_new_from_stock (GTK_STOCK_CANCEL,GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image (GTK_BUTTON(button),GTK_WIDGET(image));
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->action_area),button,TRUE,TRUE,2);
+	g_signal_connect_swapped(G_OBJECT(button),"clicked",G_CALLBACK(gtk_widget_destroy),dialog);
+
+	gtk_grab_add (dialog);
+
+	gtk_widget_show_all (dialog);
+}
+
+void dnj_envvars_popup_menu (GtkWidget *treeview, GdkEventButton *event, gpointer userdata)
+{
+	GtkWidget *menu, *menuitem;
+
+	menu = gtk_menu_new ();
+
+	menuitem = gtk_menu_item_new_with_label ("Add");
+	g_signal_connect (menuitem,"activate",(GCallback) dnj_envvars_add, userdata);
+
+	gtk_menu_shell_append (GTK_MENU_SHELL(menu),menuitem);
+	gtk_widget_show_all (menu);
+
+	gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL,
+								 (event != NULL) ? event->button : 0,
+								 gdk_event_get_time((GdkEvent*)event));
+}
+
+// Envvars button pressed callback
+gboolean dnj_envvars_bpressed (GtkWidget *treeview, GdkEventButton *event, gpointer userdata)
+{
+	if (event->type == GDK_BUTTON_PRESS && event->button == 3) {
+		dnj_envvars_popup_menu (treeview, event, userdata);
+		
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
+// Envvars popup
+gboolean dnj_envvars_popup (GtkWidget *treeview, gpointer userdata)
+{
+	dnj_envvars_popup_menu (treeview,NULL,userdata);
+
+	return TRUE;
+}
+
 GtkWidget *dnj_envvars_widgets (struct drqm_jobs_info *info)
 {
 	GtkWidget *frame;
@@ -1609,6 +1709,9 @@ GtkWidget *dnj_envvars_widgets (struct drqm_jobs_info *info)
 	model = GTK_TREE_MODEL (store);
 	gtk_tree_view_set_model (GTK_TREE_VIEW(view),model);
 	g_object_unref (model);
+	
+	g_signal_connect(view, "button-press-event", (GCallback) dnj_envvars_bpressed, info);
+	g_signal_connect(view, "popup-menu", (GCallback) dnj_envvars_popup, info);
 
 	return frame;
 }
@@ -1709,22 +1812,22 @@ GtkWidget *dnj_flags_widgets (struct drqm_jobs_info *info)
 	return (frame);
 }
 
-void dnj_envvars_list (GtkWidget *bclicked, struct drqm_jobs_info *info)
+void dnj_envvars_list (GtkWidget *bclicked, struct drqmj_envvars *info)
 {
-	GtkListStore *store = info->dnj.envvars.store;
+	GtkListStore *store = info->store;
 	GtkTreeIter iter;
 	int i;
 
 	gtk_list_store_clear (GTK_LIST_STORE(store));
-	envvars_attach (&info->dnj.envvars.envvars);
-	for (i = 0; info->dnj.envvars.envvars.nvariables; i++) {
+	envvars_attach (&info->envvars);
+	for (i = 0; i < info->envvars.nvariables; i++) {
 		gtk_list_store_append (store,&iter);
 		gtk_list_store_set (store, &iter,
-												DNJ_ENVVARS_COL_NAME, info->dnj.envvars.envvars.variables[i].name,
-												DNJ_ENVVARS_COL_VALUE, info->dnj.envvars.envvars.variables[i].value,
+												DNJ_ENVVARS_COL_NAME, info->envvars.variables[i].name,
+												DNJ_ENVVARS_COL_VALUE, info->envvars.variables[i].value,
 												-1);
 	}
-	envvars_detach (&info->dnj.envvars.envvars);
+	envvars_detach (&info->envvars);
 }
 
 void dnj_flags_jdepend_refresh_job_list (GtkWidget *bclicked, struct drqm_jobs_info *info)
