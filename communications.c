@@ -358,13 +358,80 @@ int recv_computer_status (int sfd, struct computer_status *status)
 	return 1;
 }
 
+int recv_envvar (int sfd, struct envvar *var)
+{
+	if (!dr_read (sfd,(char *)var,sizeof (struct envvar))) {
+		return 0;
+	}
+
+	drerrno = DRE_NOERROR;
+	return 1;
+}
+
+int send_envvar (int sfd, struct envvar *var)
+{
+	if (!dr_write (sfd,(char *)var,sizeof (struct envvar))) {
+		return 0;
+	}
+
+	drerrno = DRE_NOERROR;
+	return 1;
+}
+
+int send_envvars (int sfd, struct envvars *envvars)
+{
+	if (!write_16b (sfd,(char *)&envvars->nvariables)) {
+		return 0;
+	}
+
+	envvars_attach (envvars);
+	int i;
+	for (i = 0; i < envvars->nvariables; i++) {
+		if (!send_envvar (sfd,&envvars->variables[i])) {
+			return 0;
+		}
+	}
+	envvars_detach (envvars);
+
+	drerrno = DRE_NOERROR;
+	return 1;
+}
+
+int recv_envvars (int sfd, struct envvars *envvars)
+{
+	uint16_t nvariables;
+
+	envvars_empty (envvars);
+
+	if (!read_16b (sfd,&nvariables)) {
+		return 0;
+	}
+
+	int i;
+	struct envvar var;
+	for (i = 0; i < nvariables; i++) {
+		if (!recv_envvar (sfd, &var)) {
+			return 0;
+		}
+		envvars_variable_add (envvars,var.name,var.value);
+	}
+
+	drerrno = DRE_NOERROR;
+	return 1;
+}
+
 int recv_job (int sfd, struct job *job)
 {
 	if (!dr_read(sfd,(char*)job,sizeof (struct job))) {
 		return 0;
 	}
 	
-	/* Now we should have the computer hardware info with the values in */
+	// Environment variables
+	if (!recv_envvars (sfd,&job->envvars)) {
+		return 0;
+	}
+
+	/* Now we should have the job info with the values in */
 	/* network byte order, so we put them in host byte order */
 	job->id = ntohl (job->id);
 	job->nprocs = ntohs (job->nprocs);
@@ -495,6 +562,11 @@ int send_job (int sfd, struct job *job)
 	bswapped.limits.memory = htonl (bswapped.limits.memory);
 
 	if (!dr_write (sfd,(char*)buf,sizeof(bswapped))) {
+		return 0;
+	}
+
+	// Environment variables
+	if (!send_envvars (sfd,&bswapped.envvars)) {
 		return 0;
 	}
 	
