@@ -138,6 +138,7 @@ int envvars_variable_add (struct envvars *envvars, char *name, char *value)
 	int new_size = envvars->nvariables + 1;
 	int nshmid = envvars_get_shared_memory (new_size);
 	if (nshmid == -1) {
+		envvars_detach (envvars);
 		return 0;
 	}
 	struct envvars new_envvars;
@@ -145,6 +146,7 @@ int envvars_variable_add (struct envvars *envvars, char *name, char *value)
 	new_envvars.nvariables = new_size;
 	new_envvars.evshmid = nshmid;
 	if (!envvars_attach(&new_envvars)) {
+		envvars_detach (envvars);
 		return 0;
 	}
 
@@ -156,6 +158,60 @@ int envvars_variable_add (struct envvars *envvars, char *name, char *value)
 	strncpy (new_envvars.variables[envvars->nvariables].name,name,MAXNAMELEN);
 	strncpy (new_envvars.variables[envvars->nvariables].value,value,MAXNAMELEN);
 	new_envvars.nvariables = new_size;
+
+	// Delete old values
+	envvars_detach(envvars);
+	envvars_empty(envvars);
+
+	// Copy new values to old structure
+	envvars->nvariables = new_size;
+	envvars->evshmid = nshmid;
+
+	envvars_detach (envvars);
+
+	drerrno = DRE_NOERROR;
+	return 1;
+}
+
+int envvars_variable_delete (struct envvars *envvars, char *name)
+{
+	struct envvar *var = envvars_variable_find (envvars,name);
+
+	if (!var) {
+		// Trying to delete a non-existing variable
+		envvars_detach (envvars);
+		return 0;
+	}
+
+	int new_size = envvars->nvariables - 1;
+
+	if (new_size == 0) {
+		envvars_detach (envvars);
+		return envvars_empty (envvars);
+	}
+
+	// New shared memory id
+	int nshmid = envvars_get_shared_memory (new_size);
+	if (nshmid == -1) {
+		return 0;
+	}
+	struct envvars new_envvars;
+	envvars_init(&new_envvars);
+	new_envvars.nvariables = new_size;
+	new_envvars.evshmid = nshmid;
+	if (!envvars_attach(&new_envvars)) {
+		return 0;
+	}
+
+	// Copy all but the deleted one to the new allocated space
+	int i,j;
+	for (i = 0,j = 0; i < envvars->nvariables; i++) {
+		if (strncmp(envvars->variables[i].name,name,MAXNAMELEN) == 0) {
+			continue;
+		}
+		memcpy (&new_envvars.variables[j],&envvars->variables[i],sizeof(struct envvar));
+		j++;
+	}
 
 	// Delete old values
 	envvars_detach(envvars);
