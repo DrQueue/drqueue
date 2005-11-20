@@ -106,6 +106,9 @@ char *drerrno_str (void)
 	case DRE_NOMEMORY:
 		msg = "Not enough memory";
 		break;
+	case DRE_DTSHMEM:
+		msg = "Could not detach shared memory";
+		break;
 	default:
 		msg = "drerrno NOT listed !!";
 	}

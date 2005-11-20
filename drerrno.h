@@ -50,6 +50,7 @@ extern int drerrno;		/* global errno */
 #define DRE_NOETCDIR				23	/* No etc directory */
 #define DRE_RMSHMEM					24	// Remove shared memory
 #define DRE_NOMEMORY				25	// Not enough memory
+#define DRE_DTSHMEM         26  // Detach shared memory
 
 char *drerrno_str (void);
 
