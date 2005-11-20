@@ -61,6 +61,18 @@ struct drqmj_flags {
 	GtkWidget *cbjobdelete;				// Delete job when finished
 };
 
+enum {
+	DNJ_ENVVARS_COL_NAME = 0,
+	DNJ_ENVVARS_COL_VALUE,
+	DNJ_ENVVARS_NUM_COLS
+};
+
+struct drqmj_envvars {
+	GtkListStore *store;
+	GtkTreeView *view;
+	struct envvars envvars;
+};
+
 struct drqmj_dnji {							/* dialog new job info */
 	GtkWidget *dialog;
 	GtkWidget *vbox;
@@ -91,7 +103,8 @@ struct drqmj_dnji {							/* dialog new job info */
 
 	struct drqmj_limits limits;		/* limits info */
 	struct drqmj_flags flags;			/* flags info */
-	
+	struct drqmj_envvars envvars; // Environment variables info
+
 	int submitstopped;						/* Set if the job has to be stopped just after submission */
 };
 

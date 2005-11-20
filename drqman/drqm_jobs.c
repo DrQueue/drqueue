@@ -92,6 +92,9 @@ static void dnj_flags_bjobdepend_clicked (GtkWidget *bclicked, struct drqm_jobs_
 static void dnj_flags_jdepend_refresh_job_list (GtkWidget *bclicked, struct drqm_jobs_info *info);
 static void dnj_flags_jdepend_accept (GtkWidget *bclicked, struct drqm_jobs_info *info);
 
+// Environment variables
+static GtkWidget *dnj_envvars_widgets (struct drqm_jobs_info *info);
+
 /* JOB ACTIONS */
 static GtkWidget *DeleteJobDialog (struct drqm_jobs_info *info);
 static void djd_bok_pressed (GtkWidget *button, struct drqm_jobs_info *info);
@@ -777,6 +780,10 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
 
 	/* Limits STUFF */
 	frame = dnj_limits_widgets (info);
+	gtk_box_pack_start(GTK_BOX(vbox),frame,TRUE,TRUE,5);
+
+	// Environment variables STUFF
+	frame = dnj_envvars_widgets (info);
 	gtk_box_pack_start(GTK_BOX(vbox),frame,TRUE,TRUE,5);
 
 	/* Flags STUFF */
@@ -1553,6 +1560,59 @@ static GtkWidget *dnj_limits_widgets (struct drqm_jobs_info *info)
 	return (frame);
 }
 
+GtkWidget *dnj_envvars_widgets (struct drqm_jobs_info *info)
+{
+	GtkWidget *frame;
+	GtkTooltips *tooltips;
+	GtkWidget *swindow;
+
+	// TreeView stuff
+	GtkCellRenderer *renderer;
+	GtkTreeModel *model;
+	GtkWidget *view;
+	// Store
+	GtkListStore *store;
+
+	tooltips = TooltipsNew ();
+	frame = gtk_frame_new ("Environment variables");
+
+	swindow = gtk_scrolled_window_new (NULL,NULL);
+	// Scrolled window
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(swindow),GTK_POLICY_AUTOMATIC,GTK_POLICY_AUTOMATIC);
+	gtk_container_add(GTK_CONTAINER(frame),swindow);
+
+	// The view
+	view = gtk_tree_view_new();
+	info->dnj.envvars.view = GTK_TREE_VIEW (view);
+	gtk_container_add(GTK_CONTAINER(swindow),view);
+
+	// Column 1
+	renderer = gtk_cell_renderer_text_new();
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW(view),
+																							 -1,
+																							 "Name",
+																							 renderer,
+																							 "text",DNJ_ENVVARS_COL_NAME,
+																							 NULL);
+	// Column 2
+	renderer = gtk_cell_renderer_text_new();
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW(view),
+																							 -1,
+																							 "Value",
+																							 renderer,
+																							 "text",DNJ_ENVVARS_COL_VALUE,
+																							 NULL);
+	
+	// Store & TreeView
+	store = gtk_list_store_new (DNJ_ENVVARS_NUM_COLS, G_TYPE_STRING, G_TYPE_STRING);
+	info->dnj.envvars.store = store;
+	model = GTK_TREE_MODEL (store);
+	gtk_tree_view_set_model (GTK_TREE_VIEW(view),model);
+	g_object_unref (model);
+
+	return frame;
+}
+
 GtkWidget *dnj_flags_widgets (struct drqm_jobs_info *info)
 {
 	GtkWidget *frame;
@@ -1647,6 +1707,24 @@ GtkWidget *dnj_flags_widgets (struct drqm_jobs_info *info)
 	gtk_box_pack_start (GTK_BOX(hbox),cbutton,TRUE,TRUE,2);
 
 	return (frame);
+}
+
+void dnj_envvars_list (GtkWidget *bclicked, struct drqm_jobs_info *info)
+{
+	GtkListStore *store = info->dnj.envvars.store;
+	GtkTreeIter iter;
+	int i;
+
+	gtk_list_store_clear (GTK_LIST_STORE(store));
+	envvars_attach (&info->dnj.envvars.envvars);
+	for (i = 0; info->dnj.envvars.envvars.nvariables; i++) {
+		gtk_list_store_append (store,&iter);
+		gtk_list_store_set (store, &iter,
+												DNJ_ENVVARS_COL_NAME, info->dnj.envvars.envvars.variables[i].name,
+												DNJ_ENVVARS_COL_VALUE, info->dnj.envvars.envvars.variables[i].value,
+												-1);
+	}
+	envvars_detach (&info->dnj.envvars.envvars);
 }
 
 void dnj_flags_jdepend_refresh_job_list (GtkWidget *bclicked, struct drqm_jobs_info *info)
