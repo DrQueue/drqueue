@@ -40,6 +40,7 @@ int envvars_init (struct envvars *envvars)
 int envvars_empty (struct envvars *envvars)
 {
 	if (envvars->evshmid != -1) {
+		envvars_detach (envvars);
 		if (shmctl (envvars->evshmid,IPC_RMID,NULL) == -1) {
 			drerrno = DRE_RMSHMEM;
 			return 0;

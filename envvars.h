@@ -24,6 +24,12 @@
 
 #include "constants.h"
 
+#if defined (__IRIX)
+#include <sys/types.h>
+#else
+#include <stdint.h>
+#endif
+
 // A single environment variable
 struct envvar {
 	char name[MAXNAMELEN];
@@ -33,7 +39,7 @@ struct envvar {
 // The group of all environment variables
 struct envvars {
 	struct envvar *variables;
-	int nvariables;
+	uint16_t nvariables;
 	int evshmid;
 };
 

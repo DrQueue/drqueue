@@ -25,6 +25,7 @@
 #include "request.h"
 #include "job.h"
 #include "database.h"
+#include "envvars.h"
 
 #ifdef COMM_REPORT
 extern long int bsent;		/* Bytes sent */
@@ -60,6 +61,10 @@ int send_blocked_host (int sdf, struct blocked_host *bh);
 int recv_blocked_host (int sdf, struct blocked_host *bh);
 int send_computer_pools (int sfd, struct computer_limits *cl,int attached);
 int recv_computer_pools (int sfd, struct computer_limits *cl);
+int send_envvars (int sfd, struct envvars *envvars);
+int recv_envvars (int sfd, struct envvars *envvars);
+int send_envvar (int sfd, struct envvar *var);
+int recv_envvar (int sfd, struct envvar *var);
 
 int send_string (int sfd, char *str);
 int recv_string (int sfd, char **str);

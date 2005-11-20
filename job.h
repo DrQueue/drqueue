@@ -39,7 +39,7 @@
 #include <time.h>
 
 #include "constants.h"
-
+#include "envvars.h"
 
 
 /* FRAME SECTION */
@@ -219,14 +219,15 @@ struct job {
 
 	// Blocked hosts
 	struct blocked_host *blocked_host;
-	int bhshmid;			// Shared memory id for the blocked_host structure
+	int bhshmid;			            // Shared memory id for the blocked_host structure
 	uint16_t nblocked;						// Number of blocked hosts
 
 	uint32_t flags;								/* Job flags */
 
 	uint32_t dependid;						/* Jobid on which this one depends */
 
-	struct job_limits limits;
+	struct job_limits limits;     // Job limits
+	struct envvars envvars;       // Environment variables
 };
 
 struct database;

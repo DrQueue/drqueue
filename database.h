@@ -26,7 +26,7 @@
 #include "job.h"
 #include "computer.h"
 
-#define DB_VERSION 7		/* Database version. This version must change when we change the job structure */
+#define DB_VERSION 8		      /* Database version. This version must change when we change the job structure */
 #define DB_MAGIC	 0xADDEEFBE /* magic number */
 
 struct load_balancing {
