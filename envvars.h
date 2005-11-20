@@ -16,7 +16,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
-// $Id: /drqueue/remote/trunk/job.h 2303 2005-05-13T21:44:10.411864Z jorge	$
+// $Id$
 //
 
 #ifndef _ENVVARS_H_
