@@ -26,6 +26,8 @@
 #include "task.h"
 #include "slave.h"
 #include "semaphores.h"
+#include "logger.h"
+#include "request.h"
 
 void task_init_all (struct task *task)
 {
@@ -151,4 +153,25 @@ void task_environment_set (struct task *task)
 	putenv ("DRQUEUE_OS=IRIX");
 #endif
 
+
+	// Job specific environment variables
+	struct envvars envvars;
+	envvars_init(&envvars);
+	if (!request_job_envvars (task->ijob,&envvars,SLAVE_LAUNCHER)) {
+		log_slave_task (task,L_WARNING,"Could not receive job environment variables");
+		return;
+	}
+
+	log_slave_computer (L_DEBUG,"Received %i environment variables",envvars.nvariables);
+	int i;
+	char *buffer;
+	envvars_attach(&envvars);
+	for (i = 0; i < envvars.nvariables; i++) {
+		buffer = (char *) malloc (BUFFERLEN);
+		snprintf (buffer,BUFFERLEN,"%s=%s",envvars.variables[i].name,envvars.variables[i].value);
+		log_slave_computer (L_DEBUG,"Putting \"%s\" in the environment",buffer);
+		putenv (buffer);
+	}
+	envvars_detach(&envvars);
+	envvars_empty(&envvars);
 }

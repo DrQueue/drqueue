@@ -90,6 +90,7 @@ void handle_r_r_jobdelblkhost (int sfd,struct database *wdb,int icomp,struct req
 void handle_r_r_joblstblkhost (int sfd,struct database *wdb,int icomp,struct request *req);
 void handle_r_r_joblms (int sfd,struct database *wdb,int icomp,struct request *req);
 void handle_r_r_joblps (int sfd,struct database *wdb,int icomp,struct request *req);
+void handle_r_r_jobenvvars (int sfd,struct database *wdb,int icomp,struct request *req);
 
 /* sent TO MASTER */
 void update_computer_status (struct slave_database *database); /* The slave calls this function to update the */
@@ -127,6 +128,7 @@ int request_job_frame_reset_requeued (uint32_t ijob, uint32_t frame, int who);
 int request_job_add_blocked_host (uint32_t ijob, uint32_t icomp, int who);
 int request_job_delete_blocked_host (uint32_t ijob, uint32_t icomp, int who);
 int request_job_list_blocked_host (uint32_t ijob, struct blocked_host **bh, uint16_t *nblocked, int who);
+int request_job_envvars (uint32_t ijob, struct envvars *envvars, int who);
 
 /* sent TO SLAVE */
 int request_slave_killtask (char *slave,uint16_t itask,int who);
