@@ -67,7 +67,7 @@ int envvars_attach (struct envvars *envvars)
 
 	envvars->variables = (struct envvar *) shmat (envvars->evshmid,0,0);
 	if (envvars->variables == (struct envvar *)-1) {
-		envvars_empty (envvars);
+		perror ("envvars_attach");
 		drerrno = DRE_ATTACHSHMEM;
 		return 0;
 	}
@@ -132,14 +132,13 @@ int envvars_variable_add (struct envvars *envvars, char *name, char *value)
 	if (var != NULL) {
 		// If the variable already exists we change it's value
 		strncpy (var->value,value,MAXNAMELEN);
-		envvars_detach (envvars);
 		return 0;
 	}
 
 	int new_size = envvars->nvariables + 1;
 	int nshmid = envvars_get_shared_memory (new_size);
 	if (nshmid == -1) {
-		envvars_detach (envvars);
+		fprintf (stderr,"envvars_variable_add : could not get shared memory\n");
 		return 0;
 	}
 	struct envvars new_envvars;
@@ -147,7 +146,6 @@ int envvars_variable_add (struct envvars *envvars, char *name, char *value)
 	new_envvars.nvariables = new_size;
 	new_envvars.evshmid = nshmid;
 	if (!envvars_attach(&new_envvars)) {
-		envvars_detach (envvars);
 		return 0;
 	}
 
@@ -167,8 +165,6 @@ int envvars_variable_add (struct envvars *envvars, char *name, char *value)
 	// Copy new values to old structure
 	envvars->nvariables = new_size;
 	envvars->evshmid = nshmid;
-
-	envvars_detach (envvars);
 
 	drerrno = DRE_NOERROR;
 	return 1;

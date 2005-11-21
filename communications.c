@@ -401,7 +401,9 @@ int recv_envvars (int sfd, struct envvars *envvars)
 {
 	uint16_t nvariables;
 
-	envvars_empty (envvars);
+	if (!envvars_empty (envvars)) {
+		return 0;
+	}
 
 	if (!read_16b (sfd,&nvariables)) {
 		return 0;
@@ -426,6 +428,8 @@ int recv_job (int sfd, struct job *job)
 		return 0;
 	}
 	
+	envvars_init (&job->envvars);
+
 	// Environment variables
 	if (!recv_envvars (sfd,&job->envvars)) {
 		return 0;
