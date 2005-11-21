@@ -192,6 +192,10 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
 		log_master (L_DEBUG,"Request job limit pool set");
 		handle_r_r_joblps (sfd,wdb,icomp,&request);
 		break;
+	case R_R_JOBENVVARS:
+		log_master (L_DEBUG,"Request job environment variables");
+		handle_r_r_jobenvvars (sfd,wdb,icomp,&request);
+		break;
 	default:
 		log_master (L_WARNING,"Unknown request");
 	}
@@ -1315,6 +1319,65 @@ int request_job_continue (uint32_t ijob, int who)
 
 	close (sfd);
 	return 1;
+}
+
+int request_job_envvars (uint32_t ijob, struct envvars *envvars, int who)
+{
+	/* On error returns 0, error otherwise drerrno is set to the error */
+	int sfd;
+	struct request req;
+
+	if ((sfd = connect_to_master ()) == -1) {
+		drerrno = DRE_NOCONNECT;
+		return 0;
+	}
+
+	req.type = R_R_JOBENVVARS;
+	req.data = ijob;
+
+	if (!send_request (sfd,&req,who)) {
+		drerrno = DRE_ERRORWRITING;
+		close (sfd);
+		return 0;
+	}
+
+	if (!recv_envvars (sfd,envvars)) {
+		close (sfd);
+		return 0;
+	}
+
+	close (sfd);
+	return 1;
+}
+
+void handle_r_r_jobenvvars (int sfd,struct database *wdb,int icomp,struct request *req)
+{
+	/* The master handles this type of packages */
+	/* This function is called unlocked */
+	/* This function is called by the master */
+	log_master (L_DEBUG,"Entering handle_r_r_jobenvvars");
+
+	uint32_t ijob;
+
+	ijob = req->data;
+
+	log_master (L_DEBUG,"Requested environment variables of job: %i",ijob);
+
+	if (ijob >= MAXJOBS)
+		return;
+
+	semaphore_lock (wdb->semid);
+
+	if (wdb->job[ijob].used) {
+		log_master (L_DEBUG,"Sending %i environment variables",wdb->job[ijob].envvars.nvariables);
+		if (!send_envvars(sfd,&wdb->job[ijob].envvars)) {
+			log_master (L_WARNING,"Error while sending the environment variables: %s",drerrno_str());
+		}
+	}
+
+	semaphore_release (wdb->semid);
+
+	log_master (L_DEBUG,"Exiting handle_r_r_jobenvvars");
 }
 
 void handle_r_r_stopjob (int sfd,struct database *wdb,int icomp,struct request *req)

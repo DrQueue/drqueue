@@ -54,6 +54,7 @@
 #define R_R_JOBLMS				30 // Job limits memory set
 #define R_R_JOBLPS				31 // Job limits pool set
 #define R_R_RERUNJOB			32 // ReRun a whole job
+#define R_R_JOBENVVARS    33 // Job environment variables
 
 /* Requests to the slave */
 #define RS_R_KILLTASK						1 /* Request to slave to kill a task */
