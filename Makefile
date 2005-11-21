@@ -216,7 +216,7 @@ tags:
 	etags *.[ch] drqman/*.[ch]
 
 clean:
-	rm -fR *.o *.exe *~ libdrqueue.a slave master sendjob requeue jobfinfo jobinfo cjob TAGS tmp/* logs/* db/* contrib/windows/*.exe bin/*.$(systype)
+	rm -fR *.o *.exe *~ libdrqueue.a slave master sendjob requeue jobfinfo jobinfo compinfo cjob TAGS tmp/* logs/* db/* contrib/windows/*.exe bin/*.$(systype)
 	rm -fR blockhost
 	$(MAKE) -C drqman clean
 
