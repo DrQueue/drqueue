@@ -142,6 +142,8 @@ void job_init (struct job *job)
 	job->flags = 0;
 
 	job_init_limits (job);
+	
+	envvars_init(&job->envvars);
 }
 
 void job_delete (struct job *job)

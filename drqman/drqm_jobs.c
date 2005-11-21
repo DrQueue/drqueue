@@ -617,6 +617,11 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info)
 	}
 }
 
+static void dnj_destroy (GtkWidget *dialog, struct drqm_jobs_info *info)
+{
+	envvars_empty (&info->dnj.envvars.envvars);
+}
+
 static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
 {
 	GtkWidget *window;
@@ -642,6 +647,8 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
 	gtk_window_set_title (GTK_WINDOW(window),"New Job");
 	g_signal_connect (G_OBJECT(window),"delete_event",G_CALLBACK(dnj_deleted),
 										(GtkObject*)info);
+	g_signal_connect (G_OBJECT(window),"destroy",G_CALLBACK(dnj_destroy),info);
+														 
 	gtk_window_set_default_size(GTK_WINDOW(window),800,500);
 	gtk_container_set_border_width (GTK_CONTAINER(window),5);
 	info->dnj.dialog = window;
@@ -1106,6 +1113,9 @@ static int dnj_submit (struct drqmj_dnji *info)
 		job.flags |= JF_JOBDELETE;
 	}
 	
+	// Environment variables
+	job.envvars = info->envvars.envvars;
+
 	if (!register_job (&job))
 		return 0;
 
@@ -1572,6 +1582,24 @@ void dnj_envvars_add_accept (GtkWidget *bpressed, gpointer userdata)
 											 (char *)gtk_entry_get_text(GTK_ENTRY(info->evalue)));
 }
 
+void dnj_envvars_delete_accept (GtkWidget *bpressed, gpointer userdata)
+{
+	struct drqmj_envvars *info = (struct drqmj_envvars *)userdata;
+
+	GtkTreeSelection *selection;
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+
+  selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(info->view));
+  if (gtk_tree_selection_get_selected(selection, &model, &iter))
+  {
+    gchar *name;
+    gtk_tree_model_get (model, &iter, DNJ_ENVVARS_COL_NAME, &name, -1);
+		envvars_variable_delete(&info->envvars,(char *)name);
+    g_free(name);
+  }
+}
+
 void dnj_envvars_add (GtkWidget *menuitem, gpointer userdata)
 {
 	GtkWidget *dialog;
@@ -1623,6 +1651,33 @@ void dnj_envvars_add (GtkWidget *menuitem, gpointer userdata)
 	gtk_widget_show_all (dialog);
 }
 
+void dnj_envvars_delete (GtkWidget *menu_item, gpointer userdata)
+{
+	GtkWidget *dialog;
+	GList *cbs = NULL ;		/* callbacks, pairs (function, argument)*/
+
+	struct drqmj_envvars *info = &((struct drqm_jobs_info *)userdata)->dnj.envvars;
+	userdata = (gpointer) info;
+
+	GtkTreeSelection *selection;
+	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(info->view));
+	if (gtk_tree_selection_count_selected_rows(selection) != 1) {
+		return;
+	}
+
+	cbs = g_list_append (cbs,dnj_envvars_delete_accept);
+	cbs = g_list_append (cbs,userdata);
+	cbs = g_list_append (cbs,dnj_envvars_list);
+	cbs = g_list_append (cbs,userdata);
+
+	dialog = ConfirmDialog ("Do you really want delete the environment variable ?",
+													cbs);
+
+	g_list_free (cbs);
+
+	gtk_grab_add(dialog);
+}
+
 void dnj_envvars_popup_menu (GtkWidget *treeview, GdkEventButton *event, gpointer userdata)
 {
 	GtkWidget *menu, *menuitem;
@@ -1631,8 +1686,16 @@ void dnj_envvars_popup_menu (GtkWidget *treeview, GdkEventButton *event, gpointe
 
 	menuitem = gtk_menu_item_new_with_label ("Add");
 	g_signal_connect (menuitem,"activate",(GCallback) dnj_envvars_add, userdata);
-
 	gtk_menu_shell_append (GTK_MENU_SHELL(menu),menuitem);
+
+	GtkTreeSelection *selection;
+	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
+	if (gtk_tree_selection_count_selected_rows(selection) == 1) {
+		menuitem = gtk_menu_item_new_with_label ("Delete");
+		g_signal_connect (menuitem,"activate",(GCallback) dnj_envvars_delete, userdata);
+		gtk_menu_shell_append (GTK_MENU_SHELL(menu),menuitem);
+	}
+	
 	gtk_widget_show_all (menu);
 
 	gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL,

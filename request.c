@@ -548,6 +548,8 @@ void handle_r_r_regisjob (int sfd,struct database *wdb)
 	/* TO DO */
 	/* Check if the job is already registered ! Or not ? */
 
+	job_init (&job);
+
 	semaphore_lock(wdb->semid);
 	if ((index = job_index_free(wdb)) == -1) {
 		/* No space left on database */

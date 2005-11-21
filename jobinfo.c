@@ -115,6 +115,7 @@ int main (int argc,char *argv[])
 			exit (1);
 		}
 		show_job (job);
+		envvars_empty(&job->envvars);
 		free (job);
 		job = NULL;
 		break;
@@ -139,6 +140,13 @@ void print_job (struct job *job)
 void show_job (struct job *job)
 {
 	printf ("ID: %i Name: %s\n",job->id,job->name);
+	int i;
+	envvars_attach(&job->envvars);
+	printf("\tEnvironment variables\n");
+	for (i = 0; i < job->envvars.nvariables; i++) {
+		printf ("\t%s=%s\n",job->envvars.variables[i].name,job->envvars.variables[i].value);
+	}
+	envvars_detach(&job->envvars);
 }
 
 void usage (void)
