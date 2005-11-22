@@ -104,6 +104,10 @@ int main (int argc,char *argv[])
 		break;
 	case OP_LIST:
 		print_jobs (job,njobs);
+		int i;
+		for (i = 0; i < njobs; i++) {
+			job_init (&job[i]);
+		}
 		break;
 	case OP_NUMBER:
 		printf ("%i\n",njobs);
