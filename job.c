@@ -126,6 +126,8 @@ void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job)
 
 void job_init (struct job *job)
 {
+	envvars_empty(&job->envvars);
+
 	memset (job,0,sizeof (struct job));
 
 	job->used = 0;
@@ -142,8 +144,6 @@ void job_init (struct job *job)
 	job->flags = 0;
 
 	job_init_limits (job);
-	
-	envvars_init(&job->envvars);
 }
 
 void job_delete (struct job *job)

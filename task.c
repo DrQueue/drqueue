@@ -162,14 +162,14 @@ void task_environment_set (struct task *task)
 		return;
 	}
 
-	log_slave_computer (L_DEBUG,"Received %i environment variables",envvars.nvariables);
+	log_slave_task (task,L_DEBUG,"Received %i environment variables",envvars.nvariables);
 	int i;
 	char *buffer;
 	envvars_attach(&envvars);
 	for (i = 0; i < envvars.nvariables; i++) {
 		buffer = (char *) malloc (BUFFERLEN);
 		snprintf (buffer,BUFFERLEN,"%s=%s",envvars.variables[i].name,envvars.variables[i].value);
-		log_slave_computer (L_DEBUG,"Putting \"%s\" in the environment",buffer);
+		log_slave_task (task,L_DEBUG,"Putting \"%s\" in the environment",buffer);
 		putenv (buffer);
 	}
 	envvars_detach(&envvars);
