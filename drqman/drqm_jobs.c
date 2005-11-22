@@ -102,6 +102,17 @@ static void djd_bok_pressed (GtkWidget *button, struct drqm_jobs_info *info);
 static void job_hstop_cb (GtkWidget *button, struct drqm_jobs_info *info);
 static void job_rerun_cb (GtkWidget *button, struct drqm_jobs_info *info);
 
+void free_job_list(GtkWidget *joblist,gpointer userdata)
+{
+	struct drqm_jobs_info *info = userdata;
+
+	int i;
+
+	for (i = 0; i < info->njobs; i++) {
+		job_init (&info->jobs[i]);
+	}
+}
+
 void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info)
 {
 	/* This function receives the notebook widget to wich the new tab will append */
@@ -123,6 +134,7 @@ void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info)
 	/* Clist */
 	clist = CreateJobsList (&info->idj);
 	gtk_box_pack_start(GTK_BOX(vbox),clist,TRUE,TRUE,2);
+	g_signal_connect(G_OBJECT(clist),"destroy",G_CALLBACK(free_job_list),&info->idj);
 	
 	// Refresh stuff
 	hbox = gtk_hbox_new(FALSE,2);

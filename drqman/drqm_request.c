@@ -87,6 +87,7 @@ void drqm_request_joblist (struct drqm_jobs_info *info)
 void drqm_clean_joblist (struct drqm_jobs_info *info)
 {
 	if (info->jobs) {
+		free_job_list(NULL,info);
 		g_free (info->jobs);
 		info->jobs = NULL;
 	}
