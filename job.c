@@ -143,6 +143,8 @@ void job_init (struct job *job)
 
 	job->flags = 0;
 
+	job->envvars.evshmid = -1;
+
 	job_init_limits (job);
 }
 

@@ -67,7 +67,6 @@ int envvars_attach (struct envvars *envvars)
 
 	envvars->variables = (struct envvar *) shmat (envvars->evshmid,0,0);
 	if (envvars->variables == (struct envvar *)-1) {
-		perror ("envvars_attach");
 		drerrno = DRE_ATTACHSHMEM;
 		return 0;
 	}

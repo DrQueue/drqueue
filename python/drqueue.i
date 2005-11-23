@@ -95,6 +95,7 @@ slaves. Also provides access to all data structures of DrQueue."
 %include "request.h"
 %include "constants.h"
 %include "job.h"
+%include "envvars.h"
 
 typedef unsigned int time_t;
 typedef unsigned short int uint16_t;
@@ -117,7 +118,13 @@ typedef unsigned char uint8_t;
 
 	~job ()
 	{
+		job_init(self);
 		free (self);
+	}
+
+	int environment_variable_add (char *name, char *value)
+	{
+		return envvars_variable_add (&self->envvars,name,value);
 	}
 
 	PyObject *request_frame_list (int who)
