@@ -127,6 +127,25 @@ typedef unsigned char uint8_t;
 		return envvars_variable_add (&self->envvars,name,value);
 	}
 
+	int environment_variable_delete (char *name)
+	{
+		return envvars_variable_delete (&self->envvars,name);
+	}
+
+	char *environment_variable_find (char *name)
+	{
+		struct envvar *variable;
+
+		variable = envvars_variable_find (&self->envvars,name);
+	
+		if (!variable) {
+			PyErr_SetString(PyExc_IndexError,"No such variable");
+			return NULL;
+		}
+
+		return variable->value;
+	}
+
 	PyObject *request_frame_list (int who)
 	{
 		PyObject *l = PyList_New(0);
