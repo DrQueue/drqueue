@@ -36,6 +36,7 @@ extern "C" {
 #include "database.h"
 #include "semaphores.h"
 #include "common.h"
+#include "envvars.h"
 
 /* Script generators */
 #include "mayasg.h"
