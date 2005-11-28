@@ -651,7 +651,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
 		counter = 0;
 		for (i=0;i<MAXJOBS;i++) {
 			ijob = pol[i].index;
-			if (pol[i].pri == wdb->lb.last_priority) {
+			if (pol[i].pri >= wdb->lb.last_priority) {
 				for (j=wdb->lb.next_i;j<MAXJOBS;j++) {
 					ijob = pol[j].index;
 					if (job_available(wdb,ijob,&iframe,icomp)) {
@@ -687,7 +687,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp)
 				}
 				break;
 			}
-			if (pol[i].pri == wdb->lb.last_priority) {
+			if (pol[i].pri >= wdb->lb.last_priority) {
 				ijob = pol[i].index;
 				/* ATENTION job_available sets the available frame as FS_ASSIGNED !! */
 				/* We need to set it back to FS_WAITING if something fails */
