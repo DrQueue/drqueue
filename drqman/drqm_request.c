@@ -33,7 +33,8 @@ void drqm_request_joblist (struct drqm_jobs_info *info)
 	/* This function is called from inside drqman */
 	struct request req;
 	int sfd;
-	struct job *tjob; 
+	struct job *tjob;
+	uint32_t njobs;
 	int i;
 
 	if ((sfd = connect_to_master ()) == -1) {
@@ -54,7 +55,7 @@ void drqm_request_joblist (struct drqm_jobs_info *info)
 	}
 
 	if (req.type == R_R_LISTJOBS) {
-		info->njobs = req.data;
+		njobs = req.data;
 	} else {
 		fprintf (stderr,"ERROR: Not appropiate answer to request R_R_LISTJOBS\n");
 		close (sfd);
@@ -62,15 +63,15 @@ void drqm_request_joblist (struct drqm_jobs_info *info)
 	}
 
 	drqm_clean_joblist (info);
-	if (info->njobs) {
-		if ((info->jobs = g_malloc (sizeof (struct job) * info->njobs)) == NULL) {
+	if (njobs) {
+		if ((info->jobs = g_malloc (sizeof (struct job) * njobs)) == NULL) {
 			fprintf (stderr,"Not enough memory for job structures\n");
 			close (sfd);
 			return;
 		}
-
+		info->njobs = njobs;
 		tjob = info->jobs;
-		for (i=0;i<info->njobs;i++) {
+		for (i=0;i<njobs;i++) {
 			if (!recv_job (sfd,tjob)) {
 				fprintf (stderr,"ERROR: Receiving job (drqm_request_joblist)\n");
 				break;
@@ -79,6 +80,7 @@ void drqm_request_joblist (struct drqm_jobs_info *info)
 		}
 	} else {
 		info->jobs = NULL;
+		info->njobs = 0;
 	}
 
 	close (sfd);
