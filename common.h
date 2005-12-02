@@ -38,7 +38,7 @@
 
 #include "job.h"
 
-#define VERSION  "0.63.1"
+#define VERSION  "0.63.2"
 
 int common_environment_check (void);
 void show_version (char **argv);
