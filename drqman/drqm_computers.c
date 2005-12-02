@@ -314,8 +314,8 @@ static void ComputerDetails(GtkWidget *menu_item, struct drqm_computers_info *in
 
 static void cdd_destroy (GtkWidget *w, struct drqm_computers_info *info)
 {
-	if (GTK_TOGGLE_BUTTON(info->cdd.ari.cbenabled)->active) {
-		g_source_remove (info->cdd.ari.sourceid);
+	if (GTK_TOGGLE_BUTTON(info->ari.cbenabled)->active) {
+		g_source_remove (info->ari.sourceid);
 	}
 }
 
@@ -530,9 +530,9 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info)
 	g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(cdd_update),info);
 	gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
 	// Auto refresh
-	info->cdd.ari.callback = cdd_autorefreshupdate;
-	info->cdd.ari.data = info;
-	autorefreshWidgets = CreateAutoRefreshWidgets (&info->cdd.ari);
+	info->ari.callback = cdd_autorefreshupdate;
+	info->ari.data = info;
+	autorefreshWidgets = CreateAutoRefreshWidgets (&info->ari);
 	gtk_box_pack_start(GTK_BOX(hbox),autorefreshWidgets,FALSE,FALSE,2);
 
 	if (!cdd_update (window,info)) {
