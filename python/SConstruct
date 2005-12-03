@@ -9,11 +9,13 @@ env = Environment (CC = 'gcc',
 print "Platform is: ",sys.platform
 if sys.platform == "linux2":
 	env.Append (CCFLAGS = '-D__LINUX')
+	env.Append (CPPPATH=['/usr/include/python2.4',".."])
 elif sys.platform == "darwin":
-	env.Append (CCFLAGS = '-D__OSX')
+	env.Append (CCFLAGS = Split('-D__OSX -fno-common'))
+	env.Append (CPPPATH=['/sw/include/python2.3',".."])
+	env.Append (LIBS=['python2.3'],LIBPATH=['/sw/lib/python2.3/config'])
 
 env.Append (CXXFLAGS='-D__CPLUSPLUS')
-env.Append (CPPPATH=['/usr/include/python2.4',".."])
 env.Append (SWIGFLAGS="-python -I..")
 
 libdrqueue = Split ("""../computer_info.c ../computer_status.c ../task.c ../logger.c ../communications.c
