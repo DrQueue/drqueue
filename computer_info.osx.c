@@ -22,6 +22,16 @@
 #include <sys/types.h>
 #include <sys/sysctl.h>
 
+int get_procspeed (void)
+{
+	return 0;
+}
+
+t_proctype get_proctype (void)
+{
+	return PROCTYPE_UNKNOWN;
+}
+
 void get_hwinfo (struct computer_hwinfo *hwinfo)
 {
 	size_t len;
