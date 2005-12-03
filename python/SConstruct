@@ -12,8 +12,8 @@ if sys.platform == "linux2":
 	env.Append (CPPPATH=['/usr/include/python2.4',".."])
 elif sys.platform == "darwin":
 	env.Append (CCFLAGS = Split('-D__OSX -fno-common'))
-	env.Append (CPPPATH=['/sw/include/python2.3',".."])
-	env.Append (LIBS=['python2.3'],LIBPATH=['/sw/lib/python2.3/config'])
+	env.Append (CPPPATH=['/sw/include/python2.4',".."])
+	env.Append (LIBS=['python2.4'],LIBPATH=['/sw/lib/python2.4/config'])
 
 env.Append (CXXFLAGS='-D__CPLUSPLUS')
 env.Append (SWIGFLAGS="-python -I..")
