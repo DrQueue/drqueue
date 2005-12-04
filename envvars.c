@@ -22,6 +22,7 @@
 #include "envvars.h"
 #include "drerrno.h"
 
+#include <unistd.h>
 #include <stdio.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
