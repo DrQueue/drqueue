@@ -165,6 +165,8 @@ int envvars_variable_add (struct envvars *envvars, char *name, char *value)
 	// Copy new values to old structure
 	envvars->nvariables = new_size;
 	envvars->evshmid = nshmid;
+	envvars->variables = new_envvars.variables;
+	envvars_detach(envvars);
 
 	drerrno = DRE_NOERROR;
 	return 1;
