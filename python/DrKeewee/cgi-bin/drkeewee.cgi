@@ -8,6 +8,7 @@ import os
 import sys
 sys.path.insert(0,'..')
 import drqueue
+import time
 
 class job:
     def __init__(self,drjob):
@@ -27,10 +28,17 @@ class job:
         print '<div id="job" class="job">'
         print '<tr class="jobrow">'
         print '<td>' + str(self.drjob.id)
-        print '<td><a href="%s/job/%i">'%(os.environ['SCRIPT_NAME'],self.drjob.id,) + self.drjob.name + '</a>'
-        print '<td>' + self.Status()
-        print '<td>' + str(self.drjob.fleft)
-        print '<td>' + str(self.drjob.fdone)
+        print '<td><a href="%s/job/%i">'%(os.environ['SCRIPT_NAME'],self.drjob.id,) + self.drjob.name + '</a>' + '</td>'
+        print '<td>' + self.drjob.owner + '</td>'
+        print '<td>' + self.Status() + '</td>'
+        print '<td>' + str(self.drjob.fleft) + '</td>'
+        print '<td>' + str(self.drjob.fdone) + '</td>'
+        print '<td>' + str(self.drjob.nprocs) + '</td>'
+        print '<td>' + drqueue.time_str(self.drjob.avg_frame_time) + '</td>'
+        if self.drjob.nprocs:
+            print '<td>' + time.ctime(self.drjob.est_finish_time)  + '</td>'
+        else:
+            print '<td>Not running</td>'
         print '</tr>'
         print '</div>'
     def ShowJobItem (self,itemname,itemvalue):
@@ -92,7 +100,8 @@ class joblist:
         print 'Job List'
         print '</div>'
         print '<table class="joblisttable">'
-        print '<tr class="jobrowtitle"><td>Id</td><td>Name</td><td>Status</td><td>Frames left</td><td>Frames done</td></tr>'
+        print '<tr class="jobrowtitle"><td>Id</td><td>Name</td><td>Owner</td><td>Status</td><td>Frames left</td><td>Frames done</td>\
+        <td>Frames running</td><td>Average frame time</td><td>Estimated end</td></tr>'
         for drjob in self.drlist:
             kwjob = job(drjob)
             kwjob.ShowMinRow()
@@ -106,13 +115,61 @@ class joblist:
             self.ShowJobs()
         print '</div>'
 
+class computer:
+    def __init__(self,drcomputer):
+        self.drcomputer = drcomputer
+        
+    def ShowMinRow (self):
+        print '<div id="computer" class="computer">'
+        print '<tr class="computerrow">'
+        print '<td>' + str(self.drcomputer.hwinfo.id)
+        print '<td><a href="%s/computer/%i">'%(os.environ['SCRIPT_NAME'],self.drcomputer.hwinfo.id,) + self.drcomputer.hwinfo.name + '</a>' + '</td>'
+        print '<td>'
+        if self.drcomputer.limits.enabled:
+            print 'Yes'
+        else:
+            print 'No'
+        print '</td>'
+        print '<td>' + str(self.drcomputer.status.ntasks) + '</td>'
+        print '<td>' + str(self.drcomputer.status.get_loadavg(0)) + ',' \
+              + str(self.drcomputer.status.get_loadavg(1)) + ','\
+              + str(self.drcomputer.status.get_loadavg(2)) + '</td>'
+        print '<td>' + self.Pools() + '</td>'
+        print '</tr>'
+        print '</div>'
 
+    def Pools(self):
+        pools = ''
+        for i in range (self.drcomputer.limits.npools):
+            if i > 0:
+                pools += ' , '
+            pools += self.drcomputer.limits.get_pool(i).name
+        return pools
 
 class computerlist:
     def __init__(self):
-        pass
+        try:
+            self.drlist = drqueue.request_computer_list(drqueue.CLIENT)
+        except:
+            self.drlist = None
+
+    def ShowComputers(self):
+        print '<div id="computerlisttitle" class="computerlisttitle">'
+        print 'Computer List'
+        print '</div>'
+        print '<table class="computerlisttable">'
+        print '<tr class="computerrowtitle"><td>Id</td><td>Name</td><td>Enabled</td><td>Running</td><td>Load Average</td><td>Pools</td>'
+        for drcomputer in self.drlist:
+            kwcomputer = computer(drcomputer)
+            kwcomputer.ShowMinRow()
+        print '</table>'
+        
     def show(self):
-        print '<div id="computerlist" class="joblist">'
+        print '<div class="computerlist">'
+        if self.drlist == None:
+            print '<p class="error">Could not connect to master: %s'%(os.environ['DRQUEUE_MASTER'],)
+        else:
+            self.ShowComputers()
         print '</div>'
 
 class drkeewee:

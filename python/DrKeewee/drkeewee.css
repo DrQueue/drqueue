@@ -68,3 +68,22 @@ body, th, td {
 	margin-left: auto;
 	margin-right: auto;
 }
+
+
+.computerlisttitle {
+	font: bold 21px verdana,arial,'Bitstream Vera Sans',helvetica,sans-serif;	
+	text-align: center;
+	padding: 10;
+}
+.computerlisttable {
+	width: 90%;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+}
+.computerrowtitle {
+	background: #aaa;
+}
+.computerrow {
+	background: #ddd;
+}
