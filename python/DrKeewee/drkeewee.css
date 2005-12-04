@@ -1,18 +1,26 @@
 body {
- background: #fff;
- color: #000;
+ background: #eee;
+ color: #111;
  margin: 10px;
  padding: 0;
 }
 body, th, td {
- font: normal 14px verdana,arial,'Bitstream Vera Sans',helvetica,sans-serif;
+ font: bold 14px verdana,arial,'Bitstream Vera Sans',helvetica,sans-serif;
 }
 .jobtitle {
 	font: bold 21px verdana,arial,'Bitstream Vera Sans',helvetica,sans-serif;
 	text-align: center;
 }
 .joblisttitle {
-	font: bold 21px verdana,arial,'Bitstream Vera Sans',helvetica,sans-serif;
+	font: bold 21px verdana,arial,'Bitstream Vera Sans',helvetica,sans-serif;	
+	text-align: center;
+	padding: 10;
+}
+.joblisttable {
+	width: 90%;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
 }
 .jobrowtitle {
 	background: #aaa;
@@ -23,6 +31,10 @@ body, th, td {
 .title {
 	text-align: center;
 	font-size: 21px;
+	background: #ddd;
+	border-style: solid;
+	border-color: #444;
+	border-width: 5;
 }
 .jobitem {
 	font: normal 14px;
@@ -33,7 +45,7 @@ body, th, td {
 .jobitemname {
 	font-size: 16px;
 	color: #111;
-	background: #eee;
+	background: #aaa;
 }
 .jobitemvalue {
 	font-size: 14px;
@@ -49,4 +61,10 @@ body, th, td {
 }
 .framerow {
 	background: #ddd;
+}
+.framelisttable {
+	width: 90%;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
 }

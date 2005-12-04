@@ -66,7 +66,7 @@ class job:
         print '<div class="framelisttitle">'
         print 'Frame List'
         print '</div>'
-        print '<table>'
+        print '<table class="framelisttable">'
         print '<tr class="framerowtitle"><td>Number</td><td>Status</td><td>Exit code</td><td>Computer</td><td>Task</td><td>Requeued</td></tr>'
         index = 0
         for drframe in self.drframelist:
@@ -91,7 +91,7 @@ class joblist:
         print '<div id="joblisttitle" class="joblisttitle">'
         print 'Job List'
         print '</div>'
-        print '<table>'
+        print '<table class="joblisttable">'
         print '<tr class="jobrowtitle"><td>Id</td><td>Name</td><td>Status</td><td>Frames left</td><td>Frames done</td></tr>'
         for drjob in self.drlist:
             kwjob = job(drjob)
