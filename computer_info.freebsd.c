@@ -33,14 +33,21 @@ void get_hwinfo (struct computer_hwinfo *hwinfo)
 	hwinfo->arch = ARCH_INTEL;
 	bl=128;
 	sysctlbyname("hw.model", &buffer,&bl,NULL,0);
-
-	if (strstr(buffer,"Pentium 4")) {
+	
+	if (strstr(buffer,"Opteron(tm)") != NULL) {
+		hwinfo->proctype = PROCTYPE_OPTERON;
+	} else if (strstr(buffer,"Xeon(TM)") != NULL) {
+		hwinfo->proctype = PROCTYPE_INTELXEON;
+	} else if (strstr(buffer,"Pentium(R) 4")) {
 		hwinfo->proctype = PROCTYPE_PENTIUM4;
+	} else if (strstr(buffer,"Pentium(R) M") != NULL) {
+		hwinfo->proctype = PROCTYPE_PENTIUMM;
 	} else if (strstr(buffer,"Pentium III")) {
 		hwinfo->proctype = PROCTYPE_PENTIUMIII;
 	} else if (strstr(buffer,"Pentium II")) {
 		hwinfo->proctype = PROCTYPE_PENTIUMII;
-	} else if (strstr(buffer,"K6")) {
+	} else if (strstr(buffer,"Athlon") ||
+		   strstr(buffer,"Duron")) {
 		hwinfo->proctype = PROCTYPE_ATHLON;
 	} else {
 		hwinfo->proctype = PROCTYPE_PENTIUM;
