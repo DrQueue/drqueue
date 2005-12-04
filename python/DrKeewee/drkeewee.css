@@ -1,0 +1,38 @@
+body {
+ background: #fff;
+ color: #000;
+ margin: 10px;
+ padding: 0;
+}
+body, th, td {
+ font: normal 13px verdana,arial,'Bitstream Vera Sans',helvetica,sans-serif;
+}
+.jobtitle {
+	font: bold 19px verdana,arial,'Bitstream Vera Sans',helvetica,sans-serif;
+	text-align: center;
+}
+.joblisttitle {
+	font: bold 16px verdana,arial,'Bitstream Vera Sans',helvetica,sans-serif;
+}
+.jobrowtitle {
+	background: #aaa;
+}
+.jobrow {
+	background: #ddd;
+}
+.title {
+	text-align: center;
+	font-size: 21px;
+}
+.jobitem {
+	font: normal 14px;
+	color: #111;
+}
+.jobitemrow {
+}
+.jobitemname {
+	font-size: 16px;
+}
+.jobitemvalue {
+	font-size: 14px;
+}
