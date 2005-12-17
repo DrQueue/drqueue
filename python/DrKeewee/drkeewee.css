@@ -87,3 +87,36 @@ body, th, td {
 .computerrow {
 	background: #ddd;
 }
+.computeritem {
+	font: normal 14px;
+	color: #111;
+}
+.computeritemrow {
+}
+.computeritemname {
+	font-size: 16px;
+	color: #111;
+	background: #aaa;
+}
+.computeritemvalue {
+	font-size: 14px;
+	color: #222;
+	background: #ddd;
+}
+
+.tasklisttitle {
+	font: bold 17px verdana,arial,'Bitstream Vera Sans',helvetica,sans-serif;
+	text-align: center;
+}
+.taskrowtitle {
+	background: #aaa;
+}
+.taskrow {
+	background: #ddd;
+}
+.tasklisttable {
+	width: 90%;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+}
