@@ -134,6 +134,13 @@ int main (int argc,char *argv[])
     		exit (1);
   		}
 			break;
+		case TOJ_MANTRA:
+  		if (RegisterMantraJobFromFile (infile)) {
+				std::cerr << "Error registering Mantra job from file: " << argv[argc-1] << std::endl;
+    		exit (1);
+  		}
+			break;
+
 		case TOJ_TERRAGEN:
   		if (RegisterTerragenJobFromFile (infile)) {
 				std::cerr << "Error registering Terragen job from file: " << argv[argc-1] << std::endl;
@@ -155,7 +162,7 @@ int main (int argc,char *argv[])
 
 void presentation (void)
 {
-  std::cout << "DrQueue - by Jorge Daza García Blanes\n\n";
+  std::cout << "DrQueue - by Jorge Daza Garcï¿½ Blanes\n\n";
 }
 
 void cleanup (int signum)
@@ -169,7 +176,7 @@ void usage (void)
 						<< "Valid options:\n"
 						<< "\t-v version information\n"
 						<< "\t-h prints this help\n"
-						<< "\t-t [maya|blender|mentalray|bmrt|aqsis|3delight|pixie|lightwave|terragen|nuke|aftereffects|shake] type of job\n";
+						<< "\t-t [maya|blender|mentalray|bmrt|aqsis|mantra|3delight|pixie|lightwave|terragen|nuke|aftereffects|shake] type of job\n";
 }
 
 int RegisterMayaJobFromFile (std::ifstream &infile)
@@ -848,6 +855,62 @@ int RegisterAqsisJobFromFile (std::ifstream &infile)
   return 0;
 }
 
+int RegisterMantraJobFromFile (std::ifstream &infile)
+{
+  // Job variables for the script generator
+  struct job job;
+  struct mantrasgi mantraSgi;
+
+  std::string owner;
+  std::string jobName;
+  int frameStart,frameEnd,frameStep;
+  std::string scenePath;
+  char *pathToScript;
+
+  getline(infile,owner);
+  getline(infile,jobName);
+  infile >> frameStart;
+  infile >> frameEnd;
+  infile >> frameStep;
+  getline(infile,scenePath);	//
+  getline(infile,scenePath);	// Get two times because '>>' leaves the pointer before \n 
+
+//  strncpy(aqsisSgi.file_owner,owner.c_str(),BUFFERLEN-1);
+  strncpy(mantraSgi.scene,scenePath.c_str(),BUFFERLEN-1);
+  snprintf(mantraSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
+
+  if (!(pathToScript = mantrasg_create(&mantraSgi))) {
+    std::cerr << "Error creating script file\n";
+    return 1;
+  }
+
+  strncpy (job.name,jobName.c_str(),MAXNAMELEN-1);
+  strncpy (job.cmd,pathToScript,MAXCMDLEN-1);
+  strncpy (job.owner,owner.c_str(),MAXNAMELEN-1);
+  strncpy (job.email,owner.c_str(),MAXNAMELEN-1);
+  job.frame_start = frameStart;
+  job.frame_end = frameEnd;
+  job.frame_step = frameStep;
+  job.priority = 500;
+
+  job.koj = KOJ_MANTRA;
+  strncpy (job.koji.mantra.scene,scenePath.c_str(),BUFFERLEN-1);
+  strncpy (job.koji.mantra.viewcmd,"",BUFFERLEN-1);
+
+  job.limits.os_flags = OSF_LINUX;
+  job.limits.nmaxcpus = (uint16_t)-1;
+  job.limits.nmaxcpuscomputer = (uint16_t)-1;
+	job.limits.memory = 0;
+	strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
+
+  if (!register_job(&job)) {
+    std::cerr << "Error sending job to the queue\n";
+    return 1;
+  }
+
+  return 0;
+}
+
 int RegisterBmrtJobFromFile (std::ifstream &infile)
 {
   // Job variables for the script generator
@@ -920,6 +983,8 @@ int str2toj (char *str)
 		toj = TOJ_THREEDELIGHT;
 	} else if (strstr(str,"aqsis") != NULL) {
 		toj = TOJ_AQSIS;
+	} else if (strstr(str,"mantra") != NULL) {
+		toj = TOJ_MANTRA;
 	} else if (strstr(str,"lightwave") != NULL) {
 		toj = TOJ_LIGHTWAVE;
 	} else if (strstr(str,"pixie") != NULL) {

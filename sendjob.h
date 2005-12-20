@@ -37,6 +37,7 @@
 #define TOJ_AQSIS				 10 // Aqsis koj
 #define TOJ_TERRAGEN		 11	 // Terragen koj
 #define TOJ_NUKE				 12	 // Nuke koj
+#define TOJ_MANTRA                               13      // Mantra koj
 
 void presentation (void);
 
@@ -49,6 +50,7 @@ int RegisterPixieJobFromFile (std::ifstream &infile);
 int RegisterLightwaveJobFromFile (std::ifstream &infile);
 int RegisterAftereffectsJobFromFile (std::ifstream &infile);
 int RegisterShakeJobFromFile (std::ifstream &infile);
+int RegisterMantraJobFromFile (std::ifstream &infile);
 int RegisterAqsisJobFromFile (std::ifstream &infile);
 int RegisterTerragenJobFromFile (std::ifstream &infile);
 int RegisterNukeJobFromFile (std::ifstream &infile);

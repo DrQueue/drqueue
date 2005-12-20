@@ -34,6 +34,7 @@
 #include "drqm_jobs_mentalray.h"
 #include "drqm_jobs_blender.h"
 #include "drqm_jobs_bmrt.h"
+#include "drqm_jobs_mantra.h"
 #include "drqm_jobs_aqsis.h"
 #include "drqm_jobs_pixie.h"
 #include "drqm_jobs_3delight.h"
@@ -95,6 +96,7 @@ struct drqmj_dnji {							/* dialog new job info */
 	struct drqmj_koji_blender koji_blender; /* koj info for blender */
 	struct drqmj_koji_bmrt koji_bmrt; /* koj info for bmrt */
 	struct drqmj_koji_aqsis koji_aqsis; /* koj info for aqsis */
+	struct drqmj_koji_mantra koji_mantra; /* koj info for aqsis */
 	struct drqmj_koji_pixie koji_pixie; /* koj info for pixie */
 	struct drqmj_koji_3delight koji_3delight;
 	struct drqmj_koji_lightwave koji_lightwave;
