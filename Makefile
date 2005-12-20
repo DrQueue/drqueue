@@ -4,7 +4,7 @@ CC = gcc
 CPP = g++
 OBJS_LIBDRQUEUE = computer_info.o computer_status.o task.o logger.o communications.o \
 			computer.o request.o semaphores.o job.o drerrno.o database.o common.o \
-			aqsissg.o mayasg.o mentalraysg.o blendersg.o bmrtsg.o pixiesg.o 3delightsg.o \
+			mantrasg.o aqsissg.o mayasg.o mentalraysg.o blendersg.o bmrtsg.o pixiesg.o 3delightsg.o \
 			lightwavesg.o aftereffectssg.o shakesg.o terragensg.o nukesg.o envvars.o
 
 LDFLAGS =

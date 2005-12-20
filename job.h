@@ -143,6 +143,12 @@ union koj_info {		/* Kind of job information */
 		char scene[BUFFERLEN];
 		char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
 	} aqsis;
+	struct kojo_mantra {
+		char scene[BUFFERLEN];
+		char renderdir[BUFFERLEN];
+		char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
+	} mantra;
+
 	struct koji_aftereffects {
 	char project[BUFFERLEN];
 	char comp[BUFFERLEN];
@@ -168,6 +174,7 @@ union koj_info {		/* Kind of job information */
 #define KOJ_AQSIS					 10 // Aqsis koj
 #define KOJ_TERRAGEN			 11	// Terragen koj
 #define KOJ_NUKE			     12	// Nuke koj
+#define KOJ_MANTRA                           13 // Mantra koj
 
 /* JOB SECTION */
 typedef enum {

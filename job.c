@@ -789,6 +789,7 @@ void job_environment_set (struct job *job, uint32_t iframe)
 	static char terrainfile[BUFFERLEN];
 	static char image[BUFFERLEN];
 	static char owner[BUFFERLEN];
+	static char name[BUFFERLEN];
 	static char startframe[BUFFERLEN];
 	static char endframe[BUFFERLEN];
 	static char stepframe[BUFFERLEN];
@@ -821,6 +822,9 @@ void job_environment_set (struct job *job, uint32_t iframe)
 	/* Owner of the job */
 	snprintf (owner,BUFFERLEN-1,"DRQUEUE_OWNER=%s",job->owner);
 	putenv (owner);
+	/* Name of the job */
+	snprintf (name,BUFFERLEN-1,"DRQUEUE_BASE=%s",job->name);
+	putenv (name);
 
 	/* OS */
 #if defined(__LINUX)
@@ -901,6 +905,12 @@ void job_environment_set (struct job *job, uint32_t iframe)
 	case KOJ_AQSIS:
 		snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCRIPT=%s",job->koji.aqsis.scene);
 		putenv (scene);
+		break;
+	case KOJ_MANTRA:
+		snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCRIPT=%s",job->koji.mantra.scene);
+		putenv (scene);
+		snprintf (renderdir,BUFFERLEN-1,"DRQUEUE_RD=%s",job->koji.mantra.renderdir);
+		putenv (renderdir);
 		break;
 	case KOJ_TERRAGEN:
 		snprintf (scriptfile,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.terragen.scriptfile);
