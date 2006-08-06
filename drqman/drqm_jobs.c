@@ -48,6 +48,7 @@
 #include "drqm_jobs_lightwave.h"
 #include "drqm_jobs_terragen.h"
 #include "drqm_jobs_nuke.h"
+#include "drqm_jobs_turtle.h"
 
 // Icon includes
 #include "job_icon.h"
@@ -609,6 +610,20 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info)
 		gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_terragen.eviewcmd),
 											 info->jobs[info->row].koji.terragen.viewcmd);
 		break;
+	case KOJ_TURTLE:
+		gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(info->dnj.ckoj)->entry),
+											 "Turtle");
+		gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_turtle.escene),
+											 info->jobs[info->row].koji.turtle.scene);
+		gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_turtle.erenderdir),
+											 info->jobs[info->row].koji.turtle.renderdir);
+		gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_turtle.eprojectdir),
+											 info->jobs[info->row].koji.turtle.projectdir);
+		gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_turtle.eimage),
+											 info->jobs[info->row].koji.turtle.image);
+		gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_turtle.eviewcmd),
+											 info->jobs[info->row].koji.turtle.viewcmd);
+		break;
 	}
 }
 
@@ -922,6 +937,8 @@ static int dnj_submit (struct drqmj_dnji *info)
 	struct job job;
 	struct passwd *pw;
 
+	job_init (&job);
+
 	strncpy(job.name,gtk_entry_get_text(GTK_ENTRY(info->ename)),MAXNAMELEN-1);
 	if (strlen(job.name) == 0)
 		return 0;
@@ -958,7 +975,7 @@ static int dnj_submit (struct drqmj_dnji *info)
 		strncpy(job.koji.maya.renderdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.erenderdir)),BUFFERLEN-1);
 		strncpy(job.koji.maya.projectdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eprojectdir)),BUFFERLEN-1);
 		strncpy(job.koji.maya.precommand,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eprecommand)),BUFFERLEN-1);
-		strncpy(job.koji.maya.precommand,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eprecommand)),BUFFERLEN-1);				
+		strncpy(job.koji.maya.postcommand,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.epostcommand)),BUFFERLEN-1);				
 		strncpy(job.koji.maya.image,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eimage)),BUFFERLEN-1);
 		strncpy(job.koji.maya.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eviewcmd)),BUFFERLEN-1);
 		break;
@@ -1043,6 +1060,13 @@ static int dnj_submit (struct drqmj_dnji *info)
 	case KOJ_SHAKE:
 		strncpy(job.koji.shake.script,gtk_entry_get_text(GTK_ENTRY(info->koji_shake.eshakescript)),BUFFERLEN-1);
 		strncpy(job.koji.shake.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_shake.eviewcmd)),BUFFERLEN-1);
+		break;
+	case KOJ_TURTLE:
+		strncpy(job.koji.turtle.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.escene)),BUFFERLEN-1);
+		strncpy(job.koji.turtle.renderdir,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.erenderdir)),BUFFERLEN-1);
+		strncpy(job.koji.turtle.projectdir,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.eprojectdir)),BUFFERLEN-1);
+		strncpy(job.koji.turtle.image,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.eimage)),BUFFERLEN-1);
+		strncpy(job.koji.turtle.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.eviewcmd)),BUFFERLEN-1);
 		break;
 	}
 
@@ -1331,6 +1355,7 @@ static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info)
 	items = g_list_append (items,"Shake");
 	items = g_list_append (items,"Terragen");
 	items = g_list_append (items,"Nuke");
+	items = g_list_append (items,"Turtle");
 	combo = gtk_combo_new();
 	gtk_tooltips_set_tip(tooltips,GTK_COMBO(combo)->entry,"Selector for the kind of job",NULL);
 	gtk_combo_set_popdown_strings (GTK_COMBO(combo),items);
@@ -1376,6 +1401,8 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
 		new_koj = KOJ_AFTEREFFECTS;
 	} else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Shake") == 0) {
 		new_koj = KOJ_SHAKE;
+	} else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Turtle") == 0) {
+		new_koj = KOJ_TURTLE;
 	} else {
 /*		 fprintf (stderr,"dnj_koj_combo_changed: koj not listed!\n"); */
 /*		fprintf (stderr,"entry: %s\n",gtk_entry_get_text(GTK_ENTRY(entry))); */
@@ -1439,6 +1466,10 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
 			break;
 		case KOJ_TERRAGEN:
 			info->dnj.fkoj = dnj_koj_frame_terragen (info);
+			gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
+			break;
+		case KOJ_TURTLE:
+			info->dnj.fkoj = dnj_koj_frame_turtle (info);
 			gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
 			break;
 

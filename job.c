@@ -123,6 +123,8 @@ void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job)
 
 void job_init (struct job *job)
 {
+	memset (job,0,sizeof(struct job));
+
 	job->used = 0;
 	job->frame_info = NULL;
 	job->fishmid = -1;		/* -1 when not reserved */
@@ -824,7 +826,7 @@ void job_environment_set (struct job *job, uint32_t iframe)
 		snprintf (precommand,BUFFERLEN-1,"DRQUEUE_PRE=%s",job->koji.maya.precommand);
 		putenv (precommand);
 		snprintf (postcommand,BUFFERLEN-1,"DRQUEUE_POST=%s",job->koji.maya.postcommand);
-		putenv (postcommand);		
+		putenv (postcommand);
 		snprintf (image,BUFFERLEN-1,"DRQUEUE_IMAGE=%s",job->koji.maya.image);
 		putenv (image);
 		break;
@@ -885,6 +887,16 @@ void job_environment_set (struct job *job, uint32_t iframe)
 		putenv (worldfile);
 		snprintf (terrainfile,BUFFERLEN-1,"DRQUEUE_CD=%s",job->koji.terragen.terrainfile);
 		putenv (terrainfile);
+		break;
+	case KOJ_TURTLE:
+		snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.turtle.scene);
+		putenv (scene);
+		snprintf (renderdir,BUFFERLEN-1,"DRQUEUE_RD=%s",job->koji.turtle.renderdir);
+		putenv (renderdir);
+		snprintf (projectdir,BUFFERLEN-1,"DRQUEUE_PD=%s",job->koji.turtle.projectdir);
+		putenv (projectdir);
+		snprintf (image,BUFFERLEN-1,"DRQUEUE_IMAGE=%s",job->koji.turtle.image);
+		putenv (image);
 		break;
 	}
 }
@@ -1020,6 +1032,9 @@ char *job_koj_string (struct job *job)
 		break;
 	case KOJ_SHAKE:
 		msg = "Shake";
+		break;
+	case KOJ_TURTLE:
+		msg = "Turtle";
 		break;
 	default:
 		msg = "DEFAULT (ERROR)";

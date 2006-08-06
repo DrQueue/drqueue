@@ -5,7 +5,7 @@ CPP = g++
 OBJS_LIBDRQUEUE = computer_info.o computer_status.o task.o logger.o communications.o \
 			computer.o request.o semaphores.o job.o drerrno.o database.o common.o \
 			aqsissg.o mayasg.o mentalraysg.o blendersg.o bmrtsg.o pixiesg.o 3delightsg.o \
-			lightwavesg.o aftereffectssg.o shakesg.o terragensg.o nukesg.o
+			lightwavesg.o aftereffectssg.o shakesg.o terragensg.o nukesg.o turtlesg.o
 
 LDFLAGS =
 
@@ -35,7 +35,7 @@ ifeq ($(origin systype),undefined)
 endif
 
 ifeq ($(systype),Linux)
- CFLAGS = -DCOMM_REPORT -Wall -I. -D__LINUX -g -O2
+ CFLAGS = -DCOMM_REPORT -D_GNU_SOURCE -Wall -I. -D__LINUX -g -O2
  CPPFLAGS = -D__CPLUSPLUS -D_GNU_SOURCE -DCOMM_REPORT -Wall -I. -D__LINUX -g -O2
  MAKE = make
 else 
@@ -216,7 +216,7 @@ tags:
 	etags *.[ch] drqman/*.[ch]
 
 clean:
-	rm -fR *.o *.exe *~ libdrqueue.a slave master sendjob requeue jobfinfo jobinfo cjob TAGS tmp/* logs/* db/* contrib/windows/*.exe bin/*.$(systype)
+	rm -fR *.o *.exe *~ libdrqueue.a slave master sendjob requeue jobfinfo jobinfo compinfo cjob TAGS tmp/* logs/* db/* contrib/windows/*.exe bin/*.$(systype)
 	rm -fR blockhost
 	$(MAKE) -C drqman clean
 

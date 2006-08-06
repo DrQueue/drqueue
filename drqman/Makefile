@@ -11,7 +11,7 @@ OBJS = main.o notebook.o drqm_jobs.o drqm_request.o drqm_computers.o drqm_common
 				drqm_jobs_maya.o drqm_jobs_mentalray.o drqm_jobs_blender.o drqm_jobs_bmrt.o \
 				drqm_jobs_pixie.o drqm_jobs_jdd.o drqm_jobs_3delight.o drqm_jobs_lightwave.o drqm_cygwin.o \
 				drqm_jobs_aqsis.o drqm_autorefresh.o drqm_jobs_aftereffects.o drqm_jobs_shake.o drqm_jobs_terragen.o \
-				drqm_jobs_nuke.o
+				drqm_jobs_nuke.o drqm_jobs_turtle.o
 
 #Figure out OS-specific Configuration parameters
 ifeq ($(origin systype),undefined)
