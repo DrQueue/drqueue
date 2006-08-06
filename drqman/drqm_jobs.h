@@ -43,6 +43,7 @@
 #include "drqm_jobs_shake.h"
 #include "drqm_jobs_terragen.h"
 #include "drqm_jobs_nuke.h"
+#include "drqm_jobs_turtle.h"
 
 enum {
 	DNJ_FLAGS_DEPEND_COL_ID = 0,
@@ -104,6 +105,7 @@ struct drqmj_dnji {							/* dialog new job info */
 	struct drqmj_koji_aftereffects koji_aftereffects;
 	struct drqmj_koji_shake koji_shake;
 	struct drqmj_koji_terragen koji_terragen;
+	struct drqmj_koji_turtle koji_turtle;
 
 	struct drqmj_limits limits;		/* limits info */
 	struct drqmj_flags flags;			/* flags info */

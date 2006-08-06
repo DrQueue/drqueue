@@ -2,21 +2,24 @@ import sys
 import glob
 import os
 
-env = Environment (CC = 'gcc', 
-										CCFLAGS=Split ('-DCOMM_REPORT -D_GNU_SOURCE -O2'))
+env = Environment (CC = 'gcc', CCFLAGS=Split ('-DCOMM_REPORT -D_GNU_SOURCE -O2'))
 
+swigflags = "-python -I.."
 
 print "Platform is: ",sys.platform
 if sys.platform == "linux2":
 	env.Append (CCFLAGS = '-D__LINUX')
 	env.Append (CPPPATH=['/usr/include/python2.4',".."])
+	swigflags = swigflags + " -D__LINUX"
 elif sys.platform == "darwin":
 	env.Append (CCFLAGS = Split('-D__OSX -fno-common'))
 	env.Append (CPPPATH=['/sw/include/python2.4',".."])
 	env.Append (LIBS=['python2.4'],LIBPATH=['/sw/lib/python2.4/config'])
+	swigflags = swigflags + " -D__OSX"
+
 
 env.Append (CXXFLAGS='-D__CPLUSPLUS')
-env.Append (SWIGFLAGS="-python -I..")
+env.Append (SWIGFLAGS= Split(swigflags))
 
 libdrqueue = Split ("""../computer_info.c ../computer_status.c ../task.c ../logger.c ../communications.c
       ../computer.c ../request.c ../semaphores.c ../job.c ../drerrno.c ../database.c ../common.c
@@ -30,6 +33,7 @@ drqueue_i = glob.glob("*.i")
 drqueue_all = drqueue_i + libdrqueue
 
 env["SHLIBPREFIX"] = "_"
+drqueue = env.SharedLibrary ("drqueue", drqueue_all)
 drqueue = env.SharedLibrary ("drqueue", drqueue_all)
 #drqueue_copy = env.Command ("_drqueue.so",drqueue,"cp -f libdrqueue.so _drqueue.so")
 #Depends(drqueue_copy,drqueue)

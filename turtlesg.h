@@ -16,37 +16,39 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
-// $Id: /drqueue/remote/trunk/mayasg.h 2283 2005-05-10T14:56:00.331140Z oliverhotz	$
+// $Id: /drqueue/remote/trunk/turtlesg.h 2283 2005-05-10T14:56:00.331140Z oliverhotz	$
 //
 
-#ifndef _MAYASG_H_
-#define _MAYASG_H_
+#ifndef _TURTLESG_H_
+#define _TURTLESG_H_
 
 #include "constants.h"
-#include <stdint.h>
 
 #ifdef __CPLUSPLUS
 extern "C" {
 #endif 
 
-struct mayasgi {		/* Maya Script Generator Info */
-	char renderdir[BUFFERLEN];
-	char projectdir[BUFFERLEN];
-	char scene[BUFFERLEN];
-	char image[BUFFERLEN];
-	char scriptdir[BUFFERLEN];
-	char file_owner[BUFFERLEN];
-	char camera[BUFFERLEN];
-	uint32_t res_x,res_y;  /* Resolution of the frame */
+struct turtlesgi {		/* Maya Script Generator Info */
+	char renderdir[BUFFERLEN]; // -imageOutputPath
+	char projectdir[BUFFERLEN]; // -projectPath
+	char scene[BUFFERLEN]; // -gemoetry
+	char image[BUFFERLEN]; // -imageName
+	char scriptdir[BUFFERLEN]; 
+	char file_owner[BUFFERLEN]; 
+	char camera[BUFFERLEN]; // -camera
+	//int  resx, resy; // -resolution x y
+	char resx[BUFFERLEN];
+	char resy[BUFFERLEN];
 	char format[BUFFERLEN];
-	char mentalray;	 // 1 if we should render with mr
-	char precommand[BUFFERLEN]; // allows a prerender command (mel script) to be executed before the render
-	char postcommand[BUFFERLEN]; // allows a postrender command (mel script to be executed after the render
+	int usemaya70; // 1 if we should render with Maya 7.0, 0 for Maya 6.5
+//	char precommand[BUFFERLEN]; // allows a prerender command (mel script) to be executed before the render
+//	char postcommand[BUFFERLEN]; // allows a postrender command (mel script to be executed after the render
+	
 };
 
-char *mayasg_create (struct mayasgi *info);
+char *turtlesg_create (struct turtlesgi *info);
 
-char *mayasg_default_script_path (void);
+char *turtlesg_default_script_path (void);
 
 #ifdef __CPLUSPLUS
 }

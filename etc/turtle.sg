@@ -1,0 +1,117 @@
+
+set echo_style=bsd
+
+#
+# THIS IS A TCSH SCRIPT FILE
+# 
+# Default configuration for maya script generator
+# You can set the environment variables here (csh style)
+# setupenv -ver 4.0 maya
+
+#
+# For platform dependend environment setting a form like this
+# can be used :
+#
+#
+# if ($DRQUEUE_OS == "LINUX") then
+#    # Environment for Linux
+# else if ($DRQUEUE_OS == "IRIX") then
+#    # Environment for Irix
+# else
+#    # Some error messages
+# endif
+#
+# The same structure can be used with the Render command
+#
+#
+
+# Set these, if the environment variables are not already set on the system
+#
+#setenv MAYA_FILE_ICON_PATH Z:/_APPLICATIONS/AliasWavefront/Maya6.5/icons
+#setenv MAYA_PLUG_IN_PATH Z:/_APPLICATIONS/AliasWavefront/Maya6.5/bin/plug-ins
+#setenv MAYA_SCRIPT_PATH Z:/_APPLICATIONS/AliasWavefront/Maya6.5/scripts
+#setenv MAYA_LOCATION Z:/_APPLICATIONS/AliasWavefront/Maya6.5
+#setenv XBMLANGPATH Z:/_APPLICATIONS/AliasWavefront/Maya6.5/icons
+
+if ($DRQUEUE_OS != "WINDOWS") then
+   set WINPATH="false"
+   echo $DRQUEUE_SCENE | grep -q ^R: && set WINPATH="true"
+
+   if($WINPATH == "true") then
+       set DRQUEUE_RD=`echo $DRQUEUE_RD | sed -e s/^R\:/\\/mnt\\/shared/g -e s/\\\\/\\\//g`
+       set DRQUEUE_PD=`echo $DRQUEUE_PD | sed -e s/^R\:/\\/mnt\\/shared/g -e s/\\\\/\\\//g`
+       set DRQUEUE_SCENE=`echo $DRQUEUE_SCENE | sed -e s/^R\:/\\/mnt\\/shared/g -e s/\\\\/\\\//g`
+   endif
+endif
+
+if ($DRQUEUE_OS == "WINDOWS") then
+  set BLOCK=`"$DRQUEUE_BIN/expr.exe" $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
+  set DRQUEUE_SCENE=`"$DRQUEUE_BIN/cygpath.exe" -w "$DRQUEUE_SCENE"`
+  set DRQUEUE_RD=`"$DRQUEUE_BIN/cygpath.exe" -w "$DRQUEUE_RD"`
+  set DRQUEUE_PD=`"$DRQUEUE_BIN/cygpath.exe" -w "$DRQUEUE_PD"`
+else
+  set BLOCK=`expr $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
+endif
+
+if ($BLOCK > $DRQUEUE_ENDFRAME) then
+  set BLOCK = $DRQUEUE_ENDFRAME;
+endif
+
+if($?USEMAYA70) then
+  set MYTURTLE = /usr/local/bin/Turtle70
+else
+  set MYTURTLE = /usr/local/bin/Turtle65
+endif
+
+if ($?DRQUEUE_IMAGE) then
+  set CIMAGE = "-imageName $DRQUEUE_IMAGE"
+else
+  set CIMAGE = ""
+endif
+
+if ($?CAMERA) then
+  set CAMERA = "-camera $CAMERA"
+else
+  set CAMERA = ""
+endif
+
+
+if ($?RESX && $?RESY) then
+  set RESOLUTION = "-resolution $RESX $RESY"
+endif
+
+set COMMAND="$MYTURTLE -geometry $DRQUEUE_SCENE \
+                       -imageOutputPath $DRQUEUE_RD \
+                       -projectPath $DRQUEUE_PD \
+                       -renderThreads 2 \
+                       -display off \
+                       -startFrame $DRQUEUE_FRAME \
+                       -endFrame $BLOCK \
+                       $CIMAGE $CAMERA $RESOLUTION"
+
+echo $COMMAND
+
+# if ($DRQUEUE_OS == "WINDOWS") then
+#   Z:/_APPLICATIONS/AliasWavefront/Maya6.5/bin/render $DRQUEUE_PRE $DRQUEUE_POST -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT \
+# 						-rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" $MENTALRAY $CIMAGE $CAMERA "$DRQUEUE_SCENE"
+# else
+#   /usr/aw/maya/bin/Render -n 0 -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT \
+# 			-rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" $MENTALRAY $CIMAGE $CAMERA "$DRQUEUE_SCENE"
+# endif
+
+$COMMAND
+
+# This should requeue the frame if failed
+if ( $? != 0 ) then
+  echo "Requeueing frame..."
+  kill -INT $$
+else
+  if ($DRQUEUE_OS != "WINDOWS") then
+    # The frame was rendered properly
+    $DRQUEUE_BIN/chown_block $RF_OWNER $DRQUEUE_RD/$DRQUEUE_IMAGE $DRQUEUE_FRAME $BLOCK 
+  endif
+endif
+
+#
+# Notice that the exit code of the last command is received by DrQueue
+#

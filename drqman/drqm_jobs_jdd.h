@@ -29,33 +29,33 @@
 
 struct drqmj_jddi {							/* job details dialog info*/
 	GtkWidget *dialog;						/* Main dialog */
-	GtkWidget *lname;							/* label name */
+	GtkWidget *lname;						/* label name */
 	GtkWidget *lowner;						/* label owner */
 	GtkWidget *lstatus;						/* label status */
-	GtkWidget *lcmd;							/* label command */
-	GtkWidget *lstartend;					/* start and end frames */
-	GtkWidget *lblock_size;				/* label block_size */
-	GtkWidget *lpri;							/* priority */
-	GtkWidget *cpri;							/* Combo */
-	GtkWidget *epri;							/* entry priority when changing */
+	GtkWidget *lcmd;						/* label command */
+	GtkWidget *lstartend;						/* start and end frames */
+	GtkWidget *lblock_size;						/* label block_size */
+	GtkWidget *lpri;						/* priority */
+	GtkWidget *cpri;						/* Combo */
+	GtkWidget *epri;						/* entry priority when changing */
 	GtkWidget *lfrldf;						/* frames left, done and failed */
-	GtkWidget *lbs;								/* block size */
-	GtkWidget *lsubmitt;					// label for submission time
-	GtkWidget *lavgt;							/* average time per frame */
-	GtkWidget *lestf;							/* estimated finish time */
+	GtkWidget *lbs;							/* block size */
+	GtkWidget *lsubmitt;						// label for submission time
+	GtkWidget *lavgt;						/* average time per frame */
+	GtkWidget *lestf;						/* estimated finish time */
 
 	// Frames
-	GtkWidget *clist;							/* frame info clist */
-	GtkWidget *menu;							/* Popup menu */
+	GtkWidget *clist;						/* frame info clist */
+	GtkWidget *menu;						/* Popup menu */
 	GtkWidget *swindow;						// Scrolled window so get can get the adjustments later
 
 	// Blocked hosts
 	GtkWidget *menu_bh;						// Blocked hosts menu
-	GtkWidget *clist_bh;					// Blocked hosts clist
+	GtkWidget *clist_bh;						// Blocked hosts clist
 	struct drqm_computers_info bhdi_computers_info;
 
 	gint row,column;							/* selected frame */
-	int selected;									/* if a frame is selected */
+	int selected;								/* if a frame is selected */
 	struct job job;								/* The struct of the selected job */
 	struct drqmj_limits limits;		/* Limits info */
 	struct drqmj_sesframes sesframes; /* Info about start, end, step frames */
