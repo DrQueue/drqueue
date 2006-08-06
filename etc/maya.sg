@@ -22,24 +22,53 @@
 #
 #
 
+#####
+#
 # Set these, if the environment variables are not already set on the system
+# (You have to modify them to fit your environment)
+#
+###
 #
 #setenv MAYA_FILE_ICON_PATH Z:/_APPLICATIONS/AliasWavefront/Maya6.5/icons
 #setenv MAYA_PLUG_IN_PATH Z:/_APPLICATIONS/AliasWavefront/Maya6.5/bin/plug-ins
 #setenv MAYA_SCRIPT_PATH Z:/_APPLICATIONS/AliasWavefront/Maya6.5/scripts
 #setenv MAYA_LOCATION Z:/_APPLICATIONS/AliasWavefront/Maya6.5
 #setenv XBMLANGPATH Z:/_APPLICATIONS/AliasWavefront/Maya6.5/icons
+#
+#####
 
+
+#####
+#
+# Sample unix/windows path conversion
+#
+###
+#
+#set echo_style=bsd
+#
+#if ($DRQUEUE_OS != "WINDOWS") then
+#   set WINPATH="false"
+#   echo $DRQUEUE_SCENE | grep -q ^R: && set WINPATH="true"
+#
+#   if($WINPATH == "true") then
+#       set DRQUEUE_RD=`echo $DRQUEUE_RD | sed -e s/^R\:/\\/mnt\\/shared/g -e s/\\\\/\\\//g`
+#       set DRQUEUE_PD=`echo $DRQUEUE_PD | sed -e s/^R\:/\\/mnt\\/shared/g -e s/\\\\/\\\//g`
+#       set DRQUEUE_SCENE=`echo $DRQUEUE_SCENE | sed -e s/^R\:/\\/mnt\\/shared/g -e s/\\\\/\\\//g`
+#   endif
+#endif
+#
+#####
 
 
 if ($DRQUEUE_OS == "WINDOWS") then
   set BLOCK=`"$DRQUEUE_BIN/expr.exe" $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
   set DRQUEUE_SCENE=`"$DRQUEUE_BIN/cygpath.exe" -w "$DRQUEUE_SCENE"`
   set DRQUEUE_RD=`"$DRQUEUE_BIN/cygpath.exe" -w "$DRQUEUE_RD"`
-	set DRQUEUE_PD=`"$DRQUEUE_BIN/cygpath.exe" -w "$DRQUEUE_PD"`
+  set DRQUEUE_PD=`"$DRQUEUE_BIN/cygpath.exe" -w "$DRQUEUE_PD"`
 else
   set BLOCK=`expr $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
 endif
+
 if ($BLOCK > $DRQUEUE_ENDFRAME) then
   set BLOCK = $DRQUEUE_ENDFRAME;
 endif
@@ -80,36 +109,57 @@ else
 	set MENTALRAY = ""
 endif
 
+
+######
+#
+# Pre/Post Render scripts
+#
+###
+
 if ($?DRQUEUE_PRE) then
-	set DRQUEUE_PRE = "-preRender $DRQUEUE_PRE"
+	set DRQUEUE_PRE = "-preRender ${DRQUEUE_PRE}"
 else
 	set DRQUEUE_PRE = ""
 endif
 
 if ($?DRQUEUE_POST) then
-	set DRQUEUE_POST = "-postRender $DRQUEUE_POST"
+	set DRQUEUE_POST = "-postRender ${DRQUEUE_POST}"
 else
 	set DRQUEUE_POST = ""
 endif
 
+#####
 
+## This echoes the what would be the render parameters
+#
+#echo render -n 0 -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT -rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" $MENTALRAY $CIMAGE $CAMERA "$DRQUEUE_SCENE"
 echo render $DRQUEUE_PRE $DRQUEUE_POST -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT -rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" $MENTALRAY $CIMAGE $CAMERA "$DRQUEUE_SCENE"
 
+## The following paths need to be checked so they fit yours
 if ($DRQUEUE_OS == "WINDOWS") then
   render $DRQUEUE_PRE $DRQUEUE_POST -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT \
 						-rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" $MENTALRAY $CIMAGE $CAMERA "$DRQUEUE_SCENE"
 else
   /usr/aw/maya/bin/Render $DRQUEUE_PRE $DRQUEUE_POST -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT \
 			-rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" $MENTALRAY $CIMAGE $CAMERA "$DRQUEUE_SCENE"
+
+## Another way to call the Maya renderer
+#
+#  /usr/aw/maya/bin/Render -n 0 -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT \
+#			-rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" $MENTALRAY $CIMAGE $CAMERA "$DRQUEUE_SCENE"
+#
+
 endif
 
 # This should requeue the frame if failed
 if ( $? != 0 ) then
+  # If the render script gets killed, the assigned frame/block will be requeued
   echo "Requeueing frame..."
   kill -INT $$
 else
+  # The frame was rendered properly (exit code == 0)
   if ($DRQUEUE_OS != "WINDOWS") then
-    # The frame was rendered properly
+    # so we change the owner of the resulting images to the owner of the job
     $DRQUEUE_BIN/chown_block $RF_OWNER $DRQUEUE_RD/$DRQUEUE_IMAGE $DRQUEUE_FRAME $BLOCK 
   endif
 endif

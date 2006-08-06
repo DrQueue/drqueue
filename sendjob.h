@@ -37,7 +37,8 @@
 #define TOJ_AQSIS				 10 // Aqsis koj
 #define TOJ_TERRAGEN		 11	 // Terragen koj
 #define TOJ_NUKE				 12	 // Nuke koj
-#define TOJ_MANTRA                               13      // Mantra koj
+#define TOJ_TURTLE			13 // Turtle koj
+#define TOJ_MANTRA                               14      // Mantra koj
 
 void presentation (void);
 
@@ -54,6 +55,7 @@ int RegisterMantraJobFromFile (std::ifstream &infile);
 int RegisterAqsisJobFromFile (std::ifstream &infile);
 int RegisterTerragenJobFromFile (std::ifstream &infile);
 int RegisterNukeJobFromFile (std::ifstream &infile);
+int RegisterTurtleJobFromFile (std::ifstream &infile);
 
 int str2toj (char *str);
 

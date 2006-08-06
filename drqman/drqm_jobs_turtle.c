@@ -17,7 +17,7 @@
 // USA
 // 
 /* 
- * $Id: /drqueue/remote/trunk/drqman/drqm_jobs_maya.c 2291 2005-05-12T16:15:56.618107Z jorge	$ 
+ * $Id: /drqueue/remote/trunk/drqman/drqm_jobs_turtle.c 2291 2005-05-12T16:15:56.618107Z jorge	$ 
  */
 
 #include <string.h>
@@ -29,23 +29,23 @@
 
 #include "drqm_jobs.h"
 #include "drqm_common.h"
-#include "drqm_jobs_maya.h"
+#include "drqm_jobs_turtle.h"
 
 #ifdef __CYGWIN
 #include "drqm_cygwin.h"
 #endif
 
-static void dnj_koj_frame_maya_projectdir_search (GtkWidget *button, struct drqmj_koji_maya *info);
-static void dnj_koj_frame_maya_projectdir_set (GtkWidget *button, struct drqmj_koji_maya *info);
-static void dnj_koj_frame_maya_renderdir_search (GtkWidget *button, struct drqmj_koji_maya *info);
-static void dnj_koj_frame_maya_renderdir_set (GtkWidget *button, struct drqmj_koji_maya *info);
-static void dnj_koj_frame_maya_script_search (GtkWidget *button, struct drqmj_koji_maya *info);
-static void dnj_koj_frame_maya_script_set (GtkWidget *button, struct drqmj_koji_maya *info);
-static void dnj_koj_frame_maya_scene_search (GtkWidget *button, struct drqmj_koji_maya *info);
-static void dnj_koj_frame_maya_scene_set (GtkWidget *button, struct drqmj_koji_maya *info);
-static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info);
+static void dnj_koj_frame_turtle_projectdir_search (GtkWidget *button, struct drqmj_koji_turtle *info);
+static void dnj_koj_frame_turtle_projectdir_set (GtkWidget *button, struct drqmj_koji_turtle *info);
+static void dnj_koj_frame_turtle_renderdir_search (GtkWidget *button, struct drqmj_koji_turtle *info);
+static void dnj_koj_frame_turtle_renderdir_set (GtkWidget *button, struct drqmj_koji_turtle *info);
+static void dnj_koj_frame_turtle_script_search (GtkWidget *button, struct drqmj_koji_turtle *info);
+static void dnj_koj_frame_turtle_script_set (GtkWidget *button, struct drqmj_koji_turtle *info);
+static void dnj_koj_frame_turtle_scene_search (GtkWidget *button, struct drqmj_koji_turtle *info);
+static void dnj_koj_frame_turtle_scene_set (GtkWidget *button, struct drqmj_koji_turtle *info);
+static void dnj_koj_frame_turtle_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info);
 
-GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
+GtkWidget *dnj_koj_frame_turtle (struct drqm_jobs_info *info)
 {
 	GtkWidget *frame;
 	GtkWidget *vbox;
@@ -61,7 +61,7 @@ GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
 	tooltips = TooltipsNew ();
 
 	/* Frame */
-	frame = gtk_frame_new ("Maya job information");
+	frame = gtk_frame_new ("Turtle job information");
 
 	/* Main vbox */
 	vbox = gtk_vbox_new (FALSE,2);
@@ -70,10 +70,10 @@ GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
 	// Mental Ray ?
 	hbox = gtk_hbox_new (TRUE,2);
 	gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
-	cbutton = gtk_check_button_new_with_label("Mental Ray");
+	cbutton = gtk_check_button_new_with_label("Use Maya 7.0");
 	gtk_box_pack_start (GTK_BOX(hbox),cbutton,FALSE,FALSE,2);
-	gtk_tooltips_set_tip(tooltips,cbutton,"Should we render with mental ray ?",NULL);
-	info->dnj.koji_maya.cbmentalray = cbutton;
+	gtk_tooltips_set_tip(tooltips,cbutton,"Should we use Maya 7.0 instead of 6.5?",NULL);
+	info->dnj.koji_turtle.cbusemaya70 = cbutton;
 
 	/* Scene file */
 	hbox = gtk_hbox_new (TRUE,2);
@@ -83,14 +83,14 @@ GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
 	hbox2 = gtk_hbox_new (FALSE,0);
 	gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
 	entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
-	info->dnj.koji_maya.escene = entry;
-	gtk_tooltips_set_tip(tooltips,entry,"File name of the maya scene file that should be rendered",NULL);
+	info->dnj.koji_turtle.escene = entry;
+	gtk_tooltips_set_tip(tooltips,entry,"File name of the turtle scene file that should be rendered",NULL);
 	gtk_box_pack_start (GTK_BOX(hbox2),entry,TRUE,TRUE,2);
 	button = gtk_button_new_with_label ("Search");
-	gtk_tooltips_set_tip(tooltips,button,"File selector for the maya scene file",NULL);
+	gtk_tooltips_set_tip(tooltips,button,"File selector for the turtle scene file",NULL);
 	gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
 	g_signal_connect (G_OBJECT(button),"clicked",
-										G_CALLBACK(dnj_koj_frame_maya_scene_search),&info->dnj.koji_maya);
+										G_CALLBACK(dnj_koj_frame_turtle_scene_search),&info->dnj.koji_turtle);
 
 	/* Project directory */
 	hbox = gtk_hbox_new (TRUE,2);
@@ -100,14 +100,14 @@ GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
 	hbox2 = gtk_hbox_new (FALSE,0);
 	gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
 	entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
-	gtk_tooltips_set_tip(tooltips,entry,"Directory where your Maya project is located",NULL);
-	info->dnj.koji_maya.eprojectdir = entry;
+	gtk_tooltips_set_tip(tooltips,entry,"Directory where your Turtle project is located",NULL);
+	info->dnj.koji_turtle.eprojectdir = entry;
 	gtk_box_pack_start (GTK_BOX(hbox2),entry,TRUE,TRUE,2);
 	button = gtk_button_new_with_label ("Search");
-	gtk_tooltips_set_tip(tooltips,button,"File selector for the maya project directory",NULL);
+	gtk_tooltips_set_tip(tooltips,button,"File selector for the turtle project directory",NULL);
 	gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
 	g_signal_connect (G_OBJECT(button),"clicked",
-										G_CALLBACK(dnj_koj_frame_maya_projectdir_search),&info->dnj.koji_maya);
+										G_CALLBACK(dnj_koj_frame_turtle_projectdir_search),&info->dnj.koji_turtle);
 
 	/* Render directory */
 	hbox = gtk_hbox_new (TRUE,2);
@@ -118,13 +118,13 @@ GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
 	gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
 	entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
 	gtk_tooltips_set_tip(tooltips,entry,"Directory where the images should be stored",NULL);
-	info->dnj.koji_maya.erenderdir = entry;
+	info->dnj.koji_turtle.erenderdir = entry;
 	gtk_box_pack_start (GTK_BOX(hbox2),entry,TRUE,TRUE,2);
 	button = gtk_button_new_with_label ("Search");
-	gtk_tooltips_set_tip(tooltips,button,"File selector for the maya render directory",NULL);
+	gtk_tooltips_set_tip(tooltips,button,"File selector for the turtle render directory",NULL);
 	gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
 	g_signal_connect (G_OBJECT(button),"clicked",
-										G_CALLBACK(dnj_koj_frame_maya_renderdir_search),&info->dnj.koji_maya);
+										G_CALLBACK(dnj_koj_frame_turtle_renderdir_search),&info->dnj.koji_turtle);
 
 	/* Output Image file name */
 	hbox = gtk_hbox_new (TRUE,2);
@@ -135,27 +135,37 @@ GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
 	gtk_tooltips_set_tip(tooltips,entry,"File name of the output image without extension. "
 					 "The extension will be taken from the scene. "
 					 "If no image name is specified it will be taken from the scene",NULL);
-	info->dnj.koji_maya.eimage = entry;
+	info->dnj.koji_turtle.eimage = entry;
 	gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
 
-	/* Pre command */
+	/* Camera */
 	hbox = gtk_hbox_new (TRUE,2);
 	gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
-	label = gtk_label_new ("Pre command Mel Script:");
+	label = gtk_label_new ("Camera:");
 	gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
 	entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
-	gtk_tooltips_set_tip(tooltips,entry,"Mel script that will be executed before rendering the Frame",NULL);
-	info->dnj.koji_maya.eprecommand = entry;
+	gtk_tooltips_set_tip(tooltips,entry,"Name of the camera to render from",NULL);
+	info->dnj.koji_turtle.ecamera = entry;
 	gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
 
-	/* Post command */
+	/* Resolution X */
 	hbox = gtk_hbox_new (TRUE,2);
 	gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
-	label = gtk_label_new ("Post command Mel Script:");
+	label = gtk_label_new ("Resolution X:");
 	gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
 	entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
-	gtk_tooltips_set_tip(tooltips,entry,"Mel script that will be executed after rendering the Frame",NULL);
-	info->dnj.koji_maya.epostcommand = entry;
+	gtk_tooltips_set_tip(tooltips,entry,"Resolution X",NULL);
+	info->dnj.koji_turtle.eresx = entry;
+	gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
+
+	/* Resolution Y */
+	hbox = gtk_hbox_new (TRUE,2);
+	gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+	label = gtk_label_new ("Resolution Y:");
+	gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+	entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
+	gtk_tooltips_set_tip(tooltips,entry,"Resolution Y",NULL);
+	info->dnj.koji_turtle.eresy = entry;
 	gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
 
 	/* File Owner */
@@ -167,7 +177,7 @@ GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
 	gtk_tooltips_set_tip(tooltips,entry,"After rendering the ownership of the "
 					 "rendered files will be changed to this. By default it "
 					 "is the same as the owner of the job",NULL);
-	info->dnj.koji_maya.efile_owner = entry;
+	info->dnj.koji_turtle.efile_owner = entry;
 	if (!(pw = getpwuid(geteuid()))) {
 		gtk_entry_set_text(GTK_ENTRY(entry),"ERROR");
 	} else {
@@ -184,8 +194,8 @@ GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
 	entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
 	gtk_tooltips_set_tip(tooltips,entry,"Command that will be executed when you select 'Watch image' "
 					 "in the frames list (inside the detailed job view)",NULL);
-	info->dnj.koji_maya.eviewcmd = entry;
-	gtk_entry_set_text(GTK_ENTRY(entry),KOJ_MAYA_DFLT_VIEWCMD);
+	info->dnj.koji_turtle.eviewcmd = entry;
+	gtk_entry_set_text(GTK_ENTRY(entry),KOJ_TURTLE_DFLT_VIEWCMD);
 	gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
 
 	/* Script directory */
@@ -197,15 +207,15 @@ GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
 	gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
 	entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
 	gtk_tooltips_set_tip(tooltips,entry,"Directory in which, in case of using the automatic "
-											 "script generator, the command script will be saved.",NULL);
-	info->dnj.koji_maya.escript = entry;
-	gtk_entry_set_text (GTK_ENTRY(entry),mayasg_default_script_path());
+					 "script generator, the command script will be saved.",NULL);
+	info->dnj.koji_turtle.escript = entry;
+	gtk_entry_set_text (GTK_ENTRY(entry),turtlesg_default_script_path());
 	gtk_box_pack_start (GTK_BOX(hbox2),entry,TRUE,TRUE,2);
 	button = gtk_button_new_with_label ("Search");
 	gtk_tooltips_set_tip(tooltips,button,"File selector for the script directory",NULL);
 	gtk_box_pack_start (GTK_BOX(hbox2),button,FALSE,FALSE,2);
 	g_signal_connect (G_OBJECT(button),"clicked",
-										G_CALLBACK(dnj_koj_frame_maya_script_search),&info->dnj.koji_maya);
+										G_CALLBACK(dnj_koj_frame_turtle_script_search),&info->dnj.koji_turtle);
 
 	/* Buttons */
 	/* Create script */
@@ -216,9 +226,9 @@ GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
 	gtk_tooltips_set_tip(tooltips,button,"Create automagically the script based on the given information",NULL);
 	gtk_box_pack_start (GTK_BOX(bbox),button,TRUE,TRUE,2);
 	switch (info->dnj.koj) {
-	case KOJ_MAYA:
+	case KOJ_TURTLE:
 		g_signal_connect (G_OBJECT(button),"clicked",
-											G_CALLBACK(dnj_koj_frame_maya_bcreate_pressed),&info->dnj);
+											G_CALLBACK(dnj_koj_frame_turtle_bcreate_pressed),&info->dnj);
 		break;
 	default:
 		fprintf (stderr,"What ?!\n");
@@ -230,18 +240,24 @@ GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
 	return frame;
 }
 
-GtkWidget *jdd_koj_maya_widgets (struct drqm_jobs_info *info)
+GtkWidget *jdd_koj_turtle_widgets (struct drqm_jobs_info *info)
 {
 	GtkWidget *table;
 	GtkWidget *label;
 	GtkAttachOptions options = GTK_EXPAND | GTK_SHRINK | GTK_FILL ;
-	char *labels[] = { "Scene:", info->jdd.job.koji.maya.scene,
-										 "Project directory:", info->jdd.job.koji.maya.projectdir,
-										 "Render directory:", info->jdd.job.koji.maya.renderdir,
-										 "Output image:", info->jdd.job.koji.maya.image,
-										 "Pre Command:", info->jdd.job.koji.maya.precommand,
-										 "Post Command:", info->jdd.job.koji.maya.postcommand,
-										 "View command:", info->jdd.job.koji.maya.viewcmd,
+
+	char resx_str[BUFFERLEN],resy_str[BUFFERLEN];
+	snprintf(resx_str,BUFFERLEN,"%i",info->jdd.job.koji.turtle.resx);
+	snprintf(resy_str,BUFFERLEN,"%i",info->jdd.job.koji.turtle.resx);
+
+	char *labels[] = { "Scene:", info->jdd.job.koji.turtle.scene,
+										 "Project directory:", info->jdd.job.koji.turtle.projectdir,
+										 "Render directory:", info->jdd.job.koji.turtle.renderdir,
+										 "Output image:", info->jdd.job.koji.turtle.image,
+										 "Camera:", info->jdd.job.koji.turtle.camera,
+										 "Resolution X:", resx_str,
+										 "Resolution Y:", resy_str,
+										 "View command:", info->jdd.job.koji.turtle.viewcmd,
 										 NULL };
 	char **cur;
 	int r,c;			/* Rows and columns */
@@ -268,19 +284,21 @@ GtkWidget *jdd_koj_maya_widgets (struct drqm_jobs_info *info)
 	return table;
 }
 
-static void dnj_koj_frame_maya_projectdir_search (GtkWidget *button, struct drqmj_koji_maya *info)
+static void dnj_koj_frame_turtle_projectdir_search (GtkWidget *button, struct drqmj_koji_turtle *info)
 {
 	GtkWidget *dialog;
+	char dir[BUFFERLEN];
 
 	dialog = gtk_file_selection_new ("Please select the project directory");
 	info->fsprojectdir = dialog;
 
 	if (strlen(gtk_entry_get_text(GTK_ENTRY(info->eprojectdir)))) {
-		gtk_file_selection_set_filename (GTK_FILE_SELECTION(dialog),gtk_entry_get_text(GTK_ENTRY(info->eprojectdir)));
+		strncpy (dir,gtk_entry_get_text(GTK_ENTRY(info->eprojectdir)),BUFFERLEN-1);
+		gtk_file_selection_set_filename (GTK_FILE_SELECTION(dialog),strcat(dir,"/"));
 	}
 
 	gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
-											"clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_maya_projectdir_set), info);
+											"clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_turtle_projectdir_set), info);
 	gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
 														 "clicked", GTK_SIGNAL_FUNC (gtk_widget_destroy),
 														 (gpointer) dialog);
@@ -291,11 +309,10 @@ static void dnj_koj_frame_maya_projectdir_search (GtkWidget *button, struct drqm
 	gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void dnj_koj_frame_maya_projectdir_set (GtkWidget *button, struct drqmj_koji_maya *info)
+static void dnj_koj_frame_turtle_projectdir_set (GtkWidget *button, struct drqmj_koji_turtle *info)
 {
 	struct stat s;
 	char buf[BUFFERLEN];
-	char buf2[BUFFERLEN];
 	char *p;
 
 	strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsprojectdir)),BUFFERLEN-1);
@@ -306,32 +323,24 @@ static void dnj_koj_frame_maya_projectdir_set (GtkWidget *button, struct drqmj_k
 			*p = 0;
 	}
 	gtk_entry_set_text (GTK_ENTRY(info->eprojectdir),buf);
-#ifdef __CYGWIN
-	snprintf(buf2,BUFFERLEN,"%s\\images\\",buf);
-	gtk_entry_set_text (GTK_ENTRY(info->erenderdir),buf2);
-	snprintf(buf2,BUFFERLEN,"%s\\scenes\\",buf);
-	gtk_entry_set_text (GTK_ENTRY(info->escene),buf2);
-#else
-	snprintf(buf2,BUFFERLEN,"%s/images/",buf);
-	gtk_entry_set_text (GTK_ENTRY(info->erenderdir),buf2);
-	snprintf(buf2,BUFFERLEN,"%s/scenes/",buf);
-	gtk_entry_set_text (GTK_ENTRY(info->escene),buf2);
-#endif
 }
 
-static void dnj_koj_frame_maya_renderdir_search (GtkWidget *button, struct drqmj_koji_maya *info)
+static void dnj_koj_frame_turtle_renderdir_search (GtkWidget *button, struct drqmj_koji_turtle *info)
 {
 	GtkWidget *dialog;
+	char dir[BUFFERLEN];
 
+#ifndef __CYGWIN
 	dialog = gtk_file_selection_new ("Please select the output directory");
 	info->fsrenderdir = dialog;
 
 	if (strlen(gtk_entry_get_text(GTK_ENTRY(info->erenderdir)))) {
-		gtk_file_selection_set_filename (GTK_FILE_SELECTION(dialog),gtk_entry_get_text(GTK_ENTRY(info->erenderdir)));
+		strncpy (dir,gtk_entry_get_text(GTK_ENTRY(info->erenderdir)),BUFFERLEN-1);
+		gtk_file_selection_set_filename (GTK_FILE_SELECTION(dialog),strcat(dir,"/"));
 	}
 
 	gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
-					"clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_maya_renderdir_set), info);
+					"clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_turtle_renderdir_set), info);
 	gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
 					 "clicked", GTK_SIGNAL_FUNC (gtk_widget_destroy),
 					 (gpointer) dialog);
@@ -340,10 +349,14 @@ static void dnj_koj_frame_maya_renderdir_search (GtkWidget *button, struct drqmj
 					 (gpointer) dialog);
 	gtk_widget_show (dialog);
 	gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
+#else
+	gtk_entry_set_text (GTK_ENTRY(info->erenderdir), cygwin_dir_dialog(NULL));
+#endif
+
 }
 
 
-static void dnj_koj_frame_maya_renderdir_set (GtkWidget *button, struct drqmj_koji_maya *info)
+static void dnj_koj_frame_turtle_renderdir_set (GtkWidget *button, struct drqmj_koji_turtle *info)
 {
 	struct stat s;
 	char buf[BUFFERLEN];
@@ -359,10 +372,11 @@ static void dnj_koj_frame_maya_renderdir_set (GtkWidget *button, struct drqmj_ko
 	gtk_entry_set_text (GTK_ENTRY(info->erenderdir),buf);
 }
 
-static void dnj_koj_frame_maya_scene_search (GtkWidget *button, struct drqmj_koji_maya *info)
+static void dnj_koj_frame_turtle_scene_search (GtkWidget *button, struct drqmj_koji_turtle *info)
 {
 	GtkWidget *dialog;
 
+#ifndef __CYGWIN
 	dialog = gtk_file_selection_new ("Please select a scene file");
 	info->fsscene = dialog;
 
@@ -371,7 +385,7 @@ static void dnj_koj_frame_maya_scene_search (GtkWidget *button, struct drqmj_koj
 	}
 
 	gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
-					"clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_maya_scene_set), info);
+					"clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_turtle_scene_set), info);
 	gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
 					 "clicked", GTK_SIGNAL_FUNC (gtk_widget_destroy),
 					 (gpointer) dialog);
@@ -380,40 +394,44 @@ static void dnj_koj_frame_maya_scene_search (GtkWidget *button, struct drqmj_koj
 					 (gpointer) dialog);
 	gtk_widget_show (dialog);
 	gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
+#else
+	gtk_entry_set_text (GTK_ENTRY(info->escene), cygwin_file_dialog(NULL, NULL, NULL, 0));
+#endif
 }
 
-static void dnj_koj_frame_maya_scene_set (GtkWidget *button, struct drqmj_koji_maya *info)
+static void dnj_koj_frame_turtle_scene_set (GtkWidget *button, struct drqmj_koji_turtle *info)
 {
 	char buf[BUFFERLEN];
+	char *p;
 	
 	strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscene)),BUFFERLEN-1);
-	gtk_entry_set_text (GTK_ENTRY(info->escene),buf);
+	/* This removed the path part of the filename */
+/*		p = strrchr(buf,'/'); */
+/*		p = ( p ) ? p+1 : buf; */
+	/* We need the whole scene path */
+	p = buf;
+	gtk_entry_set_text (GTK_ENTRY(info->escene),p);
 }
 
-static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info)
+static void dnj_koj_frame_turtle_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info)
 {
-	struct mayasgi mayasgi; /* Maya script generator info */
+	struct turtlesgi turtlesgi; /* Maya script generator info */
 	char *file;
 
-	memset (&mayasgi,0,sizeof(mayasgi));
-	mayasgi.mentalray = GTK_TOGGLE_BUTTON(info->koji_maya.cbmentalray)->active;
-	strncpy (mayasgi.renderdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.erenderdir)),BUFFERLEN-1);
-	strncpy (mayasgi.projectdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eprojectdir)),BUFFERLEN-1);
-	strncpy (mayasgi.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escene)),BUFFERLEN-1);
-	strncpy (mayasgi.precommand,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eprecommand)),BUFFERLEN-1);
-	strncpy (mayasgi.postcommand,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.epostcommand)),BUFFERLEN-1);
-	strncpy (mayasgi.image,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eimage)),BUFFERLEN-1);
-	strncpy (mayasgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escript)),BUFFERLEN-1);
-	strncpy (mayasgi.file_owner,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.efile_owner)),BUFFERLEN-1);
-	strncpy (mayasgi.camera,"",BUFFERLEN-1);
-	mayasgi.res_x = mayasgi.res_y = -1;
-	strncpy (mayasgi.format,"",BUFFERLEN-1);
+	turtlesgi.usemaya70 = GTK_TOGGLE_BUTTON(info->koji_turtle.cbusemaya70)->active;
+	strncpy (turtlesgi.renderdir,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.erenderdir)),BUFFERLEN-1);
+	strncpy (turtlesgi.projectdir,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.eprojectdir)),BUFFERLEN-1);
+	strncpy (turtlesgi.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.escene)),BUFFERLEN-1);
+	strncpy (turtlesgi.camera,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.ecamera)),BUFFERLEN-1);	
+	strncpy (turtlesgi.image,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.eimage)),BUFFERLEN-1);
+	strncpy (turtlesgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.escript)),BUFFERLEN-1);
+	strncpy (turtlesgi.file_owner,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.efile_owner)),BUFFERLEN-1);
+	strncpy (turtlesgi.resx,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.eresx)),BUFFERLEN-1);	
+	strncpy (turtlesgi.resy,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.eresy)),BUFFERLEN-1);	
+	// turtlesgi.resx = turtlesgi.resy = -1; /* ojo aca !! */
+	strncpy (turtlesgi.format,"",BUFFERLEN-1);
 
-/* 	fprintf (stderr,"PRE/POST Before calling mayasg_create\n"); */
-/* 	fprintf (stderr,"ERROR: %s\n",mayasgi.precommand); */
-/* 	fprintf (stderr,"ERROR: %s\n",mayasgi.postcommand); */
-
-	if ((file = mayasg_create (&mayasgi)) == NULL) {
+	if ((file = turtlesg_create (&turtlesgi)) == NULL) {
 		fprintf (stderr,"ERROR: %s\n",drerrno_str());
 		return;
 	} else {
@@ -421,10 +439,11 @@ static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_
 	} 
 }
 
-static void dnj_koj_frame_maya_script_search (GtkWidget *button, struct drqmj_koji_maya *info)
+static void dnj_koj_frame_turtle_script_search (GtkWidget *button, struct drqmj_koji_turtle *info)
 {
 	GtkWidget *dialog;
 
+#ifndef __CYGWIN
 	dialog = gtk_file_selection_new ("Please select a script directory");
 	info->fsscript = dialog;
 
@@ -433,7 +452,7 @@ static void dnj_koj_frame_maya_script_search (GtkWidget *button, struct drqmj_ko
 	}
 
 	gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
-					"clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_maya_script_set), info);
+					"clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_turtle_script_set), info);
 	gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
 					 "clicked", GTK_SIGNAL_FUNC (gtk_widget_destroy),
 					 (gpointer) dialog);
@@ -442,12 +461,25 @@ static void dnj_koj_frame_maya_script_search (GtkWidget *button, struct drqmj_ko
 					 (gpointer) dialog);
 	gtk_widget_show (dialog);
 	gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
+#else
+	gtk_entry_set_text (GTK_ENTRY(info->escript), cygwin_dir_dialog(NULL));
+#endif
+
 }
 
-static void dnj_koj_frame_maya_script_set (GtkWidget *button, struct drqmj_koji_maya *info)
+static void dnj_koj_frame_turtle_script_set (GtkWidget *button, struct drqmj_koji_turtle *info)
 {
+	struct stat s;
+
 	char buf[BUFFERLEN];
+	char *p;
 	
 	strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscript)),BUFFERLEN-1);
+	stat(buf, &s);
+	if (!S_ISDIR(s.st_mode)) {
+		p = strrchr(buf,'/');
+		if (p)
+			*p = 0;
+	}
 	gtk_entry_set_text (GTK_ENTRY(info->escript),buf);
 }

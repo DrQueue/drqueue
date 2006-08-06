@@ -150,7 +150,7 @@ union koj_info {		/* Kind of job information */
 	} mantra;
 
 	struct koji_aftereffects {
-	char project[BUFFERLEN];
+        char project[BUFFERLEN];
 	char comp[BUFFERLEN];
 	char viewcmd[BUFFERLEN];
 	} aftereffects;
@@ -158,6 +158,15 @@ union koj_info {		/* Kind of job information */
 		char script[BUFFERLEN];
 		char viewcmd[BUFFERLEN];
 	} shake;
+	struct koji_turtle {
+		char scene[BUFFERLEN]; // -geometry
+		char renderdir[BUFFERLEN]; // -imageOutputPath
+		char projectdir[BUFFERLEN]; // -projectPath
+		char camera[BUFFERLEN]; // -camera
+		uint32_t resx, resy; // -resolution x y
+		char image[BUFFERLEN]; // -imageName
+		char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
+	} turtle;
 };
 
 /* Koj types */
@@ -174,7 +183,8 @@ union koj_info {		/* Kind of job information */
 #define KOJ_AQSIS					 10 // Aqsis koj
 #define KOJ_TERRAGEN			 11	// Terragen koj
 #define KOJ_NUKE			     12	// Nuke koj
-#define KOJ_MANTRA                           13 // Mantra koj
+#define KOJ_TURTLE         13	// Turtle koj
+#define KOJ_MANTRA         14 // Mantra koj
 
 /* JOB SECTION */
 typedef enum {

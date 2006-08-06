@@ -475,6 +475,10 @@ int recv_job (int sfd, struct job *job)
 	case KOJ_3DELIGHT:
 	case KOJ_PIXIE:
 		break;
+	case KOJ_TURTLE:
+		job->koji.turtle.resx = ntohl (job->koji.turtle.resx);
+		job->koji.turtle.resy = ntohl (job->koji.turtle.resy);
+		break;
 	}
 
 	job->frame_info = NULL;
@@ -540,6 +544,10 @@ int send_job (int sfd, struct job *job)
 		break;
 	case KOJ_3DELIGHT:
 	case KOJ_PIXIE:
+		break;
+	case KOJ_TURTLE:
+		bswapped.koji.turtle.resx = htonl (bswapped.koji.turtle.resx);
+		bswapped.koji.turtle.resy = htonl (bswapped.koji.turtle.resy);
 		break;
 	}
 	bswapped.koj = htons (bswapped.koj);

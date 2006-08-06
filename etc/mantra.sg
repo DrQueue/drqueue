@@ -1,0 +1,152 @@
+#
+# THIS IS A TCSH SCRIPT FILE
+# 
+# Default configuration for pixie script generator
+# You can set the environment variables here (csh style)
+
+#
+# For platform dependend environment setting a form like this
+# can be used :
+#
+#
+# if ($DRQUEUE_OS == "LINUX") then
+#    # Environment for Linux
+# else if ($DRQUEUE_OS == "IRIX") then
+#    # Environment for Irix
+# else
+#    # Some error messages
+# endif
+#
+# The same structure can be used with the Render command
+#
+#
+
+# Begin Script
+if ( $DRQUEUE_OS == "WINDOWS" ) then
+		set BLOCK=`"$DRQUEUE_BIN/expr.exe" $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
+		set DRQUEUE_SCENE=`"$DRQUEUE_BIN/cygpath.exe" -w "$DRQUEUE_SCENE"`
+else
+		set BLOCK=`expr $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
+endif
+if ( $BLOCK > $DRQUEUE_ENDFRAME ) then
+		set BLOCK = $DRQUEUE_ENDFRAME;
+endif
+
+if ( $CUSTOM_BUCKET ) then
+		set bucket_args="-B $BUCKETSIZE"
+else
+		set bucket_args=""
+endif
+
+if ( $CUSTOM_LOD ) then
+		set lod_args="-L $LOD"
+else
+		set lod_args=""
+endif
+
+if ( $CUSTOM_VARYAA ) then
+		set varyaa_args="-v $VARYAA"
+else
+		set varyaa_args=""
+endif
+
+if ( $RAYTRACE ) then
+	set RAYTRACE_args="-r"
+else
+	set RAYTRACE_args=""
+endif
+
+if ( $ANTIALIAS ) then
+	set ANTIALIAS_args="-A"
+else
+	set ANTIALIAS_args=""
+endif
+
+if ( $CUSTOM_BDEPTH ) then
+	set BDEPTH_args="-b $BDEPTH"
+else
+	set BDEPTH_args=""
+endif
+
+if ( $CUSTOM_ZDEPTH ) then
+	if ( $ZDEPTH == "average" ) then
+		set ZDEPTH_args="-z"
+	else
+		set ZDEPTH_args="-Z"
+	endif
+else
+	set ZDEPTH_args=""
+endif
+
+if ( $CUSTOM_CRACKS ) then
+	set CRACKS_args="-c $CRACKS"
+else
+	set CRACKS_args=""
+endif
+
+if ( $CUSTOM_QUALITY ) then
+	set QUALITY_args="-q $QUALITY"
+else
+	set QUALITY_args=""
+endif
+
+if ( $CUSTOM_QFINER ) then
+	set QFINER_args="-Q $QFINER"
+else
+	set QFINER_args=""
+endif
+
+if ( $CUSTOM_SMULTIPLIER ) then
+	set SMULTIPLIER_args="-s $SMULTIPLIER"
+else
+	set SMULTIPLIER_args=""
+endif
+
+if ( $CUSTOM_MPCACHE ) then
+	set MPCACHE_args="-G $MPCACHE"
+else
+	set MPCACHE_args=""
+endif
+
+if ( $CUSTOM_MCACHE ) then
+	set MCACHE_args="-M $MCACHE"
+else
+	set MCACHE_args=""
+endif
+
+if ( $CUSTOM_SMPOLYGON ) then
+	set SMPOLYGON_args="-S $SMPOLYGON"
+else
+	set SMPOLYGON_args=""
+endif
+
+if ( $CUSTOM_WH ) then
+	set WIDTH_args="-w $WIDTH"
+	set HEIGHT_args="-h $HEIGHT"
+else
+	set WIDTH_args=""
+	set HEIGHT_args=""
+endif
+
+if ( $CUSTOM_TYPE ) then
+	set TYPE_args=".$TYPE"
+else
+	set TYPE_args=""
+endif
+
+echo mantra -f $DRQUEUE_SCENE$DRQUEUE_PADFRAME.ifd $ANTIALIAS_args $RAYTRACE_args $bucket_args $lod_args $varyaa_args $BDEPTH_args $ZDEPTH_args $CRACKS_args $QUALITY_args $QFINER_args $SMULTIPLIER_args $MPCACHE_args $MCACHE_args $SMPOLYGON_args $WIDTH_args $HEIGHT_args $DRQUEUE_RD$DRQUEUE_PADFRAME$TYPE_args
+mantra -f $DRQUEUE_SCENE$DRQUEUE_PADFRAME.ifd $ANTIALIAS_args $RAYTRACE_args $bucket_args $lod_args $varyaa_args $BDEPTH_args $ZDEPTH_args $CRACKS_args $QUALITY_args $QFINER_args $SMULTIPLIER_args $MPCACHE_args $MCACHE_args $SMPOLYGON_args $WIDTH_args $HEIGHT_args $DRQUEUE_RD$DRQUEUE_PADFRAME$TYPE_args
+
+# This should requeue the frame if failed
+if ( $? != 0 ) then
+  echo "Requeueing frame..."
+  kill -INT $$
+else
+  # The frame was rendered properly
+	# We don't know the output image name. If we knew we could set this correctly
+  # chown_block $RF_OWNER $RD/$IMAGE $FRAME $FRAME 
+endif
+
+#
+# Notice that the exit code of the last command is received by DrQueue
+#
