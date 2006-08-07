@@ -44,6 +44,9 @@
 #include "drqm_jobs_terragen.h"
 #include "drqm_jobs_nuke.h"
 #include "drqm_jobs_turtle.h"
+#include "drqm_jobs_xsi.h"
+
+#include <string.h>
 
 enum {
 	DNJ_FLAGS_DEPEND_COL_ID = 0,
@@ -83,7 +86,7 @@ struct drqmj_dnji {							/* dialog new job info */
 	GtkWidget *ename;
 	GtkWidget *ecmd;
 	GtkWidget *esf,*eef,*estf; /* entry start frame, entry end frame, entry step frames */
-	GtkWidget *ebs;								/* entry block_size */
+	GtkWidget *ebs,*efp;								/* entry block_size */
 	GtkWidget *cpri,*epri;				/* combo priority, entry priority */
 	GtkWidget *fs;								/* File selector */
 
@@ -106,6 +109,7 @@ struct drqmj_dnji {							/* dialog new job info */
 	struct drqmj_koji_shake koji_shake;
 	struct drqmj_koji_terragen koji_terragen;
 	struct drqmj_koji_turtle koji_turtle;
+	struct drqmj_koji_xsi koji_xsi;
 
 	struct drqmj_limits limits;		/* limits info */
 	struct drqmj_flags flags;			/* flags info */
@@ -140,13 +144,17 @@ void HStopJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
 void ContinueJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
 void ReRunJob (GtkWidget *menu_item, struct drqm_jobs_info *info);
 
+void jobs_column_clicked (GtkCList *clist, gint column, struct drqm_jobs_info *info);
+int jobs_cmp_id (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+int jobs_cmp_name (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+int jobs_cmp_owner (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+int jobs_cmp_status (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+int jobs_cmp_processors (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+int jobs_cmp_left (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+int jobs_cmp_done (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+int jobs_cmp_failed (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+int jobs_cmp_total (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+int jobs_cmp_pri (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+int jobs_cmp_pool (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
 
 #endif /* _DRQM_JOBS_H */
-
-
-
-
-
-
-
-

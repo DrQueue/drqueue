@@ -69,6 +69,7 @@ struct task {
 	char owner[MAXNAMELEN]; /* owner of the job */
 	uint32_t frame;		/* current _real_ frame number (!!not index!!) */
 	uint32_t frame_start,frame_end;
+	uint32_t frame_pad;
 	uint32_t frame_step;
 	uint32_t block_size;
 	int32_t pid;			/* pid */
@@ -86,7 +87,3 @@ char *task_status_string (unsigned char status);
 void task_environment_set (struct task *task);
 
 #endif /* _TASK_H_ */
-
-
-
-

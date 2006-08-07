@@ -474,6 +474,7 @@ int recv_job (int sfd, struct job *job)
 		break;
 	case KOJ_3DELIGHT:
 	case KOJ_PIXIE:
+	case KOJ_XSI:
 		break;
 	case KOJ_TURTLE:
 		job->koji.turtle.resx = ntohl (job->koji.turtle.resx);
@@ -544,6 +545,7 @@ int send_job (int sfd, struct job *job)
 		break;
 	case KOJ_3DELIGHT:
 	case KOJ_PIXIE:
+	case KOJ_XSI:
 		break;
 	case KOJ_TURTLE:
 		bswapped.koji.turtle.resx = htonl (bswapped.koji.turtle.resx);
@@ -574,11 +576,13 @@ int send_job (int sfd, struct job *job)
 	bswapped.limits.memory = htonl (bswapped.limits.memory);
 
 	if (!dr_write (sfd,(char*)buf,sizeof(bswapped))) {
+		fprintf (stderr,"ERROR: Failed to write job to sfd\n");
 		return 0;
 	}
 
 	// Environment variables
 	if (!send_envvars (sfd,&bswapped.envvars)) {
+		fprintf (stderr,"ERROR: Failed to send Environment\n");
 		return 0;
 	}
 	

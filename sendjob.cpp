@@ -153,6 +153,11 @@ int main (int argc,char *argv[])
     		exit (1);
   		}
 			break;
+		case TOJ_XSI:
+  		if (RegisterXSIJobFromFile (infile)) {
+				std::cerr << "Error registering XSI job from file: " << argv[argc-1] << std::endl;
+    		exit (1);
+  		}
 	}
 
   std::cerr << "Job sent successfuly to the queue\n";
@@ -176,7 +181,7 @@ void usage (void)
 						<< "Valid options:\n"
 						<< "\t-v version information\n"
 						<< "\t-h prints this help\n"
-						<< "\t-t [maya|blender|mentalray|bmrt|aqsis|mantra|3delight|pixie|lightwave|terragen|nuke|aftereffects|shake] type of job\n";
+						<< "\t-t [maya|blender|mentalray|bmrt|aqsis|mantra|3delight|pixie|lightwave|terragen|nuke|aftereffects|shake|xsi] type of job\n";
 }
 
 int RegisterMayaJobFromFile (std::ifstream &infile)
@@ -188,7 +193,7 @@ int RegisterMayaJobFromFile (std::ifstream &infile)
   std::string owner;
   std::string jobName;
   std::string camera;
-  int frameStart,frameEnd,frameStep;
+  int frameStart,frameEnd,frameStep, mentalRay;
   int resX,resY;
   std::string scenePath;
   std::string renderDir;
@@ -200,6 +205,7 @@ int RegisterMayaJobFromFile (std::ifstream &infile)
   getline(infile,owner);
   getline(infile,jobName);
   getline(infile,camera);
+  infile >> mentalRay;
   infile >> frameStart;
   infile >> frameEnd;
   infile >> frameStep;
@@ -208,21 +214,37 @@ int RegisterMayaJobFromFile (std::ifstream &infile)
   getline(infile,scenePath);	//
   getline(infile,scenePath);	// Get two times because '>>' leaves the pointer before \n 
   getline(infile,renderDir);
-	getline(infile,projectDir);
+  getline(infile,projectDir);
   getline(infile,fileFormat);
   getline(infile,image);
 
+//	mayasgi.mentalray = GTK_TOGGLE_BUTTON(info->koji_maya.cbmentalray)->active;
+//	strncpy (mayasgi.renderdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.erenderdir)),BUFFERLEN-1);
+//	strncpy (mayasgi.projectdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eprojectdir)),BUFFERLEN-1);
+//	strncpy (mayasgi.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escene)),BUFFERLEN-1);
+//	strncpy (mayasgi.precommand,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eprecommand)),BUFFERLEN-1);
+//	strncpy (mayasgi.postcommand,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.epostcommand)),BUFFERLEN-1);	
+//	strncpy (mayasgi.image,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eimage)),BUFFERLEN-1);
+//	strncpy (mayasgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escript)),BUFFERLEN-1);
+//	strncpy (mayasgi.file_owner,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.efile_owner)),BUFFERLEN-1);
+//	strncpy (mayasgi.camera,"",BUFFERLEN-1);
+//	mayasgi.res_x = mayasgi.res_y = -1;
+//	strncpy (mayasgi.format,"",BUFFERLEN-1);
+
+  mayaSgi.mentalray = mentalRay;
+  strncpy(mayaSgi.renderdir,renderDir.c_str(),BUFFERLEN-1);
+  strncpy(mayaSgi.projectdir,projectDir.c_str(),BUFFERLEN-1);
+  strncpy(mayaSgi.scene,scenePath.c_str(),BUFFERLEN-1);
+  strncpy (mayaSgi.precommand,"",BUFFERLEN-1);
+  strncpy (mayaSgi.postcommand,"",BUFFERLEN-1);
+  strncpy(mayaSgi.image,image.c_str(),BUFFERLEN-1);
+  snprintf(mayaSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
   strncpy(mayaSgi.file_owner,owner.c_str(),BUFFERLEN-1);
   strncpy(mayaSgi.camera,camera.c_str(),BUFFERLEN-1);
   mayaSgi.res_x = resX;
   mayaSgi.res_y = resY;
-  strncpy(mayaSgi.scene,scenePath.c_str(),BUFFERLEN-1);
-  strncpy(mayaSgi.renderdir,renderDir.c_str(),BUFFERLEN-1);
-	strncpy(mayaSgi.projectdir,projectDir.c_str(),BUFFERLEN-1);
-	strncpy(mayaSgi.format,fileFormat.c_str(),BUFFERLEN-1);
-  snprintf(mayaSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
-  strncpy(mayaSgi.image,image.c_str(),BUFFERLEN-1);
-
+  strncpy(mayaSgi.format,fileFormat.c_str(),BUFFERLEN-1);
+  
   if (!(pathToScript = mayasg_create(&mayaSgi))) {
     std::cerr << "Error creating script file\n";
     return 1;
@@ -232,23 +254,40 @@ int RegisterMayaJobFromFile (std::ifstream &infile)
   strncpy (job.cmd,pathToScript,MAXCMDLEN-1);
   strncpy (job.owner,owner.c_str(),MAXNAMELEN-1);
   strncpy (job.email,owner.c_str(),MAXNAMELEN-1);
+ 
+  job.autoRequeue = 1;
+  job.status = JOBSTATUS_WAITING;
+  job.frame_info = NULL;
+  
   job.frame_start = frameStart;
   job.frame_end = frameEnd;
   job.frame_step = frameStep;
-  job.priority = 500;
+  job.frame_pad = 4;
+  job.block_size = 1;
+  job.priority = 5;
+
+  strncpy (job.name,jobName.c_str(),MAXNAMELEN-1);
+  strncpy (job.cmd,pathToScript,MAXCMDLEN-1);
+  strncpy (job.owner,owner.c_str(),MAXNAMELEN-1);
+  strncpy (job.email,owner.c_str(),MAXNAMELEN-1);
 
   job.koj = KOJ_MAYA;
   strncpy (job.koji.maya.scene,scenePath.c_str(),BUFFERLEN-1);
   strncpy (job.koji.maya.renderdir,renderDir.c_str(),BUFFERLEN-1);
-	strncpy (job.koji.maya.projectdir,projectDir.c_str(),BUFFERLEN-1);
+  strncpy (job.koji.maya.projectdir,projectDir.c_str(),BUFFERLEN-1);
   strncpy (job.koji.maya.image,"",BUFFERLEN-1);
   strncpy (job.koji.maya.viewcmd,"",BUFFERLEN-1);
+  
+  job.envvars.variables = NULL;
+  job.envvars.nvariables = 0;
+  job.envvars.evshmid = -1;
 
+  job.flags = 0;
   job.limits.os_flags = OSF_LINUX;
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
-	job.limits.memory = 0;
-	strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
+  job.limits.memory = 0;
+  strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
 
   if (!register_job(&job)) {
     std::cerr << "Error sending job to the queue\n";
@@ -298,6 +337,8 @@ int RegisterMentalrayJobFromFile (std::ifstream &infile)
   strncpy(mentalraySgi.format,fileFormat.c_str(),BUFFERLEN-1);
   snprintf(mentalraySgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
   strncpy(mentalraySgi.image,image.c_str(),BUFFERLEN-1);
+
+  job.autoRequeue = 1;
 
   if (!(pathToScript = mentalraysg_create(&mentalraySgi))) {
     std::cerr << "Error creating script file\n";
@@ -353,6 +394,8 @@ int RegisterBlenderJobFromFile (std::ifstream &infile)
 
   strncpy(blenderSgi.scene,scenePath.c_str(),BUFFERLEN-1);
   snprintf(blenderSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
+
+  job.autoRequeue = 1;
 
   if (!(pathToScript = blendersg_create(&blenderSgi))) {
 		std::cerr << "Error creating script file\n";
@@ -416,6 +459,8 @@ int RegisterLightwaveJobFromFile (std::ifstream &infile)
   strncpy(lightwaveSgi.configdir,configDir.c_str(),BUFFERLEN-1);
 	strncpy(lightwaveSgi.projectdir,projectDir.c_str(),BUFFERLEN-1);
   snprintf(lightwaveSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
+
+  job.autoRequeue = 1;
 
   if (!(pathToScript = lightwavesg_create(&lightwaveSgi))) {
     std::cerr << "Error creating script file\n";
@@ -481,6 +526,8 @@ int RegisterTerragenJobFromFile (std::ifstream &infile)
 	strncpy(terragenSgi.terrainfile,terrainfile.c_str(),BUFFERLEN-1);
   snprintf(terragenSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
 
+  job.autoRequeue = 1;
+
   if (!(pathToScript = terragensg_create(&terragenSgi))) {
     std::cerr << "Error creating script file\n";
     return 1;
@@ -539,6 +586,8 @@ int RegisterShakeJobFromFile (std::ifstream &infile)
   strncpy(shakeSgi.script,scenePath.c_str(),BUFFERLEN-1);
   snprintf(shakeSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
 
+  job.autoRequeue = 1;
+
   if (!(pathToScript = shakesg_create(&shakeSgi))) {
     std::cerr << "Error creating script file\n";
     return 1;
@@ -594,6 +643,8 @@ int RegisterNukeJobFromFile (std::ifstream &infile)
 //  strncpy(nukeSgi.file_owner,owner.c_str(),BUFFERLEN-1);
   strncpy(nukeSgi.scene,scenePath.c_str(),BUFFERLEN-1);
   snprintf(nukeSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
+
+  job.autoRequeue = 1;
 
   if (!(pathToScript = nukesg_create(&nukeSgi))) {
     std::cerr << "Error creating script file\n";
@@ -651,6 +702,8 @@ int RegisterThreedelightJobFromFile (std::ifstream &infile)
   strncpy(threedelightSgi.scene,scenePath.c_str(),BUFFERLEN-1);
   snprintf(threedelightSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
 
+  job.autoRequeue = 1;
+
   if (!(pathToScript = threedelightsg_create(&threedelightSgi))) {
     std::cerr << "Error creating script file\n";
     return 1;
@@ -706,6 +759,7 @@ int RegisterPixieJobFromFile (std::ifstream &infile)
 //  strncpy(pixieSgi.file_owner,owner.c_str(),BUFFERLEN-1);
   strncpy(pixieSgi.scene,scenePath.c_str(),BUFFERLEN-1);
   snprintf(pixieSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
+  job.autoRequeue = 1;
 
   if (!(pathToScript = pixiesg_create(&pixieSgi))) {
     std::cerr << "Error creating script file\n";
@@ -766,6 +820,8 @@ int RegisterAftereffectsJobFromFile (std::ifstream &infile)
   strncpy(aftereffectsSgi.comp,comp.c_str(),BUFFERLEN-1);
   snprintf(aftereffectsSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
 
+  job.autoRequeue = 1;
+
   if (!(pathToScript = aftereffectssg_create(&aftereffectsSgi))) {
     std::cerr << "Error creating script file\n";
     return 1;
@@ -822,6 +878,8 @@ int RegisterAqsisJobFromFile (std::ifstream &infile)
 //  strncpy(aqsisSgi.file_owner,owner.c_str(),BUFFERLEN-1);
   strncpy(aqsisSgi.scene,scenePath.c_str(),BUFFERLEN-1);
   snprintf(aqsisSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
+
+  job.autoRequeue = 1;
 
   if (!(pathToScript = aqsissg_create(&aqsisSgi))) {
     std::cerr << "Error creating script file\n";
@@ -935,6 +993,8 @@ int RegisterBmrtJobFromFile (std::ifstream &infile)
   strncpy(bmrtSgi.scene,scenePath.c_str(),BUFFERLEN-1);
   snprintf(bmrtSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
 
+  job.autoRequeue = 1;
+
   if (!(pathToScript = bmrtsg_create(&bmrtSgi))) {
     std::cerr << "Error creating script file\n";
     return 1;
@@ -959,6 +1019,116 @@ int RegisterBmrtJobFromFile (std::ifstream &infile)
 	job.limits.memory = 0;
 	strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
 
+  if (!register_job(&job)) {
+    std::cerr << "Error sending job to the queue\n";
+    return 1;
+  }
+
+  return 0;
+}
+
+int RegisterXSIJobFromFile (std::ifstream &infile)
+{
+  // Job variables for the script generator
+  struct job job;
+  struct xsisgi xsiSgi;
+
+  std::string owner;
+  std::string jobName;
+  std::string xsiDir;
+  int priority, maxcpus;
+  int frameStart,frameEnd,framePad,frameStep,blockSize;
+  int resX,resY;
+  int skipFrames;
+  std::string scenePath;
+  std::string pass;
+  std::string renderDir;
+  std::string image;
+  std::string imageExt;
+  char *pathToScript;
+  int runScript;
+  std::string scriptRun;
+
+  getline(infile,owner); 
+  getline(infile,jobName); 
+  getline(infile,xsiDir); //the xsi version directory i.e. XSI_5.1
+  infile >> priority;
+  infile >> maxcpus;
+  infile >> frameStart;
+  infile >> frameEnd;
+  infile >> framePad;
+  infile >> frameStep;
+  infile >> blockSize;
+  infile >> resX;
+  infile >> resY;
+  infile >> skipFrames;
+  getline(infile,scenePath);	//
+  getline(infile,scenePath);	// Get two times because '>>' leaves the pointer before \n 
+  getline(infile,pass);
+  getline(infile,renderDir);
+  getline(infile,image);
+  getline(infile,imageExt);
+  infile >> runScript;
+  if (runScript) {
+	  getline(infile,scriptRun); //
+	  getline(infile,scriptRun); // Get two times because '>>' leaves the pointer before \n
+  }
+
+  strncpy(xsiSgi.file_owner,owner.c_str(),BUFFERLEN-1);
+  xsiSgi.res_x = resX;
+  xsiSgi.res_y = resY;
+  xsiSgi.skipFrames = skipFrames;
+  strncpy(xsiSgi.xsiDir,xsiDir.c_str(),BUFFERLEN-1);
+  strncpy(xsiSgi.scene,scenePath.c_str(),BUFFERLEN-1);
+  strncpy(xsiSgi.pass,pass.c_str(),BUFFERLEN-1);
+  strncpy(xsiSgi.renderdir,renderDir.c_str(),BUFFERLEN-1);
+  snprintf(xsiSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
+  strncpy(xsiSgi.image,image.c_str(),BUFFERLEN-1);
+  strncpy(xsiSgi.imageExt,imageExt.c_str(),BUFFERLEN-1);
+  xsiSgi.runScript = runScript;
+  strncpy(xsiSgi.scriptRun,scriptRun.c_str(),BUFFERLEN-1);
+  
+  if (!(pathToScript = xsisg_create(&xsiSgi))) {
+    std::cerr << "Error creating script file\n";
+    return 1;
+  }
+  
+  //script file is created - now let's build the job and submit it.
+  strncpy (job.name,jobName.c_str(),MAXNAMELEN-1);
+  strncpy (job.cmd,pathToScript,MAXCMDLEN-1);
+  strncpy (job.owner,owner.c_str(),MAXNAMELEN-1);
+  strncpy (job.email,owner.c_str(),MAXNAMELEN-1);
+  
+  job.autoRequeue = 0;
+  job.status = JOBSTATUS_WAITING;
+  job.frame_info = NULL;
+  
+  job.frame_start = frameStart;
+  job.frame_end = frameEnd;
+  job.frame_pad = framePad;
+  job.frame_step = frameStep;
+  job.block_size = blockSize;
+  job.priority = priority;
+
+  job.koj = KOJ_XSI;
+  strncpy (job.koji.xsi.scene,scenePath.c_str(),BUFFERLEN-1);
+  strncpy (job.koji.xsi.pass,pass.c_str(),BUFFERLEN-1);
+  strncpy (job.koji.xsi.renderdir,renderDir.c_str(),BUFFERLEN-1);
+  strncpy (job.koji.xsi.image,image.c_str(),BUFFERLEN-1);
+  strncpy (job.koji.xsi.imageExt,imageExt.c_str(),BUFFERLEN-1);
+  strncpy (job.koji.xsi.viewcmd,"$DRQUEUE_BIN/viewcmd/imf_batch",BUFFERLEN-1);
+
+  job.flags = 0;
+  job.limits.os_flags = OSF_LINUX;
+  job.limits.nmaxcpus = maxcpus;
+  job.limits.nmaxcpuscomputer = (uint16_t)-1;
+  job.limits.memory = 0;
+  strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
+
+  job.envvars.variables = NULL;
+  job.envvars.nvariables = 0;
+  job.envvars.evshmid = -1;
+  
   if (!register_job(&job)) {
     std::cerr << "Error sending job to the queue\n";
     return 1;
@@ -997,8 +1167,9 @@ int str2toj (char *str)
 		toj = TOJ_NUKE;
 	} else if (strstr(str,"terragen") != NULL) {
 		toj = TOJ_TERRAGEN;		
+	} else if (strstr(str,"xsi") != NULL) {
+		toj = TOJ_XSI;
 	}
 
 	return toj;
 }
-
