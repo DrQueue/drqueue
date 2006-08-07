@@ -138,6 +138,7 @@ void job_init (struct job *job)
 
 	job->frame_start = 1;
 	job->frame_end = 1;
+	job->frame_pad = 4;
 	job->frame_step = 1;
 	job->block_size = 1;
 
@@ -776,7 +777,9 @@ int job_index_correct_master (struct database *wdb,uint32_t ijob)
 void job_environment_set (struct job *job, uint32_t iframe)
 {
 	uint32_t frame;
+	static char padformat[BUFFERLEN];
 	static char padframe[BUFFERLEN];
+	static char padframes[BUFFERLEN];
 	static char s_frame[BUFFERLEN];
 	static char scene[BUFFERLEN];
 	static char renderdir[BUFFERLEN];
@@ -788,6 +791,7 @@ void job_environment_set (struct job *job, uint32_t iframe)
 	static char worldfile[BUFFERLEN];
 	static char terrainfile[BUFFERLEN];
 	static char image[BUFFERLEN];
+	static char imageExt[BUFFERLEN];
 	static char owner[BUFFERLEN];
 	static char name[BUFFERLEN];
 	static char startframe[BUFFERLEN];
@@ -797,13 +801,30 @@ void job_environment_set (struct job *job, uint32_t iframe)
 	static char project[BUFFERLEN];
 	static char comp[BUFFERLEN];
 	static char script[BUFFERLEN];
+	static char pass[BUFFERLEN];
 	
 	frame = job_frame_index_to_number (job,iframe);
 
 	/* Padded frame number */
 	/* TODO: make padding length user defined */
-	snprintf (padframe,BUFFERLEN-1,"DRQUEUE_PADFRAME=%04i",frame);
+	snprintf (padformat,BUFFERLEN-1,"DRQUEUE_PADFRAME=%%0%ii",job->frame_pad);
+	snprintf (padframe,BUFFERLEN-1,padformat,frame);
 	putenv (padframe);
+	
+	int i;
+	int block_end = frame+job->block_size;
+	if (block_end > job->frame_end + 1) {
+		block_end = job->frame_end + 1;
+	}
+	snprintf (padformat,BUFFERLEN-1,"DRQUEUE_PADFRAMES=%%0%uu",job->frame_pad);
+	snprintf (padframes,BUFFERLEN-1,padformat,frame);
+	for (i=frame+1; i<block_end; i++) {
+		snprintf (padformat,BUFFERLEN-1,"%s %%0%uu",padframes,job->frame_pad);
+		snprintf (padframes,BUFFERLEN-1,padformat,i);
+	}
+//	snprintf (padformat,BUFFERLEN-1,"%s\"",padframes);
+	putenv (padframes);
+	
 	/* Frame number */
 	snprintf (s_frame,BUFFERLEN-1,"DRQUEUE_FRAME=%i",frame);
 	putenv (s_frame);
@@ -929,6 +950,18 @@ void job_environment_set (struct job *job, uint32_t iframe)
 		putenv (projectdir);
 		snprintf (image,BUFFERLEN-1,"DRQUEUE_IMAGE=%s",job->koji.turtle.image);
 		putenv (image);
+		break;
+	case KOJ_XSI:
+		snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.xsi.scene);
+		putenv (scene);
+		snprintf (pass,BUFFERLEN-1,"DRQUEUE_PASS=%s",job->koji.xsi.pass);
+		putenv (pass);
+		snprintf (renderdir,BUFFERLEN-1,"DRQUEUE_RD=%s",job->koji.xsi.renderdir);
+		putenv (renderdir);
+		snprintf (image,BUFFERLEN-1,"DRQUEUE_IMAGE=%s",job->koji.xsi.image);
+		putenv (image);
+		snprintf (imageExt,BUFFERLEN-1,"DRQUEUE_IMAGEEXT=%s",job->koji.xsi.imageExt);
+		putenv (imageExt);
 		break;
 	}
 }
@@ -1072,6 +1105,9 @@ char *job_koj_string (struct job *job)
 		break;
 	case KOJ_MANTRA:
 		msg = "Mantra/Houdini";
+		break;
+	case KOJ_XSI:
+		msg = "XSI";
 		break;
 	default:
 		msg = "DEFAULT (ERROR)";

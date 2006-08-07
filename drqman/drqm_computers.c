@@ -34,7 +34,7 @@
 
 /* Static functions declaration */
 static GtkWidget *CreateComputersList(struct drqm_computers_info *info);
-static GtkWidget *CreateClist (GtkWidget *window);
+static GtkWidget *CreateClist ();
 static GtkWidget *CreateButtonRefresh (struct drqm_computers_info *info);
 static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_computers_info *info);
 static GtkWidget *CreateMenu (struct drqm_computers_info *info);
@@ -145,23 +145,29 @@ static GtkWidget *CreateComputersList(struct drqm_computers_info *info)
 	/* Scrolled window */
 	window = gtk_scrolled_window_new(NULL,NULL);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-	info->clist = CreateClist(window);
+	info->clist = CreateClist();
 
+	gtk_signal_connect(GTK_OBJECT(info->clist),"click-column",
+			 GTK_SIGNAL_FUNC(computers_column_clicked),info);
+	gtk_clist_set_selection_mode(GTK_CLIST(info->clist),GTK_SELECTION_EXTENDED);
+	gtk_container_add (GTK_CONTAINER(window),info->clist);
+	
 	/* Create the popup menu */
 	info->menu = CreateMenu(info);
 
 	return (window);
 }
 
-static GtkWidget *CreateClist (GtkWidget *window)
+//static GtkWidget *CreateClist (GtkWidget *window)
+static GtkWidget *CreateClist ()
 {
 	gchar *titles[] = { "ID","Enabled","Running","Name","OS","CPUs","Load Avg", "Pools" };
 	GtkWidget *clist;
 
 	clist = gtk_clist_new_with_titles (8, titles);
-	gtk_container_add(GTK_CONTAINER(window),clist);
+	//gtk_container_add(GTK_CONTAINER(window),clist);
 	gtk_clist_column_titles_show(GTK_CLIST(clist));
-	gtk_clist_column_titles_passive(GTK_CLIST(clist));
+	//gtk_clist_column_titles_passive(GTK_CLIST(clist));
 	gtk_clist_set_column_width (GTK_CLIST(clist),0,50);
 	gtk_clist_set_column_width (GTK_CLIST(clist),1,50);
 	gtk_clist_set_column_width (GTK_CLIST(clist),2,100);
@@ -170,9 +176,13 @@ static GtkWidget *CreateClist (GtkWidget *window)
 	gtk_clist_set_column_width (GTK_CLIST(clist),5,45);
 	gtk_clist_set_column_width (GTK_CLIST(clist),6,100);
 	gtk_clist_set_column_width (GTK_CLIST(clist),7,100);
+
+	gtk_clist_set_sort_type (GTK_CLIST(clist),GTK_SORT_DESCENDING);
+	gtk_clist_set_compare_func (GTK_CLIST(clist),computers_cmp_name);
+
 	gtk_widget_show(clist);
 
-	gtk_clist_set_selection_mode(GTK_CLIST(clist),GTK_SELECTION_EXTENDED);
+	//gtk_clist_set_selection_mode(GTK_CLIST(clist),GTK_SELECTION_EXTENDED);
 
 	return (clist);
 }
@@ -256,6 +266,9 @@ void drqm_update_computerlist (struct drqm_computers_info *info)
 	for(i=0;i<ncols;i++)
 		g_free (buff[i]);
 	g_free (buff);
+	
+	gtk_clist_sort (GTK_CLIST(info->clist));
+
 }
 
 static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_computers_info *info)
@@ -1240,3 +1253,263 @@ static void DisableComputers (GtkWidget *button,struct drqm_computers_info *info
 	AutoRefreshUpdate(info);
 }
 
+void computers_column_clicked (GtkCList *clist, gint column, struct drqm_computers_info *info)
+{
+	static GtkSortType dir = GTK_SORT_ASCENDING;
+	static int lastClick = 0;
+	
+	if (lastClick != column) {
+		lastClick = column;
+		dir = GTK_SORT_ASCENDING;
+	}
+
+	if (dir == GTK_SORT_DESCENDING) {
+		dir = GTK_SORT_ASCENDING;
+	} else {
+		dir = GTK_SORT_DESCENDING;
+	}
+	
+	/* ATTENTION this column numbers must be changed if the column order changes */
+	// "ID","Enabled","Running","Name","OS","CPUs","Load Avg", "Pools"
+	if (column == 0) {
+		gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+		gtk_clist_set_compare_func (GTK_CLIST(clist),computers_cmp_id);
+		gtk_clist_sort (GTK_CLIST(clist));
+	} else if (column == 1) {
+		gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+		gtk_clist_set_compare_func (GTK_CLIST(clist),computers_cmp_enabled);
+		gtk_clist_sort (GTK_CLIST(clist));
+	} else if (column == 2) {
+		gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+		gtk_clist_set_compare_func (GTK_CLIST(clist),computers_cmp_running);
+		gtk_clist_sort (GTK_CLIST(clist));
+	} else if (column == 3) {
+		gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+		gtk_clist_set_compare_func (GTK_CLIST(clist),computers_cmp_name);
+		gtk_clist_sort (GTK_CLIST(clist));
+	} else if (column == 4) {
+		gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+		gtk_clist_set_compare_func (GTK_CLIST(clist),computers_cmp_os);
+		gtk_clist_sort (GTK_CLIST(clist));
+	} else if (column == 5) {
+		gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+		gtk_clist_set_compare_func (GTK_CLIST(clist),computers_cmp_cpus);
+		gtk_clist_sort (GTK_CLIST(clist));
+	} else if (column == 6) {
+		gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+		gtk_clist_set_compare_func (GTK_CLIST(clist),computers_cmp_loadavg);
+		gtk_clist_sort (GTK_CLIST(clist));
+	} else if (column == 7) {
+		gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+		gtk_clist_set_compare_func (GTK_CLIST(clist),computers_cmp_pools);
+		gtk_clist_sort (GTK_CLIST(clist));
+	}
+}
+
+int computers_cmp_id (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+	struct computer *ca,*cb;
+
+	ca = (struct computer *) ((GtkCListRow*)ptr1)->data;
+	cb = (struct computer *) ((GtkCListRow*)ptr2)->data;
+
+	if (ca->hwinfo.id < cb->hwinfo.id) {
+		return 1;
+	} else if (ca->hwinfo.id == cb->hwinfo.id) {
+		return 0;
+	} else {
+		return -1;
+	}
+
+	return 0;
+}
+
+int computers_cmp_enabled (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+	struct computer *ca,*cb;
+
+	ca = (struct computer *) ((GtkCListRow*)ptr1)->data;
+	cb = (struct computer *) ((GtkCListRow*)ptr2)->data;
+
+	if (ca->limits.enabled < cb->limits.enabled) {
+		return 1;
+	} else if (ca->limits.enabled == cb->limits.enabled) {
+		return 0;
+	} else {
+		return -1;
+	}
+
+	return 0;
+}
+
+int computers_cmp_running (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+	struct computer *ca,*cb;
+
+	ca = (struct computer *) ((GtkCListRow*)ptr1)->data;
+	cb = (struct computer *) ((GtkCListRow*)ptr2)->data;
+
+	if (ca->status.ntasks < cb->status.ntasks) {
+		return 1;
+	} else if (ca->status.ntasks == cb->status.ntasks) {
+		return 0;
+	} else {
+		return -1;
+	}
+
+	return 0;
+}
+
+int computers_cmp_name (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+	struct computer *ca,*cb;
+	
+	int diff;
+
+	ca = (struct computer *) ((GtkCListRow*)ptr1)->data;
+	cb = (struct computer *) ((GtkCListRow*)ptr2)->data;
+		
+	diff = strcmp(ca->hwinfo.name, cb->hwinfo.name);
+
+	if (diff < 0) {
+		return 1;
+	} else if (diff == 0) {
+		return 0;
+	} else {
+		return -1;
+	}
+
+	return 0;
+}
+
+int computers_cmp_os (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+	struct computer *ca,*cb;
+	
+	int diff;
+
+	ca = (struct computer *) ((GtkCListRow*)ptr1)->data;
+	cb = (struct computer *) ((GtkCListRow*)ptr2)->data;
+		
+	diff = strcmp(osstring(ca->hwinfo.os), osstring(cb->hwinfo.os));
+
+	if (diff < 0) {
+		return 1;
+	} else if (diff == 0) {
+		return 0;
+	} else {
+		return -1;
+	}
+
+	return 0;
+}
+
+int computers_cmp_cpus (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+	struct computer *ca,*cb;
+
+	ca = (struct computer *) ((GtkCListRow*)ptr1)->data;
+	cb = (struct computer *) ((GtkCListRow*)ptr2)->data;
+
+	if (ca->hwinfo.ncpus < cb->hwinfo.ncpus) {
+		return 1;
+	} else if (ca->hwinfo.ncpus == cb->hwinfo.ncpus) {
+		return 0;
+	} else {
+		return -1;
+	}
+
+	return 0;
+}
+
+int computers_cmp_loadavg (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+	struct computer *ca,*cb;
+	
+	ca = (struct computer *) ((GtkCListRow*)ptr1)->data;
+	cb = (struct computer *) ((GtkCListRow*)ptr2)->data;
+
+	if (ca->status.loadavg[0] < cb->status.loadavg[0]) {
+		return 1;
+	} else if (ca->status.loadavg[0] == cb->status.loadavg[0]) {
+		if (ca->status.loadavg[1] < cb->status.loadavg[1]) {
+			return 1;
+		} else if (ca->status.loadavg[1] == cb->status.loadavg[1]) {
+			if (ca->status.loadavg[2] < cb->status.loadavg[2]) {
+				return 1;
+			} else if (ca->status.loadavg[2] == cb->status.loadavg[2]) {
+				return 0;
+			} else {
+				return -1;
+			}
+		} else {
+			return -1;
+		}
+	} else {
+		return -1;
+	}
+
+	return 0;
+}
+
+int computers_cmp_pools (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+	struct computer *ca,*cb;
+	
+	int diff;
+	
+	ca = (struct computer *) ((GtkCListRow*)ptr1)->data;
+	cb = (struct computer *) ((GtkCListRow*)ptr2)->data;
+		
+	char pa[BUFFERLEN];
+	char pb[BUFFERLEN];
+	char msg2[BUFFERLEN];
+
+	int i;
+		
+	if (ca->limits.npools) {
+		struct pool *pool;
+		if ((pool = computer_pool_attach_shared_memory(ca->limits.poolshmid)) != (void*)-1) {
+			snprintf (pa,BUFFERLEN,"%s",pool[0].name);
+			for (i=1;i<ca->limits.npools;i++) {
+				snprintf (msg2,BUFFERLEN,"%s,%s",pa,pool[i].name);
+				strncpy (pa,msg2,BUFFERLEN-1);
+			}
+			computer_pool_detach_shared_memory(pool);
+			computer_pool_free(&ca->limits);
+		} else {
+			snprintf (pa,BUFFERLEN,"WARNING: Could not attach pool shared memory");
+		}
+	} else {
+		snprintf (pa,BUFFERLEN,"WARNING: This computer doesn't belong to any pool");
+	}
+
+	if (cb->limits.npools) {
+		struct pool *pool;
+		if ((pool = computer_pool_attach_shared_memory(ca->limits.poolshmid)) != (void*)-1) {
+			snprintf (pb,BUFFERLEN,"%s",pool[0].name);
+			for (i=1;i<cb->limits.npools;i++) {
+				snprintf (msg2,BUFFERLEN,"%s,%s",pb,pool[i].name);
+				strncpy (pb,msg2,BUFFERLEN-1);
+			}
+			computer_pool_detach_shared_memory(pool);
+			computer_pool_free(&cb->limits);
+		} else {
+			snprintf (pb,BUFFERLEN,"WARNING: Could not attach pool shared memory");
+		}
+	} else {
+		snprintf (pb,BUFFERLEN,"WARNING: This computer doesn't belong to any pool");
+	}
+
+	diff = strcmp(pa, pb);
+
+	if (diff < 0) {
+		return 1;
+	} else if (diff == 0) {
+		return 0;
+	} else {
+		return -1;
+	}
+
+	return 0;
+}

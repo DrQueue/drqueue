@@ -46,6 +46,8 @@ void task_init (struct task *task)
 	strcpy(task->jobcmd,"NONE");
 	strcpy(task->owner,"NOBODY");
 	task->frame = 0;
+	task->frame_pad = 4;
+	
 	task->pid = 0;
 	task->itask = 0;
 	task->exitstatus = 0;
@@ -102,7 +104,9 @@ char *task_status_string (unsigned char status)
 
 void task_environment_set (struct task *task)
 {
+	static char padformat[BUFFERLEN];
 	static char padframe[BUFFERLEN];
+	static char padframes[BUFFERLEN];
 	static char frame[BUFFERLEN];
 	static char owner[BUFFERLEN];
 	static char frame_start[BUFFERLEN];
@@ -114,10 +118,27 @@ void task_environment_set (struct task *task)
 
 	/* Padded frame number */
 	/* TODO: make padding length user defined */
-	snprintf (padframe,BUFFERLEN,"DRQUEUE_PADFRAME=%04i",task->frame);
+	snprintf (padformat,BUFFERLEN-1,"DRQUEUE_PADFRAME=%%0%uu",task->frame_pad);
+	snprintf (padframe,BUFFERLEN-1,padformat,task->frame);
 	putenv (padframe);
+	
+	//create a variable with a space delimited padded frames list
+	int i;
+	int block_end = task->frame+task->block_size;
+	if (block_end > task->frame_end + 1) {
+		block_end = task->frame_end + 1;
+	}
+	snprintf (padformat,BUFFERLEN-1,"DRQUEUE_PADFRAMES=%%0%uu",task->frame_pad);
+	snprintf (padframes,BUFFERLEN-1,padformat,task->frame);
+	for (i=task->frame+1; i<block_end; i++) {
+		snprintf (padformat,BUFFERLEN-1,"%s %%0%uu",padframes,task->frame_pad);
+		snprintf (padframes,BUFFERLEN-1,padformat,i);
+	}
+	//snprintf (padformat,BUFFERLEN-1,"%s\"",padframes);
+	putenv (padframes);
+	
 	/* Frame number */
-	snprintf (frame,BUFFERLEN,"DRQUEUE_FRAME=%u",task->frame);
+	snprintf (frame,BUFFERLEN-1,"DRQUEUE_FRAME=%u",task->frame);
 	putenv (frame);
 	/* Owner of the job */
 	snprintf (owner,BUFFERLEN-1,"DRQUEUE_OWNER=%s",task->owner);
@@ -163,7 +184,6 @@ void task_environment_set (struct task *task)
 	}
 
 	log_slave_task (task,L_DEBUG,"Received %i environment variables",envvars.nvariables);
-	int i;
 	char *buffer;
 	envvars_attach(&envvars);
 	for (i = 0; i < envvars.nvariables; i++) {

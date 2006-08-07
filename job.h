@@ -167,6 +167,15 @@ union koj_info {		/* Kind of job information */
 		char image[BUFFERLEN]; // -imageName
 		char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
 	} turtle;
+	struct koji_xsi {
+		char scene[BUFFERLEN];
+		char pass[BUFFERLEN];
+		char renderdir[BUFFERLEN];	/* Output directory for the images */
+		char image[BUFFERLEN];
+		char imageExt[BUFFERLEN];
+		char viewcmd[BUFFERLEN];	/* something like "$DRQUEUE_BIN/viewcmd/imf_batch" */
+	} xsi;
+
 };
 
 /* Koj types */
@@ -180,11 +189,12 @@ union koj_info {		/* Kind of job information */
 #define KOJ_LIGHTWAVE			 7	// Lightwave koj
 #define KOJ_AFTEREFFECTS	 8	// After Effects koj
 #define KOJ_SHAKE					 9	// Shake koj
-#define KOJ_AQSIS					 10 // Aqsis koj
-#define KOJ_TERRAGEN			 11	// Terragen koj
-#define KOJ_NUKE			     12	// Nuke koj
-#define KOJ_TURTLE         13	// Turtle koj
-#define KOJ_MANTRA         14 // Mantra koj
+#define KOJ_AQSIS                       10	// Aqsis koj
+#define KOJ_TERRAGEN			11	// Terragen koj
+#define KOJ_NUKE			12	// Nuke koj
+#define KOJ_TURTLE                      13	// Turtle koj
+#define KOJ_MANTRA                      14	// Mantra koj
+#define KOJ_XSI				15	// XSI koj
 
 /* JOB SECTION */
 typedef enum {
@@ -219,12 +229,15 @@ struct job {
 	char cmd[MAXCMDLEN];
 	char owner[MAXNAMELEN];
 	char email[MAXNAMELEN]; /* Specific email address for email notifications */
+	char autoRequeue;
+
 
 	uint16_t koj;			/* Kind of job */
 	union koj_info koji;		/* koj info */
 	
 	// FIXME: frames are uint32_t but the function that returns frames available is int 
 	uint32_t frame_start,frame_end;
+	char frame_pad;
 	uint32_t frame_step;
 	uint32_t fleft,fdone,ffailed; /* Frames left,done and failed */
 	uint32_t block_size;
@@ -303,6 +316,3 @@ int priority_job_compare (const void *a,const void *b);
 char *job_koj_string (struct job *job);
 
 #endif /* _JOB_H_ */
-
-
-

@@ -124,6 +124,6 @@ void usage (void)
 						 "\t-c will continue a previously stopped job\n"
 						 "\t-t show the status of the job\n"
 						 "\t-j <job_id>\n"
-						 "\t-v print v	ersion\n"
+						 "\t-v print version\n"
 						 "\t-h print this help	\n");
 }

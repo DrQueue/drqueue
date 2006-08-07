@@ -197,7 +197,7 @@ GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info)
 	gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
 	entry = gtk_entry_new_with_max_length (BUFFERLEN-1);
 	gtk_tooltips_set_tip(tooltips,entry,"Directory in which, in case of using the automatic "
-											 "script generator, the command script will be saved.",NULL);
+					 "script generator, the command script will be saved.",NULL);
 	info->dnj.koji_maya.escript = entry;
 	gtk_entry_set_text (GTK_ENTRY(entry),mayasg_default_script_path());
 	gtk_box_pack_start (GTK_BOX(hbox2),entry,TRUE,TRUE,2);

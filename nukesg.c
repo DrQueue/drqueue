@@ -127,7 +127,6 @@ char *nukesg_create (struct nukesgi *info)
 	return filename;
 }
 
-
 char *nukesg_default_script_path (void)
 {
 	static char buf[BUFFERLEN];
@@ -144,6 +143,4 @@ char *nukesg_default_script_path (void)
 
 	return buf;
 }
-
-
 

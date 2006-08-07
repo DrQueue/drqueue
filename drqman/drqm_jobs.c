@@ -50,13 +50,15 @@
 #include "drqm_jobs_terragen.h"
 #include "drqm_jobs_nuke.h"
 #include "drqm_jobs_turtle.h"
+#include "drqm_jobs_xsi.h"
 
 // Icon includes
 #include "job_icon.h"
 
 /* Static functions declaration */
 static GtkWidget *CreateJobsList(struct drqm_jobs_info *info);
-static GtkWidget *CreateClist (GtkWidget *window);
+//static GtkWidget *CreateClist (GtkWidget *window);
+static GtkWidget *CreateClist ();
 static GtkWidget *CreateButtonRefresh (struct drqm_jobs_info *info);
 static void PressedButtonRefresh (GtkWidget *b, struct drqm_jobs_info *info);
 static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *info);
@@ -176,23 +178,26 @@ static GtkWidget *CreateJobsList(struct drqm_jobs_info *info)
 	/* Scrolled window */
 	window = gtk_scrolled_window_new(NULL,NULL);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-	info->clist = CreateClist(window);
+	info->clist = CreateClist();
 
+	gtk_signal_connect(GTK_OBJECT(info->clist),"click-column",
+				 GTK_SIGNAL_FUNC(jobs_column_clicked),info);
+	gtk_clist_set_selection_mode(GTK_CLIST(info->clist),GTK_SELECTION_EXTENDED);
+	gtk_container_add (GTK_CONTAINER(window),info->clist);
+	
 	/* Create the popup menu */
 	info->menu = CreateMenu(info);
 
 	return (window);
 }
 
-static GtkWidget *CreateClist (GtkWidget *window)
+static GtkWidget *CreateClist ()
 {
 	gchar *titles[] = { "ID","Name","Owner","Status","Processors","Left","Done","Failed","Total","Pri","Pool" };
 	GtkWidget *clist;
 
 	clist = gtk_clist_new_with_titles (11, titles);
-	gtk_container_add(GTK_CONTAINER(window),clist);
 	gtk_clist_column_titles_show(GTK_CLIST(clist));
-	gtk_clist_column_titles_passive(GTK_CLIST(clist));
 	gtk_clist_set_column_width (GTK_CLIST(clist),0,25);
 	gtk_clist_set_column_width (GTK_CLIST(clist),1,75);
 	gtk_clist_set_column_width (GTK_CLIST(clist),2,75);
@@ -204,11 +209,8 @@ static GtkWidget *CreateClist (GtkWidget *window)
 	gtk_clist_set_column_width (GTK_CLIST(clist),8,45);
 	gtk_clist_set_column_width (GTK_CLIST(clist),9,45);
 
-	gtk_clist_set_sort_column (GTK_CLIST(clist),9);
-	gtk_clist_set_sort_type (GTK_CLIST(clist),GTK_SORT_ASCENDING);
-	gtk_clist_set_compare_func (GTK_CLIST(clist),pri_cmp_clist);
-
-	gtk_clist_set_selection_mode(GTK_CLIST(clist),GTK_SELECTION_EXTENDED);
+	gtk_clist_set_sort_type (GTK_CLIST(clist),GTK_SORT_DESCENDING);
+	gtk_clist_set_compare_func (GTK_CLIST(clist),jobs_cmp_id);
 
 	gtk_widget_show(clist);
 
@@ -649,6 +651,15 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info)
 		gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_turtle.eviewcmd),
 											 info->jobs[info->row].koji.turtle.viewcmd);
 		break;
+	case KOJ_XSI:
+		gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(info->dnj.ckoj)->entry), "XSI");
+		gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_xsi.escene), info->jobs[info->row].koji.xsi.scene);
+		gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_xsi.epass), info->jobs[info->row].koji.xsi.pass);
+		gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_xsi.erenderdir), info->jobs[info->row].koji.xsi.renderdir);
+		gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_xsi.eimage), info->jobs[info->row].koji.xsi.image);
+		gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_xsi.eimageExt), info->jobs[info->row].koji.xsi.imageExt);
+		gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_xsi.eviewcmd), info->jobs[info->row].koji.xsi.viewcmd);
+		break;
 	}
 }
 
@@ -790,6 +801,18 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info)
 	gtk_tooltips_set_tip(tooltips,entry,"Size of the block that will be rendered",NULL);
 	gtk_entry_set_text (GTK_ENTRY(entry),"1");
 	info->dnj.ebs = entry;
+	gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
+
+	/* Frame Padding */
+	hbox = gtk_hbox_new (TRUE,2);
+	gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
+	label = gtk_label_new ("Frame Padding:");
+	gtk_label_set_justify (GTK_LABEL(label),GTK_JUSTIFY_LEFT);
+	gtk_box_pack_start (GTK_BOX(hbox),label,FALSE,FALSE,2);
+	entry = gtk_entry_new ();
+	gtk_tooltips_set_tip(tooltips,entry,"Minimum number of digits to use for padded frame numbers",NULL);
+	gtk_entry_set_text (GTK_ENTRY(entry),"4");
+	info->dnj.efp = entry;
 	gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
 
 	/* Priority */
@@ -976,7 +999,6 @@ static int dnj_submit (struct drqmj_dnji *info)
 	struct passwd *pw;
 
 	job_init(&job);
-
 	strncpy(job.name,gtk_entry_get_text(GTK_ENTRY(info->ename)),MAXNAMELEN-1);
 	if (strlen(job.name) == 0)
 		return 0;
@@ -991,6 +1013,8 @@ static int dnj_submit (struct drqmj_dnji *info)
 		return 0;
 	if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->ebs)),"%u",&job.block_size) != 1)
 		return 0;
+	if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->efp)),"%c",&job.frame_pad) != 1)
+		return 0;
 	if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->epri)),"%u",&job.priority) != 1)
 		return 0;
 
@@ -1002,6 +1026,7 @@ static int dnj_submit (struct drqmj_dnji *info)
 	job.owner[MAXNAMELEN-1] = 0;
 	job.status = JOBSTATUS_WAITING;
 	job.frame_info = NULL;
+	job.autoRequeue = 1;
 
 	/* KOJ */
 	job.koj = info->koj;
@@ -1109,6 +1134,15 @@ static int dnj_submit (struct drqmj_dnji *info)
 		strncpy(job.koji.turtle.projectdir,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.eprojectdir)),BUFFERLEN-1);
 		strncpy(job.koji.turtle.image,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.eimage)),BUFFERLEN-1);
 		strncpy(job.koji.turtle.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.eviewcmd)),BUFFERLEN-1);
+		break;
+	case KOJ_XSI:
+		strncpy(job.koji.xsi.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.escene)),BUFFERLEN-1);
+		strncpy(job.koji.xsi.pass,gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.epass)),BUFFERLEN-1);
+		strncpy(job.koji.xsi.renderdir,gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.erenderdir)),BUFFERLEN-1);
+		strncpy(job.koji.xsi.image,gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.eimage)),BUFFERLEN-1);
+		strncpy(job.koji.xsi.imageExt,gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.eimageExt)),BUFFERLEN-1);
+		strncpy(job.koji.xsi.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.eviewcmd)),BUFFERLEN-1);
+		job.autoRequeue=0;
 		break;
 	}
 
@@ -1402,6 +1436,7 @@ static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info)
 	items = g_list_append (items,"Terragen");
 	items = g_list_append (items,"Nuke");
 	items = g_list_append (items,"Turtle");
+	items = g_list_append (items,"XSI");
 	combo = gtk_combo_new();
 	gtk_tooltips_set_tip(tooltips,GTK_COMBO(combo)->entry,"Selector for the kind of job",NULL);
 	gtk_combo_set_popdown_strings (GTK_COMBO(combo),items);
@@ -1451,6 +1486,8 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
 		new_koj = KOJ_SHAKE;
 	} else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Turtle") == 0) {
 		new_koj = KOJ_TURTLE;
+	} else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"XSI") == 0) {
+		new_koj = KOJ_XSI;
 	} else {
 /*		 fprintf (stderr,"dnj_koj_combo_changed: koj not listed!\n"); */
 /*		fprintf (stderr,"entry: %s\n",gtk_entry_get_text(GTK_ENTRY(entry))); */
@@ -1524,7 +1561,10 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
 			info->dnj.fkoj = dnj_koj_frame_turtle (info);
 			gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
 			break;
-
+		case KOJ_XSI:
+			info->dnj.fkoj = dnj_koj_frame_xsi (info);
+			gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
+			break;
 		}
 	}
 }
@@ -2102,3 +2142,290 @@ void dnj_flags_cbmailnotify_toggled (GtkWidget *cbutton, struct drqm_jobs_info *
 	}
 }
 
+void jobs_column_clicked (GtkCList *clist, gint column, struct drqm_jobs_info *info)
+{
+	static GtkSortType dir = GTK_SORT_ASCENDING;
+	static int lastClick = 0;
+	
+	if (lastClick != column) {
+		lastClick = column;
+		dir = GTK_SORT_ASCENDING;
+	}
+
+	if (dir == GTK_SORT_DESCENDING) {
+		dir = GTK_SORT_ASCENDING;
+	} else {
+		dir = GTK_SORT_DESCENDING;
+	}
+	
+	/* ATTENTION this column numbers must be changed if the column order changes */
+	if (column == 0) {
+		gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+		gtk_clist_set_compare_func (GTK_CLIST(clist),jobs_cmp_id);
+		gtk_clist_sort (GTK_CLIST(clist));
+	} else if (column == 1) {
+		gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+		gtk_clist_set_compare_func (GTK_CLIST(clist),jobs_cmp_name);
+		gtk_clist_sort (GTK_CLIST(clist));
+	} else if (column == 2) {
+		gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+		gtk_clist_set_compare_func (GTK_CLIST(clist),jobs_cmp_owner);
+		gtk_clist_sort (GTK_CLIST(clist));
+	} else if (column == 3) {
+		gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+		gtk_clist_set_compare_func (GTK_CLIST(clist),jobs_cmp_status);
+		gtk_clist_sort (GTK_CLIST(clist));
+	} else if (column == 4) {
+		gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+		gtk_clist_set_compare_func (GTK_CLIST(clist),jobs_cmp_processors);
+		gtk_clist_sort (GTK_CLIST(clist));
+	} else if (column == 5) {
+		gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+		gtk_clist_set_compare_func (GTK_CLIST(clist),jobs_cmp_left);
+		gtk_clist_sort (GTK_CLIST(clist));
+	} else if (column == 6) {
+		gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+		gtk_clist_set_compare_func (GTK_CLIST(clist),jobs_cmp_done);
+		gtk_clist_sort (GTK_CLIST(clist));
+	} else if (column == 7) {
+		gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+		gtk_clist_set_compare_func (GTK_CLIST(clist),jobs_cmp_failed);
+		gtk_clist_sort (GTK_CLIST(clist));
+	} else if (column == 8) {
+		gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+		gtk_clist_set_compare_func (GTK_CLIST(clist),jobs_cmp_total);
+		gtk_clist_sort (GTK_CLIST(clist));
+	} else if (column == 9) {
+		gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+		gtk_clist_set_compare_func (GTK_CLIST(clist),jobs_cmp_pri);
+		gtk_clist_sort (GTK_CLIST(clist));
+	} else if (column == 10) {
+		gtk_clist_set_sort_type (GTK_CLIST(clist),dir);
+		gtk_clist_set_compare_func (GTK_CLIST(clist),jobs_cmp_pool);
+		gtk_clist_sort (GTK_CLIST(clist));
+	}
+}
+
+int jobs_cmp_id (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+	struct job *ja,*jb;
+
+	ja = (struct job *) ((GtkCListRow*)ptr1)->data;
+	jb = (struct job *) ((GtkCListRow*)ptr2)->data;
+
+	if (ja->id < jb->id) {
+		return 1;
+	} else if (ja->id == jb->id) {
+		return 0;
+	} else {
+		return -1;
+	}
+
+	return 0;
+}
+
+int jobs_cmp_name (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+	struct job *ja,*jb;
+	
+	int diff;
+
+	ja = (struct job *) ((GtkCListRow*)ptr1)->data;
+	jb = (struct job *) ((GtkCListRow*)ptr2)->data;
+		
+	diff = strcmp(ja->name, jb->name);
+
+	if (diff < 0) {
+		return 1;
+	} else if (diff == 0) {
+		return 0;
+	} else {
+		return -1;
+	}
+
+	return 0;
+}
+
+int jobs_cmp_owner (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+	struct job *ja,*jb;
+	
+	int diff;
+
+	ja = (struct job *) ((GtkCListRow*)ptr1)->data;
+	jb = (struct job *) ((GtkCListRow*)ptr2)->data;
+		
+	diff = strcmp(ja->owner, jb->owner);
+
+	if (diff < 0) {
+		return 1;
+	} else if (diff == 0) {
+		return 0;
+	} else {
+		return -1;
+	}
+
+	return 0;
+}
+
+int jobs_cmp_status (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+	struct job *ja,*jb;
+
+	ja = (struct job *) ((GtkCListRow*)ptr1)->data;
+	jb = (struct job *) ((GtkCListRow*)ptr2)->data;
+		
+	char *sa, *sb;
+
+	int diff;
+	
+	sa = job_status_string(ja->status);
+	sb = job_status_string(jb->status);
+	
+	diff = strcmp(sa, sb);
+
+	if (diff < 0) {
+		return 1;
+	} else if (diff == 0) {
+		return 0;
+	} else {
+		return -1;
+	}
+
+	return 0;
+}
+
+int jobs_cmp_processors (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+	struct job *ja,*jb;
+
+	ja = (struct job *) ((GtkCListRow*)ptr1)->data;
+	jb = (struct job *) ((GtkCListRow*)ptr2)->data;
+
+	if (ja->nprocs < jb->nprocs) {
+		return 1;
+	} else if (ja->nprocs == jb->nprocs) {
+		return 0;
+	} else {
+		return -1;
+	}
+
+	return 0;
+}
+
+int jobs_cmp_left (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+	struct job *ja,*jb;
+
+	ja = (struct job *) ((GtkCListRow*)ptr1)->data;
+	jb = (struct job *) ((GtkCListRow*)ptr2)->data;
+
+	if (ja->fleft < jb->fleft) {
+		return 1;
+	} else if (ja->fleft == jb->fleft) {
+		return 0;
+	} else {
+		return -1;
+	}
+
+	return 0;
+}
+
+int jobs_cmp_done (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+	struct job *ja,*jb;
+
+	ja = (struct job *) ((GtkCListRow*)ptr1)->data;
+	jb = (struct job *) ((GtkCListRow*)ptr2)->data;
+
+	if (ja->fdone < jb->fdone) {
+		return 1;
+	} else if (ja->fdone == jb->fdone) {
+		return 0;
+	} else {
+		return -1;
+	}
+
+	return 0;
+}
+
+int jobs_cmp_failed (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+	struct job *ja,*jb;
+
+	ja = (struct job *) ((GtkCListRow*)ptr1)->data;
+	jb = (struct job *) ((GtkCListRow*)ptr2)->data;
+
+	if (ja->ffailed < jb->ffailed) {
+		return 1;
+	} else if (ja->ffailed == jb->ffailed) {
+		return 0;
+	} else {
+		return -1;
+	}
+
+	return 0;
+}
+
+int jobs_cmp_total (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+	struct job *ja,*jb;
+
+	ja = (struct job *) ((GtkCListRow*)ptr1)->data;
+	jb = (struct job *) ((GtkCListRow*)ptr2)->data;
+		
+	int a, b;
+	
+	a = job_nframes(ja);
+	b = job_nframes(jb);
+
+	if (a < b) {
+		return 1;
+	} else if (a == b) {
+		return 0;
+	} else {
+		return -1;
+	}
+
+	return 0;
+}
+
+int jobs_cmp_pri (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+	struct job *ja,*jb;
+
+	ja = (struct job *) ((GtkCListRow*)ptr1)->data;
+	jb = (struct job *) ((GtkCListRow*)ptr2)->data;
+
+	if (ja->priority < jb->priority) {
+		return 1;
+	} else if (ja->priority == jb->priority) {
+		return 0;
+	} else {
+		return -1;
+	}
+
+	return 0;
+}
+
+int jobs_cmp_pool (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+	struct job *ja,*jb;
+	
+	int diff;
+
+	ja = (struct job *) ((GtkCListRow*)ptr1)->data;
+	jb = (struct job *) ((GtkCListRow*)ptr2)->data;
+		
+	diff = strcmp(ja->limits.pool, jb->limits.pool);
+
+	if (diff < 0) {
+		return 1;
+	} else if (diff == 0) {
+		return 0;
+	} else {
+		return -1;
+	}
+
+	return 0;
+}

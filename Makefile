@@ -5,7 +5,7 @@ CPP = g++
 OBJS_LIBDRQUEUE = computer_info.o computer_status.o task.o logger.o communications.o \
 			computer.o request.o semaphores.o job.o drerrno.o database.o common.o \
 			mantrasg.o aqsissg.o mayasg.o mentalraysg.o blendersg.o bmrtsg.o pixiesg.o 3delightsg.o \
-			lightwavesg.o aftereffectssg.o shakesg.o terragensg.o nukesg.o turtlesg.o envvars.o
+			lightwavesg.o aftereffectssg.o shakesg.o terragensg.o nukesg.o xsisg.o turtlesg.o envvars.o
 
 LDFLAGS =
 
@@ -77,7 +77,7 @@ endif
 
 all: base drqman
 
-base: slave master requeue sendjob jobfinfo blockhost cjob jobinfo compinfo
+base: slave master requeue sendjob jobfinfo blockhost ctask cjob jobinfo compinfo
 
 install: miniinstall $(systype)_install 
 
@@ -92,12 +92,12 @@ IRIX_install:
 	install -d -m 0755 $(INSTROOT)/etc
 	install -d -m 0777 $(INSTROOT)/db
 	install -d -m 0777 $(INSTROOT)/contrib
-	cp ./bin/* $(INSTROOT)/bin/ || exit 0
+	cp -r ./bin/* $(INSTROOT)/bin/ || exit 0
 	cp ./etc/* $(INSTROOT)/etc/ || exit 0
 	cp ./contrib/* $(INSTROOT)/contrib/ || exit 0
-	chmod 0755 $(INSTROOT)/bin/* || exit 0
+	chmod -R 0755 $(INSTROOT)/bin/* || exit 0
 	chmod 0755 $(INSTROOT)/contrib/* || exit 0
-	chown $(INSTUID):$(INSTGID) $(INSTROOT)/bin/*
+	chown -R $(INSTUID):$(INSTGID) $(INSTROOT)/bin/*
 	chown $(INSTUID):$(INSTGID) $(INSTROOT)/contrib/*
 
 Linux_install:
@@ -107,12 +107,12 @@ Linux_install:
 	install -d -m 0755 $(INSTROOT)/etc
 	install -d -m 0777 $(INSTROOT)/db
 	install -d -m 0777 $(INSTROOT)/contrib
-	cp ./bin/* $(INSTROOT)/bin/ || exit 0
+	cp -r ./bin/* $(INSTROOT)/bin/ || exit 0
 	cp ./etc/* $(INSTROOT)/etc/ || exit 0
 	cp ./contrib/* $(INSTROOT)/contrib/ || exit 0
-	chmod 0755 $(INSTROOT)/bin/* || exit 0
+	chmod -R 0755 $(INSTROOT)/bin/* || exit 0
 	chmod 0755 $(INSTROOT)/contrib/* || exit 0
-	chown $(INSTUID):$(INSTGID) $(INSTROOT)/bin/*
+	chown -R $(INSTUID):$(INSTGID) $(INSTROOT)/bin/*
 	chown $(INSTUID):$(INSTGID) $(INSTROOT)/contrib/*
 
 CYGWIN_NT-5.1_install:
@@ -124,7 +124,7 @@ CYGWIN_NT-5.1_install:
 	install -d -m 0777 $(INSTROOT)/contrib
 	install -d -m 0777 $(INSTROOT)/contrib/windows
 	install -d -m 0777 $(INSTROOT)/contrib/windows/Installer
-	cp ./bin/*.exe $(INSTROOT)/bin/ || exit 0
+	cp -r ./bin/*.exe $(INSTROOT)/bin/ || exit 0
 	cp /usr/sbin/cygserver $(INSTROOT)/bin || exit 0
 	cp `which expr.exe` $(INSTROOT)/bin || exit 0
 	cp `which tcsh.exe` $(INSTROOT)/bin || exit 0
@@ -135,7 +135,7 @@ CYGWIN_NT-5.1_install:
 	cp ./contrib/windows/*.exe $(INSTROOT)/contrib/windows || exit 0
 	cp ./contrib/windows/Installer/* $(INSTROOT)/contrib/windows/installer || exit 0
 	cp COPYING $(INSTROOT)/
-	chmod 0755 $(INSTROOT)/bin/* || exit 0
+	chmod -R 0755 $(INSTROOT)/bin/* || exit 0
 	chmod 0755 $(INSTROOT)/contrib/* || exit 0
 	sh contrib/windows/install_dlls.sh $(INSTROOT)/bin
 	$(NSISPATH)/makensis.exe `cygpath -w $(INSTROOT)/contrib/windows/Installer/installer.nsi`
@@ -148,12 +148,12 @@ FreeBSD_install:
 	install -d -m 0755 $(INSTROOT)/etc
 	install -d -m 0777 $(INSTROOT)/db
 	install -d -m 0777 $(INSTROOT)/contrib
-	cp ./bin/* $(INSTROOT)/bin/ || exit 0
+	cp -r ./bin/* $(INSTROOT)/bin/ || exit 0
 	cp ./etc/* $(INSTROOT)/etc/ || exit 0
 	cp ./contrib/* $(INSTROOT)/contrib/ || exit 0
-	chmod 0755 $(INSTROOT)/bin/* || exit 0
+	chmod -R 0755 $(INSTROOT)/bin/* || exit 0
 	chmod 0755 $(INSTROOT)/contrib/* || exit 0
-	chown $(INSTUID):$(INSTGID) $(INSTROOT)/bin/*
+	chown -R $(INSTUID):$(INSTGID) $(INSTROOT)/bin/*
 	chown $(INSTUID):$(INSTGID) $(INSTROOT)/contrib/*
 
 Darwin_install:
@@ -163,12 +163,12 @@ Darwin_install:
 	install -d -m 0755 $(INSTROOT)/etc
 	install -d -m 0777 $(INSTROOT)/db
 	install -d -m 0777 $(INSTROOT)/contrib
-	cp ./bin/* $(INSTROOT)/bin/ || exit 0
+	cp -r ./bin/* $(INSTROOT)/bin/ || exit 0
 	cp ./etc/* $(INSTROOT)/etc/ || exit 0
 	cp ./contrib/* $(INSTROOT)/contrib/ || exit 0
-	chmod 0755 $(INSTROOT)/bin/* || exit 0
+	chmod -R 0755 $(INSTROOT)/bin/* || exit 0
 	chmod 0755 $(INSTROOT)/contrib/* || exit 0
-	chown $(INSTUID):$(INSTGID) $(INSTROOT)/bin/*
+	chown -R $(INSTUID):$(INSTGID) $(INSTROOT)/bin/*
 	chown $(INSTUID):$(INSTGID) $(INSTROOT)/contrib/*
 
 miniinstall: base
@@ -180,6 +180,7 @@ ifeq ($(systype),IRIX)
 	install -root $(PWD) -m 0755 -f /bin -src jobfinfo jobfinfo.$(systype)
 	install -root $(PWD) -m 0755 -f /bin -src jobinfo jobinfo.$(systype)
 	install -root $(PWD) -m 0755 -f /bin -src blockhost blockhost.$(systype)
+	install -root $(PWD) -m 0755 -f /bin -src ctask ctask.$(systype)
 	install -root $(PWD) -m 0755 -f /bin -src cjob cjob.$(systype)
 	install -root $(PWD) -m 0755 -f /bin -src sendjob sendjob.$(systype)
 	test -x ./drqman/drqman && install -root $(PWD) -m 0755 -f /bin -src drqman/drqman drqman.$(systype) || test 1
@@ -192,6 +193,7 @@ else
 	install -m 0755 -p ./jobfinfo.exe bin/jobfinfo.exe
 	install -m 0755 -p ./jobinfo.exe bin/jobfinfo.exe
 	install -m 0755 -p ./blockhost.exe bin/blockhost.exe
+	install -m 0755 -p ./ctask.exe bin/ctask.exe
 	install -m 0755 -p ./cjob.exe bin/cjob.exe
 	install -m 0755 -p ./sendjob.exe bin/sendjob.exe
 	test -x ./drqman/drqman.exe && install -m 0755 -p ./drqman/drqman.exe bin/drqman.exe || exit 0
@@ -203,6 +205,7 @@ else
 	install -m 0755 -p ./jobfinfo bin/jobfinfo.$(systype)
 	install -m 0755 -p ./jobinfo bin/jobinfo.$(systype)
 	install -m 0755 -p ./blockhost bin/blockhost.$(systype)
+	install -m 0755 -p ./ctask bin/ctask.$(systype)
 	install -m 0755 -p ./cjob bin/cjob.$(systype)
 	install -m 0755 -p ./sendjob bin/sendjob.$(systype)
 	test -x ./drqman/drqman && install -m 0755 -p ./drqman/drqman bin/drqman.$(systype) || exit 0
@@ -216,7 +219,7 @@ tags:
 	etags *.[ch] drqman/*.[ch]
 
 clean:
-	rm -fR *.o *.exe *~ libdrqueue.a slave master sendjob requeue jobfinfo jobinfo compinfo cjob TAGS tmp/* logs/* db/* contrib/windows/*.exe bin/*.$(systype)
+	rm -fR *.o *.exe *~ libdrqueue.a slave master sendjob requeue jobfinfo jobinfo compinfo ctask cjob TAGS tmp/* logs/* db/* contrib/windows/*.exe bin/*.$(systype)
 	rm -fR blockhost
 	$(MAKE) -C drqman clean
 
@@ -254,6 +257,9 @@ jobinfo.o: jobinfo.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 blockhost: blockhost.o libdrqueue.a
 blockhost.o: blockhost.c
+	$(CC) -c $(CFLAGS) -o $@ $<
+ctask: ctask.o libdrqueue.a
+ctask.o: ctask.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 cjob: cjob.o libdrqueue.a
 cjob.o: cjob.c
