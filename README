@@ -1,30 +1,85 @@
-DrQueue - The Open Source Distributed Render Queue
---------------------------------------------------
-
+About DrQueue
+-------------
 DrQueue is the Open Source Distributed Render Queue. It is the Open
-Source alternative to other comercial products. It has been tested on
-renderfarms with more 200 processors and mixed architectures.
+Source alternative to other propietary products. It has been tested on
+renderfarms with more than 200 processors and mixed architectures.
 
-DrQueue has been coded and is maintained by Jorge Daza <jorge@drqueue.org>
-though you can find a list of contributors on the CREDITS file.
+It is a tool under development, though it is being used in production by
+many people since it release.
 
+Platforms
+---------
 DrQueue runs on Linux, Irix, FreeBSD, Mac OS X and Windows at the time of this
-writing. Also has scripts generators for Maya, Blender, BMRT, Pixie, Lightwave,
-3Delight and mental ray.  But it can handle any other renderer or application
-that supports command line.
+writing.
 
+render engines
+--------------
+It can be used with any renderer or application that supports command line (has 
+been used as well as a distributed compilation tool).
+
+It works with 'job scripts' that every slave executes with varying environment
+variables. Those job scripts can be customized to do any other task.
+
+Currently it has 'script generators' (pieces of code that create those scripts
+using a base file [etc/*.sg]) for the following software: Blender, Maya, Lightwave,
+Mental Ray, BMRT, 3Delight, Pixie, Aqsis, After Effects, Shake, Nuke and Terragen.
+
+It has a "general" (in the sense of generic) kind of job, that you could
+use to submit any other script for your tool of choice if not listed, or even if
+listed if you want to do it your way.
+
+scriptability
+-------------
 DrQueue if fully scriptable, through it's API one can code complex
 distributed systems but out of the box is easily managed by advanced end
 users.
 
-You can find everything you might need in it's web site:
-http://www.drqueue.org/
+It has python bindings that let you use the whole "libdrqueue" functions and
+data structures. 
 
-Also there is an anonymous svn repository where you can get the latest
-development version. Please give feedback through the forums, email or
-bug tracker, regarding any issue that might arise.
+So it is possible to write python scripts that "talk" to master and slave nodes. Modify
+some parameter, check the filesystem for some frames and create new jobs... there are
+many useful ways you can make use of that.
 
-You can also find some of us at #drqueue in irc.freenode.net 
+If you're not familiar with python but are interested in programming, I highly recommend
+you to read about it.
 
-Happy Hacking.
+DrKeewee [python/DrKeewee] is written in python. It is a small web server that talks to the
+master node and gives you information about the queue status.
+
+online resources (participation)
+--------------------------------
+In the site http://www.drqueue.org you'll find some resources that are meant
+to provide a two-way communication. For example: you'll find documentation trying
+to give you some hints, howto's, guides... but they're not nearly complete and update.
+That's why it's a wiki. You can modify or add pages online, through your browser.
+If you find out something is wrong, outdated, badly written... you can modify it,
+put a note, a warning, whatever could make others save time.
+
+Improving the site is at your hand too.
+
+Right now you have forums, bugtracker, mailing lists, wiki documentation, repository
+browser... and well, if you find the link and works should be there too.
+
+If you're a drqueue user your opinion and feedback is really important. Submit bug reports,
+they're really useful. 
+
+repository
+----------
+There is an anonymous subversion repository where you can get the latest
+development version.
+
+irc channel
+-----------
+Sometimes you'll find some of us at #drqueue in irc.freenode.net
+
+Most of the time channel is idle, please do not write and leave after five minutes
+if you received no answer. Be patient.
+
+Authors
+-------
+DrQueue has been coded and is maintained by Jorge Daza <jorge@drqueue.org>
+thanks to the contributions of many people which are listed in the CREDITS file.
+
+DrQueue wouldn't be here without them.
 
