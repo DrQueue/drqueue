@@ -1,0 +1,22 @@
+#!/bin/tcsh
+set FRAME_LIST=""
+set DISP_LIST=""
+foreach jobframe ($DRQUEUE_PADFRAMES)
+	set curImage=$DRQUEUE_RD/$DRQUEUE_IMAGE$jobframe$DRQUEUE_IMAGEEXT
+	if ( -r $curImage ) then
+		set filesize=`du -b $curImage | sed 's/\t.*//g'`
+		if (128 == $filesize) then
+			if ($DISP_LIST == "") then
+				set DISP_LIST="$curImage"
+			endif
+		else
+			set FRAME_LIST="$FRAME_LIST $curImage"
+		endif
+	endif
+end
+
+if ($DISP_LIST == "") then
+	set DISP_LIST="$FRAME_LIST"
+endif
+
+imf_disp $DISP_LIST

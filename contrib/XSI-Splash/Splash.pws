@@ -1,0 +1,27 @@
+
+[executer]
+RunInTerminal=true
+
+[Project State]
+clean before build=false
+
+[filenumbers]
+0=223
+
+[filemarkers]
+0=
+
+[File View]
+filter.file.unmatch=*.so *.o *.a *.la
+filter.file.ignore.hidden=0
+filter.dir.ignore.hidden=0
+
+[filelist]
+0=/afs/fluid/users/alanj/svn-drqueue/local/trunk/contrib/XSI-Splash/Splash.cpp
+
+[Project Tree]
+0=0
+1=0:0
+
+[File Tree]
+0=0
