@@ -195,6 +195,7 @@ void computer_update_assigned (struct database *wdb,uint32_t ijob,int iframe,int
 	task->frame_end = wdb->job[ijob].frame_end;
 	task->frame_step = wdb->job[ijob].frame_step;
 	task->block_size = wdb->job[ijob].block_size;
+	task->frame_pad = wdb->job[ijob].frame_pad;
 	task->pid = 0;
 	task->exitstatus = 0;
 	task->itask = (uint16_t) itask;

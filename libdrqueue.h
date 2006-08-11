@@ -53,6 +53,7 @@ extern "C" {
 #include "aqsissg.h"
 #include "mantrasg.h"
 #include "turtlesg.h"
+#include "xsisg.h"
 
 extern int phantom[2];									/* FIXME: This should be local to the slave */
 

@@ -121,7 +121,7 @@ static void jdd_mantra_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *i
 static void jdd_terragen_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 static void jdd_nuke_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 static void jdd_turtle_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
-
+static void jdd_xsi_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 
 struct row_data {
 	uint32_t frame;
@@ -343,6 +343,13 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info)
 		gtk_menu_append(GTK_MENU(menu),menu_item);
 		gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_turtle_viewcmd_exec),info);
 		break;
+	case KOJ_XSI:
+		menu_item = gtk_menu_item_new ();
+		gtk_menu_append(GTK_MENU(menu),menu_item);
+		menu_item = gtk_menu_item_new_with_label("Watch image");
+		gtk_menu_append(GTK_MENU(menu),menu_item);
+		gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_xsi_viewcmd_exec),info);
+		break;
 	}
 
 	gtk_signal_connect(GTK_OBJECT((info->jdd.clist)),"event",GTK_SIGNAL_FUNC(PopupMenuFrames),info);
@@ -453,6 +460,9 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info)
 		 info->jdd.job.frame_step);
 	gtk_label_set_text (GTK_LABEL(info->jdd.lstartend),msg);
 
+	snprintf(msg,BUFFERLEN-1,"%u",info->jdd.job.frame_pad);
+	gtk_label_set_text (GTK_LABEL(info->jdd.lfpad),msg);
+	
 	snprintf(msg,BUFFERLEN-1,"%u",info->jdd.job.block_size);
 	gtk_label_set_text (GTK_LABEL(info->jdd.lbs),msg);
 	
@@ -830,29 +840,35 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info)
 	newinfo->jdd.lfrldf = label2;
 	jdd_table_pack (table, label, label2, NULL, 6);
 
+	/* Frame Padding */
+	label = gtk_label_new ("Frame padding:");
+	label2 = gtk_label_new (NULL);
+	newinfo->jdd.lfpad = label2;
+	jdd_table_pack (table, label, label2, NULL, 7);
+
 	/* Block size */
 	label = gtk_label_new ("Block size:");
 	label2 = gtk_label_new (NULL);
 	newinfo->jdd.lbs = label2;
-	jdd_table_pack (table, label, label2, NULL, 7);
+	jdd_table_pack (table, label, label2, NULL, 8);
 
 	// Job submission time
 	label = gtk_label_new ("Submission time");
 	label2 = gtk_label_new (NULL);
 	newinfo->jdd.lsubmitt = label2;
-	jdd_table_pack (table,label, label2, NULL, 8);
+	jdd_table_pack (table,label, label2, NULL, 9);
 
 	/* Average time per frame */
 	label = gtk_label_new ("Average frame time:");
 	label2 = gtk_label_new (NULL);
 	newinfo->jdd.lavgt = label2;
-	jdd_table_pack (table, label, label2, NULL, 9);
+	jdd_table_pack (table, label, label2, NULL, 10);
 
 	/* Estimated finish time */
 	label = gtk_label_new ("Estimated finish time:");
 	label2 = gtk_label_new (NULL);
 	newinfo->jdd.lestf = label2;
-	jdd_table_pack (table, label, label2, NULL, 10);
+	jdd_table_pack (table, label, label2, NULL, 11);
 
 	/* KOJ */
 	frame = jdd_koj_widgets (newinfo);
@@ -1611,6 +1627,40 @@ static void jdd_turtle_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *i
 	}
 }
 
+static void jdd_xsi_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info)
+{
+	/* Sets the waiting frames as finished */
+	GList *sel;
+	uint32_t frame,iframe;
+	const char *new_argv[4];
+	extern char **environ;
+	struct row_data *rdata;
+	char *exec_path;
+	
+	if (!(sel = GTK_CLIST(info->jdd.clist)->selection)) {
+		return;
+	}
+
+	rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+	frame = rdata->frame;
+	
+	iframe = job_frame_number_to_index (&info->jdd.job,frame);
+
+	if (fork() == 0) {
+		new_argv[0] = SHELL_NAME;
+		new_argv[1] = "-c";
+		new_argv[2] = info->jdd.job.koji.xsi.viewcmd;
+		new_argv[3] = NULL;		 
+
+		job_environment_set(&info->jdd.job,iframe);
+		
+		exec_path = SHELL_PATH;
+		execve(exec_path ,(char*const*)new_argv,environ);
+		perror("execve");
+		exit (1);
+	}
+}
+
 static GtkWidget *jdd_limits_widgets (struct drqm_jobs_info *info)
 {
 	GtkWidget *frame,*frame2;
@@ -2337,6 +2387,10 @@ GtkWidget *jdd_koj_widgets (struct drqm_jobs_info *info)
 		break;
 	case KOJ_TURTLE:
 		koj_vbox = jdd_koj_turtle_widgets (info);
+		gtk_box_pack_start (GTK_BOX(vbox),koj_vbox,FALSE,FALSE,2);
+		break;
+	case KOJ_XSI:
+		koj_vbox = jdd_koj_xsi_widgets (info);
 		gtk_box_pack_start (GTK_BOX(vbox),koj_vbox,FALSE,FALSE,2);
 		break;
 	}

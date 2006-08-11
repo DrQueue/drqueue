@@ -34,6 +34,5 @@ drqueue_all = drqueue_i + libdrqueue
 
 env["SHLIBPREFIX"] = "_"
 drqueue = env.SharedLibrary ("drqueue", drqueue_all)
-drqueue = env.SharedLibrary ("drqueue", drqueue_all)
 #drqueue_copy = env.Command ("_drqueue.so",drqueue,"cp -f libdrqueue.so _drqueue.so")
 #Depends(drqueue_copy,drqueue)

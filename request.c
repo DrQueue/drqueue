@@ -510,6 +510,7 @@ int register_job (struct job *job)
 		case RERR_NOERROR:
 			if (!send_job (sfd,job)) {
 				close (sfd);
+				fprintf (stderr,"ERROR: Job couldn't be sent\n");
 				return 0;
 			}
 			break;
@@ -1051,10 +1052,17 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
 					case FS_WAITING:
 						break;
 					case FS_ASSIGNED:
-						fi[task.frame].status = FS_WAITING;
-						fi[task.frame].start_time = 0;
-						fi[task.frame].requeued++;
-						wdb->job[task.ijob].fleft++;
+						// CHECK: is this a pointer ?
+						if (&wdb->job[task.ijob].autoRequeue) {
+							fi[task.frame].status = FS_WAITING;
+							fi[task.frame].start_time = 0;
+							fi[task.frame].requeued++;
+							wdb->job[task.ijob].fleft++;
+						} else {
+							fi[task.frame].status = FS_ERROR;
+							time(&fi[task.frame].end_time);
+							wdb->job[task.ijob].ffailed++;
+						}
 						break;
 					case FS_ERROR:
 					case FS_FINISHED:
@@ -1063,18 +1071,24 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp)
 					fi[task.frame].start_time = 0;
 					fi[task.frame].end_time = 0;
 				} else {
-					log_master_job (&wdb->job[task.ijob],L_INFO,"Frame %i died signal not catched", 
-													job_frame_index_to_number (&wdb->job[task.ijob],task.frame));
+					log_master_job (&wdb->job[task.ijob],L_INFO,"Frame %i died - signal %i", 
+													job_frame_index_to_number (&wdb->job[task.ijob],task.frame), sig);
 					fi[task.frame].status = FS_ERROR;
 					time(&fi[task.frame].end_time);
 					wdb->job[task.ijob].ffailed++;
 				}
 			} else {
 				/* This	 must be WIFSTOPPED, but I'm not sure */
-				log_master_job (&wdb->job[task.ijob],L_INFO,"Frame %i died abnormally", 
-												job_frame_index_to_number (&wdb->job[task.ijob],task.frame));
-				fi[task.frame].status = FS_ERROR;
-				time(&fi[task.frame].end_time);
+				if (fi[task.frame].status == FS_ASSIGNED) {
+					log_master_job (&wdb->job[task.ijob],L_INFO,"Frame %i died without signal.", 
+							job_frame_index_to_number (&wdb->job[task.ijob],task.frame));
+					fi[task.frame].status = FS_ERROR;
+					time(&fi[task.frame].end_time);
+				} else {
+				// TODO: complete this.
+				//	log_master_computer ( /*<FILLME>*/ ,L_INFO,"Frame %i died without signal but was not assigned.", 
+				//			job_frame_index_to_number (&wdb->job[task.ijob],task.frame));
+				}
 			}
 		}
 	} else {
@@ -2325,8 +2339,9 @@ void handle_r_r_jobffini (int sfd,struct database *wdb,int icomp,struct request 
 
 	semaphore_lock(wdb->semid);
 
-	if (!job_index_correct_master(wdb,ijob))
+	if (!job_index_correct_master(wdb,ijob)) {
 		return;
+	}
 
 	if (!job_frame_number_correct(&wdb->job[ijob],frame))
 		return;
@@ -2342,9 +2357,19 @@ void handle_r_r_jobffini (int sfd,struct database *wdb,int icomp,struct request 
 
 	switch (fi[iframe].status) {
 	case FS_WAITING:
+		fi[iframe].exitcode = 0;
+		time(&fi[iframe].end_time);
+		wdb->job[ijob].fdone++;
+		wdb->job[ijob].fdone--;
 		fi[iframe].status = FS_FINISHED;
 		break;
 	case FS_ASSIGNED:
+		fi[iframe].exitcode = 0;
+		time(&fi[iframe].end_time);
+		wdb->job[ijob].fdone++;
+		wdb->job[ijob].fleft--;
+		fi[iframe].status = FS_FINISHED;
+		break;
 	case FS_ERROR:
 	case FS_FINISHED:
 		break;

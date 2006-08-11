@@ -82,7 +82,15 @@ struct info_drqm;
 
 void CreateComputersPage (GtkWidget *notebook,struct info_drqm *info);
 void drqm_update_computerlist (struct drqm_computers_info *info);
+	
+void computers_column_clicked (GtkCList *clist, gint column, struct drqm_computers_info *info);
+int computers_cmp_id (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+int computers_cmp_enabled (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+int computers_cmp_running (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+int computers_cmp_name (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+int computers_cmp_os (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+int computers_cmp_cpus (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+int computers_cmp_loadavg (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
+int computers_cmp_pools (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
 
 #endif /* _DRQM_COMPUTERS_H */
-
-
