@@ -1,21 +1,21 @@
-// 
+//
 // Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
-// 
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
-// 
+//
 /* $Id$ */
 
 #ifndef _SENDJOB_H_
@@ -26,21 +26,21 @@
 
 #define TOJ_NONE                 0
 #define TOJ_MAYA                 1
-#define TOJ_BLENDER              2	// Blender koj
-#define TOJ_BMRT                 3	// BMRT koj
-#define TOJ_THREEDELIGHT         4	// 3delight koj
-#define TOJ_PIXIE                5	// Pixie koj
-#define TOJ_MENTALRAY            6	// Mental ray
-#define TOJ_LIGHTWAVE            7	// Lightwave koj
-#define TOJ_AFTEREFFECTS         8	// After Effects koj
-#define TOJ_SHAKE                9	// Shake koj
-#define TOJ_AQSIS                10	// Aqsis koj
-#define TOJ_TERRAGEN             11	// Terragen koj
-#define TOJ_NUKE                 12	// Nuke koj
-#define TOJ_TURTLE               13	// Turtle koj
-#define TOJ_MANTRA               14	// Mantra koj
-#define TOJ_XSI                  15	// XSI koj
-#define TOJ_GENERAL              16	// General koj
+#define TOJ_BLENDER              2 // Blender koj
+#define TOJ_BMRT                 3 // BMRT koj
+#define TOJ_THREEDELIGHT         4 // 3delight koj
+#define TOJ_PIXIE                5 // Pixie koj
+#define TOJ_MENTALRAY            6 // Mental ray
+#define TOJ_LIGHTWAVE            7 // Lightwave koj
+#define TOJ_AFTEREFFECTS         8 // After Effects koj
+#define TOJ_SHAKE                9 // Shake koj
+#define TOJ_AQSIS                10 // Aqsis koj
+#define TOJ_TERRAGEN             11 // Terragen koj
+#define TOJ_NUKE                 12 // Nuke koj
+#define TOJ_TURTLE               13 // Turtle koj
+#define TOJ_MANTRA               14 // Mantra koj
+#define TOJ_XSI                  15 // XSI koj
+#define TOJ_GENERAL              16 // General koj
 
 void presentation (void);
 

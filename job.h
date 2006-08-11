@@ -1,22 +1,22 @@
-// 
+//
 // Copyright (C) 2001,2002,2003,2004,2005 Jorge Daza Garcia-Blanes
-// 
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
-// 
-// $Id: /drqueue/remote/trunk/job.h 2303 2005-05-13T21:44:10.411864Z jorge	$
+//
+// $Id$
 //
 
 #ifndef _JOB_H_
@@ -44,231 +44,247 @@
 
 /* FRAME SECTION */
 typedef enum {
-	FS_WAITING,			/* Waiting to be assigned */
-	FS_ASSIGNED,			/* Currently assigned but not finished (so RUNNING) */
-	FS_ERROR,			/* Finished with error */
-	FS_FINISHED			/* Finished with success */
+  FS_WAITING,   /* Waiting to be assigned */
+  FS_ASSIGNED,   /* Currently assigned but not finished (so RUNNING) */
+  FS_ERROR,   /* Finished with error */
+  FS_FINISHED   /* Finished with success */
 } t_framestatus;
 
 /* Struct that holds information about a single frame */
 struct frame_info {
-	uint8_t status;			/* Status */
-	time_t start_time,end_time; /* Time of start and ending of the frame (32 bit integer) */
-	uint8_t exitcode;		/* Exit code of the process */
-	uint32_t icomp;		/* Index to computer */
-	uint16_t itask;		/* Index to task on computer */
-	uint16_t requeued; // Number of times that this frame has been requeued, starts at 0
-	uint16_t flags;		 // Frame flags
+  uint8_t status;   /* Status */
+  time_t start_time,end_time; /* Time of start and ending of the frame (32 bit integer) */
+  uint8_t exitcode;  /* Exit code of the process */
+  uint32_t icomp;  /* Index to computer */
+  uint16_t itask;  /* Index to task on computer */
+  uint16_t requeued; // Number of times that this frame has been requeued, starts at 0
+  uint16_t flags;   // Frame flags
 };
 
 // Frame Flags
-#define FF_REQUEUE	(1<<0)	// Frame has to be requeued when finished.
+#define FF_REQUEUE (1<<0) // Frame has to be requeued when finished.
 
 // BLOCKED HOSTS SECTION
 struct blocked_host {
-	char name[MAXNAMELEN];
+  char name[MAXNAMELEN];
 };
 
 /* LIMITS SECTION */
 struct job_limits {
-	uint16_t nmaxcpus;		/* Maximum number of cpus running the job */
-	uint16_t nmaxcpuscomputer;	/* Maximum number of cpus running the job on one single computer */
-	uint16_t os_flags;		/* In which OS will it run */
-	uint32_t memory;
-	char pool[MAXNAMELEN];
+  uint16_t nmaxcpus;  /* Maximum number of cpus running the job */
+  uint16_t nmaxcpuscomputer; /* Maximum number of cpus running the job on one single computer */
+  uint16_t os_flags;  /* In which OS will it run */
+  uint32_t memory;
+  char pool[MAXNAMELEN];
 };
 
 /* KOJ SECTION */
 /* this union must have the appropiate information for every kind of job */
-union koj_info {		/* Kind of job information */
-	struct koji_general {
+union koj_info {  /* Kind of job information */
+  struct koji_general {
     char *scriptdir;
-  } general;
-	struct koji_maya {
-		char scene[BUFFERLEN];
-		char renderdir[BUFFERLEN];	/* Output directory for the images */
-		char projectdir[BUFFERLEN];
-		char precommand[BUFFERLEN];
-		char postcommand[BUFFERLEN];				
-		char image[BUFFERLEN];
-		char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
-	} maya;
-	struct koji_mentalray {
-		char scene[BUFFERLEN];
-		char renderdir[BUFFERLEN];	/* Output directory for the images */
-		char image[BUFFERLEN];
-		char viewcmd[BUFFERLEN];	/* something like "imf_disp $DRQUEUE_RD/$DRQUEUE_IMAGE.$DRQUEUE_FRAME.iff" */
-	} mentalray;
-	struct koji_blender {
-		char scene[BUFFERLEN];
-		char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
-	} blender;
-	struct koji_bmrt {
-		char scene[BUFFERLEN];
-		char viewcmd[BUFFERLEN];
-		char custom_crop;
-		uint32_t xmin,xmax,ymin,ymax;
-		char custom_samples;
-		uint32_t xsamples,ysamples;
-		char disp_stats;
-		char verbose;
-		char custom_beep;
-		char custom_radiosity;
-		uint32_t radiosity_samples;
-		char custom_raysamples;
-		uint32_t raysamples;
-	} bmrt;
-	struct koji_pixie {
-		char scene[BUFFERLEN];
-		char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
-	} pixie;
-	struct koji_3delight {
-		char scene[BUFFERLEN];
-		char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
-	} threedelight;
-	struct koji_lightwave {
-		char scene[BUFFERLEN];
-		char projectdir[BUFFERLEN]; /* Project directory */
-		char configdir[BUFFERLEN];	/* Config directory */
-		char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
-	} lightwave;
-	struct koji_nuke {
-		char scene[BUFFERLEN];
-		char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
-	} nuke;
-	struct koji_terragen {
-		char scriptfile[BUFFERLEN];
-		char worldfile[BUFFERLEN];	/* World File */
-		char terrainfile[BUFFERLEN];	/* Terrain File */
-		char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
-	} terragen;
-	struct koji_aqsis {
-		char scene[BUFFERLEN];
-		char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
-	} aqsis;
-	struct koji_mantra {
-		char scene[BUFFERLEN];
-		char renderdir[BUFFERLEN];
-		char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
-	} mantra;
+  }
+  general;
+  struct koji_maya {
+    char scene[BUFFERLEN];
+    char renderdir[BUFFERLEN]; /* Output directory for the images */
+    char projectdir[BUFFERLEN];
+    char precommand[BUFFERLEN];
+    char postcommand[BUFFERLEN];
+    char image[BUFFERLEN];
+    char viewcmd[BUFFERLEN]; /* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
+  }
+  maya;
+  struct koji_mentalray {
+    char scene[BUFFERLEN];
+    char renderdir[BUFFERLEN]; /* Output directory for the images */
+    char image[BUFFERLEN];
+    char viewcmd[BUFFERLEN]; /* something like "imf_disp $DRQUEUE_RD/$DRQUEUE_IMAGE.$DRQUEUE_FRAME.iff" */
+  }
+  mentalray;
+  struct koji_blender {
+    char scene[BUFFERLEN];
+    char viewcmd[BUFFERLEN]; /* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
+  }
+  blender;
+  struct koji_bmrt {
+    char scene[BUFFERLEN];
+    char viewcmd[BUFFERLEN];
+    char custom_crop;
+    uint32_t xmin,xmax,ymin,ymax;
+    char custom_samples;
+    uint32_t xsamples,ysamples;
+    char disp_stats;
+    char verbose;
+    char custom_beep;
+    char custom_radiosity;
+    uint32_t radiosity_samples;
+    char custom_raysamples;
+    uint32_t raysamples;
+  }
+  bmrt;
+  struct koji_pixie {
+    char scene[BUFFERLEN];
+    char viewcmd[BUFFERLEN]; /* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
+  }
+  pixie;
+  struct koji_3delight {
+    char scene[BUFFERLEN];
+    char viewcmd[BUFFERLEN]; /* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
+  }
+  threedelight;
+  struct koji_lightwave {
+    char scene[BUFFERLEN];
+    char projectdir[BUFFERLEN]; /* Project directory */
+    char configdir[BUFFERLEN]; /* Config directory */
+    char viewcmd[BUFFERLEN]; /* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
+  }
+  lightwave;
+  struct koji_nuke {
+    char scene[BUFFERLEN];
+    char viewcmd[BUFFERLEN]; /* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
+  }
+  nuke;
+  struct koji_terragen {
+    char scriptfile[BUFFERLEN];
+    char worldfile[BUFFERLEN]; /* World File */
+    char terrainfile[BUFFERLEN]; /* Terrain File */
+    char viewcmd[BUFFERLEN]; /* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
+  }
+  terragen;
+  struct koji_aqsis {
+    char scene[BUFFERLEN];
+    char viewcmd[BUFFERLEN]; /* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
+  }
+  aqsis;
+  struct koji_mantra {
+    char scene[BUFFERLEN];
+    char renderdir[BUFFERLEN];
+    char viewcmd[BUFFERLEN]; /* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
+  }
+  mantra;
 
-	struct koji_aftereffects {
-        char project[BUFFERLEN];
-	char comp[BUFFERLEN];
-	char viewcmd[BUFFERLEN];
-	} aftereffects;
-	struct koji_shake {
-		char script[BUFFERLEN];
-		char viewcmd[BUFFERLEN];
-	} shake;
-	struct koji_turtle {
-		char scene[BUFFERLEN]; // -geometry
-		char renderdir[BUFFERLEN]; // -imageOutputPath
-		char projectdir[BUFFERLEN]; // -projectPath
-		char camera[BUFFERLEN]; // -camera
-		uint32_t resx, resy; // -resolution x y
-		char image[BUFFERLEN]; // -imageName
-		char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
-	} turtle;
-	struct koji_xsi {
-		char scene[BUFFERLEN];
-		char pass[BUFFERLEN];
-		char renderdir[BUFFERLEN];	/* Output directory for the images */
-		char image[BUFFERLEN];
-		char imageExt[BUFFERLEN];
-		char viewcmd[BUFFERLEN];	/* something like "$DRQUEUE_BIN/viewcmd/imf_batch" */
-	} xsi;
+  struct koji_aftereffects {
+    char project[BUFFERLEN];
+    char comp[BUFFERLEN];
+    char viewcmd[BUFFERLEN];
+  }
+  aftereffects;
+  struct koji_shake {
+    char script[BUFFERLEN];
+    char viewcmd[BUFFERLEN];
+  }
+  shake;
+  struct koji_turtle {
+    char scene[BUFFERLEN]; // -geometry
+    char renderdir[BUFFERLEN]; // -imageOutputPath
+    char projectdir[BUFFERLEN]; // -projectPath
+    char camera[BUFFERLEN]; // -camera
+    uint32_t resx, resy; // -resolution x y
+    char image[BUFFERLEN]; // -imageName
+    char viewcmd[BUFFERLEN]; /* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
+  }
+  turtle;
+  struct koji_xsi {
+    char scene[BUFFERLEN];
+    char pass[BUFFERLEN];
+    char renderdir[BUFFERLEN]; /* Output directory for the images */
+    char image[BUFFERLEN];
+    char imageExt[BUFFERLEN];
+    char viewcmd[BUFFERLEN]; /* something like "$DRQUEUE_BIN/viewcmd/imf_batch" */
+  }
+  xsi;
 
 };
 
 /* Koj types */
-#define KOJ_GENERAL				 0	/* Not specific koj */
-#define KOJ_MAYA					 1	/* Maya koj */
-#define KOJ_BLENDER				 2	/* Blender koj */
-#define KOJ_BMRT					 3	/* BMRT koj */
-#define KOJ_3DELIGHT			 4	/* 3delight koj */
-#define KOJ_PIXIE					 5	/* Pixie koj */
-#define KOJ_MENTALRAY			 6	/* Mental Ray koj */
-#define KOJ_LIGHTWAVE			 7	// Lightwave koj
-#define KOJ_AFTEREFFECTS	 8	// After Effects koj
-#define KOJ_SHAKE					 9	// Shake koj
-#define KOJ_AQSIS                       10	// Aqsis koj
-#define KOJ_TERRAGEN			11	// Terragen koj
-#define KOJ_NUKE			12	// Nuke koj
-#define KOJ_TURTLE                      13	// Turtle koj
-#define KOJ_MANTRA                      14	// Mantra koj
-#define KOJ_XSI				15	// XSI koj
+#define KOJ_GENERAL     0 /* Not specific koj */
+#define KOJ_MAYA      1 /* Maya koj */
+#define KOJ_BLENDER     2 /* Blender koj */
+#define KOJ_BMRT      3 /* BMRT koj */
+#define KOJ_3DELIGHT    4 /* 3delight koj */
+#define KOJ_PIXIE      5 /* Pixie koj */
+#define KOJ_MENTALRAY    6 /* Mental Ray koj */
+#define KOJ_LIGHTWAVE    7 // Lightwave koj
+#define KOJ_AFTEREFFECTS  8 // After Effects koj
+#define KOJ_SHAKE      9 // Shake koj
+#define KOJ_AQSIS                       10 // Aqsis koj
+#define KOJ_TERRAGEN   11 // Terragen koj
+#define KOJ_NUKE   12 // Nuke koj
+#define KOJ_TURTLE                      13 // Turtle koj
+#define KOJ_MANTRA                      14 // Mantra koj
+#define KOJ_XSI    15 // XSI koj
 
 /* JOB SECTION */
 typedef enum {
-	JOBSTATUS_WAITING,						/* Waiting to be dispatched */
-	JOBSTATUS_ACTIVE,							/* Already dispatched */
-	JOBSTATUS_STOPPED,            /* Stopped, waiting for current frames to finish */
-	JOBSTATUS_FINISHED
+  JOBSTATUS_WAITING,      /* Waiting to be dispatched */
+  JOBSTATUS_ACTIVE,       /* Already dispatched */
+  JOBSTATUS_STOPPED,            /* Stopped, waiting for current frames to finish */
+  JOBSTATUS_FINISHED
 } t_jobstatus;
 
 /* JOB FLAGS */
-#define JF_MAILNOTIFY			(1<<0) /* Mail notifications on events */
-#define JF_MNDIFEMAIL			(1<<1) /* Email address for notifications specified on "email" field */
-#define JF_JOBDEPEND			(1<<2) // This job depends on another to start
-#define JF_JOBDELETE			(1<<3) // Delete job when finished
+#define JF_MAILNOTIFY   (1<<0) /* Mail notifications on events */
+#define JF_MNDIFEMAIL   (1<<1) /* Email address for notifications specified on "email" field */
+#define JF_JOBDEPEND   (1<<2) // This job depends on another to start
+#define JF_JOBDELETE   (1<<3) // Delete job when finished
 
 /* OS FLAGS */
-#define OSF_IRIX					(1<<0) /* If set will run on Irix */
-#define OSF_LINUX					(1<<1) /* If set will run on Linux */
-#define OSF_OSX						(1<<2) /* If set will run on OSX */
-#define OSF_FREEBSD				(1<<3) /* If set will run on FreeBSD */
-#define OSF_CYGWIN				(1<<4) /* If set will run on Windows */
+#define OSF_IRIX     (1<<0) /* If set will run on Irix */
+#define OSF_LINUX     (1<<1) /* If set will run on Linux */
+#define OSF_OSX      (1<<2) /* If set will run on OSX */
+#define OSF_FREEBSD    (1<<3) /* If set will run on FreeBSD */
+#define OSF_CYGWIN    (1<<4) /* If set will run on Windows */
 
 /* THE JOB ITSELF */
 struct job {
-	char used;
-	uint32_t id;			/* Id number for the job */
-	uint16_t nprocs;		/* Number of procs currently assigned */
-	uint16_t status;		/* Status of the job */
-	uint32_t priority;		/* Priority */
+  char used;
+  uint32_t id;   /* Id number for the job */
+  uint16_t nprocs;  /* Number of procs currently assigned */
+  uint16_t status;  /* Status of the job */
+  uint32_t priority;  /* Priority */
 
-	char name[MAXNAMELEN];
-	char cmd[MAXCMDLEN];
-	char owner[MAXNAMELEN];
-	char email[MAXNAMELEN]; /* Specific email address for email notifications */
-	char autoRequeue;
+  char name[MAXNAMELEN];
+  char cmd[MAXCMDLEN];
+  char owner[MAXNAMELEN];
+  char email[MAXNAMELEN]; /* Specific email address for email notifications */
+  char autoRequeue;
 
 
-	uint16_t koj;			/* Kind of job */
-	union koj_info koji;		/* koj info */
-	
-	// FIXME: frames are uint32_t but the function that returns frames available is int 
-	uint32_t frame_start,frame_end;
-	char frame_pad;
-	uint32_t frame_step;
-	uint32_t fleft,fdone,ffailed; /* Frames left,done and failed */
-	uint32_t block_size;
-	time_t submit_time;			// Time when the job was submitted
-	time_t avg_frame_time;	/* Average frame time */
-	time_t est_finish_time; /* Estimated finish time */
-	struct frame_info *frame_info; /* Status of every frame */
-	int fishmid;		 /* Shared memory id for the frame_info structure */
+  uint16_t koj;   /* Kind of job */
+  union koj_info koji;  /* koj info */
 
-	// Blocked hosts
-	struct blocked_host *blocked_host;
-	int bhshmid;			            // Shared memory id for the blocked_host structure
-	uint16_t nblocked;						// Number of blocked hosts
+  // FIXME: frames are uint32_t but the function that returns frames available is int
+  uint32_t frame_start,frame_end;
+  char frame_pad;
+  uint32_t frame_step;
+  uint32_t fleft,fdone,ffailed; /* Frames left,done and failed */
+  uint32_t block_size;
+  time_t submit_time;   // Time when the job was submitted
+  time_t avg_frame_time; /* Average frame time */
+  time_t est_finish_time; /* Estimated finish time */
+  struct frame_info *frame_info; /* Status of every frame */
+  int fishmid;   /* Shared memory id for the frame_info structure */
 
-	uint32_t flags;								/* Job flags */
+  // Blocked hosts
+  struct blocked_host *blocked_host;
+  int bhshmid;               // Shared memory id for the blocked_host structure
+  uint16_t nblocked;      // Number of blocked hosts
 
-	uint32_t dependid;						/* Jobid on which this one depends */
+  uint32_t flags;        /* Job flags */
 
-	struct job_limits limits;     // Job limits
-	struct envvars envvars;       // Environment variables
+  uint32_t dependid;      /* Jobid on which this one depends */
+
+  struct job_limits limits;     // Job limits
+  struct envvars envvars;       // Environment variables
 };
 
 struct database;
 
-struct tpol {			/* Priority ordered list of jobs */
-	uint32_t index;		/* index to unordered list */
-	uint32_t pri;			/* priority of that job */
-	time_t submit_time; // submission time of the job
+struct tpol {   /* Priority ordered list of jobs */
+  uint32_t index;  /* index to unordered list */
+  uint32_t pri;   /* priority of that job */
+  time_t submit_time; // submission time of the job
 };
 
 int job_index_free (void *pwdb);

@@ -1,24 +1,24 @@
 //
 // Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
-// 
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
-// 
+//
 //
 // $Id$
-// 
+//
 // To set up a maya job from a file and send it to the master
 //
 
@@ -38,8 +38,7 @@
 
 void usage (void);
 
-int main (int argc,char *argv[])
-{
+int main (int argc,char *argv[]) {
   int opt;
   int toj = 0;
   char* frame_range;
@@ -53,19 +52,19 @@ int main (int argc,char *argv[])
   while ((opt = getopt (argc,argv,"f:hvt:")) != -1) {
     switch (opt) {
     case 'v':
-    	//      show_version (argv);
-    	exit (0);
-		case 't':
-			toj = str2toj (optarg);
-			break;
-		case 'f':
-			frame_range = (optarg);
-			fs = atoi(strtok(frame_range,":"));
-			fe = atoi(strtok(NULL,":"));
-			sf = atoi(strtok(NULL,"\0"));
-			break;
-  	case '?':
-  	case 'h':
+      //      show_version (argv);
+      exit (0);
+    case 't':
+      toj = str2toj (optarg);
+      break;
+    case 'f':
+      frame_range = (optarg);
+      fs = atoi(strtok(frame_range,":"));
+      fe = atoi(strtok(NULL,":"));
+      sf = atoi(strtok(NULL,"\0"));
+      break;
+    case '?':
+    case 'h':
       usage();
       exit (1);
     }
@@ -76,7 +75,7 @@ int main (int argc,char *argv[])
     exit (1);
   }
 
-	set_default_env();
+  set_default_env();
 
   if (!common_environment_check()) {
     std::cerr << "Error checking the environment: " << drerrno_str() << std::endl;
@@ -84,130 +83,128 @@ int main (int argc,char *argv[])
   }
 
   std::ifstream infile(argv[argc-1]);
-	switch (toj) {
-		case TOJ_GENERAL:
-        if (RegisterGeneralJob (argv[argc-1], fs, fe, sf)) {
-                std::cerr << "Error registering GENERAL job: " << argv[argc-1] << std::endl;
-            exit (1);
-        }
-            break;
-		case TOJ_MAYA:
-  		if (RegisterMayaJobFromFile (infile)) {
-				std::cerr << "Error registering MAYA job from file: " << argv[argc-1] << std::endl;
-    		exit (1);
-  		}
-			break;
-		case TOJ_MENTALRAY:
-  		if (RegisterMentalrayJobFromFile (infile)) {
-				std::cerr << "Error registering MENTALRAY job from file: " << argv[argc-1] << std::endl;
-    		exit (1);
-  		}
-			break;
-		case TOJ_BLENDER:
-  		if (RegisterBlenderJobFromFile (infile)) {
-				std::cerr << "Error registering BLENDER job from file: " << argv[argc-1] << std::endl;
-    		exit (1);
-  		}
-			break;
-		case TOJ_BMRT:
-  		if (RegisterBmrtJobFromFile (infile)) {
-				std::cerr << "Error registering BMRT job from file: " << argv[argc-1] << std::endl;
-    		exit (1);
-  		}
-			break;
-		case TOJ_THREEDELIGHT:
-  		if (RegisterThreedelightJobFromFile (infile)) {
-				std::cerr << "Error registering 3Delight job from file: " << argv[argc-1] << std::endl;
-    		exit (1);
-  		}
-			break;
-		case TOJ_PIXIE:
-  		if (RegisterPixieJobFromFile (infile)) {
-				std::cerr << "Error registering PIXIE job from file: " << argv[argc-1] << std::endl;
-    		exit (1);
-  		}
-			break;
-		case TOJ_LIGHTWAVE:
-  		if (RegisterLightwaveJobFromFile (infile)) {
-				std::cerr << "Error registering Lightwave job from file: " << argv[argc-1] << std::endl;
-    		exit (1);
-  		}
-			break;
-					case TOJ_AFTEREFFECTS:
-  		if (RegisterAftereffectsJobFromFile (infile)) {
-				std::cerr << "Error registering After Effects job from file: " << argv[argc-1] << std::endl;
-    		exit (1);
-  		}
-			break;
-		case TOJ_SHAKE:
-  		if (RegisterShakeJobFromFile (infile)) {
-				std::cerr << "Error registering Shake job from file: " << argv[argc-1] << std::endl;
-    		exit (1);
-  		}
-			break;
-		case TOJ_AQSIS:
-  		if (RegisterAqsisJobFromFile (infile)) {
-				std::cerr << "Error registering Aqsis job from file: " << argv[argc-1] << std::endl;
-    		exit (1);
-  		}
-			break;
-		case TOJ_MANTRA:
-  		if (RegisterMantraJobFromFile (infile)) {
-				std::cerr << "Error registering Mantra job from file: " << argv[argc-1] << std::endl;
-    		exit (1);
-  		}
-			break;
+  switch (toj) {
+  case TOJ_GENERAL:
+    if (RegisterGeneralJob (argv[argc-1], fs, fe, sf)) {
+      std::cerr << "Error registering GENERAL job: " << argv[argc-1] << std::endl;
+      exit (1);
+    } else {
+      // test indentation
+    }
+    break;
+  case TOJ_MAYA:
+    if (RegisterMayaJobFromFile (infile)) {
+      std::cerr << "Error registering MAYA job from file: " << argv[argc-1] << std::endl;
+      exit (1);
+    }
+    break;
+  case TOJ_MENTALRAY:
+    if (RegisterMentalrayJobFromFile (infile)) {
+      std::cerr << "Error registering MENTALRAY job from file: " << argv[argc-1] << std::endl;
+      exit (1);
+    }
+    break;
+  case TOJ_BLENDER:
+    if (RegisterBlenderJobFromFile (infile)) {
+      std::cerr << "Error registering BLENDER job from file: " << argv[argc-1] << std::endl;
+      exit (1);
+    }
+    break;
+  case TOJ_BMRT:
+    if (RegisterBmrtJobFromFile (infile)) {
+      std::cerr << "Error registering BMRT job from file: " << argv[argc-1] << std::endl;
+      exit (1);
+    }
+    break;
+  case TOJ_THREEDELIGHT:
+    if (RegisterThreedelightJobFromFile (infile)) {
+      std::cerr << "Error registering 3Delight job from file: " << argv[argc-1] << std::endl;
+      exit (1);
+    }
+    break;
+  case TOJ_PIXIE:
+    if (RegisterPixieJobFromFile (infile)) {
+      std::cerr << "Error registering PIXIE job from file: " << argv[argc-1] << std::endl;
+      exit (1);
+    }
+    break;
+  case TOJ_LIGHTWAVE:
+    if (RegisterLightwaveJobFromFile (infile)) {
+      std::cerr << "Error registering Lightwave job from file: " << argv[argc-1] << std::endl;
+      exit (1);
+    }
+    break;
+  case TOJ_AFTEREFFECTS:
+    if (RegisterAftereffectsJobFromFile (infile)) {
+      std::cerr << "Error registering After Effects job from file: " << argv[argc-1] << std::endl;
+      exit (1);
+    }
+    break;
+  case TOJ_SHAKE:
+    if (RegisterShakeJobFromFile (infile)) {
+      std::cerr << "Error registering Shake job from file: " << argv[argc-1] << std::endl;
+      exit (1);
+    }
+    break;
+  case TOJ_AQSIS:
+    if (RegisterAqsisJobFromFile (infile)) {
+      std::cerr << "Error registering Aqsis job from file: " << argv[argc-1] << std::endl;
+      exit (1);
+    }
+    break;
+  case TOJ_MANTRA:
+    if (RegisterMantraJobFromFile (infile)) {
+      std::cerr << "Error registering Mantra job from file: " << argv[argc-1] << std::endl;
+      exit (1);
+    }
+    break;
 
-		case TOJ_TERRAGEN:
-  		if (RegisterTerragenJobFromFile (infile)) {
-				std::cerr << "Error registering Terragen job from file: " << argv[argc-1] << std::endl;
-    		exit (1);
-  		}
-			break;
-		case TOJ_NUKE:
-  		if (RegisterNukeJobFromFile (infile)) {
-				std::cerr << "Error registering Nuke job from file: " << argv[argc-1] << std::endl;
-    		exit (1);
-  		}
-			break;
-		case TOJ_XSI:
-  		if (RegisterXSIJobFromFile (infile)) {
-				std::cerr << "Error registering XSI job from file: " << argv[argc-1] << std::endl;
-    		exit (1);
-  		}
-	}
+  case TOJ_TERRAGEN:
+    if (RegisterTerragenJobFromFile (infile)) {
+      std::cerr << "Error registering Terragen job from file: " << argv[argc-1] << std::endl;
+      exit (1);
+    }
+    break;
+  case TOJ_NUKE:
+    if (RegisterNukeJobFromFile (infile)) {
+      std::cerr << "Error registering Nuke job from file: " << argv[argc-1] << std::endl;
+      exit (1);
+    }
+    break;
+  case TOJ_XSI:
+    if (RegisterXSIJobFromFile (infile)) {
+      std::cerr << "Error registering XSI job from file: " << argv[argc-1] << std::endl;
+      exit (1);
+    }
+  }
 
   std::cerr << "Job sent successfuly to the queue\n";
 
   exit (0);
 }
 
-void presentation (void)
-{
+void presentation (void) {
   std::cout << "DrQueue - by Jorge Daza Garcia-Blanes\n\n";
 }
 
-void cleanup (int signum)
-{
+void cleanup (int signum) {
   exit(0);
 }
 
-void usage (void)
-{       
+void usage (void) {
   std::cerr << "Usage: sendjob [-vh] [-f frameStart[:frameEnd[:stepFrame]]] -t <type> <job_file>\n"
-                        << "Valid options:\n"
-                        << "\t-v version information\n"
-                        << "\t-h prints this help\n"
-                        << "\t-f [frameStart[:frameEnd[:stepFrame]]]\n"
-                        << "\t-t [general|maya|blender|mentalray|bmrt|aqsis|3delight|pixie|lightwave|terragen|nuke|aftereffects|shake|xsi] type of job\n";
-}           
+  << "Valid options:\n"
+  << "\t-v version information\n"
+  << "\t-h prints this help\n"
+  << "\t-f [frameStart[:frameEnd[:stepFrame]]]\n"
+  << "\t-t [general|maya|blender|mentalray|bmrt|aqsis|3delight|pixie|lightwave|terragen|nuke|aftereffects|shake|xsi] type of job\n";
+}
 
 
-/*      
-  unlike the other Register functions, General does not parse the infile.  It will execute it instead.
-*/          
-int RegisterGeneralJob (char* infile, int frameStart, int frameEnd, int frameStep)
-{           
+/*
+    unlike the other Register functions, General does not parse the infile.  It will execute it instead.
+*/
+int RegisterGeneralJob (char* infile, int frameStart, int frameEnd, int frameStep) {
   // Job variables for the script generator
   struct job job;
   struct generalsgi generalSgi;
@@ -244,7 +241,7 @@ int RegisterGeneralJob (char* infile, int frameStart, int frameEnd, int frameSte
     return 1;
   }
 
-job.status = JOBSTATUS_WAITING;
+  job.status = JOBSTATUS_WAITING;
   job.frame_info = NULL;
   job.envvars.variables = NULL;
   job.envvars.nvariables = 0;
@@ -283,19 +280,19 @@ job.status = JOBSTATUS_WAITING;
   job.limits.memory = 0;
   strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
 
-/*
-  fprintf(stderr,"DEBUG: ----\n");
-  fprintf(stderr,"DEBUG: user_id: %d\n",uid);
-  fprintf(stderr,"DEBUG: group_id: %d\n",gid);
-  fprintf(stderr,"DEBUG: script: %s\n",generalSgi.script);
-  fprintf(stderr,"DEBUG: scriptDir: %s\n",generalSgi.scriptDir);
-  fprintf(stderr,"DEBUG: frame_start: %d\n",job.frame_start);
-  fprintf(stderr,"DEBUG:   frame_end: %d\n",job.frame_end);
-  fprintf(stderr,"DEBUG:  frame_step: %d\n",job.frame_step);
-  fprintf(stderr,"DEBUG: ----\n");
-*/
+  /*
+   fprintf(stderr,"DEBUG: ----\n");
+   fprintf(stderr,"DEBUG: user_id: %d\n",uid);
+   fprintf(stderr,"DEBUG: group_id: %d\n",gid);
+   fprintf(stderr,"DEBUG: script: %s\n",generalSgi.script);
+   fprintf(stderr,"DEBUG: scriptDir: %s\n",generalSgi.scriptDir);
+   fprintf(stderr,"DEBUG: frame_start: %d\n",job.frame_start);
+   fprintf(stderr,"DEBUG:   frame_end: %d\n",job.frame_end);
+   fprintf(stderr,"DEBUG:  frame_step: %d\n",job.frame_step);
+   fprintf(stderr,"DEBUG: ----\n");
+  */
 
-if (!register_job(&job)) {
+  if (!register_job(&job)) {
     std::cerr << "Error sending General job to the queue\n";
     return 1;
   }
@@ -303,8 +300,7 @@ if (!register_job(&job)) {
   return 0;
 }
 
-int RegisterMayaJobFromFile (std::ifstream &infile)
-{
+int RegisterMayaJobFromFile (std::ifstream &infile) {
   // Job variables for the script generator
   struct job job;
   struct mayasgi mayaSgi;
@@ -330,25 +326,25 @@ int RegisterMayaJobFromFile (std::ifstream &infile)
   infile >> frameStep;
   infile >> resX;
   infile >> resY;
-  getline(infile,scenePath);	//
-  getline(infile,scenePath);	// Get two times because '>>' leaves the pointer before \n 
+  getline(infile,scenePath); //
+  getline(infile,scenePath); // Get two times because '>>' leaves the pointer before \n
   getline(infile,renderDir);
   getline(infile,projectDir);
   getline(infile,fileFormat);
   getline(infile,image);
 
-//	mayasgi.mentalray = GTK_TOGGLE_BUTTON(info->koji_maya.cbmentalray)->active;
-//	strncpy (mayasgi.renderdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.erenderdir)),BUFFERLEN-1);
-//	strncpy (mayasgi.projectdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eprojectdir)),BUFFERLEN-1);
-//	strncpy (mayasgi.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escene)),BUFFERLEN-1);
-//	strncpy (mayasgi.precommand,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eprecommand)),BUFFERLEN-1);
-//	strncpy (mayasgi.postcommand,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.epostcommand)),BUFFERLEN-1);	
-//	strncpy (mayasgi.image,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eimage)),BUFFERLEN-1);
-//	strncpy (mayasgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escript)),BUFFERLEN-1);
-//	strncpy (mayasgi.file_owner,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.efile_owner)),BUFFERLEN-1);
-//	strncpy (mayasgi.camera,"",BUFFERLEN-1);
-//	mayasgi.res_x = mayasgi.res_y = -1;
-//	strncpy (mayasgi.format,"",BUFFERLEN-1);
+  // mayasgi.mentalray = GTK_TOGGLE_BUTTON(info->koji_maya.cbmentalray)->active;
+  // strncpy (mayasgi.renderdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.erenderdir)),BUFFERLEN-1);
+  // strncpy (mayasgi.projectdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eprojectdir)),BUFFERLEN-1);
+  // strncpy (mayasgi.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escene)),BUFFERLEN-1);
+  // strncpy (mayasgi.precommand,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eprecommand)),BUFFERLEN-1);
+  // strncpy (mayasgi.postcommand,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.epostcommand)),BUFFERLEN-1);
+  // strncpy (mayasgi.image,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eimage)),BUFFERLEN-1);
+  // strncpy (mayasgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escript)),BUFFERLEN-1);
+  // strncpy (mayasgi.file_owner,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.efile_owner)),BUFFERLEN-1);
+  // strncpy (mayasgi.camera,"",BUFFERLEN-1);
+  // mayasgi.res_x = mayasgi.res_y = -1;
+  // strncpy (mayasgi.format,"",BUFFERLEN-1);
 
   mayaSgi.mentalray = mentalRay;
   strncpy(mayaSgi.renderdir,renderDir.c_str(),BUFFERLEN-1);
@@ -363,7 +359,7 @@ int RegisterMayaJobFromFile (std::ifstream &infile)
   mayaSgi.res_x = resX;
   mayaSgi.res_y = resY;
   strncpy(mayaSgi.format,fileFormat.c_str(),BUFFERLEN-1);
-  
+
   if (!(pathToScript = mayasg_create(&mayaSgi))) {
     std::cerr << "Error creating script file\n";
     return 1;
@@ -373,11 +369,11 @@ int RegisterMayaJobFromFile (std::ifstream &infile)
   strncpy (job.cmd,pathToScript,MAXCMDLEN-1);
   strncpy (job.owner,owner.c_str(),MAXNAMELEN-1);
   strncpy (job.email,owner.c_str(),MAXNAMELEN-1);
- 
+
   job.autoRequeue = 1;
   job.status = JOBSTATUS_WAITING;
   job.frame_info = NULL;
-  
+
   job.frame_start = frameStart;
   job.frame_end = frameEnd;
   job.frame_step = frameStep;
@@ -396,7 +392,7 @@ int RegisterMayaJobFromFile (std::ifstream &infile)
   strncpy (job.koji.maya.projectdir,projectDir.c_str(),BUFFERLEN-1);
   strncpy (job.koji.maya.image,"",BUFFERLEN-1);
   strncpy (job.koji.maya.viewcmd,"",BUFFERLEN-1);
-  
+
   job.envvars.variables = NULL;
   job.envvars.nvariables = 0;
   job.envvars.evshmid = -1;
@@ -416,8 +412,7 @@ int RegisterMayaJobFromFile (std::ifstream &infile)
   return 0;
 }
 
-int RegisterMentalrayJobFromFile (std::ifstream &infile)
-{
+int RegisterMentalrayJobFromFile (std::ifstream &infile) {
   // Job variables for the script generator
   struct job job;
   struct mentalraysgi mentalraySgi;
@@ -441,8 +436,8 @@ int RegisterMentalrayJobFromFile (std::ifstream &infile)
   infile >> frameStep;
   infile >> resX;
   infile >> resY;
-  getline(infile,scenePath);	//
-  getline(infile,scenePath);	// Get two times because '>>' leaves the pointer before \n 
+  getline(infile,scenePath); //
+  getline(infile,scenePath); // Get two times because '>>' leaves the pointer before \n
   getline(infile,renderDir);
   getline(infile,fileFormat);
   getline(infile,image);
@@ -482,8 +477,8 @@ int RegisterMentalrayJobFromFile (std::ifstream &infile)
   job.limits.os_flags = OSF_LINUX;
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
-	job.limits.memory = 0;
-	strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
+  job.limits.memory = 0;
+  strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
 
   if (!register_job(&job)) {
     std::cerr << "Error sending job to the queue\n";
@@ -493,8 +488,7 @@ int RegisterMentalrayJobFromFile (std::ifstream &infile)
   return 0;
 }
 
-int RegisterBlenderJobFromFile (std::ifstream &infile)
-{
+int RegisterBlenderJobFromFile (std::ifstream &infile) {
   // Job variables for the script generator
   struct job job;
   struct blendersgi blenderSgi;
@@ -508,8 +502,8 @@ int RegisterBlenderJobFromFile (std::ifstream &infile)
   infile >> frameStart;
   infile >> frameEnd;
   infile >> frameStep;
-  getline(infile,scenePath);	//
-  getline(infile,scenePath);	// Get two times because '>>' leaves the pointer before \n 
+  getline(infile,scenePath); //
+  getline(infile,scenePath); // Get two times because '>>' leaves the pointer before \n
 
   strncpy(blenderSgi.scene,scenePath.c_str(),BUFFERLEN-1);
   snprintf(blenderSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
@@ -517,7 +511,7 @@ int RegisterBlenderJobFromFile (std::ifstream &infile)
   job.autoRequeue = 1;
 
   if (!(pathToScript = blendersg_create(&blenderSgi))) {
-		std::cerr << "Error creating script file\n";
+    std::cerr << "Error creating script file\n";
     return 1;
   }
 
@@ -538,19 +532,18 @@ int RegisterBlenderJobFromFile (std::ifstream &infile)
   job.limits.os_flags = OSF_LINUX;
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
-	job.limits.memory = 0;
-	strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
+  job.limits.memory = 0;
+  strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
 
   if (!register_job(&job)) {
-		std::cerr << "Error sending job to the queue\n";
+    std::cerr << "Error sending job to the queue\n";
     return 1;
   }
 
   return 0;
 }
 
-int RegisterLightwaveJobFromFile (std::ifstream &infile)
-{
+int RegisterLightwaveJobFromFile (std::ifstream &infile) {
   // Job variables for the script generator
   struct job job;
   struct lightwavesgi lightwaveSgi;
@@ -560,7 +553,7 @@ int RegisterLightwaveJobFromFile (std::ifstream &infile)
   int frameStart,frameEnd,frameStep;
   std::string scenePath;
   std::string configDir;
-	std::string projectDir;
+  std::string projectDir;
   char *pathToScript;
 
   getline(infile,owner);
@@ -568,15 +561,15 @@ int RegisterLightwaveJobFromFile (std::ifstream &infile)
   infile >> frameStart;
   infile >> frameEnd;
   infile >> frameStep;
-  getline(infile,scenePath);	//
-  getline(infile,scenePath);	// Get two times because '>>' leaves the pointer before \n 
+  getline(infile,scenePath); //
+  getline(infile,scenePath); // Get two times because '>>' leaves the pointer before \n
   getline(infile,configDir);
-	getline(infile,projectDir);
+  getline(infile,projectDir);
 
-//  strncpy(lightwaveSgi.file_owner,owner.c_str(),BUFFERLEN-1);
+  //  strncpy(lightwaveSgi.file_owner,owner.c_str(),BUFFERLEN-1);
   strncpy(lightwaveSgi.scene,scenePath.c_str(),BUFFERLEN-1);
   strncpy(lightwaveSgi.configdir,configDir.c_str(),BUFFERLEN-1);
-	strncpy(lightwaveSgi.projectdir,projectDir.c_str(),BUFFERLEN-1);
+  strncpy(lightwaveSgi.projectdir,projectDir.c_str(),BUFFERLEN-1);
   snprintf(lightwaveSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
 
   job.autoRequeue = 1;
@@ -598,14 +591,14 @@ int RegisterLightwaveJobFromFile (std::ifstream &infile)
   job.koj = KOJ_LIGHTWAVE;
   strncpy (job.koji.lightwave.scene,scenePath.c_str(),BUFFERLEN-1);
   strncpy (job.koji.lightwave.configdir,configDir.c_str(),BUFFERLEN-1);
-	strncpy (job.koji.lightwave.projectdir,projectDir.c_str(),BUFFERLEN-1);
+  strncpy (job.koji.lightwave.projectdir,projectDir.c_str(),BUFFERLEN-1);
   strncpy (job.koji.lightwave.viewcmd,"",BUFFERLEN-1);
 
   job.limits.os_flags = OSF_LINUX;
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
-	job.limits.memory = 0;
-	strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
+  job.limits.memory = 0;
+  strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
 
   if (!register_job(&job)) {
     std::cerr << "Error sending job to the queue\n";
@@ -615,8 +608,7 @@ int RegisterLightwaveJobFromFile (std::ifstream &infile)
   return 0;
 }
 
-int RegisterTerragenJobFromFile (std::ifstream &infile)
-{
+int RegisterTerragenJobFromFile (std::ifstream &infile) {
   // Job variables for the script generator
   struct job job;
   struct terragensgi terragenSgi;
@@ -626,7 +618,7 @@ int RegisterTerragenJobFromFile (std::ifstream &infile)
   int frameStart,frameEnd,frameStep;
   std::string scenePath;
   std::string worldfile;
-	std::string terrainfile;
+  std::string terrainfile;
   char *pathToScript;
 
   getline(infile,owner);
@@ -634,15 +626,15 @@ int RegisterTerragenJobFromFile (std::ifstream &infile)
   infile >> frameStart;
   infile >> frameEnd;
   infile >> frameStep;
-  getline(infile,scenePath);	//
-  getline(infile,scenePath);	// Get two times because '>>' leaves the pointer before \n 
+  getline(infile,scenePath); //
+  getline(infile,scenePath); // Get two times because '>>' leaves the pointer before \n
   getline(infile,worldfile);
-	getline(infile,terrainfile);
+  getline(infile,terrainfile);
 
   strncpy(terragenSgi.file_owner,owner.c_str(),BUFFERLEN-1);
   strncpy(terragenSgi.scriptfile,scenePath.c_str(),BUFFERLEN-1);
   strncpy(terragenSgi.worldfile,worldfile.c_str(),BUFFERLEN-1);
-	strncpy(terragenSgi.terrainfile,terrainfile.c_str(),BUFFERLEN-1);
+  strncpy(terragenSgi.terrainfile,terrainfile.c_str(),BUFFERLEN-1);
   snprintf(terragenSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
 
   job.autoRequeue = 1;
@@ -664,14 +656,14 @@ int RegisterTerragenJobFromFile (std::ifstream &infile)
   job.koj = KOJ_TERRAGEN;
   strncpy (job.koji.terragen.scriptfile,scenePath.c_str(),BUFFERLEN-1);
   strncpy (job.koji.terragen.worldfile,worldfile.c_str(),BUFFERLEN-1);
-	strncpy (job.koji.terragen.terrainfile,terrainfile.c_str(),BUFFERLEN-1);
+  strncpy (job.koji.terragen.terrainfile,terrainfile.c_str(),BUFFERLEN-1);
   strncpy (job.koji.terragen.viewcmd,"",BUFFERLEN-1);
 
   job.limits.os_flags = OSF_LINUX;
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
-	job.limits.memory = 0;
-	strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
+  job.limits.memory = 0;
+  strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
 
   if (!register_job(&job)) {
     std::cerr << "Error sending job to the queue\n";
@@ -681,8 +673,7 @@ int RegisterTerragenJobFromFile (std::ifstream &infile)
   return 0;
 }
 
-int RegisterShakeJobFromFile (std::ifstream &infile)
-{
+int RegisterShakeJobFromFile (std::ifstream &infile) {
   // Job variables for the script generator
   struct job job;
   struct shakesgi shakeSgi;
@@ -698,10 +689,10 @@ int RegisterShakeJobFromFile (std::ifstream &infile)
   infile >> frameStart;
   infile >> frameEnd;
   infile >> frameStep;
-  getline(infile,scenePath);	//
-  getline(infile,scenePath);	// Get two times because '>>' leaves the pointer before \n 
+  getline(infile,scenePath); //
+  getline(infile,scenePath); // Get two times because '>>' leaves the pointer before \n
 
-//  strncpy(shakeSgi.file_owner,owner.c_str(),BUFFERLEN-1);
+  //  strncpy(shakeSgi.file_owner,owner.c_str(),BUFFERLEN-1);
   strncpy(shakeSgi.script,scenePath.c_str(),BUFFERLEN-1);
   snprintf(shakeSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
 
@@ -728,8 +719,8 @@ int RegisterShakeJobFromFile (std::ifstream &infile)
   job.limits.os_flags = OSF_LINUX;
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
-	job.limits.memory = 0;
-	strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
+  job.limits.memory = 0;
+  strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
 
   if (!register_job(&job)) {
     std::cerr << "Error sending job to the queue\n";
@@ -739,8 +730,7 @@ int RegisterShakeJobFromFile (std::ifstream &infile)
   return 0;
 }
 
-int RegisterNukeJobFromFile (std::ifstream &infile)
-{
+int RegisterNukeJobFromFile (std::ifstream &infile) {
   // Job variables for the script generator
   struct job job;
   struct nukesgi nukeSgi;
@@ -756,10 +746,10 @@ int RegisterNukeJobFromFile (std::ifstream &infile)
   infile >> frameStart;
   infile >> frameEnd;
   infile >> frameStep;
-  getline(infile,scenePath);	//
-  getline(infile,scenePath);	// Get two times because '>>' leaves the pointer before \n 
+  getline(infile,scenePath); //
+  getline(infile,scenePath); // Get two times because '>>' leaves the pointer before \n
 
-//  strncpy(nukeSgi.file_owner,owner.c_str(),BUFFERLEN-1);
+  //  strncpy(nukeSgi.file_owner,owner.c_str(),BUFFERLEN-1);
   strncpy(nukeSgi.scene,scenePath.c_str(),BUFFERLEN-1);
   snprintf(nukeSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
 
@@ -786,8 +776,8 @@ int RegisterNukeJobFromFile (std::ifstream &infile)
   job.limits.os_flags = OSF_LINUX;
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
-	job.limits.memory = 0;
-	strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
+  job.limits.memory = 0;
+  strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
 
   if (!register_job(&job)) {
     std::cerr << "Error sending job to the queue\n";
@@ -797,8 +787,7 @@ int RegisterNukeJobFromFile (std::ifstream &infile)
   return 0;
 }
 
-int RegisterThreedelightJobFromFile (std::ifstream &infile)
-{
+int RegisterThreedelightJobFromFile (std::ifstream &infile) {
   // Job variables for the script generator
   struct job job;
   struct threedelightsgi threedelightSgi;
@@ -814,8 +803,8 @@ int RegisterThreedelightJobFromFile (std::ifstream &infile)
   infile >> frameStart;
   infile >> frameEnd;
   infile >> frameStep;
-  getline(infile,scenePath);	//
-  getline(infile,scenePath);	// Get two times because '>>' leaves the pointer before \n 
+  getline(infile,scenePath); //
+  getline(infile,scenePath); // Get two times because '>>' leaves the pointer before \n
 
   strncpy(threedelightSgi.file_owner,owner.c_str(),BUFFERLEN-1);
   strncpy(threedelightSgi.scene,scenePath.c_str(),BUFFERLEN-1);
@@ -844,8 +833,8 @@ int RegisterThreedelightJobFromFile (std::ifstream &infile)
   job.limits.os_flags = OSF_LINUX;
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
-	job.limits.memory = 0;
-	strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
+  job.limits.memory = 0;
+  strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
 
   if (!register_job(&job)) {
     std::cerr << "Error sending job to the queue\n";
@@ -855,8 +844,7 @@ int RegisterThreedelightJobFromFile (std::ifstream &infile)
   return 0;
 }
 
-int RegisterPixieJobFromFile (std::ifstream &infile)
-{
+int RegisterPixieJobFromFile (std::ifstream &infile) {
   // Job variables for the script generator
   struct job job;
   struct pixiesgi pixieSgi;
@@ -872,10 +860,10 @@ int RegisterPixieJobFromFile (std::ifstream &infile)
   infile >> frameStart;
   infile >> frameEnd;
   infile >> frameStep;
-  getline(infile,scenePath);	//
-  getline(infile,scenePath);	// Get two times because '>>' leaves the pointer before \n 
+  getline(infile,scenePath); //
+  getline(infile,scenePath); // Get two times because '>>' leaves the pointer before \n
 
-//  strncpy(pixieSgi.file_owner,owner.c_str(),BUFFERLEN-1);
+  //  strncpy(pixieSgi.file_owner,owner.c_str(),BUFFERLEN-1);
   strncpy(pixieSgi.scene,scenePath.c_str(),BUFFERLEN-1);
   snprintf(pixieSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
   job.autoRequeue = 1;
@@ -901,8 +889,8 @@ int RegisterPixieJobFromFile (std::ifstream &infile)
   job.limits.os_flags = OSF_LINUX;
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
-	job.limits.memory = 0;
-	strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
+  job.limits.memory = 0;
+  strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
 
   if (!register_job(&job)) {
     std::cerr << "Error sending job to the queue\n";
@@ -912,8 +900,7 @@ int RegisterPixieJobFromFile (std::ifstream &infile)
   return 0;
 }
 
-int RegisterAftereffectsJobFromFile (std::ifstream &infile)
-{
+int RegisterAftereffectsJobFromFile (std::ifstream &infile) {
   // Job variables for the script generator
   struct job job;
   struct aftereffectssgi aftereffectsSgi;
@@ -930,11 +917,11 @@ int RegisterAftereffectsJobFromFile (std::ifstream &infile)
   infile >> frameStart;
   infile >> frameEnd;
   infile >> frameStep;
-  getline(infile,scenePath);	//
-  getline(infile,scenePath);	// Get two times because '>>' leaves the pointer before \n 
+  getline(infile,scenePath); //
+  getline(infile,scenePath); // Get two times because '>>' leaves the pointer before \n
   getline(infile,comp);
 
-//  strncpy(aftereffectsSgi.file_owner,owner.c_str(),BUFFERLEN-1);
+  //  strncpy(aftereffectsSgi.file_owner,owner.c_str(),BUFFERLEN-1);
   strncpy(aftereffectsSgi.project,scenePath.c_str(),BUFFERLEN-1);
   strncpy(aftereffectsSgi.comp,comp.c_str(),BUFFERLEN-1);
   snprintf(aftereffectsSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
@@ -963,8 +950,8 @@ int RegisterAftereffectsJobFromFile (std::ifstream &infile)
   job.limits.os_flags = OSF_LINUX;
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
-	job.limits.memory = 0;
-	strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
+  job.limits.memory = 0;
+  strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
 
   if (!register_job(&job)) {
     std::cerr << "Error sending job to the queue\n";
@@ -974,8 +961,7 @@ int RegisterAftereffectsJobFromFile (std::ifstream &infile)
   return 0;
 }
 
-int RegisterAqsisJobFromFile (std::ifstream &infile)
-{
+int RegisterAqsisJobFromFile (std::ifstream &infile) {
   // Job variables for the script generator
   struct job job;
   struct aqsissgi aqsisSgi;
@@ -991,10 +977,10 @@ int RegisterAqsisJobFromFile (std::ifstream &infile)
   infile >> frameStart;
   infile >> frameEnd;
   infile >> frameStep;
-  getline(infile,scenePath);	//
-  getline(infile,scenePath);	// Get two times because '>>' leaves the pointer before \n 
+  getline(infile,scenePath); //
+  getline(infile,scenePath); // Get two times because '>>' leaves the pointer before \n
 
-//  strncpy(aqsisSgi.file_owner,owner.c_str(),BUFFERLEN-1);
+  //  strncpy(aqsisSgi.file_owner,owner.c_str(),BUFFERLEN-1);
   strncpy(aqsisSgi.scene,scenePath.c_str(),BUFFERLEN-1);
   snprintf(aqsisSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
 
@@ -1021,8 +1007,8 @@ int RegisterAqsisJobFromFile (std::ifstream &infile)
   job.limits.os_flags = OSF_LINUX;
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
-	job.limits.memory = 0;
-	strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
+  job.limits.memory = 0;
+  strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
 
   if (!register_job(&job)) {
     std::cerr << "Error sending job to the queue\n";
@@ -1032,8 +1018,7 @@ int RegisterAqsisJobFromFile (std::ifstream &infile)
   return 0;
 }
 
-int RegisterMantraJobFromFile (std::ifstream &infile)
-{
+int RegisterMantraJobFromFile (std::ifstream &infile) {
   // Job variables for the script generator
   struct job job;
   struct mantrasgi mantraSgi;
@@ -1049,10 +1034,10 @@ int RegisterMantraJobFromFile (std::ifstream &infile)
   infile >> frameStart;
   infile >> frameEnd;
   infile >> frameStep;
-  getline(infile,scenePath);	//
-  getline(infile,scenePath);	// Get two times because '>>' leaves the pointer before \n 
+  getline(infile,scenePath); //
+  getline(infile,scenePath); // Get two times because '>>' leaves the pointer before \n
 
-//  strncpy(aqsisSgi.file_owner,owner.c_str(),BUFFERLEN-1);
+  //  strncpy(aqsisSgi.file_owner,owner.c_str(),BUFFERLEN-1);
   strncpy(mantraSgi.scene,scenePath.c_str(),BUFFERLEN-1);
   snprintf(mantraSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
 
@@ -1077,8 +1062,8 @@ int RegisterMantraJobFromFile (std::ifstream &infile)
   job.limits.os_flags = OSF_LINUX;
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
-	job.limits.memory = 0;
-	strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
+  job.limits.memory = 0;
+  strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
 
   if (!register_job(&job)) {
     std::cerr << "Error sending job to the queue\n";
@@ -1088,8 +1073,7 @@ int RegisterMantraJobFromFile (std::ifstream &infile)
   return 0;
 }
 
-int RegisterBmrtJobFromFile (std::ifstream &infile)
-{
+int RegisterBmrtJobFromFile (std::ifstream &infile) {
   // Job variables for the script generator
   struct job job;
   struct bmrtsgi bmrtSgi;
@@ -1105,10 +1089,10 @@ int RegisterBmrtJobFromFile (std::ifstream &infile)
   infile >> frameStart;
   infile >> frameEnd;
   infile >> frameStep;
-  getline(infile,scenePath);	//
-  getline(infile,scenePath);	// Get two times because '>>' leaves the pointer before \n 
+  getline(infile,scenePath); //
+  getline(infile,scenePath); // Get two times because '>>' leaves the pointer before \n
 
-//  strncpy(bmrtSgi.file_owner,owner.c_str(),BUFFERLEN-1);
+  //  strncpy(bmrtSgi.file_owner,owner.c_str(),BUFFERLEN-1);
   strncpy(bmrtSgi.scene,scenePath.c_str(),BUFFERLEN-1);
   snprintf(bmrtSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
 
@@ -1135,8 +1119,8 @@ int RegisterBmrtJobFromFile (std::ifstream &infile)
   job.limits.os_flags = OSF_LINUX;
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
-	job.limits.memory = 0;
-	strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
+  job.limits.memory = 0;
+  strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
 
   if (!register_job(&job)) {
     std::cerr << "Error sending job to the queue\n";
@@ -1146,8 +1130,7 @@ int RegisterBmrtJobFromFile (std::ifstream &infile)
   return 0;
 }
 
-int RegisterXSIJobFromFile (std::ifstream &infile)
-{
+int RegisterXSIJobFromFile (std::ifstream &infile) {
   // Job variables for the script generator
   struct job job;
   struct xsisgi xsiSgi;
@@ -1168,8 +1151,8 @@ int RegisterXSIJobFromFile (std::ifstream &infile)
   int runScript;
   std::string scriptRun;
 
-  getline(infile,owner); 
-  getline(infile,jobName); 
+  getline(infile,owner);
+  getline(infile,jobName);
   getline(infile,xsiDir); //the xsi version directory i.e. XSI_5.1
   infile >> priority;
   infile >> maxcpus;
@@ -1181,16 +1164,16 @@ int RegisterXSIJobFromFile (std::ifstream &infile)
   infile >> resX;
   infile >> resY;
   infile >> skipFrames;
-  getline(infile,scenePath);	//
-  getline(infile,scenePath);	// Get two times because '>>' leaves the pointer before \n 
+  getline(infile,scenePath); //
+  getline(infile,scenePath); // Get two times because '>>' leaves the pointer before \n
   getline(infile,pass);
   getline(infile,renderDir);
   getline(infile,image);
   getline(infile,imageExt);
   infile >> runScript;
   if (runScript) {
-	  getline(infile,scriptRun); //
-	  getline(infile,scriptRun); // Get two times because '>>' leaves the pointer before \n
+    getline(infile,scriptRun); //
+    getline(infile,scriptRun); // Get two times because '>>' leaves the pointer before \n
   }
 
   strncpy(xsiSgi.file_owner,owner.c_str(),BUFFERLEN-1);
@@ -1206,22 +1189,22 @@ int RegisterXSIJobFromFile (std::ifstream &infile)
   strncpy(xsiSgi.imageExt,imageExt.c_str(),BUFFERLEN-1);
   xsiSgi.runScript = runScript;
   strncpy(xsiSgi.scriptRun,scriptRun.c_str(),BUFFERLEN-1);
-  
+
   if (!(pathToScript = xsisg_create(&xsiSgi))) {
     std::cerr << "Error creating script file\n";
     return 1;
   }
-  
+
   //script file is created - now let's build the job and submit it.
   strncpy (job.name,jobName.c_str(),MAXNAMELEN-1);
   strncpy (job.cmd,pathToScript,MAXCMDLEN-1);
   strncpy (job.owner,owner.c_str(),MAXNAMELEN-1);
   strncpy (job.email,owner.c_str(),MAXNAMELEN-1);
-  
+
   job.autoRequeue = 0;
   job.status = JOBSTATUS_WAITING;
   job.frame_info = NULL;
-  
+
   job.frame_start = frameStart;
   job.frame_end = frameEnd;
   job.frame_pad = framePad;
@@ -1247,7 +1230,7 @@ int RegisterXSIJobFromFile (std::ifstream &infile)
   job.envvars.variables = NULL;
   job.envvars.nvariables = 0;
   job.envvars.evshmid = -1;
-  
+
   if (!register_job(&job)) {
     std::cerr << "Error sending job to the queue\n";
     return 1;
@@ -1256,41 +1239,40 @@ int RegisterXSIJobFromFile (std::ifstream &infile)
   return 0;
 }
 
-int str2toj (char *str)
-{
-	int toj = TOJ_NONE;
+int str2toj (char *str) {
+  int toj = TOJ_NONE;
 
-	if (strstr(str,"general") != NULL) {
-		toj = TOJ_GENERAL;
-	} else if (strstr(str,"maya") != NULL) {
-		toj = TOJ_MAYA;
-	} else if (strstr(str,"mentalray") != NULL) {
-		toj = TOJ_MENTALRAY;
-	} else if (strstr(str,"blender") != NULL) {
-		toj = TOJ_BLENDER;
-	} else if (strstr(str,"bmrt") != NULL) {
-		toj = TOJ_BMRT;
-	} else if (strstr(str,"3delight") != NULL) {
-		toj = TOJ_THREEDELIGHT;
-	} else if (strstr(str,"aqsis") != NULL) {
-		toj = TOJ_AQSIS;
-	} else if (strstr(str,"mantra") != NULL) {
-		toj = TOJ_MANTRA;
-	} else if (strstr(str,"lightwave") != NULL) {
-		toj = TOJ_LIGHTWAVE;
-	} else if (strstr(str,"pixie") != NULL) {
-		toj = TOJ_PIXIE;
-	} else if (strstr(str,"aftereffects") != NULL) {
-		toj = TOJ_AFTEREFFECTS;
-	} else if (strstr(str,"shake") != NULL) {
-		toj = TOJ_SHAKE;
-	} else if (strstr(str,"nuke") != NULL) {
-		toj = TOJ_NUKE;
-	} else if (strstr(str,"terragen") != NULL) {
-		toj = TOJ_TERRAGEN;		
-	} else if (strstr(str,"xsi") != NULL) {
-		toj = TOJ_XSI;
-	}
+  if (strstr(str,"general") != NULL) {
+    toj = TOJ_GENERAL;
+  } else if (strstr(str,"maya") != NULL) {
+    toj = TOJ_MAYA;
+  } else if (strstr(str,"mentalray") != NULL) {
+    toj = TOJ_MENTALRAY;
+  } else if (strstr(str,"blender") != NULL) {
+    toj = TOJ_BLENDER;
+  } else if (strstr(str,"bmrt") != NULL) {
+    toj = TOJ_BMRT;
+  } else if (strstr(str,"3delight") != NULL) {
+    toj = TOJ_THREEDELIGHT;
+  } else if (strstr(str,"aqsis") != NULL) {
+    toj = TOJ_AQSIS;
+  } else if (strstr(str,"mantra") != NULL) {
+    toj = TOJ_MANTRA;
+  } else if (strstr(str,"lightwave") != NULL) {
+    toj = TOJ_LIGHTWAVE;
+  } else if (strstr(str,"pixie") != NULL) {
+    toj = TOJ_PIXIE;
+  } else if (strstr(str,"aftereffects") != NULL) {
+    toj = TOJ_AFTEREFFECTS;
+  } else if (strstr(str,"shake") != NULL) {
+    toj = TOJ_SHAKE;
+  } else if (strstr(str,"nuke") != NULL) {
+    toj = TOJ_NUKE;
+  } else if (strstr(str,"terragen") != NULL) {
+    toj = TOJ_TERRAGEN;
+  } else if (strstr(str,"xsi") != NULL) {
+    toj = TOJ_XSI;
+  }
 
-	return toj;
+  return toj;
 }
