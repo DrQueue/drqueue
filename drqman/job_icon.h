@@ -7,7 +7,8 @@
 static const guint8 job_icon[] __attribute__ ((__aligned__ (4))) =
 #else
 static const guint8 job_icon[] =
-#endif { ""
+#endif
+{ ""
   /* Pixbuf magic (0x47646b50) */
   "GdkP"
   /* length: header (24) + pixel_data (711) */
@@ -46,6 +47,6 @@ static const guint8 job_icon[] =
   "\0\0""2!\15\3\352:\26\6\3778\25\6\377\23\7\2\267\0\0\0\6\233\0\0\0\0"
   "\4\0\0\0(\36\13\3\340\26\10\2\304\0\0\0\12\235\0\0\0\0\2\0\0\0\27\0\0"
   "\0\20\377\0\0\0\0\327\0\0\0\0"
-  };
+};
 
 

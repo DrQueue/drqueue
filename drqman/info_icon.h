@@ -7,7 +7,8 @@
 static const guint8 info_icon[] __attribute__ ((__aligned__ (4))) =
 #else
 static const guint8 info_icon[] =
-#endif { ""
+#endif
+{ ""
   /* Pixbuf magic (0x47646b50) */
   "GdkP"
   /* length: header (24) + pixel_data (995) */
@@ -61,6 +62,6 @@ static const guint8 info_icon[] =
   "\377HH\213\37555g\307\21\21\"f\30\30/\7\227\0\0\0\0\6\30\30/\15\10\10"
   "\20<\12\12\23W\11\11\21Q\12\12\22""9\30\30.\16\377\0\0\0\0\255\0\0\0"
   "\0"
-  };
+};
 
 
