@@ -1,13 +1,11 @@
 # $Id$
 
 CC = gcc
-CPP = g++
+CXX = g++
 OBJS_LIBDRQUEUE = computer_info.o computer_status.o task.o logger.o communications.o \
 			computer.o request.o semaphores.o job.o drerrno.o database.o common.o \
 			generalsg.o mantrasg.o aqsissg.o mayasg.o mentalraysg.o blendersg.o bmrtsg.o pixiesg.o 3delightsg.o \
 			lightwavesg.o aftereffectssg.o shakesg.o terragensg.o nukesg.o xsisg.o turtlesg.o envvars.o
-
-#LDFLAGS =
 
 ifeq ($(origin INSTROOT),undefined)
 INSTROOT = /usr/local/drqueue
@@ -34,9 +32,12 @@ ifeq ($(origin systype),undefined)
  systype=$(shell uname -s)
 endif
 
+CFLAGS = -I. -g -O2 -Wall
+CPPFLAGS = -D_GNU_SOURCE -DCOMM_REPORT
+CXXFLAGS = $(CFLAGS) -D__CPLUSPLUS 
+
 ifeq ($(systype),Linux)
- CFLAGS += -DCOMM_REPORT -D_GNU_SOURCE -Wall -I. -D__LINUX -g -O2
- CPPFLAGS += -D__CPLUSPLUS -D_GNU_SOURCE -DCOMM_REPORT -Wall -I. -D__LINUX -g -O2
+ CPPFLAGS += -D__LINUX
  MAKE = make
 else 
  ifeq ($(systype),IRIX)
@@ -73,15 +74,20 @@ ifneq ($(origin LIBWRAP),undefined)
 endif
 
 #abstract make targets
-.PHONY: default all install miniinstall irix_install linux_install doc tags clean testing_env
+.PHONY: default all install miniinstall irix_install linux_install doc tags clean testing_env drqman
 
-all: base drqman
+BASE_C_TOOLS = slave master requeue jobfinfo blockhost ctask cjob jobinfo compinfo
+BASE_CXX_TOOLS = sendjob
 
-base: slave master requeue sendjob jobfinfo blockhost ctask cjob jobinfo compinfo
+all: base drqman/drqman
+
+drqman: drqman/drqman
+
+base: $(BASE_C_TOOLS) $(BASE_CXX_TOOLS)
 
 install: miniinstall $(systype)_install 
 
-drqman: libdrqueue.a
+drqman/drqman: libdrqueue.a
 	$(MAKE) -C drqman
 
 testing_env:
@@ -222,60 +228,42 @@ tags:
 	etags *.[ch] drqman/*.[ch]
 
 clean:
-	rm -fR *.o *.exe *~ libdrqueue.a slave master sendjob requeue jobfinfo jobinfo compinfo ctask cjob TAGS tmp/* logs/* db/* contrib/windows/*.exe bin/*.$(systype)
-	rm -fR blockhost
+	rm -fR *.o *.exe *~ libdrqueue.a $(BASE_C_TOOLS) $(BASE_CXX_TOOLS) TAGS tmp/* logs/* db/* contrib/windows/*.exe bin/*.$(systype)
 	$(MAKE) -C drqman clean
 
 #actual object make targets
-
-libdrqueue.a : $(OBJS_LIBDRQUEUE) libdrqueue.h
+libdrqueue.h: $(OBJS_LIBDRQUEUE:.o=.h)
+libdrqueue.a: $(OBJS_LIBDRQUEUE) libdrqueue.h
 	ar sq $@ $(OBJS_LIBDRQUEUE)
 
 ifeq ($(systype),CYGWIN_NT-5.1)
-
 contrib/windows/Resources/drqueue.res: contrib/windows/Resources/drqueue.rc
 	$(MAKE) -C contrib/windows/Resources
-slave: slave.o libdrqueue.a
-	$(CC) -o $@ slave.o libdrqueue.a $(LDFLAGS) #$(UIFLAGS) 
-master: master.o libdrqueue.a contrib/windows/Resources/drqueue.res
-	$(CC) -o $@ master.o libdrqueue.a $(LDFLAGS) #$(UIFLAGS) 
-
-else
-
-slave: slave.o libdrqueue.a
-	$(CC) -o $@ slave.o libdrqueue.a $(LDFLAGS)
-master: master.o libdrqueue.a
-	$(CC) -o $@ master.o libdrqueue.a $(LDFLAGS)
-
 endif
 
-requeue: requeue.o libdrqueue.a
-requeue.o: requeue.c
-	$(CC) -c $(CFLAGS) -o $@ $<
-jobfinfo: jobfinfo.o libdrqueue.a
-jobfinfo.o: jobfinfo.c
-	$(CC) -c $(CFLAGS) -o $@ $<
-jobinfo: jobinfo.o libdrqueue.a
-jobinfo.o: jobinfo.c
-	$(CC) -c $(CFLAGS) -o $@ $<
-blockhost: blockhost.o libdrqueue.a
-blockhost.o: blockhost.c
-	$(CC) -c $(CFLAGS) -o $@ $<
-ctask: ctask.o libdrqueue.a
-ctask.o: ctask.c
-	$(CC) -c $(CFLAGS) -o $@ $<
-cjob: cjob.o libdrqueue.a
-cjob.o: cjob.c
-	$(CC) -c $(CFLAGS) -o $@ $<
-compinfo: compinfo.o libdrqueue.a
-compinfo.o: compinfo.c
-	$(CC) -c $(CFLAGS) -o $@ $<
-
-sendjob: sendjob.o libdrqueue.a
-	$(CPP) $(CPPDFLAGS) -o $@ sendjob.o libdrqueue.a $(LDFLAGS)
-
-libdrqueue.h: computer_info.h computer_status.h task.h logger.h communications.h \
-			computer.h request.h semaphores.h job.h drerrno.h database.h common.h
-
+%.c: %.h
+%.cpp: %.h
 %.o: %.c %.h constants.h
-	$(CC) -c $(CFLAGS) -o $@ $<
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
+
+requeue: requeue.o libdrqueue.a
+	$(CC) $(LDFLAGS) $^ -o $@
+jobinfo: jobinfo.o libdrqueue.a
+	$(CC) $(LDFLAGS) $^ -o $@
+jobfinfo: jobfinfo.o libdrqueue.a
+	$(CC) $(LDFLAGS) $^ -o $@
+blockhost: blockhost.o libdrqueue.a
+	$(CC) $(LDFLAGS) $^ -o $@
+ctask: ctask.o libdrqueue.a
+	$(CC) $(LDFLAGS) $^ -o $@
+cjob: cjob.o libdrqueue.a
+	$(CC) $(LDFLAGS) $^ -o $@
+compinfo: compinfo.o libdrqueue.a
+	$(CC) $(LDFLAGS) $^ -o $@
+
+sendjob.o: sendjob.cpp sendjob.h
+	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) $<
+sendjob: sendjob.o libdrqueue.a
+	$(CXX) -o $@ $^ $(LDFLAGS)
+
+
