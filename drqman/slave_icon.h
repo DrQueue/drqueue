@@ -7,7 +7,8 @@
 static const guint8 slave_icon[] __attribute__ ((__aligned__ (4))) =
 #else
 static const guint8 slave_icon[] =
-#endif { ""
+#endif
+{ ""
   /* Pixbuf magic (0x47646b50) */
   "GdkP"
   /* length: header (24) + pixel_data (2004) */
@@ -89,6 +90,6 @@ static const guint8 slave_icon[] =
   "\5\5l\10\10\10r\10\10\10t\202\6\6\6t\13\10\10\10t\10\10\10s\5\5\5n\3"
   "\3\3h\1\1\1c\0\0\0[\0\0\0S\0\0\0H\0\0\0:\0\0\0&\0\0\0\11\377\0\0\0\0"
   "\205\0\0\0\0"
-  };
+};
 
 
