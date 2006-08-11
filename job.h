@@ -81,6 +81,9 @@ struct job_limits {
 /* KOJ SECTION */
 /* this union must have the appropiate information for every kind of job */
 union koj_info {		/* Kind of job information */
+	struct koji_general {
+    char *scriptdir;
+  } general;
 	struct koji_maya {
 		char scene[BUFFERLEN];
 		char renderdir[BUFFERLEN];	/* Output directory for the images */
@@ -119,7 +122,7 @@ union koj_info {		/* Kind of job information */
 		char scene[BUFFERLEN];
 		char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
 	} pixie;
-	struct kojo_3delight {
+	struct koji_3delight {
 		char scene[BUFFERLEN];
 		char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
 	} threedelight;
@@ -139,11 +142,11 @@ union koj_info {		/* Kind of job information */
 		char terrainfile[BUFFERLEN];	/* Terrain File */
 		char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
 	} terragen;
-	struct kojo_aqsis {
+	struct koji_aqsis {
 		char scene[BUFFERLEN];
 		char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
 	} aqsis;
-	struct kojo_mantra {
+	struct koji_mantra {
 		char scene[BUFFERLEN];
 		char renderdir[BUFFERLEN];
 		char viewcmd[BUFFERLEN];	/* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
