@@ -184,7 +184,7 @@ int main (int argc,char *argv[])
 
 void presentation (void)
 {
-  std::cout << "DrQueue - by Jorge Daza Garc� Blanes\n\n";
+  std::cout << "DrQueue - by Jorge Daza Garcia-Blanes\n\n";
 }
 
 void cleanup (int signum)
