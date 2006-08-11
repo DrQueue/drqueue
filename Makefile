@@ -7,7 +7,7 @@ OBJS_LIBDRQUEUE = computer_info.o computer_status.o task.o logger.o communicatio
 			generalsg.o mantrasg.o aqsissg.o mayasg.o mentalraysg.o blendersg.o bmrtsg.o pixiesg.o 3delightsg.o \
 			lightwavesg.o aftereffectssg.o shakesg.o terragensg.o nukesg.o xsisg.o turtlesg.o envvars.o
 
-LDFLAGS =
+#LDFLAGS =
 
 ifeq ($(origin INSTROOT),undefined)
 INSTROOT = /usr/local/drqueue
@@ -35,22 +35,22 @@ ifeq ($(origin systype),undefined)
 endif
 
 ifeq ($(systype),Linux)
- CFLAGS = -DCOMM_REPORT -D_GNU_SOURCE -Wall -I. -D__LINUX -g -O2
- CPPFLAGS = -D__CPLUSPLUS -D_GNU_SOURCE -DCOMM_REPORT -Wall -I. -D__LINUX -g -O2
+ CFLAGS += -DCOMM_REPORT -D_GNU_SOURCE -Wall -I. -D__LINUX -g -O2
+ CPPFLAGS += -D__CPLUSPLUS -D_GNU_SOURCE -DCOMM_REPORT -Wall -I. -D__LINUX -g -O2
  MAKE = make
 else 
  ifeq ($(systype),IRIX)
-	CFLAGS = -DCOMM_REPORT -Wall -I. -D__IRIX -g -O2
-	CPPFLAGS = -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__IRIX -g -O2
+	CFLAGS += -DCOMM_REPORT -Wall -I. -D__IRIX -g -O2
+	CPPFLAGS += -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__IRIX -g -O2
 	MAKE = /usr/freeware/bin/gmake
  else
 	ifeq ($(systype),Darwin)
-	 CFLAGS = -DCOMM_REPORT -Wall -I. -D__OSX -g -O2
-   CPPFLAGS = -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__OSX -g -O2
+   CFLAGS += -DCOMM_REPORT -Wall -I. -D__OSX -g -O2
+   CPPFLAGS += -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__OSX -g -O2
 	 MAKE = make
 	else
 	 ifeq ($(systype),FreeBSD)
-	  CFLAGS = -DCOMM_REPORT -Wall -I. -D__FREEBSD -g -O2
+    CFLAGS = -DCOMM_REPORT -Wall -I. -D__FREEBSD -g -O2
     CPPFLAGS = -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__FREEBSD -g -O2
 	  MAKE = gmake
 	 else
@@ -73,7 +73,7 @@ ifneq ($(origin LIBWRAP),undefined)
 endif
 
 #abstract make targets
-.PHONY: default all install miniinstall irix_install linux_install doc tags clean
+.PHONY: default all install miniinstall irix_install linux_install doc tags clean testing_env
 
 all: base drqman
 
@@ -81,9 +81,12 @@ base: slave master requeue sendjob jobfinfo blockhost ctask cjob jobinfo compinf
 
 install: miniinstall $(systype)_install 
 
-
 drqman: libdrqueue.a
 	$(MAKE) -C drqman
+
+testing_env:
+	mkdir tmp logs db
+	chmod 777 tmp
 
 IRIX_install:
 	install -d -m 0777 $(INSTROOT)/tmp
