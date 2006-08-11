@@ -24,25 +24,27 @@
 #include <fstream>
 #include "job.h"
 
-#define TOJ_NONE				 0
-#define TOJ_MAYA				 1
-#define TOJ_BLENDER			 2
-#define TOJ_BMRT				 3	/* BMRT koj */
-#define TOJ_THREEDELIGHT 4	/* 3delight koj */
-#define TOJ_PIXIE				 5	/* Pixie koj */
-#define TOJ_MENTALRAY		 6
-#define TOJ_LIGHTWAVE		 7	// Lightwave koj
-#define TOJ_AFTEREFFECTS 8	// After Effects koj
-#define TOJ_SHAKE				 9	// Shake koj
-#define TOJ_AQSIS				 10 // Aqsis koj
-#define TOJ_TERRAGEN		 11	 // Terragen koj
-#define TOJ_NUKE				 12	 // Nuke koj
-#define TOJ_TURTLE			13 // Turtle koj
-#define TOJ_MANTRA                               14      // Mantra koj
-#define TOJ_XSI                         15	// XSI koj
+#define TOJ_NONE                 0
+#define TOJ_MAYA                 1
+#define TOJ_BLENDER              2	// Blender koj
+#define TOJ_BMRT                 3	// BMRT koj
+#define TOJ_THREEDELIGHT         4	// 3delight koj
+#define TOJ_PIXIE                5	// Pixie koj
+#define TOJ_MENTALRAY            6	// Mental ray
+#define TOJ_LIGHTWAVE            7	// Lightwave koj
+#define TOJ_AFTEREFFECTS         8	// After Effects koj
+#define TOJ_SHAKE                9	// Shake koj
+#define TOJ_AQSIS                10	// Aqsis koj
+#define TOJ_TERRAGEN             11	// Terragen koj
+#define TOJ_NUKE                 12	// Nuke koj
+#define TOJ_TURTLE               13	// Turtle koj
+#define TOJ_MANTRA               14	// Mantra koj
+#define TOJ_XSI                  15	// XSI koj
+#define TOJ_GENERAL              16	// General koj
 
 void presentation (void);
 
+int RegisterGeneralJob (char* infile, int frameStart, int frameEnd, int frameStep);
 int RegisterMayaJobFromFile (std::ifstream &infile);
 int RegisterMentalrayJobFromFile (std::ifstream &infile);
 int RegisterBlenderJobFromFile (std::ifstream &infile);

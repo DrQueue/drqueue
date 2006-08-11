@@ -39,6 +39,7 @@ extern "C" {
 #include "envvars.h"
 
 /* Script generators */
+#include "generalsg.h"
 #include "mayasg.h"
 #include "mentalraysg.h"
 #include "blendersg.h"
