@@ -42,19 +42,30 @@ int main (int argc,char *argv[])
 {
   int opt;
   int toj = 0;
+  char* frame_range;
+  int fs, fe, sf;
 
   presentation();
+  fs = 1;
+  fe = 1;
+  sf = 1;
 
-  while ((opt = getopt (argc,argv,"hvt:")) != -1) {
+  while ((opt = getopt (argc,argv,"f:hvt:")) != -1) {
     switch (opt) {
     case 'v':
-      //      show_version (argv);
-      exit (0);
+    	//      show_version (argv);
+    	exit (0);
 		case 't':
 			toj = str2toj (optarg);
 			break;
-    case '?':
-    case 'h':
+		case 'f':
+			frame_range = (optarg);
+			fs = atoi(strtok(frame_range,":"));
+			fe = atoi(strtok(NULL,":"));
+			sf = atoi(strtok(NULL,"\0"));
+			break;
+  	case '?':
+  	case 'h':
       usage();
       exit (1);
     }
@@ -74,6 +85,12 @@ int main (int argc,char *argv[])
 
   std::ifstream infile(argv[argc-1]);
 	switch (toj) {
+		case TOJ_GENERAL:
+        if (RegisterGeneralJob (argv[argc-1], fs, fe, sf)) {
+                std::cerr << "Error registering GENERAL job: " << argv[argc-1] << std::endl;
+            exit (1);
+        }
+            break;
 		case TOJ_MAYA:
   		if (RegisterMayaJobFromFile (infile)) {
 				std::cerr << "Error registering MAYA job from file: " << argv[argc-1] << std::endl;
@@ -176,12 +193,114 @@ void cleanup (int signum)
 }
 
 void usage (void)
-{
-  std::cerr << "Usage: sendjob [-vh] -t <type> <job_file>\n"
-						<< "Valid options:\n"
-						<< "\t-v version information\n"
-						<< "\t-h prints this help\n"
-						<< "\t-t [maya|blender|mentalray|bmrt|aqsis|mantra|3delight|pixie|lightwave|terragen|nuke|aftereffects|shake|xsi] type of job\n";
+{       
+  std::cerr << "Usage: sendjob [-vh] [-f frameStart[:frameEnd[:stepFrame]]] -t <type> <job_file>\n"
+                        << "Valid options:\n"
+                        << "\t-v version information\n"
+                        << "\t-h prints this help\n"
+                        << "\t-f [frameStart[:frameEnd[:stepFrame]]]\n"
+                        << "\t-t [general|maya|blender|mentalray|bmrt|aqsis|3delight|pixie|lightwave|terragen|nuke|aftereffects|shake|xsi] type of job\n";
+}           
+
+
+/*      
+  unlike the other Register functions, General does not parse the infile.  It will execute it instead.
+*/          
+int RegisterGeneralJob (char* infile, int frameStart, int frameEnd, int frameStep)
+{           
+  // Job variables for the script generator
+  struct job job;
+  struct generalsgi generalSgi;
+
+  uid_t uid;
+  gid_t gid;
+  char *scriptdir;
+  std::string owner;
+  char *pathToScript;
+  char *tmpPath;
+
+
+  uid = getuid();
+  gid = getgid();
+  // scriptDir = get_current_dir_name();
+  scriptdir = NULL;
+  getcwd(scriptdir, BUFFERLEN);
+  strncpy(generalSgi.script,infile,BUFFERLEN-1);
+  // strncpy(generalSgi.scriptDir,scriptDir.c_str(),BUFFERLEN-1);
+  generalSgi.scriptdir = (char *)scriptdir;
+  generalSgi.uid_owner = uid;
+  generalSgi.gid_owner = gid;
+
+  // Set where the tmp files will get stored
+  if ((tmpPath = getenv("DRQUEUE_TMP"))) {
+    snprintf(generalSgi.drqueue_scriptdir,BUFFERLEN,"%s",tmpPath);
+  } else {
+    snprintf(generalSgi.drqueue_scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
+  }
+
+  // make the temporary executable file which drqueue will ultimately run.
+  if (!(pathToScript = generalsg_create(&generalSgi))) {
+    std::cerr << "Error creating general script file\n";
+    return 1;
+  }
+
+job.status = JOBSTATUS_WAITING;
+  job.frame_info = NULL;
+  job.envvars.variables = NULL;
+  job.envvars.nvariables = 0;
+  job.envvars.evshmid = -1;
+  job.flags = 0;
+  strncpy(job.name,infile,BUFFERLEN-1);
+  owner = getlogin();
+  strncpy(job.owner,owner.c_str(),BUFFERLEN-1);
+  strncpy (job.cmd,pathToScript,MAXCMDLEN-1);
+  //strncpy (job.owner,owner.c_str(),MAXNAMELEN-1);
+  // strncpy (job.email,owner.c_str(),MAXNAMELEN-1);
+  job.frame_start = frameStart;
+  job.frame_end = frameEnd;
+  job.frame_step = frameStep;
+  job.block_size = 1;
+  job.priority = 500;
+
+  job.koj = KOJ_GENERAL;
+
+
+  // strncpy (job.koji.general.scriptDir,scriptDir,BUFFERLEN);
+  job.koji.general.scriptdir = scriptdir;
+  // job.koji.general.scriptDir = scriptDir;
+
+  // farm properties
+  //   (I'll need to create a flag for setting all these)
+
+  // job.limits.os_flags = OSF_LINUX;
+  // job.limits.os_flags = OSF_OSX;
+  // job.limits.os_flags = OSF_FREEBSD;
+
+  // Not exactly sure how to set this yet but This sets every platform except for windows (which sucks anyway :).
+  job.limits.os_flags = 111;
+  job.limits.nmaxcpus = (uint16_t)-1;
+  job.limits.nmaxcpuscomputer = (uint16_t)-1;
+  job.limits.memory = 0;
+  strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
+
+/*
+  fprintf(stderr,"DEBUG: ----\n");
+  fprintf(stderr,"DEBUG: user_id: %d\n",uid);
+  fprintf(stderr,"DEBUG: group_id: %d\n",gid);
+  fprintf(stderr,"DEBUG: script: %s\n",generalSgi.script);
+  fprintf(stderr,"DEBUG: scriptDir: %s\n",generalSgi.scriptDir);
+  fprintf(stderr,"DEBUG: frame_start: %d\n",job.frame_start);
+  fprintf(stderr,"DEBUG:   frame_end: %d\n",job.frame_end);
+  fprintf(stderr,"DEBUG:  frame_step: %d\n",job.frame_step);
+  fprintf(stderr,"DEBUG: ----\n");
+*/
+
+if (!register_job(&job)) {
+    std::cerr << "Error sending General job to the queue\n";
+    return 1;
+  }
+  std::cerr << "General Job registered successfuly.\n";
+  return 0;
 }
 
 int RegisterMayaJobFromFile (std::ifstream &infile)
@@ -197,7 +316,7 @@ int RegisterMayaJobFromFile (std::ifstream &infile)
   int resX,resY;
   std::string scenePath;
   std::string renderDir;
-	std::string projectDir;
+  std::string projectDir;
   std::string fileFormat;
   std::string image;
   char *pathToScript;
@@ -1141,7 +1260,9 @@ int str2toj (char *str)
 {
 	int toj = TOJ_NONE;
 
-	if (strstr(str,"maya") != NULL) {
+	if (strstr(str,"general") != NULL) {
+		toj = TOJ_GENERAL;
+	} else if (strstr(str,"maya") != NULL) {
 		toj = TOJ_MAYA;
 	} else if (strstr(str,"mentalray") != NULL) {
 		toj = TOJ_MENTALRAY;
