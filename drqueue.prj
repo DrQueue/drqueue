@@ -1,0 +1,251 @@
+# Anjuta Version 1.2.4 
+Compatibility Level: 1 
+
+<PROJECT_DESCRIPTION_START>
+<PROJECT_DESCRIPTION_END>
+<CONFIG_PROGS_START>
+<CONFIG_PROGS_END>
+<CONFIG_LIBS_START>
+<CONFIG_LIBS_END>
+<CONFIG_HEADERS_START>
+<CONFIG_HEADERS_END>
+<CONFIG_CHARACTERISTICS_START>
+<CONFIG_CHARACTERISTICS_END>
+<CONFIG_LIB_FUNCS_START>
+<CONFIG_LIB_FUNCS_END>
+<CONFIG_ADDITIONAL_START>
+<CONFIG_ADDITIONAL_END>
+<CONFIG_FILES_START>
+<CONFIG_FILES_END>
+<MAKEFILE_AM_START>
+<MAKEFILE_AM_END>
+
+props.file.type=project
+
+anjuta.version=1.2.4
+anjuta.compatibility.level=1
+
+project.name=drqueue
+project.type=GENERIC
+project.target.type=EXECUTABLE
+project.version=0.63.3
+project.author=Vincent Dedun
+project.source.target=unknown
+project.has.gettext=0
+project.gui.command=
+project.programming.language=C++
+project.excluded.modules=intl
+
+project.config.extra.modules.before=
+project.config.extra.modules.after=
+project.config.blocked=1
+project.config.disable.overwriting=1 1 1 1 1 1 1 1 1 
+
+project.menu.entry=drqueue Version 0.63.3
+project.menu.group=Application
+project.menu.comment=drqueue Version 0.63.3
+project.menu.icon=
+project.menu.need.terminal=0
+
+project.configure.options=
+anjuta.program.arguments=
+preferences.build.option.jobs=0
+preferences.build.option.silent=0
+preferences.build.option.autosave=0
+preferences.make=make
+preferences.build.option.keep.going=1
+preferences.build.option.warn.undef=0
+preferences.autoformat.custom.style= -i8 -sc -bli0 -bl0 -cbi0 -ss
+preferences.indent.opening=0
+preferences.autoformat.disable=1
+preferences.indent.automatic=1
+preferences.use.tabs=1
+preferences.indent.size=4
+preferences.tabsize=4
+preferences.indent.closing=0
+
+module.include.name=.
+module.include.type=
+module.include.files=\
+	constants.h\
+	blendersg.h\
+	request_errors.h\
+	envvars.h\
+	job.h\
+	aqsissg.h\
+	mentalraysg.h\
+	terragensg.h\
+	slave.h\
+	shakesg.h\
+	sendjob.h\
+	3delightsg.h\
+	computer_status.h\
+	communications.h\
+	semaphores.h\
+	computer.h\
+	common.h\
+	drqman/drqm_jobs_aqsis.h\
+	drqman/drqm_jobs_pixie.h\
+	drqman/drqm_computers.h\
+	drqman/drqm_common.h\
+	drqman/drqm_jobs_blender.h\
+	drqman/info_icon.h\
+	drqman/drqm_jobs_jdd.h\
+	drqman/drqm_jobs_terragen.h\
+	drqman/drqm_jobs_lightwave.h\
+	drqman/drqm_jobs_bmrt.h\
+	drqman/drqm_autorefresh.h\
+	drqman/drqm_jobs_shake.h\
+	drqman/drqm_jobs_mentalray.h\
+	drqman/drqman.h\
+	drqman/slave_icon.h\
+	drqman/drqm_jobs_maya.h\
+	drqman/drqm_cygwin.h\
+	drqman/drqm_jobs_aftereffects.h\
+	drqman/drqm_jobs_common.h\
+	drqman/notebook.h\
+	drqman/drqm_jobs_nuke.h\
+	drqman/drqm_jobs_3delight.h\
+	drqman/drqm_request.h\
+	drqman/drqm_info.h\
+	drqman/drqm_jobs.h\
+	drqman/drqm_globals.h\
+	drqman/job_icon.h\
+	master.h\
+	lightwavesg.h\
+	request.h\
+	aftereffectssg.h\
+	drerrno.h\
+	mayasg.h\
+	database.h\
+	pixiesg.h\
+	computer_info.h\
+	bmrtsg.h\
+	request_codes.h\
+	task.h\
+	libdrqueue.h\
+	logger.h\
+	nukesg.h\
+	xsisg.h\
+	drqman/drqm_jobs_xsi.h
+
+module.source.name=.
+module.source.type=
+module.source.files=\
+	jobfinfo.c\
+	contrib/windows/ServiceInstaller/service.cpp\
+	blendersg.c\
+	envvars.c\
+	job.c\
+	aqsissg.c\
+	mentalraysg.c\
+	blockhost.c\
+	computer_info.irix.c\
+	compinfo.c\
+	terragensg.c\
+	slave.c\
+	computer_info.osx.c\
+	shakesg.c\
+	3delightsg.c\
+	computer_status.c\
+	communications.c\
+	cjob.c\
+	semaphores.c\
+	computer.c\
+	common.c\
+	drqman/drqm_jobs_aqsis.c\
+	drqman/drqm_jobs_pixie.c\
+	drqman/drqm_computers.c\
+	drqman/drqm_common.c\
+	drqman/drqm_jobs_blender.c\
+	drqman/drqm_jobs_jdd.c\
+	drqman/drqm_jobs_terragen.c\
+	drqman/drqm_jobs_lightwave.c\
+	drqman/drqm_jobs_bmrt.c\
+	drqman/drqm_autorefresh.c\
+	drqman/drqm_jobs_shake.c\
+	drqman/drqm_jobs_mentalray.c\
+	drqman/main.c\
+	drqman/drqm_jobs_maya.c\
+	drqman/drqm_cygwin.c\
+	drqman/drqm_jobs_aftereffects.c\
+	drqman/notebook.c\
+	drqman/drqm_jobs_nuke.c\
+	drqman/drqm_jobs_3delight.c\
+	drqman/drqm_request.c\
+	drqman/drqm_info.c\
+	drqman/drqm_jobs.c\
+	drqman/drqm_globals.c\
+	master.c\
+	jobinfo.c\
+	lightwavesg.c\
+	request.c\
+	requeue.c\
+	computer_info.linux.c\
+	aftereffectssg.c\
+	drerrno.c\
+	mayasg.c\
+	database.c\
+	pixiesg.c\
+	computer_info.cygwin.c\
+	computer_info.c\
+	bmrtsg.c\
+	task.c\
+	logger.c\
+	sendjob.cpp\
+	nukesg.c\
+	computer_info.freebsd.c\
+	xsisg.c\
+	drqman/drqm_jobs_xsi.c\
+	ctask.c
+
+module.pixmap.name=.
+module.pixmap.type=
+module.pixmap.files=\
+	contrib/windows/Resources/led-off.ico\
+	contrib/windows/Resources/drqueue.ico\
+	contrib/windows/Resources/led-on.ico\
+	contrib/windows/Controller/drqueue.ico\
+	drqman/running.xpm\
+	drqman/waiting.xpm\
+	drqman/weasel.xpm\
+	drqman/finished.xpm\
+	drqman/error.xpm
+
+module.data.name=.
+module.data.type=
+module.data.files=
+
+module.help.name=.
+module.help.type=
+module.help.files=
+
+module.doc.name=.
+module.doc.type=
+module.doc.files=\
+	TODO\
+	README\
+	python/DrKeewee/index.html\
+	COPYING\
+	CREDITS
+
+module.po.files=
+
+compiler.options.supports=
+compiler.options.include.paths=\
+	.\
+	..
+compiler.options.library.paths=
+compiler.options.libraries=
+compiler.options.libraries.selected=
+compiler.options.defines=\
+	HAVE_CONFIG_H
+compiler.options.defines.selected=
+compiler.options.warning.buttons=0 0 1 1 0 1 0 0 0 0 0 0 0 1 0 0 
+compiler.options.optimize.buttons=0 0 1 0 
+compiler.options.other.buttons=1 0 
+compiler.options.other.c.flags=
+compiler.options.other.l.flags=
+compiler.options.other.l.libs=
+
+project.src.paths=

@@ -1,0 +1,124 @@
+#
+# THIS IS A TCSH SCRIPT FILE
+# 
+# Default configuration for xsi script generator
+# You can set the environment variables here (csh style)
+
+#
+# For platform dependend environment setting a form like this
+# can be used :
+#
+#
+# if ($DRQUEUE_OS == "LINUX") then
+#    # Environment for Linux
+# else if ($DRQUEUE_OS == "IRIX") then
+#    # Environment for Irix
+# else
+#    # Some error messages
+# endif
+#
+
+#
+# Append mentalray bin to PATH
+# SPM_HOST, SI_LINKTAB_LOCATION must be set
+#
+if ($DRQUEUE_OS == "WINDOWS") then
+	setenv XSI_PATH "C:\Softimage\${XSI_DIR}\Application\bin\"
+else
+	setenv XSI_PATH "/usr/Softimage/${XSI_DIR}/Application/bin/"
+endif
+
+if ($DRQUEUE_OS == "WINDOWS") then
+#  set BLOCK=`"$DRQUEUE_BIN/expr.exe" $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
+#  set DRQUEUE_SCENE=`"$DRQUEUE_BIN/cygpath.exe" -w "$DRQUEUE_SCENE"`
+#  set DRQUEUE_RD=`"$DRQUEUE_BIN/cygpath.exe" -w "$DRQUEUE_RD"`
+else
+  set BLOCK=`expr $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
+endif
+
+if ($BLOCK > $DRQUEUE_ENDFRAME) then
+	set BLOCK = $DRQUEUE_ENDFRAME;
+endif
+
+
+if ( ! $?DRQUEUE_RD ) then
+	echo Rendering directory is not defined
+	exit 1
+endif
+
+cd /
+echo Changing current working directory to "$DRQUEUE_RD"
+cd "$DRQUEUE_RD"
+if ( "x`pwd`" == "x/" ) then
+	echo Rendering directory "$DRQUEUE_RD" is inadequate
+	exit 1
+endif
+
+echo "Initialising frames"
+set renderCurTask=0;
+if ("$DRQUEUE_SKIPFRAMES" == "off") then
+	set renderCurTask=1;
+	foreach jobframe ($DRQUEUE_PADFRAMES)
+		set curFrame=$DRQUEUE_RD/$DRQUEUE_IMAGE$jobframe$DRQUEUE_IMAGEEXT
+		if ( -r $curFrame ) then
+			rm $curFrame
+		endif
+	end
+else
+	foreach jobframe ($DRQUEUE_PADFRAMES)
+		set curFrame=$DRQUEUE_RD/$DRQUEUE_IMAGE$jobframe$DRQUEUE_IMAGEEXT
+		if ( -r $curFrame ) then
+			set filesize=`du -b $curFrame | sed 's/\t.*//g'`
+			if (128 >= $filesize) then
+				rm $curFrame
+				set renderCurTask=1
+			endif
+		else
+			set renderCurTask=1
+		endif
+	end
+endif
+
+set rendersOk=1
+
+if ($renderCurTask == 1) then
+	echo ${XSI_PATH}xsibatch -r -scene $DRQUEUE_SCENE -verbose prog -startframe $DRQUEUE_FRAME -endframe $BLOCK -pass $DRQUEUE_PASS -resolutionX $RESX -resolutionY $RESY -skip $DRQUEUE_SKIPFRAMES
+
+	${XSI_PATH}xsibatch -r -scene $DRQUEUE_SCENE -verbose prog -startframe $DRQUEUE_FRAME -endframe $BLOCK -pass $DRQUEUE_PASS -resolutionX $RESX -resolutionY $RESY -skip $DRQUEUE_SKIPFRAMES
+
+	echo "Verifying renders"
+	foreach jobframe ($DRQUEUE_PADFRAMES)
+		set curFrame=$DRQUEUE_RD/$DRQUEUE_IMAGE$jobframe$DRQUEUE_IMAGEEXT
+		chmod 666 $curFrame
+		if ( -r $curFrame ) then
+			set filesize=`du -b $curFrame | sed 's/\t.*//g'`
+			if (128 >= $filesize) then
+				set rendersOk=0
+			endif
+		else
+			set rendersOk=0
+		endif
+	end
+
+else
+	echo Skipping on - batch already rendered
+endif
+
+if ($rendersOk == 0) then
+	set NREQUEUED=`$DRQUEUE_BIN/jobfinfo -r -f $DRQUEUE_FRAME -j $DRQUEUE_JOBID`
+	if ($NREQUEUED < 3) then
+		echo "Frame(s) failed - requeueing"
+		$DRQUEUE_BIN/requeue -f $DRQUEUE_FRAME -j $DRQUEUE_JOBID
+	else
+		echo "Frame(s) failed - no more retries"
+		kill -6 $$
+	endif
+else
+	echo "Render successful"
+	$DRQUEUE_BIN/ctask -d -f $DRQUEUE_FRAME -j $DRQUEUE_JOBID
+	exit 0
+endif
+
+#
+# Notice that the exit code of the last command is received by DrQueue
+#

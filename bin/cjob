@@ -1,0 +1,24 @@
+#!/bin/sh
+#
+# $Id: requeue 784 2004-10-15 03:10:46Z jorge $
+#
+
+if [ ! $DRQUEUE_ROOT ]; then
+  echo ERROR: DRQUEUE_ROOT not set in environment
+  exit 1
+fi
+
+if [ ! $DRQUEUE_MASTER ]; then
+  echo ERROR: DRQUEUE_MASTER not set in environment
+  exit 2
+fi
+
+RQ_CMD=$DRQUEUE_ROOT/bin/cjob.`uname -s`
+
+if [ ! -x $RQ_CMD ]; then
+  echo ERROR: cjob for your platform \(cjob.`uname -s`\) does not exist in $DRQUEUE_ROOT/bin.
+  echo Perhaps you did not install it \(make miniinstall or make install\).
+  exit 3
+fi
+
+$RQ_CMD $*
