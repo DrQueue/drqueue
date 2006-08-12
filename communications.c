@@ -437,7 +437,11 @@ int recv_job (int sfd, struct job *job) {
   job->koj = ntohs (job->koj);
   switch (job->koj) {
   case KOJ_GENERAL:
+    break;
   case KOJ_MAYA:
+    job->koji.maya.res_x = ntohl (job->koji.maya.res_x);
+    job->koji.maya.res_y = ntohl (job->koji.maya.res_y);
+    break;
   case KOJ_MENTALRAY:
   case KOJ_BLENDER:
   case KOJ_LIGHTWAVE:
@@ -507,7 +511,11 @@ int send_job (int sfd, struct job *job) {
   /* Koj Stuff */
   switch (bswapped.koj) {
   case KOJ_GENERAL:
+    break;
   case KOJ_MAYA:
+    bswapped.koji.maya.res_x = htonl (bswapped.koji.maya.res_x);
+    bswapped.koji.maya.res_y = htonl (bswapped.koji.maya.res_y);
+    break;
   case KOJ_MENTALRAY:
   case KOJ_BLENDER:
   case KOJ_LIGHTWAVE:
