@@ -37,12 +37,12 @@ users.
 It has python bindings that let you use the whole "libdrqueue" functions and
 data structures. 
 
-So it is possible to write python scripts that "talk" to master and slave nodes. Modify
-some parameter, check the filesystem for some frames and create new jobs... there are
-many useful ways you can make use of that.
+So it is possible to write python scripts that "talk" to master and slave nodes giving
+you almost unlimited control on the behaviour of the system.
 
 If you're not familiar with python but are interested in programming, I highly recommend
-you to read about it.
+you to givi it try so you can feel by yourself how fast and easy is to write well organized
+and powerful object oriented code.
 
 DrKeewee [python/DrKeewee] is written in python. It is a small web server that talks to the
 master node and gives you information about the queue status.
@@ -51,23 +51,27 @@ online resources (participation)
 --------------------------------
 In the site http://www.drqueue.org you'll find some resources that are meant
 to provide a two-way communication. For example: you'll find documentation trying
-to give you some hints, howto's, guides... but they're not nearly complete and update.
+to give you some hints, howto's, guides... but they're not nearly complete and updated.
 That's why it's a wiki. You can modify or add pages online, through your browser.
 If you find out something is wrong, outdated, badly written... you can modify it,
-put a note, a warning, whatever could make others save time.
+put a note, a warning, whatever could make others save some time.
 
 Improving the site is at your hand too.
 
 Right now you have forums, bugtracker, mailing lists, wiki documentation, repository
 browser... and well, if you find the link and works should be there too.
 
+- Feedback
 If you're a drqueue user your opinion and feedback is really important. Submit bug reports,
-they're really useful. 
+they're the only way to know if the tool behaves properly with so many rendering engines.
+As you can imagine, it is not feasible for me to do all tests that are needed to know
+if there are any problem with any particular engine, platform or combination of such many
+factors related (renderers,platforms,architectures,OS's...).
 
 repository
 ----------
 There is an anonymous subversion repository where you can get the latest
-development version.
+development version. https://ssl.drqueue.org/svn/
 
 irc channel
 -----------
