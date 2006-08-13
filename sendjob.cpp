@@ -213,7 +213,7 @@ int RegisterGeneralJob (char* infile, int frameStart, int frameEnd, int frameSte
   char *pathToScript;
   char *tmpPath;
 
-  job_init (&job)
+  job_init (&job);
 
   uid = getuid();
   gid = getgid();
