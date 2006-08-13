@@ -1,5 +1,6 @@
 About DrQueue
 -------------
+
 DrQueue is the Open Source Distributed Render Queue. It is the Open
 Source alternative to other propietary products. It has been tested on
 renderfarms with more than 200 processors and mixed architectures.
@@ -41,7 +42,7 @@ So it is possible to write python scripts that "talk" to master and slave nodes 
 you almost unlimited control on the behaviour of the system.
 
 If you're not familiar with python but are interested in programming, I highly recommend
-you to givi it try so you can feel by yourself how fast and easy is to write well organized
+you to give it a try so you can feel by yourself how fast and easy is to write well organized
 and powerful object oriented code.
 
 DrKeewee [python/DrKeewee] is written in python. It is a small web server that talks to the
