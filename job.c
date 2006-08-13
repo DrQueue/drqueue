@@ -138,12 +138,16 @@ void job_init (struct job *job) {
   job->frame_pad = 4;
   job->frame_step = 1;
   job->block_size = 1;
-
+  job->autoRequeue = 1;
+  job->status = JOBSTATUS_WAITING;
+  job->priority = 500;
   job->flags = 0;
 
-  job->envvars.evshmid = -1;
+  job->koj = KOJ_GENERAL;
 
-  job_init_limits (job);
+  envvars_init (&job->envvars);
+
+  job_limits_init (&job->limits);
 }
 
 void job_delete (struct job *job) {
@@ -972,12 +976,13 @@ void job_copy (struct job *src, struct job *dst) {
   dst->frame_info = NULL;
 }
 
-void job_init_limits (struct job *job) {
-  job->limits.nmaxcpus = -1; /* No limit or 65535 */
-  job->limits.nmaxcpuscomputer = -1; /* the same */
-  job->limits.os_flags = -1; /* All operating systems */
-  job->limits.memory = 0;
-  strncpy (job->limits.pool,DEFAULT_POOL,MAXNAMELEN-1);
+void job_limits_init (struct job_limits *limits) {
+  limits->nmaxcpus = (uint16_t)-1;           // No limit or 65535
+  limits->nmaxcpuscomputer = (uint16_t)-1;   // the same
+  limits->os_flags = (uint16_t) -1;          // All operating systems
+  limits->memory = 0;                        // No memory limit
+  strncpy (limits->pool,DEFAULT_POOL,MAXNAMELEN-1);   // Belongs to
+                                                      // the default pool
 }
 
 int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp) {
@@ -1039,6 +1044,20 @@ void job_frame_info_init (struct frame_info *fi) {
   fi->icomp = fi->itask = 0;
   fi->requeued = 0;
   fi->flags = 0;
+}
+
+void job_limits_bswap_to_network (struct job_limits *limits) {
+  limits->nmaxcpus         = htons (limits->nmaxcpus);
+  limits->nmaxcpuscomputer = htons (limits->nmaxcpuscomputer);
+  limits->os_flags         = htons (limits->os_flags);
+  limits->memory           = htonl (limits->memory);
+}
+
+void job_limits_bswap_from_network (struct job_limits *limits) {
+  limits->nmaxcpus         = ntohs (limits->nmaxcpus);
+  limits->nmaxcpuscomputer = ntohs (limits->nmaxcpuscomputer);
+  limits->os_flags         = ntohs (limits->os_flags);
+  limits->memory           = ntohl (limits->memory);
 }
 
 void job_logs_remove (struct job *job) {

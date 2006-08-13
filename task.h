@@ -72,9 +72,9 @@ struct task {
   uint32_t frame_pad;
   uint32_t frame_step;
   uint32_t block_size;
-  int32_t pid;   /* pid */
-  int32_t exitstatus;  /* exit status */
-  uint8_t status;  /* status */
+  int32_t  pid;   /* pid */
+  int32_t  exitstatus;  /* exit status */
+  uint8_t  status;  /* status */
 };
 
 struct slave_database;

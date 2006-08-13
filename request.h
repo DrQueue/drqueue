@@ -101,8 +101,8 @@ extern "C" {
   int request_comp_xfer (uint32_t icomp, struct computer *comp, uint16_t who);
   int request_computer_list (struct computer **computer, uint16_t who);
   int register_job (struct job *job);
-  int request_job_available (struct slave_database *sdb);
-  void request_task_finished (struct slave_database *sdb);
+  int request_job_available (struct slave_database *sdb, uint16_t *itask);
+  void request_task_finished (struct slave_database *sdb, uint16_t itask);
   int request_job_list (struct job **job, uint16_t who);
   int request_job_delete (uint32_t ijob,uint16_t who);
   int request_job_stop (uint32_t ijob, uint16_t who);

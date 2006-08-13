@@ -470,12 +470,14 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
            info->jdd.job.ffailed);
   gtk_label_set_text (GTK_LABEL(info->jdd.lfrldf),msg);
 
-  char *submit_time = ctime(&info->jdd.job.submit_time);
+  time_t ttime = info->jdd.job.submit_time;
+  char *submit_time = ctime(&ttime);
   submit_time[strlen(submit_time)-1]=0;
   gtk_label_set_text (GTK_LABEL(info->jdd.lsubmitt),submit_time);
   gtk_label_set_text (GTK_LABEL(info->jdd.lavgt),time_str(info->jdd.job.avg_frame_time));
 
-  snprintf(msg,BUFFERLEN-1,"%s",ctime(&info->jdd.job.est_finish_time));
+  ttime = info->jdd.job.est_finish_time;
+  snprintf(msg,BUFFERLEN-1,"%s",ctime(&ttime));
   buf = strchr (msg,'\n');
   if (buf != NULL)
     *buf = '\0';
@@ -549,11 +551,13 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
     strncpy(buff[1],job_frame_status_string(info->jdd.job.frame_info[i].status),BUFFERLEN);
     snprintf (buff[2],BUFFERLEN-1,"%i",info->jdd.job.frame_info[i].requeued);
     if (info->jdd.job.frame_info[i].start_time != 0) {
-      strncpy(buff[3],ctime(&info->jdd.job.frame_info[i].start_time),BUFFERLEN);
+      time_t ttime = info->jdd.job.frame_info[i].start_time;
+      strncpy(buff[3],ctime(&ttime),BUFFERLEN);
       buf = strchr (buff[3],'\n');
       if (buf != NULL)
         *buf = '\0';
-      strncpy(buff[4],ctime(&info->jdd.job.frame_info[i].end_time),BUFFERLEN);
+      ttime = info->jdd.job.frame_info[i].end_time;
+      strncpy(buff[4],ctime(&ttime),BUFFERLEN);
       buf = strchr (buff[4],'\n');
       if (buf != NULL)
         *buf = '\0';

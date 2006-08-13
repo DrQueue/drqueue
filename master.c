@@ -66,7 +66,7 @@ int main (int argc, char *argv[]) {
 #ifdef COMM_REPORT
 
   bsent = brecv = 0;
-  time(&tstart);
+  tstart = time(NULL);
 #endif
 
   strncpy (conf,MASTER_CONF_FILE,PATH_MAX);
@@ -331,11 +331,11 @@ void clean_out (int signal, siginfo_t *info, void *data) {
 
 #ifdef COMM_REPORT
 
-  time(&tstop);
+  tstop = time(NULL);
   ttotal = tstop - tstart;
   printf ("Report of communications:\n");
-  printf ("Kbytes sent:\t\t%li\tBytes:\t%li\n",wdb->bsent/1024,wdb->bsent);
-  printf ("Kbytes recv:\t\t%li\tBytes:\t%li\n",wdb->brecv/1024,wdb->brecv);
+  printf ("Kbytes sent:\t\t%lli\tBytes:\t%lli\n",wdb->bsent/1024,wdb->bsent);
+  printf ("Kbytes recv:\t\t%lli\tBytes:\t%lli\n",wdb->brecv/1024,wdb->brecv);
   printf ("Kbytes sent/second:\t%f\n",(float)(wdb->bsent/1024)/ttotal);
   printf ("Kbytes recv/second:\t%f\n",(float)(wdb->brecv/1024)/ttotal);
 #endif
