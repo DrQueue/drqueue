@@ -1,0 +1,31 @@
+#!/bin/sh -e
+
+MACHINE=`uname -m`
+KERNEL=`uname -s`
+BASETOOL=`basename $0`
+
+check_environment () {
+  if [ "x${DRQUEUE_ROOT}" == "x" ]; then
+    echo ERROR: DRQUEUE_ROOT not set in environment
+    exit 1
+  fi
+  if [ "x${DRQUEUE_MASTER}" == "x" ]; then
+    echo ERROR: DRQUEUE_MASTER not set in environment
+    exit 1
+  fi
+}
+
+wrapper_cmd () {
+  CMD_TO_WRAP=$1
+  if [ ! -x $DRQUEUE_ROOT/bin/$CMD_TO_WRAP ]; then
+    echo ERROR: Command "$CMD_TO_WRAP" does not exist. Cannot be wrapped.
+    exit 1
+  fi
+  WRAP_CMD=$DRQUEUE_ROOT/bin/$BASETOOL.$KERNEL.$MACHINE
+  if [ ! -x ${WRAP_CMD} ]; then
+    echo ERROR: the wrapper "$BASETOOL" for your platform \(${WRAP_CMD}\) does not exist.
+    echo Perhaps you did not install it \(make miniinstall or make install\).
+    exit 1
+  fi
+  return 0
+}
