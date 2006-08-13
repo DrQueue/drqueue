@@ -1,24 +1,14 @@
-#!/bin/sh
+#!/bin/sh -e
 #
-# $Id$
+# $Id: requeue 784 2004-10-15 03:10:46Z jorge $
 #
 
-if [ ! $DRQUEUE_ROOT ]; then
-  echo ERROR: DRQUEUE_ROOT not set in environment
-  exit 1
-fi
+SHLIB=$DRQUEUE_ROOT/bin/shlib
 
-if [ ! $DRQUEUE_MASTER ]; then
-  echo ERROR: DRQUEUE_MASTER not set in environment
-  exit 2
-fi
+. $SHLIB || die "ERROR: Could not read $SHLIB"
 
-SJ_CMD=$DRQUEUE_ROOT/bin/sendjob.`uname -s`
+check_environment
 
-if [ ! -x $SJ_CMD ]; then
-  echo ERROR: sendjob for your platform \(sendjob.`uname -s`\) does not exist in $DRQUEUE_ROOT/bin.
-  echo Perhaps you did not install it \(make miniinstall or make install\).
-  exit 3
-fi
+wrapper_cmd "$BASETOOL"
 
-$SJ_CMD $*
+$WRAP_CMD $*

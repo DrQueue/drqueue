@@ -635,7 +635,7 @@ int recv_task (int sfd, struct task *task) {
   task->frame_end   = ntohl (task->frame_end);
   task->frame_step  = ntohl (task->frame_step);
   task->block_size  = ntohl (task->block_size);
-  task->frame_pad   = ntohl (task->frame_pad);
+  //task->frame_pad   = ntohs (task->frame_pad);
   task->pid         = ntohl (task->pid);
   task->exitstatus  = ntohl (task->exitstatus);
 
@@ -658,7 +658,7 @@ int send_task (int sfd, struct task *task) {
   bswapped.frame_end   = htonl (bswapped.frame_end);
   bswapped.frame_step  = htonl (bswapped.frame_step);
   bswapped.block_size  = htonl (bswapped.block_size);
-  bswapped.frame_pad   = htonl (bswapped.frame_pad);
+  //bswapped.frame_pad   = htonl (bswapped.frame_pad);
   bswapped.pid         = htonl (bswapped.pid);
   bswapped.exitstatus  = htonl (bswapped.exitstatus);
 

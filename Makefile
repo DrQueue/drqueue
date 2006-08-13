@@ -29,7 +29,8 @@ endif
 
 #Figure out OS-specific Configuration parameters
 ifeq ($(origin systype),undefined)
- systype=$(shell uname -s)
+	systype=$(shell uname -s)
+	machinetype=$(shell uname -m)
 endif
 
 CFLAGS = -I. -g -O2 -Wall
@@ -183,16 +184,16 @@ Darwin_install:
 miniinstall: base
 ifeq ($(systype),IRIX)
 	install -root $(PWD) -d -m 0755 bin
-	install -root $(PWD) -m 0755 -f /bin -src slave slave.$(systype)
-	install -root $(PWD) -m 0755 -f /bin -src master master.$(systype)
-	install -root $(PWD) -m 0755 -f /bin -src requeue requeue.$(systype)
-	install -root $(PWD) -m 0755 -f /bin -src jobfinfo jobfinfo.$(systype)
-	install -root $(PWD) -m 0755 -f /bin -src jobinfo jobinfo.$(systype)
-	install -root $(PWD) -m 0755 -f /bin -src blockhost blockhost.$(systype)
-	install -root $(PWD) -m 0755 -f /bin -src ctask ctask.$(systype)
-	install -root $(PWD) -m 0755 -f /bin -src cjob cjob.$(systype)
-	install -root $(PWD) -m 0755 -f /bin -src sendjob sendjob.$(systype)
-	test -x ./drqman/drqman && install -root $(PWD) -m 0755 -f /bin -src drqman/drqman drqman.$(systype) || test 1
+	install -root $(PWD) -m 0755 -f /bin -src slave slave.$(systype).$(machinetype)
+	install -root $(PWD) -m 0755 -f /bin -src master master.$(systype).$(machinetype)
+	install -root $(PWD) -m 0755 -f /bin -src requeue requeue.$(systype).$(machinetype)
+	install -root $(PWD) -m 0755 -f /bin -src jobfinfo jobfinfo.$(systype).$(machinetype)
+	install -root $(PWD) -m 0755 -f /bin -src jobinfo jobinfo.$(systype).$(machinetype)
+	install -root $(PWD) -m 0755 -f /bin -src blockhost blockhost.$(systype).$(machinetype)
+	install -root $(PWD) -m 0755 -f /bin -src ctask ctask.$(systype).$(machinetype)
+	install -root $(PWD) -m 0755 -f /bin -src cjob cjob.$(systype).$(machinetype)
+	install -root $(PWD) -m 0755 -f /bin -src sendjob sendjob.$(systype).$(machinetype)
+	test -x ./drqman/drqman && install -root $(PWD) -m 0755 -f /bin -src drqman/drqman drqman.$(systype).$(machinetype) || test 1
 else
  ifeq ($(systype),CYGWIN_NT-5.1)
 	install -d -m 0755 bin
@@ -208,16 +209,16 @@ else
 	test -x ./drqman/drqman.exe && install -m 0755 -p ./drqman/drqman.exe bin/drqman.exe || exit 0
 else
 	install -d -m 0755 bin
-	install -m 0755 -p ./slave bin/slave.$(systype)
-	install -m 0755 -p ./master bin/master.$(systype)
-	install -m 0755 -p ./requeue bin/requeue.$(systype)
-	install -m 0755 -p ./jobfinfo bin/jobfinfo.$(systype)
-	install -m 0755 -p ./jobinfo bin/jobinfo.$(systype)
-	install -m 0755 -p ./blockhost bin/blockhost.$(systype)
-	install -m 0755 -p ./ctask bin/ctask.$(systype)
-	install -m 0755 -p ./cjob bin/cjob.$(systype)
-	install -m 0755 -p ./sendjob bin/sendjob.$(systype)
-	test -x ./drqman/drqman && install -m 0755 -p ./drqman/drqman bin/drqman.$(systype) || exit 0
+	install -m 0755 -p ./slave bin/slave.$(systype).$(machinetype)
+	install -m 0755 -p ./master bin/master.$(systype).$(machinetype)
+	install -m 0755 -p ./requeue bin/requeue.$(systype).$(machinetype)
+	install -m 0755 -p ./jobfinfo bin/jobfinfo.$(systype).$(machinetype)
+	install -m 0755 -p ./jobinfo bin/jobinfo.$(systype).$(machinetype)
+	install -m 0755 -p ./blockhost bin/blockhost.$(systype).$(machinetype)
+	install -m 0755 -p ./ctask bin/ctask.$(systype).$(machinetype)
+	install -m 0755 -p ./cjob bin/cjob.$(systype).$(machinetype)
+	install -m 0755 -p ./sendjob bin/sendjob.$(systype).$(machinetype)
+	test -x ./drqman/drqman && install -m 0755 -p ./drqman/drqman bin/drqman.$(systype).$(machinetype) || exit 0
 endif
 endif
 
@@ -228,7 +229,7 @@ tags:
 	etags *.[ch] drqman/*.[ch]
 
 clean:
-	rm -fR *.o *.exe *~ libdrqueue.a $(BASE_C_TOOLS) $(BASE_CXX_TOOLS) TAGS tmp/* logs/* db/* contrib/windows/*.exe bin/*.$(systype)
+	rm -fR *.o *.os *.exe *~ libdrqueue.a $(BASE_C_TOOLS) $(BASE_CXX_TOOLS) TAGS tmp/* logs/* db/* contrib/windows/*.exe bin/*.$(systype).$(machinetype)
 	$(MAKE) -C drqman clean
 
 #actual object make targets
