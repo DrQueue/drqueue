@@ -35,6 +35,7 @@
 #include "logger.h"
 #include "semaphores.h"
 #include "common.h"
+#include "drerrno.h"
 
 int job_index_free (void *pwdb) {
   /* Return the index to a free job record OR -1 if there */
@@ -268,7 +269,7 @@ int job_available (struct database *wdb,uint32_t ijob, int *iframe, uint32_t ico
 
 }
 
-int job_first_frame_available (struct database *wdb,uint32_t ijob,uint32_t icomp) {
+uint32_t job_first_frame_available (struct database *wdb,uint32_t ijob,uint32_t icomp) {
   /* To be called LOCKED */
   /* This function not only returns the first frame */
   /* available but also updates the job structure when found */
@@ -276,7 +277,7 @@ int job_first_frame_available (struct database *wdb,uint32_t ijob,uint32_t icomp
   /* set the info about the icomp,start,itask) */
   int i;
   int r = -1;
-  int nframes;
+  uint32_t nframes;
   struct frame_info *fi;
 
   nframes = job_nframes (&wdb->job[ijob]);
@@ -332,7 +333,9 @@ void job_update_assigned (struct database *wdb, uint32_t ijob, int iframe, int i
   wdb->job[ijob].frame_info[iframe].itask = itask;
 
   /* Time stuff */
-  time (&wdb->job[ijob].frame_info[iframe].start_time);
+  time_t ttime;
+  time (&ttime);
+  wdb->job[ijob].frame_info[iframe].start_time = (uint64_t) ttime;
   wdb->job[ijob].frame_info[iframe].end_time = wdb->job[ijob].frame_info[iframe].start_time
       + wdb->job[ijob].avg_frame_time;
 
@@ -345,23 +348,25 @@ void job_update_assigned (struct database *wdb, uint32_t ijob, int iframe, int i
   detach_frame_shared_memory(wdb->job[ijob].frame_info);
 }
 
-int get_blocked_host_shared_memory (int nhosts) {
+uint64_t get_blocked_host_shared_memory (uint32_t nhosts) {
   int shmid;
 
   if ((shmid = shmget (IPC_PRIVATE,sizeof(struct blocked_host)*nhosts, IPC_EXCL|IPC_CREAT|0600)) == -1) {
-    log_master (L_ERROR,"get_blocked_host_shared_memory: shmget");
+    drerrno = DRE_GETSHMEM;
+    log_master (L_ERROR,"get_blocked_host_shared_memory: shmget (%s)",drerrno_str());
     perror ("shmget");
     return shmid;
   }
 
-  return shmid;
+  return (uint64_t) shmid;
 }
 
-struct blocked_host *attach_blocked_host_shared_memory (int shmid) {
+struct blocked_host *attach_blocked_host_shared_memory (uint64_t shmid) {
   void *rv;   /* return value */
 
-  if ((rv = shmat (shmid,0,0)) == (void *)-1) {
-    log_master (L_ERROR,"attach_blocked_host_shared_memory: shmat");
+  if ((rv = shmat ((int)shmid,0,0)) == (void *)-1) {
+    drerrno = DRE_ATTACHSHMEM;
+    log_master (L_ERROR,"attach_blocked_host_shared_memory (shmat): %s",drerrno_str());
     perror ("blocked host shmat");
   }
 
@@ -370,43 +375,48 @@ struct blocked_host *attach_blocked_host_shared_memory (int shmid) {
 
 void detach_blocked_host_shared_memory (struct blocked_host *bhshp) {
   if (shmdt((char*)bhshp) == -1) {
-    log_master (L_WARNING,"Call to shmdt failed");
+    drerrno = DRE_RMSHMEM;
+    log_master (L_ERROR,"Call to shmdt failed (detach_blocked_host_shared_memory): %s",drerrno_str());
+    perror ("shmdt: detach_blocked_host_shared_memory");
   }
 }
 
-int get_frame_shared_memory (int nframes) {
+uint64_t get_frame_shared_memory (uint32_t nframes) {
   int shmid;
 
   if ((shmid = shmget (IPC_PRIVATE,sizeof(struct frame_info)*nframes, IPC_EXCL|IPC_CREAT|0600)) == -1) {
-    log_master (L_ERROR,"get_frame_shared_memory: shmget");
+    drerrno = DRE_GETSHMEM;
+    log_master (L_ERROR,"get_frame_shared_memory: %s",drerrno_str());
     perror ("shmget");
-    return shmid;
   }
 
-  return shmid;
+  return (uint64_t) shmid;
 }
 
-struct frame_info *attach_frame_shared_memory (int shmid) {
-  void *rv;   /* return value */
+struct frame_info *attach_frame_shared_memory (uint64_t shmid) {
+  void *pam;   // pointer to attached memory
 
-  if ((rv = shmat (shmid,0,0)) == (void *)-1) {
-    log_master (L_ERROR,"attach_frame_shared_memory: shmat");
-    perror ("frame shmat");
+  if ((pam = shmat ((int)shmid,0,0)) == (void *)-1) {
+    drerrno = DRE_ATTACHSHMEM;
+    log_master (L_ERROR,"attach_frame_shared_memory (shmat): %s",drerrno_str());
+    perror ("attach_frame_shared_memory");
   }
 
-  return (struct frame_info *) rv;
+  return (struct frame_info *) pam;
 }
 
 void detach_frame_shared_memory (struct frame_info *fishp) {
   if (shmdt((char*)fishp) == -1) {
-    log_master (L_WARNING,"Call to shmdt failed");
+    drerrno = DRE_RMSHMEM;
+    log_master (L_WARNING,"Call to shmdt failed: detach_frame_shared_memory: %s", drerrno_str());
+    perror ("shmdt: detach_frame_shared_memory");
   }
 }
 
-int job_njobs_masterdb (struct database *wdb) {
-  int i,c=0;
+uint32_t job_njobs_masterdb (struct database *wdb) {
+  uint32_t i,c;
 
-  for (i=0;i<MAXJOBS;i++) {
+  for (i=0,c=0;i<MAXJOBS;i++) {
     if (wdb->job[i].used) {
       c++;
     }
@@ -421,13 +431,15 @@ void job_update_info (struct database *wdb,uint32_t ijob) {
   /* This function is called unlocked */
   /* This function set the information about running, waiting processes... */
   /* Locks, and for every frame in the job checks it's status */
-  int i,nprocs=0;
+  uint16_t nprocs=0;
   struct frame_info *fi;
-  int fleft=0,fdone=0,ffailed=0;
-  int total;
-  uint64_t avg_frame_time = 0;
-  static int old_fdone = 0; /* Old frames done to update or not the estimated finish time */
-  static int old_nprocs = 0; /* Same that old_fdone */
+  uint32_t fleft=0,fdone=0,ffailed=0;
+  uint32_t i,total;
+  uint64_t avg_frame_time = 0;      // it's bigger than the actual
+                                    // job.avg_frame_time because this
+                                    // one accumulates the sum of all
+                                    // frame times to then divide by
+                                    // the number of finished ones.
   struct job job;
 
   log_master (L_DEBUG,"Entering job_update_info.");
@@ -442,6 +454,7 @@ void job_update_info (struct database *wdb,uint32_t ijob) {
 
   job_copy (&wdb->job[ijob],&job);
   total = job_nframes(&job);
+  job.frame_info = NULL;
   if (total) {
     fi = attach_frame_shared_memory (wdb->job[ijob].fishmid);
     if (fi == (void *) -1) {
@@ -449,8 +462,13 @@ void job_update_info (struct database *wdb,uint32_t ijob) {
       return;
     }
     job.frame_info = (struct frame_info *) malloc (sizeof(struct frame_info)*total);
+    if (!job.frame_info) {
+      semaphore_release (wdb->semid);
+      return;
+    }
     memcpy(job.frame_info,fi,sizeof(struct frame_info)*total);
     detach_frame_shared_memory(fi);
+    fi = NULL;
   }
   semaphore_release(wdb->semid);
   ///
@@ -481,6 +499,8 @@ void job_update_info (struct database *wdb,uint32_t ijob) {
 
   if (total)
     free (job.frame_info);
+  
+  job.frame_info = NULL;
 
   if (fdone) {
     avg_frame_time /= fdone;
@@ -494,9 +514,9 @@ void job_update_info (struct database *wdb,uint32_t ijob) {
     return;
   }
 
-  wdb->job[ijob].nprocs = nprocs;
-  wdb->job[ijob].fleft = fleft;
-  wdb->job[ijob].fdone = fdone;
+  wdb->job[ijob].nprocs  = nprocs;
+  wdb->job[ijob].fleft   = fleft;
+  wdb->job[ijob].fdone   = fdone;
   wdb->job[ijob].ffailed = ffailed;
 
   if (fdone)
@@ -505,10 +525,14 @@ void job_update_info (struct database *wdb,uint32_t ijob) {
   /* If we do not check old_fdone and old_nprocs, the est_finish_time is being updated every time */
   /* this function is called. In this way it is only updated when it must, that is when a frame is */
   /* finished or when the number of running processors change */
-  if ((nprocs) && ((fdone != old_fdone) || (nprocs != old_nprocs))) {
+  if ((nprocs) &&
+      ((fdone != wdb->job[ijob].old_fdone)
+       ||
+       (nprocs != wdb->job[ijob].old_nprocs))) 
+  {
     wdb->job[ijob].est_finish_time = time(NULL) + ((avg_frame_time * (fleft+nprocs)) / nprocs);
-    old_fdone = fdone;
-    old_nprocs = nprocs;
+    wdb->job[ijob].old_fdone = fdone;
+    wdb->job[ijob].old_nprocs = nprocs;
   }
 
   switch (wdb->job[ijob].status) {
@@ -544,7 +568,7 @@ void job_update_info (struct database *wdb,uint32_t ijob) {
 }
 
 int job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe, struct frame_info *fi) {
-  /* This function check if the running or loading (in frame_info at job) process is actually */
+  // This function checks if the running or loading (in frame_info at job) process is actually
   /* runnning or not (in task at computer) */
   t_framestatus fistatus;
   int running = 1;
@@ -552,7 +576,7 @@ int job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe,
   t_taskstatus tstatus;
   struct job job;
 
-  ///
+  //
   semaphore_lock (wdb->semid);
 
   if (!job_index_correct_master (wdb,ijob)) {
@@ -609,8 +633,8 @@ int job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe,
       }
     } else { // itask == -1
       /* The task is being loaded, so it hasn't yet a itask assigned */
+      
     }
-
   }
 
   if (!running) {
@@ -619,15 +643,18 @@ int job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe,
     log_master_job (&job,L_WARNING,"Task registered as running not running. Requeued");
     fitmp = attach_frame_shared_memory (job.fishmid);
     if (fitmp == (void *) -1) {
+      // Couldn't attach frame_info shared memory
       semaphore_release (wdb->semid);
+      drerrno = DRE_ATTACHSHMEM;
+      log_master_job (&job,L_ERROR,"%s", drerrno_str());
       return 0;
+    } else {
+      fitmp[iframe].status = FS_WAITING;
+      fitmp[iframe].start_time = 0;
+      fitmp[iframe].requeued++;
+      
+      detach_frame_shared_memory(fitmp);
     }
-
-    fitmp[iframe].status = FS_WAITING;
-    fitmp[iframe].start_time = 0;
-    fitmp[iframe].requeued++;
-
-    detach_frame_shared_memory(fitmp);
   }
 
   semaphore_release (wdb->semid);
@@ -1114,7 +1141,7 @@ int job_available_no_icomp (struct database *wdb,uint32_t ijob, int *iframe) {
   return 1;
 }
 
-int job_first_frame_available_no_icomp (struct database *wdb,uint32_t ijob) {
+uint32_t job_first_frame_available_no_icomp (struct database *wdb,uint32_t ijob) {
   /* To be called LOCKED */
   /* This function not only returns the first frame */
   /* available without updating the job structure */

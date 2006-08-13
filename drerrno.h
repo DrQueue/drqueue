@@ -22,7 +22,7 @@
 #ifndef _DRERRNO_H_
 #define _DRERRNO_H_
 
-extern int drerrno;  /* global errno */
+extern int drerrno;              // global errno
 
 #define DRE_NOERROR     0 /* No error */
 #define DRE_ERROROPENING  1  /* Could not open file or directory */
