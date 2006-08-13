@@ -283,14 +283,14 @@ void computer_pool_detach_shared_memory (struct pool *cpshp) {
   }
 }
 
-int computer_pool_add (struct computer_limits *cl, char *pool) {
+int computer_pool_add (struct computer_limits *cl, char *poolname) {
   struct pool *opool = (struct pool *)-1;
   struct pool *npool;
   int npoolshmid;
 
   // fprintf (stderr,"computer_pool_add (cl=%x,cl->poolshmid=%i) : %s\n",cl,cl->poolshmid,pool);
 
-  if (computer_pool_exists (cl,pool)) {
+  if (computer_pool_exists (cl,poolname)) {
     // It is already on the list
     return 1;
   }
@@ -318,12 +318,13 @@ int computer_pool_add (struct computer_limits *cl, char *pool) {
     computer_pool_detach_shared_memory (opool);
     if (shmctl (cl->poolshmid,IPC_RMID,NULL) == -1) {
       drerrno = DRE_RMSHMEM;
-      return 0;
+      // TODO: log this problem
+      // return 0;
     }
   }
 
   cl->poolshmid = npoolshmid;
-  strncpy (npool[cl->npools].name,pool,MAXNAMELEN-1);
+  strncpy (npool[cl->npools].name,poolname,MAXNAMELEN);
   // fprintf(stderr,"Added pool : %s\n",npool[cl->npools].name);
   cl->npools++;
 
@@ -393,7 +394,7 @@ void computer_pool_list (struct computer_limits *cl) {
   }
 }
 
-int computer_pool_exists (struct computer_limits *cl,char *pool) {
+int computer_pool_exists (struct computer_limits *cl,char *poolname) {
   int i;
   struct pool *npool;
 
@@ -405,7 +406,7 @@ int computer_pool_exists (struct computer_limits *cl,char *pool) {
   }
 
   for (i=0;i<cl->npools;i++) {
-    if (strncmp (npool[i].name,pool,strlen(npool[i].name)+1) == 0)
+    if (strncmp (npool[i].name,poolname,strlen(poolname)+1) == 0)
       return 1;
   }
 
@@ -418,7 +419,7 @@ int computer_pool_free (struct computer_limits *cl) {
   // fprintf (stderr,"PID (%i): computer_pool_free (cl=%x,cl->poolshmid=%i,cl->npools=%i)\n",getpid(),cl,cl->poolshmid,cl->npools);
   if (cl->poolshmid != -1) {
     if (shmctl (cl->poolshmid,IPC_RMID,NULL) == -1) {
-      fprintf (stderr,"ERROR: deleting poolshmid (%i)\n",cl->poolshmid);
+      fprintf (stderr,"ERROR: deleting poolshmid (%lli)\n",cl->poolshmid);
       drerrno = DRE_RMSHMEM;
       return 0;
     }
