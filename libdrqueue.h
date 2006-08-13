@@ -26,6 +26,8 @@
 extern "C" {
 #endif
 
+extern int drerrno;
+
 #include "computer.h"
 #include "job.h"
 #include "task.h"

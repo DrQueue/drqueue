@@ -40,10 +40,9 @@ extern "C" {
     char resx[BUFFERLEN];
     char resy[BUFFERLEN];
     char format[BUFFERLEN];
-    int usemaya70; // 1 if we should render with Maya 7.0, 0 for Maya 6.5
+    char usemaya70; // 1 if we should render with Maya 7.0, 0 for Maya 6.5
     // char precommand[BUFFERLEN]; // allows a prerender command (mel script) to be executed before the render
     // char postcommand[BUFFERLEN]; // allows a postrender command (mel script to be executed after the render
-
   };
 
   char *turtlesg_create (struct turtlesgi *info);
