@@ -36,10 +36,10 @@ struct pool {
   char name[MAXNAMELEN];
 };
 
-struct autoenable {    /* I put autoenable on limits even */
-  time_t last;      /* Time of the last autoenable event happened */
-  uint8_t h,m;      /* Hour and minute of wished autoenable */
-  uint8_t flags;     // Autoenable flag
+struct autoenable {   /* I put autoenable on limits even */
+  uint32_t last;      /* Time of the last autoenable event happened */
+  uint8_t  h,m;       /* Hour and minute of wished autoenable */
+  uint8_t  flags;     // Autoenable flag
 };
 
 struct computer_limits {
@@ -49,7 +49,7 @@ struct computer_limits {
   struct autoenable autoenable;
   struct pool *pool;
   uint16_t npools;
-  int poolshmid; // Pool's shared memory id
+  uint64_t poolshmid; // Pool's shared memory id
 };
 
 struct computer {

@@ -788,7 +788,7 @@ int send_computer_pools (int sfd, struct computer_limits *cl, uint8_t attached) 
     } else {
       if ((pool = (struct pool *) computer_pool_attach_shared_memory(cl->poolshmid)) == (void*)-1) {
         perror ("Attaching");
-        fprintf (stderr,"ERROR attaching memory %d shmid\n", cl->poolshmid);
+        fprintf (stderr,"ERROR (send_computer_pools) attaching pool shared memory %llu shmid\n", cl->poolshmid);
         return 0;
       }
     }
@@ -865,9 +865,12 @@ int send_computer_limits (int sfd, struct computer_limits *cl, uint8_t attached)
 
   /* We make a copy coz we need to modify the values */
   memcpy (buf,cl,sizeof(bswapped));
+
   /* Prepare for sending */
   bswapped.nmaxcpus = htons (bswapped.nmaxcpus);
   bswapped.maxfreeloadcpu = htons (bswapped.maxfreeloadcpu);
+  bswapped.npools = htons(bswapped.npools);
+
   /* Autoenable stuff */
   bswapped.autoenable.last = htonl (bswapped.autoenable.last);
 

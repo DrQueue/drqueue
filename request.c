@@ -1039,8 +1039,7 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp) {
           case FS_WAITING:
             break;
           case FS_ASSIGNED:
-            // CHECK: is this a pointer ?
-            if (&wdb->job[task.ijob].autoRequeue) {
+            if (wdb->job[task.ijob].autoRequeue) {
               fi[task.frame].status = FS_WAITING;
               fi[task.frame].start_time = 0;
               fi[task.frame].requeued++;
