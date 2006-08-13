@@ -44,21 +44,21 @@
 
 /* FRAME SECTION */
 typedef enum {
-  FS_WAITING,   /* Waiting to be assigned */
+  FS_WAITING,    /* Waiting to be assigned */
   FS_ASSIGNED,   /* Currently assigned but not finished (so RUNNING) */
-  FS_ERROR,   /* Finished with error */
-  FS_FINISHED   /* Finished with success */
+  FS_ERROR,      /* Finished with error */
+  FS_FINISHED    /* Finished with success */
 } t_framestatus;
 
 /* Struct that holds information about a single frame */
 struct frame_info {
-  uint8_t status;   /* Status */
-  time_t start_time,end_time; /* Time of start and ending of the frame (32 bit integer) */
-  uint8_t exitcode;  /* Exit code of the process */
-  uint32_t icomp;  /* Index to computer */
-  uint16_t itask;  /* Index to task on computer */
-  uint16_t requeued; // Number of times that this frame has been requeued, starts at 0
-  uint16_t flags;   // Frame flags
+  uint8_t  status;              // Status
+  uint32_t start_time,end_time; // (time_t) Time of start and ending of the frame (32 bit integer)
+  uint8_t  exitcode;            // Exit code of the process
+  uint32_t icomp;               // Index to computer
+  uint16_t itask;               // Index to task on computer
+  uint16_t requeued;            // Number of times that this frame has been requeued, starts at 0
+  uint16_t flags;               // Frame flags
 };
 
 // Frame Flags
@@ -198,93 +198,104 @@ union koj_info {  /* Kind of job information */
 };
 
 /* Koj types */
-#define KOJ_GENERAL     0 /* Not specific koj */
-#define KOJ_MAYA      1 /* Maya koj */
-#define KOJ_BLENDER     2 /* Blender koj */
-#define KOJ_BMRT      3 /* BMRT koj */
-#define KOJ_3DELIGHT    4 /* 3delight koj */
-#define KOJ_PIXIE      5 /* Pixie koj */
-#define KOJ_MENTALRAY    6 /* Mental Ray koj */
-#define KOJ_LIGHTWAVE    7 // Lightwave koj
-#define KOJ_AFTEREFFECTS  8 // After Effects koj
-#define KOJ_SHAKE      9 // Shake koj
-#define KOJ_AQSIS                       10 // Aqsis koj
-#define KOJ_TERRAGEN   11 // Terragen koj
-#define KOJ_NUKE   12 // Nuke koj
-#define KOJ_TURTLE                      13 // Turtle koj
-#define KOJ_MANTRA                      14 // Mantra koj
-#define KOJ_XSI    15 // XSI koj
+#define KOJ_GENERAL       0  // Not specific koj
+#define KOJ_MAYA          1  // Maya koj
+#define KOJ_BLENDER       2  // Blender koj
+#define KOJ_BMRT          3  // BMRT koj
+#define KOJ_3DELIGHT      4  // 3delight koj
+#define KOJ_PIXIE         5  // Pixie koj
+#define KOJ_MENTALRAY     6  // Mental Ray koj
+#define KOJ_LIGHTWAVE     7  // Lightwave koj
+#define KOJ_AFTEREFFECTS  8  // After Effects koj
+#define KOJ_SHAKE         9  // Shake koj
+#define KOJ_AQSIS         10 // Aqsis koj
+#define KOJ_TERRAGEN      11 // Terragen koj
+#define KOJ_NUKE          12 // Nuke koj
+#define KOJ_TURTLE        13 // Turtle koj
+#define KOJ_MANTRA        14 // Mantra koj
+#define KOJ_XSI           15 // XSI koj
 
 /* JOB SECTION */
 typedef enum {
-  JOBSTATUS_WAITING,      /* Waiting to be dispatched */
-  JOBSTATUS_ACTIVE,       /* Already dispatched */
-  JOBSTATUS_STOPPED,            /* Stopped, waiting for current frames to finish */
-  JOBSTATUS_FINISHED
+  JOBSTATUS_WAITING,            // Waiting to be dispatched. Wants to
+                                // start rendering
+  JOBSTATUS_ACTIVE,             // Already dispatched and supposedly
+                                // running
+  JOBSTATUS_STOPPED,            // Stopped. No waiting frames will get assigned
+                                // to jobs in this situation (CHECK:
+                                // what happens on requeue)
+  JOBSTATUS_FINISHED            // After completion. Job has finished
+                                // processing all it frames/tasks
 } t_jobstatus;
 
 /* JOB FLAGS */
-#define JF_MAILNOTIFY   (1<<0) /* Mail notifications on events */
-#define JF_MNDIFEMAIL   (1<<1) /* Email address for notifications specified on "email" field */
-#define JF_JOBDEPEND   (1<<2) // This job depends on another to start
-#define JF_JOBDELETE   (1<<3) // Delete job when finished
+#define JF_MAILNOTIFY   (1<<0) // Mail notifications on events
+#define JF_MNDIFEMAIL   (1<<1) // Email address for notifications specified on "email" field
+#define JF_JOBDEPEND    (1<<2) // This job depends on another to start
+#define JF_JOBDELETE    (1<<3) // Delete job when finished
 
 /* OS FLAGS */
-#define OSF_IRIX     (1<<0) /* If set will run on Irix */
-#define OSF_LINUX     (1<<1) /* If set will run on Linux */
-#define OSF_OSX      (1<<2) /* If set will run on OSX */
-#define OSF_FREEBSD    (1<<3) /* If set will run on FreeBSD */
-#define OSF_CYGWIN    (1<<4) /* If set will run on Windows */
+#define OSF_IRIX      (1<<0) // If set will run on Irix
+#define OSF_LINUX     (1<<1) // If set will run on Linux
+#define OSF_OSX       (1<<2) // If set will run on OSX
+#define OSF_FREEBSD   (1<<3) // If set will run on FreeBSD
+#define OSF_CYGWIN    (1<<4) // If set will run on Windows
 
 /* THE JOB ITSELF */
 struct job {
-  char used;
-  uint32_t id;   /* Id number for the job */
-  uint16_t nprocs;  /* Number of procs currently assigned */
-  uint16_t status;  /* Status of the job */
-  uint32_t priority;  /* Priority */
+  uint8_t  used;
+  uint32_t id;        // Id number for the job
+  uint16_t nprocs;    // Number of procs currently assigned
+  uint16_t status;    // Status of the job
+  uint32_t priority;  // Priority
 
   char name[MAXNAMELEN];
   char cmd[MAXCMDLEN];
   char owner[MAXNAMELEN];
-  char email[MAXNAMELEN]; /* Specific email address for email notifications */
-  char autoRequeue;
+  char email[MAXNAMELEN]; // Specific email address for email notifications
+  uint8_t autoRequeue;
 
 
-  uint16_t koj;   /* Kind of job */
-  union koj_info koji;  /* koj info */
+  uint16_t koj;         // Kind of job
+  union koj_info koji;  // koj info
 
   // FIXME: frames are uint32_t but the function that returns frames available is int
   uint32_t frame_start,frame_end;
-  char frame_pad;
+  uint8_t  frame_pad;
   uint32_t frame_step;
-  uint32_t fleft,fdone,ffailed; /* Frames left,done and failed */
-  uint32_t block_size;
-  time_t submit_time;   // Time when the job was submitted
-  time_t avg_frame_time; /* Average frame time */
-  time_t est_finish_time; /* Estimated finish time */
-  struct frame_info *frame_info; /* Status of every frame */
-  int fishmid;   /* Shared memory id for the frame_info structure */
+  uint32_t fleft,fdone,ffailed; // Frames left,done and failed
+  uint32_t old_fdone;           // Number of frames finished last time
+                                // we checked.
+  uint16_t old_nprocs;          // Number of procs running last time
+                                // we checked.
+  uint32_t block_size;          // Number of tasks that should be
+                                // executed by slave before
+                                // requesting a new task
+  uint32_t submit_time;         // Time when the job was submitted
+  uint32_t avg_frame_time;      // Average frame time
+  uint32_t est_finish_time;     // Estimated finish time
+                                // we checked.
+  struct frame_info *frame_info; // Status of every frame
+  uint64_t fishmid;              // Frame info shared memory id
 
-  // Blocked hosts
-  struct blocked_host *blocked_host;
-  int bhshmid;               // Shared memory id for the blocked_host structure
-  uint16_t nblocked;      // Number of blocked hosts
+  struct blocked_host *blocked_host;  // Blocked hosts
+  uint64_t bhshmid;                   // Shared memory id for the blocked_host structure
+  uint16_t nblocked;                  // Number of blocked hosts
 
-  uint32_t flags;        /* Job flags */
+  uint32_t flags;                // Job flags
 
-  uint32_t dependid;      /* Jobid on which this one depends */
+  uint32_t dependid;             // Jobid on which this one depends
 
-  struct job_limits limits;     // Job limits
-  struct envvars envvars;       // Environment variables
+  struct job_limits limits;      // Job limits
+  struct envvars envvars;        // Environment variables
 };
 
 struct database;
 
-struct tpol {   /* Priority ordered list of jobs */
-  uint32_t index;  /* index to unordered list */
-  uint32_t pri;   /* priority of that job */
-  time_t submit_time; // submission time of the job
+struct tpol {           // Priority ordered list of jobs
+  uint32_t index;       // index to unordered list
+  uint32_t pri;         // priority of that job
+  uint64_t submit_time; // submission time of the job
 };
 
 int job_index_free (void *pwdb);
@@ -299,8 +310,8 @@ void job_copy (struct job *src, struct job *dst);
 
 int job_available (struct database *wdb,uint32_t ijob, int *iframe, uint32_t icomp);
 int job_available_no_icomp (struct database *wdb,uint32_t ijob, int *iframe);
-int job_first_frame_available (struct database *wdb,uint32_t ijob,uint32_t icomp);
-int job_first_frame_available_no_icomp (struct database *wdb,uint32_t ijob);
+uint32_t job_first_frame_available (struct database *wdb,uint32_t ijob,uint32_t icomp);
+uint32_t job_first_frame_available_no_icomp (struct database *wdb,uint32_t ijob);
 
 void job_frame_waiting (struct database *wdb,uint32_t ijob, int iframe);
 void job_update_assigned (struct database *wdb,uint32_t ijob, int iframe, int icomp, int itask);
@@ -308,26 +319,28 @@ void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job);
 void job_init (struct job *job);
 void job_frame_info_init (struct frame_info *fi);
 void job_delete (struct job *job);
-int job_njobs_masterdb (struct database *wdb);
+uint32_t job_njobs_masterdb (struct database *wdb);
 void job_update_info (struct database *wdb,uint32_t ijob);
-int job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe, struct frame_info *fi);
+int job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe, struct frame_info *fi); // bool
 void job_stop (struct job *job);
 void job_continue (struct job *job);
-int job_index_correct_master (struct database *wdb,uint32_t ijob);
+int job_index_correct_master (struct database *wdb,uint32_t ijob); // bool
 
 void job_init_limits (struct job *job);
-int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp);
+int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp); // bool
 
 void job_environment_set (struct job *job, uint32_t iframe);
-void job_logs_remove (struct job *job);
+void job_logs_remove (struct job *job);   // WARN: this function
+                                          // removes the logs
+                                          // directory for a job
 
-int get_frame_shared_memory (int nframes); /* ipc shared memory */
-struct frame_info *attach_frame_shared_memory (int shmid);
+uint64_t get_frame_shared_memory (uint32_t nframes); /* ipc shared memory */
+struct frame_info *attach_frame_shared_memory (uint64_t shmid);
 void detach_frame_shared_memory (struct frame_info *fishp);
 
 // Blocked hosts
-int get_blocked_host_shared_memory (int nframes); /* ipc shared memory */
-struct blocked_host *attach_blocked_host_shared_memory (int shmid);
+uint64_t get_blocked_host_shared_memory (uint32_t nhosts); /* ipc shared memory */
+struct blocked_host *attach_blocked_host_shared_memory (uint64_t shmid);
 void detach_blocked_host_shared_memory (struct blocked_host *bhshp);
 
 int priority_job_compare (const void *a,const void *b);

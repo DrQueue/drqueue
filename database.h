@@ -26,8 +26,8 @@
 #include "job.h"
 #include "computer.h"
 
-#define DB_VERSION 8        /* Database version. This version must change when we change the job structure */
-#define DB_MAGIC  0xADDEEFBE /* magic number */
+#define DB_VERSION 9           // Database version. This version must change when we change the job structure
+#define DB_MAGIC   0xADDEEFBE  // magic number
 
 struct load_balancing {
   struct tpol pol[MAXJOBS]; // Priority ordered list of jobs
@@ -43,15 +43,15 @@ struct database {
   int shmid;   /* shared memory id */
 #ifdef COMM_REPORT
 
-  long int bsent;
-  long int brecv;
+  uint64_t bsent;
+  uint64_t brecv;
 #endif
 };
 
-struct database_hdr {  /* Database header for the saved database */
-  uint32_t magic;  /* Magics number */
-  uint32_t version;  /* Version number for the saved database */
-  uint16_t job_size;  /* Number of total (used and empty) jobs in the jobs structure */
+struct database_hdr {  // Database header for the saved database
+  uint32_t magic;      // Magics number
+  uint32_t version;    // Version number for the saved database
+  uint16_t job_size;   // Number of total (used and empty) jobs in the jobs structure
   /* We only save the jobs, because the computers' slaves need to be restarted */
 };
 

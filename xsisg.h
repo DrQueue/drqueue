@@ -21,6 +21,7 @@
 #define _XSISG_H_
 
 #include "constants.h"
+#include <stdint.h>
 
 #ifdef __CPLUSPLUS
 extern "C" {
@@ -35,10 +36,10 @@ extern "C" {
     char imageExt[BUFFERLEN];
     char scriptdir[BUFFERLEN];
     char file_owner[BUFFERLEN];
-    int  res_x,res_y;  /* Resolution of the frame */
-    int  skipFrames; //skip rendered frames - 1 is true
-    int  runScript;  //1 if we should run a script instead of rendering
-    char scriptRun[BUFFERLEN]; //script to run
+    uint32_t res_x,res_y;       // Resolution of the frame
+    char skipFrames;           // skip rendered frames (1 is true)
+    char runScript;            // 1 if we should run a script instead of rendering
+    char scriptRun[BUFFERLEN]; // script to run
   };
 
   char *xsisg_create (struct xsisgi *info);
@@ -49,4 +50,4 @@ extern "C" {
 }
 #endif
 
-#endif /* _MENTALRAYSG_H_ */
+#endif /* _XSISG_H_ */

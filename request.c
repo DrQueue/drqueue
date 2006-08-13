@@ -201,7 +201,7 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
   if ((icomp != -1) && (request.who != CLIENT)) {
     semaphore_lock (wdb->semid);
     /* set the time of the last connection */
-    time(&wdb->computer[icomp].lastconn);
+    wdb->computer[icomp].lastconn = time(NULL);
     semaphore_release (wdb->semid);
   }
 }
@@ -302,7 +302,7 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
 
   computer_init(&wdb->computer[index]);
   wdb->computer[index].used = 1;
-  time(&wdb->computer[index].lastconn);
+  wdb->computer[index].lastconn = time(NULL);
 
   /* No errors, we (master) can receive the hwinfo from the remote */
   /* computer to be registered */
@@ -1023,7 +1023,7 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp) {
       } else {
         fi[task.frame].status = FS_FINISHED;
         fi[task.frame].exitcode = DR_WEXITSTATUS(task.exitstatus);
-        time(&fi[task.frame].end_time);
+        fi[task.frame].end_time = time(NULL);
         wdb->job[task.ijob].fdone++;
       }
     } else {
@@ -1047,7 +1047,7 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp) {
               wdb->job[task.ijob].fleft++;
             } else {
               fi[task.frame].status = FS_ERROR;
-              time(&fi[task.frame].end_time);
+              fi[task.frame].end_time = time(NULL);
               wdb->job[task.ijob].ffailed++;
             }
             break;
@@ -1061,7 +1061,7 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp) {
           log_master_job (&wdb->job[task.ijob],L_INFO,"Frame %i died - signal %i",
                           job_frame_index_to_number (&wdb->job[task.ijob],task.frame), sig);
           fi[task.frame].status = FS_ERROR;
-          time(&fi[task.frame].end_time);
+          fi[task.frame].end_time = time(NULL);
           wdb->job[task.ijob].ffailed++;
         }
       } else {
@@ -1070,7 +1070,7 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp) {
           log_master_job (&wdb->job[task.ijob],L_INFO,"Frame %i died without signal.",
                           job_frame_index_to_number (&wdb->job[task.ijob],task.frame));
           fi[task.frame].status = FS_ERROR;
-          time(&fi[task.frame].end_time);
+          fi[task.frame].end_time = time (NULL);
         } else {
           // TODO: complete this.
           // log_master_computer ( /*<FILLME>*/ ,L_INFO,"Frame %i died without signal but was not assigned.",
@@ -1170,7 +1170,7 @@ void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp) {
   log_master (L_DEBUG,"Exiting handle_r_r_listcomp");
 }
 
-int request_job_delete (uint32_t ijob, int who) {
+int request_job_delete (uint32_t ijob, uint16_t who) {
   /* On error returns 0, error otherwise drerrno is set to the error */
   int sfd;
   struct request req;
@@ -1240,7 +1240,7 @@ void handle_r_r_deletjob (int sfd,struct database *wdb,int icomp,struct request 
   log_master (L_DEBUG,"Exiting handle_r_r_deletjob");
 }
 
-int request_slave_killtask (char *slave,uint16_t itask,int who) {
+int request_slave_killtask (char *slave,uint16_t itask,uint16_t who) {
   /* This function is called by the master */
   /* It just sends a slave a request to kill a particular task */
   /* Returns 0 on failure */
@@ -1257,6 +1257,7 @@ int request_slave_killtask (char *slave,uint16_t itask,int who) {
 
   if (!send_request (sfd,&request,who)) {
     drerrno = DRE_ERRORWRITING;
+    log_master (L_ERROR,"resquest_slave_killtask to slave %s. %s",slave,drerrno_str());
     return 0;
   }
 
@@ -1268,7 +1269,7 @@ void handle_rs_r_killtask (int sfd,struct slave_database *sdb,struct request *re
   kill(-sdb->comp->status.task[req->data].pid,SIGINT);
 }
 
-int request_job_stop (uint32_t ijob, int who) {
+int request_job_stop (uint32_t ijob, uint16_t who) {
   /* On error returns 0, error otherwise drerrno is set to the error */
   int sfd;
   struct request req;
@@ -1291,7 +1292,7 @@ int request_job_stop (uint32_t ijob, int who) {
   return 1;
 }
 
-int request_job_continue (uint32_t ijob, int who) {
+int request_job_continue (uint32_t ijob, uint16_t who) {
   /* On error returns 0, error otherwise drerrno is set to the error */
   int sfd;
   struct request req;
@@ -1314,7 +1315,7 @@ int request_job_continue (uint32_t ijob, int who) {
   return 1;
 }
 
-int request_job_envvars (uint32_t ijob, struct envvars *envvars, int who) {
+int request_job_envvars (uint32_t ijob, struct envvars *envvars, uint16_t who) {
   /* On error returns 0, error otherwise drerrno is set to the error */
   int sfd;
   struct request req;
@@ -1452,7 +1453,7 @@ void handle_r_r_hstopjob (int sfd,struct database *wdb,int icomp,struct request 
   log_master (L_DEBUG,"Exiting handle_r_r_hstopjob");
 }
 
-int request_job_hstop (uint32_t ijob, int who) {
+int request_job_hstop (uint32_t ijob, uint16_t who) {
   /* On error returns 0, error otherwise drerrno is set to the error */
   int sfd;
   struct request req;
@@ -1475,7 +1476,7 @@ int request_job_hstop (uint32_t ijob, int who) {
   return 1;
 }
 
-int request_job_rerun (uint32_t ijob, int who) {
+int request_job_rerun (uint32_t ijob, uint16_t who) {
   /* On error returns 0, error otherwise drerrno is set to the error */
   int sfd;
   struct request req;
@@ -1542,7 +1543,7 @@ void handle_r_r_rerunjob (int sfd,struct database *wdb,int icomp,struct request 
   log_master (L_DEBUG,"Exiting handle_r_r_rerunjob");
 }
 
-int request_job_xfer (uint32_t ijob, struct job *job, int who) {
+int request_job_xfer (uint32_t ijob, struct job *job, uint16_t who) {
   /* This function can be called by anyone */
   struct request req;
   int sfd;
@@ -1637,7 +1638,7 @@ void handle_r_r_jobxfer (int sfd,struct database *wdb,int icomp,struct request *
   log_master (L_DEBUG,"Exiting handle_r_r_jobxfer");
 }
 
-int request_job_xferfi (uint32_t ijob, struct frame_info *fi, int nframes, int who) {
+int request_job_xferfi (uint32_t ijob, struct frame_info *fi, int nframes, uint16_t who) {
   /* fi must have been already allocated */
   /* This function can be called by anyone */
   struct request req;
@@ -1819,7 +1820,7 @@ void handle_r_r_jobfinfo (int sfd,struct database *wdb,int icomp,struct request 
   log_master (L_DEBUG,"Exiting handle_r_r_jobfinfo");
 }
 
-int request_comp_xfer (uint32_t icomp, struct computer *comp, int who) {
+int request_comp_xfer (uint32_t icomp, struct computer *comp, uint16_t who) {
   /* This function can be called by anyone */
   struct request req;
   int sfd;
@@ -1913,7 +1914,7 @@ void handle_r_r_compxfer (int sfd,struct database *wdb,int icomp,struct request 
   computer_detach (&comp);
 }
 
-int request_job_frame_info (uint32_t ijob, uint32_t frame, struct frame_info *fi, int who) {
+int request_job_frame_info (uint32_t ijob, uint32_t frame, struct frame_info *fi, uint16_t who) {
   int sfd;
   struct request req;
 
@@ -1948,7 +1949,7 @@ int request_job_frame_info (uint32_t ijob, uint32_t frame, struct frame_info *fi
   return 1;
 }
 
-int request_job_delete_blocked_host (uint32_t ijob, uint32_t icomp, int who) {
+int request_job_delete_blocked_host (uint32_t ijob, uint32_t icomp, uint16_t who) {
   int sfd;
   struct request req;
 
@@ -1977,7 +1978,7 @@ int request_job_delete_blocked_host (uint32_t ijob, uint32_t icomp, int who) {
   return 1;
 }
 
-int request_job_add_blocked_host (uint32_t ijob, uint32_t icomp, int who) {
+int request_job_add_blocked_host (uint32_t ijob, uint32_t icomp, uint16_t who) {
   int sfd;
   struct request req;
 
@@ -2005,7 +2006,7 @@ int request_job_add_blocked_host (uint32_t ijob, uint32_t icomp, int who) {
   return 1;
 }
 
-int request_job_frame_waiting (uint32_t ijob, uint32_t frame, int who) {
+int request_job_frame_waiting (uint32_t ijob, uint32_t frame, uint16_t who) {
   /* On error returns 0, error otherwise drerrno is set to the error */
   int sfd;
   struct request req;
@@ -2102,7 +2103,7 @@ void handle_r_r_jobfwait (int sfd,struct database *wdb,int icomp,struct request 
   log_master(L_DEBUG,"Exiting handle_r_r_jobfwait");
 }
 
-int request_job_frame_kill (uint32_t ijob, uint32_t frame, int who) {
+int request_job_frame_kill (uint32_t ijob, uint32_t frame, uint16_t who) {
   /* On error returns 0, error otherwise drerrno is set to the error */
   /* This function requests a running frames (FS_ASSIGNED) and only running */
   /* to be killed. It is set to waiting again as part of the process of signaling */
@@ -2202,7 +2203,7 @@ void handle_r_r_jobfkill (int sfd,struct database *wdb,int icomp,struct request 
   log_master(L_DEBUG,"Exiting handle_r_r_jobfkill");
 }
 
-int request_job_frame_finish (uint32_t ijob, uint32_t frame, int who) {
+int request_job_frame_finish (uint32_t ijob, uint32_t frame, uint16_t who) {
   /* On error returns 0, error otherwise drerrno is set to the error */
   /* This function asks for a frame to be set as finished, it only works */
   /* on FS_WAITING frames. */
@@ -2236,7 +2237,7 @@ int request_job_frame_finish (uint32_t ijob, uint32_t frame, int who) {
   return 1;
 }
 
-int request_job_frame_reset_requeued (uint32_t ijob, uint32_t frame, int who) {
+int request_job_frame_reset_requeued (uint32_t ijob, uint32_t frame, uint16_t who) {
   /* On error returns 0, error otherwise drerrno is set to the error */
   /* This function asks for a frame to be set as finished, it only works */
   /* on FS_WAITING frames. */
@@ -2312,14 +2313,14 @@ void handle_r_r_jobffini (int sfd,struct database *wdb,int icomp,struct request 
   switch (fi[iframe].status) {
   case FS_WAITING:
     fi[iframe].exitcode = 0;
-    time(&fi[iframe].end_time);
+    fi[iframe].end_time = time(NULL);
     wdb->job[ijob].fdone++;
     wdb->job[ijob].fdone--;
     fi[iframe].status = FS_FINISHED;
     break;
   case FS_ASSIGNED:
     fi[iframe].exitcode = 0;
-    time(&fi[iframe].end_time);
+    fi[iframe].end_time = time(NULL);
     wdb->job[ijob].fdone++;
     wdb->job[ijob].fleft--;
     fi[iframe].status = FS_FINISHED;
@@ -2410,7 +2411,7 @@ void handle_r_r_jobdelblkhost (int sfd, struct database *wdb, int icomp, struct 
   log_master(L_DEBUG,"Exiting handle_r_r_jobdelblkhost");
 }
 
-int request_job_list_blocked_host (uint32_t ijob, struct blocked_host **bh, uint16_t *nblocked, int who) {
+int request_job_list_blocked_host (uint32_t ijob, struct blocked_host **bh, uint16_t *nblocked, uint16_t who) {
   int sfd;
   struct request req;
   struct blocked_host *tbh;
@@ -2612,7 +2613,7 @@ void handle_r_r_jobfrstrqd (int sfd,struct database *wdb,int icomp,struct reques
   log_master(L_DEBUG,"Exiting handle_r_r_jobffini");
 }
 
-int request_job_frame_kill_finish (uint32_t ijob, uint32_t frame, int who) {
+int request_job_frame_kill_finish (uint32_t ijob, uint32_t frame, uint16_t who) {
   /* On error returns 0, error otherwise drerrno is set to the error */
   /* This function asks for a frame to be set as finished, it only works */
   /* on FS_WAITING frames. */
@@ -2706,7 +2707,7 @@ void handle_r_r_jobfkfin (int sfd,struct database *wdb,int icomp,struct request 
 }
 
 
-int request_slave_limits_nmaxcpus_set (char *slave, uint32_t nmaxcpus, int who) {
+int request_slave_limits_nmaxcpus_set (char *slave, uint32_t nmaxcpus, uint16_t who) {
   int sfd;
   struct request req;
 
@@ -2726,7 +2727,7 @@ int request_slave_limits_nmaxcpus_set (char *slave, uint32_t nmaxcpus, int who) 
   return 1;
 }
 
-int request_slave_limits_enabled_set (char *slave, uint8_t enabled, int who) {
+int request_slave_limits_enabled_set (char *slave, uint8_t enabled, uint16_t who) {
   int sfd;
   struct request req;
 
@@ -2746,7 +2747,7 @@ int request_slave_limits_enabled_set (char *slave, uint8_t enabled, int who) {
   return 1;
 }
 
-int request_slave_limits_autoenable_set (char *slave, uint32_t h, uint32_t m, unsigned char flags, int who) {
+int request_slave_limits_autoenable_set (char *slave, uint32_t h, uint32_t m, unsigned char flags, uint16_t who) {
   int sfd;
   struct request req;
 
@@ -2973,7 +2974,7 @@ void handle_rs_r_setmaxfreeloadcpu (int sfd,struct slave_database *sdb,struct re
   log_slave_computer(L_DEBUG,"Exiting handle_rs_r_setmaxfreeloadcpu");
 }
 
-int request_slave_limits_maxfreeloadcpu_set (char *slave, uint32_t maxfreeloadcpu, int who) {
+int request_slave_limits_maxfreeloadcpu_set (char *slave, uint32_t maxfreeloadcpu, uint16_t who) {
   int sfd;
   struct request req;
 
@@ -2994,7 +2995,7 @@ int request_slave_limits_maxfreeloadcpu_set (char *slave, uint32_t maxfreeloadcp
 }
 
 
-int request_slavexit (uint32_t icomp, int who) {
+int request_slavexit (uint32_t icomp, uint16_t who) {
   /* On error returns 0, error otherwise drerrno is set to the error */
   int sfd;
   struct request req;
@@ -3045,7 +3046,7 @@ void handle_r_r_slavexit (int sfd,struct database *wdb,int icomp,struct request 
 }
 
 int request_job_sesupdate (uint32_t ijob, uint32_t frame_start,uint32_t frame_end,
-                           uint32_t frame_step, uint32_t block_size, int who) {
+                           uint32_t frame_step, uint32_t block_size, uint16_t who) {
   /* On error returns 0, error otherwise drerrno is set to the error */
   /* This function sends the new frame_start,end and step for ijob */
   int sfd;
@@ -3240,7 +3241,7 @@ void handle_r_r_jobsesup (int sfd,struct database *wdb,int icomp,struct request 
   log_master (L_DEBUG,"Exiting handle_r_r_jobsesup");
 }
 
-int request_job_limits_memory_set (uint32_t ijob, uint32_t memory, int who) {
+int request_job_limits_memory_set (uint32_t ijob, uint32_t memory, uint16_t who) {
   /* On error returns 0, error otherwise drerrno is set to the error */
   /* This function request the master to set a new limit for job's nmaxcpus */
   int sfd;
@@ -3273,7 +3274,7 @@ int request_job_limits_memory_set (uint32_t ijob, uint32_t memory, int who) {
   return 1;
 }
 
-int request_job_limits_pool_set (uint32_t ijob, char *pool, int who) {
+int request_job_limits_pool_set (uint32_t ijob, char *pool, uint16_t who) {
   /* On error returns 0, error otherwise drerrno is set to the error */
   /* This function request the master to set a new limit for job's nmaxcpus */
   int sfd;
@@ -3364,7 +3365,7 @@ void handle_r_r_joblps (int sfd,struct database *wdb,int icomp,struct request *r
   log_master(L_DEBUG,"Exiting handle_r_r_joblps");
 }
 
-int request_job_limits_nmaxcpus_set (uint32_t ijob, uint16_t nmaxcpus, int who) {
+int request_job_limits_nmaxcpus_set (uint32_t ijob, uint16_t nmaxcpus, uint16_t who) {
   /* On error returns 0, error otherwise drerrno is set to the error */
   /* This function request the master to set a new limit for job's nmaxcpus */
   int sfd;
@@ -3429,7 +3430,7 @@ void handle_r_r_joblnmcs (int sfd,struct database *wdb,int icomp,struct request 
   log_master(L_DEBUG,"Exiting handle_r_r_joblnmcs");
 }
 
-int request_job_limits_nmaxcpuscomputer_set (uint32_t ijob, uint16_t nmaxcpuscomputer, int who) {
+int request_job_limits_nmaxcpuscomputer_set (uint32_t ijob, uint16_t nmaxcpuscomputer, uint16_t who) {
   /* On error returns 0, error otherwise drerrno is set to the error */
   /* This function request the master to set a new limit for job's nmaxcpus */
   int sfd;
@@ -3494,7 +3495,7 @@ void handle_r_r_joblnmccs (int sfd,struct database *wdb,int icomp,struct request
   log_master(L_DEBUG,"Exiting handle_r_r_joblnmccs");
 }
 
-int request_job_priority_update (uint32_t ijob, uint32_t priority, int who) {
+int request_job_priority_update (uint32_t ijob, uint32_t priority, uint16_t who) {
   /* On error returns 0, error otherwise drerrno is set to the error */
   /* This function request the master to set a priority for a job (identified by ijob) */
   int sfd;
@@ -3599,7 +3600,7 @@ void request_all_slaves_job_available (struct database *wdb) {
   log_master (L_DEBUG,"Exiting request_all_slaves_job_available");
 }
 
-int request_slave_job_available (char *slave, int who) {
+int request_slave_job_available (char *slave, uint16_t who) {
   /* This function is called by the master */
   /* It just sends a slave a notification that there is a job available */
   /* Returns 0 on failure */
@@ -3620,7 +3621,7 @@ int request_slave_job_available (char *slave, int who) {
   return 1;
 }
 
-int request_slave_limits_pool_add (char *slave, char *pool, int who) {
+int request_slave_limits_pool_add (char *slave, char *pool, uint16_t who) {
   int sfd;
   struct request request;
 
@@ -3641,7 +3642,7 @@ int request_slave_limits_pool_add (char *slave, char *pool, int who) {
   return 1;
 }
 
-int request_slave_limits_pool_remove (char *slave, char *pool, int who) {
+int request_slave_limits_pool_remove (char *slave, char *pool, uint16_t who) {
   int sfd;
   struct request request;
 
@@ -3704,7 +3705,7 @@ void handle_rs_r_limitspoolremove (int sfd,struct slave_database *sdb,struct req
   log_slave_computer(L_DEBUG,"Exiting handle_rs_r_limitspooladd");
 }
 
-int request_job_list (struct job **job, int who) {
+int request_job_list (struct job **job, uint16_t who) {
   struct request req;
   int sfd;
   struct job *tjob;
@@ -3762,7 +3763,7 @@ int request_job_list (struct job **job, int who) {
   return njobs;
 }
 
-int request_computer_list (struct computer **computer, int who) {
+int request_computer_list (struct computer **computer, uint16_t who) {
   struct request req;
   int sfd;
   struct computer *tcomputer;

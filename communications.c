@@ -263,7 +263,7 @@ int recv_request (int sfd, struct request *request) {
   return 1;
 }
 
-int send_request (int sfd, struct request *request,int who) {
+int send_request (int sfd, struct request *request,uint8_t who) {
   void *buf = request;
 
   request->data = htonl (request->data);
@@ -439,8 +439,6 @@ int recv_job (int sfd, struct job *job) {
   case KOJ_GENERAL:
     break;
   case KOJ_MAYA:
-    job->koji.maya.res_x = ntohl (job->koji.maya.res_x);
-    job->koji.maya.res_y = ntohl (job->koji.maya.res_y);
     break;
   case KOJ_MENTALRAY:
   case KOJ_BLENDER:
@@ -513,8 +511,6 @@ int send_job (int sfd, struct job *job) {
   case KOJ_GENERAL:
     break;
   case KOJ_MAYA:
-    bswapped.koji.maya.res_x = htonl (bswapped.koji.maya.res_x);
-    bswapped.koji.maya.res_y = htonl (bswapped.koji.maya.res_y);
     break;
   case KOJ_MENTALRAY:
   case KOJ_BLENDER:
@@ -630,7 +626,7 @@ int send_task (int sfd, struct task *task) {
   return 1;
 }
 
-int send_computer (int sfd, struct computer *computer, int attached) {
+int send_computer (int sfd, struct computer *computer, uint8_t attached) {
   if (!send_computer_status (sfd,&computer->status)) {
     printf ("error send_computer_status\n");
     return 0;
@@ -732,7 +728,7 @@ int recv_string (int sfd, char **str) {
   return 1;
 }
 
-int send_computer_pools (int sfd, struct computer_limits *cl, int attached) {
+int send_computer_pools (int sfd, struct computer_limits *cl, uint8_t attached) {
   int i;
   uint16_t npools;
   struct pool *pool;
@@ -820,7 +816,7 @@ int recv_computer_limits (int sfd, struct computer_limits *cl) {
   return 1;
 }
 
-int send_computer_limits (int sfd, struct computer_limits *cl, int attached) {
+int send_computer_limits (int sfd, struct computer_limits *cl, uint8_t attached) {
   struct computer_limits bswapped;
   void *buf = &bswapped;
 
