@@ -125,8 +125,9 @@ int main (int argc,char *argv[]) {
     computer_autoenable_check (&sdb); /* Check if it's time for autoenable */
 
     while (computer_available(sdb.comp)) {
-      if (request_job_available(&sdb)) {
-        launch_task(&sdb);
+      uint16_t itask;
+      if (request_job_available(&sdb,&itask)) {
+        launch_task(&sdb,itask);
         update_computer_status (&sdb);
       } else {
         break;   /* The while */
@@ -437,9 +438,8 @@ void sigpipe_handler (int signal, siginfo_t *info, void *data) {
   exit (1);
 }
 
-void launch_task (struct slave_database *sdb) {
-  /* Here we get the job ready in the process task structure */
-  /* pointed by sdb->itask */
+void launch_task (struct slave_database *sdb, uint16_t itask) {
+  /* Here we get the job ready in the process task structure pointed by itask */
   int rc;
   pid_t task_pid,waiter_pid;
   extern char **environ;
@@ -460,26 +460,26 @@ void launch_task (struct slave_database *sdb) {
       new_argv[0] = SHELL_NAME;
       if ((new_argv[1] = malloc(MAXCMDLEN)) == NULL)
         return;
-      cygwin_conv_to_posix_path(sdb->comp->status.task[sdb->itask].jobcmd,(char*)new_argv[1]);
+      cygwin_conv_to_posix_path(sdb->comp->status.task[itask].jobcmd,(char*)new_argv[1]);
       new_argv[2] = NULL;
 #else
 
       new_argv[0] = SHELL_NAME;
       new_argv[1] = "-c";
-      new_argv[2] = sdb->comp->status.task[sdb->itask].jobcmd;
+      new_argv[2] = sdb->comp->status.task[itask].jobcmd;
       new_argv[3] = NULL;
 #endif
 
       setpgid(0,0);  /* So this process doesn't receive signals from the others */
       set_signal_handlers_task_exec ();
 
-      if ((lfd = log_dumptask_open (&sdb->comp->status.task[sdb->itask])) != -1) {
+      if ((lfd = log_dumptask_open (&sdb->comp->status.task[itask])) != -1) {
         dup2 (lfd,STDOUT_FILENO);
         dup2 (lfd,STDERR_FILENO);
         close (lfd);
       }
 
-      task_environment_set(&sdb->comp->status.task[sdb->itask]);
+      task_environment_set(&sdb->comp->status.task[itask]);
 
 #ifdef __CYGWIN
 
@@ -494,60 +494,60 @@ void launch_task (struct slave_database *sdb) {
       perror("execve");
       exit(errno);  /* If we arrive here, something happened exec'ing */
     } else if (task_pid == -1) {
-      log_slave_task(&sdb->comp->status.task[sdb->itask],L_WARNING,"Fork failed for task");
+      log_slave_task(&sdb->comp->status.task[itask],L_WARNING,"Fork failed for task");
       semaphore_lock(sdb->semid);
-      sdb->comp->status.task[sdb->itask].used = 0; /* We don't need the task anymore */
+      sdb->comp->status.task[itask].used = 0; /* We don't need the task anymore */
       semaphore_release(sdb->semid);
       exit (2);
     }
 
     /* Then we set the process as running */
     semaphore_lock(sdb->semid);
-    sdb->comp->status.task[sdb->itask].status = TASKSTATUS_RUNNING;
-    sdb->comp->status.task[sdb->itask].pid = task_pid;
+    sdb->comp->status.task[itask].status = TASKSTATUS_RUNNING;
+    sdb->comp->status.task[itask].pid = task_pid;
     semaphore_release(sdb->semid);
 
     if (waitpid(task_pid,&rc,0) == -1) {
       /* Some problem exec'ing */
-      log_slave_task(&sdb->comp->status.task[sdb->itask],L_ERROR,"Exec'ing cmdline (No child on launcher)");
+      log_slave_task(&sdb->comp->status.task[itask],L_ERROR,"Exec'ing cmdline (No child on launcher)");
       semaphore_lock(sdb->semid);
-      sdb->comp->status.task[sdb->itask].used = 0; /* We don't need the task anymore */
+      sdb->comp->status.task[itask].used = 0; /* We don't need the task anymore */
       semaphore_release(sdb->semid);
     } else {
       /* We have to clean the task and send the info to the master */
       /* consider WIFSIGNALED(status), WTERMSIG(status), WEXITSTATUS(status) */
       /* we pass directly the status (translated to DR) to the master and he decides what to do with the frame */
       semaphore_lock(sdb->semid);
-      sdb->comp->status.task[sdb->itask].exitstatus = 0;
+      sdb->comp->status.task[itask].exitstatus = 0;
       if (WIFSIGNALED(rc)) {
         /* Process exited abnormally either killed by us or by itself (SIGSEGV) */
         /*  printf ("\n\nSIGNALED with %i\n",WTERMSIG(rc)); */
-        sdb->comp->status.task[sdb->itask].exitstatus |= DR_SIGNALEDFLAG ;
-        sdb->comp->status.task[sdb->itask].exitstatus |= WTERMSIG(rc);
-        log_slave_task(&sdb->comp->status.task[sdb->itask],L_INFO,"Task signaled");
+        sdb->comp->status.task[itask].exitstatus |= DR_SIGNALEDFLAG ;
+        sdb->comp->status.task[itask].exitstatus |= WTERMSIG(rc);
+        log_slave_task(&sdb->comp->status.task[itask],L_INFO,"Task signaled");
       } else {
         if (WIFEXITED(rc)) {
           /*   printf ("\n\nEXITED with %i\n",WEXITSTATUS(rc)); */
-          sdb->comp->status.task[sdb->itask].exitstatus |= DR_EXITEDFLAG ;
-          sdb->comp->status.task[sdb->itask].exitstatus |= WEXITSTATUS(rc);
-          /* printf ("\n\nEXITED with %i\n",DR_WEXITSTATUS(sdb->comp->status.task[sdb->itask].exitstatus)); */
-          log_slave_task(&sdb->comp->status.task[sdb->itask],L_INFO,"Task finished");
+          sdb->comp->status.task[itask].exitstatus |= DR_EXITEDFLAG ;
+          sdb->comp->status.task[itask].exitstatus |= WEXITSTATUS(rc);
+          /* printf ("\n\nEXITED with %i\n",DR_WEXITSTATUS(sdb->comp->status.task[itask].exitstatus)); */
+          log_slave_task(&sdb->comp->status.task[itask],L_INFO,"Task finished");
         }
       }
       semaphore_release(sdb->semid);
 
-      request_task_finished (sdb);
+      request_task_finished (sdb,itask);
 
       semaphore_lock(sdb->semid);
-      sdb->comp->status.task[sdb->itask].used = 0; /* We don't need the task anymore */
+      sdb->comp->status.task[itask].used = 0; /* We don't need the task anymore */
       semaphore_release(sdb->semid);
     }
 
     exit (0);
   } else if (waiter_pid == -1) {
-    log_slave_task(&sdb->comp->status.task[sdb->itask],L_WARNING,"Fork failed for task waiter");
+    log_slave_task(&sdb->comp->status.task[itask],L_WARNING,"Fork failed for task waiter");
     semaphore_lock(sdb->semid);
-    sdb->comp->status.task[sdb->itask].used = 0; /* We don't need the task anymore */
+    sdb->comp->status.task[itask].used = 0; /* We don't need the task anymore */
     semaphore_release(sdb->semid);
     exit (1);
   }

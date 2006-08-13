@@ -315,6 +315,51 @@ int send_computer_status (int sfd, struct computer_status *status) {
   return 1;
 }
 
+int send_computer_loadavg (int sfd, struct computer_status *status) {
+  uint16_t nbo_loadavg[3]; // network byte ordered
+  
+  nbo_loadavg[0] = htons(status->loadavg[0]);
+  nbo_loadavg[1] = htons(status->loadavg[1]);
+  nbo_loadavg[2] = htons(status->loadavg[2]);
+  if (!dr_write(sfd,(char*)nbo_loadavg,sizeof(uint16_t)*3)) {
+    return 0;
+  }
+  return 1;
+}
+
+int recv_computer_loadavg (int sfd, struct computer_status *status) {
+  uint16_t nbo_loadavg[3];
+
+  if (!dr_read(sfd,(char*)nbo_loadavg,sizeof(uint16_t)*3)) {
+    return 0;
+  }
+  status->loadavg[0] = ntohs(nbo_loadavg[0]);
+  status->loadavg[1] = ntohs(nbo_loadavg[1]);
+  status->loadavg[2] = ntohs(nbo_loadavg[2]);
+  return 1;
+}
+
+int recv_computer_ntasks (int sfd, struct computer_status *status) {
+  uint16_t ntasks;
+
+  if (!dr_read(sfd,(char*)&ntasks,sizeof(uint16_t))) {
+    return 0;
+  }
+  status->ntasks = ntohs(ntasks);
+  return 1;
+}
+
+int send_computer_ntasks (int sfd, struct computer_status *status) {
+  uint16_t nbo_ntasks; // network byte ordered
+  
+  nbo_ntasks = htons(status->ntasks);
+  if (!dr_write(sfd,(char*)&nbo_ntasks,sizeof(uint16_t))) {
+    return 0;
+  }
+  return 1;
+}
+
+
 int recv_computer_status (int sfd, struct computer_status *status) {
   void *buf;
   int i;
@@ -323,13 +368,14 @@ int recv_computer_status (int sfd, struct computer_status *status) {
   computer_status_init (status);
 
   buf = status;
-  if (!dr_read(sfd,(char*)buf,sizeof(uint16_t) * 4)) {
-    return 0;
+  if (!recv_computer_loadavg (sfd,status)) {
+    drerrno = DRE_ERRORREADING;
+    fprintf (stderr,"ERROR: recv_computer_loadavg: %s\n",drerrno_str());
   }
-  status->loadavg[0] = ntohs(status->loadavg[0]);
-  status->loadavg[1] = ntohs(status->loadavg[1]);
-  status->loadavg[2] = ntohs(status->loadavg[2]);
-  status->ntasks = ntohs(status->ntasks);
+  if (!recv_computer_ntasks (sfd,status)) {
+    drerrno = DRE_ERRORREADING;
+    fprintf (stderr,"ERROR: recv_computer_ntasks: %s\n",drerrno_str());
+  }
 
   if (status->ntasks > MAXTASKS) {
     fprintf (stderr,"WARNING: ntasks > MAXTASKS (%i)\n",status->ntasks);
@@ -485,10 +531,7 @@ int recv_job (int sfd, struct job *job) {
   job->flags = ntohl (job->flags);
 
   /* Limits */
-  job->limits.nmaxcpus = ntohs (job->limits.nmaxcpus);
-  job->limits.nmaxcpuscomputer = ntohs (job->limits.nmaxcpuscomputer);
-  job->limits.os_flags = ntohs (job->limits.os_flags);
-  job->limits.memory = ntohl (job->limits.memory);
+  job_limits_bswap_from_network (&job->limits);
 
   drerrno = DRE_NOERROR;
   return 1;
@@ -541,7 +584,7 @@ int send_job (int sfd, struct job *job) {
   }
   bswapped.koj = htons (bswapped.koj);
 
-  bswapped.frame_info = NULL;
+  bswapped.frame_info = NULL;  
   bswapped.frame_start = htonl (bswapped.frame_start);
   bswapped.frame_end = htonl (bswapped.frame_end);
   bswapped.frame_step = htonl (bswapped.frame_step);
@@ -557,10 +600,7 @@ int send_job (int sfd, struct job *job) {
   bswapped.flags = htonl (bswapped.flags);
 
   /* Limits */
-  bswapped.limits.nmaxcpus = htons (bswapped.limits.nmaxcpus);
-  bswapped.limits.nmaxcpuscomputer = htons (bswapped.limits.nmaxcpuscomputer);
-  bswapped.limits.os_flags = htons (bswapped.limits.os_flags);
-  bswapped.limits.memory = htonl (bswapped.limits.memory);
+  job_limits_bswap_to_network (&bswapped.limits);
 
   if (!dr_write (sfd,(char*)buf,sizeof(bswapped))) {
     fprintf (stderr,"ERROR: Failed to write job to sfd\n");
@@ -586,17 +626,18 @@ int recv_task (int sfd, struct task *task) {
 
   /* Now we should have the task info with the values in */
   /* network byte order, so we put them in host byte order */
-  task->ijob = ntohl (task->ijob);
+  task->ijob  = ntohl (task->ijob);
   task->icomp = ntohl (task->icomp);
   task->itask = ntohs (task->itask);
 
-  task->frame = ntohl (task->frame);
+  task->frame       = ntohl (task->frame);
   task->frame_start = ntohl (task->frame_start);
-  task->frame_end = ntohl (task->frame_end);
-  task->frame_step = ntohl (task->frame_step);
-  task->block_size = ntohl (task->block_size);
-  task->pid = ntohl (task->pid);
-  task->exitstatus = ntohl (task->exitstatus);
+  task->frame_end   = ntohl (task->frame_end);
+  task->frame_step  = ntohl (task->frame_step);
+  task->block_size  = ntohl (task->block_size);
+  task->frame_pad   = ntohl (task->frame_pad);
+  task->pid         = ntohl (task->pid);
+  task->exitstatus  = ntohl (task->exitstatus);
 
   return 1;
 }
@@ -608,16 +649,18 @@ int send_task (int sfd, struct task *task) {
   /* We make a copy coz we need to modify the values */
   memcpy (buf,task,sizeof(bswapped));
   /* Prepare for sending */
-  bswapped.ijob = htonl (bswapped.ijob);
+  bswapped.ijob  = htonl (bswapped.ijob);
   bswapped.icomp = htonl (bswapped.icomp);
   bswapped.itask = htons (bswapped.itask);
-  bswapped.frame = htonl (bswapped.frame);
+
+  bswapped.frame       = htonl (bswapped.frame);
   bswapped.frame_start = htonl (bswapped.frame_start);
-  bswapped.frame_end = htonl (bswapped.frame_end);
-  bswapped.frame_step = htonl (bswapped.frame_step);
-  bswapped.block_size = htonl (bswapped.block_size);
-  bswapped.pid = htonl (bswapped.pid);
-  bswapped.exitstatus = htonl (bswapped.exitstatus);
+  bswapped.frame_end   = htonl (bswapped.frame_end);
+  bswapped.frame_step  = htonl (bswapped.frame_step);
+  bswapped.block_size  = htonl (bswapped.block_size);
+  bswapped.frame_pad   = htonl (bswapped.frame_pad);
+  bswapped.pid         = htonl (bswapped.pid);
+  bswapped.exitstatus  = htonl (bswapped.exitstatus);
 
   if (!dr_write (sfd,(char*)buf,sizeof(struct task))) {
     return 0;

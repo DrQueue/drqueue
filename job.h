@@ -326,8 +326,10 @@ void job_stop (struct job *job);
 void job_continue (struct job *job);
 int job_index_correct_master (struct database *wdb,uint32_t ijob); // bool
 
-void job_init_limits (struct job *job);
+void job_limits_init (struct job_limits *limits);
 int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp); // bool
+void job_limits_bswap_from_network (struct job_limits *limits);
+void job_limits_bswap_to_network (struct job_limits *limits);
 
 void job_environment_set (struct job *job, uint32_t iframe);
 void job_logs_remove (struct job *job);   // WARN: this function

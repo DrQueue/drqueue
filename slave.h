@@ -46,7 +46,6 @@ struct slave_database {
   struct computer *comp;
   int shmid;
   int semid;
-  int itask;   /* Index to current process task */
   struct computer_limits limits;
   uint16_t flags;
   char conf[PATH_MAX];
@@ -74,7 +73,7 @@ void sigpipe_handler (int signal, siginfo_t *info, void *data);
 
 void slave_listening_process (struct slave_database *sdb);
 void slave_consistency_process (struct slave_database *sdb);
-void launch_task (struct slave_database *sdb);
+void launch_task (struct slave_database *sdb, uint16_t itask);
 
 int get_shared_memory_slave (int force);
 int get_semaphores_slave (void);

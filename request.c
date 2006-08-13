@@ -786,12 +786,12 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp) {
 }
 
 
-int request_job_available (struct slave_database *sdb) {
+int request_job_available (struct slave_database *sdb, uint16_t *itask) {
   /* Here we (slave) ask the master for an available job and in case */
   /* of finding it we store the info into *job, and fill the task record */
   /* except what cannot be filled until the proper execution of the task */
 
-  /* This function SETS sdb->itask local to this process */
+  /* This function SETS *itask local to this process */
   /* This function returns 0 if there is no job available */
 
   struct request req;
@@ -827,7 +827,7 @@ int request_job_available (struct slave_database *sdb) {
       close (sfd);
       return 0;
     case RERR_NOREGIS:
-      log_slave_computer(L_ERROR,"Computer not registered");
+      log_slave_computer(L_ERROR,"Computer not registered. Requesting available job.");
       kill (0,SIGINT);
       break;
     default:
@@ -839,7 +839,7 @@ int request_job_available (struct slave_database *sdb) {
     kill (0,SIGINT);
   }
 
-  if ((sdb->itask = task_available (sdb)) == -1) {
+  if (((*itask) = task_available (sdb)) == (uint16_t)-1) {
     /* No task structure available */
     log_slave_computer(L_WARNING,"No task available for job");
     req.type = R_R_AVAILJOB;
@@ -863,7 +863,7 @@ int request_job_available (struct slave_database *sdb) {
 
   log_slave_computer (L_DEBUG,"Sending index to task.");
   /* So then we send the index */
-  req.data = sdb->itask;
+  req.data = *itask;
   if (!send_request(sfd,&req,SLAVE)) {
     log_slave_computer (L_ERROR,"Sending request (request_job_available) : %s",drerrno_str());
     kill (0,SIGINT);
@@ -879,7 +879,7 @@ int request_job_available (struct slave_database *sdb) {
   /* The we update the computer structure to reflect the new assigned task */
   /* that is not yet runnning so pid == 0 */
   semaphore_lock(sdb->semid);
-  memcpy(&sdb->comp->status.task[sdb->itask],&ttask,sizeof(ttask));
+  memcpy(&sdb->comp->status.task[*itask],&ttask,sizeof(ttask));
   sdb->comp->status.ntasks = computer_ntasks (sdb->comp);
   /* We update the computer load because, at the beginning it does not reflect the load */
   /* of this task */
@@ -890,7 +890,7 @@ int request_job_available (struct slave_database *sdb) {
   return 1;
 }
 
-void request_task_finished (struct slave_database *sdb) {
+void request_task_finished (struct slave_database *sdb, uint16_t itask) {
   /* This function is called non-blocked */
   /* This function is called from inside a slave launcher process */
   /* It sends the information to the master about a finished task */
@@ -946,7 +946,7 @@ void request_task_finished (struct slave_database *sdb) {
 
   /* So the master is ready to receive the task */
   /* Then we send the task */
-  if (!send_task (sfd,&sdb->comp->status.task[sdb->itask])) {
+  if (!send_task (sfd,&sdb->comp->status.task[itask])) {
     /* We should retry, but really there should be no errors here */
     log_slave_computer (L_ERROR,"Sending task on request_task_finished : %s",drerrno_str());
   }
