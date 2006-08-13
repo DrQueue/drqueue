@@ -122,7 +122,9 @@ int remove_dir (char *dir) {
 
   snprintf (cmd,BUFFERLEN,"rm -fR '%s'",dir);
 
-  return system (cmd);
+  fprintf (stderr,"WARN: I was going to remove the logs directory with the command: %s\n",cmd);
+  fprintf (stderr,"WARN: This 'feature' has been removed. You'll have to remove old log directories yourself by now.\n");
+  return 0;
 }
 
 void mn_job_finished (struct job *job) {
