@@ -22,6 +22,10 @@
 #ifndef _JOB_H_
 #define _JOB_H_
 
+#ifdef __CPLUSPLUS
+extern "C" {
+#endif
+
 #if defined (__LINUX)
 #include <stdint.h>
 #elif defined (__IRIX)
@@ -163,7 +167,6 @@ union koj_info {  /* Kind of job information */
     char viewcmd[BUFFERLEN]; /* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
   }
   mantra;
-
   struct koji_aftereffects {
     char project[BUFFERLEN];
     char comp[BUFFERLEN];
@@ -348,5 +351,9 @@ void detach_blocked_host_shared_memory (struct blocked_host *bhshp);
 int priority_job_compare (const void *a,const void *b);
 
 char *job_koj_string (struct job *job);
+
+#ifdef __CPLUSPLUS
+}
+#endif
 
 #endif /* _JOB_H_ */

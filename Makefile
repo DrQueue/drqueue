@@ -246,6 +246,10 @@ endif
 %.o: %.c %.h constants.h
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
 
+slave: slave.o libdrqueue.a
+	$(CC) $(LDFLAGS) $^ -o $@
+master: master.o libdrqueue.a
+	$(CC) $(LDFLAGS) $^ -o $@
 requeue: requeue.o libdrqueue.a
 	$(CC) $(LDFLAGS) $^ -o $@
 jobinfo: jobinfo.o libdrqueue.a
@@ -264,6 +268,6 @@ compinfo: compinfo.o libdrqueue.a
 sendjob.o: sendjob.cpp sendjob.h
 	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) $<
 sendjob: sendjob.o libdrqueue.a
-	$(CXX) -o $@ $^ $(LDFLAGS)
+	$(CXX) $^ $(LDFLAGS) -o $@ 
 
 
