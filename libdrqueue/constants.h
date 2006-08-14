@@ -30,6 +30,11 @@
 #define SHELL_PATH "/bin/sh"
 #endif
 
+// Default config files
+#define BASE_CONF_PATH "/etc/drqueue"      // Default path for config files
+#define BASE_CONF_EXT "conf"               // Extension for
+                                           // configuration files
+
 // Pools
 #define DEFAULT_POOL "Default"
 

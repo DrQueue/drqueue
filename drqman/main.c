@@ -35,7 +35,6 @@ GList *icon_list;
 static struct info_drqm info;
 char conf[PATH_MAX];
 
-#define DRQMAN_CONF_FILE "/etc/drqueue/drqman.conf"
 
 #ifdef __CYGWIN
 FILE *file_null;
@@ -48,9 +47,8 @@ int main (int argc, char *argv[]) {
 
   // fprintf (stderr,"drqman pid: %i\n",getpid());
 
-  strncpy (conf,DRQMAN_CONF_FILE,PATH_MAX);
-  config_parse(conf);
-  set_default_env(); // Config files overrides environment CHANGE (?)
+  set_default_env(); // Config files overrides environment
+  config_parse_tool("drqman");
 
   if (!common_environment_check()) {
     fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());

@@ -23,14 +23,13 @@
 #define _MASTER_H_
 
 #include "database.h"
+#include "constants.h"
 
 #if defined (__CYGWIN)
 #define KEY_MASTER "%s/master.exe" /* Key for shared memory and semaphores */
 #else
 #define KEY_MASTER "%s/master" /* Key for shared memory and semaphores */
 #endif
-
-#define MASTER_CONF_FILE "/etc/drqueue/master.conf"
 
 extern int phantom[2];
 
