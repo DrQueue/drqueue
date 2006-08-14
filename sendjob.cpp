@@ -1171,7 +1171,7 @@ int RegisterXSIJobFromFile (std::ifstream &infile) {
   xsiSgi.skipFrames = skipFrames;
   strncpy(xsiSgi.xsiDir,xsiDir.c_str(),BUFFERLEN-1);
   strncpy(xsiSgi.scene,scenePath.c_str(),BUFFERLEN-1);
-  strncpy(xsiSgi.pass,pass.c_str(),BUFFERLEN-1);
+  strncpy(xsiSgi.xsipass,pass.c_str(),BUFFERLEN-1);
   strncpy(xsiSgi.renderdir,renderDir.c_str(),BUFFERLEN-1);
   snprintf(xsiSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
   strncpy(xsiSgi.image,image.c_str(),BUFFERLEN-1);
@@ -1203,7 +1203,7 @@ int RegisterXSIJobFromFile (std::ifstream &infile) {
 
   job.koj = KOJ_XSI;
   strncpy (job.koji.xsi.scene,scenePath.c_str(),BUFFERLEN-1);
-  strncpy (job.koji.xsi.pass,pass.c_str(),BUFFERLEN-1);
+  strncpy (job.koji.xsi.xsipass,pass.c_str(),BUFFERLEN-1);
   strncpy (job.koji.xsi.renderdir,renderDir.c_str(),BUFFERLEN-1);
   strncpy (job.koji.xsi.image,image.c_str(),BUFFERLEN-1);
   strncpy (job.koji.xsi.imageExt,imageExt.c_str(),BUFFERLEN-1);

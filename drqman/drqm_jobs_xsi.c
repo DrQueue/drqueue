@@ -379,7 +379,7 @@ static void dnj_koj_frame_xsi_bcreate_pressed (GtkWidget *button, struct drqmj_d
   strncpy (xsiSgi.xsiDir,gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.exsiDir)),BUFFERLEN-1);
   strncpy (xsiSgi.renderdir,gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.erenderdir)),BUFFERLEN-1);
   strncpy (xsiSgi.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.escene)),BUFFERLEN-1);
-  strncpy (xsiSgi.pass,gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.epass)),BUFFERLEN-1);
+  strncpy (xsiSgi.xsipass,gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.epass)),BUFFERLEN-1);
   strncpy (xsiSgi.image,gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.eimage)),BUFFERLEN-1);
   strncpy (xsiSgi.imageExt,gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.eimageExt)),BUFFERLEN-1);
   strncpy (xsiSgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.escript)),BUFFERLEN-1);

@@ -245,44 +245,6 @@ typedef unsigned char uint8_t;
 }
 
 
-// COMPUTER
-%extend computer {
-	computer ()
-	{
-		struct computer *c;
-		c = malloc (sizeof(struct computer));
-		if (!c)
-			return (struct computer *)PyErr_NoMemory();
-		computer_init(c);
-		return c;
-	}
-
-	~computer ()
-	{
-		free (self);
-	}
-
-	void request_enable (int who)
-	{
-		if (!request_slave_limits_enabled_set (self->hwinfo.name,1,who)) {
-			PyErr_SetString(PyExc_IOError,drerrno_str());
-		}
-	}
-
-	void request_disable (int who)
-	{
-		if (!request_slave_limits_enabled_set (self->hwinfo.name,0,who)) {
-			PyErr_SetString(PyExc_IOError,drerrno_str());
-		}
-	}
-
-	void update (int who)
-	{
-		if (!request_comp_xfer(self->hwinfo.id,self,who)) {
-			PyErr_SetString(PyExc_IOError,drerrno_str());
-		}
-	}
-}
 
 /* COMPUTER LIMITS */
 %extend computer_limits {
@@ -321,6 +283,20 @@ typedef unsigned char uint8_t;
 
 		return pool;
 	}
+
+  void pool_add (char *computer_name, char *pool_name, int who)
+  {
+		if (!request_slave_limits_pool_add(computer_name,pool_name,who)) {
+			PyErr_SetString(PyExc_IOError,drerrno_str());
+    }
+  }
+
+  void pool_remove (char *computer_name, char *pool_name, int who)
+  {
+		if (!request_slave_limits_pool_remove(computer_name,pool_name,who)) {
+			PyErr_SetString(PyExc_IOError,drerrno_str());
+    }
+  }
 }
 
 /* COMPUTER STATUS */
@@ -355,4 +331,57 @@ typedef unsigned char uint8_t;
 		}
 		return &self->task[index];
 	}
+}
+
+// COMPUTER
+%extend computer {
+	computer ()
+	{
+		struct computer *c;
+		c = malloc (sizeof(struct computer));
+		if (!c)
+			return (struct computer *)PyErr_NoMemory();
+		computer_init(c);
+		return c;
+	}
+
+	~computer ()
+	{
+		free (self);
+	}
+
+	void request_enable (int who)
+	{
+		if (!request_slave_limits_enabled_set (self->hwinfo.name,1,who)) {
+			PyErr_SetString(PyExc_IOError,drerrno_str());
+		}
+	}
+
+	void request_disable (int who)
+	{
+		if (!request_slave_limits_enabled_set (self->hwinfo.name,0,who)) {
+			PyErr_SetString(PyExc_IOError,drerrno_str());
+		}
+	}
+
+	void update (int who)
+	{
+		if (!request_comp_xfer(self->hwinfo.id,self,who)) {
+			PyErr_SetString(PyExc_IOError,drerrno_str());
+		}
+	}
+
+  void add_pool (char *pool_name, int who)
+  {
+    if (!request_slave_limits_pool_add(self->hwinfo.name,pool_name,who)) {
+		  	PyErr_SetString(PyExc_IOError,drerrno_str());
+    }
+  }
+
+  void remove_pool (char *pool_name, int who)
+  {
+    if (!request_slave_limits_pool_remove(self->hwinfo.name,pool_name,who)) {
+		  	PyErr_SetString(PyExc_IOError,drerrno_str());
+    }
+  }
 }
