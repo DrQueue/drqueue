@@ -2,10 +2,7 @@
 
 CC = gcc
 CXX = g++
-OBJS_LIBDRQUEUE = computer_info.o computer_status.o task.o logger.o communications.o \
-			computer.o request.o semaphores.o job.o drerrno.o database.o common.o \
-			generalsg.o mantrasg.o aqsissg.o mayasg.o mentalraysg.o blendersg.o bmrtsg.o pixiesg.o 3delightsg.o \
-			lightwavesg.o aftereffectssg.o shakesg.o terragensg.o nukesg.o xsisg.o turtlesg.o envvars.o
+OBJS_LIBDRQUEUE = $(patsubst %.c,%.o,$(wildcard libdrqueue/*.c))
 
 ifeq ($(origin INSTROOT),undefined)
 INSTROOT = /usr/local/drqueue
@@ -33,7 +30,7 @@ ifeq ($(origin systype),undefined)
 	machinetype=$(shell uname -m)
 endif
 
-CFLAGS = -I. -g -O2 -Wall
+CFLAGS = -I. -Ilibdrqueue -g -O2 -Wall
 CPPFLAGS = -D_GNU_SOURCE -DCOMM_REPORT
 CXXFLAGS = $(CFLAGS) -D__CPLUSPLUS 
 
