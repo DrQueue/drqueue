@@ -30,7 +30,7 @@ extern "C" {
   struct xsisgi {  /* XSI Script Generator Info */
     char xsiDir[BUFFERLEN];
     char scene[BUFFERLEN];
-    char pass[BUFFERLEN];
+    char xsipass[BUFFERLEN];
     char renderdir[BUFFERLEN];
     char image[BUFFERLEN];
     char imageExt[BUFFERLEN];

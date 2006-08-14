@@ -50,7 +50,7 @@ char *xsisg_create (struct xsisgi *info) {
 
   p = strrchr(info->scene,'/');
   p = ( p ) ? p+1 : info->scene;
-  snprintf(filename,BUFFERLEN-1,"%s/%s-%s.%lX",info->scriptdir,p,info->pass,(unsigned long int)time(NULL));
+  snprintf(filename,BUFFERLEN-1,"%s/%s-%s.%lX",info->scriptdir,p,info->xsipass,(unsigned long int)time(NULL));
 
   if ((f = fopen (filename, "a")) == NULL) {
     if (errno == ENOENT) {
@@ -74,7 +74,7 @@ char *xsisg_create (struct xsisgi *info) {
   fprintf(f,"#!/bin/tcsh\n\n");
   fprintf(f,"set DRQUEUE_RD=%s\n",info->renderdir);
   fprintf(f,"set DRQUEUE_SCENE=%s\n",info->scene);
-  fprintf(f,"set DRQUEUE_PASS=%s\n",info->pass);
+  fprintf(f,"set DRQUEUE_PASS=%s\n",info->xsipass);
   fprintf(f,"set RF_OWNER=%s\n",info->file_owner);
   fprintf(f,"set XSI_DIR=%s\n",info->xsiDir);
 
