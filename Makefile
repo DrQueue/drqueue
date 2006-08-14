@@ -30,9 +30,9 @@ ifeq ($(origin systype),undefined)
 	machinetype=$(shell uname -m)
 endif
 
-CFLAGS = -I. -Ilibdrqueue -g -O2 -Wall
-CPPFLAGS = -D_GNU_SOURCE -DCOMM_REPORT
-CXXFLAGS = $(CFLAGS) -D__CPLUSPLUS 
+CFLAGS += -g -O2 -Wall
+CPPFLAGS += -D_GNU_SOURCE -DCOMM_REPORT -I. -Ilibdrqueue 
+CXXFLAGS += $(CFLAGS) -D__CPLUSPLUS 
 
 ifeq ($(systype),Linux)
  CPPFLAGS += -D__LINUX
@@ -220,10 +220,11 @@ endif
 endif
 
 doc:
-	cxref *.[ch] drqman/*.[ch] -all-comments -xref-all -index-all -R/home/jorge/prog/drqueue -O/home/jorge/prog/drqueue/doc -html32 -D__LINUX
+	text -d ./doc || mkdir ./doc
+	cxref *.[ch] libdrqueue/*.[ch] drqman/*.[ch] $(CPPFLAGS) `pkg-config gtk+-2.0 --cflags` -all-comments -xref-all -index-all -html -O./doc
 
 tags:
-	etags *.[ch] drqman/*.[ch]
+	etags *.[ch] libdrqueue/*.[ch] drqman/*.[ch]
 
 clean:
 	rm -fR *.o *.os *.exe *~ libdrqueue.a $(BASE_C_TOOLS) $(BASE_CXX_TOOLS) TAGS tmp/* logs/* db/* contrib/windows/*.exe bin/*.$(systype).$(machinetype)

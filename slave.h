@@ -24,6 +24,7 @@
 
 #include "computer.h"
 #include "job.h"
+#include "constants.h"
 
 #include <limits.h>
 #include <signal.h>
@@ -37,8 +38,6 @@
 /* Each slave has a slave_database global variable that is local to each */
 /* process. _Except_ the pointer to the computer struct that is a shared */
 /* memory one */
-
-#define SLAVE_CONF_FILE "/etc/drqueue/slave.conf"
 
 #define SDBF_SETMAXCPUS (1<<0) // Set if we have to change the maximum number of CPUs at start.
 
