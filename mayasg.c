@@ -81,60 +81,63 @@ char *mayasg_create (struct mayasgi *info) {
   p = ( p ) ? p+1 : scene;
   snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
-  if ((f = fopen (filename, "a")) == NULL) {
-    if (errno == ENOENT) {
-      /* If its because the directory does not exist we try creating it first */
-      if (mkdir (info->scriptdir,0775) == -1) {
-        drerrno = DRE_COULDNOTCREATE;
-        return NULL;
-      } else if ((f = fopen (filename, "a")) == NULL) {
-        drerrno = DRE_COULDNOTCREATE;
-        return NULL;
-      }
-    } else {
-      drerrno = DRE_COULDNOTCREATE;
-      return NULL;
-    }
-  }
+  // TODO: Unified path handling
 
-  fchmod (fileno(f),0777);
+/*   if ((f = fopen (filename, "a")) == NULL) { */
+/*     if (errno == ENOENT) { */
+/*       /\* If its because the directory does not exist we try creating it first *\/ */
+/*       if (mkdir (info->scriptdir,0775) == -1) { */
+/*         drerrno = DRE_COULDNOTCREATE; */
+/*         return NULL; */
+/*       } else if ((f = fopen (filename, "a")) == NULL) { */
+/*         drerrno = DRE_COULDNOTCREATE; */
+/*         return NULL; */
+/*       } */
+/*     } else { */
+/*       drerrno = DRE_COULDNOTCREATE; */
+/*       return NULL; */
+/*     } */
+/*   } */
 
-  /* So now we have the file open and so we must write to it */
-  fprintf(f,"#!/bin/tcsh\n\n");
-  fprintf(f,"set DRQUEUE_RD='\"%s\"'\n",info->renderdir);
-  fprintf(f,"set DRQUEUE_PD='\"%s\"'\n",info->projectdir);
-  fprintf(f,"set DRQUEUE_SCENE='\"%s\"'\n",info->scene);
-  fprintf(f,"set RF_OWNER=%s\n",info->file_owner);
+/*   fchmod (fileno(f),0777); */
+
+  struct jobscript_info *ji = jobscript_new (JOBSCRIPT_TCSH,filename);
+
+  jobscript_write_heading (ji);
+  jobscript_set_variable (ji,"DRQUEUE_RD",info->renderdir);
+  jobscript_set_variable (ji,"DRQUEUE_PD",info->projectdir);
+  jobscript_set_variable (ji,"DRQUEUE_SCENE",info->scene);
+  jobscript_set_variable (ji,"RF_OWNER",info->file_owner);
   if (strlen(info->format)) {
-    fprintf(f,"set FFORMAT=%s\n",info->format);
+    jobscript_set_variable (ji,"FFORMAT",info->format);
   }
   if (info->res_x != -1) {
-    fprintf(f,"set RESX=%i\n",info->res_x);
+    jobscript_set_variable_int (ji,"RESX",info->res_x);
   }
   if (info->res_y != -1) {
-    fprintf(f,"set RESY=%i\n",info->res_y);
+    jobscript_set_variable_int (ji,"RESY",info->res_y);
   }
   if (strlen(info->camera)) {
-    fprintf(f,"set CAMERA=%s\n",info->camera);
+    jobscript_set_variable (ji,"CAMERA",info->camera);
   }
   if (strlen(info->image)) {
-    fprintf(f,"set DRQUEUE_IMAGE=%s\n",info->image);
+    jobscript_set_variable (ji,"DRQUEUE_IMAGE",info->image);
   }
   if (info->mentalray) {
-    fprintf(f,"set MENTALRAY=1");
+    jobscript_set_variable (ji,"MENTALRAY","1");
   }
 
   if (strlen(info->postcommand)) {
-    fprintf(f,"set DRQUEUE_POST='\"%s\"'\n",info->postcommand);
+    jobscript_set_variable (ji,"DRQUEUE_POST",info->postcommand);
   }
   if (strlen(info->precommand)) {
-    fprintf(f,"set DRQUEUE_PRE='\"%s\"'\n",info->precommand);
+    jobscript_set_variable (ji,"DRQUEUE_PRE",info->precommand);
   }
-
 
   snprintf(fn_etc_maya_sg,BUFFERLEN-1,"%s/maya.sg",getenv("DRQUEUE_ETC"));
 
-  fflush (f);
+  fflush (ji->file);
+  f = ji->file;
 
   if ((etc_maya_sg = fopen (fn_etc_maya_sg,"r")) == NULL) {
     fprintf(f,"\necho -------------------------------------------------\n");
