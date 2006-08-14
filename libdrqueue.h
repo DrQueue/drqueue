@@ -39,6 +39,7 @@ extern int drerrno;
 #include "semaphores.h"
 #include "common.h"
 #include "envvars.h"
+#include "jobscript.h"
 
   /* Script generators */
 #include "generalsg.h"
