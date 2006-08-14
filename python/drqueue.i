@@ -338,6 +338,26 @@ typedef unsigned char uint8_t;
 	}
 }
 
+// struct pool
+%extend pool {
+  pool (char *name)
+  {
+    struct pool *p;
+    p = malloc (sizeof(struct pool));
+    if (!p)
+      return (struct pool *)PyErr_NoMemory();
+    memset (p,0,sizeof(struct pool));
+    strncpy (p->name,name,MAXNAMELEN-1);
+    return p;
+  }
+
+  ~pool ()
+  {
+    free (self);
+  }
+}
+
+
 // COMPUTER
 %extend computer {
 	computer ()
@@ -354,6 +374,60 @@ typedef unsigned char uint8_t;
 	{
 		free (self);
 	}
+
+  PyObject *list_pools (void)
+  {
+    PyObject *l = PyList_New(0);
+		int npools = self->limits.npools;
+
+    if ((self->limits.pool = (struct pool *) computer_pool_attach_shared_memory(self->limits.poolshmid)) == (void*)-1) {
+      PyErr_SetString(PyExc_MemoryError,drerrno_str());
+		}
+
+    int i;
+    for (i=0;i<npools;i++) {
+      struct pool *pool_i = malloc (sizeof(struct pool));
+			if (!pool_i) {
+				return PyErr_NoMemory();
+			}
+      memcpy (pool_i,&self->limits.pool[i],sizeof(struct pool));
+			PyObject *o = SWIG_NewPointerObj((void*)(pool_i), SWIGTYPE_p_pool, 0);
+			PyList_Append(l,o);
+		}
+
+    computer_pool_detach_shared_memory (self->limits.pool);
+		return l; 
+  }
+
+
+  PyObject *set_pools (PyObject *pool_list) {
+    int i;
+    if (!PyList_Check(pool_list)) {
+      PyErr_SetString (PyExc_ValueError, "Expecting a list");
+      return NULL;
+    }
+    int npools = PyList_Size(pool_list);
+    PyObject *old_list = (PyObject*)computer_list_pools(self);
+    if (!PyList_Check(old_list)) {
+      PyErr_SetString (PyExc_ValueError, "Expecting a list");
+      return NULL;
+    }
+    for (i=0;i<npools;i++) {
+      PyObject *pool_obj = PyList_GetItem(pool_list,i);
+      struct pool *tpool = NULL;
+      SWIG_Python_ConvertPtr(pool_obj,(void **)&tpool, SWIGTYPE_p_pool, SWIG_POINTER_EXCEPTION | 0 );
+      request_slave_limits_pool_add(self->hwinfo.name,tpool->name,CLIENT);
+    }
+    int onpools = PyList_Size(old_list);
+    for (i=0;i<onpools;i++) {
+      PyObject *pool_obj = PyList_GetItem(old_list,i);
+      struct pool *tpool = NULL;
+      SWIG_Python_ConvertPtr(pool_obj,(void **)&tpool, SWIGTYPE_p_pool, SWIG_POINTER_EXCEPTION | 0 );
+      request_slave_limits_pool_remove(self->hwinfo.name,tpool->name,CLIENT);
+    }
+    PyObject *last_list = (PyObject*)computer_list_pools(self);
+    return last_list;
+  }
 
 	void request_enable (int who)
 	{
@@ -388,29 +462,5 @@ typedef unsigned char uint8_t;
     if (!request_slave_limits_pool_remove(self->hwinfo.name,pool_name,who)) {
 		  	PyErr_SetString(PyExc_IOError,drerrno_str());
     }
-  }
-
-  PyObject *list_pools (void)
-  {
-    PyObject *l = PyList_New(0);
-		int npools = self->limits.npools;
-
-    if ((self->limits.pool = (struct pool *) computer_pool_attach_shared_memory(self->limits.poolshmid)) == (void*)-1) {
-      PyErr_SetString(PyExc_MemoryError,drerrno_str());
-		}
-
-    int i;
-    for (i=0;i<npools;i++) {
-      struct pool *pool_i = malloc (sizeof(struct pool));
-			if (!pool_i) {
-				return PyErr_NoMemory();
-			}
-      memcpy (pool_i,&self->limits.pool[i],sizeof(struct pool));
-			PyObject *o = SWIG_NewPointerObj((void*)(pool_i), SWIGTYPE_p_pool, 0);
-			PyList_Append(l,o);
-		}
-
-    computer_pool_detach_shared_memory (self->limits.pool);
-		return l; 
   }
 }
