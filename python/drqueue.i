@@ -297,6 +297,11 @@ typedef unsigned char uint8_t;
 			PyErr_SetString(PyExc_IOError,drerrno_str());
     }
   }
+
+  void pool_list ()
+  {
+    computer_pool_list (self);
+  }
 }
 
 /* COMPUTER STATUS */
@@ -383,5 +388,29 @@ typedef unsigned char uint8_t;
     if (!request_slave_limits_pool_remove(self->hwinfo.name,pool_name,who)) {
 		  	PyErr_SetString(PyExc_IOError,drerrno_str());
     }
+  }
+
+  PyObject *list_pools (void)
+  {
+    PyObject *l = PyList_New(0);
+		int npools = self->limits.npools;
+
+    if ((self->limits.pool = (struct pool *) computer_pool_attach_shared_memory(self->limits.poolshmid)) == (void*)-1) {
+      PyErr_SetString(PyExc_MemoryError,drerrno_str());
+		}
+
+    int i;
+    for (i=0;i<npools;i++) {
+      struct pool *pool_i = malloc (sizeof(struct pool));
+			if (!pool_i) {
+				return PyErr_NoMemory();
+			}
+      memcpy (pool_i,&self->limits.pool[i],sizeof(struct pool));
+			PyObject *o = SWIG_NewPointerObj((void*)(pool_i), SWIGTYPE_p_pool, 0);
+			PyList_Append(l,o);
+		}
+
+    computer_pool_detach_shared_memory (self->limits.pool);
+		return l; 
   }
 }
