@@ -36,15 +36,15 @@
 #include "computer_info.h"
 
 #if defined (__LINUX)
-#include "computer_info.linux.c"
+#include "computer_info.linux.h"
 #elif defined (__IRIX)
-#include "computer_info.irix.c"
+#include "computer_info.irix.h"
 #elif defined (__OSX)
-#include "computer_info.osx.c"
+#include "computer_info.osx.h"
 #elif defined (__FREEBSD)
-#include "computer_info.freebsd.c"
+#include "computer_info.freebsd.h"
 #elif defined (__CYGWIN)
-#include "computer_info.cygwin.c"
+#include "computer_info.cygwin.h"
 #else
 #error You need to define the OS, or OS defined not supported
 #endif

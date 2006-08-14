@@ -18,10 +18,13 @@ ifeq ($(origin systype),undefined)
  systype=$(shell uname -s)
 endif
 
+CFLAGS = -I../libdrqueue -I.. -Wall -g -O2
+
 ifeq ($(systype),Linux)
- CFLAGS = -Wall -I.. -D__LINUX -g `pkg-config --cflags gtk+-2.0` -O2
- LDFLAGS = `pkg-config --libs gtk+-2.0`
- MAKE = make
+	CPPFLAGS += -D__LINUX
+	CFLAGS += -D__LINUX `pkg-config --cflags gtk+-2.0`
+	LDFLAGS = `pkg-config --libs gtk+-2.0`
+	MAKE = make
 else 
  ifeq ($(systype),IRIX)
   CFLAGS = -Wall -I.. -D__IRIX -g `pkg-config --cflags gtk+-2.0` -O2
