@@ -4,7 +4,7 @@ import os
 
 env = Environment (CC = 'gcc', CCFLAGS=Split ('-DCOMM_REPORT -D_GNU_SOURCE -O2'), CPPFLAGS=Split ('-I.. -I../libdrqueue'))
 
-swigflags = "-python"
+swigflags = "-python -I.. -I../libdrqueue"
 
 print "Platform is: ",sys.platform
 if sys.platform == "linux2":
