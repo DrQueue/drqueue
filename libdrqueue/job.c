@@ -801,7 +801,7 @@ void job_environment_set (struct job *job, uint32_t iframe) {
   static char project[BUFFERLEN];
   static char comp[BUFFERLEN];
   static char script[BUFFERLEN];
-  static char pass[BUFFERLEN];
+  static char xsipass[BUFFERLEN];
 
   frame = job_frame_index_to_number (job,iframe);
 
@@ -959,8 +959,8 @@ void job_environment_set (struct job *job, uint32_t iframe) {
   case KOJ_XSI:
     snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.xsi.scene);
     putenv (scene);
-    snprintf (pass,BUFFERLEN-1,"DRQUEUE_PASS=%s",job->koji.xsi.pass);
-    putenv (pass);
+    snprintf (xsipass,BUFFERLEN-1,"DRQUEUE_PASS=%s",job->koji.xsi.xsipass);
+    putenv (xsipass);
     snprintf (renderdir,BUFFERLEN-1,"DRQUEUE_RD=%s",job->koji.xsi.renderdir);
     putenv (renderdir);
     snprintf (image,BUFFERLEN-1,"DRQUEUE_IMAGE=%s",job->koji.xsi.image);

@@ -640,7 +640,7 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info) {
   case KOJ_XSI:
     gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(info->dnj.ckoj)->entry), "XSI");
     gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_xsi.escene), info->jobs[info->row].koji.xsi.scene);
-    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_xsi.epass), info->jobs[info->row].koji.xsi.pass);
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_xsi.epass), info->jobs[info->row].koji.xsi.xsipass);
     gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_xsi.erenderdir), info->jobs[info->row].koji.xsi.renderdir);
     gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_xsi.eimage), info->jobs[info->row].koji.xsi.image);
     gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_xsi.eimageExt), info->jobs[info->row].koji.xsi.imageExt);
@@ -1115,7 +1115,7 @@ static int dnj_submit (struct drqmj_dnji *info) {
     break;
   case KOJ_XSI:
     strncpy(job.koji.xsi.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.escene)),BUFFERLEN-1);
-    strncpy(job.koji.xsi.pass,gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.epass)),BUFFERLEN-1);
+    strncpy(job.koji.xsi.xsipass,gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.epass)),BUFFERLEN-1);
     strncpy(job.koji.xsi.renderdir,gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.erenderdir)),BUFFERLEN-1);
     strncpy(job.koji.xsi.image,gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.eimage)),BUFFERLEN-1);
     strncpy(job.koji.xsi.imageExt,gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.eimageExt)),BUFFERLEN-1);

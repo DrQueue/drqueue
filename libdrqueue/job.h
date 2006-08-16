@@ -190,7 +190,7 @@ union koj_info {  /* Kind of job information */
   turtle;
   struct koji_xsi {
     char scene[BUFFERLEN];
-    char pass[BUFFERLEN];
+    char xsipass[BUFFERLEN];
     char renderdir[BUFFERLEN]; /* Output directory for the images */
     char image[BUFFERLEN];
     char imageExt[BUFFERLEN];
