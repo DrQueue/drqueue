@@ -22,26 +22,10 @@
 #ifndef _TASK_H_
 #define _TASK_H_
 
-#ifdef __LINUX
-#include <stdint.h>
+#ifdef __IRIX
+# include <sys/types.h>
 #else
-# ifdef __IRIX
-#  include <sys/types.h>
-# else
-#  ifdef __OSX
-#  include <stdint.h>
-#  else
-#  ifdef __FREEBSD
-#   include <stdint.h>
-#  else
-#   ifdef __CYGWIN
-#   include <stdint.h>
-#   else
-#   error You need to define the OS, or OS defined not supported
-#   endif
-#  endif
-#  endif
-# endif
+# include <stdint.h>
 #endif
 
 #include "constants.h"
@@ -69,7 +53,7 @@ struct task {
   char owner[MAXNAMELEN]; /* owner of the job */
   uint32_t frame;  /* current _real_ frame number (!!not index!!) */
   uint32_t frame_start,frame_end;
-  uint32_t frame_pad;
+  uint8_t  frame_pad;
   uint32_t frame_step;
   uint32_t block_size;
   int32_t  pid;   /* pid */

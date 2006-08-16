@@ -197,7 +197,6 @@ union koj_info {  /* Kind of job information */
     char viewcmd[BUFFERLEN]; /* something like "$DRQUEUE_BIN/viewcmd/imf_batch" */
   }
   xsi;
-
 };
 
 /* Koj types */
@@ -267,6 +266,7 @@ struct job {
   uint8_t  frame_pad;
   uint32_t frame_step;
   uint32_t fleft,fdone,ffailed; // Frames left,done and failed
+
   uint32_t old_fdone;           // Number of frames finished last time
                                 // we checked.
   uint16_t old_nprocs;          // Number of procs running last time
