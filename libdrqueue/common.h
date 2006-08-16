@@ -46,7 +46,6 @@ int rmdir_check_str (char *path);
 int remove_dir (char *dir);
 char *time_str (uint32_t nseconds);
 void set_default_env(void);
-void config_parse (char *cfg);
 
 int common_date_check (void);
 

@@ -40,6 +40,8 @@ extern int drerrno;
 #include "common.h"
 #include "envvars.h"
 #include "jobscript.h"
+#include "config.h"
+#include "list.h"
 
   /* Script generators */
 #include "generalsg.h"

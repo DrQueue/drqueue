@@ -57,15 +57,12 @@ char buffer[BUFFERLEN];     /* Buffer to read from phantom */
 int main (int argc,char *argv[]) {
   int force = 0;
 
-  strncpy (sdb.conf,SLAVE_CONF_FILE,PATH_MAX);
-
   slave_get_options(&argc,&argv,&force,&sdb);
-
+  set_default_env(); // Config files overrides environment CHANGE (?)
   // Read the config file after reading the arguments, as those may change
   // the path to the config file
-  config_parse(sdb.conf);
-  set_default_env(); // Config files overrides environment CHANGE (?)
-
+  config_parse_tool("slave");
+  
   system ("env | grep DRQUEUE");
 
   if (!common_environment_check()) {
@@ -609,6 +606,7 @@ void slave_get_options (int *argc,char ***argv, int *force, struct slave_databas
       min++;
       sdb->limits.autoenable.h = atoi (hour) % 24;
       sdb->limits.autoenable.m = atoi (min) % 60;
+      printf ("Autoenable time from command line: %02i:%02i\n",sdb->limits.autoenable.h,sdb->limits.autoenable.m);
       break;
     case 'n':
       sdb->limits.nmaxcpus = atoi (optarg);
@@ -616,13 +614,15 @@ void slave_get_options (int *argc,char ***argv, int *force, struct slave_databas
       break;
     case 'c':
       strncpy(sdb->conf,optarg,PATH_MAX-1);
+      printf ("Reading config file from: '%s'\n",sdb->conf);
       break;
     case 'f':
       *force = 1;
+      fprintf (stderr,"WARNING: Forcing usage of pre-existing shared memory (-f). Do not do this unless you really know what it means.\n");
       break;
     case 'l':
       loglevel = atoi (optarg);
-      printf ("Logging level set to: %i\n",loglevel);
+      printf ("Logging level set to: %i (%s)\n",loglevel,log_level_str(loglevel));
       break;
     case 'o':
       logonscreen = 1;
@@ -650,8 +650,7 @@ void slave_set_limits (struct slave_database *sdb) {
   if (sdb->flags & SDBF_SETMAXCPUS) {
     sdb->comp->limits.nmaxcpus = (sdb->limits.nmaxcpus > sdb->comp->limits.nmaxcpus) ?
                                  sdb->comp->limits.nmaxcpus : sdb->limits.nmaxcpus;
-    log_slave_computer (L_INFO,"Setting maximum number of CPUs to %i",
-                        sdb->comp->limits.nmaxcpus);
+    log_slave_computer (L_INFO,"Setting maximum number of CPUs to %i",sdb->comp->limits.nmaxcpus);
   }
 }
 

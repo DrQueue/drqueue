@@ -69,14 +69,12 @@ int main (int argc, char *argv[]) {
   tstart = time(NULL);
 #endif
 
-  strncpy (conf,MASTER_CONF_FILE,PATH_MAX);
-
   master_get_options (&argc,&argv,&force);
 
+  set_default_env(); // Config files overrides environment
   // Read the config file after reading the arguments, as those may change
   // the path to the config file
-  config_parse(conf);
-  set_default_env(); // Config files overrides environment CHANGE (?)
+  config_parse_tool("master");
   log_master (L_INFO,"Starting...");
 
   if (!common_environment_check()) {
@@ -458,13 +456,15 @@ void master_get_options (int *argc,char ***argv, int *force) {
     switch (opt) {
     case 'f':
       *force = 1;
+      fprintf (stderr,"WARNING: Forcing usage of pre-existing shared memory (-f). Do not do this unless you really know what it means.\n");
       break;
     case 'l':
       loglevel = atoi (optarg);
-      printf ("Logging level set to: %i\n",loglevel);
+      printf ("Logging level set to: %i (%s)\n",loglevel,log_level_str(loglevel));
       break;
     case 'c':
       strncpy(conf,optarg,PATH_MAX-1);
+      printf ("Reading config file from: '%s'\n",conf);
       break;
     case 'o':
       logonscreen = 1;
