@@ -66,7 +66,7 @@ void report_hwinfo (struct computer_hwinfo *hwinfo) {
   printf ("Processor type:\t\t%s\n",proctypestring((t_proctype)hwinfo->proctype));
   printf ("Processor speed:\t%i MHz\n",hwinfo->procspeed);
   printf ("Number of processors:\t%i\n",hwinfo->ncpus);
-  printf ("Speed index:\t\t%i\n",hwinfo->speedindex);
+  //printf ("Speed index:\t\t%i\n",hwinfo->speedindex);
   printf ("Memory:\t\t\t%i Mbytes\n",hwinfo->memory);
 }
 
@@ -83,6 +83,7 @@ char *osstring (t_os os) {
   case OS_LINUX:
     msg = "Linux";
     break;
+  case OS_WINDOWS:
   case OS_CYGWIN:
     msg = "Windows";
     break;
@@ -130,6 +131,9 @@ char *proctypestring (t_proctype proctype) {
   switch (proctype) {
   case PROCTYPE_UNKNOWN:
     msg = "UNKNOWN";
+    break;
+  case PROCTYPE_INTEL_UNKNOWN:
+    msg = "Intel (not listed)";
     break;
   case PROCTYPE_PENTIUM:
     msg = "Pentium";
