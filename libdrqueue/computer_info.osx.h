@@ -21,65 +21,48 @@
 
 #include <sys/types.h>
 #include <sys/sysctl.h>
+#include <stdlib.h>
 
 #define STR_ARCH_INTEL "i386"
+#define STR_ARCH_PPC "Power Macintosh"
 
 t_arch get_architecture (void);
 
 void get_hwinfo (struct computer_hwinfo *hwinfo) {
-  size_t len;
-  uint64_t freq;
-
   if (gethostname (hwinfo->name,MAXNAMELEN-1) == -1) {
     perror ("get_hwinfo: gethostname");
     kill(0,SIGINT);
   }
   hwinfo->arch = get_architecture();
   hwinfo->os = OS_OSX;
-  hwinfo->proctype = PROCTYPE_PPC;
+  hwinfo->proctype = get_proctype();
   hwinfo->ncpus = get_numproc();
   hwinfo->speedindex = get_speedindex (hwinfo);
-  len = 8; // FIXME Hardcoded (?)
-  sysctlbyname ("hw.cpufrequency",&freq,&len,NULL,0);
-  hwinfo->procspeed = freq / 10e5;
+  hwinfo->procspeed = get_procspeed();
   hwinfo->memory = get_memory ();
 }
 
 uint32_t get_memory (void) {
   size_t len;
-  uint64_t memory_64;
-  uint32_t memory_32;
+  uint64_t memory;
   int retcode;
 
-  retcode = sysctlbyname ("hw.memsize",NULL,&len,NULL,0);
+	len = sizeof(memory);
+  retcode = sysctlbyname ("hw.memsize",&memory,&len,NULL,0);
   if (retcode == -1) {
     return 0;
   }
-  if (len == 4) {
-    // CHECK: is this needed ??
-    //retcode = sysctlbyname ("hw.memsize",&memory_32,&len,NULL,0);
-    //if (retcode == -1) {
-    //  return 0;
-    //}
-    return 0;
-  } else if (len == 8) {
-    // Old working code
-    retcode = sysctlbyname ("hw.memsize",&memory_64,&len,NULL,0);
-    if (retcode == -1) {
-      return 0;
-    }
-    memory_64 >>= 20;
-    return memory_64;
-  }
+  memory >>= 20;
 
-  return 0;
+  return memory;
 }
 
 int get_numproc (void) {
   size_t len;
   int ncpu;
 
-  sysctlbyname ("hw.ncpu",NULL,&len,NULL,0);
+	len = sizeof(ncpu);
+  //sysctlbyname ("hw.ncpu",NULL,&len,NULL,0);
   sysctlbyname ("hw.ncpu",&ncpu,&len,NULL,0);
 
   return ncpu;
@@ -106,10 +89,12 @@ t_arch get_architecture (void) {
   // FIXME: Do al Intel Mac return "i386" ??
   if (strncmp(buffer,STR_ARCH_INTEL,strlen(STR_ARCH_INTEL)) == 0) {
     return ARCH_INTEL;
+  } else if (strncmp(buffer,STR_ARCH_PPC,strlen(STR_ARCH_PPC)) == 0) {
+	  // FIXME: And do al PPC Mac return "Power Macintosh" ?
+    return ARCH_PPC;
   }
 
-  // FIXME: If it's not intel it's PPC... (?)
-  return ARCH_PPC;
+  return ARCH_UNKNOWN;
 }
 
 t_proctype get_proctype (void) {
@@ -130,13 +115,10 @@ t_proctype get_proctype (void) {
 int get_procspeed (void) {
   // README: found on "hw.cpufrequency"
   size_t len;
-  int procspeed;
+  uint64_t procspeed;
   int retcode;
 
-  retcode = sysctlbyname ("hw.cpufrequency",NULL,&len,NULL,0);
-  if (retcode == -1) {
-    return 0;
-  }
+	len = sizeof(procspeed);
   retcode = sysctlbyname ("hw.cpufrequency",&procspeed,&len,NULL,0);
   if (retcode == -1) {
     return 0;
