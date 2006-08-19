@@ -27,22 +27,26 @@ ifeq ($(systype),Linux)
 	MAKE = make
 else 
  ifeq ($(systype),IRIX)
-  CFLAGS = -Wall -I.. -D__IRIX -g `pkg-config --cflags gtk+-2.0` -O2
+	CPPFLAGS += -D__IRIX
+	CFLAGS += -D__IRIX `pkg-config --cflags gtk+-2.0`
   LDFLAGS = `pkg-config --libs gtk+-2.0`
   MAKE = /usr/freeware/bin/make
  else
   ifeq ($(systype),Darwin)
-   CFLAGS = -Wall -I.. -D__OSX -g `pkg-config --cflags gtk+-2.0` -O2
+   CPPFLAGS += -D__OSX
+	 CFLAGS += -D__OSX `pkg-config --cflags gtk+-2.0`
    LDFLAGS = `pkg-config --libs gtk+-2.0`
    MAKE = make
   else
    ifeq ($(systype),FreeBSD)
-    CFLAGS = -Wall -I.. -D__FREEBSD -g `pkg-config --cflags gtk+-2.0` -O2
+    CPPFLAGS += -D__FREEBSD
+	  CFLAGS += -D__FREEBSD `pkg-config --cflags gtk+-2.0`
     LDFLAGS = `pkg-config --libs gtk+-2.0`
     MAKE = gmake
    else
     ifeq ($(systype),CYGWIN_NT-5.1)
-     CFLAGS = -Wall -I.. -D__CYGWIN -g `$(GTK_PATH)/pkg-config --cflags gtk+-2.0` -mms-bitfields -O2
+     CPPFLAGS += -D__CYGWIN
+	   CFLAGS += -D__CYWIN `$(GTK_PATH)/pkg-config --cflags gtk+-2.0`
      LDFLAGS = `$(GTK_PATH)/pkg-config --libs gtk+-2.0`
      UIFLAGS = -e _mainCRTStartup -mwindows ../contrib/windows/Resources/drqueue.res 
      MAKE = make

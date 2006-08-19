@@ -39,23 +39,19 @@ ifeq ($(systype),Linux)
  MAKE = make
 else 
  ifeq ($(systype),IRIX)
-	CFLAGS += -DCOMM_REPORT -Wall -I. -D__IRIX -g -O2
 	CPPFLAGS += -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__IRIX -g -O2
 	MAKE = /usr/freeware/bin/gmake
  else
 	ifeq ($(systype),Darwin)
-   CFLAGS += -DCOMM_REPORT -Wall -I. -D__OSX -g -O2
-   CPPFLAGS += -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__OSX -g -O2
+   CPPFLAGS += -D__OSX
 	 MAKE = make
 	else
 	 ifeq ($(systype),FreeBSD)
-    CFLAGS = -DCOMM_REPORT -Wall -I. -D__FREEBSD -g -O2
-    CPPFLAGS = -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__FREEBSD -g -O2
+    CPPFLAGS = -D__FREEBSD
 	  MAKE = gmake
 	 else
 	  ifeq ($(systype),CYGWIN_NT-5.1)
-	   CFLAGS = -DCOMM_REPORT -Wall -I. -D__CYGWIN -g -O2 
-     CPPFLAGS = -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__CYGWIN -g -O2
+     CPPFLAGS = -D__CYGWIN
 	   MAKE = make
 	   UIFLAGS += -e _mainCRTStartup -mwindows contrib/windows/Resources/drqueue.res 
 		else	
@@ -227,7 +223,7 @@ tags:
 	etags *.[ch] libdrqueue/*.[ch] drqman/*.[ch]
 
 clean:
-	rm -fR *.o *.os *.exe *~ libdrqueue.a $(BASE_C_TOOLS) $(BASE_CXX_TOOLS) TAGS tmp/* logs/* db/* contrib/windows/*.exe bin/*.$(systype).$(machinetype)
+	rm -fR *.o *.os *.exe *~ libdrqueue.a $(BASE_C_TOOLS) $(BASE_CXX_TOOLS) TAGS tmp/* logs/* db/* contrib/windows/*.exe bin/*.$(systype).$(machinetype) $(OBJS_LIBDRQUEUE)
 	$(MAKE) -C drqman clean
 
 #actual object make targets
