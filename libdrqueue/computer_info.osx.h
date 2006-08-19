@@ -22,13 +22,9 @@
 #include <sys/types.h>
 #include <sys/sysctl.h>
 
-int get_procspeed (void) {
-  return 0;
-}
+#define STR_ARCH_INTEL "i386"
 
-t_proctype get_proctype (void) {
-  return PROCTYPE_UNKNOWN;
-}
+t_arch get_architecture (void);
 
 void get_hwinfo (struct computer_hwinfo *hwinfo) {
   size_t len;
@@ -38,7 +34,7 @@ void get_hwinfo (struct computer_hwinfo *hwinfo) {
     perror ("get_hwinfo: gethostname");
     kill(0,SIGINT);
   }
-  hwinfo->arch = ARCH_PPC;
+  hwinfo->arch = get_architecture();
   hwinfo->os = OS_OSX;
   hwinfo->proctype = PROCTYPE_PPC;
   hwinfo->ncpus = get_numproc();
@@ -50,13 +46,33 @@ void get_hwinfo (struct computer_hwinfo *hwinfo) {
 }
 
 uint32_t get_memory (void) {
-  size_t len = 8; // FIXME hardcoded ?
-  uint64_t memory;
+  size_t len;
+  uint64_t memory_64;
+  uint32_t memory_32;
+  int retcode;
 
-  sysctlbyname ("hw.memsize",&memory,&len,NULL,0);
-  memory >>= 20;
+  retcode = sysctlbyname ("hw.memsize",NULL,&len,NULL,0);
+  if (retcode == -1) {
+    return 0;
+  }
+  if (len == 4) {
+    // CHECK: is this needed ??
+    //retcode = sysctlbyname ("hw.memsize",&memory_32,&len,NULL,0);
+    //if (retcode == -1) {
+    //  return 0;
+    //}
+    return 0;
+  } else if (len == 8) {
+    // Old working code
+    retcode = sysctlbyname ("hw.memsize",&memory_64,&len,NULL,0);
+    if (retcode == -1) {
+      return 0;
+    }
+    memory_64 >>= 20;
+    return memory_64;
+  }
 
-  return memory;
+  return 0;
 }
 
 int get_numproc (void) {
@@ -67,4 +83,66 @@ int get_numproc (void) {
   sysctlbyname ("hw.ncpu",&ncpu,&len,NULL,0);
 
   return ncpu;
+}
+
+t_arch get_architecture (void) {
+  size_t len;
+  char *buffer;
+  int retcode;
+
+  retcode = sysctlbyname ("hw.machine",NULL,&len,NULL,0);
+  if (retcode == -1) {
+    return ARCH_UNKNOWN;
+  }
+  buffer = (char *)malloc(len);
+  if (buffer == NULL) {
+    return ARCH_UNKNOWN;
+  }
+  retcode = sysctlbyname ("hw.machine",buffer,&len,NULL,0);
+  if (retcode == -1) {
+    return ARCH_UNKNOWN;
+  }
+  
+  // FIXME: Do al Intel Mac return "i386" ??
+  if (strncmp(buffer,STR_ARCH_INTEL,strlen(STR_ARCH_INTEL)) == 0) {
+    return ARCH_INTEL;
+  }
+
+  // FIXME: If it's not intel it's PPC... (?)
+  return ARCH_PPC;
+}
+
+t_proctype get_proctype (void) {
+  // TODO: check values "hw.cputype" and "hw.cpusubtype"
+  t_arch arch;
+
+  arch = get_architecture();
+
+  if (arch == ARCH_INTEL) {
+    return PROCTYPE_INTEL_UNKNOWN;
+  } else if (arch == ARCH_PPC) {
+    return PROCTYPE_PPC;
+  }
+
+  return PROCTYPE_UNKNOWN;
+}
+
+int get_procspeed (void) {
+  // README: found on "hw.cpufrequency"
+  size_t len;
+  int procspeed;
+  int retcode;
+
+  retcode = sysctlbyname ("hw.cpufrequency",NULL,&len,NULL,0);
+  if (retcode == -1) {
+    return 0;
+  }
+  retcode = sysctlbyname ("hw.cpufrequency",&procspeed,&len,NULL,0);
+  if (retcode == -1) {
+    return 0;
+  }
+  // procspeed is returned in hertz we should return Mhz
+  procspeed /= 1000000;
+
+  return procspeed;
 }
