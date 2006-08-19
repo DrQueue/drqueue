@@ -37,12 +37,11 @@ void config_parse_tool (char *tool) {
   // Hardcoded
   config_get_default_file (cfg_path,tool,PATH_MAX);
   config_parse (cfg_path);
-  if ( getenv ("DRQUEUE_ROOT") ) {
-    snprintf (cfg_path,PATH_MAX,"%s/etc/%s.%s",getenv("DRQUEUE_ROOT"),tool,BASE_CONF_EXT);
-    config_parse (cfg_path);
-  }
   if ( getenv ("DRQUEUE_ETC") ) {
     snprintf (cfg_path,PATH_MAX,"%s/%s.%s",getenv("DRQUEUE_ETC"),tool,BASE_CONF_EXT);
+    config_parse (cfg_path);
+  } else if ( getenv ("DRQUEUE_ROOT") ) {
+    snprintf (cfg_path,PATH_MAX,"%s/etc/%s.%s",getenv("DRQUEUE_ROOT"),tool,BASE_CONF_EXT);
     config_parse (cfg_path);
   }
 }
