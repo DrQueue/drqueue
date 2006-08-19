@@ -26,8 +26,8 @@ endif
 
 #Figure out OS-specific Configuration parameters
 ifeq ($(origin systype),undefined)
-	systype=$(shell uname -s)
-	machinetype=$(shell uname -m)
+ systype=$(shell uname -s)
+ machinetype=$(shell uname -m)
 endif
 
 CFLAGS += -g -O2 -Wall
@@ -39,26 +39,26 @@ ifeq ($(systype),Linux)
  MAKE = make
 else 
  ifeq ($(systype),IRIX)
-	CPPFLAGS += -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__IRIX -g -O2
-	MAKE = /usr/freeware/bin/gmake
+  CPPFLAGS += -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__IRIX -g -O2
+  MAKE = /usr/freeware/bin/gmake
  else
-	ifeq ($(systype),Darwin)
+  ifeq ($(systype),Darwin)
    CPPFLAGS += -D__OSX
-	 MAKE = make
-	else
-	 ifeq ($(systype),FreeBSD)
+   MAKE = make
+  else
+   ifeq ($(systype),FreeBSD)
     CPPFLAGS = -D__FREEBSD
-	  MAKE = gmake
-	 else
-	  ifeq ($(systype),CYGWIN_NT-5.1)
+    MAKE = gmake
+   else
+    ifeq ($(systype),CYGWIN_NT-5.1)
      CPPFLAGS = -D__CYGWIN
-	   MAKE = make
-	   UIFLAGS += -e _mainCRTStartup -mwindows contrib/windows/Resources/drqueue.res 
-		else	
-			$(error Cannot make DrQueue -- systype "$(systype)" is unknown)
-	  endif
-	 endif
-	endif
+     MAKE = make
+     UIFLAGS += -e _mainCRTStartup -mwindows contrib/windows/Resources/drqueue.res 
+    else	
+     $(error Cannot make DrQueue -- systype "$(systype)" is unknown)
+    endif
+   endif
+  endif
  endif	
 endif
 
