@@ -47,7 +47,7 @@ uint32_t get_memory (void) {
   uint64_t memory;
   int retcode;
 
-	len = sizeof(memory);
+  len = sizeof(memory);
   retcode = sysctlbyname ("hw.memsize",&memory,&len,NULL,0);
   if (retcode == -1) {
     return 0;
@@ -61,7 +61,7 @@ int get_numproc (void) {
   size_t len;
   int ncpu;
 
-	len = sizeof(ncpu);
+  len = sizeof(ncpu);
   //sysctlbyname ("hw.ncpu",NULL,&len,NULL,0);
   sysctlbyname ("hw.ncpu",&ncpu,&len,NULL,0);
 
@@ -118,7 +118,7 @@ int get_procspeed (void) {
   uint64_t procspeed;
   int retcode;
 
-	len = sizeof(procspeed);
+  len = sizeof(procspeed);
   retcode = sysctlbyname ("hw.cpufrequency",&procspeed,&len,NULL,0);
   if (retcode == -1) {
     return 0;
