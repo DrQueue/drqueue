@@ -229,7 +229,8 @@ clean:
 #actual object make targets
 libdrqueue.h: $(OBJS_LIBDRQUEUE:.o=.h)
 libdrqueue.a: $(OBJS_LIBDRQUEUE) libdrqueue.h
-	ar sq $@ $(OBJS_LIBDRQUEUE)
+	ar r $@ $(OBJS_LIBDRQUEUE)
+	ranlib $@
 
 ifeq ($(systype),CYGWIN_NT-5.1)
 contrib/windows/Resources/drqueue.res: contrib/windows/Resources/drqueue.rc
