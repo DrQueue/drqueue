@@ -6,16 +6,17 @@
 TOOL_NAME="mkrelease_tag"
 SVK_BASE="//drqueue/remote"
 SVN_BASE="https://ssl.drqueue.org/svn"
-TMP_PATH="./tmp.checkout"
+TMP_PATH="/tmp/tmp.checkout"
 
 usage () {
 	cat <<END
 
 DrQueue's release-tag and related tarball builder.
 
-Usage: $TOOL_NAME [-h] [-b <from_branch>] -s|-k -t <tag>
+Usage: $TOOL_NAME [-hg] [-b <from_branch>] -s|-k -t <tag>
 
-    -h will print this help 
+    -h will print this help
+    -g will only create the tarball for the selected tag version
     -s will use svn to do the work
     -k will use svk instead of svn
     -t <tag_name> will create the tag <tag_name> (from trunk if -b <branch> not specified)
@@ -74,7 +75,7 @@ check_repo_branch () {
             
 check_repo_tag_info () {
     $TOOL ls $REPO_TAG_PATH > /dev/null 2>&1
-    if [ $? -eq 0 ]; then
+    if [ "x$BUILD_TARBALL" != "xy" -a $? -eq 0 ]; then
         echo "The tag you're trying to create already exists"
         exit 1
     fi
@@ -105,16 +106,23 @@ tmp_commit () {
         echo "ERROR: No message given for commit"
         exit 1
     fi
-    $TOOL ci -m "$MSG" $FILES
+    old_path=$(pwd)
+    cd $TMP_PATH
+    echo Working dir: $(pwd)
+    echo $TOOL ci -m "$MSG" $FILES
     if [ $? -ne 0 ]; then
         echo "ERROR: there was a problem commiting $FILES"
         exit 1
     fi
+    cd $old_path
+    echo Working dir: $(pwd)
+    unset old_path
     return 0
 }
 
 change_common_h () {
-    COMMON_H_PATH="$TMP_PATH/libdrqueue/common.h"
+    BASE_COMMON_H="libdrqueue/common.h"
+    COMMON_H_PATH="$TMP_PATH/$BASE_COMMON_H"
     if [ ! -w $COMMON_H_PATH ]; then
         echo "No common.h at $COMMON_H_PATH"
         exit 1
@@ -122,7 +130,7 @@ change_common_h () {
     awk '/VERSION/ { print $1,$2," \"SED_VERSION_CHANGE_ME\""; next; }; /.*/ { print }' $COMMON_H_PATH > $COMMON_H_PATH.tmp || die "ERROR with awk in change_common_h"
     sed -e "s/SED_VERSION_CHANGE_ME/$VERSION/g" $COMMON_H_PATH.tmp > $COMMON_H_PATH || die "ERROR with sed in change_common_h"
     rm -f $COMMON_H_PATH.tmp
-    tmp_commit "New version number on common.h: $VERSION" $COMMON_H_PATH
+    tmp_commit "New version number on common.h: $VERSION" $BASE_COMMON_H
     return 0
 }
 
@@ -159,23 +167,30 @@ repo_create_tag () {
 }
 
 build_tarball () {
-    $TOOL co $REPO_TAG_PATH drqueue-$VERSION > /dev/null
+    BASE_NAME="drqueue-$VERSION"
+    CO_PATH="$TMP_PATH/$BASE_NAME"
+    $TOOL co $REPO_TAG_PATH $CO_PATH > /dev/null
     if [ $? -ne 0 ]; then
         echo ERROR: There was a problem checking out the tag $REPO_TAG_PATH
         exit 1
     fi
-    tar zcvf drqueue.$VERSION.tgz --exclude="*/.svn" drqueue-$VERSION
+    old_path=$(pwd)
+    cd $TMP_PATH
+    tar zcvf $old_path/drqueue.$VERSION.tgz --exclude="*/.svn" drqueue-$VERSION
     rm -fR drqueue-$VERSION
+    cd $old_path
+    unset old_path
     return 0
 }
 
-while getopts ":hskb:t:" OPTION
+while getopts ":hskgb:t:" OPTION
   do
   case $OPTION in
       h ) usage
           exit 0;;
       s ) REPO_TOOL="svn";;
       k ) REPO_TOOL="svk";;
+      g ) BUILD_TARBALL="y";;
       b ) BRANCH="branches/$OPTARG";;
       t ) TAG="tags/$OPTARG"; VERSION="$OPTARG";;
       * ) echo "ERROR. Uknown option $OPTION";;
@@ -199,11 +214,16 @@ if [ "x$SURE" != "xy" ]; then
     exit 1
 fi
 
-tmp_checkout
-change_common_h
-repo_create_tag
-tmp_remove
-build_tarball
+if [ "x$BUILD_TARBALL" != "xy" ]; then
+    tmp_checkout
+    change_common_h
+    repo_create_tag
+    tmp_remove
+    build_tarball
+else
+    echo "Creating only tarball file"
+    build_tarball
+fi
 
 exit 1
 
