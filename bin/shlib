@@ -3,35 +3,18 @@
 # $Id$
 #
 
+
+####
+#
+# Defaults
+#
+
+DRQ_SH_AUTOESCAPE=0
+DRQ_SH_UNDERSCORE=1
+
 MACHINE=`uname -m`
 KERNEL=`uname -s`
 BASETOOL=`basename $0`
-
-check_environment () {
-  if [ "x${DRQUEUE_ROOT}" == "x" ]; then
-    echo ERROR: DRQUEUE_ROOT not set in environment
-    exit 1
-  fi
-  if [ "x${DRQUEUE_MASTER}" == "x" ]; then
-    echo ERROR: DRQUEUE_MASTER not set in environment
-    exit 1
-  fi
-}
-
-wrapper_cmd () {
-  CMD_TO_WRAP=$1
-  if [ ! -x $DRQUEUE_ROOT/bin/$CMD_TO_WRAP ]; then
-    echo ERROR: Command "$CMD_TO_WRAP" does not exist. Cannot be wrapped.
-    exit 1
-  fi
-  WRAP_CMD=$DRQUEUE_ROOT/bin/$BASETOOL.$KERNEL.$MACHINE
-  if [ ! -x ${WRAP_CMD} ]; then
-    echo ERROR: the wrapper "$BASETOOL" for your platform \(${WRAP_CMD}\) does not exist.
-    echo Perhaps you did not install it \(make miniinstall or make install\).
-    exit 1
-  fi
-  return 0
-}
 
 underscore_spaces () {
     ORIG_STRING="$1"
@@ -45,6 +28,73 @@ escape_spaces_string () {
       return 1
   else
       echo $(echo $ORIG_STRING | sed 's/ /\\ /g')
+  fi
+  return 0
+}
+
+check_environment () {
+  if [ "x${DRQUEUE_ROOT}" == "x" ]; then
+    echo ERROR: DRQUEUE_ROOT not set in environment
+    exit 1
+  fi
+  if [ "x${DRQUEUE_MASTER}" == "x" ]; then
+    echo ERROR: DRQUEUE_MASTER not set in environment
+    exit 1
+  fi
+}
+
+get_env_drqueue_root () {
+    check_environment
+    if [ ! -z $DRQ_SH_AUTOESCAPE -o ! -z "$1" ]; then
+      echo $(escape_spaces_string "$DRQUEUE_ROOT")
+    else
+      echo $DRQUEUE_ROOT
+    fi
+    return 0
+}
+
+get_env_base_tool () {
+    if [ ! -z $DRQ_SH_AUTOESCAPE -o ! -z "$1" ]; then
+        echo $(escape_spaces_string "$BASETOOL")
+    else
+        echo "$BASETOOL"
+    fi
+}
+
+get_env_kernel () {
+    if [ ! -z "$DRQ_SH_UNDERSCORE" -o ! -z "$1" ]; then
+        echo $(underscore_spaces "`uname -s`")
+    else
+        echo "`uname -s`"
+    fi
+}
+
+get_env_machine () {
+    if [ ! -z "$DRQ_SH_UNDERSCORE" -o ! -z "$1" ]; then
+        echo $(underscore_spaces "`uname -m`")
+    else
+        echo `uname -m`
+    fi
+}
+
+
+wrapper_cmd () {
+  CMD_TO_WRAP=$1
+  _conv_to_underscores=$2
+  unset WRAP_CMD
+  _full_unwrapped_tool_path="$(get_env_drqueue_root)/bin/$CMD_TO_WRAP"
+  if [ ! -x "$_full_unwrapped_tool_path" ]; then
+    echo ERROR: Command "$_full_unwrapped_tool_path" does not exist. Cannot be wrapped.
+    exit 1
+  fi
+
+  _full_wrapped_path=$(get_env_drqueue_root)/bin/$(get_env_base_tool).$(get_env_kernel).$(get_env_machine)
+  WRAP_CMD="$_full_wrapped_path"
+
+  if [ ! -x "${WRAP_CMD}" ]; then
+    echo ERROR: the wrapper "$(get_env_base_tool)" for your platform \(${WRAP_CMD}\) does not exist.
+    echo Perhaps you did not install it \(make miniinstall or make install\).
+    exit 1
   fi
   return 0
 }
