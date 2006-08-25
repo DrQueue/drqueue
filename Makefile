@@ -26,8 +26,9 @@ endif
 
 #Figure out OS-specific Configuration parameters
 ifeq ($(origin systype),undefined)
- systype=$(shell uname -s)
- machinetype=$(shell uname -m)
+systype = $(shell bash -c "source ./bin/shlib; underscore_spaces `uname -s`")
+#machinetype = $(shell bash -c "source ./bin/shlib; underscore_spaces `uname -m`")
+machinetype = $(shell bash -c "source ./bin/shlib; underscore_spaces 'Power Macintosh'")
 endif
 
 CFLAGS += -g -O2 -Wall
@@ -35,31 +36,23 @@ CPPFLAGS += -D_GNU_SOURCE -DCOMM_REPORT -I. -Ilibdrqueue
 CXXFLAGS += $(CFLAGS) -D__CPLUSPLUS 
 
 ifeq ($(systype),Linux)
- CPPFLAGS += -D__LINUX
- MAKE = make
-else 
- ifeq ($(systype),IRIX)
-  CPPFLAGS += -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__IRIX -g -O2
-  MAKE = /usr/freeware/bin/gmake
- else
-  ifeq ($(systype),Darwin)
-   CPPFLAGS += -D__OSX
-   MAKE = make
-  else
-   ifeq ($(systype),FreeBSD)
-    CPPFLAGS = -D__FREEBSD
-    MAKE = gmake
-   else
-    ifeq ($(systype),CYGWIN_NT-5.1)
-     CPPFLAGS = -D__CYGWIN
-     MAKE = make
-     UIFLAGS += -e _mainCRTStartup -mwindows contrib/windows/Resources/drqueue.res 
-    else	
-     $(error Cannot make DrQueue -- systype "$(systype)" is unknown)
-    endif
-   endif
-  endif
- endif	
+CPPFLAGS += -D__LINUX
+MAKE = make
+else ifeq ($(systype),IRIX)
+CPPFLAGS += -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__IRIX -g -O2
+MAKE = /usr/freeware/bin/gmake
+else ifeq ($(systype),Darwin)
+CPPFLAGS += -D__OSX
+MAKE = make
+else ifeq ($(systype),FreeBSD)
+CPPFLAGS = -D__FREEBSD
+MAKE = gmake
+else ifeq ($(systype),CYGWIN_NT-5.1)
+CPPFLAGS = -D__CYGWIN
+MAKE = make
+UIFLAGS += -e _mainCRTStartup -mwindows contrib/windows/Resources/drqueue.res 
+else	
+$(error Cannot make DrQueue -- systype "$(systype)" is unknown)
 endif
 
 ifneq ($(origin LIBWRAP),undefined)
