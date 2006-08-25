@@ -27,8 +27,7 @@ endif
 #Figure out OS-specific Configuration parameters
 ifeq ($(origin systype),undefined)
 systype = $(shell bash -c "source ./bin/shlib; underscore_spaces `uname -s`")
-#machinetype = $(shell bash -c "source ./bin/shlib; underscore_spaces `uname -m`")
-machinetype = $(shell bash -c "source ./bin/shlib; underscore_spaces 'Power Macintosh'")
+machinetype = $(shell bash -c "source ./bin/shlib; underscore_spaces `uname -m`")
 endif
 
 CFLAGS += -g -O2 -Wall
