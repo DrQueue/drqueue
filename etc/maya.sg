@@ -76,6 +76,7 @@ endif
 if ($?DRQUEUE_IMAGE) then
   set CIMAGE = "-im $DRQUEUE_IMAGE"
 else
+  set DRQUEUE_IMAGE = ""
   set CIMAGE = ""
 endif
 
