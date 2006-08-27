@@ -245,7 +245,7 @@ void computer_pool_set_from_environment (struct computer_limits *cl) {
 
 void computer_pool_init (struct computer_limits *cl) {
   // fprintf (stderr,"PID (%i) poolshmid (%i) : COMPUTER_POOL_INIT\n",getpid(),cl->poolshmid);
-  memset (cl,0,sizeof(struct computer_limits));
+  cl->pool = NULL;
   cl->poolshmid = -1;
   cl->npools = 0;
 }
@@ -460,6 +460,7 @@ int computer_ntasks (struct computer *comp) {
 }
 
 void computer_init_limits (struct computer *comp) {
+  memset (&comp->limits,0,sizeof(struct computer_limits));
   comp->limits.enabled = 1;
   comp->limits.nmaxcpus = comp->hwinfo.ncpus;
   comp->limits.maxfreeloadcpu = MAXLOADAVG;

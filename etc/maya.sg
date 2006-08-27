@@ -117,13 +117,13 @@ endif
 ###
 
 if ($?DRQUEUE_PRE) then
-	set DRQUEUE_PRE = "-preRender ${DRQUEUE_PRE}"
+	set DRQUEUE_PRE = "-preRender '${DRQUEUE_PRE}'"
 else
 	set DRQUEUE_PRE = ""
 endif
 
 if ($?DRQUEUE_POST) then
-	set DRQUEUE_POST = "-postRender ${DRQUEUE_POST}"
+	set DRQUEUE_POST = "-postRender '${DRQUEUE_POST}'"
 else
 	set DRQUEUE_POST = ""
 endif
@@ -160,7 +160,7 @@ else
   # The frame was rendered properly (exit code == 0)
   if ($DRQUEUE_OS != "WINDOWS") then
     # so we change the owner of the resulting images to the owner of the job
-    $DRQUEUE_BIN/chown_block $RF_OWNER $DRQUEUE_RD/$DRQUEUE_IMAGE $DRQUEUE_FRAME $BLOCK 
+    $DRQUEUE_BIN/chown_block $RF_OWNER "$DRQUEUE_RD/$DRQUEUE_IMAGE" $DRQUEUE_FRAME $BLOCK 
   endif
 endif
 
