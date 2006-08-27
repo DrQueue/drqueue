@@ -23,10 +23,12 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
+#include <unistd.h>
 #include "libdrqueue.h"
 #include "jobscript.h"
 
-struct jobscript_info *jobscript_new (jobscript_type type,char filename[PATH_MAX]) {
+struct jobscript_info *jobscript_new (jobscript_type type,char *filename) {
   FILE *f = NULL;
 
   if ( type != JOBSCRIPT_TCSH ) {
@@ -77,14 +79,13 @@ int jobscript_write_heading (struct jobscript_info *ji) {
   return 0;
 }
 
-int jobscript_set_variable_int (struct jobscript_info *ji,char name[JS_MAX_VAR_NAME],int64_t value) {
+int jobscript_set_variable_int (struct jobscript_info *ji,char *name,int64_t value) {
   char str_value[JS_MAX_VAR_VALUE];
   snprintf (str_value,JS_MAX_VAR_VALUE,"%lli",value);
   return jobscript_set_variable (ji,name,str_value);
 }
 
-int jobscript_set_variable (struct jobscript_info *ji,char name[JS_MAX_VAR_NAME],char value[JS_MAX_VAR_VALUE]) {
-
+int jobscript_set_variable (struct jobscript_info *ji,char *name,char *value) {
   int rv;
   if ((rv = jobscript_check_pointer (ji)) == 0 ) {
     return rv;
@@ -124,7 +125,7 @@ int jobscript_tcsh_write_heading (struct jobscript_info *ji) {
   return 1;
 }
 
-int jobscript_tcsh_set_variable (struct jobscript_info *ji,char name[JS_MAX_VAR_NAME],char value[JS_MAX_VAR_VALUE]) {
+int jobscript_tcsh_set_variable (struct jobscript_info *ji,char *name,char *value) {
   int rv;
   if ( (rv = jobscript_tcsh_check_pointer (ji)) == 0 ) {
     return rv;
@@ -132,5 +133,58 @@ int jobscript_tcsh_set_variable (struct jobscript_info *ji,char name[JS_MAX_VAR_
   // TODO: correct name of variable
   fprintf (ji->file,"\n## tcsh variable set by jobscript tools\n");
   fprintf (ji->file,"set %s=\"%s\"\n",name,value);
-  return 0;
+  return 1;
+}
+
+int jobscript_template_write (struct jobscript_info *ji,char *template_file_name)
+{
+  int rv;
+  char template_file_path[PATH_MAX];
+  char *templates_directory;
+  FILE *file_template;
+  int fd_template, fd_jobscript;
+  int size;
+  char buf[BUFFERLEN];
+
+  // TODO: Check template type (bash,tcsh,...), detect and report errors
+
+  if ( (rv = jobscript_check_pointer (ji)) == 0 ) {
+    return rv;
+  }
+  
+  if ((templates_directory = getenv ("DRQUEUE_ETC")) == NULL)
+  {
+    if ((templates_directory = getenv ("DRQUEUE_ROOT")) == NULL) {
+      fprintf (stderr,"ERROR: No templates directory found. Check environment variables DRQUEUE_ETC and DRQUEUE_ROOT\n");
+      return 0;
+    } else {
+      snprintf(template_file_path,PATH_MAX,"%s/etc/%s",templates_directory,template_file_name);
+    }
+  } else {
+    snprintf(template_file_path,PATH_MAX,"%s/%s",templates_directory,template_file_name);
+  }
+
+  if ((file_template = fopen (template_file_path,"r")) == NULL) {
+    fprintf (stderr,"ERROR: No template file could not be read at '%s'\n",template_file_path);
+    return 0;
+  }
+  
+  fprintf (ji->file,"\n# jobscript starts writing template file '%s'\n",template_file_path);
+
+  fflush (ji->file);
+  fd_template = fileno (file_template);
+  fd_jobscript = fileno (ji->file);
+  while ((size = read (fd_template,buf,BUFFERLEN)) != 0) {
+    write (fd_jobscript,buf,size);
+  }
+  fclose(file_template);
+  fflush (ji->file);
+
+  fprintf (ji->file,"\n# jobscript finished writing template file '%s'\n",template_file_path);
+
+  return 1;
+}
+
+int jobscript_close (struct jobscript_info *ji) {
+  return fclose (ji->file);
 }
