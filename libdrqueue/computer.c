@@ -245,12 +245,13 @@ void computer_pool_set_from_environment (struct computer_limits *cl) {
 
 void computer_pool_init (struct computer_limits *cl) {
   // fprintf (stderr,"PID (%i) poolshmid (%i) : COMPUTER_POOL_INIT\n",getpid(),cl->poolshmid);
+  cl->pool = NULL;
   cl->poolshmid = -1;
   cl->npools = 0;
 }
 
-int computer_pool_get_shared_memory (int npools) {
-  int shmid;
+uint64_t computer_pool_get_shared_memory (int npools) {
+  uint64_t shmid;
 
   if ((shmid = shmget (IPC_PRIVATE,sizeof(struct pool)*npools, IPC_EXCL|IPC_CREAT|0600)) == -1) {
     perror ("shmget");
@@ -286,7 +287,7 @@ void computer_pool_detach_shared_memory (struct pool *cpshp) {
 int computer_pool_add (struct computer_limits *cl, char *poolname) {
   struct pool *opool = (struct pool *)-1;
   struct pool *npool;
-  int npoolshmid;
+  uint64_t npoolshmid;
 
   // fprintf (stderr,"computer_pool_add (cl=%x,cl->poolshmid=%i) : %s\n",cl,cl->poolshmid,pool);
 
@@ -336,7 +337,7 @@ int computer_pool_add (struct computer_limits *cl, char *poolname) {
 void computer_pool_remove (struct computer_limits *cl, char *pool) {
   struct pool *opool = (struct pool *)-1;
   struct pool *npool;
-  int npoolshmid;
+  uint64_t npoolshmid;
   int i,j;
 
   if (!computer_pool_exists (cl,pool)) {
@@ -459,6 +460,7 @@ int computer_ntasks (struct computer *comp) {
 }
 
 void computer_init_limits (struct computer *comp) {
+  memset (&comp->limits,0,sizeof(struct computer_limits));
   comp->limits.enabled = 1;
   comp->limits.nmaxcpus = comp->hwinfo.ncpus;
   comp->limits.maxfreeloadcpu = MAXLOADAVG;

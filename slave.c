@@ -394,12 +394,14 @@ void slave_consistency_process (struct slave_database *sdb) {
 
 void slave_listening_process (struct slave_database *sdb) {
   pid_t child_pid;
-  int sfd,csfd;
+  int sfd,csfd,highest_fd;
 
   if ((sfd = get_socket(SLAVEPORT)) == -1) {
     log_slave_computer (L_ERROR,"Unable to open socket (server)");
     kill(0,SIGINT);
   }
+  highest_fd = sfd+1;
+  printf ("Highest file descriptor after initialization %i\n",highest_fd);
   printf ("Waiting for connections...\n");
   while (1) {
     if ((csfd = accept_socket_slave (sfd)) != -1) {
@@ -417,8 +419,8 @@ void slave_listening_process (struct slave_database *sdb) {
       }
       /* Father */
       close (csfd);
-      if (csfd > 6)
-        printf ("!! csfd:  %i\n",csfd);
+      if (csfd > highest_fd)
+        printf ("csfd has grown over the default highest (csfd=%i)\n",csfd);
     }
   }
 }

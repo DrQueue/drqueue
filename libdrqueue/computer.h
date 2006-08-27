@@ -80,7 +80,7 @@ int computer_attach (struct computer *computer);
 int computer_detach (struct computer *computer);
 
 // Pools
-int computer_pool_get_shared_memory (int npools);
+uint64_t computer_pool_get_shared_memory (int npools);
 struct pool *computer_pool_attach_shared_memory (int shmid);
 void computer_pool_detach_shared_memory (struct pool *cpshp);
 void computer_pool_init (struct computer_limits *cl);
