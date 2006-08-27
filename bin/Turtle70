@@ -1,0 +1,13 @@
+#!/bin/bash
+
+export MAYA_DEBUG_NO_SIGNAL_HANDLERS=1
+export MAYA_LOCATION=/usr/aw/maya7.0
+export MAYA_PLUG_IN_PATH=/usr/illuminatelabs/turtle2/plug-in 
+export ILR_ROOT=/usr/illuminatelabs/turtle2
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MAYA_LOCATION}/lib
+export IL_LICENSE_FILE=/etc/turtle/license.dat
+export ILR_MAYA70_ROOT=/usr/aw/maya7.0
+
+/usr/illuminatelabs/turtle2/bin/TurtleForMaya70 $@
+
+exit $?
