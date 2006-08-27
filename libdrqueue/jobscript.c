@@ -131,6 +131,6 @@ int jobscript_tcsh_set_variable (struct jobscript_info *ji,char name[JS_MAX_VAR_
   }
   // TODO: correct name of variable
   fprintf (ji->file,"\n## tcsh variable set by jobscript tools\n");
-  fprintf (ji->file,"set %s='\"%s\"'\n",name,value);
+  fprintf (ji->file,"set %s=\"%s\"\n",name,value);
   return 0;
 }
