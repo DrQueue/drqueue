@@ -40,14 +40,7 @@ char *mayasg_create (struct mayasgi *info) {
   /* This function creates the maya render script based on the information given */
   /* Returns a pointer to a string containing the path of the just created file */
   /* Returns NULL on failure and sets drerrno */
-  FILE *f;
-  FILE *etc_maya_sg;  /* The maya script generator configuration file */
-  int fd_etc_maya_sg,fd_f;
   static char filename[BUFFERLEN];
-  char fn_etc_maya_sg[BUFFERLEN]; /* File name pointing to DRQUEUE_ETC/maya.sg */
-  char buf[BUFFERLEN];
-  char image_arg[BUFFERLEN];
-  int size;
   char *p;   /* Scene filename without path */
   char scene[MAXCMDLEN];
   char renderdir[MAXCMDLEN];
@@ -82,25 +75,6 @@ char *mayasg_create (struct mayasgi *info) {
   snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
   // TODO: Unified path handling
-
-/*   if ((f = fopen (filename, "a")) == NULL) { */
-/*     if (errno == ENOENT) { */
-/*       /\* If its because the directory does not exist we try creating it first *\/ */
-/*       if (mkdir (info->scriptdir,0775) == -1) { */
-/*         drerrno = DRE_COULDNOTCREATE; */
-/*         return NULL; */
-/*       } else if ((f = fopen (filename, "a")) == NULL) { */
-/*         drerrno = DRE_COULDNOTCREATE; */
-/*         return NULL; */
-/*       } */
-/*     } else { */
-/*       drerrno = DRE_COULDNOTCREATE; */
-/*       return NULL; */
-/*     } */
-/*   } */
-
-/*   fchmod (fileno(f),0777); */
-
   struct jobscript_info *ji = jobscript_new (JOBSCRIPT_TCSH,filename);
 
   jobscript_write_heading (ji);
@@ -134,28 +108,8 @@ char *mayasg_create (struct mayasgi *info) {
     jobscript_set_variable (ji,"DRQUEUE_PRE",info->precommand);
   }
 
-  snprintf(fn_etc_maya_sg,BUFFERLEN-1,"%s/maya.sg",getenv("DRQUEUE_ETC"));
-
-  fflush (ji->file);
-  f = ji->file;
-
-  if ((etc_maya_sg = fopen (fn_etc_maya_sg,"r")) == NULL) {
-    fprintf(f,"\necho -------------------------------------------------\n");
-    fprintf(f,"echo ATTENTION ! There was a problem opening: %s\n",fn_etc_maya_sg);
-    fprintf(f,"echo So the default configuration will be used\n");
-    fprintf(f,"echo -------------------------------------------------\n");
-    fprintf(f,"\n\n");
-    fprintf(f,"Render -preRender $DRQUEUE_PRE -postRender $DRQUEUE_POST -s $DRQUEUE_FRAME -e $DRQUEUE_FRAME -rd $DRQUEUE_RD -proj $DRQUEUE_PD %s $DRQUEUE_SCENERender -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT -rd $DRQUEUE_RD -proj $DRQUEUE_PD $MENTALRAY $CIMAGE $CAMERA $DRQUEUE_SCENE\n\n",image_arg);
-  } else {
-    fd_etc_maya_sg = fileno (etc_maya_sg);
-    fd_f = fileno (f);
-    while ((size = read (fd_etc_maya_sg,buf,BUFFERLEN)) != 0) {
-      write (fd_f,buf,size);
-    }
-    fclose(etc_maya_sg);
-  }
-
-  fclose(f);
+  jobscript_template_write (ji,"maya.sg");
+  jobscript_close (ji);
 
   return filename;
 }
