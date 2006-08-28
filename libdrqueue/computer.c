@@ -42,27 +42,29 @@ int computer_index_addr (void *pwdb,struct in_addr addr) {
   int index;
   struct hostent *host;
   char *dot;
-  int i=0;
   char *name;
 
   log_master (L_DEBUG,"Entering computer_index_addr");
 
+
   if ((host = gethostbyaddr ((const void *)&addr.s_addr,sizeof (struct in_addr),AF_INET)) == NULL) {
-    log_master (L_WARNING,"Could not resolve name for: %s",inet_ntoa(addr));
+    log_master (L_INFO,"computer_index_addr(). Using IP address as host name because '%s' could not be resolved",inet_ntoa(addr));
     name=inet_ntoa(addr);
   } else {
+    //int i=0;
     if ((dot = strchr (host->h_name,'.')) != NULL)
       *dot = '\0';
-    /*   printf ("Name: %s\n",host->h_name); */
     name = host->h_name;
-    while (host->h_aliases[i] != NULL) {
-      /*    printf ("Alias: %s\n",host->h_aliases[i]); */
-      i++;
-    }
-    while (*host->h_aliases != NULL) {
-      /*    printf ("Alias: %s\n",*host->h_aliases); */
-      host->h_aliases++;
-    }
+/*     /\*   printf ("Name: %s\n",host->h_name); *\/ */
+/*     name = host->h_name; */
+/*     while (host->h_aliases[i] != NULL) { */
+/*       /\*    printf ("Alias: %s\n",host->h_aliases[i]); *\/ */
+/*       i++; */
+/*     } */
+/*     while (*host->h_aliases != NULL) { */
+/*       /\*    printf ("Alias: %s\n",*host->h_aliases); *\/ */
+/*       host->h_aliases++; */
+/*     } */
   }
 
 
@@ -250,8 +252,8 @@ void computer_pool_init (struct computer_limits *cl) {
   cl->npools = 0;
 }
 
-uint64_t computer_pool_get_shared_memory (int npools) {
-  uint64_t shmid;
+int64_t computer_pool_get_shared_memory (int npools) {
+  int64_t shmid;
 
   if ((shmid = shmget (IPC_PRIVATE,sizeof(struct pool)*npools, IPC_EXCL|IPC_CREAT|0600)) == -1) {
     perror ("shmget");
@@ -265,7 +267,8 @@ uint64_t computer_pool_get_shared_memory (int npools) {
   return shmid;
 }
 
-struct pool *computer_pool_attach_shared_memory (int shmid) {
+struct pool *computer_pool_attach_shared_memory (int64_t shmid) {
+  // Returns -1 on failure
   void *rv;   /* return value */
 
   if ((rv = shmat (shmid,0,0)) == (void *)-1) {
@@ -287,7 +290,7 @@ void computer_pool_detach_shared_memory (struct pool *cpshp) {
 int computer_pool_add (struct computer_limits *cl, char *poolname) {
   struct pool *opool = (struct pool *)-1;
   struct pool *npool;
-  uint64_t npoolshmid;
+  int64_t npoolshmid;
 
   // fprintf (stderr,"computer_pool_add (cl=%x,cl->poolshmid=%i) : %s\n",cl,cl->poolshmid,pool);
 
@@ -320,6 +323,7 @@ int computer_pool_add (struct computer_limits *cl, char *poolname) {
     if (shmctl (cl->poolshmid,IPC_RMID,NULL) == -1) {
       drerrno = DRE_RMSHMEM;
       // TODO: log this problem
+      fprintf(stderr,"WARNING: computer_pool_add() Previous pool list could not be removed. (%s)\n",drerrno_str());
       // return 0;
     }
   }
@@ -337,7 +341,7 @@ int computer_pool_add (struct computer_limits *cl, char *poolname) {
 void computer_pool_remove (struct computer_limits *cl, char *pool) {
   struct pool *opool = (struct pool *)-1;
   struct pool *npool;
-  uint64_t npoolshmid;
+  int64_t npoolshmid;
   int i,j;
 
   if (!computer_pool_exists (cl,pool)) {
@@ -386,12 +390,15 @@ void computer_pool_list (struct computer_limits *cl) {
 
   if (cl->poolshmid != -1) {
     pool = (struct pool *) computer_pool_attach_shared_memory (cl->poolshmid);
-    printf ("Pools: \n");
-    for (i = 0; i < cl->npools; i++) {
-      printf (" \t%i - %s\n",i,pool[i].name);
+    if (pool != (void*)-1) {
+      printf ("Pools: \n");
+      for (i = 0; i < cl->npools; i++) {
+        printf (" \t%i - %s\n",i,pool[i].name);
+      }
+      computer_pool_detach_shared_memory (pool);
+    } else {
+      fprintf (stderr,"ERROR: computer_pool_list() pool shared memory could not be attached. (%s)\n",drerrno_str());
     }
-
-    computer_pool_detach_shared_memory (pool);
   }
 }
 
@@ -420,7 +427,7 @@ int computer_pool_free (struct computer_limits *cl) {
   // fprintf (stderr,"PID (%i): computer_pool_free (cl=%x,cl->poolshmid=%i,cl->npools=%i)\n",getpid(),cl,cl->poolshmid,cl->npools);
   if (cl->poolshmid != -1) {
     if (shmctl (cl->poolshmid,IPC_RMID,NULL) == -1) {
-      fprintf (stderr,"ERROR: deleting poolshmid (%lli)\n",cl->poolshmid);
+      fprintf (stderr,"ERROR: computer_pool_free() deleting shared memory poolshmid: %lli\n",cl->poolshmid);
       drerrno = DRE_RMSHMEM;
       return 0;
     }

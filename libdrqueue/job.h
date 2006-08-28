@@ -279,10 +279,10 @@ struct job {
   uint32_t est_finish_time;     // Estimated finish time
                                 // we checked.
   struct frame_info *frame_info; // Status of every frame
-  uint64_t fishmid;              // Frame info shared memory id
+  int64_t fishmid;               // Frame info shared memory id
 
   struct blocked_host *blocked_host;  // Blocked hosts
-  uint64_t bhshmid;                   // Shared memory id for the blocked_host structure
+  int64_t bhshmid;                    // Shared memory id for the blocked_host structure
   uint16_t nblocked;                  // Number of blocked hosts
 
   uint32_t flags;                // Job flags
@@ -339,13 +339,13 @@ void job_logs_remove (struct job *job);   // WARN: this function
                                           // removes the logs
                                           // directory for a job
 
-uint64_t get_frame_shared_memory (uint32_t nframes); /* ipc shared memory */
-struct frame_info *attach_frame_shared_memory (uint64_t shmid);
+int64_t get_frame_shared_memory (uint32_t nframes); /* ipc shared memory */
+struct frame_info *attach_frame_shared_memory (int64_t shmid);
 void detach_frame_shared_memory (struct frame_info *fishp);
 
 // Blocked hosts
-uint64_t get_blocked_host_shared_memory (uint32_t nhosts); /* ipc shared memory */
-struct blocked_host *attach_blocked_host_shared_memory (uint64_t shmid);
+int64_t get_blocked_host_shared_memory (uint32_t nhosts); /* ipc shared memory */
+struct blocked_host *attach_blocked_host_shared_memory (int64_t shmid);
 void detach_blocked_host_shared_memory (struct blocked_host *bhshp);
 
 int priority_job_compare (const void *a,const void *b);

@@ -49,15 +49,15 @@ struct computer_limits {
   struct autoenable autoenable;
   struct pool *pool;
   uint16_t npools;
-  uint64_t poolshmid; // Pool's shared memory id
+  int64_t poolshmid; // Pool's shared memory id
 };
 
 struct computer {
   struct computer_hwinfo hwinfo;
   struct computer_status status;
   struct computer_limits limits;
-  time_t lastconn;  /* Time of last connection to the master */
-  unsigned char used;  /* If the record is being used or not */
+  uint32_t  lastconn;   /* Time of last connection to the master */
+  uint8_t   used;       /* Is this computer record being used or not ? */
 };
 
 struct database;
@@ -80,8 +80,8 @@ int computer_attach (struct computer *computer);
 int computer_detach (struct computer *computer);
 
 // Pools
-uint64_t computer_pool_get_shared_memory (int npools);
-struct pool *computer_pool_attach_shared_memory (int shmid);
+int64_t computer_pool_get_shared_memory (int npools);
+struct pool *computer_pool_attach_shared_memory (int64_t shmid);
 void computer_pool_detach_shared_memory (struct pool *cpshp);
 void computer_pool_init (struct computer_limits *cl);
 int computer_pool_add (struct computer_limits *cl, char *pool);

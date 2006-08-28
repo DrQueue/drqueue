@@ -123,14 +123,17 @@ void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job) {
 }
 
 void job_init (struct job *job) {
-  envvars_empty(&job->envvars);
+  // Remove from memory what it could be holding
+  envvars_empty(&job->envvars);  
 
+  // Zeroed
   memset (job,0,sizeof(struct job));
 
   job->used = 0;
   job->frame_info = NULL;
-  job->fishmid = -1;  /* -1 when not reserved */
+  job->fishmid = -1;  // -1 when not reserved
   job->bhshmid = -1;  // -1 when not reserved
+  job->blocked_host = NULL;
   job->nblocked = 0;
 
   job->frame_start = 1;
@@ -145,7 +148,8 @@ void job_init (struct job *job) {
 
   job->koj = KOJ_GENERAL;
 
-  envvars_init (&job->envvars);
+  // Environment variables Init
+  envvars_init(&job->envvars);
 
   job_limits_init (&job->limits);
 }
@@ -160,6 +164,7 @@ void job_delete (struct job *job) {
       log_master_job(job,L_ERROR,"job_delete: shmctl (job->fishmid,IPC_RMID,NULL) [Removing frame shared memory]");
     }
     job->fishmid = -1;
+    job->frame_info = NULL;
   }
 
   if (job->bhshmid != -1) {
@@ -167,6 +172,8 @@ void job_delete (struct job *job) {
       log_master_job(job,L_ERROR,"job_delete: shmctl (job->bhshmid,IPC_RMID,NULL) [Removing blocked hosts shared memory]");
     }
     job->bhshmid = -1;
+    job->nblocked = 0;
+    job->blocked_host = NULL;
   }
 
   job_init (job);
@@ -352,8 +359,8 @@ void job_update_assigned (struct database *wdb, uint32_t ijob, int iframe, int i
   detach_frame_shared_memory(wdb->job[ijob].frame_info);
 }
 
-uint64_t get_blocked_host_shared_memory (uint32_t nhosts) {
-  int shmid;
+int64_t get_blocked_host_shared_memory (uint32_t nhosts) {
+  int64_t shmid;
 
   if ((shmid = shmget (IPC_PRIVATE,sizeof(struct blocked_host)*nhosts, IPC_EXCL|IPC_CREAT|0600)) == -1) {
     drerrno = DRE_GETSHMEM;
@@ -362,13 +369,13 @@ uint64_t get_blocked_host_shared_memory (uint32_t nhosts) {
     return shmid;
   }
 
-  return (uint64_t) shmid;
+  return shmid;
 }
 
-struct blocked_host *attach_blocked_host_shared_memory (uint64_t shmid) {
+struct blocked_host *attach_blocked_host_shared_memory (int64_t shmid) {
   void *rv;   /* return value */
 
-  if ((rv = shmat ((int)shmid,0,0)) == (void *)-1) {
+  if ((rv = shmat (shmid,0,0)) == (void *)-1) {
     drerrno = DRE_ATTACHSHMEM;
     log_master (L_ERROR,"attach_blocked_host_shared_memory (shmat): %s",drerrno_str());
     perror ("blocked host shmat");
@@ -385,8 +392,8 @@ void detach_blocked_host_shared_memory (struct blocked_host *bhshp) {
   }
 }
 
-uint64_t get_frame_shared_memory (uint32_t nframes) {
-  int shmid;
+int64_t get_frame_shared_memory (uint32_t nframes) {
+  int64_t shmid;
 
   if ((shmid = shmget (IPC_PRIVATE,sizeof(struct frame_info)*nframes, IPC_EXCL|IPC_CREAT|0600)) == -1) {
     drerrno = DRE_GETSHMEM;
@@ -394,13 +401,13 @@ uint64_t get_frame_shared_memory (uint32_t nframes) {
     perror ("shmget");
   }
 
-  return (uint64_t) shmid;
+  return shmid;
 }
 
-struct frame_info *attach_frame_shared_memory (uint64_t shmid) {
+struct frame_info *attach_frame_shared_memory (int64_t shmid) {
   void *pam;   // pointer to attached memory
 
-  if ((pam = shmat ((int)shmid,0,0)) == (void *)-1) {
+  if ((pam = shmat (shmid,0,0)) == (void *)-1) {
     drerrno = DRE_ATTACHSHMEM;
     log_master (L_ERROR,"attach_frame_shared_memory (shmat): %s",drerrno_str());
     perror ("attach_frame_shared_memory");
@@ -1166,7 +1173,7 @@ uint32_t job_first_frame_available_no_icomp (struct database *wdb,uint32_t ijob)
   /* available without updating the job structure */
   int i;
   int r = -1;
-  int nframes;
+  uint32_t nframes;
   struct frame_info *fi;
 
   nframes = job_nframes (&wdb->job[ijob]);

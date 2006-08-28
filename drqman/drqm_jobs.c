@@ -1935,15 +1935,17 @@ void dnj_envvars_list (GtkWidget *bclicked, struct drqmj_envvars *info) {
   int i;
 
   gtk_list_store_clear (GTK_LIST_STORE(store));
-  envvars_attach (&info->envvars);
-  for (i = 0; i < info->envvars.nvariables; i++) {
-    gtk_list_store_append (store,&iter);
-    gtk_list_store_set (store, &iter,
-                        DNJ_ENVVARS_COL_NAME, info->envvars.variables[i].name,
-                        DNJ_ENVVARS_COL_VALUE, info->envvars.variables[i].value,
-                        -1);
+  if (info->envvars.nvariables) {
+    envvars_attach (&info->envvars);
+    for (i = 0; i < info->envvars.nvariables; i++) {
+      gtk_list_store_append (store,&iter);
+      gtk_list_store_set (store, &iter,
+                          DNJ_ENVVARS_COL_NAME, info->envvars.variables[i].name,
+                          DNJ_ENVVARS_COL_VALUE, info->envvars.variables[i].value,
+                          -1);
+    }
+    envvars_detach (&info->envvars);
   }
-  envvars_detach (&info->envvars);
 }
 
 void dnj_flags_jdepend_refresh_job_list (GtkWidget *bclicked, struct drqm_jobs_info *info) {
