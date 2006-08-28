@@ -562,23 +562,6 @@ void zerocmd (char *cmd) {
   }
 }
 
-char *parse_arg (char *cmd,int pos,int len) {
-  int c = 0;
-  char *a = cmd;   /* argument to be returned */
-
-  while (c < pos) {
-    while (*a)
-      a++;  /* jumps a word */
-    while (!*a)
-      a++;  /* jumps the zeroes */
-    c++;
-    if (((int)a-(int)cmd) >= len)
-      return NULL;
-  }
-
-  return a;
-}
-
 void usage (void) {
   fprintf (stderr,"Valid options:\n"
            "\t-a <hour:minute> to use autoenable\n"

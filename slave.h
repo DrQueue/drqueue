@@ -79,6 +79,5 @@ int get_semaphores_slave (void);
 void *attach_shared_memory_slave (int shmid);
 
 void zerocmd (char *cmd);
-char *parse_arg (char *cmd,int pos,int len);
 
 #endif

@@ -23,20 +23,11 @@
 #define _COMPUTER_INFO_H_
 
 
-#if defined (__LINUX)
-#include <stdint.h>
-#elif defined (__IRIX)
-#include <sys/types.h>
-#elif defined (__OSX)
-#include <stdint.h>
-#elif defined (__FREEBSD)
-#include <stdint.h>
-#elif defined (__CYGWIN)
-#include <stdint.h>
-#else
-#error You need to define the OS, or OS defined not supported
+#if defined (__IRIX)
+# include <sys/types.h>
 #endif
 
+#include <stdint.h>
 #include "constants.h"
 
 typedef enum {
@@ -74,15 +65,16 @@ typedef enum {
 } t_proctype;
 
 struct computer_hwinfo {
-  char name[MAXNAMELEN];    /* Name of the computer */
-  uint32_t id;         /* Identification number */
+  char name[MAXNAMELEN];   /* Name of the computer */
+  uint32_t id;             /* Identification number */
   unsigned char arch;      /* type of architecture */
-  unsigned char os;       /* type of operating system */
-  unsigned char proctype;    /* type of processors */
+  unsigned char os;        /* type of operating system */
+  unsigned char proctype;  /* type of processors */
   uint32_t procspeed;      /* speed of the processors */
-  uint16_t ncpus;   /* number of processors that the computer has */
-  uint32_t speedindex; /* global speed index for making comparisons between different computers */
-  uint32_t memory;       /* Memory in Mbytes */
+  uint16_t ncpus;          /* number of processors that the computer has */
+  uint32_t speedindex;     /* global speed index for making comparisons between different computers */
+  uint32_t memory;         /* Memory in Mbytes */
+  uint8_t  nnbits;         // 64/32 or 0 (Unknown) cpu
 };
 
 void get_hwinfo (struct computer_hwinfo *hwinfo);
@@ -91,9 +83,11 @@ int get_procspeed (void);
 int get_numproc (void);
 int get_speedindex (struct computer_hwinfo *hwinfo);
 uint32_t get_memory (void);
+uint8_t computer_info_nnbits ();
 
 void report_hwinfo (struct computer_hwinfo *hwinfo);
 
+char *bitsstring (uint8_t nnbits);
 char *osstring (t_os os);
 char *archstring (t_arch arch);
 char *proctypestring (t_proctype proctype);

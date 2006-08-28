@@ -40,6 +40,7 @@ void get_hwinfo (struct computer_hwinfo *hwinfo) {
   hwinfo->speedindex = get_speedindex (hwinfo);
   hwinfo->procspeed = get_procspeed();
   hwinfo->memory = get_memory ();
+  hwinfo->nnbits = computer_info_nnbits();
 }
 
 uint32_t get_memory (void) {
