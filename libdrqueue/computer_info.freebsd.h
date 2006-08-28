@@ -70,6 +70,7 @@ void get_hwinfo (struct computer_hwinfo *hwinfo) {
   hwinfo->ncpus = sysctl_data;
   hwinfo->speedindex = get_speedindex (hwinfo);
   hwinfo->memory = get_memory ();
+  hwinfo->nnbits = computer_info_nnbits();
 }
 
 uint32_t get_memory (void) {

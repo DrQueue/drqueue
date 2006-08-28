@@ -39,7 +39,7 @@ ifeq ($(systype),Linux)
  MAKE = make
 else
  ifeq ($(systype),IRIX)
- 	CPPFLAGS += -D__CPLUSPLUS -DCOMM_REPORT -Wall -I. -D__IRIX -g -O2
+  CPPFLAGS += -D__IRIX
   MAKE = /usr/freeware/bin/gmake
  else
   ifeq ($(systype),Darwin)

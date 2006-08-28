@@ -265,7 +265,7 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
   log_master (L_DEBUG,"Entering handle_r_r_register");
 
   if ((host = gethostbyaddr ((const void *)&addr->sin_addr.s_addr,sizeof (struct in_addr),AF_INET)) == NULL) {
-    log_master (L_WARNING,"Could not resolve name for: %s",inet_ntoa(addr->sin_addr));
+    log_master (L_INFO,"handle_r_r_register(). Using IP address as host name because '%s' could not be resolved",inet_ntoa(addr->sin_addr));
     name=inet_ntoa(addr->sin_addr);
   } else {
     if ((dot = strchr (host->h_name,'.')) != NULL)
@@ -277,7 +277,7 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
 
   if (icomp != -1) {
     /*   semaphore_release(wdb->semid); */
-    log_master (L_INFO,"Already registered computer requesting registration (%s)",name);
+    log_master (L_WARNING,"Already registered computer requesting registration (%s)",name);
     log_master (L_WARNING,"Registering again !! (%s)",name);
     /*   answer.type = R_R_REGISTER; */
     /*   answer.data = RERR_ALREADY; */
@@ -290,7 +290,7 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
     if ((index = computer_index_free(wdb)) == -1) {
       semaphore_release(wdb->semid);
       /* No space left on database */
-      log_master (L_WARNING,"No space left for computer: '%s'",name);
+      log_master (L_ERROR,"No space left for computer: '%s'",name);
       answer.type = R_R_REGISTER;
       answer.data = RERR_NOSPACE;
       if (!send_request (sfd,&answer,MASTER)) {
@@ -1337,6 +1337,8 @@ int request_job_envvars (uint32_t ijob, struct envvars *envvars, uint16_t who) {
     close (sfd);
     return 0;
   }
+
+  // TODO: envvars_check(envvars); to check for posible corrupted values.
 
   close (sfd);
   return 1;
