@@ -38,6 +38,9 @@ database_init (struct database *wdb) {
   int i;
 
   for (i = 0; i < MAXJOBS; i++) {
+    envvars_init(&wdb->job[i].envvars); // First we set proper
+                                        // defaults for the envvars to
+                                        // avoid Warning messages
     job_init (&wdb->job[i]);
   }
 
@@ -51,6 +54,16 @@ database_init (struct database *wdb) {
 
   wdb->lb.last_priority = 0;
   wdb->lb.next_i = 0;
+}
+
+uint32_t
+database_version_id () {
+  // The real version number stored on the database will depend on the
+  // DB_VERSION number as well as the size of a pointer to void
+  // (characteristic of 64/32 bits architecture)
+  uint32_t version_id;
+  version_id = (DB_VERSION << 8) | sizeof (void*);
+  return version_id;
 }
 
 int
@@ -91,7 +104,7 @@ database_load (struct database *wdb) {
     return 0;
   }
   read_32b (fd, &hdr.version);
-  if (hdr.version != DB_VERSION) {
+  if (hdr.version != database_version_id()) {
     drerrno = DRE_DIFVERSION;
     close (fd);
     return 0;
@@ -113,8 +126,7 @@ database_load (struct database *wdb) {
           close (fd);
           return 0;
         }
-        if ((fi =
-               attach_frame_shared_memory (wdb->job[c].fishmid)) == (void *) -1) {
+        if ((fi = attach_frame_shared_memory (wdb->job[c].fishmid)) == (void *) -1) {
           drerrno = DRE_ATTACHSHMEM;
           close (fd);
           return 0;
@@ -208,8 +220,7 @@ database_save (struct database *wdb) {
     if (wdb->job[c].used) {
       int nframes = job_nframes (&wdb->job[c]);
       int i;
-      if ((fi =
-             attach_frame_shared_memory (wdb->job[c].fishmid)) == (void *) -1) {
+      if ((fi = attach_frame_shared_memory (wdb->job[c].fishmid)) == (void *) -1) {
         /* If we fail to attach the frame shared memory we need to save empty frames */
         /* because we already save the info about the job and then when loading it will try */
         /* to load the number of frames there specified */

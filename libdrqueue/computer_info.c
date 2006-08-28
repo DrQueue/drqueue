@@ -25,9 +25,11 @@
 #include <ctype.h>
 #include <sys/types.h>
 #include <signal.h>
+
 #ifdef __IRIX
 #include <sys/sysmp.h>
 #endif
+
 #ifdef __FREEBSD
 #include <sys/sysctl.h>
 #endif
@@ -64,6 +66,7 @@ void report_hwinfo (struct computer_hwinfo *hwinfo) {
   printf ("Architecture:\t\t%s\n",archstring((t_arch)hwinfo->arch));
   printf ("OS:\t\t\t%s\n",osstring((t_os)hwinfo->os));
   printf ("Processor type:\t\t%s\n",proctypestring((t_proctype)hwinfo->proctype));
+  printf ("64bit-32bit cpu:\t%s\n",bitsstring(hwinfo->nnbits));
   printf ("Processor speed:\t%i MHz\n",hwinfo->procspeed);
   printf ("Number of processors:\t%i\n",hwinfo->ncpus);
   //printf ("Speed index:\t\t%i\n",hwinfo->speedindex);
@@ -101,6 +104,45 @@ char *osstring (t_os os) {
   return msg;
 }
 
+
+uint8_t
+computer_info_nnbits () {
+  // This function will try to guess if the computer is a 32 or 64 bit
+  // one. For that we'll use the size of a pointer to void
+  int bytes=sizeof(void*);
+  if (bytes == 4) {
+    // This seems to be a 32bit cpu (or a 64bit one emulating 32bit ?)
+    return 32;
+  } else if (bytes == 8) {
+    // Well, a 64bit one is my best guess
+    return 64;
+  }
+
+  // In other situations:
+  return 0;
+}
+
+char *
+bitsstring (uint8_t nnbits) {
+  char *msg;
+
+  switch (nnbits) {
+  case 0:
+    msg = "Unknown";
+    break;
+  case 32:
+    msg = "32bit";
+    break;
+  case 64:
+    msg = "64bit";
+    break;
+  default:
+    msg = "ERROR: value not listed";
+  }
+
+  return msg;
+}
+
 char *archstring (t_arch arch) {
   char *msg;
 
@@ -109,10 +151,10 @@ char *archstring (t_arch arch) {
     msg = "UNKNOWN";
     break;
   case ARCH_INTEL:
-    msg = "Intel (Little Endian)";
+    msg = "Intel";
     break;
   case ARCH_MIPS:
-    msg = "Mips (Big Endian)";
+    msg = "Mips";
     break;
   case ARCH_PPC:
     msg = "PowerPC";

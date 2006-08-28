@@ -416,14 +416,16 @@ int send_envvars (int sfd, struct envvars *envvars) {
     return 0;
   }
 
-  envvars_attach (envvars);
-  int i;
-  for (i = 0; i < envvars->nvariables; i++) {
-    if (!send_envvar (sfd,&envvars->variables[i])) {
-      return 0;
+  if (envvars->nvariables) {
+    envvars_attach (envvars);
+    int i;
+    for (i = 0; i < envvars->nvariables; i++) {
+      if (!send_envvar (sfd,&envvars->variables[i])) {
+        return 0;
+      }
     }
+    envvars_detach (envvars);
   }
-  envvars_detach (envvars);
 
   drerrno = DRE_NOERROR;
   return 1;
@@ -442,11 +444,13 @@ int recv_envvars (int sfd, struct envvars *envvars) {
 
   int i;
   struct envvar var;
-  for (i = 0; i < nvariables; i++) {
-    if (!recv_envvar (sfd, &var)) {
-      return 0;
+  if (nvariables) {
+    for (i = 0; i < nvariables; i++) {
+      if (!recv_envvar (sfd, &var)) {
+        return 0;
+      }
+      envvars_variable_add (envvars,var.name,var.value);
     }
-    envvars_variable_add (envvars,var.name,var.value);
   }
 
   drerrno = DRE_NOERROR;
@@ -795,6 +799,7 @@ int send_computer_pools (int sfd, struct computer_limits *cl, uint8_t attached) 
 
     for (i=0;i<cl->npools;i++) {
       if (!dr_write(sfd,(char*)&pool[i],sizeof(struct pool))) {
+        fprintf (stderr,"ERROR (send_computer_pools) error while sending pool number %i\n",i);
         return 0;
       }
     }
@@ -803,8 +808,8 @@ int send_computer_pools (int sfd, struct computer_limits *cl, uint8_t attached) 
       computer_pool_detach_shared_memory (pool);
   }
 
-  // fprintf (stderr,"communications.c\n");
-  // computer_pool_list (cl);
+  fprintf (stderr,"DEBUG: Received pool list\n");
+  computer_pool_list (cl);
 
   return 1;
 }
@@ -849,10 +854,10 @@ int recv_computer_limits (int sfd, struct computer_limits *cl) {
   cl->autoenable.last = ntohl (cl->autoenable.last);
 
   // Pools
-  cl->npools = 0;
-  cl->poolshmid = -1;
+  computer_pool_init(cl);
 
   if (!recv_computer_pools (sfd,cl)) {
+    fprintf (stderr,"ERROR: Receiving computer pools. (%s)\n",drerrno_str());
     return 0;
   }
 

@@ -40,7 +40,7 @@ struct envvar {
 struct envvars {
   struct envvar *variables;
   uint16_t nvariables;
-  int evshmid;
+  int64_t evshmid;
 };
 
 int envvars_init (struct envvars *envvars);
@@ -50,6 +50,6 @@ int envvars_variable_delete (struct envvars *envvars, char *name);
 int envvars_attach (struct envvars *envvars);
 int envvars_detach (struct envvars *envvars);
 struct envvar* envvars_variable_find (struct envvars *envvars, char *name);    // Returns "name"'s value or NULL if it does not exist
-int envvars_get_shared_memory (int size);
+int64_t envvars_get_shared_memory (int size);
 
 #endif /* _ENVVARS_H_ */

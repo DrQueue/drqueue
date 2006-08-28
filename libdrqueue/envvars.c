@@ -39,12 +39,15 @@ int envvars_init (struct envvars *envvars) {
 
 int envvars_empty (struct envvars *envvars) {
   if (envvars->evshmid != -1) {
-    envvars_detach (envvars);
-    if (shmctl (envvars->evshmid,IPC_RMID,NULL) == -1) {
-      drerrno = DRE_RMSHMEM;
-      return 0;
+    if (envvars->evshmid != 0) {
+      envvars_detach (envvars);
+      if (shmctl (envvars->evshmid,IPC_RMID,NULL) == -1) {
+        envvars_init (envvars);
+        drerrno = DRE_RMSHMEM;
+        return 0;
+      }
+      envvars_init (envvars);
     }
-    envvars_init (envvars);
   }
 
   drerrno = DRE_NOERROR;
@@ -52,15 +55,28 @@ int envvars_empty (struct envvars *envvars) {
 }
 
 int envvars_attach (struct envvars *envvars) {
+  if (!envvars->nvariables) {
+    // There are no variables stored. No need to continue.
+    if (envvars->evshmid != -1) {
+      fprintf (stderr,"WARNING: envvars_attach() segment with a could be proper id but no variables. Deleting.\n");
+      if (!envvars_empty(envvars)) {
+        fprintf (stderr,"ERROR: envvars_attach() empty segment could not be deleted. Initializing data.\n");
+      }
+    }
+    envvars_init(envvars);
+    return 1;
+  }
   if (envvars->evshmid == -1) {
+    fprintf (stderr,"WARNING: envvars_attach() envvars shmid == -1 . Not attaching\n");
     drerrno = DRE_ATTACHSHMEM;
     return 0;
   }
 
   if (envvars->variables != NULL) {
     // Already attached
+    fprintf (stderr,"WARNING: envvars_attach() variables segment seems to be already attached. Not attaching again.\n");
     drerrno = DRE_NOERROR;
-    return 1;
+    return 0;
   }
 
   envvars->variables = (struct envvar *) shmat (envvars->evshmid,0,0);
@@ -80,6 +96,16 @@ int envvars_detach (struct envvars *envvars) {
     envvars->variables = NULL;
     drerrno = DRE_NOERROR;
     return 1;
+  }
+
+  if (envvars->evshmid == -1) {
+    fprintf (stderr,"WARNING: envvars_dettach() A shared memory segment with id == -1 was requested to be detached.\n");
+  } else if (envvars->variables == NULL) { 
+    fprintf (stderr,"WARNING: envvars_dettach() A shared memory segment pointing to NULL was requested to be detached.\n");
+  } else if (!envvars->nvariables) {
+    // No need to warn
+  } else {
+    fprintf (stderr,"WARNING: envvars_dettach() Requested memory segment could not be detached.\n");
   }
 
   drerrno = DRE_DTSHMEM;
@@ -105,8 +131,8 @@ struct envvar *envvars_variable_find (struct envvars *envvars, char *name) {
   return result;
 }
 
-int envvars_get_shared_memory (int size) {
-  int shmid;
+int64_t envvars_get_shared_memory (int size) {
+  int64_t shmid;
 
   if ((shmid = shmget (IPC_PRIVATE,sizeof(struct envvar)*size, IPC_EXCL|IPC_CREAT|0600)) == -1) {
     perror ("shmget");
@@ -128,9 +154,9 @@ int envvars_variable_add (struct envvars *envvars, char *name, char *value) {
   }
 
   int new_size = envvars->nvariables + 1;
-  int nshmid = envvars_get_shared_memory (new_size);
+  int64_t nshmid = envvars_get_shared_memory (new_size);
   if (nshmid == -1) {
-    fprintf (stderr,"envvars_variable_add : could not get shared memory\n");
+    fprintf (stderr,"ERROR: envvars_variable_add() could not get shared memory segment of size %i\n",new_size);
     return 0;
   }
   struct envvars new_envvars;
@@ -142,8 +168,9 @@ int envvars_variable_add (struct envvars *envvars, char *name, char *value) {
   }
 
   // Copy old variables to new allocated memory
-  if (envvars->nvariables > 0)
+  if (envvars->nvariables > 0) {
     memcpy (new_envvars.variables,envvars->variables,sizeof(struct envvar) * envvars->nvariables);
+  }
 
   // Add new variable to new envvars
   strncpy (new_envvars.variables[envvars->nvariables].name,name,MAXNAMELEN);
@@ -181,7 +208,7 @@ int envvars_variable_delete (struct envvars *envvars, char *name) {
   }
 
   // New shared memory id
-  int nshmid = envvars_get_shared_memory (new_size);
+  int64_t nshmid = envvars_get_shared_memory (new_size);
   if (nshmid == -1) {
     return 0;
   }
