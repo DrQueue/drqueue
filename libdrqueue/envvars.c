@@ -59,13 +59,9 @@ int envvars_attach (struct envvars *envvars) {
   // This function just tries to attach the segment identified by
   // evshmid to the data structure
   
-  //fprintf (stderr,"++++ envvars_attach()\n");
-  //envvars_dump_info(envvars);
-  
   if (envvars->evshmid == (int64_t)-1) {
     // This could happen when trying to attach an empty list to
     // search for existing variables, like envvars_variable_find()
-
     //fprintf (stderr,"WARNING: envvars_attach() envvars shmid == -1 . Not attaching\n");
     drerrno = DRE_ATTACHSHMEM;
     return 0;
@@ -81,22 +77,23 @@ int envvars_attach (struct envvars *envvars) {
     //return 0;
 
     // Other option.
-    //fprintf (stderr,"WARNING: envvars_attach() variables segment seems to be already attached. We proceed as requested.\n");
-
+    fprintf (stderr,"WARNING: envvars_attach() variables segment seems to be already attached. We proceed as requested.\n");
     shmdt (envvars->variables);
   }
 
   envvars->variables = (struct envvar *) shmat ((int)envvars->evshmid,0,0);
-  //fprintf (stderr,"++++++++++++++++++++++++++ %i\n",envvars->variables);
+
   if (envvars->variables == (struct envvar *)-1) {
     envvars->variables = NULL;
     drerrno = DRE_ATTACHSHMEM;
     return 0;
   }
-  
+
+#ifdef __DEBUG_ENVVARS
   fprintf (stderr,"++++ envvars_attach() ++++ variables == -1 (shmat)\n");
   envvars_dump_info(envvars);
   fprintf (stderr,"+++++++++ envvars_attach() EXIT\n");
+#endif
 
   drerrno = DRE_NOERROR;
   return 1;
@@ -106,10 +103,12 @@ void
 envvars_dump_info (struct envvars *envvars) {
   // This fuction will try to dump the contents of envvars to stderr
   int i;
+
   fprintf (stderr,"envvars_dump_info() Starting...\n");
   fprintf (stderr,"variables=%p\n",(void*)envvars->variables);
   fprintf (stderr,"nvariables=%i\n",envvars->nvariables);
   fprintf (stderr,"evshmid=%lli\n",envvars->evshmid);
+
   if (envvars->evshmid != -1) {
     // There's a possible valid value on evshmid. Let's check
     struct envvar *temp;
@@ -170,18 +169,9 @@ envvars_dump_info (struct envvars *envvars) {
 
 int envvars_detach (struct envvars *envvars) {
 
-  //fprintf (stderr,"++++ !!!!!!!!!!!! envvars_dettach() !!!!!!!!!!! STARTING\n");
-  //envvars_dump_info(envvars);
-
-  if ((envvars->variables != NULL)
-      && (shmdt (envvars->variables) != -1)) {
+  if ((envvars->variables != NULL) && (shmdt (envvars->variables) != -1)) {
     // detached 
     envvars->variables = NULL;
-
-    //fprintf (stderr,"++++ ++++ envvars_dettach() ++++ detached\n");
-    //envvars_dump_info(envvars);
-    //fprintf (stderr,"++++ ++++ envvars_dettach() EXITING\n");
-
     drerrno = DRE_NOERROR;
     return 1;
   }
@@ -201,16 +191,13 @@ int envvars_detach (struct envvars *envvars) {
   }
 #endif
 
-  //
-  //fprintf (stderr,"++++ ++++ envvars_dettach() ++++ detached\n");
-  //envvars_dump_info(envvars);
-  //fprintf (stderr,"++++ ++++ envvars_dettach() ++++ variables previous null\n");
-  //
-  envvars->variables = NULL;
+#ifdef __DEBUG_ENVVARS
+  //envvars->variables = NULL;
   //
   fprintf (stderr,"++++ ++++ envvars_dettach() ++++ variables after null\n");
   envvars_dump_info(envvars);
   fprintf (stderr,"++++ ++++ envvars_dettach() EXITING\n");
+#endif
 
   drerrno = DRE_DTSHMEM;
   return 0;
@@ -224,8 +211,10 @@ struct envvar *envvars_variable_find (struct envvars *envvars, char *name) {
   int i;
 
   if (!envvars_attach(envvars)) {
+#ifdef __DEBUG_ENVVARS
     fprintf (stderr,"NO WORRIES we were looking for the variable '%s' on some yet inexisting shm when found this problem:\n\t\
 envvars_variable_find() could not attach variables. (%s)\n",name,drerrno_str());
+#endif
     return result;
   }
 
@@ -259,7 +248,9 @@ int64_t envvars_get_shared_memory (int size) {
 
 int envvars_variable_add (struct envvars *envvars, char *name, char *value) {
 
+#ifdef __DEBUG_ENVVARS
   fprintf (stderr,"envvars_variable_add() Starting...\n");
+#endif
 
   // Search for another one with the same name.
   struct envvar *var = envvars_variable_find (envvars,name);
@@ -295,12 +286,8 @@ int envvars_variable_add (struct envvars *envvars, char *name, char *value) {
 
   // Copy old variables to new allocated memory
   if (envvars->nvariables > 0) {
-    fprintf (stderr,"DEBUG: copying %i variables from old to new list.\n",envvars->nvariables);
-/*     if (!envvars_attach(envvars)) { */
-/*       fprintf (stderr,"ERROR: envvars_variable_add() could not attach previously allocated space. (%s)\n",drerrno_str()); */
-/*       envvars_detach(&new_envvars); */
-/*       return 0; */
-/*     }     */
+    envvars_attach(envvars);
+    //fprintf (stderr,"DEBUG: copying %i variables from old to new list.\n",envvars->nvariables);
     memcpy (new_envvars.variables,envvars->variables,sizeof(struct envvar)*envvars->nvariables);
     envvars_detach(envvars); // And we're done with old variables
     envvars_empty(envvars);  // surely
@@ -319,9 +306,11 @@ int envvars_variable_add (struct envvars *envvars, char *name, char *value) {
 
   // We're done using new_envvars...
   envvars_detach(envvars);
-  
+
+#ifdef __DEBUG_ENVVARS  
   fprintf (stderr,"envvars_variable_add() Added variable (%s,%s) to evshmid (%lli).\n",name,value,nshmid);
   fprintf (stderr,"envvars_variable_add() Finish...\n");
+#endif
 
   drerrno = DRE_NOERROR;
   return 1;
@@ -332,13 +321,11 @@ int envvars_variable_delete (struct envvars *envvars, char *name) {
 
   if (!var) {
     // Trying to delete a non-existing variable
-    //envvars_detach (envvars); // Already detached on "find" when
-                                // nothing's found
     return 1;
   }
 
   if (!envvars->nvariables) {
-    // we should had returned previously but
+    // we should have returned previously but
     // just in case
     return 1;
   }
