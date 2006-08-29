@@ -1110,7 +1110,8 @@ static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info) {
   /* function */
   strncpy (task.jobname,info->jdd.job.name,MAXNAMELEN-1);
   task.frame = job_frame_index_to_number (&info->jdd.job,info->jdd.row);
-
+  task.ijob = info->jdd.job.id;
+  
   // Allocate memory for idle info
   iinfo = (struct idle_info *)g_malloc(sizeof (struct idle_info));
 

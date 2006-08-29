@@ -32,6 +32,8 @@
 #define L_WARNING 1
 #define L_INFO 2
 #define L_DEBUG 3
+#define L_DEBUG2 4
+#define L_DEBUG3 5
 
 extern int loglevel;
 extern int logonscreen;
@@ -50,6 +52,9 @@ char *log_level_str (int level);
 
 int log_dumptask_open (struct task *t);
 int log_dumptask_open_ro (struct task *t);
+
+int log_job_path_get (uint32_t jobid,char *path,int pathlen);
+int log_task_filename_get (struct task *task, char *path, int pathlen);
 
 #endif
 

@@ -1,5 +1,4 @@
-//
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -31,11 +30,13 @@
 #include <errno.h>
 #include <time.h>
 #include <stdarg.h>
+#include <limits.h>
 
 #include "logger.h"
 #include "task.h"
 #include "job.h"
 #include "computer.h"
+#include "libdrqueue.h"
 
 int loglevel = L_INFO;
 int logonscreen = 0;
@@ -96,6 +97,7 @@ FILE *log_slave_open_task (struct task *task) {
     kill(0,SIGINT);
   }
 
+  // Backup method
   snprintf(dir,BUFFERLEN-1,"%s/%s",basedir,task->jobname);
   snprintf(filename,BUFFERLEN-1,"%s/%s.log",dir,task->jobname);
   if ((f = fopen (filename, "a")) == NULL) {
@@ -108,7 +110,7 @@ FILE *log_slave_open_task (struct task *task) {
         return f;
       }
       if ((f = fopen (filename, "a")) == NULL) {
-        perror ("log_sl ave_open_task: Couldn't open file for writing.");
+        perror ("log_slave_open_task: Couldn't open file for writing.");
         fprintf (stderr,"So...  logging on screen.\n");
         logonscreen = 1;
         return f;
@@ -337,6 +339,12 @@ char *log_level_str (int level) {
   case L_DEBUG:
     msg = "Debug";
     break;
+  case L_DEBUG2:
+    msg = "Debug2";
+    break;
+  case L_DEBUG3:
+    msg = "Debug3";
+    break;
   default:
     msg = "UNKNOWN";
   }
@@ -344,57 +352,140 @@ char *log_level_str (int level) {
   return msg;
 }
 
-int log_dumptask_open (struct task *t) {
-  int lfd;
-  char filename[BUFFERLEN];
-  char dir[BUFFERLEN];
-  char *basedir;
-  char name[MAXNAMELEN];
-  time_t tm;
+int log_job_path_get (uint32_t jobid, char *path, int pathlen) {
+  struct job job;
+  char *log_basedir;
+  int nwritten; // number of bytes written
 
-  if ((basedir = getenv("DRQUEUE_LOGS")) == NULL) {
-    fprintf (stderr,"Environment variable DRQUEUE_LOGS not set. Aborting...\n");
-    kill(0,SIGINT);
+  if ((log_basedir = getenv("DRQUEUE_LOGS")) == NULL) {
+    fprintf (stderr,"Environment variable DRQUEUE_LOGS not set.\n");
+    return -1;
   }
 
-  snprintf(dir,BUFFERLEN-1,"%s/%s",basedir,t->jobname);
-  snprintf(filename,BUFFERLEN-1,"%s/%s.%04i",dir,t->jobname,t->frame);
-  if ((lfd = open (filename, O_CREAT|O_APPEND|O_RDWR, 0664)) == -1) {
+  if ((path ==NULL) || (pathlen <= 0)) {
+    // TODO: Show error
+    //fprintf (stderr,"Non valid values for path or pathlen.\n");
+    return -1;
+  }
+
+  if (!request_job_xfer (jobid,&job,CLIENT)) {
+    //log_message (L_WARNING,"log_get_job_path: Could not retrieve job information on jobid %u\n",jobid);
+    return -1;
+  }
+
+  nwritten = snprintf (path,pathlen,"%s/%03u.%s",log_basedir,job.id,job.name);
+
+  // we do not need the job anymore
+  job_delete (&job);
+
+  if (nwritten >= pathlen) {
+    // TODO: Show error
+    return -1;
+  }
+  
+  return nwritten;
+}
+
+int log_task_filename_get (struct task *task, char *path, int pathlen) {
+  // Returns len of the written string or -1 on failure
+  char job_path[PATH_MAX];
+  int nwritten;
+
+  if ((nwritten = log_job_path_get(task->ijob,job_path,PATH_MAX)) == -1) {
+    // TODO: Show error
+    return -1;
+  }
+  
+  if ((path ==NULL) || (pathlen <= 0)) {
+    // TODO: Show error
+    //fprintf (stderr,"Non valid values for path or pathlen.\n");
+    return -1;
+  }
+
+  nwritten = snprintf(path,pathlen,"%s/%s.%04u",job_path,task->jobname,task->frame);
+  if (nwritten >= pathlen) {
+    // TODO: Show error
+    return -1;
+  }
+
+  return nwritten;
+}
+
+int log_dumptask_open (struct task *t) {
+  int lfd;
+  char task_filename[PATH_MAX];
+  char job_path[PATH_MAX];
+  char hostname[MAXNAMELEN];
+  time_t tm;
+  char buf[BUFFERLEN];
+
+
+  if (log_job_path_get(t->ijob,job_path,PATH_MAX) == -1) {
+    // Backup code
+    char *basedir;
+    if ((basedir = getenv("DRQUEUE_LOGS")) == NULL) {
+      fprintf (stderr,"WARNING: Environment variable DRQUEUE_LOGS not set.\n");
+      return -1;
+    }
+    snprintf(job_path,PATH_MAX,"%s/%03u.%s.DEFAULT",basedir,t->ijob,t->jobname);
+  }
+
+  fprintf(stderr,"DEBUG: Logs for job go to path '%s'\n",job_path);
+
+  if (log_task_filename_get(t,task_filename,PATH_MAX) == -1) {
+    // Backup code
+    snprintf(task_filename,PATH_MAX,"%s/%s.%04i.DEFAULT",job_path,t->jobname,t->frame);
+  }
+
+  fprintf(stderr,"DEBUG: Logs for this task go to path '%s'\n",task_filename);
+
+  // TODO: Check for directory and creation on another function.
+
+  if ((lfd = open (task_filename, O_CREAT|O_APPEND|O_RDWR, 0664)) == -1) {
     if (errno == ENOENT) {
       /* If its because the directory does not exist we try creating it first */
-      if (mkdir (dir,0775) == -1) {
-        log_slave_task (t,L_ERROR,"Couldn't create directory for task logs");
+      if (mkdir (job_path,0775) == -1) {
+        log_slave_task (t,L_ERROR,"Couldn't create directory for task logs on '%s'",job_path);
         return -1;
       }
-      if ((lfd = open (filename, O_CREAT|O_APPEND|O_RDWR, 0664)) == -1) {
-        log_slave_task (t,L_ERROR,"Couldn't open file for task log");
+      if ((lfd = open (task_filename, O_CREAT|O_APPEND|O_RDWR, 0664)) == -1) {
+        log_slave_task (t,L_ERROR,"Couldn't open or create file for task log on '%s'",task_filename);
         return -1;
       }
     }
   }
 
   time (&tm);
-  gethostname (name,MAXNAMELEN-1);
-  sprintf(filename,"Log started at %sComputer: %s\n\n",ctime(&tm),name);
-  write(lfd,filename,strlen(filename));
+  gethostname (hostname,MAXNAMELEN-1);
+  snprintf(buf,BUFFERLEN,"Log started at %sComputer: %s\n\n",ctime(&tm),hostname);
+  write(lfd,buf,strlen(buf));
   return lfd;
 }
 
 int log_dumptask_open_ro (struct task *t) {
   /* Open in read only for clients */
   int lfd;
-  char filename[BUFFERLEN];
-  char dir[BUFFERLEN];
-  char *basedir;
+  char task_filename[PATH_MAX];
 
-  if ((basedir = getenv("DRQUEUE_LOGS")) == NULL) {
-    fprintf (stderr,"Environment variable DRQUEUE_LOGS not set. Aborting...\n");
-    kill(0,SIGINT);
+  if (log_task_filename_get(t,task_filename,PATH_MAX) == -1) {
+    char job_path[PATH_MAX];
+    // Backup code
+    if (log_job_path_get(t->ijob,job_path,PATH_MAX) == -1) {
+      // Backup code 
+      char *basedir;
+      if ((basedir = getenv("DRQUEUE_LOGS")) == NULL) {
+        fprintf (stderr,"WARNING: Environment variable DRQUEUE_LOGS not set.\n");
+        return -1;
+      }
+      snprintf(job_path,PATH_MAX,"%s/%03u.%s.DEFAULT",basedir,t->ijob,t->jobname);
+    }
+    snprintf(task_filename,PATH_MAX,"%s/%s.%04i.DEFAULT",job_path,t->jobname,t->frame);
   }
+  
+  fprintf(stderr,"DEBUG: Trying to read task log from path '%s'\n",task_filename);
 
-  snprintf(dir,BUFFERLEN-1,"%s/%s",basedir,t->jobname);
-  snprintf(filename,BUFFERLEN-1,"%s/%s.%04i",dir,t->jobname,t->frame);
-  if ((lfd = open (filename,O_RDONLY)) == -1) {
+  if ((lfd = open (task_filename,O_RDONLY)) == -1) {
+    fprintf (stderr,"ERROR: Couldn't open log file for task on '%s'\n",task_filename);
     return -1;
   }
 

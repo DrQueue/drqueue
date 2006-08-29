@@ -179,6 +179,7 @@ void job_delete (struct job *job) {
   // Does the same also with the blocked hosts structure
   if (job->fishmid != (int64_t)-1) {
     if (shmctl ((int)job->fishmid,IPC_RMID,NULL) == -1) {
+      // FIXME: this function is not called only by the master.
       log_master_job(job,L_ERROR,"job_delete: shmctl (job->fishmid,IPC_RMID,NULL) [Removing frame shared memory]");
     }
     job->fishmid = (int64_t)-1;
