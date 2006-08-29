@@ -432,7 +432,7 @@ int send_envvars (int sfd, struct envvars *envvars) {
       if (!send_envvar (sfd,&(envvars->variables[i]))) {
         return 0;
       }
-      fprintf (stderr,"DEBUG: send_envvars() just sent (%s,%s)\n",envvars->variables[i].name,envvars->variables[i].value);
+      //fprintf (stderr,"DEBUG: send_envvars() just sent (%s,%s)\n",envvars->variables[i].name,envvars->variables[i].value);
     }
     envvars_detach (envvars);
   }
@@ -450,18 +450,10 @@ int recv_envvars (int sfd, struct envvars *envvars) {
     return 0;
   }
 
-/*   fprintf (stderr,"--- recv_envvars() AFTER EMPTYING DUMP follows\n"); */
-/*   envvars_dump_info(envvars); */
-
   if (!read_16b (sfd,&nvariables)) {
     fprintf (stderr,"ERROR: recv_envvars() while receiving nvariables. (%s)\n",drerrno_str());
     return 0;
   }
-
-  // FIXME: Our own init.
-  //envvars->nvariables=0;
-  //envvars->variables=NULL;
-  //envvars->evshmid=(int64_t)-1;
 
   int i;
   struct envvar var;
@@ -481,22 +473,15 @@ int recv_envvars (int sfd, struct envvars *envvars) {
     }
   }
 
-  // is envars left attached at this point ?
-  //fprintf (stderr,"recv_envvars() DUMP follows\n");
-  //envvars_dump_info(envvars);
-
   drerrno = DRE_NOERROR;
   return 1;
 }
 
 int recv_job (int sfd, struct job *job) {
-  struct envvars old_envvars;
 
-  old_envvars.evshmid = job->envvars.evshmid;
-  old_envvars.nvariables = job->envvars.nvariables;
-  old_envvars.variables = job->envvars.variables;
-
+  // We should empty all locally reserved structures
   envvars_empty(&job->envvars);
+
   if (!dr_read(sfd,(char*)job,sizeof (struct job))) {
     return 0;
   }
@@ -649,7 +634,7 @@ int send_job (int sfd, struct job *job) {
   envvars_init(&bswapped.envvars);
   bswapped.envvars.nvariables = htons(bswapped.envvars.nvariables);
   bswapped.envvars.variables = NULL;
-  bswapped.envvars.evshmid = 0xffffffffffffffff;
+  bswapped.envvars.evshmid = (int64_t)-1; // 64bit 
 
   if (!dr_write (sfd,(char*)buf,sizeof(struct job))) {
     fprintf (stderr,"ERROR: Failed to write job to sfd\n");
