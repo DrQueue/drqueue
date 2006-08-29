@@ -1352,7 +1352,6 @@ void handle_r_r_jobenvvars (int sfd,struct database *wdb,int icomp,struct reques
   /* This function is called unlocked */
   /* This function is called by the master */
   log_master (L_DEBUG,"Entering handle_r_r_jobenvvars");
-  fprintf (stderr,"Entering handle_r_r_jobenvvars");
 
   uint32_t ijob;
 
@@ -1369,16 +1368,13 @@ void handle_r_r_jobenvvars (int sfd,struct database *wdb,int icomp,struct reques
 
   if (wdb->job[ijob].used) {
     log_master (L_DEBUG,"Sending %i environment variables",wdb->job[ijob].envvars.nvariables);
-    fprintf (stderr,"Sending %i environment variables",wdb->job[ijob].envvars.nvariables);
     if (!send_envvars(sfd,&wdb->job[ijob].envvars)) {
       log_master (L_WARNING,"Error while sending the environment variables: %s",drerrno_str());
-      fprintf (stderr,"Error while sending the environment variables: %s",drerrno_str());
     }
   }
 
   semaphore_release (wdb->semid);
 
-  fprintf (stderr,"Entering handle_r_r_jobenvvars");
   log_master (L_DEBUG,"Exiting handle_r_r_jobenvvars");
 }
 
