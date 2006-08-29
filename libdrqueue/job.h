@@ -26,20 +26,8 @@
 extern "C" {
 #endif
 
-#if defined (__LINUX)
-#include <stdint.h>
-#elif defined (__IRIX)
 #include <sys/types.h>
-#elif defined (__OSX)
 #include <stdint.h>
-#elif defined (__FREEBSD)
-#include <stdint.h>
-#elif defined (__CYGWIN)
-#include <stdint.h>
-#else
-#error You need to define the OS, or OS defined not supported
-#endif
-
 #include <time.h>
 
 #include "constants.h"
@@ -310,6 +298,7 @@ uint32_t job_frame_number_to_index (struct job *job,uint32_t number);
 int job_frame_number_correct (struct job *job,uint32_t number);
 uint32_t job_nframes (struct job *job);
 void job_copy (struct job *src, struct job *dst);
+void job_fix_received_invalid (struct job *job);
 
 int job_available (struct database *wdb,uint32_t ijob, int *iframe, uint32_t icomp);
 int job_available_no_icomp (struct database *wdb,uint32_t ijob, int *iframe);

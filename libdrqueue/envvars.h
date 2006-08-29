@@ -24,11 +24,11 @@
 
 #include "constants.h"
 
-#if defined (__IRIX)
-#include <sys/types.h>
-#else
-#include <stdint.h>
+#ifndef __IRIX
+# include <stdint.h>
 #endif
+
+#include <sys/types.h>
 
 // A single environment variable
 struct envvar {
@@ -51,5 +51,6 @@ int envvars_attach (struct envvars *envvars);
 int envvars_detach (struct envvars *envvars);
 struct envvar* envvars_variable_find (struct envvars *envvars, char *name);    // Returns "name"'s value or NULL if it does not exist
 int64_t envvars_get_shared_memory (int size);
+void envvars_dump_info (struct envvars *envvars);
 
 #endif /* _ENVVARS_H_ */

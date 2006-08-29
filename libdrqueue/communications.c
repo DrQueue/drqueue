@@ -31,6 +31,7 @@
 #include <stdlib.h>
 #include <netdb.h>
 #include <unistd.h>
+#include <stdint.h>
 #include <string.h>
 
 #include "communications.h"
@@ -394,7 +395,9 @@ int recv_computer_status (int sfd, struct computer_status *status) {
 }
 
 int recv_envvar (int sfd, struct envvar *var) {
-  if (!dr_read (sfd,(char *)var,sizeof (struct envvar))) {
+  // receives a single environment variable structure
+  if ( dr_read (sfd,(char *)var,sizeof (struct envvar)) == 0 ) {
+    perror ("recv_envvar");
     return 0;
   }
 
@@ -403,7 +406,9 @@ int recv_envvar (int sfd, struct envvar *var) {
 }
 
 int send_envvar (int sfd, struct envvar *var) {
+  // sends a single environment variable structure
   if (!dr_write (sfd,(char *)var,sizeof (struct envvar))) {
+    perror ("send_envvar");
     return 0;
   }
 
@@ -412,17 +417,22 @@ int send_envvar (int sfd, struct envvar *var) {
 }
 
 int send_envvars (int sfd, struct envvars *envvars) {
+  //fprintf (stderr,"DEBUG: send_envvars() we have %i environment variables available for the request\n",envvars->nvariables);
+
   if (!write_16b (sfd,(char *)&envvars->nvariables)) {
     return 0;
   }
+
+  //fprintf (stderr,"DEBUG: send_envvars() and just informed the client about that\n");
 
   if (envvars->nvariables) {
     envvars_attach (envvars);
     int i;
     for (i = 0; i < envvars->nvariables; i++) {
-      if (!send_envvar (sfd,&envvars->variables[i])) {
+      if (!send_envvar (sfd,&(envvars->variables[i]))) {
         return 0;
       }
+      fprintf (stderr,"DEBUG: send_envvars() just sent (%s,%s)\n",envvars->variables[i].name,envvars->variables[i].value);
     }
     envvars_detach (envvars);
   }
@@ -432,40 +442,68 @@ int send_envvars (int sfd, struct envvars *envvars) {
 }
 
 int recv_envvars (int sfd, struct envvars *envvars) {
+  // This function leaves envvars DETACHED
   uint16_t nvariables;
 
   if (!envvars_empty (envvars)) {
+    fprintf (stderr,"ERROR: recv_envvars() error calling envvars_empty(). (%s)\n",drerrno_str());
     return 0;
   }
 
+/*   fprintf (stderr,"--- recv_envvars() AFTER EMPTYING DUMP follows\n"); */
+/*   envvars_dump_info(envvars); */
+
   if (!read_16b (sfd,&nvariables)) {
+    fprintf (stderr,"ERROR: recv_envvars() while receiving nvariables. (%s)\n",drerrno_str());
     return 0;
   }
+
+  // FIXME: Our own init.
+  //envvars->nvariables=0;
+  //envvars->variables=NULL;
+  //envvars->evshmid=(int64_t)-1;
 
   int i;
   struct envvar var;
   if (nvariables) {
+    //fprintf (stderr,"DEBUG: recv_envvars() we'll receive %i variables\n",nvariables);
+
     for (i = 0; i < nvariables; i++) {
+      //fprintf (stderr,"DEBUG: recv_envvars() receive variable number %i\n",i);
+
       if (!recv_envvar (sfd, &var)) {
+        fprintf (stderr,"ERROR: recv_envvars() while receiving a single variable. (%s)\n",drerrno_str());
         return 0;
       }
+
       envvars_variable_add (envvars,var.name,var.value);
+      memset (&var,0,sizeof(struct envvar));
     }
   }
+
+  // is envars left attached at this point ?
+  //fprintf (stderr,"recv_envvars() DUMP follows\n");
+  //envvars_dump_info(envvars);
 
   drerrno = DRE_NOERROR;
   return 1;
 }
 
 int recv_job (int sfd, struct job *job) {
+  struct envvars old_envvars;
+
+  old_envvars.evshmid = job->envvars.evshmid;
+  old_envvars.nvariables = job->envvars.nvariables;
+  old_envvars.variables = job->envvars.variables;
+
+  envvars_empty(&job->envvars);
   if (!dr_read(sfd,(char*)job,sizeof (struct job))) {
     return 0;
   }
-
-  envvars_init (&job->envvars);
-
+  
   // Environment variables
   if (!recv_envvars (sfd,&job->envvars)) {
+    fprintf (stderr,"ERROR: recv_job() there was an error while receiving envvars (%s)\n",drerrno_str());
     return 0;
   }
 
@@ -476,11 +514,12 @@ int recv_job (int sfd, struct job *job) {
   job->status = ntohs (job->status);
 
   // Frame info
-  job->fishmid = -1;
+  job->frame_info = NULL;
+  job->fishmid = (int64_t)-1;
 
   // Blocked hosts
   job->blocked_host = NULL;
-  job->bhshmid = -1;
+  job->bhshmid = (int64_t)-1;
   job->nblocked = 0;
 
   /* Koj Stuff */
@@ -603,16 +642,22 @@ int send_job (int sfd, struct job *job) {
 
   bswapped.flags = htonl (bswapped.flags);
 
-  /* Limits */
+  // Limits
   job_limits_bswap_to_network (&bswapped.limits);
 
-  if (!dr_write (sfd,(char*)buf,sizeof(bswapped))) {
+  // Filling the envvars with neutral values
+  envvars_init(&bswapped.envvars);
+  bswapped.envvars.nvariables = htons(bswapped.envvars.nvariables);
+  bswapped.envvars.variables = NULL;
+  bswapped.envvars.evshmid = 0xffffffffffffffff;
+
+  if (!dr_write (sfd,(char*)buf,sizeof(struct job))) {
     fprintf (stderr,"ERROR: Failed to write job to sfd\n");
     return 0;
   }
 
   // Environment variables
-  if (!send_envvars (sfd,&bswapped.envvars)) {
+  if (!send_envvars (sfd,&job->envvars)) {
     fprintf (stderr,"ERROR: Failed to send Environment\n");
     return 0;
   }
@@ -639,7 +684,7 @@ int recv_task (int sfd, struct task *task) {
   task->frame_end   = ntohl (task->frame_end);
   task->frame_step  = ntohl (task->frame_step);
   task->block_size  = ntohl (task->block_size);
-  //task->frame_pad   = ntohs (task->frame_pad);
+  //task->frame_pad   = ntohs (task->frame_pad); // it's an uint8_t
   task->pid         = ntohl (task->pid);
   task->exitstatus  = ntohl (task->exitstatus);
 
@@ -988,6 +1033,7 @@ int recv_blocked_host (int sfd, struct blocked_host *bh) {
 int dr_read (int fd, char *buf, uint32_t len) {
   int r;
   int bleft;
+  int total = 0;
 
   bleft = len;
   while ((r = read (fd,buf,bleft)) < bleft) {
@@ -998,12 +1044,12 @@ int dr_read (int fd, char *buf, uint32_t len) {
     }
     bleft -= r;
     buf += r;
+    total += r;
 #ifdef COMM_REPORT
-
     brecv += r;
 #endif
-
   }
+
 #ifdef COMM_REPORT
   brecv += r;
 #endif

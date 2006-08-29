@@ -650,7 +650,7 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info) {
 }
 
 static void dnj_destroy (GtkWidget *dialog, struct drqm_jobs_info *info) {
-  envvars_empty (&info->dnj.envvars.envvars);
+  //envvars_empty (&info->dnj.envvars.envvars);
 }
 
 static GtkWidget *NewJobDialog (struct drqm_jobs_info *info) {
@@ -670,7 +670,7 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info) {
 
   tooltips = TooltipsNew ();
 
-  envvars_init (&info->dnj.envvars.envvars);
+  envvars_empty (&info->dnj.envvars.envvars);
 
   /* Dialog */
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -1936,7 +1936,10 @@ void dnj_envvars_list (GtkWidget *bclicked, struct drqmj_envvars *info) {
 
   gtk_list_store_clear (GTK_LIST_STORE(store));
   if (info->envvars.nvariables) {
-    envvars_attach (&info->envvars);
+    if (!envvars_attach (&info->envvars)) {
+      fprintf(stderr,"dnj_envvars_list() it's been not possible to attach environment variables. (%s)\n",drerrno_str());
+      return;
+    }
     for (i = 0; i < info->envvars.nvariables; i++) {
       gtk_list_store_append (store,&iter);
       gtk_list_store_set (store, &iter,

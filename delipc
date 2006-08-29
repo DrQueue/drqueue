@@ -2,5 +2,6 @@
 ipcs | egrep 0x0000000 | egrep 64 | cut -f 2 -d" " > delete
 ipcs | egrep 0x0000000 | egrep 128 | cut -f 2 -d" " >> delete
 ipcs | egrep 0x0000000 | egrep 256 | cut -f 2 -d" " >> delete
+ipcs | cut -f 2 -d" " >> delete
 for a in `cat delete`; do ipcrm -m $a; done
 

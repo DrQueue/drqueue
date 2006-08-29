@@ -161,7 +161,8 @@ void config_parse (char *cfg) {
   }
 }
 
-FILE *config_open (char *filename) {
+FILE *
+config_open (char *filename) {
   FILE *f;
   if ( (f = fopen (filename,"r")) != NULL ) {
     return f;
@@ -173,7 +174,8 @@ FILE *config_open (char *filename) {
   return NULL;
 }
 
-int config_line_ends_node (struct config_node *base, char *line) {
+int
+config_line_ends_node (struct config_node *base, char *line) {
   if ( line[0]=='[' 
        && line[1]=='/'
        && strncmp (base->name,&line[2],strlen(base->name)) == 0 
@@ -247,28 +249,36 @@ int config_find_nodes (struct config_node *base,FILE *file) {
   return 0;
 }
 
-struct config_node *config_node_new (struct config_node *parent, char *name, char *desc, FILE *file) {
+struct config_node *
+config_node_new (struct config_node *parent, char *name, char *desc, FILE *file) {
   struct config_node *config = (struct config_node *) malloc (sizeof (struct config_node));
-  if (name)
+
+  if (name) {
     snprintf(config->name,CFG_ITEM_NAME_LEN,"%s",name);
-  else {
+  } else {
     fprintf (stderr,"ERROR: Config Node needs a name\n");
     return NULL;
   }
-  if (desc)
+
+  if (desc) {
     snprintf(config->value,CFG_ITEM_VALUE_LEN,"%s",desc);
+  }
+
   config->item_list = list_new (NULL);
   config->node_list = list_new (NULL);
   config->filepos = ftell (file);
   config->parent = parent;
-  if (parent)
+  if (parent) {
     list_add (parent->node_list,config);
+  }
 
   return config;
 }
 
-struct config_node *config_read (char *filename,char *tool) {
+struct config_node *
+config_read (char *filename,char *tool) {
 
+  // Fuction to be called for parsing "filename" config related to "tool"
   FILE *cfg_file = config_open (filename);
 
   if ( cfg_file == NULL ) {
@@ -276,7 +286,7 @@ struct config_node *config_read (char *filename,char *tool) {
     return NULL;
   }
 
-  struct config_node *config = config_node_new (NULL,"tool","tool root config node",cfg_file);
+  struct config_node *config = config_node_new (NULL,tool,"Root config node",cfg_file);
 
   config_find_nodes (config,cfg_file);
 
