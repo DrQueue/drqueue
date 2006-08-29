@@ -62,7 +62,7 @@ database_version_id () {
   // DB_VERSION number as well as the size of a pointer to void
   // (characteristic of 64/32 bits architecture)
   uint32_t version_id;
-  version_id = (DB_VERSION << 8) | sizeof (void*);
+  version_id = ((DB_VERSION << 8) | sizeof (void*));
   return version_id;
 }
 
@@ -121,7 +121,7 @@ database_load (struct database *wdb) {
     if (wdb->job[c].used) {
       nframes = job_nframes (&wdb->job[c]);
       if (nframes) {
-        if ((wdb->job[c].fishmid = get_frame_shared_memory (nframes)) == -1) {
+        if ((wdb->job[c].fishmid = get_frame_shared_memory (nframes)) == (int64_t)-1) {
           drerrno = DRE_GETSHMEM;
           close (fd);
           return 0;
@@ -206,7 +206,7 @@ database_save (struct database *wdb) {
   }
 
   hdr.magic = DB_MAGIC;
-  hdr.version = DB_VERSION;
+  hdr.version = database_version_id();
   hdr.job_size = MAXJOBS;
 
   write_32b (fd, &hdr.magic);
@@ -215,6 +215,7 @@ database_save (struct database *wdb) {
 
   for (c = 0; c < MAXJOBS; c++) {
     if (!send_job (fd, &wdb->job[c])) {
+      // TODO: report
       return 0;
     }
     if (wdb->job[c].used) {

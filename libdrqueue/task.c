@@ -28,10 +28,11 @@
 #include "semaphores.h"
 #include "logger.h"
 #include "request.h"
+#include "drerrno.h"
+
 
 void task_init_all (struct task *task) {
   int i;
-
   for (i=0;i < MAXTASKS; i++)
     task_init (&task[i]);
 }
@@ -181,16 +182,18 @@ void task_environment_set (struct task *task) {
     log_slave_task (task,L_WARNING,"Could not receive job environment variables");
     return;
   }
-
   log_slave_task (task,L_DEBUG,"Received %i environment variables",envvars.nvariables);
   char *buffer;
-  envvars_attach(&envvars);
-  for (i = 0; i < envvars.nvariables; i++) {
-    buffer = (char *) malloc (BUFFERLEN);
-    snprintf (buffer,BUFFERLEN,"%s=%s",envvars.variables[i].name,envvars.variables[i].value);
-    log_slave_task (task,L_DEBUG,"Putting \"%s\" in the environment",buffer);
-    putenv (buffer);
+  if (!envvars_attach(&envvars)) {
+    log_slave_task (task,L_WARNING,"Custom environment variables could not be attached. (%s)",drerrno_str());
+  } else {
+    for (i = 0; i < envvars.nvariables; i++) {
+      buffer = (char *) malloc (BUFFERLEN);
+      snprintf (buffer,BUFFERLEN,"%s=%s",envvars.variables[i].name,envvars.variables[i].value);
+      log_slave_task (task,L_DEBUG,"Putting \"%s\" in the environment",buffer);
+      putenv (buffer);
+    }
+    envvars_detach(&envvars);
   }
-  envvars_detach(&envvars);
   envvars_empty(&envvars);
 }
