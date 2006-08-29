@@ -525,6 +525,7 @@ int register_job (struct job *job) {
     return 0;
   }
 
+  // We need to receive the jobid that has been assigned.
   if (!recv_request (sfd,&req)) {
     fprintf(stderr,"ERROR: receiving request (register_job)\n");
     close (sfd);
@@ -575,6 +576,8 @@ void handle_r_r_regisjob (int sfd,struct database *wdb) {
     semaphore_release(wdb->semid);
     return;
   }
+
+  //job_fix_received_invalid (&job); // Is this needed at all ?
 
   // We send the job first to avoid race conditions with "submit job stopped"
   job_init_registered (wdb,index,&job);
@@ -1349,6 +1352,7 @@ void handle_r_r_jobenvvars (int sfd,struct database *wdb,int icomp,struct reques
   /* This function is called unlocked */
   /* This function is called by the master */
   log_master (L_DEBUG,"Entering handle_r_r_jobenvvars");
+  fprintf (stderr,"Entering handle_r_r_jobenvvars");
 
   uint32_t ijob;
 
@@ -1356,20 +1360,25 @@ void handle_r_r_jobenvvars (int sfd,struct database *wdb,int icomp,struct reques
 
   log_master (L_DEBUG,"Requested environment variables of job: %i",ijob);
 
-  if (ijob >= MAXJOBS)
+  if (!job_index_correct_master(wdb,ijob)) {
+    log_master (L_INFO,"Request for hard stopping of an unused job");
     return;
+  }
 
   semaphore_lock (wdb->semid);
 
   if (wdb->job[ijob].used) {
     log_master (L_DEBUG,"Sending %i environment variables",wdb->job[ijob].envvars.nvariables);
+    fprintf (stderr,"Sending %i environment variables",wdb->job[ijob].envvars.nvariables);
     if (!send_envvars(sfd,&wdb->job[ijob].envvars)) {
       log_master (L_WARNING,"Error while sending the environment variables: %s",drerrno_str());
+      fprintf (stderr,"Error while sending the environment variables: %s",drerrno_str());
     }
   }
 
   semaphore_release (wdb->semid);
 
+  fprintf (stderr,"Entering handle_r_r_jobenvvars");
   log_master (L_DEBUG,"Exiting handle_r_r_jobenvvars");
 }
 
@@ -2369,7 +2378,7 @@ void handle_r_r_jobdelblkhost (int sfd, struct database *wdb, int icomp, struct 
     if ((obh = attach_blocked_host_shared_memory (wdb->job[ijob].bhshmid)) == (void *)-1) {
       return;
     }
-    if ((nbhshmid = get_blocked_host_shared_memory (sizeof(struct blocked_host)*(wdb->job[ijob].nblocked-1))) == -1) {
+    if ((nbhshmid = get_blocked_host_shared_memory (sizeof(struct blocked_host)*(wdb->job[ijob].nblocked-1))) == (int64_t)-1) {
       return;
     }
     if ((nbh = attach_blocked_host_shared_memory (nbhshmid)) == (void *)-1) {
@@ -2401,11 +2410,11 @@ void handle_r_r_jobdelblkhost (int sfd, struct database *wdb, int icomp, struct 
     log_master_job(&wdb->job[ijob],L_INFO,"Deleted host %s from block list.",obh[0].name);
     detach_blocked_host_shared_memory (obh);
     if (shmctl (wdb->job[ijob].bhshmid,IPC_RMID,NULL) == -1) {
-      log_master_job(&wdb->job[ijob],L_ERROR,
-                     "job_delete: shmctl (job->bhshmid,IPC_RMID,NULL) [Removing blocked hosts shared memory]");
+      log_master_job(&wdb->job[ijob],L_ERROR, "job_delete: shmctl (job->bhshmid,IPC_RMID,NULL) [Removing blocked hosts shared memory]");
     }
-    wdb->job[ijob].bhshmid = -1;
+    wdb->job[ijob].bhshmid = (int64_t)-1;
     wdb->job[ijob].nblocked = 0;
+    wdb->job[ijob].blocked_host = NULL;
   }
   semaphore_release(wdb->semid);
 
@@ -2536,7 +2545,7 @@ void handle_r_r_jobblkhost (int sfd, struct database *wdb, int icomp, struct req
     }
   }
 
-  if ((nbhshmid = get_blocked_host_shared_memory (wdb->job[ijob].nblocked+1)) == -1) {
+  if ((nbhshmid = get_blocked_host_shared_memory (wdb->job[ijob].nblocked+1)) == (int64_t)-1) {
     semaphore_release (wdb->semid);
     return;
   }
@@ -3148,7 +3157,7 @@ void handle_r_r_jobsesup (int sfd,struct database *wdb,int icomp,struct request 
     return;
   }
 
-  if ((nfishmid = get_frame_shared_memory (nnframes)) == -1) {
+  if ((nfishmid = get_frame_shared_memory (nnframes)) == (int64_t)-1) {
     semaphore_release(wdb->semid);
     log_master (L_ERROR,"Could not allocate memory for new SES. Could not proceed updating SES.");
     return;

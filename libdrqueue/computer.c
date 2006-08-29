@@ -246,22 +246,22 @@ void computer_pool_set_from_environment (struct computer_limits *cl) {
 }
 
 void computer_pool_init (struct computer_limits *cl) {
-  // fprintf (stderr,"PID (%i) poolshmid (%i) : COMPUTER_POOL_INIT\n",getpid(),cl->poolshmid);
+  // fprintf (stderr,"PID (%i) poolshmid (%lli) : COMPUTER_POOL_INIT\n",getpid(),cl->poolshmid);
   cl->pool = NULL;
-  cl->poolshmid = -1;
+  cl->poolshmid = (int64_t)-1;
   cl->npools = 0;
 }
 
 int64_t computer_pool_get_shared_memory (int npools) {
   int64_t shmid;
 
-  if ((shmid = shmget (IPC_PRIVATE,sizeof(struct pool)*npools, IPC_EXCL|IPC_CREAT|0600)) == -1) {
+  if ((shmid = shmget (IPC_PRIVATE,sizeof(struct pool)*npools, IPC_EXCL|IPC_CREAT|0600)) == (int64_t)-1) {
     perror ("shmget");
     drerrno = DRE_GETSHMEM;
     return shmid;
   }
 
-  // fprintf(stderr,"PID (%i) shmid (%i): Allocated space for %i pools\n", getpid(),shmid,npools);
+  // fprintf(stderr,"PID (%i) shmid (%lli): Allocated space for %i pools\n", getpid(),shmid,npools);
 
   drerrno = DRE_NOERROR;
   return shmid;
@@ -292,7 +292,7 @@ int computer_pool_add (struct computer_limits *cl, char *poolname) {
   struct pool *npool;
   int64_t npoolshmid;
 
-  // fprintf (stderr,"computer_pool_add (cl=%x,cl->poolshmid=%i) : %s\n",cl,cl->poolshmid,pool);
+  // fprintf (stderr,"computer_pool_add (cl=%x,cl->poolshmid=%lli) : %s\n",cl,cl->poolshmid,pool);
 
   if (computer_pool_exists (cl,poolname)) {
     // It is already on the list
@@ -306,7 +306,7 @@ int computer_pool_add (struct computer_limits *cl, char *poolname) {
     return 0;
   }
 
-  if ((npoolshmid = computer_pool_get_shared_memory(cl->npools+1)) == -1) {
+  if ((npoolshmid = computer_pool_get_shared_memory(cl->npools+1)) == (int64_t)-1) {
     fprintf (stderr,"Could not get new shared memory (npools = %i)\n",cl->npools+1);
     return 0;
   }
@@ -357,7 +357,7 @@ void computer_pool_remove (struct computer_limits *cl, char *pool) {
     return;
   }
 
-  if ((npoolshmid = computer_pool_get_shared_memory(cl->npools-1)) == -1) {
+  if ((npoolshmid = computer_pool_get_shared_memory(cl->npools-1)) == (int64_t)-1) {
     return;
   }
 
@@ -388,7 +388,7 @@ void computer_pool_list (struct computer_limits *cl) {
   int i;
   struct pool *pool;
 
-  if (cl->poolshmid != -1) {
+  if (cl->poolshmid != (int64_t)-1) {
     pool = (struct pool *) computer_pool_attach_shared_memory (cl->poolshmid);
     if (pool != (void*)-1) {
       printf ("Pools: \n");
@@ -424,14 +424,14 @@ int computer_pool_exists (struct computer_limits *cl,char *poolname) {
 }
 
 int computer_pool_free (struct computer_limits *cl) {
-  // fprintf (stderr,"PID (%i): computer_pool_free (cl=%x,cl->poolshmid=%i,cl->npools=%i)\n",getpid(),cl,cl->poolshmid,cl->npools);
-  if (cl->poolshmid != -1) {
+  // fprintf (stderr,"PID (%i): computer_pool_free (cl=%x,cl->poolshmid=%lli,cl->npools=%i)\n",getpid(),cl,cl->poolshmid,cl->npools);
+  if (cl->poolshmid != (int64_t)-1) {
     if (shmctl (cl->poolshmid,IPC_RMID,NULL) == -1) {
       fprintf (stderr,"ERROR: computer_pool_free() deleting shared memory poolshmid: %lli\n",cl->poolshmid);
       drerrno = DRE_RMSHMEM;
       return 0;
     }
-    cl->poolshmid = -1;
+    cl->poolshmid = (int64_t)-1;
   }
 
   computer_pool_init (cl);

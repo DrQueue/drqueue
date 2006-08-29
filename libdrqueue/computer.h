@@ -25,6 +25,7 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <time.h>
+#include <stdint.h>
 
 #include "computer_info.h"
 #include "computer_status.h"
