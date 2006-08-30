@@ -48,7 +48,7 @@ struct computer_limits {
   uint16_t nmaxcpus;    /* Maximum number of cpus running */
   uint16_t maxfreeloadcpu; /* Maximum load that a cpu can have to be considered free */
   struct autoenable autoenable;
-  struct pool *pool;
+  struct pool *pool,*local_pool;
   uint16_t npools;
   int64_t poolshmid; // Pool's shared memory id
 };
@@ -82,11 +82,11 @@ int computer_detach (struct computer *computer);
 
 // Pools
 int64_t computer_pool_get_shared_memory (int npools);
-struct pool *computer_pool_attach_shared_memory (int64_t shmid);
-void computer_pool_detach_shared_memory (struct pool *cpshp);
+struct pool *computer_pool_attach_shared_memory (struct computer_limits *cl);
+int computer_pool_detach_shared_memory (struct computer_limits *cl);
 void computer_pool_init (struct computer_limits *cl);
 int computer_pool_add (struct computer_limits *cl, char *pool);
-void computer_pool_remove (struct computer_limits *cl, char *pool);
+int computer_pool_remove (struct computer_limits *cl, char *pool);
 void computer_pool_list (struct computer_limits *cl);
 int computer_pool_exists (struct computer_limits *cl,char *pool);
 int computer_pool_free (struct computer_limits *cl);

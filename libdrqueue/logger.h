@@ -38,6 +38,8 @@
 extern int loglevel;
 extern int logonscreen;
 
+void log_auto (int level, char *fmt, ...);
+
 void log_slave_task (struct task *task,int level,char *fmt,...);
 FILE *log_slave_open_task (struct task *task);
 void log_slave_computer (int level, char *fmt, ...);

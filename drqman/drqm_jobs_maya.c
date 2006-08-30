@@ -402,10 +402,6 @@ static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_
   mayasgi.res_x = mayasgi.res_y = -1;
   strncpy (mayasgi.format,"",BUFFERLEN-1);
 
-  /*  fprintf (stderr,"PRE/POST Before calling mayasg_create\n"); */
-  /*  fprintf (stderr,"ERROR: %s\n",mayasgi.precommand); */
-  /*  fprintf (stderr,"ERROR: %s\n",mayasgi.postcommand); */
-
   if ((file = mayasg_create (&mayasgi)) == NULL) {
     fprintf (stderr,"ERROR: %s\n",drerrno_str());
     return;
