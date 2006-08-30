@@ -49,6 +49,7 @@ void log_slave_task (struct task *task,int level,char *fmt,...) {
   char name[MAXNAMELEN];
   char buf[BUFFERLEN];  /* Buffer used to store ctime */
   char msg[BUFFERLEN];
+  char msg2[BUFFERLEN];
   time_t now;
   va_list ap;
 
@@ -75,15 +76,20 @@ void log_slave_task (struct task *task,int level,char *fmt,...) {
     f_log = stdout;
   }
 
-  if (loglevel < L_DEBUG)
-    fprintf (f_log,"%8s : %8s -> Job: %8s || Owner: %8s || Frame: %4i || %s: %s\n",buf,name,
-             task->jobname,task->owner,task->frame,log_level_str(level),msg);
-  else
-    fprintf (f_log,"%8s : %8s -> Job: %8s || Owner: %8s || Frame: %4i || (%i) %s: %s\n",buf,name,
-             task->jobname,task->owner,task->frame,(int)getpid(),log_level_str(level),msg);
+  if (loglevel < L_DEBUG) {
+    snprintf (msg2,BUFFERLEN,"%8s -> Job: %8s || Owner: %8s || Frame: %4i || %s: %s\n",name,
+              task->jobname,task->owner,task->frame,log_level_str(level),msg);
+  } else {
+    snprintf (msg2,BUFFERLEN,"%8s -> Job: %8s || Owner: %8s || Frame: %4i || (%i) %s: %s\n",name,
+              task->jobname,task->owner,task->frame,(int)getpid(),log_level_str(level),msg);
+  }
+  
+  fprintf(f_log,"%8s : %s",buf,msg2);
 
-  if (!logonscreen)
+  if (!logonscreen) {
     fclose (f_log);
+    log_slave_computer (level,"COPY from task log: %s",msg2);
+  }
 }
 
 FILE *log_slave_open_task (struct task *task) {

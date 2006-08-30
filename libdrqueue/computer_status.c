@@ -75,7 +75,7 @@ void check_tasks (struct computer_status *cstatus, int semid) {
   cstatus->ntasks = 0;
   for (i=0;i<MAXTASKS;i++) {
     if (cstatus->task[i].used) {
-      if (cstatus->task[i].status != TASKSTATUS_LOADING) {
+      if (cstatus->task[i].status == TASKSTATUS_RUNNING) {
         /* If the task is LOADING then there is no process running yet */
         if (kill(cstatus->task[i].pid,0) == 0) { /* check if task is running */
           cstatus->ntasks++;

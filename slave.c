@@ -63,7 +63,7 @@ int main (int argc,char *argv[]) {
   // the path to the config file
   config_parse_tool("slave");
   
-  system ("env | grep DRQUEUE");
+  //system ("env | grep DRQUEUE");
 
   if (!common_environment_check()) {
     fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
@@ -113,8 +113,6 @@ int main (int argc,char *argv[]) {
     slave_consistency_process (&sdb);
     exit (0);
   }
-
-
 
   while (1) {
     get_computer_status (&sdb.comp->status,sdb.semid);
@@ -518,6 +516,7 @@ void launch_task (struct slave_database *sdb, uint16_t itask) {
       /* we pass directly the status (translated to DR) to the master and he decides what to do with the frame */
       semaphore_lock(sdb->semid);
       sdb->comp->status.task[itask].exitstatus = 0;
+      sdb->comp->status.task[itask].status = TASKSTATUS_FINISHED;
       if (WIFSIGNALED(rc)) {
         /* Process exited abnormally either killed by us or by itself (SIGSEGV) */
         /*  printf ("\n\nSIGNALED with %i\n",WTERMSIG(rc)); */

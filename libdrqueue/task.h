@@ -40,7 +40,8 @@
 
 typedef enum {
   TASKSTATUS_LOADING,  /* Assigned but not running yet */
-  TASKSTATUS_RUNNING
+  TASKSTATUS_RUNNING,
+  TASKSTATUS_FINISHED  // Finished but reporting to master still
 } t_taskstatus;
 
 struct task {

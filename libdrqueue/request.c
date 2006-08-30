@@ -54,6 +54,19 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
     log_master (L_WARNING,"Error receiving request (handle_request_master)");
     return;
   }
+
+  // Update the time here, because it could not reach the end of the
+  // switch if the handler decides to exit this process. (all
+  // connection handling runs as different processes for every single
+  // connection. Master forked before accepting this connection and
+  // this is the child.)
+  if ((icomp != -1) && (request.who == SLAVE)) {
+    semaphore_lock (wdb->semid);
+    /* set the time of the last connection */
+    wdb->computer[icomp].lastconn = time(NULL);
+    semaphore_release (wdb->semid);
+  }
+
   switch (request.type) {
   case R_R_REGISTER:
     log_master (L_DEBUG,"Registration of new slave request");
@@ -198,12 +211,7 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
   default:
     log_master (L_WARNING,"Unknown request");
   }
-  if ((icomp != -1) && (request.who != CLIENT)) {
-    semaphore_lock (wdb->semid);
-    /* set the time of the last connection */
-    wdb->computer[icomp].lastconn = time(NULL);
-    semaphore_release (wdb->semid);
-  }
+
 }
 
 void handle_request_slave (int sfd,struct slave_database *sdb) {
@@ -353,18 +361,20 @@ void update_computer_status (struct slave_database *sdb) {
   int sfd;
 
   if ((sfd = connect_to_master ()) == -1) {
-    log_slave_computer(L_ERROR,drerrno_str());
+    log_slave_computer(L_ERROR,"Could not connect to master: %s",drerrno_str());
     kill(0,SIGINT);
   }
 
   req.type = R_R_UCSTATUS;
   if (!send_request (sfd,&req,SLAVE)) {
-    log_slave_computer (L_WARNING,"Error sending request (update_computer_status)");
+    log_slave_computer (L_WARNING,"Error sending request (update_computer_status): %s",drerrno_str());
     kill (0,SIGINT);
+    return;
   }
   if (!recv_request (sfd,&req)) {
-    log_slave_computer (L_WARNING,"Error receiving request (update_computer_status)");
+    log_slave_computer (L_WARNING,"Error receiving request (update_computer_status): %s",drerrno_str());
     kill (0,SIGINT);
+    return;
   }
 
   if (req.type == R_R_UCSTATUS) {
@@ -378,13 +388,13 @@ void update_computer_status (struct slave_database *sdb) {
     case RERR_NOREGIS:
       log_slave_computer (L_ERROR,"Computer not registered");
       kill (0,SIGINT);
+      break;
     default:
       log_slave_computer (L_ERROR,"Error code not listed on answer to R_R_UCSTATUS");
-      kill (0,SIGINT);
+      break;
     }
   } else {
     log_slave_computer (L_ERROR,"Not appropiate answer to request R_R_UCSTATUS");
-    kill (0,SIGINT);
   }
   close (sfd);
 }
@@ -429,12 +439,15 @@ void register_slave (struct computer *computer) {
     case RERR_ALREADY:
       log_slave_computer (L_ERROR,"Already registered");
       kill (0,SIGINT);
+      break;
     case RERR_NOSPACE:
       log_slave_computer (L_ERROR,"No space on database");
       kill (0,SIGINT);
+      break;
     default:
       log_slave_computer (L_ERROR,"Error code not listed on answer to R_R_REGISTER");
       kill (0,SIGINT);
+      break;
     }
   } else {
     log_slave_computer (L_ERROR,"Not appropiate answer to request R_R_REGISTER");
@@ -456,7 +469,7 @@ void handle_r_r_ucstatus (int sfd,struct database *wdb,int icomp) {
     if (!send_request (sfd,&answer,MASTER)) {
       log_master (L_WARNING,"Error receiving request (handle_r_r_ucstatus)");
     }
-    exit (0);
+    return;
   }
 
   /* No errors, we (master) can receive the status from the remote */
@@ -503,7 +516,7 @@ int register_job (struct job *job) {
     case RERR_NOERROR:
       if (!send_job (sfd,job)) {
         close (sfd);
-        fprintf (stderr,"ERROR: Job couldn't be sent\n");
+        fprintf (stderr,"ERROR: Job couldn't be sent: %s\n",drerrno_str());
         return 0;
       }
       break;
@@ -611,12 +624,10 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp) {
     if (!send_request (sfd,&answer,MASTER)) {
       log_master (L_WARNING,"Error sending request (handle_r_r_availjob)");
     }
-    exit (0);
+    return;
   }
 
-
   log_master (L_DEBUG,"Creating priority ordered list of jobs");
-
   for (i=0;i<MAXJOBS;i++) {
     pol[i].index = i;
     pol[i].pri = wdb->job[i].priority;
@@ -635,6 +646,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp) {
   }
 
   if (equal_pols == 0) {
+    log_master_computer(&wdb->computer[icomp],L_DEBUG2,"handle_r_r_availjob() equal_pols == 0");
     // If they changed we save the new one
     for (i=0;i<MAXJOBS;i++) {
       wdb->lb.pol[i].index = pol[i].index;
@@ -667,6 +679,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp) {
     }
   } else {
     // Pols are equal
+    log_master_computer(&wdb->computer[icomp],L_DEBUG2,"handle_r_r_availjob() equal_pols == 1");
     for (i=wdb->lb.next_i;i<MAXJOBS;i++) {
       if ((i+1) >= MAXJOBS) {
         for (i=0;i<MAXJOBS;i++) {
@@ -707,6 +720,22 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp) {
   }
 
   if (i>=MAXJOBS) {
+    // No available jobs from the last assigned one to the end
+    // Lets look before.
+    for (i=0;i<MAXJOBS;i++) {
+      ijob = pol[i].index;
+      /* ATENTION job_available sets the available frame as FS_ASSIGNED !! */
+      /* We need to set it back to FS_WAITING if something fails */
+      if (job_available(wdb,ijob,&iframe,icomp)) {
+        log_master_job(&wdb->job[ijob],L_INFO,"Frame %i assigned",job_frame_index_to_number(&wdb->job[ijob],iframe));
+        wdb->lb.next_i = i+1;
+        break;
+      }
+    }
+  }
+
+  if (i>=MAXJOBS) {
+    // No available one neither before.
     wdb->lb.next_i = 0;
     log_master_computer(&wdb->computer[icomp],L_DEBUG,"No available job");
     answer.type = R_R_AVAILJOB;
@@ -714,7 +743,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp) {
     if (!send_request (sfd,&answer,MASTER)) {
       log_master(L_WARNING,"Error sending request (handle_r_r_availjob)");
     }
-    exit (0);
+    return;
   } else {
     wdb->lb.last_priority = pol[i].pri;
   }
@@ -782,10 +811,9 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp) {
 
   log_master_computer (&wdb->computer[icomp],L_DEBUG,"Sending updated task");
   if (!send_task (sfd,&wdb->computer[icomp].status.task[itask])) {
-    log_master_computer (&wdb->computer[icomp],L_ERROR,drerrno_str());
+    log_master_computer (&wdb->computer[icomp],L_ERROR,"Could not send updated task information to the slave: %s",drerrno_str());
     job_frame_waiting (wdb,ijob,iframe);
-    exit (0);
-  }
+  }  
 }
 
 
@@ -884,9 +912,6 @@ int request_job_available (struct slave_database *sdb, uint16_t *itask) {
   semaphore_lock(sdb->semid);
   memcpy(&sdb->comp->status.task[*itask],&ttask,sizeof(ttask));
   sdb->comp->status.ntasks = computer_ntasks (sdb->comp);
-  /* We update the computer load because, at the beginning it does not reflect the load */
-  /* of this task */
-  //sdb->comp->status.loadavg[0] += sdb->comp->limits.maxfreeloadcpu;
   semaphore_release(sdb->semid);
 
   close (sfd);
