@@ -123,13 +123,11 @@ int computer_available (struct computer *computer) {
   /* This means that never will be assigned more tasks than processors */
   /* This behaviour could be changed in the future */
   npt = (computer->limits.nmaxcpus < computer->hwinfo.ncpus) ? computer->limits.nmaxcpus : computer->hwinfo.ncpus;
+  log_slave_computer(L_DEBUG2,"computer_available() phase 1 (limits on cpus) : npt = %i",npt);
 
   /* then npt is the minimum of npt or the number of free tasks structures */
   npt = (npt < MAXTASKS) ? npt : MAXTASKS;
-
-  /* Prevent floating point exception */
-  if (!computer->limits.maxfreeloadcpu)
-    return 0;
+  log_slave_computer(L_DEBUG2,"computer_available() phase 2 (<maxtasks) : npt = %i",npt);
 
   /* Care must be taken because we substract the running tasks TWO times */
   /* one because of the load, another one here. */
@@ -144,9 +142,11 @@ int computer_available (struct computer *computer) {
     t = npt;
   }
   npt -= t;
+  log_slave_computer(L_DEBUG2,"computer_available() phase 3 (after considering the loadavg) : npt = %i",npt);
 
   /* Number of current working tasks */
   npt -= computer->status.ntasks;
+  log_slave_computer(L_DEBUG2,"computer_available() phase 3 (substract ntasks) : npt = %i",npt);
 
   if (computer->status.ntasks > MAXTASKS) {
     /* This should never happen, btw */
@@ -154,9 +154,12 @@ int computer_available (struct computer *computer) {
     kill (0,SIGINT);
   }
 
-  if (npt <= 0)
+  if (npt <= 0) {
+    log_slave_computer(L_DEBUG2,"computer_available() returning 0 : NOT available");
     return 0;
+  }
 
+  log_slave_computer(L_DEBUG2,"computer_available() returning 1 : available");
   return 1;
 }
 

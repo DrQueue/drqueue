@@ -279,36 +279,29 @@ int send_request (int sfd, struct request *request,uint8_t who) {
 }
 
 int send_computer_status (int sfd, struct computer_status *status) {
-  struct computer_status bswapped;
-  void *buf = &bswapped;
   uint16_t i;
-
-  /* We make a copy coz we need to modify the values */
-  memcpy (buf,status,sizeof(struct computer_status));
-
-  /* Prepare for sending */
-  bswapped.loadavg[0] = htons(bswapped.loadavg[0]);
-  bswapped.loadavg[1] = htons(bswapped.loadavg[1]);
-  bswapped.loadavg[2] = htons(bswapped.loadavg[2]);
+  uint16_t ntasks;
 
   /* Count the tasks. (Shouldn't be necessary) */
   // FIXME: Remove this ?
-  bswapped.ntasks = 0;
+  ntasks = 0;
   for (i=0;i<MAXTASKS;i++) {
-    if (bswapped.task[i].used)
-      bswapped.ntasks++;
+    if (status->task[i].used)
+      ntasks++;
   }
 
-  bswapped.ntasks = htons (bswapped.ntasks);
+  if (!send_computer_loadavg(sfd,status)) {
+    return 0;
+  }
 
-  if (!dr_write(sfd,(char*)buf,sizeof(uint16_t) * 4)) { // Send the first 4 uint16_t that are loadavg and ntasks
+  if (!send_computer_ntasks(sfd,status)) {
     return 0;
   }
 
   /* We just send the used tasks */
   for (i=0;i<MAXTASKS;i++) {
-    if (bswapped.task[i].used) {
-      if (!send_task(sfd,&bswapped.task[i]))
+    if (status->task[i].used) {
+      if (!send_task(sfd,&status->task[i]))
         return 0;
     }
   }
