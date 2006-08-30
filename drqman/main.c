@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <gtk/gtk.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "drqman.h"
 #include "notebook.h"
@@ -40,13 +41,15 @@ char conf[PATH_MAX];
 FILE *file_null;
 #endif
 
+void drqman_get_options (int *argc,char ***argv);
+
 int main (int argc, char *argv[]) {
   GtkWidget *window;
   GtkWidget *main_vbox;
   char rc_file[MAXCMDLEN];
 
   // fprintf (stderr,"drqman pid: %i\n",getpid());
-
+  drqman_get_options(&argc,&argv);
   set_default_env(); // Config files overrides environment
   config_parse_tool("drqman");
 
@@ -56,6 +59,9 @@ int main (int argc, char *argv[]) {
   }
 
   gtk_init(&argc,&argv);
+
+  
+
 #ifdef __CYGWIN
 
   snprintf(rc_file,MAXCMDLEN-1,"%s/drqman-windows.rc",getenv("DRQUEUE_ETC"));
@@ -105,4 +111,23 @@ int main (int argc, char *argv[]) {
   return (0);
 }
 
+void drqman_get_options (int *argc,char ***argv) {
+  int opt;
 
+  while ((opt = getopt (*argc,*argv,"l:o")) != -1) {
+    switch (opt) {
+    case 'l':
+      loglevel = atoi (optarg);
+      printf ("Logging level set to: %i (%s)\n",loglevel,log_level_str(loglevel));
+      break;
+    case 'o':
+      logonscreen = 1;
+      printf ("Logging on screen.\n");
+      break;
+    case '?':
+    case 'h':
+      //usage();
+      exit (0);
+    }
+  }
+}

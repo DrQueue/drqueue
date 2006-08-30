@@ -978,23 +978,39 @@ static int dnj_submit (struct drqmj_dnji *info) {
 
   job_init(&job);
   strncpy(job.name,gtk_entry_get_text(GTK_ENTRY(info->ename)),MAXNAMELEN-1);
-  if (strlen(job.name) == 0)
+  if (strlen(job.name) == 0) {
+    fprintf (stderr,"Job needs a name\n");
     return 0;
+  }
   strncpy(job.cmd,gtk_entry_get_text(GTK_ENTRY(info->ecmd)),MAXCMDLEN-1);
-  if (strlen(job.cmd) == 0)
+  if (strlen(job.cmd) == 0) {
+    fprintf (stderr,"Job needs a command.\n");
     return 0;
-  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->esf)),"%u",&job.frame_start) != 1)
+  }
+  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->esf)),"%u",&job.frame_start) != 1) {
+    fprintf (stderr,"start frame could not be read\n");
     return 0;
-  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->eef)),"%u",&job.frame_end) != 1)
+  }
+  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->eef)),"%u",&job.frame_end) != 1) {
+    fprintf (stderr,"end frame could not be read\n");
     return 0;
-  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->estf)),"%u",&job.frame_step) != 1)
+  }
+  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->estf)),"%u",&job.frame_step) != 1) {
+    fprintf (stderr,"step frame could not be read\n");
     return 0;
-  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->ebs)),"%u",&job.block_size) != 1)
+  }
+  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->ebs)),"%u",&job.block_size) != 1) {
+    fprintf (stderr,"block size could not be read\n");
     return 0;
-  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->efp)),"%c",&job.frame_pad) != 1)
+  }
+  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->efp)),"%c",&job.frame_pad) != 1) { 
+    fprintf (stderr,"frame pad could not be read\n");
     return 0;
-  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->epri)),"%u",&job.priority) != 1)
+  }
+  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->epri)),"%u",&job.priority) != 1) {
+    fprintf (stderr,"priority could not be read\n");
     return 0;
+  }
 
   if (!(pw = getpwuid(geteuid()))) {
     strncpy (job.owner,"ERROR",MAXNAMELEN-1);
@@ -1036,22 +1052,34 @@ static int dnj_submit (struct drqmj_dnji *info) {
     /* Custom crop */
     job.koji.bmrt.custom_crop = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbcrop)->active;
     if (job.koji.bmrt.custom_crop) {
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropxmin)),"%u",&job.koji.bmrt.xmin) != 1)
+      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropxmin)),"%u",&job.koji.bmrt.xmin) != 1) {
+        fprintf (stderr,"x min could not be read\n");
         return 0;
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropxmax)),"%u",&job.koji.bmrt.xmax) != 1)
+      }
+      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropxmax)),"%u",&job.koji.bmrt.xmax) != 1) {
+        fprintf (stderr,"x max could not be read\n");
         return 0;
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropymin)),"%u",&job.koji.bmrt.ymin) != 1)
+      }
+      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropymin)),"%u",&job.koji.bmrt.ymin) != 1) {
+        fprintf (stderr,"y min could not be read\n");
         return 0;
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropymax)),"%u",&job.koji.bmrt.ymax) != 1)
+      }
+      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropymax)),"%u",&job.koji.bmrt.ymax) != 1) {
+        fprintf (stderr,"y max could not be read\n");
         return 0;
+      }
     }
     /* Custom samples */
     job.koji.bmrt.custom_samples = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbsamples)->active;
     if (job.koji.bmrt.custom_samples) {
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.exsamples)),"%u",&job.koji.bmrt.xsamples) != 1)
+      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.exsamples)),"%u",&job.koji.bmrt.xsamples) != 1) {
+        fprintf (stderr,"x samples could not be read\n");
         return 0;
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eysamples)),"%u",&job.koji.bmrt.ysamples) != 1)
+      }
+      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eysamples)),"%u",&job.koji.bmrt.ysamples) != 1) {
+        fprintf (stderr,"y samples could not be read\n");
         return 0;
+      }
     }
     /* Stats, verbose, beep */
     job.koji.bmrt.disp_stats = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbstats)->active;
@@ -1060,14 +1088,18 @@ static int dnj_submit (struct drqmj_dnji *info) {
     /* Custom radiosity */
     job.koji.bmrt.custom_radiosity = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbradiositysamples)->active;
     if (job.koji.bmrt.custom_radiosity) {
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eradiositysamples)),"%u",&job.koji.bmrt.radiosity_samples) != 1)
+      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eradiositysamples)),"%u",&job.koji.bmrt.radiosity_samples) != 1) {
+        fprintf (stderr,"radiosity_samples could not be read\n");
         return 0;
+      }
     }
     /* Custom ray samples */
     job.koji.bmrt.custom_raysamples = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbraysamples)->active;
     if (job.koji.bmrt.custom_raysamples) {
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eraysamples)),"%u",&job.koji.bmrt.raysamples) != 1)
+      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eraysamples)),"%u",&job.koji.bmrt.raysamples) != 1) {
+        fprintf (stderr,"ray samples could not be read\n");
         return 0;
+      }
     }
     break;
   case KOJ_PIXIE:
@@ -1175,8 +1207,10 @@ static int dnj_submit (struct drqmj_dnji *info) {
   // Environment variables
   job.envvars = info->envvars.envvars;
 
-  if (!register_job (&job))
+  if (!register_job (&job)) {
+    fprintf (stderr,"Job could not be registered: %s\n",drerrno_str());
     return 0;
+  }
 
   // job.id is set on the call to register_job
   if (info->submitstopped) {

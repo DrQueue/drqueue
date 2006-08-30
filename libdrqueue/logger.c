@@ -497,3 +497,51 @@ int log_dumptask_open_ro (struct task *t) {
 
   return lfd;
 }
+
+void log_auto (int level, char *fmt, ...) {
+  // this will be the way to send log messages when no one is known
+  // for sure.
+  FILE *f_log;
+  char hostname_buf[MAXNAMELEN];
+  char *hostname_ptr = NULL;
+  char time_buf[BUFFERLEN];
+  char msg[BUFFERLEN];
+  time_t now;
+  va_list ap;
+
+  if (level > loglevel)
+    return;
+
+  va_start (ap,fmt);
+  vsnprintf (msg,BUFFERLEN-1,fmt,ap);
+  va_end (ap);
+
+  time (&now);
+  strncpy (time_buf,ctime(&now),BUFFERLEN-1);
+  time_buf[strlen(time_buf)-1] = '\0';
+
+  if (hostname_ptr == NULL) {
+    if (gethostname(hostname_buf,MAXNAMELEN-1) == -1) {
+      strcpy (hostname_buf,"UNKNOWN_hostname.error_on_gethostname");
+    }
+    hostname_ptr = hostname_buf;
+  }
+
+/*   if (!logonscreen) { */
+/*     f_log = log_slave_open_computer (name); */
+/*     if (!f_log) */
+/*       f_log = stdout; */
+/*   } else { */
+/*     f_log = stdout; */
+/*   } */
+
+  f_log = stderr;
+
+  if (loglevel < L_DEBUG)
+    fprintf (f_log,"%8s : %s: %s\n",time_buf,log_level_str(level),msg);
+  else
+    fprintf (f_log,"%8s : (%i) %s: %s\n",time_buf,(int) getpid(), log_level_str(level),msg);
+
+/*   if (!logonscreen) */
+/*     fclose (f_log); */
+}

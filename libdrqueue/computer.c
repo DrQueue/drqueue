@@ -31,6 +31,8 @@
 #include <signal.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <errno.h>
+#include <unistd.h>
 
 #include "libdrqueue.h"
 #include "slave.h"
@@ -46,25 +48,17 @@ int computer_index_addr (void *pwdb,struct in_addr addr) {
 
   log_master (L_DEBUG,"Entering computer_index_addr");
 
-
   if ((host = gethostbyaddr ((const void *)&addr.s_addr,sizeof (struct in_addr),AF_INET)) == NULL) {
     log_master (L_INFO,"computer_index_addr(). Using IP address as host name because '%s' could not be resolved",inet_ntoa(addr));
     name=inet_ntoa(addr);
   } else {
     //int i=0;
-    if ((dot = strchr (host->h_name,'.')) != NULL)
+    if (((dot = strchr (host->h_name,'.')) != NULL) && (dot != host->h_name)) {
+      // take out whatever comes after the first '.', if it's not the
+      // whole name.
       *dot = '\0';
+    }
     name = host->h_name;
-/*     /\*   printf ("Name: %s\n",host->h_name); *\/ */
-/*     name = host->h_name; */
-/*     while (host->h_aliases[i] != NULL) { */
-/*       /\*    printf ("Alias: %s\n",host->h_aliases[i]); *\/ */
-/*       i++; */
-/*     } */
-/*     while (*host->h_aliases != NULL) { */
-/*       /\*    printf ("Alias: %s\n",*host->h_aliases); *\/ */
-/*       host->h_aliases++; */
-/*     } */
   }
 
 
@@ -209,7 +203,13 @@ void computer_update_assigned (struct database *wdb,uint32_t ijob,int iframe,int
 }
 
 void computer_init (struct computer *computer) {
-  // This function is called by the master when a computer is not longer on the list
+  // Sets all computer values to the initial valid defaults.
+  // It does not free any allocated memory, be sure to use it after
+  // having freed all of it.
+  //
+  // But also be advised that functions that free their allocated
+  // space, also init the related values afterwards.
+  //
   computer->used = 0;
   computer_status_init(&computer->status);
   computer_pool_init (&computer->limits);
@@ -219,7 +219,7 @@ int computer_free (struct computer *computer) {
   computer->used = 0;
   computer_status_init(&computer->status);
   if (!computer_pool_free (&computer->limits)) {
-    fprintf (stderr,"ERROR: computer_pool_free\n");
+    log_auto (L_ERROR,"computer_pool_free() found a problem while freeing computer pool memory. (%s) (%s)\n",drerrno_str(),strerror(errno));
   }
   computer_pool_init (&computer->limits);
 
@@ -231,25 +231,41 @@ void computer_pool_set_from_environment (struct computer_limits *cl) {
   char *pool;
 
   if ((buf = getenv ("DRQUEUE_POOL")) == NULL) {
-    log_slave_computer (L_WARNING,"DRQUEUE_POOL not set, joining \"Default\"");
+    log_slave_computer (L_WARNING,"DRQUEUE_POOL not set, joining \"%s\"",DEFAULT_POOL);
     computer_pool_add (cl,DEFAULT_POOL);
   } else {
     if ((pool = strtok (buf,": ,=\r\n")) != NULL) {
-      computer_pool_add (cl,pool);
-      log_slave_computer (L_INFO,"Joining pool: \"%s\"",pool);
-      while ((pool = strtok (NULL,": ,=\n")) != NULL) {
+      if (strlen(pool) > 0) {
         computer_pool_add (cl,pool);
         log_slave_computer (L_INFO,"Joining pool: \"%s\"",pool);
       }
+      while ((pool = strtok (NULL,": ,=\n")) != NULL) {
+        if (strlen(pool) > 0) {
+          computer_pool_add (cl,pool);
+          log_slave_computer (L_INFO,"Joining pool: \"%s\"",pool);
+        }
+      }
     } else {
-      log_slave_computer (L_WARNING,"DRQUEUE_POOL in not properly set, joining \"Default\"");
+      log_slave_computer (L_WARNING,"DRQUEUE_POOL in not properly set, joining \"%s\"",DEFAULT_POOL);
       computer_pool_add (cl,DEFAULT_POOL);
+    }
+  }
+  
+  if (cl->npools == 0) {
+    // it added no pools :/
+    computer_pool_add (cl,DEFAULT_POOL);
+    if (cl->npools == 1) {
+      log_slave_computer (L_WARNING,"Check your DRQUEUE_POOL value:'%s'. Something made it to be parsed as an empty pool list. We joined the default pool : '%s'",
+                          DEFAULT_POOL);
+    } else {
+      log_auto (L_ERROR,"computer_pool_set_from_environment() it has been not possible to add any pool. Check your logs for shared memory problems.");
+      log_slave_computer (L_ERROR,"computer_pool_set_from_environment() it has been not possible to add any pool. Check your logs for shared memory problems.");
     }
   }
 }
 
 void computer_pool_init (struct computer_limits *cl) {
-  // fprintf (stderr,"PID (%i) poolshmid (%lli) : COMPUTER_POOL_INIT\n",getpid(),cl->poolshmid);
+  log_auto (L_DEBUG3,"computer_pool_init() : PID (%i) poolshmid (%lli) pool (%p)",getpid(),cl->poolshmid,cl->pool);
   cl->pool = NULL;
   cl->poolshmid = (int64_t)-1;
   cl->npools = 0;
@@ -258,133 +274,185 @@ void computer_pool_init (struct computer_limits *cl) {
 int64_t computer_pool_get_shared_memory (int npools) {
   int64_t shmid;
 
-  if ((shmid = shmget (IPC_PRIVATE,sizeof(struct pool)*npools, IPC_EXCL|IPC_CREAT|0600)) == (int64_t)-1) {
-    perror ("shmget");
+  if ((shmid = (int64_t) shmget (IPC_PRIVATE,(size_t)sizeof(struct pool)*npools, IPC_EXCL|IPC_CREAT|0600)) == (int64_t)-1) {
+    log_auto (L_ERROR,"computer_pool_get_shared_memory() could not allocate shared memory for %i pools: %s",npools,strerror(errno));
     drerrno = DRE_GETSHMEM;
     return shmid;
   }
 
-  // fprintf(stderr,"PID (%i) shmid (%lli): Allocated space for %i pools\n", getpid(),shmid,npools);
+  log_auto (L_DEBUG2,"PID (%i) shmid (%lli): Allocated space for %i pools", getpid(),shmid,npools);
 
   drerrno = DRE_NOERROR;
   return shmid;
 }
 
-struct pool *computer_pool_attach_shared_memory (int64_t shmid) {
+struct pool *computer_pool_attach_shared_memory (struct computer_limits *cl) {
   // Returns -1 on failure
   void *rv;   /* return value */
 
-  if ((rv = shmat (shmid,0,0)) == (void *)-1) {
-    drerrno = DRE_ATTACHSHMEM;
-  } else {
-    drerrno = DRE_NOERROR;
+  if (cl->pool) {
+    // already attached.
+    log_auto (L_WARNING,"computer_pool_attach_shared_memory() : trying to attach what seems an already attached memory segment. Proceeding anyway.");
   }
 
+  if ((rv = shmat ((int)cl->poolshmid,0,0)) == (void *)-1) {
+    log_auto (L_ERROR,"computer_pool_attach_shared_memory() : error attaching %lli poolshmid. (%s)",cl->poolshmid,strerror(errno));
+    log_auto (L_ERROR,"computer_pool_attach_shared_memory() : removing poolshmid from previous error (%lli)",cl->poolshmid);
+    drerrno = DRE_ATTACHSHMEM;
+    computer_pool_free(cl);
+  } else {
+    drerrno = DRE_NOERROR;
+    cl->pool = (struct pool *)rv;
+    log_auto (L_DEBUG2,"computer_pool_attach_shared_memory() : successful attach (shmid='%lli',npools='%i',pool='%p')",cl->poolshmid,cl->npools,cl->pool);
+  }
+  
   return (struct pool *)rv;
 }
 
-void computer_pool_detach_shared_memory (struct pool *cpshp) {
-  if (shmdt((char*)cpshp) == -1) {
-    // FIXME what to do then ?
-    fprintf (stderr,"ERROR: computer_pool_detach_shared_memory\n");
+int computer_pool_free (struct computer_limits *cl) {
+  int rv = 1;
+  log_auto (L_DEBUG3,"PID (%i): computer_pool_free (cl=%x,cl->poolshmid=%lli,cl->npools=%i)",getpid(),cl,cl->poolshmid,cl->npools);
+  if (cl->poolshmid != (int64_t)-1) {
+    if (shmctl (cl->poolshmid,IPC_RMID,NULL) == -1) {
+      log_auto (L_ERROR,"computer_pool_free() error found while deleting shared memory poolshmid: %lli (%s)",cl->poolshmid,strerror(errno));
+      drerrno = DRE_RMSHMEM;
+      rv = 0;
+    } else {
+      log_auto (L_DEBUG3,"PID (%i): computer_pool_free () : pool shared memory successfully removed",getpid());
+    }
   }
+
+  computer_pool_init (cl);
+  return rv;
+}
+
+int computer_pool_detach_shared_memory (struct computer_limits *cl) {
+  int rv = 1;
+  if (cl->pool) {
+    if (shmdt((char*)cl->pool) == -1) {
+      log_auto(L_ERROR,"computer_pool_detach_shared_memory: %s",strerror(errno));
+      rv = 0;
+    } 
+    cl->pool = NULL;
+  } else {
+    log_auto(L_WARNING,"computer_pool_detach_shared_memory: something tried to detach NULL");
+    rv = 0;
+  }
+  return rv;
 }
 
 int computer_pool_add (struct computer_limits *cl, char *poolname) {
   struct pool *opool = (struct pool *)-1;
   struct pool *npool;
   int64_t npoolshmid;
+  struct computer_limits new_cl;
 
-  // fprintf (stderr,"computer_pool_add (cl=%x,cl->poolshmid=%lli) : %s\n",cl,cl->poolshmid,pool);
+  log_auto (L_DEBUG2,"computer_pool_add (cl=%p,cl->poolshmid=%lli) : %s",cl,cl->poolshmid,poolname);
 
   if (computer_pool_exists (cl,poolname)) {
     // It is already on the list
+    log_auto (L_DEBUG,"computer_pool_add() : pool '%s' already exists on the list",poolname);
     return 1;
   }
 
-
-  if (cl->npools &&
-      ((opool = (struct pool *)computer_pool_attach_shared_memory(cl->poolshmid)) == (void *) -1)) {
-    fprintf (stderr,"Could not attach old shared memory\n");
+  if (cl->npools && ((opool = (struct pool *)computer_pool_attach_shared_memory(cl)) == (void *) -1)) {
+    log_auto (L_ERROR,"computer_pool_add() : Could not attach old shared memory (cl:%p shmid: %lli)",cl,cl->poolshmid);
     return 0;
   }
 
-  if ((npoolshmid = computer_pool_get_shared_memory(cl->npools+1)) == (int64_t)-1) {
-    fprintf (stderr,"Could not get new shared memory (npools = %i)\n",cl->npools+1);
+  computer_pool_init(&new_cl);
+  new_cl.npools = cl->npools+1;
+  if ((npoolshmid = computer_pool_get_shared_memory(new_cl.npools)) == (int64_t)-1) {
+    log_auto (L_ERROR,"computer_pool_add() : Could not get new shared memory (npools = %i)",new_cl.npools);
+    computer_pool_detach_shared_memory(cl);
     return 0;
   }
-
-  if ((npool = (struct pool *)computer_pool_attach_shared_memory(npoolshmid)) == (void *) -1) {
-    fprintf (stderr,"Could not attach new shared memory\n");
+  
+  new_cl.poolshmid = npoolshmid;
+  if ((npool = (struct pool *)computer_pool_attach_shared_memory(&new_cl)) == (void *) -1) {
+    log_auto (L_ERROR,"computer_pool_add() : Could not attach new shared memory (shmid: %lli,npools)",new_cl.poolshmid,new_cl.npools);
+    computer_pool_free(&new_cl);
+    computer_pool_detach_shared_memory(cl);
     return 0;
   }
-
-  if ((cl->npools) && (opool != (void*) -1)) {
+  
+  if ((cl->npools) && (cl->pool != (void*) -1)) {
     memcpy (npool,opool,sizeof (struct pool) * cl->npools);
-    //  fprintf (stderr,"Copied %i pools\n",cl->npools);
-    computer_pool_detach_shared_memory (opool);
-    if (shmctl (cl->poolshmid,IPC_RMID,NULL) == -1) {
-      drerrno = DRE_RMSHMEM;
-      // TODO: log this problem
-      fprintf(stderr,"WARNING: computer_pool_add() Previous pool list could not be removed. (%s)\n",drerrno_str());
-      // return 0;
-    }
+    log_auto(L_DEBUG2,"computer_pool_add() : copied %i pools from old list",cl->npools);
+  } else {
+    log_auto(L_DEBUG2,"computer_pool_add() : no pools to copy (npools=%i,pool=%p)",cl->npools,cl->pool);
   }
 
-  cl->poolshmid = npoolshmid;
-  strncpy (npool[cl->npools].name,poolname,MAXNAMELEN);
-  // fprintf(stderr,"Added pool : %s\n",npool[cl->npools].name);
-  cl->npools++;
+  strncpy (new_cl.pool[cl->npools].name,poolname,MAXNAMELEN);
+  log_auto(L_DEBUG2,"computer_pool_add() : copied pool name '%s' to the end of the list.",new_cl.pool[cl->npools].name);
+
+  // remove old list
+  computer_pool_detach_shared_memory (cl);
+  computer_pool_free (cl);
 
   // fprintf(stderr,"New number of pools: %i\n",cl->npools);
-  computer_pool_detach_shared_memory(npool);
+  cl->poolshmid = new_cl.poolshmid;
+  cl->pool = new_cl.pool;
+  cl->npools = new_cl.npools;
+
+  computer_pool_detach_shared_memory(cl);
   return 1;
 }
 
-void computer_pool_remove (struct computer_limits *cl, char *pool) {
+int computer_pool_remove (struct computer_limits *cl, char *pool) {
   struct pool *opool = (struct pool *)-1;
   struct pool *npool;
   int64_t npoolshmid;
   int i,j;
+  struct computer_limits new_cl;
 
   if (!computer_pool_exists (cl,pool)) {
-    // It is not on the list
-    return;
+    log_auto(L_WARNING,"computer_pool_remove() : pool '%s' not on list",pool);
+    return 0;
   }
 
-  if (!cl->npools)
-    return;
-
-  if (cl->npools &&
-      ((opool = (struct pool *) computer_pool_attach_shared_memory(cl->poolshmid)) == (void *) -1)) {
-    return;
+  if (!cl->npools) {
+    log_auto(L_WARNING,"computer_pool_remove() : pool was empty when tried to remove poolname '%s'",pool);
+    return 0;
   }
 
-  if ((npoolshmid = computer_pool_get_shared_memory(cl->npools-1)) == (int64_t)-1) {
-    return;
+  if (cl->npools && ((opool = (struct pool *) computer_pool_attach_shared_memory(cl)) == (void *) -1)) {
+    log_auto(L_ERROR,"computer_pool_remove() : could not attach old shared memory.");
+    return 0;
   }
 
-  if ((npool = (struct pool *) computer_pool_attach_shared_memory(npoolshmid)) == (void *) -1) {
-    return;
+  computer_pool_init (&new_cl);
+  new_cl.npools = cl->npools-1;
+  if ((npoolshmid = computer_pool_get_shared_memory(new_cl.npools)) == (int64_t)-1) {
+    log_auto(L_ERROR,"computer_pool_remove() : could not allocate shared memory for %i pools",new_cl.npools);
+    computer_pool_detach_shared_memory (cl);
+    return 0;
+  }
+
+  new_cl.poolshmid = npoolshmid;
+  if ((npool = (struct pool *) computer_pool_attach_shared_memory(&new_cl)) == (void *) -1) {
+    log_auto(L_WARNING,"computer_pool_remove() : could not attach new shared memory");
+    computer_pool_detach_shared_memory (cl);
+    computer_pool_free(&new_cl);
+    return 0;
   }
 
   for (i=0,j=0;i<cl->npools;i++) {
-    if (strncmp(opool[i].name,pool,strlen(pool)+1) == 0) {
+    if (strncmp(cl->pool[i].name,pool,strlen(pool)+1) == 0) {
       continue;
     }
-    memcpy(&npool[j],&opool[i],sizeof(struct pool));
+    memcpy(&new_cl.pool[j],&cl->pool[i],sizeof(struct pool));
     j++;
   }
 
-  computer_pool_detach_shared_memory (opool);
-  if (shmctl (cl->poolshmid,IPC_RMID,NULL) == -1) {
-    drerrno = DRE_RMSHMEM;
-    return;
-  }
-  cl->poolshmid = npoolshmid;
-  cl->npools--;
-  computer_pool_detach_shared_memory (npool);
-  return;
+  computer_pool_detach_shared_memory (cl);
+  computer_pool_free(cl);
+  cl->poolshmid = new_cl.poolshmid;
+  cl->npools = new_cl.npools;
+  cl->pool = new_cl.pool;
+  computer_pool_detach_shared_memory (cl);
+
+  return 1;
 }
 
 void computer_pool_list (struct computer_limits *cl) {
@@ -392,13 +460,13 @@ void computer_pool_list (struct computer_limits *cl) {
   struct pool *pool;
 
   if (cl->poolshmid != (int64_t)-1) {
-    pool = (struct pool *) computer_pool_attach_shared_memory (cl->poolshmid);
+    pool = (struct pool *) computer_pool_attach_shared_memory (cl);
     if (pool != (void*)-1) {
       printf ("Pools: \n");
       for (i = 0; i < cl->npools; i++) {
         printf (" \t%i - %s\n",i,pool[i].name);
       }
-      computer_pool_detach_shared_memory (pool);
+      computer_pool_detach_shared_memory (cl);
     } else {
       fprintf (stderr,"ERROR: computer_pool_list() pool shared memory could not be attached. (%s)\n",drerrno_str());
     }
@@ -408,38 +476,24 @@ void computer_pool_list (struct computer_limits *cl) {
 int computer_pool_exists (struct computer_limits *cl,char *poolname) {
   int i;
   struct pool *npool;
+  int found = 0;
 
   if (!cl->npools)
-    return 0;
+    return found;
 
-  if ((npool = (struct pool *) computer_pool_attach_shared_memory (cl->poolshmid)) == (void *)-1) {
-    return 0;
+  if ((npool = (struct pool *) computer_pool_attach_shared_memory (cl)) == (void *)-1) {
+    return found;
   }
 
   for (i=0;i<cl->npools;i++) {
-    if (strncmp (npool[i].name,poolname,strlen(poolname)+1) == 0)
-      return 1;
-  }
-
-  computer_pool_detach_shared_memory (npool);
-
-  return 0;
-}
-
-int computer_pool_free (struct computer_limits *cl) {
-  // fprintf (stderr,"PID (%i): computer_pool_free (cl=%x,cl->poolshmid=%lli,cl->npools=%i)\n",getpid(),cl,cl->poolshmid,cl->npools);
-  if (cl->poolshmid != (int64_t)-1) {
-    if (shmctl (cl->poolshmid,IPC_RMID,NULL) == -1) {
-      fprintf (stderr,"ERROR: computer_pool_free() deleting shared memory poolshmid: %lli\n",cl->poolshmid);
-      drerrno = DRE_RMSHMEM;
-      return 0;
+    if (strncmp (npool[i].name,poolname,strlen(poolname)+1) == 0) {
+      found = 1;
+      break;
     }
-    cl->poolshmid = (int64_t)-1;
   }
 
-  computer_pool_init (cl);
-
-  return 1;
+  computer_pool_detach_shared_memory (cl);
+  return found;
 }
 
 int computer_ncomputers_masterdb (struct database *wdb) {
@@ -544,24 +598,24 @@ int computer_attach (struct computer *computer) {
   struct pool *pool;
 
   if (computer->limits.npools) {
-    if ((pool = (struct pool *) computer_pool_attach_shared_memory(computer->limits.poolshmid)) == (void*)-1) {
-      computer->limits.npools = 0;
+    if ((pool = (struct pool *) computer_pool_attach_shared_memory(&computer->limits)) == (void*)-1) {
+      // list is deleted by same attach on failure
       return 0;
     }
-
-    computer->limits.pool = (struct pool *) malloc (sizeof (struct pool) * computer->limits.npools);
-    memcpy (computer->limits.pool,pool,sizeof (struct pool) * computer->limits.npools);
-
-    computer_pool_detach_shared_memory (pool);
+    
+    pool = (struct pool *) malloc (sizeof (struct pool) * computer->limits.npools);
+    memcpy (pool,computer->limits.pool,sizeof (struct pool) * computer->limits.npools);
+    computer->limits.local_pool = pool;
+    computer_pool_detach_shared_memory (&computer->limits);
   }
 
   return 1;
 }
 
 int computer_detach (struct computer *computer) {
-  if (computer->limits.pool) {
-    free (computer->limits.pool);
-    computer->limits.pool = NULL;
+  if (computer->limits.local_pool) {
+    free (computer->limits.local_pool);
+    computer->limits.local_pool = NULL;
   }
 
   return 1;
