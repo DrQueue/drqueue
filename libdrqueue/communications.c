@@ -696,7 +696,7 @@ int send_task (int sfd, struct task *task) {
   return 1;
 }
 
-int send_computer (int sfd, struct computer *computer, uint8_t attached) {
+int send_computer (int sfd, struct computer *computer, uint8_t use_local_pools) {
   if (!send_computer_status (sfd,&computer->status)) {
     printf ("error send_computer_status\n");
     return 0;
@@ -705,7 +705,7 @@ int send_computer (int sfd, struct computer *computer, uint8_t attached) {
     printf ("error send_computer_hwinfo\n");
     return 0;
   }
-  if (!send_computer_limits (sfd,&computer->limits,attached)) {
+  if (!send_computer_limits (sfd,&computer->limits,use_local_pools)) {
     printf ("error send_computer_limits\n");
     return 0;
   }
@@ -798,7 +798,7 @@ int recv_string (int sfd, char **str) {
   return 1;
 }
 
-int send_computer_pools (int sfd, struct computer_limits *cl, uint8_t attached) {
+int send_computer_pools (int sfd, struct computer_limits *cl, uint8_t use_local_pools) {
   int i;
   uint16_t npools;
   struct pool *pool;
@@ -810,14 +810,14 @@ int send_computer_pools (int sfd, struct computer_limits *cl, uint8_t attached) 
   }
 
   if (cl->npools) {
-    if (attached) {
-      pool = cl->pool;
-    } else {
-      if ((pool = (struct pool *) computer_pool_attach_shared_memory(cl->poolshmid)) == (void*)-1) {
+    if (!use_local_pools) {
+      if ((pool = (struct pool *) computer_pool_attach_shared_memory(cl)) == (void*)-1) {
         perror ("Attaching");
         fprintf (stderr,"ERROR (send_computer_pools) attaching pool shared memory %llu shmid\n", cl->poolshmid);
         return 0;
       }
+    } else {
+      pool = cl->local_pool;
     }
 
     for (i=0;i<cl->npools;i++) {
@@ -827,11 +827,12 @@ int send_computer_pools (int sfd, struct computer_limits *cl, uint8_t attached) 
       }
     }
 
-    if (!attached)
-      computer_pool_detach_shared_memory (pool);
+    if (!use_local_pools) {
+      computer_pool_detach_shared_memory (cl);
+    }
   }
 
-  fprintf (stderr,"DEBUG: Received pool list\n");
+  fprintf (stderr,"DEBUG: pool list that was sent:\n");
   computer_pool_list (cl);
 
   return 1;
@@ -887,7 +888,7 @@ int recv_computer_limits (int sfd, struct computer_limits *cl) {
   return 1;
 }
 
-int send_computer_limits (int sfd, struct computer_limits *cl, uint8_t attached) {
+int send_computer_limits (int sfd, struct computer_limits *cl, uint8_t use_local_pools) {
   struct computer_limits bswapped;
   void *buf = &bswapped;
 
@@ -907,7 +908,7 @@ int send_computer_limits (int sfd, struct computer_limits *cl, uint8_t attached)
   }
 
   // Pools
-  if (!send_computer_pools(sfd,cl,attached)) {
+  if (!send_computer_pools(sfd,cl,use_local_pools)) {
     return 0;
   }
 

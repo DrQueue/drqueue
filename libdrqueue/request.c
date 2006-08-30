@@ -977,9 +977,13 @@ void request_task_finished (struct slave_database *sdb, uint16_t itask) {
   if (!send_task (sfd,&sdb->comp->status.task[itask])) {
     /* We should retry, but really there should be no errors here */
     log_slave_computer (L_ERROR,"Sending task on request_task_finished : %s",drerrno_str());
+    close (sfd);
+    return;
   }
 
   close (sfd);
+  log_slave_computer(L_DEBUG,"Finished task information has been sent to master correctly.");
+  log_slave_computer(L_DEBUG,"Exiting request_task_finished");
 }
 
 void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp) {
@@ -1166,8 +1170,8 @@ void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp) {
   for (i=0;i<MAXCOMPUTERS;i++) {
     if (computer[i].used) {
       if (!computer_attach(&computer[i])) {
-        log_master (L_WARNING,"Could not attach computer pool's shared memory. Setting npools = 0.");
-        computer[i].limits.npools = 0;
+        log_master (L_WARNING,"Could not locally attach computer pool's shared memory.");
+        //computer[i].limits.npools = 0;
       }
     }
   }
@@ -1937,10 +1941,12 @@ void handle_r_r_compxfer (int sfd,struct database *wdb,int icomp,struct request 
 
   req->type = R_R_COMPXFER;
   req->data = RERR_NOERROR;
-  if (!send_request(sfd,req,MASTER))
+  if (!send_request(sfd,req,MASTER)) {
+    computer_detach (&comp);
     return;
+  }
 
-  log_master (L_DEBUG,"Sending computer");
+  log_master (L_DEBUG,"Sending computer %i",icomp2);
   send_computer (sfd,&comp,1);
   computer_detach (&comp);
 }

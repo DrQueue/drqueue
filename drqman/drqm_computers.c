@@ -228,13 +228,13 @@ void drqm_update_computerlist (struct drqm_computers_info *info) {
     if (info->computers[i].limits.npools) {
       struct pool *pool;
       char *tmp = (char *)malloc(BUFFERLEN);
-      if ((pool = computer_pool_attach_shared_memory(info->computers[i].limits.poolshmid)) != (void*)-1) {
+      if ((pool = computer_pool_attach_shared_memory(&info->computers[i].limits)) != (void*)-1) {
         snprintf(buff[7],BUFFERLEN,"%s",pool[0].name);
         for (j=1;j<info->computers[i].limits.npools;j++) {
           snprintf(tmp,BUFFERLEN,"%s,%s",buff[7],pool[j].name);
           strncpy(buff[7],tmp,BUFFERLEN-1);
         }
-        computer_pool_detach_shared_memory(pool);
+        computer_pool_detach_shared_memory(&info->computers[i].limits);
       } else {
         g_free(buff[7]);
         buff[7] = g_strdup("Cannot attach shared memory");
@@ -645,14 +645,14 @@ int cdd_update (GtkWidget *w, struct drqm_computers_info *info) {
 
   if (info->computers[info->row].limits.npools) {
     struct pool *pool;
-    if ((pool = computer_pool_attach_shared_memory(info->computers[info->row].limits.poolshmid)) != (void*)-1) {
+    if ((pool = computer_pool_attach_shared_memory(&info->computers[info->row].limits)) != (void*)-1) {
       snprintf (msg,BUFFERLEN,"%s",pool[0].name);
       for (i=1;i<info->computers[info->row].limits.npools;i++) {
         snprintf (msg2,BUFFERLEN,"%s,%s",msg,pool[i].name);
         strncpy (msg,msg2,BUFFERLEN-1);
       }
       gtk_label_set_text (GTK_LABEL(info->cdd.limits.lpools),msg);
-      computer_pool_detach_shared_memory(pool);
+      computer_pool_detach_shared_memory(&info->computers[info->row].limits);
       computer_pool_free(&info->computers[info->row].limits);
     } else {
       gtk_label_set_text (GTK_LABEL(info->cdd.limits.lpools),"WARNING: Could not attach pool shared memory");
@@ -1052,16 +1052,18 @@ void cdd_limits_pool_refresh_pool_list (GtkWidget *bclicked, struct drqm_compute
   }
   if (info->computers[info->row].limits.npools) {
     struct pool *pool;
-    pool = computer_pool_attach_shared_memory(info->computers[info->row].limits.poolshmid);
-    for (i=0;i<info->computers[info->row].limits.npools;i++) {
-      gtk_list_store_append (store,&iter);
-      gtk_list_store_set (store, &iter,
-                          CDD_POOL_COL_NAME,pool[i].name,
-                          -1);
+    pool = computer_pool_attach_shared_memory(&info->computers[info->row].limits);
+    if (pool != (struct pool *)-1) {
+      for (i=0;i<info->computers[info->row].limits.npools;i++) {
+        gtk_list_store_append (store,&iter);
+        gtk_list_store_set (store, &iter,
+                            CDD_POOL_COL_NAME,pool[i].name,
+                            -1);
+      }
+      computer_pool_detach_shared_memory(&info->computers[info->row].limits);
     }
-    computer_pool_detach_shared_memory(pool);
-    computer_pool_free(&info->computers[info->row].limits);
   }
+  computer_pool_free(&info->computers[info->row].limits);
 }
 
 
@@ -1407,11 +1409,15 @@ int computers_cmp_loadavg (GtkCList *clist, gconstpointer ptr1, gconstpointer pt
 
 int computers_cmp_pools (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   struct computer *ca,*cb;
+  struct computer_limits *cla,*clb;
 
   int diff;
 
   ca = (struct computer *) ((GtkCListRow*)ptr1)->data;
   cb = (struct computer *) ((GtkCListRow*)ptr2)->data;
+
+  cla = &ca->limits;
+  clb = &cb->limits;
 
   char pa[BUFFERLEN];
   char pb[BUFFERLEN];
@@ -1419,16 +1425,16 @@ int computers_cmp_pools (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2
 
   int i;
 
-  if (ca->limits.npools) {
+  if (cla->npools) {
     struct pool *pool;
-    if ((pool = computer_pool_attach_shared_memory(ca->limits.poolshmid)) != (void*)-1) {
+    if ((pool = computer_pool_attach_shared_memory(cla)) != (void*)-1) {
       snprintf (pa,BUFFERLEN,"%s",pool[0].name);
-      for (i=1;i<ca->limits.npools;i++) {
+      for (i=1;i<cla->npools;i++) {
         snprintf (msg2,BUFFERLEN,"%s,%s",pa,pool[i].name);
         strncpy (pa,msg2,BUFFERLEN-1);
       }
-      computer_pool_detach_shared_memory(pool);
-      computer_pool_free(&ca->limits);
+      computer_pool_detach_shared_memory(cla);
+      computer_pool_free(cla);
     } else {
       snprintf (pa,BUFFERLEN,"WARNING: Could not attach pool shared memory");
     }
@@ -1436,16 +1442,16 @@ int computers_cmp_pools (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2
     snprintf (pa,BUFFERLEN,"WARNING: This computer doesn't belong to any pool");
   }
 
-  if (cb->limits.npools) {
+  if (clb->npools) {
     struct pool *pool;
-    if ((pool = computer_pool_attach_shared_memory(ca->limits.poolshmid)) != (void*)-1) {
+    if ((pool = computer_pool_attach_shared_memory(clb)) != (void*)-1) {
       snprintf (pb,BUFFERLEN,"%s",pool[0].name);
       for (i=1;i<cb->limits.npools;i++) {
         snprintf (msg2,BUFFERLEN,"%s,%s",pb,pool[i].name);
         strncpy (pb,msg2,BUFFERLEN-1);
       }
-      computer_pool_detach_shared_memory(pool);
-      computer_pool_free(&cb->limits);
+      computer_pool_detach_shared_memory(clb);
+      computer_pool_free(clb);
     } else {
       snprintf (pb,BUFFERLEN,"WARNING: Could not attach pool shared memory");
     }
