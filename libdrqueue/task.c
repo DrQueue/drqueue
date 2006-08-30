@@ -185,7 +185,9 @@ void task_environment_set (struct task *task) {
   log_slave_task (task,L_DEBUG,"Received %i environment variables",envvars.nvariables);
   char *buffer;
   if (!envvars_attach(&envvars)) {
-    log_slave_task (task,L_WARNING,"Custom environment variables could not be attached. (%s)",drerrno_str());
+    if (envvars.nvariables > 0) {
+      log_slave_task (task,L_WARNING,"Custom environment variables could not be attached. There should be %i available. (%s)",envvars.nvariables,drerrno_str());
+    }
   } else {
     for (i = 0; i < envvars.nvariables; i++) {
       buffer = (char *) malloc (BUFFERLEN);
