@@ -53,15 +53,15 @@ static GtkWidget *CreateMenuTasks (struct drqm_computers_info *info);
 static gint PopupMenuTasks (GtkWidget *clist, GdkEvent *event, struct drqm_computers_info *info);
 // enabled
 static void cdd_limits_enabled_bcp (GtkWidget *button, struct drqm_computers_info *info);
-/* nmaxcpus */
+// nmaxcpus
 static void cdd_limits_nmaxcpus_bcp (GtkWidget *button, struct drqm_computers_info *info);
 static GtkWidget *nmc_dialog (struct drqm_computers_info *info);
 static void nmcd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info);
-/* maxfreeloadcpu */
+// maxfreeloadcpu
 static void cdd_limits_maxfreeloadcpu_bcp (GtkWidget *button, struct drqm_computers_info *info);
 static GtkWidget *mflc_dialog (struct drqm_computers_info *info);
 static void mflcd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info);
-/* autoenable */
+// autoenable
 static void cdd_limits_autoenable_bcp (GtkWidget *button, struct drqm_computers_info *info);
 static GtkWidget *autoenable_change_dialog (struct drqm_computers_info *info);
 static void aecd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info);
@@ -70,7 +70,7 @@ static void cdd_limits_pool_bcp (GtkWidget *bclicked, struct drqm_computers_info
 static void cdd_limits_pool_refresh_pool_list (GtkWidget *bclicked, struct drqm_computers_info *info);
 static void cdd_limits_pool_add_clicked (GtkWidget *bclicked, struct drqm_computers_info *info);
 static void cdd_limits_pool_remove_clicked (GtkWidget *bclicked, struct drqm_computers_info *info);
-/* kill task */
+// kill task
 static void KillTask (GtkWidget *menu_item, struct drqm_computers_info *info);
 static void dtk_bok_pressed (GtkWidget *button,struct drqm_computers_info *info);
 
@@ -119,10 +119,10 @@ void CreateComputersPage (GtkWidget *notebook,struct info_drqm *info) {
   autorefreshWidgets = CreateAutoRefreshWidgets (&info->idc.ari);
   gtk_box_pack_start(GTK_BOX(hbox2),autorefreshWidgets,FALSE,FALSE,2);
 
-  /* Append the page */
+  // Append the page
   gtk_notebook_append_page (GTK_NOTEBOOK(notebook), container, hbox);
 
-  /* Put the computers on the list */
+  // Put the computers on the list
   drqm_request_computerlist (&info->idc);
   drqm_update_computerlist (&info->idc);
 
@@ -155,7 +155,6 @@ static GtkWidget *CreateComputersList(struct drqm_computers_info *info) {
   return (window);
 }
 
-//static GtkWidget *CreateClist (GtkWidget *window)
 static GtkWidget *CreateClist () {
   gchar *titles[] = { "ID","Enabled","Running","Name","OS","CPUs","Load Avg", "Pools" };
   GtkWidget *clist;

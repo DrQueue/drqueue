@@ -141,8 +141,8 @@ void drqm_request_computerlist (struct drqm_computers_info *info) {
       computer_init (tcomputer);
       if (!recv_computer (sfd,tcomputer)) {
         fprintf (stderr,"ERROR: Receiving computer structure (drqm_request_computerlist) [%i]\n",i);
-        fflush(stderr);
-        exit (1);  // FIXME: should free pool shared memory from other received computers
+        drqm_clean_computerlist (info);
+        exit (1);
       }
       tcomputer++;
     }
@@ -161,26 +161,27 @@ void drqm_clean_computerlist (struct drqm_computers_info *info) {
     }
     g_free (info->computers);
     info->computers = NULL;
+    info->ncomputers = 0;
   }
 }
 
 void drqm_request_job_delete (uint32_t jobid) {
-  /* This function sends the request to delete the job selected from the queue */
+  // This function sends the request to delete the job selected from the queue
   request_job_delete (jobid,CLIENT);
 }
 
 void drqm_request_job_stop (uint32_t jobid) {
-  /* This function sends the request to stop the job selected from the queue */
+  // This function sends the request to stop the job selected from the queue
   request_job_stop (jobid,CLIENT);
 }
 
 void drqm_request_job_hstop (uint32_t jobid) {
-  /* This function sends the request to hard stop the job selected from the queue */
+  // This function sends the request to hard stop the job selected from the queue
   request_job_hstop (jobid,CLIENT);
 }
 
 void drqm_request_job_continue (uint32_t jobid) {
-  /* This function sends the request to continue the (stopped) job selected from the queue */
+  // This function sends the request to continue the (stopped) job selected from the queue
   request_job_continue (jobid,CLIENT);
 }
 

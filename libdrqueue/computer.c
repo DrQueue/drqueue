@@ -221,7 +221,6 @@ int computer_free (struct computer *computer) {
   if (!computer_pool_free (&computer->limits)) {
     log_auto (L_ERROR,"computer_pool_free() found a problem while freeing computer pool memory. (%s) (%s)\n",drerrno_str(),strerror(errno));
   }
-  computer_pool_init (&computer->limits);
 
   return 1;
 }
@@ -330,12 +329,16 @@ int computer_pool_detach_shared_memory (struct computer_limits *cl) {
   int rv = 1;
   if (cl->pool) {
     if (shmdt((char*)cl->pool) == -1) {
-      log_auto(L_ERROR,"computer_pool_detach_shared_memory: %s",strerror(errno));
+      log_auto(L_ERROR,"computer_pool_detach_shared_memory(): %s",strerror(errno));
       rv = 0;
     } 
     cl->pool = NULL;
   } else {
-    log_auto(L_WARNING,"computer_pool_detach_shared_memory: something tried to detach NULL");
+    if (cl->poolshmid != -1) {
+      log_auto(L_WARNING,"computer_pool_detach_shared_memory(): something tried to detach NULL with a poolshmid != -1.");
+    } else {
+      log_auto(L_DEBUG,"computer_pool_detach_shared_memory(): tried to detach NULL with a poolshmid == -1. Not an issue.");
+    }
     rv = 0;
   }
   return rv;
