@@ -57,7 +57,6 @@
 
 /* Static functions declaration */
 static GtkWidget *CreateJobsList(struct drqm_jobs_info *info);
-//static GtkWidget *CreateClist (GtkWidget *window);
 static GtkWidget *CreateClist ();
 static GtkWidget *CreateButtonRefresh (struct drqm_jobs_info *info);
 static void PressedButtonRefresh (GtkWidget *b, struct drqm_jobs_info *info);

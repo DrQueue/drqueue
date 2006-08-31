@@ -21,32 +21,32 @@ endif
 CFLAGS = -I../libdrqueue -I.. -Wall -g -O2
 
 ifeq ($(systype),Linux)
-	CPPFLAGS += -D__LINUX
-	CFLAGS += -D__LINUX `pkg-config --cflags gtk+-2.0`
-	LDFLAGS = `pkg-config --libs gtk+-2.0`
-	MAKE = make
+ CPPFLAGS += -D__LINUX
+ CFLAGS += -D__LINUX `pkg-config --cflags gtk+-2.0`
+ LDFLAGS = `pkg-config --libs gtk+-2.0`
+ MAKE = make
 else 
  ifeq ($(systype),IRIX)
-	CPPFLAGS += -D__IRIX
-	CFLAGS += -D__IRIX `pkg-config --cflags gtk+-2.0`
+  CPPFLAGS += -D__IRIX
+  CFLAGS += -D__IRIX `pkg-config --cflags gtk+-2.0`
   LDFLAGS = `pkg-config --libs gtk+-2.0`
   MAKE = /usr/freeware/bin/make
  else
   ifeq ($(systype),Darwin)
    CPPFLAGS += -D__OSX
-	 CFLAGS += -D__OSX `pkg-config --cflags gtk+-2.0`
+   CFLAGS += -D__OSX `pkg-config --cflags gtk+-2.0`
    LDFLAGS = `pkg-config --libs gtk+-2.0`
    MAKE = make
   else
    ifeq ($(systype),FreeBSD)
     CPPFLAGS += -D__FREEBSD
-	  CFLAGS += -D__FREEBSD `pkg-config --cflags gtk+-2.0`
+    CFLAGS += -D__FREEBSD `pkg-config --cflags gtk+-2.0`
     LDFLAGS = `pkg-config --libs gtk+-2.0`
     MAKE = gmake
    else
     ifeq ($(systype),CYGWIN_NT-5.1)
      CPPFLAGS += -D__CYGWIN
-	   CFLAGS += -D__CYWIN `$(GTK_PATH)/pkg-config --cflags gtk+-2.0`
+     CFLAGS += -D__CYGWIN `$(GTK_PATH)/pkg-config --cflags gtk+-2.0` -mms-bitfields
      LDFLAGS = `$(GTK_PATH)/pkg-config --libs gtk+-2.0`
      UIFLAGS = -e _mainCRTStartup -mwindows ../contrib/windows/Resources/drqueue.res 
      MAKE = make
@@ -77,6 +77,7 @@ ifeq ($(systype),CYGWIN_NT-5.1)
  
 drqman: $(OBJS) ../libdrqueue.a ../contrib/windows/Resources/drqueue.res 
 	$(CC) -o $@ $(OBJS) ../libdrqueue.a $(LDFLAGS) $(UIFLAGS) 
+
 else
 
 drqman: $(OBJS) ../libdrqueue.a

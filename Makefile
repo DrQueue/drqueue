@@ -224,6 +224,7 @@ tags:
 
 clean:
 	rm -fR *.o *.os *.exe *~ libdrqueue.a $(BASE_C_TOOLS) $(BASE_CXX_TOOLS) TAGS tmp/* logs/* db/* contrib/windows/*.exe bin/*.$(systype).$(machinetype) $(OBJS_LIBDRQUEUE)
+	rm -fR libdrqueue/*~
 	$(MAKE) -C drqman clean
 
 #actual object make targets
