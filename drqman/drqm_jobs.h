@@ -86,15 +86,15 @@ struct drqmj_dnji {       /* dialog new job info */
   GtkWidget *ename;
   GtkWidget *ecmd;
   GtkWidget *esf,*eef,*estf; /* entry start frame, entry end frame, entry step frames */
-  GtkWidget *ebs,*efp;        /* entry block_size */
-  GtkWidget *cpri,*epri;    /* combo priority, entry priority */
-  GtkWidget *fs;        /* File selector */
+  GtkWidget *ebs,*efp;       /* entry block_size, entry frame pad */
+  GtkWidget *cpri,*epri;     /* combo priority, entry priority */
+  GtkWidget *fs;             /* File selector */
 
   /* koj */
   GtkWidget *ckoj;       /* combo koj */
   GtkWidget *fkoj;       /* frame koj */
-  GtkWidget *vbkoj;       /* vbox inside the koj's tab */
-  uint16_t koj;         /* koj */
+  GtkWidget *vbkoj;      /* vbox inside the koj's tab */
+  uint16_t koj;          /* koj */
   struct drqmj_koji_maya koji_maya; /* koj info for maya */
   struct drqmj_koji_mentalray koji_mentalray; /* koj info for mentalray */
   struct drqmj_koji_blender koji_blender; /* koj info for blender */

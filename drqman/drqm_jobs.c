@@ -418,6 +418,8 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info) {
   gtk_entry_set_text(GTK_ENTRY(info->dnj.eef),buf);
   snprintf(buf,BUFFERLEN-1,"%i",info->jobs[info->row].frame_step);
   gtk_entry_set_text(GTK_ENTRY(info->dnj.estf),buf);
+  snprintf(buf,BUFFERLEN-1,"%hhu",info->jobs[info->row].frame_pad);
+  gtk_entry_set_text(GTK_ENTRY(info->dnj.estf),buf);
 
   /* Priority */
   if (info->jobs[info->row].priority == 1000) {
@@ -1002,7 +1004,7 @@ static int dnj_submit (struct drqmj_dnji *info) {
     fprintf (stderr,"block size could not be read\n");
     return 0;
   }
-  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->efp)),"%c",&job.frame_pad) != 1) { 
+  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->efp)),"%hhu",&job.frame_pad) != 1) { 
     fprintf (stderr,"frame pad could not be read\n");
     return 0;
   }
