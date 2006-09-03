@@ -465,11 +465,16 @@ void computer_pool_list (struct computer_limits *cl) {
   if (cl->poolshmid != (int64_t)-1) {
     pool = (struct pool *) computer_pool_attach_shared_memory (cl);
     if (pool != (void*)-1) {
-      printf ("Pools: \n");
       for (i = 0; i < cl->npools; i++) {
+        if (i == 0) {
+          printf ("List of pools: \n");
+        }
         printf (" \t%i - %s\n",i,pool[i].name);
       }
       computer_pool_detach_shared_memory (cl);
+      if (i == 0) {
+        printf ("WARNING: Empty list of pools.\n");
+      }
     } else {
       fprintf (stderr,"ERROR: computer_pool_list() pool shared memory could not be attached. (%s)\n",drerrno_str());
     }

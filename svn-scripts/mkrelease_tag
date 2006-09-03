@@ -152,6 +152,7 @@ tmp_remove () {
         exit 1
     fi
     rm -fR "$TMP_PATH"
+    svk --detach "$TMP_PATH"
     echo "Completed temporary path removal"
     return 0    
 }
@@ -206,22 +207,22 @@ if [ -z "$REPO_TOOL" -o -z "$TAG" ]; then
 fi
 
 check_options
-show_report
-
-read -p "Are these variables correct ? (y/n) " SURE
-if [ "x$SURE" != "xy" ]; then
-    echo "Exiting..."
-    exit 1
-fi
 
 if [ "x$BUILD_TARBALL" != "xy" ]; then
+    show_report
+    read -p "Are these variables correct ? (y/n) " SURE
+    if [ "x$SURE" != "xy" ]; then
+        echo "Exiting..."
+        exit 1
+    fi
+
     tmp_checkout
     change_common_h
     repo_create_tag
     tmp_remove
     build_tarball
 else
-    echo "Creating only tarball file"
+    echo "Creating only tarball file using tag $VERSION"
     build_tarball
 fi
 
