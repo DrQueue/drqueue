@@ -983,7 +983,7 @@ int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp) {
   if (wdb->job[ijob].nprocs >= wdb->job[ijob].limits.nmaxcpus)
     return 0;
 
-  if (computer_ntasks_job(&wdb->computer[icomp],ijob) >= wdb->job[ijob].limits.nmaxcpuscomputer)
+  if (computer_nrunning_job(&wdb->computer[icomp],ijob) >= wdb->job[ijob].limits.nmaxcpuscomputer)
     return 0;
 
   // Solved bug 0000003

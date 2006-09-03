@@ -68,7 +68,8 @@ int computer_index_name (void *pwdb,char *name);     /* because if I did I would
 int computer_index_free (void *pwdb);
 int computer_available (struct computer *computer);
 int computer_ntasks (struct computer *comp);
-int computer_ntasks_job (struct computer *comp,uint32_t ijob);
+int computer_nrunning (struct computer *comp);
+int computer_nrunning_job (struct computer *comp,uint32_t ijob);
 void computer_update_assigned (struct database *wdb,uint32_t ijob,int iframe,int icomp,int itask);
 void computer_init (struct computer *computer);
 int computer_free (struct computer *computer);

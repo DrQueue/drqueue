@@ -517,6 +517,7 @@ void launch_task (struct slave_database *sdb, uint16_t itask) {
       semaphore_lock(sdb->semid);
       sdb->comp->status.task[itask].exitstatus = 0;
       sdb->comp->status.task[itask].status = TASKSTATUS_FINISHED;
+      sdb->comp->status.nrunning--;
       if (WIFSIGNALED(rc)) {
         /* Process exited abnormally either killed by us or by itself (SIGSEGV) */
         /*  printf ("\n\nSIGNALED with %i\n",WTERMSIG(rc)); */

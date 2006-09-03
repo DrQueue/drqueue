@@ -91,7 +91,7 @@ class job:
     def ShowFrame (self,frame):
         index = drqueue.job_frame_number_to_index(self.drjob,frame)
         print '<div class="frametitle">'
-        print '<h1 class="jobtitle")>Job : ' + self.drjob.name + '</h1>'
+        print '<h1 class="jobtitle">Job : ' + self.drjob.name + '</h1>'
         print '<h2>Frame : %i</h2>'%(frame,) 
         print '<h2>Status : ' + drqueue.job_frame_status_string(self.drframelist[index].status) + '</h2>'
         print '<h3>Start Time: '
@@ -134,37 +134,81 @@ class joblist:
             self.ShowJobs()
         print '</div>'
 
+class task:
+    def __init__(self,drtask,columns=None):
+        self.drtask = drtask
+        self.columns = []
+        self.column = {}
+        if not len(self.columns):
+            self.columns = ['jobname','status','frame','ijob','itask','icomp']
+        self.fill_column()
+    def fill_column(self):
+        for name in self.columns:
+            self.column[name] = self.attribute_as_column(name)
+        return self.column
+    def attribute_as_column(self,name):
+        if name == 'jobname':
+            return '<td class="%s"><a href="%s/job/%i">%s</a></td>'%(name,os.environ['SCRIPT_NAME'],self.drtask.ijob,self.drtask.jobname,)
+        elif name == 'ijob':
+            return '<td class="%s">%i</td>'%(name,self.drtask.ijob,)
+        elif name == 'itask':
+            return '<td class="%s">%i</td>'%(name,self.drtask.itask,)
+        elif name == 'status':
+            return '<td class="%s">%s -> %i</td>'%(name,self.status_string(),self.drtask.status)
+        elif name == 'icomp':
+            return '<td class="%s"><a href="%s/computer/%i">%i</a></td>'%(name,os.environ['SCRIPT_NAME'],self.drtask.icomp,self.drtask.icomp)
+        elif name == 'frame':
+            return '<td class="%s"><a href="%s/job/%i/frame/%i">%i</a></td>'%(name,os.environ['SCRIPT_NAME'],self.drtask.ijob,self.drtask.frame,self.drtask.frame)
+        else:
+            return '<td class="empty">!!Task property unknown!!</td>'
+    def as_row_titles(self):
+        print '<tr class="taskrowtitle">'
+        for title in self.column.keys():
+            print '<th class="task-%s">%s</th>'%(title,title)
+        print '</tr>'
+    def as_row (self):
+        print '<tr class="taskrow">'
+        for column_name in self.column.keys():
+            print self.column[column_name]
+        print '</tr>'
+    def status_string(self):
+        return drqueue.task_status_string(self.drtask.status)
+    
+    
+class tasklist:
+    def __init__(self,computer):
+        self.tasklist = []
+        drtasks = computer.GetDRTasks()
+        for drtask in drtasks:
+            self.tasklist.append(task(drtask))
+    def show_as_table (self):
+        print '<table class="tasklisttable">'
+        if len(self.tasklist):
+            self.tasklist[0].as_row_titles()
+        for task_item in self.tasklist:
+            task_item.as_row()
+        print '</table>'
+    def show_as_div_table (self):
+        print '<div class="tasklist">'
+        self.show_as_table()
+        print '</div>'
+        
 class computer:
     def __init__(self,drcomputer):
         self.drcomputer = drcomputer
-
-    def TaskStatus (self,drtask):
-        if drtask.status == drqueue.TASKSTATUS_LOADING:
-            return "Loading"
-        elif drtask.status == drqueue.TASKSTATUS_RUNNING:
-            return "Running"
-        else:
-            return "Unknown"
-
-    def ShowTaskRow (self,drtask):
-        print '<tr class="taskrow">'
-        print '<td><a href="%s/job/%i">%s</a></td>'%(os.environ['SCRIPT_NAME'],drtask.ijob,drtask.jobname)
-        print '<td>%i</td>'%(drtask.ijob,)
-        print '<td>%i</td>'%(drtask.itask,)
-        print '<td><a href="%s/job/%i/frame/%i">%i</a></td>'%(os.environ['SCRIPT_NAME'],drtask.ijob,drtask.frame,drtask.frame)
-        print '<td>%i</td>'%(drtask.pid,)
-        print '<td>%s</td>'%(self.TaskStatus(drtask),)
+        self.tasklist = tasklist(self)
+    def GetDRTasks (self):
+        tlist = []
+        for i in range(drqueue.MAXTASKS):
+            drtask = self.drcomputer.status.get_task(i)
+            if drtask.used:
+                tlist.append(drtask)
+        return tlist
 
     def ShowTasks (self):
         print '<div class="tasklist">'
         print '<p class="tasklisttitle">Tasks</p>'
-        print '<table class="tasklisttable">'
-        print '<tr class="taskrowtitle"><td>Job Name</td><td>Job index</td><td>Task index</td><td>Frame</td><td>PID</td><td>Status</td></tr>'
-        for i in range(drqueue.MAXTASKS):
-            drtask = self.drcomputer.status.get_task(i)
-            if drtask.used:
-                self.ShowTaskRow(drtask)
-        print '</table>'
+        self.tasklist.show_as_table()
         print '</div>'
         
     def ShowMinRow (self):
@@ -259,7 +303,7 @@ class drkeewee:
         print '<head><title>DrKeewee</title><link rel="stylesheet" href="/drkeewee.css" type="text/css"/><head>'
     def showtitle(self):
         print '<div class="title">'
-        print '<h1>DrKeewee - <a href=http://www.drqueue.org/>DrQueue</a>\'s web service</h1>'
+        print '<span id="drkeewee"><a href="/">DrKeewee</a></span><div id="drqueue"><a href=http://www.drqueue.org/>DrQueue</a>\'s web service</div>'
         print '</div>'
     def showlists (self):
         self.joblist = joblist()

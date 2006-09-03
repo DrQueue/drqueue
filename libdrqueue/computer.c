@@ -130,7 +130,7 @@ int computer_available (struct computer *computer) {
   /*    If we substract then we are probably substracting from another task's load */
   /* Number of cpus charged based on the load */
   if (computer->limits.maxfreeloadcpu > 0) {
-    t = (computer->status.loadavg[0] / computer->limits.maxfreeloadcpu) - computer->status.ntasks;
+    t = (computer->status.loadavg[0] / computer->limits.maxfreeloadcpu) - computer->status.nrunning;
     t = ( t < 0 ) ? 0 : t;
   } else {
     t = npt;
@@ -139,10 +139,10 @@ int computer_available (struct computer *computer) {
   log_slave_computer(L_DEBUG2,"computer_available() phase 3 (after considering the loadavg) : npt = %i",npt);
 
   /* Number of current working tasks */
-  npt -= computer->status.ntasks;
-  log_slave_computer(L_DEBUG2,"computer_available() phase 3 (substract ntasks) : npt = %i",npt);
+  npt -= computer->status.nrunning;
+  log_slave_computer(L_DEBUG2,"computer_available() phase 3 (substract nrunning) : npt = %i",npt);
 
-  if (computer->status.ntasks > MAXTASKS) {
+  if (computer->status.nrunning > MAXTASKS) {
     /* This should never happen, btw */
     log_slave_computer (L_ERROR,"The computer has exceeded the MAXTASKS limit");
     kill (0,SIGINT);
@@ -200,6 +200,7 @@ void computer_update_assigned (struct database *wdb,uint32_t ijob,int iframe,int
   /* until it has exited the launching loop. And we need this information for the limits */
   /* tests */
   wdb->computer[icomp].status.ntasks++;
+  wdb->computer[icomp].status.nrunning++;
 }
 
 void computer_init (struct computer *computer) {
@@ -524,11 +525,25 @@ int computer_ntasks (struct computer *comp) {
   int ntasks = 0;
 
   for (i=0; i < MAXTASKS; i++) {
-    if (comp->status.task[i].used)
+    if (comp->status.task[i].used) {
       ntasks ++;
+    }
   }
 
   return ntasks;
+}
+
+int computer_nrunning (struct computer *comp) {
+  /* This function returns the number of running tasks */
+  /* This function should be called locked */
+  int i;
+  int nrunning = 0;
+  for (i=0; i < MAXTASKS; i++) {
+    if (comp->status.task[i].used && comp->status.task[i].status != TASKSTATUS_FINISHED) {
+      nrunning++;
+    }      
+  }
+  return nrunning;
 }
 
 void computer_init_limits (struct computer *comp) {
@@ -551,7 +566,7 @@ int computer_index_correct_master (struct database *wdb, uint32_t icomp) {
   return 1;
 }
 
-int computer_ntasks_job (struct computer *comp,uint32_t ijob) {
+int computer_nrunning_job (struct computer *comp,uint32_t ijob) {
   /* This function returns the number of tasks that are running the specified */
   /* ijob in the given computer */
   /* This function should be called locked */
@@ -560,7 +575,8 @@ int computer_ntasks_job (struct computer *comp,uint32_t ijob) {
 
   for (c=0;c<MAXTASKS;c++) {
     if ((comp->status.task[c].used)
-        && (comp->status.task[c].ijob == ijob)) {
+        && (comp->status.task[c].ijob == ijob)
+        && (comp->status.task[c].status != TASKSTATUS_FINISHED)) {
       n++;
     }
   }
