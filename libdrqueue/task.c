@@ -94,6 +94,9 @@ char *task_status_string (unsigned char status) {
   case TASKSTATUS_RUNNING:
     st_string = "Running";
     break;
+  case TASKSTATUS_FINISHED:
+    st_string = "Finished";
+    break;
   default:
     st_string = "UNKNOWN";
   }

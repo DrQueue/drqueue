@@ -912,6 +912,7 @@ int request_job_available (struct slave_database *sdb, uint16_t *itask) {
   semaphore_lock(sdb->semid);
   memcpy(&sdb->comp->status.task[*itask],&ttask,sizeof(ttask));
   sdb->comp->status.ntasks = computer_ntasks (sdb->comp);
+  sdb->comp->status.nrunning = computer_nrunning (sdb->comp);
   semaphore_release(sdb->semid);
 
   close (sfd);

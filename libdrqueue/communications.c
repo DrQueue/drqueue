@@ -281,15 +281,22 @@ int send_request (int sfd, struct request *request,uint8_t who) {
 int send_computer_status (int sfd, struct computer_status *status) {
   uint16_t i;
   uint16_t ntasks;
+  uint16_t nrunning;
 
   /* Count the tasks. (Shouldn't be necessary) */
   // FIXME: Remove this ?
   ntasks = 0;
+  nrunning = 0;
   for (i=0;i<MAXTASKS;i++) {
-    if (status->task[i].used)
+    if (status->task[i].used) {
       ntasks++;
+      if (status->task[i].status != TASKSTATUS_FINISHED) {
+        nrunning++;
+      }
+    }
   }
   status->ntasks = ntasks;
+  status->nrunning = nrunning;
 
   if (!send_computer_loadavg(sfd,status)) {
     return 0;
@@ -336,19 +343,29 @@ int recv_computer_loadavg (int sfd, struct computer_status *status) {
 
 int recv_computer_ntasks (int sfd, struct computer_status *status) {
   uint16_t ntasks;
-
+  uint16_t nrunning;
   if (!dr_read(sfd,(char*)&ntasks,sizeof(uint16_t))) {
     return 0;
   }
+  if (!dr_read(sfd,(char*)&nrunning,sizeof(uint16_t))) {
+    return 0;
+  }
   status->ntasks = ntohs(ntasks);
+  status->nrunning = ntohs(nrunning);
+
   return 1;
 }
 
 int send_computer_ntasks (int sfd, struct computer_status *status) {
-  uint16_t nbo_ntasks; // network byte ordered
+  uint16_t nbo_ntasks;   // network byte ordered
+  uint16_t nbo_nrunning; // network byte ordered
   
   nbo_ntasks = htons(status->ntasks);
+  nbo_ntasks = htons(status->nrunning);
   if (!dr_write(sfd,(char*)&nbo_ntasks,sizeof(uint16_t))) {
+    return 0;
+  }
+  if (!dr_write(sfd,(char*)&nbo_nrunning,sizeof(uint16_t))) {
     return 0;
   }
   return 1;
@@ -371,7 +388,6 @@ int recv_computer_status (int sfd, struct computer_status *status) {
     drerrno = DRE_ERRORREADING;
     fprintf (stderr,"ERROR: recv_computer_ntasks: %s\n",drerrno_str());
   }
-
   if (status->ntasks > MAXTASKS) {
     fprintf (stderr,"WARNING: ntasks > MAXTASKS (%i)\n",status->ntasks);
     status->ntasks = 0;
