@@ -38,6 +38,9 @@ void task_init_all (struct task *task) {
 }
 
 void task_init (struct task *task) {
+  if (!task) {
+    return;
+  }
   task->used = 0;
   strcpy(task->jobname,"EMPTY");
   task->ijob = 0;
@@ -110,11 +113,15 @@ void task_environment_set (struct task *task) {
   static char block_size[BUFFERLEN];
   static char ijob[BUFFERLEN];
   static char icomp[BUFFERLEN];
+  static char jobname[BUFFERLEN];
 
   /* Padded frame number */
   /* TODO: make padding length user defined */
-  snprintf (padformat,BUFFERLEN-1,"DRQUEUE_PADFRAME=%%0%uu",task->frame_pad);
-  snprintf (padframe,BUFFERLEN-1,padformat,task->frame);
+  // Old code
+/*   snprintf (padformat,BUFFERLEN-1,"DRQUEUE_PADFRAME=%%0%uu",task->frame_pad); */
+/*   snprintf (padframe,BUFFERLEN-1,padformat,task->frame); */
+  // New code
+  snprintf (padframe,BUFFERLEN,"DRQUEUE_PADFRAME=%0*i",task->frame_pad,task->frame);
   putenv (padframe);
 
   //create a variable with a space delimited padded frames list
@@ -123,13 +130,20 @@ void task_environment_set (struct task *task) {
   if (block_end > task->frame_end + 1) {
     block_end = task->frame_end + 1;
   }
-  snprintf (padformat,BUFFERLEN-1,"DRQUEUE_PADFRAMES=%%0%uu",task->frame_pad);
-  snprintf (padframes,BUFFERLEN-1,padformat,task->frame);
+  // Old code
+/*   snprintf (padformat,BUFFERLEN-1,"DRQUEUE_PADFRAMES=%%0%uu",task->frame_pad); */
+/*   snprintf (padframes,BUFFERLEN-1,padformat,task->frame); */
+  // New code
+  snprintf (padformat,BUFFERLEN,"DRQUEUE_PADFRAMES=%0*i",task->frame_pad,task->frame);
+  snprintf (padframes,BUFFERLEN,"%s",padformat);
   for (i=task->frame+1; i<block_end; i++) {
-    snprintf (padformat,BUFFERLEN-1,"%s %%0%uu",padframes,task->frame_pad);
-    snprintf (padframes,BUFFERLEN-1,padformat,i);
+    // Old code
+/*     snprintf (padformat,BUFFERLEN-1,"%s %%0%uu",padframes,task->frame_pad); */
+/*     snprintf (padframes,BUFFERLEN-1,padformat,i); */
+    // New code
+    snprintf (padformat,BUFFERLEN,"%s %0*i",padframes,task->frame_pad,i);
+    snprintf (padframes,BUFFERLEN,"%s",padformat);
   }
-  //snprintf (padformat,BUFFERLEN-1,"%s\"",padframes);
   putenv (padframes);
 
   /* Frame number */
@@ -149,6 +163,9 @@ void task_environment_set (struct task *task) {
   snprintf (block_size,BUFFERLEN-1,"DRQUEUE_BLOCKSIZE=%u",task->block_size);
   putenv (block_size);
 
+  // Job name
+  snprintf (jobname,BUFFERLEN-1,"DRQUEUE_JOBNAME=%s",task->jobname);
+  putenv (jobname);
   /* Job Index */
   snprintf (ijob,BUFFERLEN-1,"DRQUEUE_JOBID=%i",task->ijob);
   putenv (ijob);
@@ -198,4 +215,26 @@ void task_environment_set (struct task *task) {
     envvars_detach(&envvars);
   }
   envvars_empty(&envvars);
+}
+
+int
+task_set_to_job_frame (struct task *task, struct job *job, uint32_t frame) {
+  if (!task) {
+    return 0;
+  }
+  if (!job) {
+    return 0;
+  }
+  task_init(task);
+  strncpy(task->jobname,job->name,MAXNAMELEN-1);
+  task->ijob = job->id;
+  strncpy(task->jobcmd,job->cmd,MAXCMDLEN-1);
+  strncpy(task->owner,job->owner,MAXCMDLEN-1);
+  task->frame = frame;
+  task->frame_start = job->frame_start;
+  task->frame_end = job->frame_end;
+  task->frame_step = job->frame_step;
+  task->frame_pad = job->frame_pad;
+  task->block_size= job->block_size;
+  return 1;
 }

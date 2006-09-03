@@ -805,11 +805,10 @@ int job_index_correct_master (struct database *wdb,uint32_t ijob) {
 }
 
 void job_environment_set (struct job *job, uint32_t iframe) {
+  //
+  // FIXME: needs to add compid and computer OS properly
+  //
   uint32_t frame;
-  static char padformat[BUFFERLEN];
-  static char padframe[BUFFERLEN];
-  static char padframes[BUFFERLEN];
-  static char s_frame[BUFFERLEN];
   static char scene[BUFFERLEN];
   static char renderdir[BUFFERLEN];
   static char projectdir[BUFFERLEN];
@@ -821,57 +820,19 @@ void job_environment_set (struct job *job, uint32_t iframe) {
   static char terrainfile[BUFFERLEN];
   static char image[BUFFERLEN];
   static char imageExt[BUFFERLEN];
-  static char owner[BUFFERLEN];
   static char name[BUFFERLEN];
-  static char startframe[BUFFERLEN];
-  static char endframe[BUFFERLEN];
-  static char stepframe[BUFFERLEN];
-  static char blocksize[BUFFERLEN];
   static char project[BUFFERLEN];
   static char comp[BUFFERLEN];
   static char script[BUFFERLEN];
   static char xsipass[BUFFERLEN];
 
+  struct task task;
+
+
   frame = job_frame_index_to_number (job,iframe);
+  task_set_to_job_frame (&task,job,frame);
+  task_environment_set (&task);
 
-  /* Padded frame number */
-  /* TODO: make padding length user defined */
-  snprintf (padformat,BUFFERLEN-1,"DRQUEUE_PADFRAME=%%0%ii",job->frame_pad);
-  snprintf (padframe,BUFFERLEN-1,padformat,frame);
-  putenv (padframe);
-
-  int i;
-  int block_end = frame+job->block_size;
-  if (block_end > job->frame_end + 1) {
-    block_end = job->frame_end + 1;
-  }
-  snprintf (padformat,BUFFERLEN-1,"DRQUEUE_PADFRAMES=%%0%uu",job->frame_pad);
-  snprintf (padframes,BUFFERLEN-1,padformat,frame);
-  for (i=frame+1; i<block_end; i++) {
-    snprintf (padformat,BUFFERLEN-1,"%s %%0%uu",padframes,job->frame_pad);
-    snprintf (padframes,BUFFERLEN-1,padformat,i);
-  }
-  // snprintf (padformat,BUFFERLEN-1,"%s\"",padframes);
-  putenv (padframes);
-
-  /* Frame number */
-  snprintf (s_frame,BUFFERLEN-1,"DRQUEUE_FRAME=%i",frame);
-  putenv (s_frame);
-  /* Start and end frame numbers */
-  snprintf (startframe,BUFFERLEN-1,"DRQUEUE_STARTFRAME=%i",job->frame_start);
-  putenv (startframe);
-  snprintf (endframe,BUFFERLEN-1,"DRQUEUE_ENDFRAME=%i",job->frame_end);
-  putenv (endframe);
-  /* Step frames */
-  snprintf (stepframe,BUFFERLEN-1,"DRQUEUE_STEPFRAME=%i",job->frame_step);
-  putenv (stepframe);
-  /* Block size */
-  snprintf (blocksize,BUFFERLEN-1,"DRQUEUE_BLOCKKSIZE=%i",job->block_size);
-  putenv (blocksize);
-
-  /* Owner of the job */
-  snprintf (owner,BUFFERLEN-1,"DRQUEUE_OWNER=%s",job->owner);
-  putenv (owner);
   /* Name of the job */
   snprintf (name,BUFFERLEN-1,"DRQUEUE_BASE=%s",job->name);
   putenv (name);
