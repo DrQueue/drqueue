@@ -64,6 +64,7 @@ void get_computer_status (struct computer_status *cstatus, int semid) {
 void computer_status_init (struct computer_status *cstatus) {
   cstatus->loadavg[0]=cstatus->loadavg[1]=cstatus->loadavg[2]=0;
   cstatus->ntasks = 0;
+  cstatus->nrunning = 0;
   task_init_all (cstatus->task);
 }
 
