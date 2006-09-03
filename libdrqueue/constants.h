@@ -46,16 +46,16 @@
 #define CLIENT 20  /* General to clients, like sendjob or drqman or so */
 
 /* Sizes */
-#define MAXNAMELEN 64  /* Maxumum name length for computers and owners */
-#define MAXCMDLEN 256  /* Maximum command length for the task command */
-#define BUFFERLEN 256  /* General buffer len for text */
-#define MAXJOBS 100  /* Maximum number of jobs */
+#define MAXNAMELEN 128   /* Maxumum name length for computers and owners */
+#define MAXCMDLEN 1024   /* Maximum command length for the task command */
+#define BUFFERLEN 4096   /* General buffer len for text */
+#define MAXJOBS 100      /* Maximum number of jobs */
 #define MAXCOMPUTERS 100 /* Maximum number of computers */
-#define MAXTASKS 32  /* Maximum number of tasks in the same computer */
+#define MAXTASKS 32      /* Maximum number of tasks in the same computer */
 
 /* Ports */
 #define MASTERPORT 1234  /* Master listening port */
-#define SLAVEPORT 2345  /* Slave listening port */
+#define SLAVEPORT 2345   /* Slave listening port */
 
 /* Delays */
 #ifdef __CYGWIN
