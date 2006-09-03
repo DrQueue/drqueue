@@ -142,7 +142,7 @@ int main (int argc,char *argv[]) {
       /* Error in select */
       log_slave_computer(L_ERROR,"Select call failed");
     case 0:
-      log_slave_computer(L_DEBUG,"Select call timeout");
+      log_slave_computer(L_DEBUG,"Slave loop (select call timeout)");
       break;
     default:
       if (FD_ISSET(phantom[0],&read_set)) {
