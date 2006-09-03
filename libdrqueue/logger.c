@@ -41,6 +41,14 @@
 int loglevel = L_INFO;
 int logonscreen = 0;
 
+/*
+enum {
+  L_TOOL_MASTER,
+  L_TOOL_SLAVE,
+  L_TOOL_SLAVE_TASK
+} 
+*/ 
+
 /* One important detail about the logger functions is that all of them */
 /* add the trailing newline (\n). So the message shouldn't have it. */
 
@@ -99,8 +107,9 @@ FILE *log_slave_open_task (struct task *task) {
   char *basedir;
 
   if ((basedir = getenv("DRQUEUE_LOGS")) == NULL) {
-    fprintf (stderr,"Environment variable DRQUEUE_LOGS not set. Aborting...\n");
-    kill(0,SIGINT);
+    logonscreen = 1;
+    log_auto (L_ERROR,"log_slave_open_task(): environment variable DRQUEUE_LOGS not set. Logging on screen.");
+    return NULL;
   }
 
   // Backup method
@@ -110,21 +119,18 @@ FILE *log_slave_open_task (struct task *task) {
     if (errno == ENOENT) {
       /* If its because the directory does not exist we try creating it first */
       if (mkdir (dir,0775) == -1) {
-        perror ("log_slave_open_task: Couldn't create directory for task logging");
-        fprintf (stderr,"So... logging on screen.\n");
         logonscreen = 1;
+        log_auto (L_ERROR,"log_slave_open_task(): couldn't create directory for task logging '%s', logging on the screen. (%s)",dir,strerror(errno));
         return f;
       }
+      log_auto (L_INFO,"log_slave_open_task(): directory for task logs has been created '%s'.",dir);
       if ((f = fopen (filename, "a")) == NULL) {
-        perror ("log_slave_open_task: Couldn't open file for writing.");
-        fprintf (stderr,"So...  logging on screen.\n");
         logonscreen = 1;
+        log_auto (L_ERROR,"log_slave_open_task(): Couldn't open file for writing '%s', logging on the screen. (%s)",filename,strerror(errno));
         return f;
       }
+      log_auto (L_INFO,"log_slave_open_task(): log file for task '%s' could be created after creating it's parent directory.",filename);
     }
-    perror ("log_slave_open_task");
-    fprintf (stderr,"So... logging on screen.\n");
-    logonscreen = 1;
   }
 
   return f;
@@ -433,20 +439,21 @@ int log_dumptask_open (struct task *t) {
       fprintf (stderr,"WARNING: Environment variable DRQUEUE_LOGS not set.\n");
       return -1;
     }
+    // TODO: path
     snprintf(job_path,PATH_MAX,"%s/%03u.%s.DEFAULT",basedir,t->ijob,t->jobname);
   }
 
-  fprintf(stderr,"DEBUG: Logs for job go to path '%s'\n",job_path);
+  log_auto(L_DEBUG2,"log_dumptask_open(): logs for job go to directory on path '%s'",job_path);
 
   if (log_task_filename_get(t,task_filename,PATH_MAX) == -1) {
     // Backup code
+    // TODO: path
     snprintf(task_filename,PATH_MAX,"%s/%s.%04i.DEFAULT",job_path,t->jobname,t->frame);
   }
 
-  fprintf(stderr,"DEBUG: Logs for this task go to path '%s'\n",task_filename);
+  log_auto(L_DEBUG,"log_dumptask_open(): logs for this task go to path '%s'",task_filename);
 
   // TODO: Check for directory and creation on another function.
-
   if ((lfd = open (task_filename, O_CREAT|O_APPEND|O_RDWR, 0664)) == -1) {
     if (errno == ENOENT) {
       /* If its because the directory does not exist we try creating it first */
@@ -463,7 +470,7 @@ int log_dumptask_open (struct task *t) {
 
   time (&tm);
   gethostname (hostname,MAXNAMELEN-1);
-  snprintf(buf,BUFFERLEN,"Log started at %sComputer: %s\n\n",ctime(&tm),hostname);
+  snprintf(buf,BUFFERLEN,"Log started at %sComputer: %s\nLog filename: %s\n\n",ctime(&tm),hostname,task_filename);
   write(lfd,buf,strlen(buf));
   return lfd;
 }
@@ -480,18 +487,20 @@ int log_dumptask_open_ro (struct task *t) {
       // Backup code 
       char *basedir;
       if ((basedir = getenv("DRQUEUE_LOGS")) == NULL) {
-        fprintf (stderr,"WARNING: Environment variable DRQUEUE_LOGS not set.\n");
+        log_auto (L_ERROR,"log_dumptask_open_ro(): environment variable DRQUEUE_LOGS not set.");
         return -1;
       }
+      // TODO: path
       snprintf(job_path,PATH_MAX,"%s/%03u.%s.DEFAULT",basedir,t->ijob,t->jobname);
     }
+    // TODO: path
     snprintf(task_filename,PATH_MAX,"%s/%s.%04i.DEFAULT",job_path,t->jobname,t->frame);
   }
   
-  fprintf(stderr,"DEBUG: Trying to read task log from path '%s'\n",task_filename);
+  log_auto(L_DEBUG,"log_dumptask_open_ro(): trying to read task log from path '%s'",task_filename);
 
   if ((lfd = open (task_filename,O_RDONLY)) == -1) {
-    fprintf (stderr,"ERROR: Couldn't open log file for task on '%s'\n",task_filename);
+    log_auto (L_ERROR,"log_dumptask_open_ro(): couldn't open log file for task on '%s'",task_filename);
     return -1;
   }
 

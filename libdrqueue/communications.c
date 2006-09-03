@@ -289,6 +289,7 @@ int send_computer_status (int sfd, struct computer_status *status) {
     if (status->task[i].used)
       ntasks++;
   }
+  status->ntasks = ntasks;
 
   if (!send_computer_loadavg(sfd,status)) {
     return 0;
@@ -832,8 +833,10 @@ int send_computer_pools (int sfd, struct computer_limits *cl, uint8_t use_local_
     }
   }
 
-  fprintf (stderr,"DEBUG: pool list that was sent:\n");
+#ifdef __DEBUG_POOLS
+  log_auto (L_DEBUG2,"pool list that was sent:\n");
   computer_pool_list (cl);
+#endif
 
   return 1;
 }
