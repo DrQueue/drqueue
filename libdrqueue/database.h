@@ -60,6 +60,6 @@ struct database_hdr {  // Database header for the saved database
 void database_init (struct database *wdb);
 int database_save (struct database *wdb);
 int database_load (struct database *wdb);
-uint32_t database_version_id ();
+uint32_t database_version_id (void);
 
 #endif /* _DATABASE_H_ */
