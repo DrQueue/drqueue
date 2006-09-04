@@ -162,6 +162,7 @@ int get_shared_memory (int force) {
 
   root = getenv("DRQUEUE_BIN");
   snprintf (file,BUFFERLEN-1,KEY_MASTER,root);
+  log_auto (L_INFO,"Using file '%s' to obtain shared memory id.",file);
 
   if ((key = ftok (file,'Z')) == -1) {
     perror ("Getting key for shared memory");
