@@ -201,7 +201,7 @@ void job_delete (struct job *job) {
   job_init (job);
 }
 
-char *job_status_string (char status) {
+char *job_status_string (uint16_t status) {
   char *msg;
 
   switch (status) {
@@ -225,7 +225,7 @@ char *job_status_string (char status) {
   return msg;
 }
 
-char *job_frame_status_string (char status) {
+char *job_frame_status_string (uint8_t status) {
   char *msg;
 
   switch (status) {

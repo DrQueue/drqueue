@@ -25,8 +25,8 @@ libdrqueue_a = env.Library ('libdrqueue.a', libdrqueue)
 # drqman
 #
 drqman_c = glob.glob ("drqman/*.c")
-gtkcflags = os.popen('pkg-config --cflags gtk+-2.0').read()
-gtklibs = os.popen('pkg-config --libs gtk+-2.0').read()
+gtkcflags = os.popen('/sw/bin/pkg-config --cflags gtk+-2.0').read()
+gtklibs = os.popen('/sw/bin/pkg-config --libs gtk+-2.0').read()
 env_gtkstuff = env.Copy ()
 env_gtkstuff.Append (CCFLAGS = Split(gtkcflags))
 env_gtkstuff.Append (LINKFLAGS = Split(gtklibs))
