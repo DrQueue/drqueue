@@ -83,7 +83,7 @@ int get_procspeed (void);
 int get_numproc (void);
 int get_speedindex (struct computer_hwinfo *hwinfo);
 uint32_t get_memory (void);
-uint8_t computer_info_nnbits ();
+uint8_t computer_info_nnbits (void);
 
 void report_hwinfo (struct computer_hwinfo *hwinfo);
 
@@ -93,6 +93,4 @@ char *archstring (t_arch arch);
 char *proctypestring (t_proctype proctype);
 
 #endif /* _COMPUTER_INFO_H_ */
-
-
 

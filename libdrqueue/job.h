@@ -291,8 +291,8 @@ struct tpol {           // Priority ordered list of jobs
 
 int job_index_free (void *pwdb);
 void job_report (struct job *job);
-char *job_status_string (char status);
-char *job_frame_status_string (char status);
+char *job_status_string (uint16_t status);
+char *job_frame_status_string (uint8_t status);
 uint32_t job_frame_index_to_number (struct job *job,uint32_t index);
 uint32_t job_frame_number_to_index (struct job *job,uint32_t number);
 int job_frame_number_correct (struct job *job,uint32_t number);
