@@ -17,7 +17,7 @@
 // USA
 //
 //
-// $Id: aqsissg.c 1330 2005-07-05 03:50:01Z jorge $
+// $Id$
 //
 
 #include <stdio.h>

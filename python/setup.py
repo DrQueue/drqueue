@@ -19,7 +19,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 # USA
 # 
-# $Id: /drqueue/remote/trunk/jobfinfo.c 2334 2005-07-05T03:50:01.502018Z jorge  $
+# $Id$
 #
 # This program returns the number of times a frame has been requeued.
 # Useful for avoiding endless loops
@@ -30,6 +30,7 @@ import glob
 import sys
 import distutils
 from distutils.core import setup, Extension
+#from setuptools import setup, find_packages
 
 def get_define_macros():
   print "Platform is: ",sys.platform

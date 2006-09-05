@@ -17,7 +17,7 @@
 // USA
 //
 //
-// $Id: /drqueue/remote/trunk/aqsissg.h 2253 2005-05-02T03:55:54.970636Z jorge $
+// $Id$
 //
 
 #ifndef _MANTRASG_H_
