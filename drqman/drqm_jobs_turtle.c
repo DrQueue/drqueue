@@ -17,7 +17,7 @@
 // USA
 //
 /*
- * $Id: /drqueue/remote/trunk/drqman/drqm_jobs_turtle.c 2291 2005-05-12T16:15:56.618107Z jorge $ 
+ * $Id$ 
  */
 
 #include <string.h>
