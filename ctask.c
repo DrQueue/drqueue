@@ -16,7 +16,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id: ctask.c 1330 2005-07-05 03:50:01Z jorge $
+// $Id$
 //
 
 #include <stdio.h>
