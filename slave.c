@@ -233,9 +233,9 @@ void clean_out (int signal, siginfo_t *info, void *data) {
 }
 
 
-int get_shared_memory_slave (int force) {
+int64_t get_shared_memory_slave (int force) {
   key_t key;
-  int shmid;
+  int64_t shmid;
   int shmflg;
   char file[BUFFERLEN];
   char *root;
@@ -254,7 +254,7 @@ int get_shared_memory_slave (int force) {
     shmflg = IPC_EXCL|IPC_CREAT|0600;
   }
 
-  if ((shmid = shmget (key,sizeof(struct computer),shmflg)) == -1) {
+  if ((shmid = shmget (key,sizeof(struct computer),shmflg)) == (int64_t)-1) {
     perror ("Getting shared memory");
     if (!force)
       fprintf (stderr,"Try with option -f (if you are sure that no other slave is running)\n");
@@ -264,9 +264,9 @@ int get_shared_memory_slave (int force) {
   return shmid;
 }
 
-int get_semaphores_slave (void) {
+int64_t get_semaphores_slave (void) {
   key_t key;
-  int semid;
+  int64_t semid;
   struct sembuf op;
   char file[BUFFERLEN];
   char *root;
@@ -279,7 +279,7 @@ int get_semaphores_slave (void) {
     kill (0,SIGINT);
   }
 
-  if ((semid = semget (key,1, IPC_CREAT|0600)) == -1) {
+  if ((semid = semget (key,1, IPC_CREAT|0600)) == (int64_t)-1) {
     log_slave_computer (L_ERROR,"Getting semaphores");
     kill (0,SIGINT);
   }
@@ -301,7 +301,7 @@ int get_semaphores_slave (void) {
   return semid;
 }
 
-void *attach_shared_memory_slave (int shmid) {
+void *attach_shared_memory_slave (int64_t shmid) {
   void *rv;   /* return value */
 
   if ((rv = shmat (shmid,0,0)) == (void *)-1) {

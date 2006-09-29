@@ -24,6 +24,7 @@
 
 #include "database.h"
 #include "constants.h"
+#include <stdint.h>
 
 #if defined (__CYGWIN)
 #define KEY_MASTER "%s/master.exe" /* Key for shared memory and semaphores */
@@ -36,9 +37,9 @@ extern int phantom[2];
 void master_get_options (int *argc,char ***argv, int *force);
 void usage (void);
 
-int get_shared_memory (int force);
-int get_semaphores (int force);
-void *attach_shared_memory (int shmid);
+int64_t get_shared_memory (int force);
+int64_t get_semaphores (int force);
+void *attach_shared_memory (int64_t shmid);
 
 void set_signal_handlers (void);
 void set_signal_handlers_child_conn_handler (void);

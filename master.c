@@ -55,7 +55,7 @@ time_t tstart;    /* Time at wich the master has started running */
 int main (int argc, char *argv[]) {
   int sfd;   /* socket file descriptor */
   int csfd;   /* child sfd, the socket once accepted the connection */
-  int shmid;   /* shared memory id */
+  int64_t shmid;   /* shared memory id */
   int force = 0;  /* force even if shmem already exists */
   struct sockaddr_in addr; /* Address of the remote host */
   pid_t child,child_wait;
@@ -153,9 +153,9 @@ int main (int argc, char *argv[]) {
   exit (0);
 }
 
-int get_shared_memory (int force) {
+int64_t get_shared_memory (int force) {
   key_t key;
-  int shmid;
+  int64_t shmid;
   int shmflg;
   char file[BUFFERLEN];
   char *root;
@@ -175,7 +175,7 @@ int get_shared_memory (int force) {
     shmflg = IPC_EXCL|IPC_CREAT|0600;
   }
 
-  if ((shmid = shmget (key,sizeof(struct database), shmflg)) == -1) {
+  if ((shmid = shmget (key,sizeof(struct database), shmflg)) == (int64_t)-1) {
     perror ("Getting shared memory");
     if (!force)
       fprintf (stderr,"Try with option -f (if you are sure that no other master is running)\n");
@@ -185,9 +185,9 @@ int get_shared_memory (int force) {
   return shmid;
 }
 
-int get_semaphores (int force) {
+int64_t get_semaphores (int force) {
   key_t key;
-  int semid;
+  int64_t semid;
   struct sembuf op;
   int semflg;
   char file[BUFFERLEN];
@@ -207,7 +207,7 @@ int get_semaphores (int force) {
     semflg = IPC_EXCL|IPC_CREAT|0600;
   }
 
-  if ((semid = semget (key,1,semflg)) == -1) {
+  if ((semid = semget (key,1,semflg)) == (int64_t)-1) {
     perror ("Getting semaphores");
     if (!force)
       fprintf (stderr,"Try with option -f (if you are sure that no other master is running)\n");
@@ -228,11 +228,10 @@ int get_semaphores (int force) {
   }
 
   /*  fprintf (stderr,"semval: %i semid: %i\n",semctl (semid,0,GETVAL),semid); */
-
   return semid;
 }
 
-void *attach_shared_memory (int shmid) {
+void *attach_shared_memory (int64_t shmid) {
   void *rv;   /* return value */
 
   if ((rv = shmat (shmid,0,0)) == (void *)-1) {
@@ -433,7 +432,7 @@ void check_lastconn_times (struct database *wdb) {
                              (int) (now - wdb->computer[i].lastconn));
         /* We only need to remove it this  way, without requeueing its frames because */
         /* the frames will be requeued on the consistency checks (job_update_info) */
-        wdb->computer[i].used = 0;
+        computer_free (&wdb->computer[i]);
       }
     }
     semaphore_release(wdb->semid);
