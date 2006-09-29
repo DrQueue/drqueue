@@ -2978,6 +2978,7 @@ void handle_r_r_uclimits (int sfd,struct database *wdb,int icomp, struct request
     exit (0);
   }
 
+  computer_limits_init (&limits);
   if (!recv_computer_limits (sfd, &limits)) {
     log_master (L_ERROR,"Receiving computer limits (handle_r_r_uclimits)");
     exit (0);

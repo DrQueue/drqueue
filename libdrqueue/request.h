@@ -43,6 +43,7 @@
 #include "database.h"
 #include "request_errors.h"
 #include "request_codes.h"
+#include <stdint.h>
 
 #ifdef __CPLUSPLUS
 extern "C" {

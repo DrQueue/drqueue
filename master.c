@@ -85,8 +85,9 @@ int main (int argc, char *argv[]) {
 
   shmid = get_shared_memory (force);
 
-  if ((wdb = attach_shared_memory (shmid)) == (void *) -1)
+  if ((wdb = attach_shared_memory ((int)shmid)) == (void *) -1)
     exit (1);
+
   wdb->shmid = shmid;
   wdb->semid = get_semaphores (force);
 
@@ -175,7 +176,7 @@ int64_t get_shared_memory (int force) {
     shmflg = IPC_EXCL|IPC_CREAT|0600;
   }
 
-  if ((shmid = shmget (key,sizeof(struct database), shmflg)) == (int64_t)-1) {
+  if ((shmid = (int64_t) shmget (key,sizeof(struct database), shmflg)) == (int64_t)-1) {
     perror ("Getting shared memory");
     if (!force)
       fprintf (stderr,"Try with option -f (if you are sure that no other master is running)\n");
@@ -213,15 +214,15 @@ int64_t get_semaphores (int force) {
       fprintf (stderr,"Try with option -f (if you are sure that no other master is running)\n");
     kill (0,SIGINT);
   }
-  if (semctl (semid,0,SETVAL,1) == -1) {
+  if (semctl ((int)semid,0,SETVAL,1) == -1) {
     perror ("semctl SETVAL -> 1");
     kill (0,SIGINT);
   }
-  if (semctl (semid,0,GETVAL) == 0) {
+  if (semctl ((int)semid,0,GETVAL) == 0) {
     op.sem_num = 0;
     op.sem_op = 1;
     op.sem_flg = 0;
-    if (semop(semid,&op,1) == -1) {
+    if (semop((int)semid,&op,1) == -1) {
       perror ("semaphore_release");
       kill(0,SIGINT);
     }
@@ -234,7 +235,7 @@ int64_t get_semaphores (int force) {
 void *attach_shared_memory (int64_t shmid) {
   void *rv;   /* return value */
 
-  if ((rv = shmat (shmid,0,0)) == (void *)-1) {
+  if ((rv = shmat ((int)shmid,0,0)) == (void *)-1) {
     perror ("master shmat");
     return ((void *) -1);
   }
@@ -354,10 +355,10 @@ void clean_out (int signal, siginfo_t *info, void *data) {
     computer_free (&wdb->computer[i]);
   }
 
-  if (semctl (wdb->semid,0,IPC_RMID,NULL) == -1) {
+  if (semctl ((int)wdb->semid,0,IPC_RMID,NULL) == -1) {
     perror ("wdb->semid");
   }
-  if (shmctl (wdb->shmid,IPC_RMID,NULL) == -1) {
+  if (shmctl ((int)wdb->shmid,IPC_RMID,NULL) == -1) {
     perror ("wdb->shmid");
   }
 

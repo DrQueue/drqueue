@@ -222,10 +222,10 @@ void clean_out (int signal, siginfo_t *info, void *data) {
 
   computer_free (sdb.comp);
 
-  if (semctl (sdb.semid,0,IPC_RMID,NULL) == -1) {
+  if (semctl ((int)sdb.semid,0,IPC_RMID,NULL) == -1) {
     perror ("semid");
   }
-  if (shmctl (sdb.shmid,IPC_RMID,NULL) == -1) {
+  if (shmctl ((int)sdb.shmid,IPC_RMID,NULL) == -1) {
     perror ("shmid");
   }
 
@@ -254,7 +254,7 @@ int64_t get_shared_memory_slave (int force) {
     shmflg = IPC_EXCL|IPC_CREAT|0600;
   }
 
-  if ((shmid = shmget (key,sizeof(struct computer),shmflg)) == (int64_t)-1) {
+  if ((shmid = (int64_t)shmget (key,sizeof(struct computer),shmflg)) == (int64_t)-1) {
     perror ("Getting shared memory");
     if (!force)
       fprintf (stderr,"Try with option -f (if you are sure that no other slave is running)\n");
@@ -279,20 +279,20 @@ int64_t get_semaphores_slave (void) {
     kill (0,SIGINT);
   }
 
-  if ((semid = semget (key,1, IPC_CREAT|0600)) == (int64_t)-1) {
+  if ((semid = (int64_t)semget (key,1, IPC_CREAT|0600)) == (int64_t)-1) {
     log_slave_computer (L_ERROR,"Getting semaphores");
     kill (0,SIGINT);
   }
 
-  if (semctl (semid,0,SETVAL,1) == -1) {
+  if (semctl ((int)semid,0,SETVAL,1) == -1) {
     log_slave_computer (L_ERROR,"semctl SETVAL -> 1");
     kill (0,SIGINT);
   }
-  if (semctl (semid,0,GETVAL) == 0) {
+  if (semctl ((int)semid,0,GETVAL) == 0) {
     op.sem_num = 0;
     op.sem_op = 1;
     op.sem_flg = 0;
-    if (semop(semid,&op,1) == -1) {
+    if (semop((int)semid,&op,1) == -1) {
       log_slave_computer (L_ERROR,"semaphore_release");
       kill(0,SIGINT);
     }
@@ -304,7 +304,7 @@ int64_t get_semaphores_slave (void) {
 void *attach_shared_memory_slave (int64_t shmid) {
   void *rv;   /* return value */
 
-  if ((rv = shmat (shmid,0,0)) == (void *)-1) {
+  if ((rv = shmat ((int)shmid,0,0)) == (void *)-1) {
     log_slave_computer (L_ERROR,"Problem attaching slave shared memory segment");
     kill(0,SIGINT);
   }
