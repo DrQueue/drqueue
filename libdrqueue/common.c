@@ -188,43 +188,44 @@ int common_date_check (void) {
 }
 
 void set_default_env(void) {
-  char *penv,renv[BUFFERLEN];
+  char *penv,renv[BUFFERLEN],*drq_root;
 
-  if (!getenv("DRQUEUE_ROOT")) {
+  if (!(drq_root = getenv("DRQUEUE_ROOT"))) {
+    drerrno = DRE_NOENVROOT;
     log_auto (L_ERROR,"Environment variable DRQUEUE_ROOT is not set. Please set your environment variables properly. DRQUEUE_ROOT should point to the base path of DrQueue's installation. Check the documentation for more help.");
     exit (1);
   }
 
   if (!getenv("DRQUEUE_TMP")) {
-    snprintf(renv,BUFFERLEN,"DRQUEUE_TMP=%s/tmp",getenv("DRQUEUE_ROOT"));
+    snprintf(renv,BUFFERLEN,"DRQUEUE_TMP=%s/tmp",drq_root);
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
   }
 
   if (!getenv("DRQUEUE_ETC")) {
-    snprintf(renv,BUFFERLEN,"DRQUEUE_ETC=%s/etc",getenv("DRQUEUE_ROOT"));
+    snprintf(renv,BUFFERLEN,"DRQUEUE_ETC=%s/etc",drq_root);
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
   }
 
   if (!getenv("DRQUEUE_BIN")) {
-    snprintf(renv,BUFFERLEN,"DRQUEUE_BIN=%s/bin",getenv("DRQUEUE_ROOT"));
+    snprintf(renv,BUFFERLEN,"DRQUEUE_BIN=%s/bin",drq_root);
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
   }
 
   if (!getenv("DRQUEUE_LOGS")) {
-    snprintf(renv,BUFFERLEN,"DRQUEUE_LOGS=%s/logs",getenv("DRQUEUE_ROOT"));
+    snprintf(renv,BUFFERLEN,"DRQUEUE_LOGS=%s/logs",drq_root);
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
   }
 
   if (!getenv("DRQUEUE_DB")) {
-    snprintf(renv,BUFFERLEN,"DRQUEUE_DB=%s/db",getenv("DRQUEUE_ROOT"));
+    snprintf(renv,BUFFERLEN,"DRQUEUE_DB=%s/db",drq_root);
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);

@@ -64,17 +64,25 @@ int main (int argc, char *argv[]) {
   int i; // For loops
 
 #ifdef COMM_REPORT
-
   bsent = brecv = 0;
   tstart = time(NULL);
 #endif
 
   master_get_options (&argc,&argv,&force);
+  
+  // Set some standard defaults based on DRQUEUE_ROOT (must be already set!)
+  set_default_env(); 
 
-  set_default_env(); // Config files overrides environment
+  if (!common_environment_check()) {
+    fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
+    exit (1);
+  }
+  
+  // Config files override environment variables
   // Read the config file after reading the arguments, as those may change
   // the path to the config file
   config_parse_tool("master");
+
   log_master (L_INFO,"Starting...");
 
   if (!common_environment_check()) {

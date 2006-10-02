@@ -58,7 +58,15 @@ int main (int argc,char *argv[]) {
   int force = 0;
 
   slave_get_options(&argc,&argv,&force,&sdb);
-  set_default_env(); // Config files overrides environment CHANGE (?)
+  
+  set_default_env(); 
+  
+  if (!common_environment_check()) {
+    log_auto (L_ERROR,"Error checking the environment: %s",drerrno_str());
+    exit (1);
+  }
+
+  // Config files overrides environment CHANGE (?)
   // Read the config file after reading the arguments, as those may change
   // the path to the config file
   config_parse_tool("slave");
@@ -66,7 +74,7 @@ int main (int argc,char *argv[]) {
   //system ("env | grep DRQUEUE");
 
   if (!common_environment_check()) {
-    fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
+    log_auto (L_ERROR,"Error checking the environment: %s",drerrno_str());
     exit (1);
   }
 
