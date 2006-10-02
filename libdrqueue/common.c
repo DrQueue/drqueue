@@ -19,16 +19,17 @@
 // $Id$
 //
 
+#include "common.h"
+#include "drerrno.h"
+#include "constants.h"
+#include "logger.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <string.h>
-
-#include "common.h"
-#include "drerrno.h"
-#include "constants.h"
 
 int common_environment_check (void) {
   /* This function checks the environment AND the directory structure */
@@ -188,6 +189,11 @@ int common_date_check (void) {
 
 void set_default_env(void) {
   char *penv,renv[BUFFERLEN];
+
+  if (!getenv("DRQUEUE_ROOT")) {
+    log_auto (L_ERROR,"Environment variable DRQUEUE_ROOT is not set. Please set your environment variables properly. DRQUEUE_ROOT should point to the base path of DrQueue's installation. Check the documentation for more help.");
+    exit (1);
+  }
 
   if (!getenv("DRQUEUE_TMP")) {
     snprintf(renv,BUFFERLEN,"DRQUEUE_TMP=%s/tmp",getenv("DRQUEUE_ROOT"));
