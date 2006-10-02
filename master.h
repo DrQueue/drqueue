@@ -26,6 +26,8 @@
 #include "constants.h"
 #include <stdint.h>
 
+#include <stdint.h>
+
 #if defined (__CYGWIN)
 #define KEY_MASTER "%s/master.exe" /* Key for shared memory and semaphores */
 #else

@@ -177,7 +177,7 @@ int64_t get_shared_memory (int force) {
   }
 
   if ((shmid = (int64_t) shmget (key,sizeof(struct database), shmflg)) == (int64_t)-1) {
-    perror ("Getting shared memory");
+    perror ("ERROR: Getting shared memory");
     if (!force)
       fprintf (stderr,"Try with option -f (if you are sure that no other master is running)\n");
     exit (1);
@@ -208,7 +208,7 @@ int64_t get_semaphores (int force) {
     semflg = IPC_EXCL|IPC_CREAT|0600;
   }
 
-  if ((semid = semget (key,1,semflg)) == (int64_t)-1) {
+  if ((semid = (int64_t) semget (key,1,semflg)) == (int64_t) -1) {
     perror ("Getting semaphores");
     if (!force)
       fprintf (stderr,"Try with option -f (if you are sure that no other master is running)\n");
