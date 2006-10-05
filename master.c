@@ -72,11 +72,6 @@ int main (int argc, char *argv[]) {
   
   // Set some standard defaults based on DRQUEUE_ROOT (must be already set!)
   set_default_env(); 
-
-  if (!common_environment_check()) {
-    fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
-    exit (1);
-  }
   
   // Config files override environment variables
   // Read the config file after reading the arguments, as those may change
@@ -86,15 +81,18 @@ int main (int argc, char *argv[]) {
   log_master (L_INFO,"Starting...");
 
   if (!common_environment_check()) {
-    fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
+    log_auto (L_ERROR,"Error checking the environment: %s",drerrno_str());
     exit (1);
   }
+
   set_signal_handlers ();
 
+  //system ("env | grep DRQ");
   shmid = get_shared_memory (force);
 
-  if ((wdb = attach_shared_memory ((int)shmid)) == (void *) -1)
+  if ((wdb = attach_shared_memory (shmid)) == (void *) -1) {
     exit (1);
+  }
 
   wdb->shmid = shmid;
   wdb->semid = get_semaphores (force);
@@ -163,17 +161,27 @@ int main (int argc, char *argv[]) {
 }
 
 int64_t get_shared_memory (int force) {
-  key_t key;
+  key_t skey;
   int64_t shmid;
   int shmflg;
   char file[BUFFERLEN];
-  char *root;
+  char *root = NULL;
 
   root = getenv("DRQUEUE_BIN");
-  snprintf (file,BUFFERLEN-1,KEY_MASTER,root);
-  log_auto (L_INFO,"Using file '%s' to obtain shared memory id.",file);
+  if (root) {
+    snprintf (file,BUFFERLEN-1,"%s/%s",root,KEY_MASTER);
+  } else {
+    root = getenv("DRQUEUE_ROOT");
+    if (!root) {
+      fprintf (stderr,"What the heck\n");
+      log_auto (L_ERROR,"DRQUEUE_ROOT not set. (file='%s')",file);
+      exit (1);
+    }
+    snprintf (file,BUFFERLEN-1,"%s/bin/%s",root,KEY_MASTER);
+  }
+  log_auto (L_DEBUG,"Using file '%s' to obtain shared memory id.",file);
 
-  if ((key = ftok (file,'Z')) == -1) {
+  if ((skey = (key_t) ftok (file,(int)'Z')) == (key_t)-1) {
     perror ("Getting key for shared memory");
     exit (1);
   }
@@ -184,10 +192,11 @@ int64_t get_shared_memory (int force) {
     shmflg = IPC_EXCL|IPC_CREAT|0600;
   }
 
-  if ((shmid = (int64_t) shmget (key,sizeof(struct database), shmflg)) == (int64_t)-1) {
+  if ((shmid = (int64_t) shmget (skey,(int)sizeof(struct database), shmflg)) == (int64_t)-1) {
     perror ("ERROR: Getting shared memory");
-    if (!force)
+    if (!force) {
       fprintf (stderr,"Try with option -f (if you are sure that no other master is running)\n");
+    }
     exit (1);
   }
 
@@ -203,9 +212,22 @@ int64_t get_semaphores (int force) {
   char *root;
 
   root = getenv("DRQUEUE_BIN");
-  snprintf (file,BUFFERLEN-1,KEY_MASTER,root);
+  if (root) {
+    snprintf (file,BUFFERLEN-1,"%s/%s",root,KEY_MASTER);
+  } else {
+    log_auto (L_WARNING,"DRQUEUE_BIN not set.");
+    root = getenv("DRQUEUE_ROOT");
+    if (!root) {
+      fprintf (stderr,"What the heck\n");
+      log_auto (L_ERROR,"DRQUEUE_ROOT not set. (file='%s')",file);
+      exit (1);
+    }
+    snprintf (file,BUFFERLEN-1,"%s/bin/%s",root,KEY_MASTER);
+    log_auto (L_WARNING,"DRQUEUE_BIN set to default.");
+  }
+  log_auto (L_DEBUG,"Using file '%s' to obtain semaphores id.",file);
 
-  if ((key = ftok (file,'Z')) == -1) {
+  if ((key = (key_t)ftok (file,(int)'Z')) == (key_t)-1) {
     perror ("Getting key for semaphores");
     kill (0,SIGINT);
   }

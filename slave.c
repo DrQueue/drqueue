@@ -59,20 +59,14 @@ int main (int argc,char *argv[]) {
 
   slave_get_options(&argc,&argv,&force,&sdb);
   
+  // Set some standard defaults based on DRQUEUE_ROOT (must be already set!)
   set_default_env(); 
   
-  if (!common_environment_check()) {
-    log_auto (L_ERROR,"Error checking the environment: %s",drerrno_str());
-    exit (1);
-  }
-
   // Config files overrides environment CHANGE (?)
   // Read the config file after reading the arguments, as those may change
   // the path to the config file
   config_parse_tool("slave");
   
-  //system ("env | grep DRQUEUE");
-
   if (!common_environment_check()) {
     log_auto (L_ERROR,"Error checking the environment: %s",drerrno_str());
     exit (1);
@@ -82,6 +76,7 @@ int main (int argc,char *argv[]) {
 
   set_signal_handlers ();
 
+  //system ("env | grep DRQUEUE");
   sdb.shmid = get_shared_memory_slave (force);
   sdb.comp = attach_shared_memory_slave (sdb.shmid);
   sdb.semid = get_semaphores_slave ();
@@ -249,10 +244,16 @@ int64_t get_shared_memory_slave (int force) {
   char *root;
 
   root = getenv("DRQUEUE_BIN");
-  snprintf (file,BUFFERLEN-1,KEY_SLAVE,root);
-
+  if (root) {
+    snprintf (file,BUFFERLEN-1,"%s/%s",root,KEY_SLAVE);
+  } else {
+    log_auto (L_ERROR,"get_shared_memory_slave(): environment variable DRQUEUE_BIN not defined.");
+    exit (1);
+  }
+  log_auto (L_DEBUG,"get_shared_memory_slave(): using file '%s' as key for shared resources.",file);
+  
   if ((key = ftok (file,'A')) == -1) {
-    perror ("Getting key for shared memory");
+    log_auto (L_ERROR,"get_shared_memory_slave(): error obtaining key for shared memory (ftok): %s", strerror(errno));
     exit (1);
   }
 
@@ -263,9 +264,10 @@ int64_t get_shared_memory_slave (int force) {
   }
 
   if ((shmid = (int64_t)shmget (key,sizeof(struct computer),shmflg)) == (int64_t)-1) {
-    perror ("Getting shared memory");
-    if (!force)
-      fprintf (stderr,"Try with option -f (if you are sure that no other slave is running)\n");
+    log_auto (L_ERROR,"get_shared_memory_slave(): error allocating shared memory space (shmget): %s", strerror(errno));
+    if (!force) {
+      fprintf (stderr,"Try with option -f (if you are _sure_ that no other slave is running)\n");
+    }
     exit (1);
   }
 
@@ -280,7 +282,14 @@ int64_t get_semaphores_slave (void) {
   char *root;
 
   root = getenv("DRQUEUE_BIN");
-  snprintf (file,BUFFERLEN-1,KEY_SLAVE,root);
+  if (root) {
+    snprintf (file,BUFFERLEN-1,"%s/%s",root,KEY_SLAVE);
+  } else {
+    log_auto (L_ERROR,"get_semaphores_slave(): environment variable DRQUEUE_BIN not defined.");
+    exit (1);
+  }
+  log_auto (L_DEBUG,"get_semaphores_slave(): using file '%s' as key for shared resources.",file);
+  
 
   if ((key = ftok (file,'A')) == -1) {
     log_slave_computer (L_ERROR,"Getting key for semaphores");
@@ -288,12 +297,12 @@ int64_t get_semaphores_slave (void) {
   }
 
   if ((semid = (int64_t)semget (key,1, IPC_CREAT|0600)) == (int64_t)-1) {
-    log_slave_computer (L_ERROR,"Getting semaphores");
+    log_slave_computer (L_ERROR,"Getting semaphores: %s",strerror(errno));
     kill (0,SIGINT);
   }
 
   if (semctl ((int)semid,0,SETVAL,1) == -1) {
-    log_slave_computer (L_ERROR,"semctl SETVAL -> 1");
+    log_slave_computer (L_ERROR,"semctl SETVAL -> 1 : (%s)",strerror(errno));
     kill (0,SIGINT);
   }
   if (semctl ((int)semid,0,GETVAL) == 0) {
@@ -301,7 +310,7 @@ int64_t get_semaphores_slave (void) {
     op.sem_op = 1;
     op.sem_flg = 0;
     if (semop((int)semid,&op,1) == -1) {
-      log_slave_computer (L_ERROR,"semaphore_release");
+      log_slave_computer (L_ERROR,"semaphore_release: %s",strerror(errno));
       kill(0,SIGINT);
     }
   }

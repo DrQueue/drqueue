@@ -144,12 +144,12 @@ extern "C" {
 
   /* handled by SLAVE */
   void handle_rs_r_killtask (int sfd,struct slave_database *sdb,struct request *req);
+  void handle_rs_r_setenabled (int sfd,struct slave_database *sdb,struct request *req);
   void handle_rs_r_setnmaxcpus (int sfd,struct slave_database *sdb,struct request *req);
   void handle_rs_r_setmaxfreeloadcpu (int sfd,struct slave_database *sdb,struct request *req);
   void handle_rs_r_setautoenable (int sfd,struct slave_database *sdb,struct request *req);
   void handle_rs_r_limitspooladd (int sfd,struct slave_database *sdb,struct request *req);
   void handle_rs_r_limitspoolremove (int sfd,struct slave_database *sdb,struct request *req);
-  void handle_rs_r_setenabled (int sfd,struct slave_database *sdb,struct request *req);
 
 #ifdef __CPLUSPLUS
 }

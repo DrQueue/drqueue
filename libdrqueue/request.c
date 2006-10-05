@@ -52,7 +52,8 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
 
   if (!recv_request (sfd,&request)) {
     log_master (L_WARNING,"Error receiving request (handle_request_master)");
-    return;
+    // Log the problem and finish with this handler process
+    exit(1);
   }
 
   // Update the time here, because it could not reach the end of the
@@ -212,6 +213,8 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
     log_master (L_WARNING,"Unknown request");
   }
 
+  // The handler process finishes gracefully
+  exit (0);
 }
 
 void handle_request_slave (int sfd,struct slave_database *sdb) {
@@ -220,7 +223,8 @@ void handle_request_slave (int sfd,struct slave_database *sdb) {
 
   if (!recv_request (sfd,&request)) {
     log_slave_computer (L_WARNING,"Error receiving request (handle_request_slave)");
-    return;
+    // Log the problem and finish with this handler process
+    exit(1);
   }
 
   switch (request.type) {
@@ -259,6 +263,9 @@ void handle_request_slave (int sfd,struct slave_database *sdb) {
   default:
     log_slave_computer (L_WARNING,"Unknown request received");
   }
+  
+  // The handler process finishes gracefully
+  exit (0);
 }
 
 int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_in *addr) {

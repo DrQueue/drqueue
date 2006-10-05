@@ -29,9 +29,9 @@
 #include <stdint.h>
 
 #if defined (__CYGWIN)
-#define KEY_MASTER "%s/master.exe" /* Key for shared memory and semaphores */
+#define KEY_MASTER "master.exe" /* Key for shared memory and semaphores */
 #else
-#define KEY_MASTER "%s/master" /* Key for shared memory and semaphores */
+#define KEY_MASTER "master" /* Key for shared memory and semaphores */
 #endif
 
 extern int phantom[2];

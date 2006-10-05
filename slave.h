@@ -31,9 +31,9 @@
 #include <stdint.h>
 
 #if defined (__CYGWIN)
-#define KEY_SLAVE "%s/slave.exe"/* Key file for shared memory and semaphores */
+#define KEY_SLAVE "slave.exe"/* Key file for shared memory and semaphores */
 #else
-#define KEY_SLAVE "%s/slave" /* Key file for shared memory and semaphores */
+#define KEY_SLAVE "slave" /* Key file for shared memory and semaphores */
 #endif
 
 /* Each slave has a slave_database global variable that is local to each */
@@ -49,8 +49,7 @@ struct slave_database {
   struct computer_limits limits;
   uint16_t flags;
   char conf[PATH_MAX];
-}
-;    /* slave database */
+};                                    /* slave database */
 
 extern int phantom[2];
 

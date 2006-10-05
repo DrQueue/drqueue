@@ -60,7 +60,11 @@ int common_environment_check (void) {
   }
 #endif
 
-  snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_DB"));
+  if (getenv("DRQUEUE_DB") != NULL) {
+    snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_DB"));
+  } else {
+    snprintf (dir_str,BUFFERLEN-1,"%s/db",getenv("DRQUEUE_ROOT"));
+  } 
   if (stat (dir_str,&s_stat) == -1) {
     drerrno = DRE_NODBDIR;
     return 0;
@@ -190,7 +194,7 @@ int common_date_check (void) {
 void set_default_env(void) {
   char *penv,renv[BUFFERLEN],*drq_root;
 
-  if (!(drq_root = getenv("DRQUEUE_ROOT"))) {
+  if ((drq_root = getenv("DRQUEUE_ROOT")) == NULL) {
     drerrno = DRE_NOENVROOT;
     log_auto (L_ERROR,"Environment variable DRQUEUE_ROOT is not set. Please set your environment variables properly. DRQUEUE_ROOT should point to the base path of DrQueue's installation. Check the documentation for more help.");
     exit (1);
