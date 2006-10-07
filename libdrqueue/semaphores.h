@@ -22,7 +22,7 @@
 #ifndef _SEMAPHORES_H_
 #define _SEMAPHORES_H_
 
-void semaphore_lock (int semid);
-void semaphore_release (int semid);
+void semaphore_lock (int64_t semid);
+void semaphore_release (int64_t semid);
 
 #endif /* _SEMAPHORES_H_ */

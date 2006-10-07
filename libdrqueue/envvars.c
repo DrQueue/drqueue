@@ -27,6 +27,7 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <string.h>
+#include <stdint.h>
 
 int envvars_init (struct envvars *envvars) {
   envvars->variables = NULL;
@@ -268,7 +269,7 @@ int envvars_variable_add (struct envvars *envvars, char *name, char *value) {
   int64_t nshmid = envvars_get_shared_memory (new_size);
   if (nshmid == (int64_t)-1) {
     envvars_detach(envvars);
-    fprintf (stderr,"ERROR: envvars_variable_add() could not get shared memory segment of size %lu bytes\n",new_size*sizeof(struct envvar));
+    fprintf (stderr,"ERROR: envvars_variable_add() could not get shared memory segment of size %ju bytes\n",(uintmax_t)new_size*sizeof(struct envvar));
     return 0;
   }
 

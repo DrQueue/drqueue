@@ -26,6 +26,9 @@
 #include "libdrqueue.h"
 #include "config.h"
 #include "list.h"
+#include "constants.h"
+
+void config_close (FILE *f_cfg);
 
 void config_get_default_file (char *dst,char *tool,int dstlen) {
   snprintf (dst,dstlen,"%s/%s.%s",BASE_CONF_PATH,tool,BASE_CONF_EXT);
@@ -159,6 +162,7 @@ void config_parse (char *cfg) {
       exit (1);
     }
   }
+  
 }
 
 FILE *
@@ -172,6 +176,11 @@ config_open (char *filename) {
   perror ("config_open");
 
   return NULL;
+}
+
+void
+config_close (FILE *f_cfg) {
+  fclose (f_cfg);
 }
 
 int

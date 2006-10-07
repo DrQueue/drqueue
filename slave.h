@@ -28,11 +28,12 @@
 
 #include <limits.h>
 #include <signal.h>
+#include <stdint.h>
 
 #if defined (__CYGWIN)
-#define KEY_SLAVE "%s/slave.exe"/* Key file for shared memory and semaphores */
+#define KEY_SLAVE "slave.exe"/* Key file for shared memory and semaphores */
 #else
-#define KEY_SLAVE "%s/slave" /* Key file for shared memory and semaphores */
+#define KEY_SLAVE "slave" /* Key file for shared memory and semaphores */
 #endif
 
 /* Each slave has a slave_database global variable that is local to each */
@@ -43,13 +44,12 @@
 
 struct slave_database {
   struct computer *comp;
-  int shmid;
-  int semid;
+  int64_t shmid;
+  int64_t semid;
   struct computer_limits limits;
   uint16_t flags;
   char conf[PATH_MAX];
-}
-;    /* slave database */
+};                                    /* slave database */
 
 extern int phantom[2];
 
@@ -74,9 +74,9 @@ void slave_listening_process (struct slave_database *sdb);
 void slave_consistency_process (struct slave_database *sdb);
 void launch_task (struct slave_database *sdb, uint16_t itask);
 
-int get_shared_memory_slave (int force);
-int get_semaphores_slave (void);
-void *attach_shared_memory_slave (int shmid);
+int64_t get_shared_memory_slave (int force);
+int64_t get_semaphores_slave (void);
+void *attach_shared_memory_slave (int64_t shmid);
 
 void zerocmd (char *cmd);
 

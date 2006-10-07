@@ -265,7 +265,7 @@ void computer_pool_set_from_environment (struct computer_limits *cl) {
 }
 
 void computer_pool_init (struct computer_limits *cl) {
-  log_auto (L_DEBUG3,"computer_pool_init() : PID (%i) poolshmid (%lli) pool (%p)",getpid(),cl->poolshmid,cl->pool);
+  log_auto (L_DEBUG3,"computer_pool_init() : received values: PID (%i) poolshmid (%lli) pool (%p)",getpid(),cl->poolshmid,cl->pool);
   cl->pool = NULL;
   cl->poolshmid = (int64_t)-1;
   cl->npools = 0;
@@ -313,7 +313,7 @@ int computer_pool_free (struct computer_limits *cl) {
   int rv = 1;
   log_auto (L_DEBUG3,"PID (%i): computer_pool_free (cl=%x,cl->poolshmid=%lli,cl->npools=%i)",getpid(),cl,cl->poolshmid,cl->npools);
   if (cl->poolshmid != (int64_t)-1) {
-    if (shmctl (cl->poolshmid,IPC_RMID,NULL) == -1) {
+    if (shmctl ((int)cl->poolshmid,IPC_RMID,NULL) == -1) {
       log_auto (L_ERROR,"computer_pool_free() error found while deleting shared memory poolshmid: %lli (%s)",cl->poolshmid,strerror(errno));
       drerrno = DRE_RMSHMEM;
       rv = 0;
@@ -335,7 +335,7 @@ int computer_pool_detach_shared_memory (struct computer_limits *cl) {
     } 
     cl->pool = NULL;
   } else {
-    if (cl->poolshmid != -1) {
+    if (cl->poolshmid != (int64_t) -1) {
       log_auto(L_WARNING,"computer_pool_detach_shared_memory(): something tried to detach NULL with a poolshmid != -1.");
     } else {
       log_auto(L_DEBUG,"computer_pool_detach_shared_memory(): tried to detach NULL with a poolshmid == -1. Not an issue.");
@@ -364,17 +364,19 @@ int computer_pool_add (struct computer_limits *cl, char *poolname) {
     return 0;
   }
 
+  log_auto (L_DEBUG3,"computer_pool_add() : proceed to init new pools structure...");
   computer_pool_init(&new_cl);
   new_cl.npools = cl->npools+1;
-  if ((npoolshmid = computer_pool_get_shared_memory(new_cl.npools)) == (int64_t)-1) {
+  if ((npoolshmid = (int64_t) computer_pool_get_shared_memory(new_cl.npools)) == (int64_t)-1) {
     log_auto (L_ERROR,"computer_pool_add() : Could not get new shared memory (npools = %i)",new_cl.npools);
     computer_pool_detach_shared_memory(cl);
     return 0;
   }
-  
+
+  log_auto (L_DEBUG3,"computer_pool_add() : successfully allocated new shared memory segment for %i pool(s)",new_cl.npools);  
   new_cl.poolshmid = npoolshmid;
   if ((npool = (struct pool *)computer_pool_attach_shared_memory(&new_cl)) == (void *) -1) {
-    log_auto (L_ERROR,"computer_pool_add() : Could not attach new shared memory (shmid: %lli,npools)",new_cl.poolshmid,new_cl.npools);
+    log_auto (L_ERROR,"computer_pool_add() : Could not attach new shared memory (shmid: %lli,npools=%i)",new_cl.poolshmid,new_cl.npools);
     computer_pool_free(&new_cl);
     computer_pool_detach_shared_memory(cl);
     return 0;
@@ -384,11 +386,11 @@ int computer_pool_add (struct computer_limits *cl, char *poolname) {
     memcpy (npool,opool,sizeof (struct pool) * cl->npools);
     log_auto(L_DEBUG2,"computer_pool_add() : copied %i pools from old list",cl->npools);
   } else {
-    log_auto(L_DEBUG2,"computer_pool_add() : no pools to copy (npools=%i,pool=%p)",cl->npools,cl->pool);
+    log_auto(L_DEBUG2,"computer_pool_add() : no pools to copy from old pool list (npools=%i,pool=%p)",cl->npools,cl->pool);
   }
 
   strncpy (new_cl.pool[cl->npools].name,poolname,MAXNAMELEN);
-  log_auto(L_DEBUG2,"computer_pool_add() : copied pool name '%s' to the end of the list.",new_cl.pool[cl->npools].name);
+  log_auto(L_DEBUG2,"computer_pool_add() : copied pool name '%s' to the end of the new list.",new_cl.pool[cl->npools].name);
 
   // remove old list
   computer_pool_detach_shared_memory (cl);
@@ -427,7 +429,7 @@ int computer_pool_remove (struct computer_limits *cl, char *pool) {
 
   computer_pool_init (&new_cl);
   new_cl.npools = cl->npools-1;
-  if ((npoolshmid = computer_pool_get_shared_memory(new_cl.npools)) == (int64_t)-1) {
+  if ((npoolshmid = (int64_t) computer_pool_get_shared_memory(new_cl.npools)) == (int64_t)-1) {
     log_auto(L_ERROR,"computer_pool_remove() : could not allocate shared memory for %i pools",new_cl.npools);
     computer_pool_detach_shared_memory (cl);
     return 0;
@@ -481,6 +483,7 @@ void computer_pool_list (struct computer_limits *cl) {
     }
   }
 }
+
 
 int computer_pool_exists (struct computer_limits *cl,char *poolname) {
   int i;
@@ -546,16 +549,21 @@ int computer_nrunning (struct computer *comp) {
   return nrunning;
 }
 
+void computer_limits_init (struct computer_limits *cl) {
+  memset (cl,0,sizeof(struct computer_limits));
+  cl->enabled = 1;
+  cl->nmaxcpus = MAXTASKS;
+  cl->maxfreeloadcpu = MAXLOADAVG;
+  cl->autoenable.h = AE_HOUR; /* At AE_HOUR:AE_MIN autoenable by default */
+  cl->autoenable.m = AE_MIN;
+  cl->autoenable.last = 0; /* Last autoenable on Epoch */
+  cl->autoenable.flags = 0; // No flags set, autoenable disabled
+  computer_pool_init (cl);
+}
+
 void computer_init_limits (struct computer *comp) {
-  memset (&comp->limits,0,sizeof(struct computer_limits));
-  comp->limits.enabled = 1;
+  computer_limits_init (&comp->limits);
   comp->limits.nmaxcpus = comp->hwinfo.ncpus;
-  comp->limits.maxfreeloadcpu = MAXLOADAVG;
-  comp->limits.autoenable.h = AE_HOUR; /* At AE_HOUR:AE_MIN autoenable by default */
-  comp->limits.autoenable.m = AE_MIN;
-  comp->limits.autoenable.last = 0; /* Last autoenable on Epoch */
-  comp->limits.autoenable.flags = 0; // No flags set, autoenable disabled
-  computer_pool_init (&comp->limits);
 }
 
 int computer_index_correct_master (struct database *wdb, uint32_t icomp) {
