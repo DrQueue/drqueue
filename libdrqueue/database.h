@@ -26,6 +26,8 @@
 #include "job.h"
 #include "computer.h"
 
+#include <stdint.h>
+
 #define DB_VERSION 10          // Database version. This version must change when we change the job structure
 #define DB_MAGIC   0xADDEEFBE  // magic number
 
@@ -39,8 +41,8 @@ struct database {
   struct computer computer[MAXCOMPUTERS]; /* computers */
   struct job job[MAXJOBS]; /* jobs */
   struct load_balancing lb; // Load balancing info
-  int semid;   /* semaphores id */
-  int shmid;   /* shared memory id */
+  int64_t semid;   /* semaphores id */
+  int64_t shmid;   /* shared memory id */
 
 #ifdef COMM_REPORT
   uint64_t bsent;

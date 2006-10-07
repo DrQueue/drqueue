@@ -55,7 +55,7 @@ time_t tstart;    /* Time at wich the master has started running */
 int main (int argc, char *argv[]) {
   int sfd;   /* socket file descriptor */
   int csfd;   /* child sfd, the socket once accepted the connection */
-  int shmid;   /* shared memory id */
+  int64_t shmid;   /* shared memory id */
   int force = 0;  /* force even if shmem already exists */
   struct sockaddr_in addr; /* Address of the remote host */
   pid_t child,child_wait;
@@ -64,29 +64,36 @@ int main (int argc, char *argv[]) {
   int i; // For loops
 
 #ifdef COMM_REPORT
-
   bsent = brecv = 0;
   tstart = time(NULL);
 #endif
 
   master_get_options (&argc,&argv,&force);
-
-  set_default_env(); // Config files overrides environment
+  
+  // Set some standard defaults based on DRQUEUE_ROOT (must be already set!)
+  set_default_env(); 
+  
+  // Config files override environment variables
   // Read the config file after reading the arguments, as those may change
   // the path to the config file
   config_parse_tool("master");
+
   log_master (L_INFO,"Starting...");
 
   if (!common_environment_check()) {
-    fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
+    log_auto (L_ERROR,"Error checking the environment: %s",drerrno_str());
     exit (1);
   }
+
   set_signal_handlers ();
 
+  //system ("env | grep DRQ");
   shmid = get_shared_memory (force);
 
-  if ((wdb = attach_shared_memory (shmid)) == (void *) -1)
+  if ((wdb = attach_shared_memory (shmid)) == (void *) -1) {
     exit (1);
+  }
+
   wdb->shmid = shmid;
   wdb->semid = get_semaphores (force);
 
@@ -153,18 +160,28 @@ int main (int argc, char *argv[]) {
   exit (0);
 }
 
-int get_shared_memory (int force) {
-  key_t key;
-  int shmid;
+int64_t get_shared_memory (int force) {
+  key_t skey;
+  int64_t shmid;
   int shmflg;
   char file[BUFFERLEN];
-  char *root;
+  char *root = NULL;
 
   root = getenv("DRQUEUE_BIN");
-  snprintf (file,BUFFERLEN-1,KEY_MASTER,root);
-  log_auto (L_INFO,"Using file '%s' to obtain shared memory id.",file);
+  if (root) {
+    snprintf (file,BUFFERLEN-1,"%s/%s",root,KEY_MASTER);
+  } else {
+    root = getenv("DRQUEUE_ROOT");
+    if (!root) {
+      fprintf (stderr,"What the heck\n");
+      log_auto (L_ERROR,"DRQUEUE_ROOT not set. (file='%s')",file);
+      exit (1);
+    }
+    snprintf (file,BUFFERLEN-1,"%s/bin/%s",root,KEY_MASTER);
+  }
+  log_auto (L_DEBUG,"Using file '%s' to obtain shared memory id.",file);
 
-  if ((key = ftok (file,'Z')) == -1) {
+  if ((skey = (key_t) ftok (file,(int)'Z')) == (key_t)-1) {
     perror ("Getting key for shared memory");
     exit (1);
   }
@@ -175,28 +192,42 @@ int get_shared_memory (int force) {
     shmflg = IPC_EXCL|IPC_CREAT|0600;
   }
 
-  if ((shmid = shmget (key,sizeof(struct database), shmflg)) == -1) {
-    perror ("Getting shared memory");
-    if (!force)
+  if ((shmid = (int64_t) shmget (skey,(int)sizeof(struct database), shmflg)) == (int64_t)-1) {
+    perror ("ERROR: Getting shared memory");
+    if (!force) {
       fprintf (stderr,"Try with option -f (if you are sure that no other master is running)\n");
+    }
     exit (1);
   }
 
   return shmid;
 }
 
-int get_semaphores (int force) {
+int64_t get_semaphores (int force) {
   key_t key;
-  int semid;
+  int64_t semid;
   struct sembuf op;
   int semflg;
   char file[BUFFERLEN];
   char *root;
 
   root = getenv("DRQUEUE_BIN");
-  snprintf (file,BUFFERLEN-1,KEY_MASTER,root);
+  if (root) {
+    snprintf (file,BUFFERLEN-1,"%s/%s",root,KEY_MASTER);
+  } else {
+    log_auto (L_WARNING,"DRQUEUE_BIN not set.");
+    root = getenv("DRQUEUE_ROOT");
+    if (!root) {
+      fprintf (stderr,"What the heck\n");
+      log_auto (L_ERROR,"DRQUEUE_ROOT not set. (file='%s')",file);
+      exit (1);
+    }
+    snprintf (file,BUFFERLEN-1,"%s/bin/%s",root,KEY_MASTER);
+    log_auto (L_WARNING,"DRQUEUE_BIN set to default.");
+  }
+  log_auto (L_DEBUG,"Using file '%s' to obtain semaphores id.",file);
 
-  if ((key = ftok (file,'Z')) == -1) {
+  if ((key = (key_t)ftok (file,(int)'Z')) == (key_t)-1) {
     perror ("Getting key for semaphores");
     kill (0,SIGINT);
   }
@@ -207,35 +238,34 @@ int get_semaphores (int force) {
     semflg = IPC_EXCL|IPC_CREAT|0600;
   }
 
-  if ((semid = semget (key,1,semflg)) == -1) {
+  if ((semid = (int64_t) semget (key,1,semflg)) == (int64_t) -1) {
     perror ("Getting semaphores");
     if (!force)
       fprintf (stderr,"Try with option -f (if you are sure that no other master is running)\n");
     kill (0,SIGINT);
   }
-  if (semctl (semid,0,SETVAL,1) == -1) {
+  if (semctl ((int)semid,0,SETVAL,1) == -1) {
     perror ("semctl SETVAL -> 1");
     kill (0,SIGINT);
   }
-  if (semctl (semid,0,GETVAL) == 0) {
+  if (semctl ((int)semid,0,GETVAL) == 0) {
     op.sem_num = 0;
     op.sem_op = 1;
     op.sem_flg = 0;
-    if (semop(semid,&op,1) == -1) {
+    if (semop((int)semid,&op,1) == -1) {
       perror ("semaphore_release");
       kill(0,SIGINT);
     }
   }
 
   /*  fprintf (stderr,"semval: %i semid: %i\n",semctl (semid,0,GETVAL),semid); */
-
   return semid;
 }
 
-void *attach_shared_memory (int shmid) {
+void *attach_shared_memory (int64_t shmid) {
   void *rv;   /* return value */
 
-  if ((rv = shmat (shmid,0,0)) == (void *)-1) {
+  if ((rv = shmat ((int)shmid,0,0)) == (void *)-1) {
     perror ("master shmat");
     return ((void *) -1);
   }
@@ -355,10 +385,10 @@ void clean_out (int signal, siginfo_t *info, void *data) {
     computer_free (&wdb->computer[i]);
   }
 
-  if (semctl (wdb->semid,0,IPC_RMID,NULL) == -1) {
+  if (semctl ((int)wdb->semid,0,IPC_RMID,NULL) == -1) {
     perror ("wdb->semid");
   }
-  if (shmctl (wdb->shmid,IPC_RMID,NULL) == -1) {
+  if (shmctl ((int)wdb->shmid,IPC_RMID,NULL) == -1) {
     perror ("wdb->shmid");
   }
 
@@ -433,7 +463,7 @@ void check_lastconn_times (struct database *wdb) {
                              (int) (now - wdb->computer[i].lastconn));
         /* We only need to remove it this  way, without requeueing its frames because */
         /* the frames will be requeued on the consistency checks (job_update_info) */
-        wdb->computer[i].used = 0;
+        computer_free (&wdb->computer[i]);
       }
     }
     semaphore_release(wdb->semid);

@@ -96,7 +96,7 @@ void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job) {
   nframes = job_nframes (&wdb->job[ijob]);
 
   if (nframes) {
-    if ((wdb->job[ijob].fishmid = get_frame_shared_memory (nframes)) == (int64_t)-1) {
+    if ((wdb->job[ijob].fishmid = (int64_t) get_frame_shared_memory (nframes)) == (int64_t)-1) {
       job_init (&wdb->job[ijob]);
       semaphore_release(wdb->semid);
       log_master(L_ERROR,"Getting frame shared memory. New job could not be registered.");
@@ -384,7 +384,7 @@ void job_update_assigned (struct database *wdb, uint32_t ijob, int iframe, int i
 int64_t get_blocked_host_shared_memory (uint32_t nhosts) {
   int64_t shmid;
 
-  if ((shmid = shmget (IPC_PRIVATE,sizeof(struct blocked_host)*nhosts, IPC_EXCL|IPC_CREAT|0600)) == (int64_t)-1) {
+  if ((shmid = (int64_t) shmget (IPC_PRIVATE,sizeof(struct blocked_host)*nhosts, IPC_EXCL|IPC_CREAT|0600)) == (int64_t)-1) {
     drerrno = DRE_GETSHMEM;
     log_master (L_ERROR,"get_blocked_host_shared_memory: shmget (%s)",drerrno_str());
     perror ("shmget");
@@ -397,7 +397,7 @@ int64_t get_blocked_host_shared_memory (uint32_t nhosts) {
 struct blocked_host *attach_blocked_host_shared_memory (int64_t shmid) {
   void *rv;   /* return value */
 
-  if ((rv = shmat (shmid,0,0)) == (void *)-1) {
+  if ((rv = shmat ((int)shmid,0,0)) == (void *)-1) {
     drerrno = DRE_ATTACHSHMEM;
     log_master (L_ERROR,"attach_blocked_host_shared_memory (shmat): %s",drerrno_str());
     perror ("blocked host shmat");
@@ -417,7 +417,7 @@ void detach_blocked_host_shared_memory (struct blocked_host *bhshp) {
 int64_t get_frame_shared_memory (uint32_t nframes) {
   int64_t shmid;
 
-  if ((shmid = shmget (IPC_PRIVATE,sizeof(struct frame_info)*nframes, IPC_EXCL|IPC_CREAT|0600)) == (int64_t)-1) {
+  if ((shmid = (int64_t) shmget (IPC_PRIVATE,sizeof(struct frame_info)*nframes, IPC_EXCL|IPC_CREAT|0600)) == (int64_t)-1) {
     drerrno = DRE_GETSHMEM;
     log_master (L_ERROR,"get_frame_shared_memory: %s",drerrno_str());
     perror ("shmget");
@@ -429,7 +429,7 @@ int64_t get_frame_shared_memory (uint32_t nframes) {
 struct frame_info *attach_frame_shared_memory (int64_t shmid) {
   void *pam;   // pointer to attached memory
 
-  if ((pam = shmat (shmid,0,0)) == (void *)-1) {
+  if ((pam = shmat ((int)shmid,0,0)) == (void *)-1) {
     drerrno = DRE_ATTACHSHMEM;
     log_master (L_ERROR,"attach_frame_shared_memory (shmat): %s",drerrno_str());
     perror ("attach_frame_shared_memory");

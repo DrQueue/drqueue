@@ -33,6 +33,7 @@
 #include <unistd.h>
 #include <stdint.h>
 #include <string.h>
+#include <errno.h>
 
 #include "communications.h"
 #include "database.h"
@@ -866,6 +867,8 @@ int recv_computer_pools (int sfd, struct computer_limits *cl) {
     return 0;
   }
   npools = ntohs (npools);
+
+  log_auto (L_DEBUG2,"recv_computer_pools(): received npools = %i",npools);
   // fprintf (stderr,"Recv npools: %u\n",npools);
 
   computer_pool_free (cl);
@@ -873,10 +876,12 @@ int recv_computer_pools (int sfd, struct computer_limits *cl) {
     if (!dr_read(sfd,(char*)&pool,sizeof(pool))) {
       return 0;
     }
+    log_auto (L_DEBUG3,"recv_computer_pools(): received pool name='%s'. Attempting to add...",pool.name);
     computer_pool_add (cl,pool.name);
   }
 
   // computer_pool_list (cl);
+  log_auto (L_DEBUG2,"recv_computer_pools(): returning success after receiving %i pools",npools);
 
   return 1;
 }
@@ -885,7 +890,9 @@ int recv_computer_limits (int sfd, struct computer_limits *cl) {
   void *buf;
 
   buf = cl;
+  computer_pool_free(cl);
   if (!dr_read (sfd,(char*)buf,sizeof(struct computer_limits))) {
+    log_auto (L_ERROR,"recv_computer_limits() error while receiving computer limits. (%s)",strerror(errno));
     return 0;
   }
 
@@ -898,9 +905,8 @@ int recv_computer_limits (int sfd, struct computer_limits *cl) {
 
   // Pools
   computer_pool_init(cl);
-
   if (!recv_computer_pools (sfd,cl)) {
-    fprintf (stderr,"ERROR: Receiving computer pools. (%s)\n",drerrno_str());
+    log_auto (L_ERROR,"recv_computer_limits() error while receiving computer pool list. (%s)",strerror(errno));
     return 0;
   }
 
