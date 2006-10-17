@@ -25,12 +25,17 @@
 # Useful for avoiding endless loops
 #
 
+from ez_setup import use_setuptools
+use_setuptools()
+
+
 import os
 import glob
 import sys
-import distutils
-from distutils.core import setup, Extension
-#from setuptools import setup, find_packages
+#import distutils
+#from distutils.core import setup, Extension
+import setuptools
+from setuptools import setup, find_packages, Extension
 
 def get_define_macros():
   print "Platform is: ",sys.platform
@@ -62,18 +67,49 @@ def get_swig_flags():
     swigflags = swigflags + ['-D__OSX']
   return swigflags
 
+setup(
+    name = "drqueue",
+    version = "0.64.2c0",
+    packages = find_packages(),
 
+    ext_modules=[Extension('_drqueue', ['drqueue.i'] + get_abspath_glob(os.path.join('..','libdrqueue','*.c')),
+      define_macros=get_define_macros(),
+      include_dirs=[get_abspath('..'),get_abspath(os.path.join('..','libdrqueue'))],
+      swig_opts=get_swig_flags())],
 
-setup (name='drqueue',
-       version='0.1',
-       description='DrQueue Python modules',
-       author='Jorge Daza',
-       author_email='jorge@drqueue.org',
-       license='GPL General Public License version 2',
-       url='http://drqueue.org/',
-       ext_modules=[Extension('_drqueue', ['drqueue.i'] + get_abspath_glob(os.path.join('..','libdrqueue','*.c')),
-                              define_macros=get_define_macros(),
-                              include_dirs=[get_abspath('..'),get_abspath(os.path.join('..','libdrqueue'))],
-                              swig_opts=get_swig_flags())],
-       py_modules=['drqueue'])
+    #scripts = ['drqueue.py'],
+    py_modules = ['drqueue',],
+
+    # Project uses reStructuredText, so ensure that the docutils get
+    # installed or upgraded on the target machine
+    #install_requires = ['docutils>=0.3'],
+
+    package_data = {
+        # If any package contains *.txt or *.rst files, include them:
+        '': ['*.txt', '*.rst'],
+    },
+
+    # metadata for upload to PyPI
+    author = "Jorge Daza",
+    author_email = "jorge@drqueue.org",
+    description = "DrQueue bindings with Python",
+    license = "GPL General Public License version 2",
+    #keywords = "hello world example examples",
+    url = "http://drqueue.org/",   # project home page, if any
+
+    # could also include long_description, download_url, classifiers, etc.
+)
+
+#setup (name='drqueue',
+#       version='0.1',
+#       description='DrQueue Python modules',
+#       author='Jorge Daza',
+#       author_email='jorge@drqueue.org',
+#       license='GPL General Public License version 2',
+#       url='http://drqueue.org/',
+#       ext_modules=[Extension('_drqueue', ['drqueue.i'] + get_abspath_glob(os.path.join('..','libdrqueue','*.c')),
+#                              define_macros=get_define_macros(),
+#                              include_dirs=[get_abspath('..'),get_abspath(os.path.join('..','libdrqueue'))],
+#                              swig_opts=get_swig_flags())],
+#       py_modules=['drqueue'])
 
