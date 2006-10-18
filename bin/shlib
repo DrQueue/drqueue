@@ -33,11 +33,11 @@ escape_spaces_string () {
 }
 
 check_environment () {
-  if [ "x${DRQUEUE_ROOT}" == "x" ]; then
+  if [ -z ${DRQUEUE_ROOT} ]; then
     echo ERROR: DRQUEUE_ROOT not set in environment
     exit 1
   fi
-  if [ "x${DRQUEUE_MASTER}" == "x" ]; then
+  if [ -z ${DRQUEUE_MASTER} ]; then
     echo ERROR: DRQUEUE_MASTER not set in environment
     exit 1
   fi
