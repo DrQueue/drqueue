@@ -35,10 +35,22 @@
 #define L_DEBUG2 4
 #define L_DEBUG3 5
 
+typedef enum {
+  DRQ_LOG_TOOL_UNKNOWN,
+  DRQ_LOG_TOOL_MASTER,
+  DRQ_LOG_TOOL_SLAVE,
+  DRQ_LOG_TOOL_SLAVE_TASK
+} logtooltype;
+
+#define LAPP_MASTER 0
+#define LAPP_SLAVE  1
+
 extern int loglevel;
 extern int logonscreen;
+extern logtooltype logtool;
 
 void log_auto (int level, char *fmt, ...);
+void log_auto_job (struct job *job, int level, char *fmt, ...);
 
 void log_slave_task (struct task *task,int level,char *fmt,...);
 FILE *log_slave_open_task (struct task *task);

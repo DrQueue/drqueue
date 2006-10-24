@@ -30,6 +30,8 @@
 #include <stdint.h>
 #include "constants.h"
 
+#pragma pack(push,1)
+
 typedef enum {
   ARCH_UNKNOWN,
   ARCH_INTEL,
@@ -76,6 +78,8 @@ struct computer_hwinfo {
   uint32_t memory;         /* Memory in Mbytes */
   uint8_t  nnbits;         // 64/32 or 0 (Unknown) cpu
 };
+
+#pragma pack(pop)
 
 void get_hwinfo (struct computer_hwinfo *hwinfo);
 t_proctype get_proctype (void);

@@ -41,6 +41,7 @@ struct envvars {
   struct envvar *variables;
   uint16_t nvariables;
   int64_t evshmid;
+  int64_t evsemid; // semaphore exclusive for envvars
 };
 
 int envvars_init (struct envvars *envvars);

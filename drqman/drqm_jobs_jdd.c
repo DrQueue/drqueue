@@ -357,7 +357,7 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info) {
 
 static int jdd_update_blocked_hosts (GtkWidget *w, struct drqm_jobs_info *info) {
   int ncols = 2;
-  int i;
+  uint32_t i;
   char **buff;
 
   if (!request_job_list_blocked_host(info->jdd.job.id, &info->jdd.job.blocked_host, &info->jdd.job.nblocked, CLIENT)) {
@@ -377,7 +377,7 @@ static int jdd_update_blocked_hosts (GtkWidget *w, struct drqm_jobs_info *info) 
   gtk_clist_clear(GTK_CLIST(info->jdd.clist_bh));
 
   for (i=0; i < info->jdd.job.nblocked; i++) {
-    snprintf (buff[0],BUFFERLEN-1,"%i",i);
+    snprintf (buff[0],BUFFERLEN,"%u",i);
     snprintf (buff[1],BUFFERLEN,"%s",info->jdd.job.blocked_host[i].name);
 
     gtk_clist_append (GTK_CLIST(info->jdd.clist_bh),buff);

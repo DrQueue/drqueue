@@ -1307,10 +1307,11 @@ static void djd_bok_pressed (GtkWidget *button, struct drqm_jobs_info *info) {
     GList *sel;
 
     if (!(sel = GTK_CLIST(info->clist)->selection)) {
+      // FIXME: needs a message !! (or remove the row, but not the id on the master !!)
       drqm_request_job_delete (info->jobs[info->row].id);
     } else {
       for (;sel;sel = sel->next) {
-        struct job *job = (struct job *)gtk_clist_get_row_data(GTK_CLIST(info->clist),(uint32_t)sel->data);
+        struct job *job = (struct job *)gtk_clist_get_row_data(GTK_CLIST(info->clist),(gint)sel->data);
         drqm_request_job_delete (job->id);
       }
     }

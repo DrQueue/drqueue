@@ -94,64 +94,23 @@ void drqm_clean_joblist (struct drqm_jobs_info *info) {
 }
 
 void drqm_request_computerlist (struct drqm_computers_info *info) {
-  /* This function is called non-blocked */
-  /* This function is called from inside drqman */
-  struct request req;
-  int sfd;
   struct computer *tcomputer;
   int i;
 
   drqm_clean_computerlist (info);
 
-  if ((sfd = connect_to_master ()) == -1) {
-    fprintf(stderr,"%s\n",drerrno_str());
+  info->ncomputers = request_computer_list(&tcomputer,CLIENT);
+  if (info->ncomputers == -1) {
+    fprintf (stderr,"Error receiving computer list");
     return;
   }
+  info->computers = tcomputer;
 
-  req.type = R_R_LISTCOMP;
-
-  if (!send_request (sfd,&req,CLIENT)) {
-    fprintf(stderr,"%s\n",drerrno_str());
-    close (sfd);
-    return;
-  }
-  if (!recv_request (sfd,&req)) {
-    fprintf(stderr,"%s\n",drerrno_str());
-    close (sfd);
-    return;
-  }
-
-  if (req.type == R_R_LISTCOMP) {
-    info->ncomputers = req.data;
-  } else {
-    fprintf (stderr,"ERROR: Not appropiate answer to request R_R_LISTCOMP\n");
-    close (sfd);
-    return;
-  }
-
-  if (info->ncomputers) {
-    if ((info->computers = g_malloc (sizeof (struct computer) * info->ncomputers)) == NULL) {
-      fprintf (stderr,"Not enough memory for computer structures\n");
-      close (sfd);
-      return;
-    }
-
-    tcomputer = info->computers;
-    for (i=0;i<info->ncomputers;i++) {
-      computer_init (tcomputer);
-      if (!recv_computer (sfd,tcomputer)) {
-        fprintf (stderr,"ERROR: Receiving computer structure (drqm_request_computerlist) [%i]\n",i);
-        drqm_clean_computerlist (info);
-        exit (1);
-      }
-      tcomputer++;
-    }
-  }
-
-  close (sfd);
+  return;
 }
 
-void drqm_clean_computerlist (struct drqm_computers_info *info) {
+void
+drqm_clean_computerlist (struct drqm_computers_info *info) {
   int i;
 
   if (info->computers) {
@@ -159,7 +118,7 @@ void drqm_clean_computerlist (struct drqm_computers_info *info) {
       //   fprintf (stderr,"drqm_clean_computerlist: Freeing computer %i\n",i);
       computer_free(&info->computers[i]);
     }
-    g_free (info->computers);
+    free (info->computers);
     info->computers = NULL;
     info->ncomputers = 0;
   }

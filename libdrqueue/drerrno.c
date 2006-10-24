@@ -22,6 +22,7 @@
 #include "constants.h"
 
 int drerrno = DRE_NOERROR;
+int drerrno_system = 0;
 
 char *drerrno_str (void) {
   char *msg;
