@@ -99,6 +99,7 @@ slaves. Also provides access to all data structures of DrQueue."
 %include "job.h"
 %include "envvars.h"
 %include "common.h"
+%include "computer_pool.h"
 
 typedef unsigned int time_t;
 typedef unsigned short int uint16_t;
