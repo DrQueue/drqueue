@@ -1,7 +1,9 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
@@ -30,12 +32,14 @@
 #include "computer_info.h"
 #include "computer_status.h"
 
+
 // Autoenable flags
 #define AEF_ACTIVE (1<<0)
 
-struct pool {
-  char name[MAXNAMELEN];
-};
+#pragma pack (push,1)
+
+struct pool;
+struct database;
 
 struct autoenable {   /* I put autoenable on limits even */
   uint32_t last;      /* Time of the last autoenable event happened */
@@ -51,6 +55,8 @@ struct computer_limits {
   struct pool *pool,*local_pool;
   uint16_t npools;
   int64_t poolshmid; // Pool's shared memory id
+  int64_t poolsemid; // Pool's semaphore id
+  uint32_t npoolsattached;
 };
 
 struct computer {
@@ -59,18 +65,19 @@ struct computer {
   struct computer_limits limits;
   uint32_t  lastconn;   /* Time of last connection to the master */
   uint8_t   used;       /* Is this computer record being used or not ? */
+  int64_t   semid;      // Semaphore id for the computer
 };
 
-struct database;
+#pragma pack(pop)
 
 int computer_index_addr (void *pwdb,struct in_addr addr); /* I use pointers to void instead to struct database */
 int computer_index_name (void *pwdb,char *name);     /* because if I did I would have to create a dependency loop */
 int computer_index_free (void *pwdb);
 int computer_available (struct computer *computer);
-int computer_ntasks (struct computer *comp);
-int computer_nrunning (struct computer *comp);
-int computer_nrunning_job (struct computer *comp,uint32_t ijob);
-void computer_update_assigned (struct database *wdb,uint32_t ijob,int iframe,int icomp,int itask);
+uint16_t computer_ntasks (struct computer *comp);
+uint16_t computer_nrunning (struct computer *comp);
+uint16_t computer_nrunning_job (struct computer *comp,uint32_t ijob);
+void computer_update_assigned (struct database *wdb, uint32_t ijob, uint32_t iframe, uint32_t icomp, uint16_t itask);
 void computer_init (struct computer *computer);
 int computer_free (struct computer *computer);
 int computer_ncomputers_masterdb (struct database *wdb);
@@ -79,19 +86,14 @@ void computer_init_limits (struct computer *comp);      // Deprecated
 int computer_index_correct_master (struct database *wdb, uint32_t icomp);
 void computer_autoenable_check (struct slave_database *sdb);
 
+int computer_lock_check (struct computer *computer);
+int computer_lock (struct computer *computer);
+int computer_release (struct computer *computer);
+
 int computer_attach (struct computer *computer);
 int computer_detach (struct computer *computer);
 
-// Pools
-int64_t computer_pool_get_shared_memory (int npools);
-struct pool *computer_pool_attach_shared_memory (struct computer_limits *cl);
-int computer_pool_detach_shared_memory (struct computer_limits *cl);
-void computer_pool_init (struct computer_limits *cl);
-int computer_pool_add (struct computer_limits *cl, char *pool);
-int computer_pool_remove (struct computer_limits *cl, char *pool);
-void computer_pool_list (struct computer_limits *cl);
-int computer_pool_exists (struct computer_limits *cl,char *pool);
-int computer_pool_free (struct computer_limits *cl);
-void computer_pool_set_from_environment (struct computer_limits *cl);
+void computer_limits_cleanup_received (struct computer_limits *cl);
+void computer_limits_cleanup_to_send (struct computer_limits *cl);
 
 #endif /* _COMPUTER_H_ */

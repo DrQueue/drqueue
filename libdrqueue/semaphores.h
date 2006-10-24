@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,7 +22,14 @@
 #ifndef _SEMAPHORES_H_
 #define _SEMAPHORES_H_
 
-void semaphore_lock (int64_t semid);
-void semaphore_release (int64_t semid);
+#include <sys/types.h>
+#include <stdint.h>
+
+
+int semaphore_lock (int64_t semid);
+int semaphore_release (int64_t semid);
+int semaphore_valid (int64_t semid);
+int64_t semaphore_get (void);
+int semaphore_remove (int64_t semid);
 
 #endif /* _SEMAPHORES_H_ */

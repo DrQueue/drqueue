@@ -667,9 +667,17 @@ int cdd_update (GtkWidget *w, struct drqm_computers_info *info) {
   buff[ncols] = NULL;
 
   gtk_clist_freeze(GTK_CLIST(info->cdd.clist));
+  for (i=0; i < GTK_CLIST(info->cdd.clist)->rows; i++) {
+    void *ptr;
+    ptr = gtk_clist_get_row_data (GTK_CLIST(info->cdd.clist),i);
+    if (ptr != NULL) {
+      free (ptr);
+    }
+  }
   gtk_clist_clear(GTK_CLIST(info->cdd.clist));
   row = 0;
   for (i=0; i < MAXTASKS; i++) {
+    uint16_t *itaskp;
     if (info->computers[info->row].status.task[i].used) {
       snprintf (buff[0],BUFFERLEN-1,"%i",info->computers[info->row].status.task[i].itask);
       snprintf (buff[1],BUFFERLEN-1,"%s",
@@ -684,8 +692,20 @@ int cdd_update (GtkWidget *w, struct drqm_computers_info *info) {
       gtk_clist_append(GTK_CLIST(info->cdd.clist),buff);
 
       /* Row data */
-      gtk_clist_set_row_data (GTK_CLIST(info->cdd.clist),row,
-                              (gpointer)(uint32_t)info->computers[info->row].status.task[i].itask);
+      itaskp = NULL;
+      itaskp = gtk_clist_get_row_data(GTK_CLIST(info->cdd.clist),row);
+      if (!itaskp) {
+	log_auto (L_DEBUG,"cdd_update() : computer row doesn't returned NULL when getting it's data. Allocating memory. (row = %i)",
+		  row);
+	itaskp = (uint16_t*) malloc (sizeof(uint16_t));
+	if (!itaskp) {
+	  perror ("ERROR: no memory for itask pointer");
+	  // CHECK: does it free shared memory on exit ?
+	  exit(1);
+	}
+      }
+      *itaskp = info->computers[info->row].status.task[i].itask;
+      gtk_clist_set_row_data (GTK_CLIST(info->cdd.clist),row,itaskp);
       row++;
     }
   }
@@ -887,16 +907,20 @@ static void dtk_bok_pressed (GtkWidget *button,struct drqm_computers_info *info)
   /* Kill the tasks */
   /* Requeues the finished frames, sets them as waiting again */
   GList *sel;
-  uint16_t itask;
+  uint16_t *itaskp;
 
   if (!(sel = GTK_CLIST(info->cdd.clist)->selection)) {
     return;
   }
 
   for (;sel;sel = sel->next) {
-    itask = (uint16_t)(uint32_t) gtk_clist_get_row_data(GTK_CLIST(info->cdd.clist),(gint)sel->data);
-    drqm_request_slave_task_kill (info->computers[info->row].hwinfo.name,itask);
-    /*   printf ("Killing task: %i on computer: %s\n",itask,info->computers[info->row].hwinfo.name); */
+    itaskp = (uint16_t*)gtk_clist_get_row_data(GTK_CLIST(info->cdd.clist),(gint)sel->data);
+    if (itaskp != NULL) {
+      drqm_request_slave_task_kill (info->computers[info->row].hwinfo.name,*itaskp);
+      /*   printf ("Killing task: %i on computer: %s\n",itask,info->computers[info->row].hwinfo.name); */
+    } else {
+      log_auto (L_ERROR,"dtk_bok_pressed() : itaskp stored on clist data == NULL");
+    }
   }
 }
 

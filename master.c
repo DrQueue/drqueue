@@ -68,6 +68,8 @@ int main (int argc, char *argv[]) {
   tstart = time(NULL);
 #endif
 
+  logtool = DRQ_LOG_TOOL_MASTER;
+  log_auto (L_INFO,"Starting master...");
   master_get_options (&argc,&argv,&force);
   
   // Set some standard defaults based on DRQUEUE_ROOT (must be already set!)
@@ -78,7 +80,6 @@ int main (int argc, char *argv[]) {
   // the path to the config file
   config_parse_tool("master");
 
-  log_master (L_INFO,"Starting...");
 
   if (!common_environment_check()) {
     log_auto (L_ERROR,"Error checking the environment: %s",drerrno_str());
@@ -132,8 +133,8 @@ int main (int argc, char *argv[]) {
           icomp = computer_index_addr (wdb,addr.sin_addr);
           handle_request_master (csfd,wdb,icomp,&addr);
           close (csfd);
-#ifdef COMM_REPORT
 
+#ifdef COMM_REPORT
           semaphore_lock(wdb->semid);
           wdb->bsent += bsent - bsentb;
           wdb->brecv += brecv - brecvb;
@@ -147,7 +148,7 @@ int main (int argc, char *argv[]) {
       } else if (child != -1) {
         n_children++;
       } else {
-        log_master (L_ERROR,"Forking !!\n");
+        log_auto (L_ERROR,"Forking !!\n");
         sleep (5);
       }
     } else {
@@ -434,8 +435,10 @@ void sigsegv_handler (int signal, siginfo_t *info, void *data) {
 void master_consistency_checks (struct database *wdb) {
   uint32_t i;
 
+  log_auto (L_INFO,"master_consistency_checks(): Starting... (PID: %i)",getpid());
+
   while (1) {
-    log_master (L_DEBUG,"Master consistency checks loop");
+    log_auto (L_DEBUG,"Master consistency checks loop");
     check_lastconn_times (wdb);
 
     for (i=0;i<MAXJOBS;i++) {
@@ -482,6 +485,8 @@ void usage (void) {
 
 void master_get_options (int *argc,char ***argv, int *force) {
   int opt;
+
+  log_auto (L_DEBUG3,"Parsing command line");
 
   while ((opt = getopt (*argc,*argv,"c:fl:ohv")) != -1) {
     switch (opt) {

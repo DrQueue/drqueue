@@ -223,8 +223,10 @@ tags:
 	etags *.[ch] libdrqueue/*.[ch] drqman/*.[ch]
 
 clean:
-	rm -fR *.o *.os *.exe *~ libdrqueue.a $(BASE_C_TOOLS) $(BASE_CXX_TOOLS) TAGS tmp/* logs/* db/* contrib/windows/*.exe bin/*.$(systype).$(machinetype) $(OBJS_LIBDRQUEUE)
+	rm -fR *.o *.os *.exe *~ libdrqueue.a $(BASE_C_TOOLS) $(BASE_CXX_TOOLS) TAGS tmp/* logs/* db/* contrib/windows/*.exe \
+        bin/*.$(systype).$(machinetype) $(OBJS_LIBDRQUEUE)
 	rm -fR libdrqueue/*~
+	rm -f libdrqueue/*.os
 	$(MAKE) -C drqman clean
 
 #actual object make targets

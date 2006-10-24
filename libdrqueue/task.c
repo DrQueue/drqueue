@@ -1,12 +1,14 @@
 //
 // Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -104,6 +106,39 @@ char *task_status_string (unsigned char status) {
   return st_string;
 }
 
+int
+task_is_running (struct task *task) {
+  int running = 1;
+  
+  if (!task) {
+    log_auto (L_ERROR,"task_is_running(): received NULL pointer as task.");
+    return 0;
+  }
+  if (task->used != 1) {
+    if (task->used > 1) {
+      log_auto (L_WARNING,"task_is_running(): task.used > 1 ! (value: %u)",task->used);
+    } else {
+      // task->used == 0
+      //empty
+    }
+    return 0;
+  } else if (task->status == TASKSTATUS_FINISHED) {
+    return 0;
+  } else {
+    // task->used == 1 && task->status != TASKSTATUS_FINISHED
+    switch (task->status) {
+    case TASKSTATUS_RUNNING:
+    case TASKSTATUS_LOADING:
+      break;
+    default:
+      log_auto (L_WARNING,"task_is_running(): unknown task status %u (Str: %s)",
+		task->status,task_status_string(task->used));
+    }
+  }
+  
+  return running;
+}
+
 void task_environment_set (struct task *task) {
   static char padformat[BUFFERLEN];
   static char padframe[BUFFERLEN];
@@ -133,17 +168,10 @@ void task_environment_set (struct task *task) {
   if (block_end > task->frame_end + 1) {
     block_end = task->frame_end + 1;
   }
-  // Old code
-/*   snprintf (padformat,BUFFERLEN-1,"DRQUEUE_PADFRAMES=%%0%uu",task->frame_pad); */
-/*   snprintf (padframes,BUFFERLEN-1,padformat,task->frame); */
-  // New code
+
   snprintf (padformat,BUFFERLEN,"DRQUEUE_PADFRAMES=%0*i",task->frame_pad,task->frame);
   snprintf (padframes,BUFFERLEN,"%s",padformat);
   for (i=task->frame+1; i<block_end; i++) {
-    // Old code
-/*     snprintf (padformat,BUFFERLEN-1,"%s %%0%uu",padframes,task->frame_pad); */
-/*     snprintf (padframes,BUFFERLEN-1,padformat,i); */
-    // New code
     snprintf (padformat,BUFFERLEN,"%s %0*i",padframes,task->frame_pad,i);
     snprintf (padframes,BUFFERLEN,"%s",padformat);
   }
@@ -206,7 +234,8 @@ void task_environment_set (struct task *task) {
   char *buffer;
   if (!envvars_attach(&envvars)) {
     if (envvars.nvariables > 0) {
-      log_slave_task (task,L_WARNING,"Custom environment variables could not be attached. There should be %i available. (%s)",envvars.nvariables,drerrno_str());
+      log_slave_task (task,L_WARNING,"Custom environment variables could not be attached. There should be %i available. (%s)",
+		      envvars.nvariables,drerrno_str());
     }
   } else {
     for (i = 0; i < envvars.nvariables; i++) {

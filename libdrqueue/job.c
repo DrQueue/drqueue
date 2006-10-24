@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <errno.h>
 
 #include "job.h"
 #include "database.h"
@@ -36,12 +37,13 @@
 #include "semaphores.h"
 #include "common.h"
 #include "drerrno.h"
+#include "computer_pool.h"
 
-int job_index_free (void *pwdb) {
+uint32_t job_index_free (void *pwdb) {
   /* Return the index to a free job record OR -1 if there */
   /* are no more free records */
-  int index = -1;
-  int i;
+  uint32_t index = (uint32_t) -1;
+  uint32_t i;
   struct database *wdb = (struct database *)pwdb;
 
   for (i=0; i<MAXJOBS; i++) {
@@ -180,7 +182,7 @@ void job_delete (struct job *job) {
   if (job->fishmid != (int64_t)-1) {
     if (shmctl ((int)job->fishmid,IPC_RMID,NULL) == -1) {
       // FIXME: this function is not called only by the master.
-      log_master_job(job,L_ERROR,"job_delete: shmctl (job->fishmid,IPC_RMID,NULL) [Removing frame shared memory]");
+      log_auto_job(job,L_ERROR,"job_delete: shmctl (job->fishmid,IPC_RMID,NULL) [Removing frame shared memory]");
     }
     job->fishmid = (int64_t)-1;
     job->frame_info = NULL;
@@ -188,7 +190,7 @@ void job_delete (struct job *job) {
 
   if (job->bhshmid != (int64_t)-1) {
     if (shmctl ((int)job->bhshmid,IPC_RMID,NULL) == -1) {
-      log_master_job(job,L_ERROR,"job_delete: shmctl (job->bhshmid,IPC_RMID,NULL) [Removing blocked hosts shared memory]");
+      log_auto_job(job,L_ERROR,"job_delete(): shmctl (job->bhshmid,IPC_RMID,NULL) [Removing blocked hosts shared memory]");
     }
     job->bhshmid = (int64_t)-1;
     job->nblocked = 0;
@@ -262,7 +264,8 @@ uint32_t job_nframes (struct job *job) {
 }
 
 
-int job_available (struct database *wdb,uint32_t ijob, int *iframe, uint32_t icomp) {
+
+int job_available (struct database *wdb,uint32_t ijob, uint32_t *iframe, uint32_t icomp) {
   semaphore_lock(wdb->semid);
 
   if (!job_index_correct_master(wdb,ijob)) {
@@ -288,7 +291,7 @@ int job_available (struct database *wdb,uint32_t ijob, int *iframe, uint32_t ico
     return 0;
   }
 
-  if ((*iframe = job_first_frame_available (wdb,ijob,icomp)) == -1) {
+  if ((*iframe = job_first_frame_available (wdb,ijob,icomp)) == (uint32_t) -1) {
     /* This must be the last test because it actually */
     /* reserves one frame (sets it to assigned) */
     /* Also point to icomp in the frame_info BUT sets itask to -1 */
@@ -308,8 +311,8 @@ uint32_t job_first_frame_available (struct database *wdb,uint32_t ijob,uint32_t 
   /* available but also updates the job structure when found */
   /* so the frame status goes to assigned (we still have to */
   /* set the info about the icomp,start,itask) */
-  int i;
-  int r = -1;
+  uint32_t i;
+  uint32_t r = -1;
   uint32_t nframes;
   struct frame_info *fi;
 
@@ -336,7 +339,7 @@ uint32_t job_first_frame_available (struct database *wdb,uint32_t ijob,uint32_t 
   return r;
 }
 
-void job_update_assigned (struct database *wdb, uint32_t ijob, int iframe, int icomp, int itask) {
+void job_update_assigned (struct database *wdb, uint32_t ijob, uint32_t iframe, uint32_t icomp, uint16_t itask) {
   /* LOCK BEFORE CALLING THIS FUNCTION */
   /* Here we should set all the information inside the task structure (slave) */
   /* about the assigned job (master) into the remote computer */
@@ -419,8 +422,7 @@ int64_t get_frame_shared_memory (uint32_t nframes) {
 
   if ((shmid = (int64_t) shmget (IPC_PRIVATE,sizeof(struct frame_info)*nframes, IPC_EXCL|IPC_CREAT|0600)) == (int64_t)-1) {
     drerrno = DRE_GETSHMEM;
-    log_master (L_ERROR,"get_frame_shared_memory: %s",drerrno_str());
-    perror ("shmget");
+    log_auto (L_ERROR,"get_frame_shared_memory: %s (%s)",drerrno_str(),strerror(errno));
   }
 
   return shmid;
@@ -431,8 +433,7 @@ struct frame_info *attach_frame_shared_memory (int64_t shmid) {
 
   if ((pam = shmat ((int)shmid,0,0)) == (void *)-1) {
     drerrno = DRE_ATTACHSHMEM;
-    log_master (L_ERROR,"attach_frame_shared_memory (shmat): %s",drerrno_str());
-    perror ("attach_frame_shared_memory");
+    log_auto (L_ERROR,"attach_frame_shared_memory (shmat): %s",drerrno_str(),strerror(errno));
   }
 
   return (struct frame_info *) pam;
@@ -441,8 +442,7 @@ struct frame_info *attach_frame_shared_memory (int64_t shmid) {
 void detach_frame_shared_memory (struct frame_info *fishp) {
   if (shmdt((char*)fishp) == -1) {
     drerrno = DRE_RMSHMEM;
-    log_master (L_WARNING,"Call to shmdt failed: detach_frame_shared_memory: %s", drerrno_str());
-    perror ("shmdt: detach_frame_shared_memory");
+    log_auto (L_ERROR,"Call to shmdt failed: detach_frame_shared_memory: %s. (%s)", drerrno_str(),strerror(errno));
   }
 }
 
@@ -496,6 +496,7 @@ void job_update_info (struct database *wdb,uint32_t ijob) {
     }
     job.frame_info = (struct frame_info *) malloc (sizeof(struct frame_info)*total);
     if (!job.frame_info) {
+      detach_frame_shared_memory(fi);
       semaphore_release (wdb->semid);
       return;
     }
@@ -666,7 +667,7 @@ int job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe,
       }
     } else { // itask == -1
       /* The task is being loaded, so it hasn't yet a itask assigned */
-      
+      // TODO: check for timeout
     }
   }
 
@@ -744,7 +745,7 @@ void job_continue (struct job *job) {
   }
 }
 
-void job_frame_waiting (struct database *wdb,uint32_t ijob, int iframe) {
+void job_frame_waiting (struct database *wdb,uint32_t ijob, uint32_t iframe) {
   /* This function is called unlocked, it's called by the master */
   /* This function sets a frame status to FS_WAITING */
   struct frame_info *fi;
@@ -963,7 +964,7 @@ void job_environment_set (struct job *job, uint32_t iframe) {
 
 void job_copy (struct job *src, struct job *dst) {
   memcpy (dst,src,sizeof(struct job));
-  dst->frame_info = NULL;
+  job_fix_received_invalid (dst);
 }
 
 void job_limits_init (struct job_limits *limits) {
@@ -977,7 +978,7 @@ void job_limits_init (struct job_limits *limits) {
 
 int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp) {
   /* This function should return 0 in case the limits are not met for the computer */
-  int i;
+  uint32_t i;
   struct blocked_host *bh ;
 
   if (wdb->job[ijob].nprocs >= wdb->job[ijob].limits.nmaxcpus)
@@ -1021,8 +1022,9 @@ int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp) {
   }
 
   // Pools
-  if (!computer_pool_exists(&wdb->computer[icomp].limits,wdb->job[ijob].limits.pool))
+  if (!computer_pool_exists(&wdb->computer[icomp].limits,wdb->job[ijob].limits.pool)) {
     return 0;
+  }
 
   return 1;
 }
@@ -1120,7 +1122,7 @@ char *job_koj_string (struct job *job) {
   return msg;
 }
 
-int job_available_no_icomp (struct database *wdb,uint32_t ijob, int *iframe) {
+int job_available_no_icomp (struct database *wdb,uint32_t ijob, uint32_t *iframe) {
   /* This function returns 1 in case there is a job available without asigning it to any computer */
   semaphore_lock(wdb->semid);
 
@@ -1154,8 +1156,8 @@ uint32_t job_first_frame_available_no_icomp (struct database *wdb,uint32_t ijob)
   /* To be called LOCKED */
   /* This function not only returns the first frame */
   /* available without updating the job structure */
-  int i;
-  int r = -1;
+  uint32_t i;
+  uint32_t r = (uint32_t) -1;
   uint32_t nframes;
   struct frame_info *fi;
 

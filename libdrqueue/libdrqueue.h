@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -42,8 +42,9 @@ extern int drerrno;
 #include "jobscript.h"
 #include "config.h"
 #include "list.h"
+#include "computer_pool.h"
 
-  /* Script generators */
+/* Script generators */
 #include "generalsg.h"
 #include "mayasg.h"
 #include "mentalraysg.h"

@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -38,11 +40,14 @@
 #define DR_WIFSIGNALED(stat) ((stat)&DR_SIGNALEDFLAG)
 #define DR_WTERMSIG(stat)   ((stat)&0xff)
 
+// TODO: limit time LOADING and FINISHED
 typedef enum {
   TASKSTATUS_LOADING,  /* Assigned but not running yet */
   TASKSTATUS_RUNNING,
   TASKSTATUS_FINISHED  // Finished but reporting to master still
 } t_taskstatus;
+
+#pragma pack(push,1)
 
 struct task {
   uint8_t used;
@@ -64,6 +69,7 @@ struct task {
 
 struct slave_database;
 struct job;
+#pragma pack(pop)
 
 void task_init_all (struct task *task);
 void task_init (struct task *task);
@@ -72,5 +78,6 @@ void task_report (struct task *task);
 char *task_status_string (unsigned char status);
 void task_environment_set (struct task *task);
 int task_set_to_job_frame (struct task *task, struct job *job, uint32_t frame);
+int task_is_running (struct task *task);
 
 #endif /* _TASK_H_ */

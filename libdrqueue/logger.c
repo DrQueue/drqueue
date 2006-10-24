@@ -1,4 +1,4 @@
-// (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -40,14 +40,12 @@
 
 int loglevel = L_INFO;
 int logonscreen = 0;
+logtooltype logtool = DRQ_LOG_TOOL_UNKNOWN;
 
-/*
-enum {
-  L_TOOL_MASTER,
-  L_TOOL_SLAVE,
-  L_TOOL_SLAVE_TASK
-} 
-*/ 
+// PENDING:
+// * log file locking
+//   - log file struct (related to the job python wrapper)
+// * log subsystems (computer,job...)
 
 /* One important detail about the logger functions is that all of them */
 /* add the trailing newline (\n). So the message shouldn't have it. */
@@ -145,8 +143,9 @@ void log_slave_computer (int level, char *fmt, ...) {
   time_t now;
   va_list ap;
 
-  if (level > loglevel)
+  if (level > loglevel) {
     return;
+  }
 
   va_start (ap,fmt);
   vsnprintf (msg,BUFFERLEN-1,fmt,ap);
@@ -297,10 +296,11 @@ void log_master (int level,char *fmt, ...) {
     f_log = stdout;
   }
 
-  if (loglevel < L_DEBUG)
+  if (loglevel < L_DEBUG) {
     fprintf (f_log,"%8s : %s: %s\n",buf,log_level_str(level),msg);
-  else
+  } else {
     fprintf (f_log,"%8s : (%i) %s: %s\n",buf,(int)getpid(),log_level_str(level),msg);
+  }
 
   if (!logonscreen)
     fclose (f_log);
@@ -507,15 +507,29 @@ int log_dumptask_open_ro (struct task *t) {
   return lfd;
 }
 
-void log_auto (int level, char *fmt, ...) {
-  // this will be the way to send log messages when no one is known
-  // for sure.
+void log_get_time_str (char *timebuf,int buflen) { 
+  time_t now;
+  size_t len = 0;
+  if ((timebuf == NULL) || (buflen <= 0))
+    return;
+  time (&now);
+  snprintf (timebuf,buflen,"%s",ctime(&now));
+  len = strlen(timebuf);
+  timebuf[len-1] = '\0';
+}
+
+char *log_get_job_str(struct job *job) {
+  static char jobmsg[BUFFERLEN];
+
+  snprintf (jobmsg,BUFFERLEN,"Name: '%8s' || Owner: '%8s'",job->name,job->owner);
+
+  return jobmsg;
+}
+
+void log_auto_job (struct job *job, int level, char *fmt, ...) {
   FILE *f_log;
-  char hostname_buf[MAXNAMELEN];
-  char *hostname_ptr = NULL;
   char time_buf[BUFFERLEN];
   char msg[BUFFERLEN];
-  time_t now;
   va_list ap;
 
   if (level > loglevel)
@@ -525,9 +539,34 @@ void log_auto (int level, char *fmt, ...) {
   vsnprintf (msg,BUFFERLEN-1,fmt,ap);
   va_end (ap);
 
-  time (&now);
-  strncpy (time_buf,ctime(&now),BUFFERLEN-1);
-  time_buf[strlen(time_buf)-1] = '\0';
+  log_get_time_str (time_buf,BUFFERLEN);
+
+  f_log = stderr;
+
+  if (loglevel < L_DEBUG)
+    fprintf (f_log,"%8s : (JOB: %s) %s: %s\n",time_buf,log_get_job_str(job),log_level_str(level),msg);
+  else
+    fprintf (f_log,"%8s : (JOB: %s) (%i) %s: %s\n",time_buf,log_get_job_str(job),(int) getpid(), log_level_str(level),msg);
+}
+
+void log_auto (int level, char *fmt, ...) {
+  // this will be the way to send log messages when no one is known
+  // for sure.
+  FILE *f_log;
+  char hostname_buf[MAXNAMELEN];
+  char *hostname_ptr = NULL;
+  char time_buf[BUFFERLEN];
+  char msg[BUFFERLEN];
+  va_list ap;
+
+  if (level > loglevel)
+    return;
+
+  va_start (ap,fmt);
+  vsnprintf (msg,BUFFERLEN,fmt,ap);
+  va_end (ap);
+
+  log_get_time_str (time_buf,BUFFERLEN);
 
   if (hostname_ptr == NULL) {
     if (gethostname(hostname_buf,MAXNAMELEN-1) == -1) {

@@ -32,6 +32,7 @@
 #include "constants.h"
 #include "task.h"
 
+#pragma pack(push,1)
 
 struct computer_status {
   uint16_t loadavg[3];  /* load average last minute, last 5, and last 15 */
@@ -40,9 +41,11 @@ struct computer_status {
   struct task task[MAXTASKS];
 };
 
-void get_computer_status (struct computer_status *cstatus, int semid);
+#pragma pack(pop)
+
+void get_computer_status (struct computer_status *cstatus, int64_t semid);
 void computer_status_init (struct computer_status *cstatus);
-void check_tasks (struct computer_status *cstatus, int semid);
+void check_tasks (struct computer_status *cstatus, int64_t semid);
 void get_loadavg (uint16_t *loadavg);
 void report_computer_status (struct computer_status *status);
 

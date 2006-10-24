@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -31,6 +31,8 @@
 #define DB_VERSION 10          // Database version. This version must change when we change the job structure
 #define DB_MAGIC   0xADDEEFBE  // magic number
 
+#pragma pack(push,1)
+
 struct load_balancing {
   struct tpol pol[MAXJOBS]; // Priority ordered list of jobs
   uint32_t next_i;          // Variables used for load balancing
@@ -51,7 +53,7 @@ struct database {
 };
 
 struct database_hdr {  // Database header for the saved database
-  uint32_t magic;      // Magics number
+  uint32_t magic;      // Magic number
   uint32_t version;    // Version number for the saved database
   uint16_t job_size;   // Number of total (used and empty) jobs in the jobs structure
                        // We only store the job list because
@@ -59,9 +61,12 @@ struct database_hdr {  // Database header for the saved database
                        // reregister
 };
 
+#pragma pack(pop)
+
 void database_init (struct database *wdb);
 int database_save (struct database *wdb);
 int database_load (struct database *wdb);
+int database_backup (struct database *wdb);
 uint32_t database_version_id (void);
 
 #endif /* _DATABASE_H_ */
