@@ -64,6 +64,7 @@ void config_parse (char *cfg) {
 
   while ((fgets (buffer,BUFFERLEN-1,f_conf)) != NULL) {
     if (buffer[0] == '#') {
+      //fprintf (stderr,"ign line: '%s'\n",buffer);
       continue;
     }
     token = strtok(buffer,"=\n\r");

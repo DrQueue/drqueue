@@ -1,7 +1,9 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
@@ -41,6 +43,10 @@
 #include "slave.h"
 #include "drerrno.h"
 #include "job.h"
+#include "computer_pool.h"
+
+// ONGOING:
+// * check r_r_uclimits
 
 /* For the differences between data in big endian and little endian */
 /* I transmit everything in network byte order */
@@ -617,7 +623,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp) {
   struct request answer;
   uint32_t ijob = 0,i,j;
   uint16_t itask;
-  int iframe;
+  uint32_t iframe;
   struct tpol pol[MAXJOBS];
   int equal_pols;
   int counter;
@@ -1143,7 +1149,7 @@ void handle_r_r_listjobs (int sfd,struct database *wdb,int icomp) {
   answer.data = job_njobs_masterdb (wdb);
 
   if (!send_request (sfd,&answer,MASTER)) {
-    log_master (L_ERROR,"Error receiving request (handle_r_r_listjobs)");
+    log_auto (L_ERROR,"Error receiving request (handle_r_r_listjobs)");
     return;
   }
 
@@ -2943,15 +2949,18 @@ void update_computer_limits (struct computer_limits *limits) {
     case RERR_NOERROR:
       if (!send_computer_limits (sfd,limits,0)) {
         log_slave_computer (L_ERROR,"Sending computer limits (update_computer_limits) : %s",drerrno_str());
-        kill(0,SIGINT);
+        log_auto (L_ERROR,"Sending computer limits (update_computer_limits) : %s (%s)",drerrno_str(),strerror(drerrno_system));
+        //kill(0,SIGINT);
       }
       break;
     case RERR_NOREGIS:
       log_slave_computer (L_ERROR,"Computer not registered");
       kill (0,SIGINT);
+      break;
     default:
       log_slave_computer (L_ERROR,"Error code not listed on answer to R_R_UCLIMITS");
       kill (0,SIGINT);
+      break;
     }
   } else {
     log_slave_computer (L_ERROR,"Not appropiate answer to request R_R_UCLIMITS");
@@ -2964,14 +2973,14 @@ void handle_r_r_uclimits (int sfd,struct database *wdb,int icomp, struct request
   /* The master handles this type of packages */
   struct computer_limits limits;
 
-  log_master (L_DEBUG,"Entering handle_r_r_uclimits");
+  log_auto (L_DEBUG,"Entering handle_r_r_uclimits");
 
   if (icomp == -1) {
-    log_master (L_WARNING,"Not registered computer requesting update of computer limits");
+    log_auto (L_WARNING,"Not registered computer requesting update of computer limits");
     req->type = R_R_UCLIMITS;
     req->data = RERR_NOREGIS;
     if (!send_request (sfd,req,MASTER)) {
-      log_master (L_ERROR,"Receiving request (handle_r_r_uclimits)");
+      log_auto (L_ERROR,"Receiving request (handle_r_r_uclimits)");
     }
     exit (0);
   }
@@ -2981,24 +2990,25 @@ void handle_r_r_uclimits (int sfd,struct database *wdb,int icomp, struct request
   req->type = R_R_UCLIMITS;
   req->data = RERR_NOERROR;
   if (!send_request (sfd,req,MASTER)) {
-    log_master (L_ERROR,"Receiving request (handle_r_r_uclimits)");
+    log_auto (L_ERROR,"Receiving request (handle_r_r_uclimits)");
     exit (0);
   }
 
   computer_limits_init (&limits);
   if (!recv_computer_limits (sfd, &limits)) {
-    log_master (L_ERROR,"Receiving computer limits (handle_r_r_uclimits)");
+    log_auto (L_ERROR,"Receiving computer limits (handle_r_r_uclimits)");
     exit (0);
   }
 
   semaphore_lock(wdb->semid);
   computer_pool_free (&wdb->computer[icomp].limits);
   memcpy (&wdb->computer[icomp].limits, &limits, sizeof(limits));
+  computer_pool_detach_shared_memory(&wdb->computer[icomp].limits);
   semaphore_release(wdb->semid);
 
-  // computer_pool_list (&limits);
+  computer_pool_list (&limits);
 
-  log_master (L_DEBUG,"Exiting handle_r_r_uclimits");
+  log_auto (L_DEBUG,"Exiting handle_r_r_uclimits");
 }
 
 void handle_rs_r_setmaxfreeloadcpu (int sfd,struct slave_database *sdb,struct request *req) {
@@ -3609,7 +3619,7 @@ void request_all_slaves_job_available (struct database *wdb) {
   /* This function checks for an available job. In case it exists it notifies all available slaves */
   struct tpol pol[MAXJOBS];
   uint32_t ijob = 0,i;
-  int iframe;
+  uint32_t iframe;
 
   log_master (L_DEBUG,"Entering request_all_slaves_job_available");
 

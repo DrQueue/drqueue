@@ -21,6 +21,7 @@
 
 #include "envvars.h"
 #include "drerrno.h"
+#include "logger.h"
 
 #include <unistd.h>
 #include <stdio.h>
@@ -108,12 +109,12 @@ envvars_dump_info (struct envvars *envvars) {
   fprintf (stderr,"envvars_dump_info() Starting...\n");
   fprintf (stderr,"variables=%p\n",(void*)envvars->variables);
   fprintf (stderr,"nvariables=%i\n",envvars->nvariables);
-  fprintf (stderr,"evshmid=%lli\n",envvars->evshmid);
+  fprintf (stderr,"evshmid=%ji\n",envvars->evshmid);
 
   if (envvars->evshmid != -1) {
     // There's a possible valid value on evshmid. Let's check
     struct envvar *temp;
-    temp = (struct envvar *) shmat (envvars->evshmid,0,0);
+    temp = (struct envvar *) shmat ((int)envvars->evshmid,0,0);
     if ( temp != (struct envvar *)-1 ) {
       if (envvars->variables != NULL) {
         // variables had a non-null pointer. Is it valid ?
@@ -121,7 +122,7 @@ envvars_dump_info (struct envvars *envvars) {
         if (envvars->nvariables) {
           // It supposedly stores nvariables
           if (memcmp (temp,envvars->variables,sizeof(struct envvar)*envvars->nvariables) == 0) {
-            fprintf (stderr,"envvars_dump_info() The received envvars pointer cotained a VALID but not detached (that could be perfecty normal) shared memory segment\n");
+            log_auto (L_DEBUG,"envvars_dump_info() The received envvars pointer cotained a VALID but not detached (that could be perfecty normal) shared memory segment\n");
           } else {
             fprintf (stderr,"envvars_dump_info() The received envvars pointxer cotained a non detached shared memory segment\n");
             fprintf (stderr,"envvars_dump_info() But it did not match the real contents of it's evshmid\n");

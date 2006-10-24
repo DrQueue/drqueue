@@ -62,7 +62,7 @@ database_version_id () {
   // DB_VERSION number as well as the size of a pointer to void
   // (characteristic of 64/32 bits architecture)
   uint32_t version_id;
-  version_id = ((DB_VERSION << 8) | sizeof (void*));
+  version_id = ((DB_VERSION << 16) | sizeof (void*));
   return version_id;
 }
 
@@ -79,6 +79,7 @@ database_load (struct database *wdb) {
   struct frame_info *fi;
   int nframes;
 
+  // TODO: no filename guessing.
   if ((basedir = getenv ("DRQUEUE_DB")) == NULL) {
     /* This should never happen because we check it at the beginning of the program */
     drerrno = DRE_NOENVROOT;
@@ -151,10 +152,16 @@ database_load (struct database *wdb) {
 }
 
 int
+database_backup (struct database *wdb) {
+  // FIXME: to be written !!
+  return 1;
+}
+
+int
 database_save (struct database *wdb) {
   /* This function returns 1 on success and 0 on failure */
   /* It logs failure and maybe it should leave that task to the calling function */
-  /* README : this function reads from the database without locking */
+  /* README : this function reads from the database memory without locking */
   struct database_hdr hdr;
   char *basedir;
   char dir[BUFFERLEN];
@@ -163,8 +170,10 @@ database_save (struct database *wdb) {
   int c;
   struct frame_info *fi;
 
+  // TODO: this all filename guessing should be inside a function
   if ((basedir = getenv ("DRQUEUE_DB")) == NULL) {
     /* This should never happen because we check it at the beginning of the program */
+    log_auto (L_ERROR,"database_save() : DRQUEUE_DB environment variable could not be found. Master db cannot be saved.");
     drerrno = DRE_NOENVROOT;
     return 0;
   }
@@ -177,6 +186,12 @@ database_save (struct database *wdb) {
 
   snprintf (filename, BUFFERLEN - 1, "%s\\drqueue.db", dir);
 #endif
+  
+  if (database_backup(wdb) == 0) {
+    // TODO: filename should be a value returned by a function
+    log_auto (L_ERROR,"database_save() : there was an error while backing up old database. NOT SAVING current one. (file: %s)",
+	      filename);
+  }
 
   if ((fd = open (filename, O_CREAT | O_TRUNC | O_RDWR, 0664)) == -1) {
     if (errno == ENOENT) {

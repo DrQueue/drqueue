@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@
 #include "logger.h"
 #include "semaphores.h"
 
-void get_computer_status (struct computer_status *cstatus, int semid) {
+void get_computer_status (struct computer_status *cstatus, int64_t semid) {
   /* Get status not only gets the load average but also */
   /* checks that every task is running and in case they're not */
   /* it sets the task record to unused (used = 0) */
@@ -68,7 +68,7 @@ void computer_status_init (struct computer_status *cstatus) {
   task_init_all (cstatus->task);
 }
 
-void check_tasks (struct computer_status *cstatus, int semid) {
+void check_tasks (struct computer_status *cstatus, int64_t semid) {
   int i;
 
   semaphore_lock (semid);
@@ -86,6 +86,7 @@ void check_tasks (struct computer_status *cstatus, int semid) {
           cstatus->task[i].used = 0;
         }
       } else {
+        // TODO: LOADING or FINISHED ?
         cstatus->ntasks++;
       }
     }

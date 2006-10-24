@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -42,6 +44,8 @@
 #include "job.h"
 #include "drerrno.h"
 #include "task.h"
+#include "computer_pool.h"
+#include "computer.h"
 
 #ifdef LIBWRAP
 #include <tcpd.h>
@@ -55,24 +59,35 @@ long int bsent;   /* Bytes sent */
 long int brecv;   /* Bytes received */
 #endif
 
-int get_socket (short port) {
+// ONGOING:
+// * data size transmission
+// * log messages moved to auto
+// * perror messagges moved to log_auto
+// * anydata_init_received
+// * anydata_init_sending
+
+int get_socket (uint16_t port) {
   int sfd;
   struct sockaddr_in addr;
   int opt = 1;
 
   sfd = socket (PF_INET,SOCK_STREAM,0);
   if (sfd == -1) {
-    perror ("socket");
-    kill (0,SIGINT);
+    drerrno_system = errno;
+    log_auto (L_ERROR,"get_socket(): call to socket() could not create stream socket. Msg: %s",strerror(drerrno_system));
+    return sfd;
+    //kill (0,SIGINT);
   } else {
     if (setsockopt(sfd,SOL_SOCKET,SO_REUSEADDR,(int *)&opt,sizeof(opt)) == -1) {
-      perror ("setsockopt");
+      drerrno_system = errno;
+      log_auto (L_ERROR,"get_socket(): call to setsockopt() failed. Msg: %s",strerror(drerrno_system));
     }
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
     addr.sin_addr.s_addr = htonl(INADDR_ANY);
     if (bind (sfd,(struct sockaddr *)&addr,sizeof (addr)) == -1) {
-      perror ("bind");
+      drerrno_system = errno;
+      log_auto (L_ERROR,"get_socket(): call to bind() failed. Msg: %s",strerror(drerrno_system));
       sfd = -1;
     } else {
       listen (sfd,MAXLISTEN);
@@ -87,8 +102,9 @@ int accept_socket (int sfd,struct database *wdb,struct sockaddr_in *addr) {
   socklen_t len = sizeof (struct sockaddr_in);
 
   if ((fd = accept (sfd,(struct sockaddr *)addr,&len)) == -1) {
-    log_master (L_ERROR,"Accepting connection.");
-    exit (1);
+    drerrno_system = errno;
+    log_auto (L_ERROR,"accept_socket(): error accepting connection. Msg: %s",strerror(drerrno_system));
+    return -1;
   }
 
 #ifdef LIBWRAP
@@ -210,11 +226,72 @@ int connect_to_slave (char *slave) {
   return sfd;
 }
 
+int check_recv_datasize (int sfd, uint32_t datasize) {
+  uint32_t remotesize = 0;
+  uint32_t localsize;
+
+  if (!dr_read(sfd,(char*)&remotesize,sizeof(uint32_t))) {
+    log_auto (L_ERROR,"check_recv_datasize(): communications problem. Could not read from socket or file. (%s)",strerror(errno));
+    return 0;
+  }
+  remotesize = ntohl(remotesize);
+  localsize = htonl(datasize);
+  if (!dr_write(sfd,(char*)&localsize,sizeof(uint32_t))) {
+    log_auto (L_ERROR,"check_recv_datasize(): communications problem. Could not write to socket or file. (%s)",strerror(errno));
+    return 0;
+  }
+
+  if (datasize != remotesize) {
+    log_auto (L_ERROR,"check_recv_datasize(): remote and local sizes for data are different.");
+    log_auto (L_ERROR,"check_recv_datasize(): if you are using different versions of the software please, update older ones.");
+    log_auto (L_ERROR,"check_recv_datasize(): if not this is probably a BUG. Check if it's has been reported.");
+    return 0;
+  }
+
+  return 1;
+}
+
+int check_send_datasize (int sfd, uint32_t datasize) {
+  uint32_t remotesize = 0;
+  uint32_t localsize;
+  
+  log_auto(L_DEBUG3,"check_send_datasize():> Entering...");
+
+  localsize = htonl(datasize);
+  if (!dr_write(sfd,(char*)&localsize,sizeof(uint32_t))) {
+    log_auto (L_ERROR,"check_recv_datasize(): communications problem. Could not write to socket or file. (%s)",strerror(errno));
+    return 0;
+  }
+  if (!dr_read(sfd,(char*)&remotesize,sizeof(uint32_t))) {
+    log_auto (L_ERROR,"check_recv_datasize(): communications problem. Could not read from socket or file. (%s)",strerror(errno));
+    return 0;
+  }
+  remotesize = ntohl(remotesize);
+
+  if (datasize != remotesize) {
+    log_auto (L_ERROR,"check_recv_datasize(): remote and local sizes for data are different.");
+    log_auto (L_ERROR,"check_recv_datasize(): if you are using different versions of the software please, update older ones.");
+    log_auto (L_ERROR,"check_recv_datasize(): if not this is probably a BUG. Check if it's has been reported.");
+    return 0;
+  }
+
+  log_auto(L_DEBUG3,"check_send_datasize():< Returning...");
+  return 1;
+}
+
 int recv_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo) {
   void *buf;
+  uint32_t datasize;
+  
+  datasize = sizeof(struct computer_hwinfo);
+  if (!check_recv_datasize(sfd, datasize)) {
+    log_auto (L_ERROR,"recv_computer_hwinfo(): different data sizes for 'struct computer_hwinfo'.");
+    return 0;
+  }
 
   buf = hwinfo;
-  if (!dr_read (sfd,(char *)buf,sizeof(struct computer_hwinfo))) {
+  if (!dr_read (sfd,(char*)buf,datasize)) {
+    log_auto (L_ERROR,"recv_computer_hwinfo(): could not read computer hardware information. (%s)",strerror(errno));
     return 0;
   }
 
@@ -233,6 +310,13 @@ int recv_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo) {
 int send_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo) {
   struct computer_hwinfo bswapped;
   void *buf = &bswapped;
+  uint32_t datasize;
+
+  datasize = sizeof(bswapped);
+  if (!check_send_datasize(sfd,datasize)) {
+    log_auto (L_ERROR,"send_computer_hwinfo(): different data sizes for struct computer_hwinfo.");
+    return 0;
+  }
 
   /* We make a copy coz we need to modify the values */
   memcpy (buf,hwinfo,sizeof(bswapped));
@@ -243,7 +327,7 @@ int send_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo) {
   bswapped.speedindex = htonl (bswapped.speedindex);
   bswapped.memory = htonl (bswapped.memory);
 
-  if (!dr_write (sfd, (char *) buf, sizeof (struct computer_hwinfo))) {
+  if (!dr_write (sfd, (char *) buf, datasize)) {
     return 0;
   }
 
@@ -789,12 +873,21 @@ int send_frame_info (int sfd, struct frame_info *fi) {
 
 int send_string (int sfd, char *str) {
   uint16_t len,lensw;
+  uint32_t datasize;
 
   len = strlen (str)+1;
   lensw = htons (len);
-  if (!dr_write (sfd,(char*)&lensw,sizeof (lensw)))
+  datasize = sizeof (lensw);
+  if (!check_send_datasize(sfd,datasize)) {
+    return 0;
+  }
+  if (!dr_write (sfd,(char*)&lensw,datasize))
     return 0;
 
+  datasize = len;
+  if (!check_send_datasize(sfd,datasize)) {
+    return 0;
+  }
   if (!dr_write (sfd,(char*)str,len))
     return 0;
 
@@ -803,12 +896,21 @@ int send_string (int sfd, char *str) {
 
 int recv_string (int sfd, char **str) {
   uint16_t len;
+  uint32_t datasize;
 
-  if (!dr_read (sfd,(char*)&len,sizeof(len)))
+  datasize = sizeof(len);
+  if (!check_recv_datasize(sfd,datasize)) {
     return 0;
-
+  }
+  if (!dr_read (sfd,(char*)&len,datasize)) {
+    return 0;
+  }
   len = ntohs (len);
-
+  
+  datasize = len;
+  if (!check_recv_datasize(sfd,len)) {
+    return 0;
+  }
   *str = (char *) malloc (len);
   if (!dr_read (sfd,*str,len))
     return 0;
@@ -817,32 +919,56 @@ int recv_string (int sfd, char **str) {
 }
 
 int send_computer_pools (int sfd, struct computer_limits *cl, uint8_t use_local_pools) {
-  int i;
+  uint16_t i;
   uint16_t npools;
   struct pool *pool;
+  uint32_t datasize;
 
-  // fprintf (stderr,"Send npools: %u\n",cl->npools);
-  npools = htons (cl->npools);
-  if (!dr_write (sfd,(char*)&npools,sizeof(npools))) {
+  log_auto (L_DEBUG2,"send_computer_pools() : Entering...");
+
+  //computer_pool_lock (cl);
+  datasize = sizeof (npools);
+  if (!check_send_datasize(sfd,datasize)) {
+    log_auto (L_ERROR,"send_computer_pools(): different data size for npools (uint16_t). Local: %u",datasize); 
     return 0;
   }
 
+  log_auto (L_DEBUG3,"send_computer_pools() : going to send '%u' pools",cl->npools);
+  npools = htons (cl->npools);
+  if (!dr_write (sfd,(char*)&npools,datasize)) {
+    log_auto (L_ERROR,"send_computer_pools(): could not send npools. (%s)",strerror(drerrno_system));
+    return 0;
+  }
+
+  datasize = sizeof(struct pool);
   if (cl->npools) {
     if (!use_local_pools) {
-      if ((pool = (struct pool *) computer_pool_attach_shared_memory(cl)) == (void*)-1) {
-        perror ("Attaching");
-        fprintf (stderr,"ERROR (send_computer_pools) attaching pool shared memory %llu shmid\n", cl->poolshmid);
+      log_auto (L_DEBUG3,"send_computer_pools(): NOT USING local pools");
+      if ((pool = (struct pool *)computer_pool_attach_shared_memory(cl)) == (struct pool*)-1) {
+        log_auto (L_ERROR,"send_computer_pools() : attaching pool shared memory '%ji' shmid. (%s)",cl->poolshmid,strerror(errno));
         return 0;
       }
     } else {
+      log_auto (L_DEBUG3,"send_computer_pools(): USING local pools");
       pool = cl->local_pool;
     }
-
+    log_auto (L_DEBUG2,"send_computer_pools(): npools = %u",cl->npools);
     for (i=0;i<cl->npools;i++) {
-      if (!dr_write(sfd,(char*)&pool[i],sizeof(struct pool))) {
-        fprintf (stderr,"ERROR (send_computer_pools) error while sending pool number %i\n",i);
+      log_auto (L_DEBUG3,"send_computer_pools(): previous to check_send_datasize(struct pool).");
+      if (!check_send_datasize(sfd,datasize)) {
+	log_auto (L_ERROR,"send_computer_pools() : different data sizes for struct pool.");
+	return 0;
+      }
+      log_auto (L_DEBUG3,"send_computer_pools(): success. post check_send_datasize(struct pool).");
+      log_auto (L_DEBUG3,"send_computer_pools(): previous send pool '%i' with name '%s'",i,pool[i].name);
+      if (!dr_write(sfd,(char*)&pool[i],datasize)) {
+        log_auto (L_ERROR,"send_computer_pools() : error while sending pool number %i. (%s)",i,strerror(drerrno_system));
+	if (!use_local_pools) {
+	  computer_pool_detach_shared_memory (cl);
+	}
         return 0;
       }
+      log_auto (L_DEBUG3,"send_computer_pools(): success. post send pool '%i' with name '%s'",i,pool[i].name);
     }
 
     if (!use_local_pools) {
@@ -850,51 +976,93 @@ int send_computer_pools (int sfd, struct computer_limits *cl, uint8_t use_local_
     }
   }
 
-#ifdef __DEBUG_POOLS
-  log_auto (L_DEBUG2,"pool list that was sent:\n");
-  computer_pool_list (cl);
-#endif
+  //log_auto (L_DEBUG2,"send_computer_pools(): pool list that was sent:\n");
+  //computer_pool_list (cl);
+
+  log_auto (L_DEBUG2,"send_computer_pools() : Returning...");
 
   return 1;
 }
 
 int recv_computer_pools (int sfd, struct computer_limits *cl) {
-  int i;
+  uint16_t i;
   uint16_t npools;
   struct pool pool;
+  uint32_t datasize;
+  struct computer_limits limits;
 
-  if (!dr_read (sfd,(char*)&npools,sizeof(npools))) {
+  log_auto (L_DEBUG2,"recv_computer_pools(): Entering...");
+
+  datasize = sizeof(npools);
+  if (!check_recv_datasize(sfd,datasize)) {
+    log_auto (L_ERROR,"recv_computer_pools(): different npools (uint16_t) size.");
+    return 0;
+  }
+
+  log_auto (L_DEBUG3,"recv_computer_pools() : _before_ receiving the number of pools");
+  if (!dr_read (sfd,(char*)&npools,datasize)) {
+    log_auto (L_ERROR,"recv_computer_pools(): error reading from file or socket.");
     return 0;
   }
   npools = ntohs (npools);
 
-  log_auto (L_DEBUG2,"recv_computer_pools(): received npools = %i",npools);
-  // fprintf (stderr,"Recv npools: %u\n",npools);
+  log_auto (L_DEBUG,"recv_computer_pools(): received number of pools, that will be = %u",npools);
 
-  computer_pool_free (cl);
+  //memset (&limits,0,sizeof(struct computer_limits));
+  //computer_pool_init (&limits);
+  computer_pool_free(cl);
+  datasize = sizeof(struct pool);
   for (i=0;i<npools;i++) {
-    if (!dr_read(sfd,(char*)&pool,sizeof(pool))) {
+    if (!check_recv_datasize(sfd,datasize)) {
+      log_auto (L_ERROR,"recv_computer_pools(): different pools (struct pool) size. Local size: %u",datasize);
+      // CHECK:
+      //computer_pool_free(cl);
+      return 0;
+    }
+    if (!dr_read(sfd,(char*)&pool,datasize)) {
+      log_auto (L_ERROR,"recv_computer_pools() : could not read pool from file or socket (pool number: %i). Msg: %s",
+		i,strerror(drerrno_system));
+      // CHECK:
+      //computer_pool_free(cl);
       return 0;
     }
     log_auto (L_DEBUG3,"recv_computer_pools(): received pool name='%s'. Attempting to add...",pool.name);
+    //computer_pool_add (&limits,pool.name);
     computer_pool_add (cl,pool.name);
   }
 
-  // computer_pool_list (cl);
+  //computer_pool_list (cl);
   log_auto (L_DEBUG2,"recv_computer_pools(): returning success after receiving %i pools",npools);
+  log_auto (L_DEBUG2,"recv_computer_pools(): Exiting...");
 
   return 1;
 }
 
 int recv_computer_limits (int sfd, struct computer_limits *cl) {
-  void *buf;
+  struct computer_limits limits;
+  void *buf=&limits;
+  uint32_t datasize;
 
-  buf = cl;
-  computer_pool_free(cl);
-  if (!dr_read (sfd,(char*)buf,sizeof(struct computer_limits))) {
-    log_auto (L_ERROR,"recv_computer_limits() error while receiving computer limits. (%s)",strerror(errno));
+  datasize = sizeof(struct computer_limits);
+  memset (buf,0,datasize);
+  computer_limits_init(&limits);
+  if (!check_recv_datasize(sfd,datasize)) {
+    log_auto (L_ERROR,"recv_computer_limits(): different data sizes for 'struct computer_limits'. Local size: %u",datasize);
     return 0;
   }
+  if (!dr_read (sfd,(char*)buf,datasize)) {
+    log_auto (L_ERROR,"recv_computer_limits(): error while receiving computer limits. (%s)",strerror(errno));
+    return 0;
+  }
+  computer_limits_cleanup_received (&limits);
+  computer_limits_init (&limits);
+  if (!recv_computer_pools (sfd,&limits)) {
+    log_auto (L_ERROR,"recv_computer_limits(): error while receiving computer pool list. (%s)",strerror(errno));
+    return 0;
+  }
+
+  computer_pool_free(cl);
+  memcpy (cl,&limits,sizeof(limits));
 
   /* Swapping bytes */
   cl->nmaxcpus = ntohs (cl->nmaxcpus);
@@ -903,19 +1071,16 @@ int recv_computer_limits (int sfd, struct computer_limits *cl) {
   /* Autoenable stuff */
   cl->autoenable.last = ntohl (cl->autoenable.last);
 
-  // Pools
-  computer_pool_init(cl);
-  if (!recv_computer_pools (sfd,cl)) {
-    log_auto (L_ERROR,"recv_computer_limits() error while receiving computer pool list. (%s)",strerror(errno));
-    return 0;
-  }
-
   return 1;
 }
 
 int send_computer_limits (int sfd, struct computer_limits *cl, uint8_t use_local_pools) {
   struct computer_limits bswapped;
   void *buf = &bswapped;
+  uint32_t datasize;
+
+  // Zero it
+  memset (buf,0,sizeof(bswapped));
 
   /* We make a copy coz we need to modify the values */
   memcpy (buf,cl,sizeof(bswapped));
@@ -923,17 +1088,30 @@ int send_computer_limits (int sfd, struct computer_limits *cl, uint8_t use_local
   /* Prepare for sending */
   bswapped.nmaxcpus = htons (bswapped.nmaxcpus);
   bswapped.maxfreeloadcpu = htons (bswapped.maxfreeloadcpu);
-  bswapped.npools = htons(bswapped.npools);
 
   /* Autoenable stuff */
   bswapped.autoenable.last = htonl (bswapped.autoenable.last);
 
-  if (!dr_write(sfd,(char*)buf,sizeof(struct computer_limits))) {
+  // Clean up shared memory info
+  bswapped.npools = 0;
+  bswapped.poolshmid = 0;
+  bswapped.poolsemid = 0;
+  bswapped.npoolsattached = 0;
+  
+  computer_limits_cleanup_to_send (&bswapped);
+  datasize = sizeof (struct computer_limits);
+  if (!check_send_datasize (sfd,datasize)) {
+    log_auto (L_ERROR,"send_computer_limits(): different data sizes for 'struct computer_limits'. Local size: %u",datasize);
+    return 0;
+  }
+  if (!dr_write(sfd,(char*)buf,datasize)) {
+    log_auto (L_ERROR,"send_computer_limits(): error while sending main computer limits data. Msg: %s",strerror(drerrno_system));
     return 0;
   }
 
   // Pools
   if (!send_computer_pools(sfd,cl,use_local_pools)) {
+    log_auto (L_ERROR,"send_computer_limits(): error while sending computer pools. Msg: %s",strerror(drerrno_system));
     return 0;
   }
 
@@ -1043,6 +1221,7 @@ int dr_read (int fd, char *buf, uint32_t len) {
   while ((r = read (fd,buf,bleft)) < bleft) {
     if ((r == -1) || ((r == 0) && (bleft > 0))) {
       /* if r is error or if there are no more bytes left on the socket but there _SHOULD_ be */
+      drerrno_system = errno;
       drerrno = DRE_ERRORREADING;
       return 0;
     }
@@ -1071,6 +1250,7 @@ int dr_write (int fd, char *buf, uint32_t len) {
     buf += w;
     if ((w == -1) || ((w == 0) && (bleft > 0))) {
       /* if w is error or if no more bytes are written but they _SHOULD_ be */
+      drerrno_system = errno;
       drerrno = DRE_ERRORWRITING;
       return 0;
     }

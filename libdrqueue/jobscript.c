@@ -81,7 +81,7 @@ int jobscript_write_heading (struct jobscript_info *ji) {
 
 int jobscript_set_variable_int (struct jobscript_info *ji,char *name,int64_t value) {
   char str_value[JS_MAX_VAR_VALUE];
-  snprintf (str_value,JS_MAX_VAR_VALUE,"%lli",value);
+  snprintf (str_value,JS_MAX_VAR_VALUE,"%ji",value);
   return jobscript_set_variable (ji,name,str_value);
 }
 

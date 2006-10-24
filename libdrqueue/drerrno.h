@@ -23,6 +23,7 @@
 #define _DRERRNO_H_
 
 extern int drerrno;              // global errno
+extern int drerrno_system;       // system's errno at the time of the error
 
 #define DRE_NOERROR     0 /* No error */
 #define DRE_ERROROPENING  1  /* Could not open file or directory */

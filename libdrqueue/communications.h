@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -33,11 +35,14 @@ extern long int brecv;  /* Bytes received */
 #endif
 
 
-int get_socket (short port);
+int get_socket (uint16_t port);
 int accept_socket (int sfd,struct database *wdb,struct sockaddr_in *addr);
 int accept_socket_slave (int sfd);
 int connect_to_master (void);
 int connect_to_slave (char *slave);
+
+int check_send_datasize (int sfd, uint32_t datasize);
+int check_recv_datasize (int sfd, uint32_t datasize);
 
 int recv_request (int sfd, struct request *request);
 int send_request (int sfd, struct request *request,uint8_t who);

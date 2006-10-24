@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2001,2002,2003,2004,2005 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 // $Id$
 //
 
+
 #ifndef _JOB_H_
 #define _JOB_H_
 
@@ -33,6 +34,7 @@ extern "C" {
 #include "constants.h"
 #include "envvars.h"
 
+#pragma pack(push,1)
 
 /* FRAME SECTION */
 typedef enum {
@@ -289,7 +291,9 @@ struct tpol {           // Priority ordered list of jobs
   uint64_t submit_time; // submission time of the job
 };
 
-int job_index_free (void *pwdb);
+#pragma pack(pop)
+
+uint32_t job_index_free (void *pwdb);
 void job_report (struct job *job);
 char *job_status_string (uint16_t status);
 char *job_frame_status_string (uint8_t status);
@@ -300,13 +304,13 @@ uint32_t job_nframes (struct job *job);
 void job_copy (struct job *src, struct job *dst);
 void job_fix_received_invalid (struct job *job);
 
-int job_available (struct database *wdb,uint32_t ijob, int *iframe, uint32_t icomp);
-int job_available_no_icomp (struct database *wdb,uint32_t ijob, int *iframe);
+int job_available (struct database *wdb,uint32_t ijob, uint32_t *iframe, uint32_t icomp);
+int job_available_no_icomp (struct database *wdb,uint32_t ijob, uint32_t *iframe);
 uint32_t job_first_frame_available (struct database *wdb,uint32_t ijob,uint32_t icomp);
 uint32_t job_first_frame_available_no_icomp (struct database *wdb,uint32_t ijob);
 
-void job_frame_waiting (struct database *wdb,uint32_t ijob, int iframe);
-void job_update_assigned (struct database *wdb,uint32_t ijob, int iframe, int icomp, int itask);
+void job_frame_waiting (struct database *wdb,uint32_t ijob, uint32_t iframe);
+void job_update_assigned (struct database *wdb,uint32_t ijob, uint32_t iframe, uint32_t icomp, uint16_t itask);
 void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job);
 void job_init (struct job *job);
 void job_frame_info_init (struct frame_info *fi);
