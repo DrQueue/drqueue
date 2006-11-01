@@ -22,6 +22,8 @@
 #ifndef _AFTEREFFECTSSG_H_
 #define _AFTEREFFECTSSG_H_
 
+#pragma pack(push,1)
+
 #include "constants.h"
 
 #ifdef __CPLUSPLUS
@@ -40,5 +42,7 @@ extern "C" {
 #ifdef __CPLUSPLUS
 }
 #endif
+
+#pragma pack(pop)
 
 #endif // _AFTEREFFECTSSG_H_
