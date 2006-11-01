@@ -58,6 +58,12 @@ semaphore_lock (int64_t semid) {
 int
 semaphore_release (int64_t semid) {
   struct sembuf op;
+
+  if (semid == -1) {
+    log_auto (L_DEBUG,"semaphore_release(): trying to release an invalid semaphore (-1).");
+    return 1;
+  }
+
   /*  fprintf (stderr,"Unlocking... semval: %i semid: %i\n",semctl (semid,0,GETVAL),semid); */
   op.sem_num = 0;
   op.sem_op = 1;
@@ -73,6 +79,9 @@ semaphore_release (int64_t semid) {
 
 int
 semaphore_valid (int64_t semid) {
+  if (semid == -1)
+    return 0;
+
   if (semctl ((int64_t)semid,0,GETVAL) == -1) {
     drerrno_system = errno;
     log_auto (L_DEBUG,"semaphore_valid(): not valid '%ji'. (Msg: %s)",semid,strerror(drerrno_system));

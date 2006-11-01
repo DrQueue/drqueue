@@ -29,10 +29,10 @@
 #include <time.h>
 #include <stdint.h>
 
-#pragma pack (push,1)
-
 #include "computer_info.h"
 #include "computer_status.h"
+
+#pragma pack (push,1)
 
 // Autoenable flags
 #define AEF_ACTIVE (1<<0)

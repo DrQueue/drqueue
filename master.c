@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -168,6 +170,7 @@ int64_t get_shared_memory (int force) {
   char file[BUFFERLEN];
   char *root = NULL;
 
+  memset (file,0,BUFFERLEN);
   root = getenv("DRQUEUE_BIN");
   if (root) {
     snprintf (file,BUFFERLEN-1,"%s/%s",root,KEY_MASTER);
@@ -193,7 +196,7 @@ int64_t get_shared_memory (int force) {
     shmflg = IPC_EXCL|IPC_CREAT|0600;
   }
 
-  if ((shmid = (int64_t) shmget (skey,(int)sizeof(struct database), shmflg)) == (int64_t)-1) {
+  if ((shmid = (int64_t) shmget (skey,(size_t)sizeof(struct database), shmflg)) == (int64_t)-1) {
     perror ("ERROR: Getting shared memory");
     if (!force) {
       fprintf (stderr,"Try with option -f (if you are sure that no other master is running)\n");

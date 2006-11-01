@@ -1,7 +1,6 @@
 #!/bin/sh
-ipcs | egrep 0x0000000 | egrep 64 | cut -f 2 -d" " > delete
-ipcs | egrep 0x0000000 | egrep 128 | cut -f 2 -d" " >> delete
-ipcs | egrep 0x0000000 | egrep 256 | cut -f 2 -d" " >> delete
-ipcs | cut -f 2 -d" " >> delete
+ipcs -s | grep '^0x' | cut -f2 -d" " > delete
+for a in `cat delete`; do ipcrm -s $a; done
+ipcs -m | grep '^0x' | cut -f2 -d" " > delete
 for a in `cat delete`; do ipcrm -m $a; done
 

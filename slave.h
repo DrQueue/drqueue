@@ -42,6 +42,8 @@
 
 #define SDBF_SETMAXCPUS (1<<0) // Set if we have to change the maximum number of CPUs at start.
 
+#pragma pack(push,1)
+
 struct slave_database {
   struct computer *comp;
   int64_t shmid;
@@ -52,6 +54,8 @@ struct slave_database {
 };                                    /* slave database */
 
 extern int phantom[2];
+
+#pragma pack(pop)
 
 void slave_get_options (int *argc,char ***argv, int *force, struct slave_database *sdb);
 void usage (void);
