@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -19,7 +21,18 @@
 // $Id$
 //
 
-void get_hwinfo (struct computer_hwinfo *hwinfo) {
+#include "computer_info.h"
+#include "logger.h"
+
+#include <signal.h>
+#include <stdint.h>
+#include <sys/types.h>
+#include <stdio.h>
+#include <string.h>
+#include <netdb.h>
+
+void
+get_hwinfo (struct computer_hwinfo *hwinfo) {
   size_t bl;
   unsigned long long int sysctl_data;
   char buffer[128];
@@ -73,7 +86,8 @@ void get_hwinfo (struct computer_hwinfo *hwinfo) {
   hwinfo->nnbits = computer_info_nnbits();
 }
 
-uint32_t get_memory (void) {
+uint32_t
+get_memory (void) {
   uint64_t memory;
   size_t len = sizeof(uint64_t);
 

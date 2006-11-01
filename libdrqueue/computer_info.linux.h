@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -19,27 +21,35 @@
 // $Id$
 //
 
+#include "logger.h"
+#include "computer_info.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <netdb.h>
+#include <sys/types.h>
+#include <stdint.h>
 
-void get_hwinfo (struct computer_hwinfo *hwinfo) {
+void
+get_hwinfo (struct computer_hwinfo *hwinfo) {
   if (gethostname (hwinfo->name,MAXNAMELEN-1) == -1) {
     perror ("get_hwinfo: gethostname");
     kill(0,SIGINT);
   }
+  // FIXME: Linux has more architectures last time I checked.
   hwinfo->arch = ARCH_INTEL;
   hwinfo->os = OS_LINUX;
   hwinfo->proctype = get_proctype();
   hwinfo->procspeed = get_procspeed();
-  // hwinfo->ncpus = MAXTASKS;
   hwinfo->ncpus = get_numproc();
   hwinfo->speedindex = get_speedindex (hwinfo);
   hwinfo->memory = get_memory ();
   hwinfo->nnbits = computer_info_nnbits();
 }
 
-uint32_t get_memory (void) {
+uint32_t
+get_memory (void) {
   uint32_t memory = 0;
   FILE *meminfo;
   char buf[BUFFERLEN];
@@ -71,7 +81,8 @@ uint32_t get_memory (void) {
   return memory;
 }
 
-t_proctype get_proctype (void) {
+t_proctype
+get_proctype (void) {
   t_proctype proctype = PROCTYPE_UNKNOWN;
   FILE *cpuinfo;
   char buf[BUFFERLEN];
@@ -119,9 +130,10 @@ t_proctype get_proctype (void) {
   return proctype;
 }
 
-int get_procspeed (void) {
+uint32_t
+get_procspeed (void) {
   FILE *cpuinfo;
-  int procspeed = 1;
+  uint32_t procspeed = 1;
   char buf[BUFFERLEN];
   float st;   /* speed temp */
   int found = 0;
@@ -144,7 +156,7 @@ int get_procspeed (void) {
   }
 
   if (!found) {
-    fprintf (stderr,"ERROR: Proc speed not found on /proc/cpuinfo\n");
+    log_auto (L_ERROR,"Proc speed not found on /proc/cpuinfo\n");
     kill (0,SIGINT);
   }
 
@@ -153,9 +165,10 @@ int get_procspeed (void) {
   return procspeed;
 }
 
-int get_numproc (void) {
+uint16_t
+get_numproc (void) {
   FILE *cpuinfo;
-  int numproc = 0;
+  uint16_t numproc = 0;
   char buf[BUFFERLEN];
 
   if ((cpuinfo = fopen("/proc/cpuinfo","r")) == NULL) {

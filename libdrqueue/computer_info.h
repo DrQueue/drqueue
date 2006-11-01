@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -83,9 +85,9 @@ struct computer_hwinfo {
 
 void get_hwinfo (struct computer_hwinfo *hwinfo);
 t_proctype get_proctype (void);
-int get_procspeed (void);
-int get_numproc (void);
-int get_speedindex (struct computer_hwinfo *hwinfo);
+uint32_t get_procspeed (void);
+uint16_t get_numproc (void);
+uint32_t get_speedindex (struct computer_hwinfo *hwinfo);
 uint32_t get_memory (void);
 uint8_t computer_info_nnbits (void);
 
