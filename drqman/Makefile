@@ -23,7 +23,10 @@ CFLAGS = -I../libdrqueue -I.. -Wall -g -O2
 ifeq ($(systype),Linux)
  CPPFLAGS += -D__LINUX
  CFLAGS += -D__LINUX `pkg-config --cflags gtk+-2.0`
- LDFLAGS = `pkg-config --libs gtk+-2.0`
+ LDFLAGS += `pkg-config --libs gtk+-2.0`
+ CHOST = x86_64-pc-linux-gnu
+ CFLAGS += -march=nocona -O2 -pipe
+ CXXFLAGS += ${CFLAGS}
  MAKE = make
 else 
  ifeq ($(systype),IRIX)
