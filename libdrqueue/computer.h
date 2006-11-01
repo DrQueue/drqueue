@@ -29,14 +29,13 @@
 #include <time.h>
 #include <stdint.h>
 
+#pragma pack (push,1)
+
 #include "computer_info.h"
 #include "computer_status.h"
 
-
 // Autoenable flags
 #define AEF_ACTIVE (1<<0)
-
-#pragma pack (push,1)
 
 struct pool;
 struct database;

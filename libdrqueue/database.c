@@ -26,6 +26,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
+#include <stdint.h>
 
 #include "database.h"
 #include "computer.h"
@@ -35,7 +36,7 @@
 
 void
 database_init (struct database *wdb) {
-  int i;
+  uint32_t i;
 
   for (i = 0; i < MAXJOBS; i++) {
     envvars_init(&wdb->job[i].envvars); // First we set proper
