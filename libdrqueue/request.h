@@ -25,6 +25,8 @@
 #ifndef _REQUEST_H_
 #define _REQUEST_H_
 
+#pragma pack(push,1)
+
 #ifdef __LINUX
 #include <stdint.h>
 #elif defined (__IRIX)
@@ -154,6 +156,8 @@ extern "C" {
 #ifdef __CPLUSPLUS
 }
 #endif
+
+#pragma pack(pop)
 
 #endif /* _REQUEST_H_ */
 

@@ -24,6 +24,8 @@
 #ifndef _COMMUNICATIONS_H_
 #define _COMMUNICATIONS_H_
 
+#pragma pack(push,1)
+
 #include "request.h"
 #include "job.h"
 #include "database.h"
@@ -34,6 +36,7 @@ extern long int bsent;  /* Bytes sent */
 extern long int brecv;  /* Bytes received */
 #endif
 
+#pragma pack(pop)
 
 int get_socket (uint16_t port);
 int accept_socket (int sfd,struct database *wdb,struct sockaddr_in *addr);
