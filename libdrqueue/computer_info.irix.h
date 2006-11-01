@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -19,7 +21,19 @@
 // $Id$
 //
 
-void get_hwinfo (struct computer_hwinfo *hwinfo) {
+#include "computer_info.h"
+#include "logger.h"
+
+#include <signal.h>
+#include <sys/types.h>
+#include <stdint.h>
+#include <netdb.h>
+#include <errno.h>
+#include <string.h>
+#include <stdio.h>
+
+void
+get_hwinfo (struct computer_hwinfo *hwinfo) {
   if (gethostname (hwinfo->name,MAXNAMELEN-1) == -1) {
     perror ("get_hwinfo: gethostname");
     kill(0,SIGINT);
@@ -34,29 +48,32 @@ void get_hwinfo (struct computer_hwinfo *hwinfo) {
   hwinfo->nnbits = computer_info_nnbits();
 }
 
-uint32_t get_memory (void) {
+uint32_t
+get_memory (void) {
   FILE *hinv;
   char buf[BUFFERLEN];
   char* offset;
-  int memsize = 0;           /* number of cpus */
+  uint32_t memsize = 0;
+  intmax_t memsize_read = 0;
   int found = 0;
 
   if ((hinv = popen ("/sbin/hinv","r")) == NULL) {
-    fprintf (stderr,"Warning: Problems executing '/sbin/hinv'\n");
+    drerrno_system = errno;
+    log_auto (L_WARNING,"Problems executing '/sbin/hinv'");
     return memsize;
   }
 
   while (fgets (buf,BUFFERLEN,hinv) != NULL) {
     if ((offset=strstr(buf,"memory size:")) != NULL) {
       /* system memory in mbytes is on this line */
-      if (sscanf (offset+13,"%i",&memsize) == 1) {
+      if (sscanf (offset+13,"%ji",&memsize_read) == 1) {
         found = 1;
       }
     }
   }
 
   if (!found) {
-    fprintf (stderr,"ERROR: Memory size not found\n");
+    log_auto (L_ERROR,"get_memory(): Memory size not found");
   }
 
   pclose (hinv);
@@ -64,14 +81,16 @@ uint32_t get_memory (void) {
   return memsize;
 }
 
-t_proctype get_proctype (void) {
+t_proctype
+get_proctype (void) {
   FILE *hinv;
   char buf[BUFFERLEN];
   t_proctype proctype = PROCTYPE_UNKNOWN;
   int found = 0;
 
   if ((hinv = popen ("/sbin/hinv","r")) == NULL) {
-    fprintf (stderr,"Warning: Problems executing '/sbin/hinv'\n");
+    drerrno_system = errno;
+    log_auto (L_WARNING,"get_proctype(): Problems executing '/sbin/hinv'. (%s)",strerror(drerrno_system));
     return proctype;
   }
 
@@ -90,7 +109,7 @@ t_proctype get_proctype (void) {
   pclose (hinv);
 
   if (!found) {
-    fprintf (stderr,"Warning processor type not listed or couldn't be found\n");
+    log_auto (L_WARNING,"get_proctype(): processor type not listed or couldn't be found.");
   }
 
   return proctype;
@@ -128,6 +147,7 @@ int get_procspeed (void) {
   return procspeed;
 }
 
-int get_numproc (void) {
-  return sysmp (MP_NPROCS);
+uint16_t
+get_numproc (void) {
+  return (uint16_t)sysmp (MP_NPROCS);
 }
