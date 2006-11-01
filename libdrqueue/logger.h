@@ -22,11 +22,15 @@
 #ifndef _LOGGER_H_
 #define _LOGGER_H_
 
-#include <stdio.h>
-
 #include "task.h"
 #include "job.h"
 #include "computer.h"
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <sys/types.h>
 
 #define L_ERROR 0
 #define L_WARNING 1

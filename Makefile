@@ -1,5 +1,9 @@
 # $Id$
 
+CHOST=x86_64-pc-linux-gnu
+CFLAGS= -march=nocona -O2 -pipe
+CXXFLAGS=${CFLAGS}
+
 CC = gcc
 CXX = g++
 OBJS_LIBDRQUEUE = $(patsubst %.c,%.o,$(wildcard libdrqueue/*.c))
@@ -30,8 +34,8 @@ systype = $(shell bash -c "source ./bin/shlib; get_env_kernel")
 machinetype = $(shell bash -c "source ./bin/shlib; get_env_machine")
 endif
 
-CFLAGS += -g -O2 -Wall
-CPPFLAGS += -D_NO_COMPUTER_POOL_SEMAPHORES -D_GNU_SOURCE -DCOMM_REPORT -I. -Ilibdrqueue
+CFLAGS += -g -O0 -Wall
+CPPFLAGS += -D_NO_COMPUTER_SEMAPHORES -D_NO_COMPUTER_POOL_SEMAPHORES -D_GNU_SOURCE -DCOMM_REPORT -I. -Ilibdrqueue
 CXXFLAGS += $(CFLAGS) -D__CPLUSPLUS 
 
 ifeq ($(systype),Linux)

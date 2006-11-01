@@ -1,12 +1,14 @@
 //
 // Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -22,14 +24,16 @@
 #ifndef _DATABASE_H_
 #define _DATABASE_H_
 
-#pragma pack(push,1)
-
 #include "constants.h"
 #include "job.h"
 #include "computer.h"
 
 #include <stdint.h>
 #include <sys/types.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+#pragma pack(push,1)
 
 #define DB_VERSION 10          // Database version. This version must change when we change the job structure
 #define DB_MAGIC   0xADDEEFBE  // magic number

@@ -4,7 +4,11 @@ import os
 
 env = Environment ()
 
-env.Append (CCFLAGS=Split ('-DCOMM_REPORT -D_GNU_SOURCE -D_NO_COMPUTER_POOL_SEMAPHORES -Wall -g -O0'))
+env.Append (CFLAGS = Split('-march=nocona -O2 -pipe'))
+
+env.Append (CCFLAGS=Split ('-DCOMM_REPORT -D_GNU_SOURCE -D_NO_COMPUTER_POOL_SEMAPHORES -D_NO_COMPUTER_SEMAPHORES \
+		-Wall -g -O0 -march=nocona -pipe'),
+            CXXFLAGS=Split('-march=nocona -O2 -pipe'))
 
 print "Platform is: ",sys.platform
 

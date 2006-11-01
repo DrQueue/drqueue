@@ -382,6 +382,10 @@ void computer_autoenable_check (struct slave_database *sdb) {
 
 int
 computer_lock_check (struct computer *computer) {
+#if defined (_NO_COMPUTER_SEMAPHORES)
+  return 1;
+#endif
+
   if (!semaphore_valid(computer->semid)) {
     log_auto (L_WARNING,"computer_lock(): semaphore not valid, creating a new one. Computer Id: %u",computer->hwinfo.id);
     computer->semid = semaphore_get();
@@ -396,6 +400,9 @@ computer_lock_check (struct computer *computer) {
 
 int
 computer_lock (struct computer *computer) {
+#if defined (_NO_COMPUTER_SEMAPHORES)
+  return 1;
+#endif
   computer_lock_check (computer);
   if (!semaphore_lock (computer->semid)) {
     log_auto (L_ERROR,"computer_lock(): There was an error while trying to lock the computer structure. Msg: %s",
@@ -409,6 +416,9 @@ computer_lock (struct computer *computer) {
 
 int
 computer_release (struct computer *computer) {
+#if defined (_NO_COMPUTER_SEMAPHORES)
+  return 1;
+#endif
   computer_lock_check (computer);
   if (!semaphore_release (computer->semid)) {
     log_auto (L_ERROR,"computer_release(): There was an error while trying to release the computer structure. Msg: %s",
