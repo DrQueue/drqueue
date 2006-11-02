@@ -4,44 +4,48 @@
 
 ifeq ($(origin GTK_PATH),undefined)
 GTK_PATH = /usr/local/gtk/bin
+$(warning Using default path for GTK_PATH with value $(GTK_PATH))
 endif
 
-CC = gcc
-OBJS = main.o notebook.o drqm_jobs.o drqm_request.o drqm_computers.o drqm_common.o drqm_info.o \
-				drqm_jobs_maya.o drqm_jobs_mentalray.o drqm_jobs_blender.o drqm_jobs_bmrt.o \
-				drqm_jobs_pixie.o drqm_jobs_jdd.o drqm_jobs_3delight.o drqm_jobs_lightwave.o drqm_cygwin.o \
-				drqm_jobs_aqsis.o drqm_autorefresh.o drqm_jobs_aftereffects.o drqm_jobs_shake.o drqm_jobs_terragen.o \
-				drqm_jobs_nuke.o drqm_jobs_turtle.o drqm_jobs_mantra.o drqm_jobs_xsi.o
+SRCS := $(wildcard *.c)
+OBJS := $(patsubst %.c,%.o,$(SRCS))
+
 
 #Figure out OS-specific Configuration parameters
 ifeq ($(origin systype),undefined)
- systype=$(shell uname -s)
+systype := $(shell bash -c "source ../bin/shlib; get_env_kernel")
+machinetype := $(shell bash -c "source ../bin/shlib; get_env_machine")
 endif
 
-CFLAGS += -g -O0 -Wall -I../libdrqueue -I..
 CPPFLAGS += -D_NO_COMPUTER_SEMAPHORES -D_NO_COMPUTER_POOL_SEMAPHORES -D_GNU_SOURCE -DCOMM_REPORT -I.. -I../libdrqueue
-CXXFLAGS += $(CFLAGS) -D__CPLUSPLUS 
+CFLAGS += -g -O0 -Wall 
+CXXFLAGS += $(CFLAGS) $(CPPFLAGS) -D__CPLUSPLUS
 
 ifeq ($(systype),Linux)
  CPPFLAGS += -D__LINUX
- CFLAGS += -D__LINUX `pkg-config --cflags gtk+-2.0`
+ CFLAGS += `pkg-config --cflags gtk+-2.0`
  LDFLAGS += `pkg-config --libs gtk+-2.0`
- CHOST = x86_64-pc-linux-gnu
- CFLAGS += -march=nocona -O2 -pipe
+ ifeq ($(machinetype),i686)
+  CFLAGS += -march=i686 -m32
+ else
+  ifeq ($(machinetype),x86_64)
+   CHOST ?= x86_64-pc-linux-gnu
+   CFLAGS += -march=nocona -m64 -pipe
+  endif
+ endif
  CXXFLAGS += ${CFLAGS}
- MAKE = make
 else 
  ifeq ($(systype),IRIX)
   CPPFLAGS += -D__IRIX
-  CFLAGS += -D__IRIX `pkg-config --cflags gtk+-2.0`
-  LDFLAGS = `pkg-config --libs gtk+-2.0`
-  MAKE = /usr/freeware/bin/make
+  CFLAGS += `pkg-config --cflags gtk+-2.0`
+  LDFLAGS += `pkg-config --libs gtk+-2.0`
+#  MAKE = /usr/freeware/bin/make
  else
   ifeq ($(systype),Darwin)
    CPPFLAGS += -D__OSX
-   CFLAGS += -D__OSX `pkg-config --cflags gtk+-2.0` ${CPPFLAGS}
+   CFLAGS += `pkg-config --cflags gtk+-2.0` -mtune=powerpc -mpowerpc
    LDFLAGS = `pkg-config --libs gtk+-2.0`
-   MAKE = make
+#   MAKE = make
   else
    ifeq ($(systype),FreeBSD)
     CPPFLAGS += -D__FREEBSD
@@ -81,17 +85,17 @@ ifeq ($(systype),CYGWIN_NT-5.1)
 	$(MAKE) -C ../contrib/windows/Resources
  
 drqman: $(OBJS) ../libdrqueue.a ../contrib/windows/Resources/drqueue.res 
-	$(CC) -o $@ $(OBJS) ../libdrqueue.a $(LDFLAGS) $(UIFLAGS) 
+	$(CC) -o $@ $(OBJS) ../libdrqueue.a $(LDFLAGS) $(UIFLAGS) $(CFLAGS)
 
 else
 
 drqman: $(OBJS) ../libdrqueue.a
-	$(CC) -o $@ $^ $(OOBJS) $(LDFLAGS)
+	$(CC) -o $@ $^ $(LDFLAGS) $(CFLAGS)
 
 endif
 
 %.o : %.c %.h
-	$(CC) -c $(CFLAGS) -o $@ $<
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
 
 .PHONY: clean
 
