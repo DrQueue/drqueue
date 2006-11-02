@@ -56,6 +56,8 @@ extern int drerrno_system;       // system's errno at the time of the error
 #define DRE_RMSHMEM     24 // Remove shared memory
 #define DRE_NOMEMORY    25 // Not enough memory
 #define DRE_DTSHMEM         26  // Detach shared memory
+#define DRE_CONNMASTER      27  // No connection to master
+#define DRE_COMMPROBLEM     28  // Communications problem
 
 char *drerrno_str (void);
 

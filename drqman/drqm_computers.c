@@ -578,7 +578,8 @@ GtkWidget *CreateTasksClist (void) {
 
 }
 
-int cdd_update (GtkWidget *w, struct drqm_computers_info *info) {
+int
+cdd_update (GtkWidget *w, struct drqm_computers_info *info) {
   /* This function depends on info->icomp and info->row properly set */
   /* info->icomp and info->row are related, the first is the id of the computer in */
   /* the master, the second is the index in the local structure of computer */
@@ -654,7 +655,6 @@ int cdd_update (GtkWidget *w, struct drqm_computers_info *info) {
       }
       gtk_label_set_text (GTK_LABEL(info->cdd.limits.lpools),msg);
       computer_pool_detach_shared_memory(&info->computers[info->row].limits);
-      computer_pool_free(&info->computers[info->row].limits);
     } else {
       gtk_label_set_text (GTK_LABEL(info->cdd.limits.lpools),"WARNING: Could not attach pool shared memory");
     }
@@ -1088,7 +1088,6 @@ void cdd_limits_pool_refresh_pool_list (GtkWidget *bclicked, struct drqm_compute
       computer_pool_detach_shared_memory(&info->computers[info->row].limits);
     }
   }
-  computer_pool_free(&info->computers[info->row].limits);
 }
 
 
@@ -1459,7 +1458,6 @@ int computers_cmp_pools (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2
         strncpy (pa,msg2,BUFFERLEN-1);
       }
       computer_pool_detach_shared_memory(cla);
-      //computer_pool_free(cla);
     } else {
       snprintf (pa,BUFFERLEN,"WARNING: Could not attach pool shared memory");
     }
@@ -1476,7 +1474,6 @@ int computers_cmp_pools (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2
         strncpy (pb,msg2,BUFFERLEN-1);
       }
       computer_pool_detach_shared_memory(clb);
-      //computer_pool_free(clb);
     } else {
       snprintf (pb,BUFFERLEN,"WARNING: Could not attach pool shared memory");
     }

@@ -44,6 +44,9 @@
 int loglevel = L_INFO;
 int logonscreen = 0;
 logtooltype logtool = DRQ_LOG_TOOL_UNKNOWN;
+struct job *logger_job = NULL;
+struct task *logger_task = NULL;
+struct computer *logger_computer = NULL;
 
 // PENDING:
 // * log file locking
@@ -55,7 +58,16 @@ logtooltype logtool = DRQ_LOG_TOOL_UNKNOWN;
 /* One important detail about the logger functions is that all of them */
 /* add the trailing newline (\n). So the message shouldn't have it. */
 
-void log_slave_task (struct task *task,int level,char *fmt,...) {
+FILE *log_slave_open_task (struct task *task);
+FILE *log_slave_open_computer (char *name);
+FILE *log_master_open (void);
+int log_dumptask_open (struct task *t);
+int log_dumptask_open_ro (struct task *t);
+int log_job_path_get (uint32_t jobid,char *path,int pathlen);
+int log_task_filename_get (struct task *task, char *path, int pathlen);
+
+void
+log_slave_task (struct task *task,int level,char *fmt,...) {
   FILE *f_log;
   char name[MAXNAMELEN];
   char buf[BUFFERLEN];  /* Buffer used to store ctime */
@@ -438,10 +450,14 @@ int log_dumptask_open (struct task *t) {
 
 
   if (log_job_path_get(t->ijob,job_path,PATH_MAX) == -1) {
+    // TODO: looking more like...
+/*     char config_logs_path[PATH_MAX]; */
+/*     if (!config_get_logs_path(config_logs_path,PATH_MAX)) { */
+/*     } */
     // Backup code
     char *basedir;
     if ((basedir = getenv("DRQUEUE_LOGS")) == NULL) {
-      fprintf (stderr,"WARNING: Environment variable DRQUEUE_LOGS not set.\n");
+      log_auto (L_WARNING,"log_dumptask_open(): environment variable DRQUEUE_LOGS not set.");
       return -1;
     }
     // TODO: path

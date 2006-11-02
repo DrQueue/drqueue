@@ -155,10 +155,6 @@ void task_environment_set (struct task *task) {
 
   /* Padded frame number */
   /* TODO: make padding length user defined */
-  // Old code
-/*   snprintf (padformat,BUFFERLEN-1,"DRQUEUE_PADFRAME=%%0%uu",task->frame_pad); */
-/*   snprintf (padframe,BUFFERLEN-1,padformat,task->frame); */
-  // New code
   snprintf (padframe,BUFFERLEN,"DRQUEUE_PADFRAME=%0*i",task->frame_pad,task->frame);
   putenv (padframe);
 
@@ -235,7 +231,7 @@ void task_environment_set (struct task *task) {
   if (!envvars_attach(&envvars)) {
     if (envvars.nvariables > 0) {
       log_slave_task (task,L_WARNING,"Custom environment variables could not be attached. There should be %i available. (%s)",
-		      envvars.nvariables,drerrno_str());
+                      envvars.nvariables,strerror(drerrno_system));
     }
   } else {
     for (i = 0; i < envvars.nvariables; i++) {

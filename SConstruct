@@ -28,7 +28,7 @@ elif env['arch'] == 'Power Macintosh':
 #for key in keys:
 #  print "construction variable = '%s', value = '%s'" % (key, dict[key])
    
-env.Append (CCFLAGS = Split ('-DCOMM_REPORT -D_GNU_SOURCE -D_NO_COMPUTER_POOL_SEMAPHORES -D_NO_COMPUTER_SEMAPHORES'),
+env.Append (CCFLAGS = Split ('-DCOMM_REPORT -D_GNU_SOURCE -D_NO_COMPUTER_POOL_SEMAPHORES -D_NO_COMPUTER_SEMAPHORES -g -O0'),
             CXXFLAGS = ['-D__CPLUSPLUS',env.subst('$CCFLAGS')])
 env.Append (CCFLAGS = [bitsFlag,])
 
