@@ -246,7 +246,7 @@ void task_environment_set (struct task *task) {
     }
     envvars_detach(&envvars);
   }
-  envvars_empty(&envvars);
+  envvars_free(&envvars);
 }
 
 int

@@ -118,7 +118,7 @@ int main (int argc,char *argv[]) {
       exit (1);
     }
     show_job (job);
-    envvars_empty(&job->envvars);
+    envvars_free(&job->envvars);
     free (job);
     job = NULL;
     break;
