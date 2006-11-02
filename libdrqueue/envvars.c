@@ -323,7 +323,7 @@ int envvars_variable_add (struct envvars *envvars, char *name, char *value) {
     //fprintf (stderr,"DEBUG: copying %i variables from old to new list.\n",envvars->nvariables);
     memcpy (new_envvars.variables,envvars->variables,sizeof(struct envvar)*envvars->nvariables);
     envvars_detach(envvars); // And we're done with old variables
-    envvars_empty(envvars);  // surely
+    envvars_free(envvars);  // surely
   }
 
   // Add new variable to new envvars
@@ -367,7 +367,7 @@ int envvars_variable_delete (struct envvars *envvars, char *name) {
 
   if (new_size == 0) {
     envvars_detach (envvars);
-    return envvars_empty (envvars);
+    return envvars_free (envvars);
   }
 
   // New shared memory id
@@ -398,7 +398,7 @@ int envvars_variable_delete (struct envvars *envvars, char *name) {
 
   // Delete old values
   envvars_detach(envvars);
-  envvars_empty(envvars);
+  envvars_free(envvars);
 
   // Copy new values to old structure
   envvars->nvariables = new_size;
