@@ -76,9 +76,9 @@
 #define DFLTAVGFTIME 120 /* Default average frame time in seconds */
 
 #ifdef __CYGWIN
-#define MASTERNCHILDREN 20 // Number of master listener procs
+#define MASTERNCHILDREN 10 // Number of master listener procs
 #else
-#define MASTERNCHILDREN 20 // Number of master listener procs
+#define MASTERNCHILDREN 10 // Number of master listener procs
 #endif
 
 // Autoenable

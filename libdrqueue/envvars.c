@@ -74,6 +74,11 @@ int envvars_attach (struct envvars *envvars) {
   // This function just tries to attach the segment identified by
   // evshmid to the data structure
   
+  if (!envvars) {
+    // TODO: log
+    return 0;
+  }
+
   if (envvars->evshmid == (int64_t)-1) {
     // This could happen when trying to attach an empty list to
     // search for existing variables, like envvars_variable_find()
@@ -92,7 +97,7 @@ int envvars_attach (struct envvars *envvars) {
     //return 0;
 
     log_auto (L_INFO,"envvars_attach(): envvars already attached (?). Detacching whatever was there.");
-    if (shmdt (envvars->variables) == -1) {
+    if (shmdt ((int)envvars->variables) == -1) {
       drerrno_system = errno;
       // Explanation: memory was freed and detached but the variable was not updated.
       log_auto (L_WARNING,"envvars_attach(): could not detach successfully. (%s)",strerror(drerrno_system));
@@ -281,6 +286,9 @@ int envvars_variable_add (struct envvars *envvars, char *name, char *value) {
 #ifdef __DEBUG_ENVVARS
   fprintf (stderr,"envvars_variable_add() Starting...\n");
 #endif
+  if (!envvars || !name || !value) {
+    return 0;
+  }
 
   // Search for another one with the same name.
   struct envvar *var = envvars_variable_find (envvars,name);

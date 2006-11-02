@@ -172,8 +172,9 @@ computer_pool_attach_shared_memory (struct computer_limits *cl) {
 
   struct pool *pool; // return value
 
-  log_auto (L_DEBUG3,"computer_pool_attach_shared_memory(): Entering...");
+  log_auto (L_DEBUG3,"computer_pool_attach_shared_memory(): >Entering...");
 
+  drerrno = DRE_NOERROR;
   if ((pool = (struct pool*)shmat ((int)cl->poolshmid,0,0)) == (void *)-1) {
     drerrno_system = errno;
     drerrno = DRE_ATTACHSHMEM;
@@ -181,12 +182,11 @@ computer_pool_attach_shared_memory (struct computer_limits *cl) {
     log_auto (L_ERROR,"computer_pool_attach_shared_memory() : removing poolshmid from previous error (%ji)",cl->poolshmid);
     computer_pool_init(cl);
   } else {
-    drerrno = DRE_NOERROR;
     cl->pool = pool;
     log_auto (L_DEBUG,"computer_pool_attach_shared_memory() : successful attach, pool pointer = %p",cl->pool);
   }
   
-  log_auto (L_DEBUG3,"computer_pool_attach_shared_memory(): Exiting...");
+  log_auto (L_DEBUG3,"computer_pool_attach_shared_memory(): >Exiting...");
   return pool;
 }
 
@@ -206,7 +206,7 @@ computer_pool_free (struct computer_limits *cl) {
       log_auto (L_WARNING,"computer_pool_free() error found while deleting shared memory poolshmid. (Msg: %s)",strerror(drerrno_system));
       rv = 0;
     } else {
-      log_auto (L_DEBUG2,"computer_pool_free () : pool shared memory successfully removed.");
+      log_auto (L_DEBUG,"computer_pool_free () : pool shared memory successfully removed.");
     }
   }
   computer_pool_release (cl);
@@ -216,8 +216,14 @@ computer_pool_free (struct computer_limits *cl) {
   return rv;
 }
 
-int computer_pool_detach_shared_memory (struct computer_limits *cl) {
+int
+computer_pool_detach_shared_memory (struct computer_limits *cl) {
   int rv = 1;
+  
+  if (!cl) {
+    return 0;
+  }
+
   log_auto (L_DEBUG2,"computer_pool_detach_shared_memory() : > Entering...");
 
   if (cl->pool) {
@@ -230,7 +236,7 @@ int computer_pool_detach_shared_memory (struct computer_limits *cl) {
     cl->pool = NULL;
   } else {
     if (cl->poolshmid != (int64_t) -1) {
-      log_auto(L_INFO,"computer_pool_detach_shared_memory(): something tried to detach NULL with a poolshmid != -1.");
+      log_auto(L_DEBUG2,"computer_pool_detach_shared_memory(): already detached, can't do it again.");
     } else {
       log_auto(L_DEBUG2,"computer_pool_detach_shared_memory(): tried to detach NULL with a poolshmid == -1. Not an issue.");
       cl->pool = NULL;
@@ -303,8 +309,6 @@ int computer_pool_add (struct computer_limits *cl, char *poolname) {
   computer_pool_copy (&new_cl,cl);           // Substitute the old one with the new one.
   computer_pool_detach_shared_memory(cl);    // Detack the new one
   computer_pool_free (&old_cl);
-
-  computer_pool_list(cl);
 
   return 1;
 }
@@ -385,6 +389,10 @@ void
 computer_pool_list (struct computer_limits *cl) {
   uint16_t i;
   struct pool *pool;
+
+  if (!cl) {
+    return;
+  }
 
   if (!cl->npools)
     return;

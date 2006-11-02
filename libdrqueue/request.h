@@ -89,7 +89,7 @@ extern "C" {
   /* sent TO MASTER */
   void update_computer_status (struct slave_database *database); /* The slave calls this function to update the */
   /* information that the master has about him */
-  void update_computer_limits (struct computer_limits *limits);
+  int update_computer_limits (struct computer_limits *limits);
 
   void register_slave (struct computer *computer);
   int request_comp_xfer (uint32_t icomp, struct computer *comp, uint16_t who);

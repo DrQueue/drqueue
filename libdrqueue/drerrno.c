@@ -112,6 +112,12 @@ char *drerrno_str (void) {
   case DRE_DTSHMEM:
     msg = "Could not detach shared memory";
     break;
+  case DRE_CONNMASTER:
+    msg = "Could not connect to master";
+    break;
+  case DRE_COMMPROBLEM:
+    msg = "Communications error";
+    break;
   default:
     msg = "drerrno NOT listed !!";
   }
