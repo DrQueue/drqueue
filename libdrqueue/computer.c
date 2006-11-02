@@ -318,6 +318,7 @@ computer_limits_init (struct computer_limits *cl) {
 void computer_init_limits (struct computer *comp) {
   computer_limits_init (&comp->limits);
   comp->limits.nmaxcpus = comp->hwinfo.ncpus;
+  comp->limits.maxfreeloadcpu = MAXLOADAVG * comp->hwinfo.ncpus;
 }
 
 int computer_index_correct_master (struct database *wdb, uint32_t icomp) {
