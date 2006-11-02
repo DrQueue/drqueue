@@ -24,6 +24,8 @@
 #ifndef _DRERRNO_H_
 #define _DRERRNO_H_
 
+#include <errno.h>
+
 extern int drerrno;              // global errno
 extern int drerrno_system;       // system's errno at the time of the error
 

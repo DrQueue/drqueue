@@ -18,7 +18,9 @@ ifeq ($(origin systype),undefined)
  systype=$(shell uname -s)
 endif
 
-CFLAGS = -I../libdrqueue -I.. -Wall -g -O2
+CFLAGS += -g -O0 -Wall -I../libdrqueue -I..
+CPPFLAGS += -D_NO_COMPUTER_SEMAPHORES -D_NO_COMPUTER_POOL_SEMAPHORES -D_GNU_SOURCE -DCOMM_REPORT -I.. -I../libdrqueue
+CXXFLAGS += $(CFLAGS) -D__CPLUSPLUS 
 
 ifeq ($(systype),Linux)
  CPPFLAGS += -D__LINUX
@@ -37,7 +39,7 @@ else
  else
   ifeq ($(systype),Darwin)
    CPPFLAGS += -D__OSX
-   CFLAGS += -D__OSX `pkg-config --cflags gtk+-2.0`
+   CFLAGS += -D__OSX `pkg-config --cflags gtk+-2.0` ${CPPFLAGS}
    LDFLAGS = `pkg-config --libs gtk+-2.0`
    MAKE = make
   else

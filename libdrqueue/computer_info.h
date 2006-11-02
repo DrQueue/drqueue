@@ -64,20 +64,21 @@ typedef enum {
   PROCTYPE_OPTERON,
   PROCTYPE_MIPSR5000,
   PROCTYPE_MIPSR10000,
-  PROCTYPE_PPC
+  PROCTYPE_PPC,
+  PROCTYPE_INTEL_CORE2
 } t_proctype;
 
 struct computer_hwinfo {
-  char name[MAXNAMELEN];   /* Name of the computer */
-  uint32_t id;             /* Identification number */
-  uint8_t  arch;      /* type of architecture */
-  uint8_t  os;        /* type of operating system */
-  uint8_t  proctype;  /* type of processors */
-  uint32_t procspeed;      /* speed of the processors */
-  uint16_t ncpus;          /* number of processors that the computer has */
-  uint32_t speedindex;     /* global speed index for making comparisons between different computers */
-  uint32_t memory;         /* Memory in Mbytes */
-  uint8_t  nnbits;         // 64/32 or 0 (Unknown) cpu
+  char     name[MAXNAMELEN];   /* Name of the computer */
+  uint32_t id;                 /* Identification number */
+  uint8_t  arch;               /* type of architecture */
+  uint8_t  os;                 /* type of operating system */
+  uint8_t  proctype;           /* type of processors */
+  uint32_t procspeed;          /* speed of the processors */
+  uint16_t ncpus;              /* number of processors that the computer has */
+  uint32_t speedindex;         /* global speed index for making comparisons between different computers */
+  uint32_t memory;             /* Memory in Mbytes */
+  uint8_t  nnbits;             // 64/32 or 0 (Unknown) cpu
 };
 
 #pragma pack(pop)

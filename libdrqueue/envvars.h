@@ -48,12 +48,14 @@ struct envvars {
 #pragma pack(pop)
 
 int envvars_init (struct envvars *envvars);
-int envvars_empty (struct envvars *envvars);
+int envvars_empty (struct envvars *envvars); // DEPRECATED use envvars_free instead
+int envvars_free (struct envvars *envvars);
 int envvars_variable_add (struct envvars *envvars, char *name, char *value);
 int envvars_variable_delete (struct envvars *envvars, char *name);
 int envvars_attach (struct envvars *envvars);
 int envvars_detach (struct envvars *envvars);
-struct envvar* envvars_variable_find (struct envvars *envvars, char *name);    // Returns "name"'s value or NULL if it does not exist
+struct envvar* envvars_variable_find (struct envvars *envvars, char *name);    // Returns "name"'s pointer 
+                                                                               // or NULL if it does not exist
 int64_t envvars_get_shared_memory (int size);
 void envvars_dump_info (struct envvars *envvars);
 
