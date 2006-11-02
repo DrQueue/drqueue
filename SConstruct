@@ -1,17 +1,39 @@
+# vim:ft=python
+
 import sys
 import glob
 import os
+import platform
 
-env = Environment ()
+env = Environment (arch=platform.machine(),)
+env.Append (CPPPATH=['.','./libdrqueue'])
 
-env.Append (CFLAGS = Split('-march=nocona -O2 -pipe'))
+print "Architecture: %s"%(env['arch'],)
+if env['arch'] == 'i386':
+  bitsFlag='-m32'
+  env.Append (CCFLAGS = Split('-march=i386'),CXXFLAGS = env.subst('$CCFLAGS'))
+elif env['arch'] == 'i686':
+  bitsFlag='-m32'
+  env.Append (CCFLAGS = Split('-march=i686'),CXXFLAGS = env.subst('$CCFLAGS'))
+elif env['arch'] == 'x86_64':
+  bitsFlag='-m64'
+  env.Append (CCFLAGS = Split('-march=athlon64'),CXXFLAGS = env.subst('$CCFLAGS'))
+elif env['arch'] == 'ppc':
+  bitsFlag='-m32'
+  env.Append (CCFLAGS = Split('-march=ppc'))
 
-env.Append (CCFLAGS=Split ('-DCOMM_REPORT -D_GNU_SOURCE -D_NO_COMPUTER_POOL_SEMAPHORES -D_NO_COMPUTER_SEMAPHORES \
-		-Wall -g -O0 -march=nocona -pipe'),
-            CXXFLAGS=Split('-march=nocona -O2 -pipe'))
+#dict = env.Dictionary()
+#keys = dict.keys()
+#keys.sort()
+#for key in keys:
+#  print "construction variable = '%s', value = '%s'" % (key, dict[key])
+   
+
+env.Append (CCFLAGS = Split ('-DCOMM_REPORT -D_GNU_SOURCE -D_NO_COMPUTER_POOL_SEMAPHORES -D_NO_COMPUTER_SEMAPHORES'),
+            CXXFLAGS = ['-D__CPLUSPLUS',env.subst('$CCFLAGS')])
+env.Append (CCFLAGS = [bitsFlag,])
 
 print "Platform is: ",sys.platform
-
 if sys.platform == "linux2":
 	env.Append (CCFLAGS = Split ('-D__LINUX'))
 elif sys.platform == "darwin":
@@ -21,13 +43,10 @@ else:
 	print "Unknown platform: %s"%(sys.platform,)
 	exit (1)
 
-env.Append (CXXFLAGS='-D__CPLUSPLUS')
-env.Append (CPPPATH=['.','./libdrqueue'])
-
 #
 # libdrqueue.a
 #
-libdrqueue_src = glob.glob("./libdrqueue/*.c")
+libdrqueue_src = glob.glob(os.path.join('.','libdrqueue','*.c'))
 libdrqueue = env.StaticLibrary ('drqueue', libdrqueue_src)
 
 #
