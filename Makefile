@@ -1,61 +1,65 @@
+#
 # $Id$
+#
 
-CC = gcc
-CXX = g++
-OBJS_LIBDRQUEUE = $(patsubst %.c,%.o,$(wildcard libdrqueue/*.c))
+ifeq (0,${MAKELEVEL})
+whoami := $(shell whoami)
+host-type := $(shell arch)
+MAKE := ${MAKE} host-type=${host-type} whoami=${whoami}
+endif
+
+SRCS_LIBDRQUEUE := $(wildcard libdrqueue/*.c)
+OBJS_LIBDRQUEUE := $(patsubst %.c,%.o,$(SRCS_LIBDRQUEUE))
 
 ifeq ($(origin INSTROOT),undefined)
 INSTROOT = /usr/local/drqueue
+$(warning Using default installation directory $(INSTROOT))
 endif
 
-ifeq ($(origin INSTUID),undefined)
-INSTUID = drqueue
-endif
+INSTUID ?= drqueue
+INSTGID ?= drqueue 
 
-ifeq ($(origin INSTGID),undefined)
-INSTGID = drqueue 
-endif
+DOTNETPATH ?= C:/WINDOWS/Microsoft.NET/Framework/v1.1.4322
+NSISPATH ?= C:/Program\ Files/NSIS
 
-ifeq ($(origin DOTNETPATH),undefined)
-DOTNETPATH = C:/WINDOWS/Microsoft.NET/Framework/v1.1.4322
-endif
-
-ifeq ($(origin NSISPATH),undefined)
-NSISPATH = C:/Program\ Files/NSIS
-endif
 
 #Figure out OS-specific Configuration parameters
 ifeq ($(origin systype),undefined)
-systype = $(shell bash -c "source ./bin/shlib; get_env_kernel")
-machinetype = $(shell bash -c "source ./bin/shlib; get_env_machine")
+systype := $(shell bash -c "source ./bin/shlib; get_env_kernel")
+machinetype := $(shell bash -c "source ./bin/shlib; get_env_machine")
 endif
 
-CFLAGS += -g -O0 -Wall
 CPPFLAGS += -D_NO_COMPUTER_SEMAPHORES -D_NO_COMPUTER_POOL_SEMAPHORES -D_GNU_SOURCE -DCOMM_REPORT -I. -Ilibdrqueue
-CXXFLAGS += $(CFLAGS) -D__CPLUSPLUS 
+CFLAGS += -g -O0 -Wall
+CXXFLAGS += $(CFLAGS) $(CPPFLAGS) -D__CPLUSPLUS 
 
 ifeq ($(systype),Linux)
  CPPFLAGS += -D__LINUX
- CHOST = x86_64-pc-linux-gnu
- CFLAGS += -march=nocona -O2 -pipe
+ ifeq ($(machinetype),i686)
+  CFLAGS += -march=i686 -m32
+ else
+  ifeq ($(machinetype),x86_64)
+   CHOST ?= x86_64-pc-linux-gnu
+   CFLAGS += -march=nocona -m64 -pipe
+  endif
+ endif
  CXXFLAGS += ${CFLAGS}
- MAKE = make
 else
  ifeq ($(systype),IRIX)
   CPPFLAGS += -D__IRIX
-  MAKE = /usr/freeware/bin/gmake
+#  MAKE = /usr/freeware/bin/gmake
  else
   ifeq ($(systype),Darwin)
    CPPFLAGS += -D__OSX
-   MAKE = make
+   CFLAGS += -mtune=powerpc -mpowerpc
+#   MAKE = make
   else 
    ifeq ($(systype),FreeBSD)
-    CPPFLAGS = -D__FREEBSD
+    CPPFLAGS += -D__FREEBSD
     MAKE = gmake
    else
     ifeq ($(systype),CYGWIN_NT-5.1)
-     CPPFLAGS = -D__CYGWIN
-     MAKE = make
+     CPPFLAGS += -D__CYGWIN
      UIFLAGS += -e _mainCRTStartup -mwindows contrib/windows/Resources/drqueue.res 
     else	
      $(error Cannot make DrQueue -- systype "$(systype)" is unknown)
@@ -85,7 +89,7 @@ base: $(BASE_C_TOOLS) $(BASE_CXX_TOOLS)
 install: miniinstall $(systype)_install 
 
 drqman/drqman: libdrqueue.a
-	$(MAKE) -C drqman
+	cd drqman && $(MAKE)
 
 testing_env:
 	mkdir tmp logs db
@@ -233,7 +237,7 @@ clean:
 	$(MAKE) -C drqman clean
 
 #actual object make targets
-libdrqueue.h: $(OBJS_LIBDRQUEUE:.o=.h)
+libdrqueue.h: $(wildcard libdrqueue/*.h)
 libdrqueue.a: $(OBJS_LIBDRQUEUE) libdrqueue.h
 	ar r $@ $(OBJS_LIBDRQUEUE)
 	ranlib $@
@@ -246,7 +250,7 @@ endif
 %.c: %.h
 %.cpp: %.h
 %.o: %.c %.h constants.h
-	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
+	$(CC) -c $(CFLAGS) $< -o $@
 
 slave: slave.o libdrqueue.a
 	$(CC) $(LDFLAGS) $^ -o $@
@@ -268,7 +272,7 @@ compinfo: compinfo.o libdrqueue.a
 	$(CC) $(LDFLAGS) $^ -o $@
 
 sendjob.o: sendjob.cpp sendjob.h
-	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) $<
+	$(CXX) -c $(CXXFLAGS) $<
 sendjob: sendjob.o libdrqueue.a
 	$(CXX) $^ $(LDFLAGS) -o $@ 
 

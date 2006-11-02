@@ -71,6 +71,9 @@ void log_master_computer (struct computer *computer, int level, char *fmt, ...);
 
 char *log_level_str (int level);
 
+int log_dumptask_open (struct task *t);
+int log_dumptask_open_ro (struct task *t);
+
 #endif
 
 
