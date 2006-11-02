@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004,2005 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -26,7 +28,6 @@
 #include <pwd.h>
 #include <sys/types.h>
 #include <gtk/gtk.h>
-
 
 #include "libdrqueue.h"
 #include "drqman.h"
@@ -105,13 +106,12 @@ static void djd_bok_pressed (GtkWidget *button, struct drqm_jobs_info *info);
 static void job_hstop_cb (GtkWidget *button, struct drqm_jobs_info *info);
 static void job_rerun_cb (GtkWidget *button, struct drqm_jobs_info *info);
 
-void free_job_list(GtkWidget *joblist,gpointer userdata) {
+void
+free_job_list(GtkWidget *joblist,gpointer userdata) {
   struct drqm_jobs_info *info = userdata;
-
   int i;
-
   for (i = 0; i < info->njobs; i++) {
-    job_init (&info->jobs[i]);
+    job_delete (&info->jobs[i]);
   }
 }
 
@@ -671,7 +671,7 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info) {
 
   tooltips = TooltipsNew ();
 
-  envvars_empty (&info->dnj.envvars.envvars);
+  envvars_free (&info->dnj.envvars.envvars);
 
   /* Dialog */
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);

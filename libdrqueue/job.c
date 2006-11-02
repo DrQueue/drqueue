@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -19,9 +21,8 @@
 // $Id$
 //
 
-#ifdef __FREEBSD
-# include <sys/types.h>
-#endif
+#include <sys/types.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -174,15 +175,17 @@ void job_init (struct job *job) {
   job_limits_init (&job->limits);
 }
 
-void job_delete (struct job *job) {
-  /* This function is called by the master locked. */
-  /* This functions marks for removal the frame info structure of the job */
-  /* So the shared memory block is finally removed when no processes are attached to it */
-  // Does the same also with the blocked hosts structure
+void
+job_delete (struct job *job) {
+  //
+  // Deallocates all memory reserved for the job and initializes it.
+  //
   if (job->fishmid != (int64_t)-1) {
     if (shmctl ((int)job->fishmid,IPC_RMID,NULL) == -1) {
+      drerrno_system = errno;
+      drerrno = DRE_RMSHMEM;
       // FIXME: this function is not called only by the master.
-      log_auto_job(job,L_ERROR,"job_delete: shmctl (job->fishmid,IPC_RMID,NULL) [Removing frame shared memory]");
+      log_auto_job(job,L_ERROR,"job_delete(): could not remove frame shared memory. (%s)",strerror(drerrno_system));
     }
     job->fishmid = (int64_t)-1;
     job->frame_info = NULL;
@@ -190,7 +193,9 @@ void job_delete (struct job *job) {
 
   if (job->bhshmid != (int64_t)-1) {
     if (shmctl ((int)job->bhshmid,IPC_RMID,NULL) == -1) {
-      log_auto_job(job,L_ERROR,"job_delete(): shmctl (job->bhshmid,IPC_RMID,NULL) [Removing blocked hosts shared memory]");
+      drerrno_system = errno;
+      drerrno = DRE_RMSHMEM;
+      log_auto_job(job,L_ERROR,"job_delete(): could not remove blocked hosts shared memory. (%s)",strerror(drerrno_system));
     }
     job->bhshmid = (int64_t)-1;
     job->nblocked = 0;
@@ -198,7 +203,7 @@ void job_delete (struct job *job) {
   }
 
   // Remove from memory what it could be holding
-  envvars_empty(&job->envvars);
+  envvars_free(&job->envvars);
   
   job_init (job);
 }
@@ -384,7 +389,8 @@ void job_update_assigned (struct database *wdb, uint32_t ijob, uint32_t iframe, 
   detach_frame_shared_memory(wdb->job[ijob].frame_info);
 }
 
-int64_t get_blocked_host_shared_memory (uint32_t nhosts) {
+int64_t
+get_blocked_host_shared_memory (uint32_t nhosts) {
   int64_t shmid;
 
   if ((shmid = (int64_t) shmget (IPC_PRIVATE,sizeof(struct blocked_host)*nhosts, IPC_EXCL|IPC_CREAT|0600)) == (int64_t)-1) {
@@ -962,12 +968,14 @@ void job_environment_set (struct job *job, uint32_t iframe) {
   }
 }
 
-void job_copy (struct job *src, struct job *dst) {
+void
+job_copy (struct job *src, struct job *dst) {
   memcpy (dst,src,sizeof(struct job));
   job_fix_received_invalid (dst);
 }
 
-void job_limits_init (struct job_limits *limits) {
+void
+job_limits_init (struct job_limits *limits) {
   limits->nmaxcpus = (uint16_t)-1;           // No limit or 65535
   limits->nmaxcpuscomputer = (uint16_t)-1;   // the same
   limits->os_flags = (uint16_t) -1;          // All operating systems

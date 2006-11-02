@@ -884,12 +884,13 @@ int send_string (int sfd, char *str) {
   if (!dr_write (sfd,(char*)&lensw,datasize))
     return 0;
 
-  datasize = len;
+  datasize = (uint32_t)len;
   if (!check_send_datasize(sfd,datasize)) {
     return 0;
   }
-  if (!dr_write (sfd,(char*)str,len))
+  if (!dr_write (sfd,(char*)str,len)) {
     return 0;
+  }
 
   return 1;
 }
@@ -907,13 +908,14 @@ int recv_string (int sfd, char **str) {
   }
   len = ntohs (len);
   
-  datasize = len;
-  if (!check_recv_datasize(sfd,len)) {
+  datasize = (uint32_t)len;
+  if (!check_recv_datasize(sfd,datasize)) {
     return 0;
   }
   *str = (char *) malloc (len);
-  if (!dr_read (sfd,*str,len))
+  if (!dr_read (sfd,(char*)*str,len)) {
     return 0;
+  }
 
   return 1;
 }
@@ -926,7 +928,7 @@ int send_computer_pools (int sfd, struct computer_limits *cl, uint8_t use_local_
 
   log_auto (L_DEBUG2,"send_computer_pools() : Entering...");
 
-  //computer_pool_lock (cl);
+  computer_pool_lock (cl);
   datasize = sizeof (npools);
   if (!check_send_datasize(sfd,datasize)) {
     log_auto (L_ERROR,"send_computer_pools(): different data size for npools (uint16_t). Local: %u",datasize); 
@@ -961,7 +963,7 @@ int send_computer_pools (int sfd, struct computer_limits *cl, uint8_t use_local_
       }
       log_auto (L_DEBUG3,"send_computer_pools(): success. post check_send_datasize(struct pool).");
       log_auto (L_DEBUG3,"send_computer_pools(): previous send pool '%i' with name '%s'",i,pool[i].name);
-      if (!dr_write(sfd,(char*)&pool[i],datasize)) {
+      if (!dr_write(sfd,(char*)&pool[i],datasize)) { // write "sizeof(struct pool)" bytes
         log_auto (L_ERROR,"send_computer_pools() : error while sending pool number %i. (%s)",i,strerror(drerrno_system));
 	if (!use_local_pools) {
 	  computer_pool_detach_shared_memory (cl);
@@ -976,8 +978,8 @@ int send_computer_pools (int sfd, struct computer_limits *cl, uint8_t use_local_
     }
   }
 
-  //log_auto (L_DEBUG2,"send_computer_pools(): pool list that was sent:\n");
-  //computer_pool_list (cl);
+  log_auto (L_DEBUG2,"send_computer_pools(): following pool list has been sent:");
+  computer_pool_list (cl);
 
   log_auto (L_DEBUG2,"send_computer_pools() : Returning...");
 
@@ -989,7 +991,7 @@ int recv_computer_pools (int sfd, struct computer_limits *cl) {
   uint16_t npools;
   struct pool pool;
   uint32_t datasize;
-  struct computer_limits limits;
+  struct computer_limits limits,old_cl;
 
   log_auto (L_DEBUG2,"recv_computer_pools(): Entering...");
 
@@ -1008,30 +1010,29 @@ int recv_computer_pools (int sfd, struct computer_limits *cl) {
 
   log_auto (L_DEBUG,"recv_computer_pools(): received number of pools, that will be = %u",npools);
 
-  //memset (&limits,0,sizeof(struct computer_limits));
-  //computer_pool_init (&limits);
-  computer_pool_free(cl);
+  memset (&limits,0,sizeof(struct computer_limits));
+  computer_pool_init (&limits);
   datasize = sizeof(struct pool);
   for (i=0;i<npools;i++) {
     if (!check_recv_datasize(sfd,datasize)) {
       log_auto (L_ERROR,"recv_computer_pools(): different pools (struct pool) size. Local size: %u",datasize);
-      // CHECK:
-      //computer_pool_free(cl);
       return 0;
     }
+    memset(&pool,0,sizeof(struct pool));
     if (!dr_read(sfd,(char*)&pool,datasize)) {
       log_auto (L_ERROR,"recv_computer_pools() : could not read pool from file or socket (pool number: %i). Msg: %s",
 		i,strerror(drerrno_system));
-      // CHECK:
-      //computer_pool_free(cl);
       return 0;
     }
     log_auto (L_DEBUG3,"recv_computer_pools(): received pool name='%s'. Attempting to add...",pool.name);
-    //computer_pool_add (&limits,pool.name);
-    computer_pool_add (cl,pool.name);
+    computer_pool_add (&limits,pool.name);
   }
 
-  //computer_pool_list (cl);
+  computer_pool_copy(cl,&old_cl);
+  computer_pool_copy(&limits,cl);
+  computer_pool_detach_shared_memory(cl);
+  computer_pool_free(&old_cl);
+
   log_auto (L_DEBUG2,"recv_computer_pools(): returning success after receiving %i pools",npools);
   log_auto (L_DEBUG2,"recv_computer_pools(): Exiting...");
 

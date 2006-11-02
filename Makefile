@@ -1,9 +1,5 @@
 # $Id$
 
-CHOST=x86_64-pc-linux-gnu
-CFLAGS= -march=nocona -O2 -pipe
-CXXFLAGS=${CFLAGS}
-
 CC = gcc
 CXX = g++
 OBJS_LIBDRQUEUE = $(patsubst %.c,%.o,$(wildcard libdrqueue/*.c))
@@ -40,6 +36,9 @@ CXXFLAGS += $(CFLAGS) -D__CPLUSPLUS
 
 ifeq ($(systype),Linux)
  CPPFLAGS += -D__LINUX
+ CHOST = x86_64-pc-linux-gnu
+ CFLAGS += -march=nocona -O2 -pipe
+ CXXFLAGS += ${CFLAGS}
  MAKE = make
 else
  ifeq ($(systype),IRIX)

@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004,2005 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -29,23 +31,35 @@
 #include <sys/shm.h>
 #include <string.h>
 #include <stdint.h>
+#include <errno.h>
+#include <sys/types.h>
 
-int envvars_init (struct envvars *envvars) {
+int
+envvars_init (struct envvars *envvars) {
   envvars->variables = NULL;
   envvars->nvariables = 0;
   envvars->evshmid = (int64_t)-1;
-
-  drerrno = DRE_NOERROR;
+  envvars->evsemid = (int64_t)-1;            // FIXME: init with a new semaphore if current invalid
   return 1;
 }
 
-int envvars_empty (struct envvars *envvars) {
+int
+envvars_empty (struct envvars *envvars) {
+  // DEPRECATED
+  log_auto (L_INFO,"envvars_empty(): usage deprecated");
+  return envvars_free (envvars);
+}
+
+int
+envvars_free (struct envvars *envvars) {
   // empties the list of environment variables.
+  int rv = 1;
+  drerrno = DRE_NOERROR;
   if (envvars->evshmid != (int64_t)-1) {
-    if (shmctl (envvars->evshmid,IPC_RMID,NULL) == -1) {
-      envvars_init (envvars);
+    if (shmctl ((int)envvars->evshmid,IPC_RMID,NULL) == -1) {
+      drerrno_system = errno;
       drerrno = DRE_RMSHMEM;
-      return 0;
+      rv = 0;
     }
   }
 
@@ -53,8 +67,7 @@ int envvars_empty (struct envvars *envvars) {
   // assigned
   envvars_init (envvars);
 
-  drerrno = DRE_NOERROR;
-  return 1;
+  return rv;
 }
 
 int envvars_attach (struct envvars *envvars) {
@@ -64,13 +77,13 @@ int envvars_attach (struct envvars *envvars) {
   if (envvars->evshmid == (int64_t)-1) {
     // This could happen when trying to attach an empty list to
     // search for existing variables, like envvars_variable_find()
-    //fprintf (stderr,"WARNING: envvars_attach() envvars shmid == -1 . Not attaching\n");
+    log_auto (L_WARNING,"envvars_attach(): attempting to use an invalid identifier for environment variables. (%ji)",
+              envvars->evshmid);
     drerrno = DRE_ATTACHSHMEM;
     return 0;
   }
 
   if (envvars->variables != NULL) {
-    //
     // Already attached (?)
     //
 
@@ -78,18 +91,22 @@ int envvars_attach (struct envvars *envvars) {
     //drerrno = DRE_ATTACHSHMEM;
     //return 0;
 
-    // Other option.
-    fprintf (stderr,"WARNING: envvars_attach() variables segment seems to be already attached. We proceed as requested.\n");
-    shmdt (envvars->variables);
-  }
-
-  envvars->variables = (struct envvar *) shmat ((int)envvars->evshmid,0,0);
-
-  if (envvars->variables == (struct envvar *)-1) {
+    log_auto (L_INFO,"envvars_attach(): envvars already attached (?). Detacching whatever was there.");
+    if (shmdt (envvars->variables) == -1) {
+      drerrno_system = errno;
+      // Explanation: memory was freed and detached but the variable was not updated.
+      log_auto (L_WARNING,"envvars_attach(): could not detach successfully. (%s)",strerror(drerrno_system));
+    }
     envvars->variables = NULL;
-    drerrno = DRE_ATTACHSHMEM;
-    return 0;
   }
+
+  if ((envvars->variables = (struct envvar *) shmat ((int)envvars->evshmid,0,0)) 
+      == (struct envvar *)-1)
+    {
+      envvars->variables = NULL;
+      drerrno = DRE_ATTACHSHMEM;
+      return 0;
+    }
 
 #ifdef __DEBUG_ENVVARS
   fprintf (stderr,"++++ envvars_attach() ++++ variables == -1 (shmat)\n");
@@ -169,17 +186,24 @@ envvars_dump_info (struct envvars *envvars) {
   fprintf (stderr,"envvars_dump_info() Finished...\n");
 }
 
-int envvars_detach (struct envvars *envvars) {
+int
+envvars_detach (struct envvars *envvars) {
 
-  if ((envvars->variables != NULL) && (shmdt (envvars->variables) != -1)) {
-    // detached 
-    envvars->variables = NULL;
-    drerrno = DRE_NOERROR;
-    return 1;
+  if (envvars->variables != NULL) {
+    if (shmdt (envvars->variables) != -1) {
+      // detached 
+      envvars->variables = NULL;
+      drerrno = DRE_NOERROR;
+      return 1;
+    } else {
+      drerrno_system = errno;
+      drerrno = DRE_DTSHMEM;
+      log_auto (L_ERROR,"envvars_detach(): could not detach memory allocated for environment variables. (%s)",
+                strerror(drerrno_system));
+    }
   }
 
 #ifdef __DEBUG_ENVVARS
-  perror ("envvars_detach");
   if (envvars->evshmid == (int64_t)-1) {
     fprintf (stderr,"WARNING: envvars_dettach() A shared memory segment with id == -1 was requested to be detached.\n");
   } else if (envvars->variables == NULL) { 
@@ -205,7 +229,9 @@ int envvars_detach (struct envvars *envvars) {
   return 0;
 }
 
-struct envvar *envvars_variable_find (struct envvars *envvars, char *name) {
+struct envvar *
+envvars_variable_find (struct envvars *envvars, char *name) {
+  // SHARED MEMORY IS LEFT ATTACHED AFTER CALLING THIS FUNCTION (If the variable is found)
   // Remember that you might need to detach shm after calling this
   // function. It is left attached, so the variable found can be
   // updated from outside this function
@@ -213,10 +239,6 @@ struct envvar *envvars_variable_find (struct envvars *envvars, char *name) {
   int i;
 
   if (!envvars_attach(envvars)) {
-#ifdef __DEBUG_ENVVARS
-    fprintf (stderr,"NO WORRIES we were looking for the variable '%s' on some yet inexisting shm when found this problem:\n\t\
-envvars_variable_find() could not attach variables. (%s)\n",name,drerrno_str());
-#endif
     return result;
   }
 
@@ -228,23 +250,29 @@ envvars_variable_find() could not attach variables. (%s)\n",name,drerrno_str());
   }
 
   if (!result) {
-    // Not found, so no need to change it.
     envvars_detach(envvars);
   }
 
   return result;
 }
 
-int64_t envvars_get_shared_memory (int size) {
+int64_t
+envvars_get_shared_memory (int size) {
+  // "size" is the number of envvars that we'd like to allocate
+  // returns the shared memory identifier or -1 on error
   int64_t shmid;
 
+  drerrno = DRE_NOERROR;
+
   if ((shmid = (int64_t) shmget (IPC_PRIVATE,sizeof(struct envvar)*size, IPC_EXCL|IPC_CREAT|0600)) == (int64_t)-1) {
-    perror ("shmget");
+    drerrno_system = errno;
     drerrno = DRE_GETSHMEM;
-    return shmid;
+    log_auto (L_WARNING,"envvars_get_shared_memory(): could not allocate memory for %i environment variables. (%s)",
+              size, strerror(drerrno_system));
+  } else {
+    log_auto (L_DEBUG2,"envvars_get_shared_memory(): allocated memory for %i environment variables.",size);
   }
 
-  drerrno = DRE_NOERROR;
   return shmid;
 }
 
@@ -265,12 +293,15 @@ int envvars_variable_add (struct envvars *envvars, char *name, char *value) {
   }
 
   // New number of environment variables
-  int new_size = envvars->nvariables + 1;
+  int16_t new_size = envvars->nvariables + 1;
 
   int64_t nshmid = envvars_get_shared_memory (new_size);
-  if (nshmid == (int64_t)-1) {
-    envvars_detach(envvars);
-    fprintf (stderr,"ERROR: envvars_variable_add() could not get shared memory segment of size %ju bytes\n",(uintmax_t)new_size*sizeof(struct envvar));
+  if ((nshmid = envvars_get_shared_memory (new_size)) == (int64_t)-1) {
+    log_auto (L_ERROR,"envvars_variable_add(): couldn't allocate memory for %i variables. (%s)",
+              new_size,strerror(drerrno_system));
+    if (!envvars_detach(envvars)) {
+      envvars_free(envvars);
+    }
     return 0;
   }
 
@@ -279,9 +310,9 @@ int envvars_variable_add (struct envvars *envvars, char *name, char *value) {
   new_envvars.nvariables = new_size;
   new_envvars.evshmid = nshmid;
   if (!envvars_attach(&new_envvars)) {
+    log_auto (L_ERROR,"envvars_variable_add(): could not attach newly allocated space. (%s)",strerror(drerrno_system));
     envvars_detach(envvars);
-    envvars_empty(&new_envvars);
-    fprintf (stderr,"ERROR: envvars_variable_add() could not attach newly allocated space. (%s)\n",drerrno_str());
+    envvars_free(&new_envvars);
     return 0;
   }
 
