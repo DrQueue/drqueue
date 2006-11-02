@@ -540,8 +540,8 @@ int recv_envvars (int sfd, struct envvars *envvars) {
   // This function leaves envvars DETACHED
   uint16_t nvariables;
 
-  if (!envvars_empty (envvars)) {
-    fprintf (stderr,"ERROR: recv_envvars() error calling envvars_empty(). (%s)\n",drerrno_str());
+  if (!envvars_free (envvars)) {
+    fprintf (stderr,"ERROR: recv_envvars() error calling envvars_free(). (%s)\n",drerrno_str());
     return 0;
   }
 
@@ -575,7 +575,7 @@ int recv_envvars (int sfd, struct envvars *envvars) {
 int recv_job (int sfd, struct job *job) {
 
   // We should empty all locally reserved structures
-  envvars_empty(&job->envvars);
+  envvars_free(&job->envvars);
 
   if (!dr_read(sfd,(char*)job,sizeof (struct job))) {
     return 0;
