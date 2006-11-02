@@ -9,7 +9,7 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
 # 
-# This program is distributed in the hope that it will be useful,
+# DrQueue is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 # GNU General Public License for more details.
@@ -21,23 +21,40 @@
 # 
 # $Id$
 #
-# This program returns the number of times a frame has been requeued.
-# Useful for avoiding endless loops
-#
 
 from ez_setup import use_setuptools
 use_setuptools()
 
-
 import os
 import glob
 import sys
-#import distutils
-#from distutils.core import setup, Extension
 import setuptools
 from setuptools import setup, find_packages, Extension
+import platform
+
+def get_wordsize_flags():
+  flagPrefix = '-Xcompiler'
+  arch=platform.machine()
+  if arch == 'i386':
+    os.environ['CFLAGS'] = '-m32 -march=i386'
+    bitsFlag = [ flagPrefix + ' -m32', flagPrefix + ' -march=i386']
+  elif arch == 'i686':
+    os.environ['CFLAGS'] = '-m32 -march=i686'
+    bitsFlag = [ flagPrefix + ' -m32', flagPrefix + ' -march=i686']
+  elif arch == 'x86_64':
+    os.environ['CFLAGS'] = '-m64 -march=athlon64'
+    bitsFlag = [ flagPrefix + ' -m64', flagPrefix + ' -march=athlon64']
+  elif arch == 'Power Macintosh':
+    os.environ['CFLAGS'] = '-mpowerpc -mtune=powerpc'
+    bitsFlag = [ flagPrefix + ' -mpowerpc', flagPrefix + ' -mtune=powerpc']
+  else:
+    print "Machine not listed: %s"%(arch,)
+    sys.exit(1)
+  return bitsFlag
+
 
 def get_define_macros():
+  get_wordsize_flags()
   print "Platform is: ",sys.platform
   l_define_macros=[('COMM_REPORT',None),('_GNU_SOURCE',None)]
   if sys.platform == "linux2":
@@ -77,7 +94,6 @@ setup(
       include_dirs=[get_abspath('..'),get_abspath(os.path.join('..','libdrqueue'))],
       swig_opts=get_swig_flags())],
 
-    #scripts = ['drqueue.py'],
     py_modules = ['drqueue',],
 
     # Project uses reStructuredText, so ensure that the docutils get
@@ -94,22 +110,8 @@ setup(
     author_email = "jorge@drqueue.org",
     description = "DrQueue bindings with Python",
     license = "GPL General Public License version 2",
-    #keywords = "hello world example examples",
-    url = "http://drqueue.org/",   # project home page, if any
+    url = "http://drqueue.org/",
 
     # could also include long_description, download_url, classifiers, etc.
 )
-
-#setup (name='drqueue',
-#       version='0.1',
-#       description='DrQueue Python modules',
-#       author='Jorge Daza',
-#       author_email='jorge@drqueue.org',
-#       license='GPL General Public License version 2',
-#       url='http://drqueue.org/',
-#       ext_modules=[Extension('_drqueue', ['drqueue.i'] + get_abspath_glob(os.path.join('..','libdrqueue','*.c')),
-#                              define_macros=get_define_macros(),
-#                              include_dirs=[get_abspath('..'),get_abspath(os.path.join('..','libdrqueue'))],
-#                              swig_opts=get_swig_flags())],
-#       py_modules=['drqueue'])
 
