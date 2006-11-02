@@ -303,7 +303,7 @@ int envvars_variable_add (struct envvars *envvars, char *name, char *value) {
   // New number of environment variables
   int16_t new_size = envvars->nvariables + 1;
 
-  int64_t nshmid = envvars_get_shared_memory (new_size);
+  int64_t nshmid;
   if ((nshmid = envvars_get_shared_memory (new_size)) == (int64_t)-1) {
     log_auto (L_ERROR,"envvars_variable_add(): couldn't allocate memory for %i variables. (%s)",
               new_size,strerror(drerrno_system));
