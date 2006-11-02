@@ -4,7 +4,7 @@ import os
 
 env = Environment ()
 
-env.Append (CCFLAGS=Split ('-DCOMM_REPORT -D_GNU_SOURCE -Wall -g -O0'))
+env.Append (CCFLAGS=Split ('-DCOMM_REPORT -D_GNU_SOURCE -D_NO_COMPUTER_POOL_SEMAPHORES -Wall -g -O0'))
 
 print "Platform is: ",sys.platform
 

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-#!/usr/bin/env python
 # 
 # Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 #
@@ -31,7 +30,6 @@ cgitb.enable()
 import cgi
 import os
 import sys
-sys.path.insert(0,'..')
 import drqueue
 import time
 
