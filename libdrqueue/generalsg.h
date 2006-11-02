@@ -26,6 +26,8 @@
 extern "C" {
 #endif
 
+#pragma pack(push,1)
+
   struct generalsgi {             /* general Script Generator Info */
     char drqueue_scriptdir[BUFFERLEN];
     char script[BUFFERLEN];
@@ -34,6 +36,7 @@ extern "C" {
     uid_t uid_owner;
     gid_t gid_owner;
   };
+#pragma pack(pop)
 
   char *generalsg_create (struct generalsgi *info);
   char *generalsg_default_script_path (void);

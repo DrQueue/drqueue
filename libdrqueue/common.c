@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -47,8 +49,11 @@ int common_environment_check (void) {
     return 0;
   }
 
-#ifndef __CYGWIN
-  snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_TMP"));
+  if (getenv("DRQUEUE_TMP") != NULL) {
+    snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_TMP"));
+  } else {
+    snprintf (dir_str,BUFFERLEN-1,"%s/tmp",getenv("DRQUEUE_ROOT"));
+  } 
   if (stat (dir_str,&s_stat) == -1) {
     drerrno = DRE_NOTMPDIR;
     return 0;
@@ -58,7 +63,6 @@ int common_environment_check (void) {
       return 0;
     }
   }
-#endif
 
   if (getenv("DRQUEUE_DB") != NULL) {
     snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_DB"));
@@ -73,7 +77,11 @@ int common_environment_check (void) {
     return 0;
   }
 
-  snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_LOGS"));
+  if (getenv("DRQUEUE_LOGS")) {
+    snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_LOGS"));
+  } else {
+    snprintf (dir_str,BUFFERLEN-1,"%s/logs",getenv("DRQUEUE_ROOT"));
+  } 
   if (stat (dir_str,&s_stat) == -1) {
     drerrno = DRE_NOLOGDIR;
     return 0;
@@ -82,13 +90,21 @@ int common_environment_check (void) {
     return 0;
   }
 
-  snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_BIN"));
+  if (getenv("DRQUEUE_BIN")) {
+    snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_BIN"));
+  } else {
+    snprintf (dir_str,BUFFERLEN-1,"%s/bin",getenv("DRQUEUE_ROOT"));
+  } 
   if (stat (dir_str,&s_stat) == -1) {
     drerrno = DRE_NOBINDIR;
     return 0;
   }
 
-  snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_ETC"));
+  if (getenv("DRQUEUE_ETC")) {
+    snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_ETC"));
+  } else {
+    snprintf (dir_str,BUFFERLEN-1,"%s/etc",getenv("DRQUEUE_ROOT"));
+  } 
   if (stat (dir_str,&s_stat) == -1) {
     drerrno = DRE_NOETCDIR;
     return 0;
@@ -196,7 +212,9 @@ void set_default_env(void) {
 
   if ((drq_root = getenv("DRQUEUE_ROOT")) == NULL) {
     drerrno = DRE_NOENVROOT;
-    log_auto (L_ERROR,"Environment variable DRQUEUE_ROOT is not set. Please set your environment variables properly. DRQUEUE_ROOT should point to the base path of DrQueue's installation. Check the documentation for more help.");
+    log_auto (L_ERROR,"Environment variable DRQUEUE_ROOT is not set. Please set your environment "
+	      "variables properly. DRQUEUE_ROOT should point to the base path of DrQueue's "
+	      "installation. Check the documentation for more help.");
     exit (1);
   }
 

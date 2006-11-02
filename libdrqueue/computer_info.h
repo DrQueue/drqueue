@@ -24,13 +24,12 @@
 #ifndef _COMPUTER_INFO_H_
 #define _COMPUTER_INFO_H_
 
-
-#if defined (__IRIX)
-# include <sys/types.h>
-#endif
+#include "constants.h"
 
 #include <stdint.h>
-#include "constants.h"
+#include <sys/types.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #pragma pack(push,1)
 
@@ -71,9 +70,9 @@ typedef enum {
 struct computer_hwinfo {
   char name[MAXNAMELEN];   /* Name of the computer */
   uint32_t id;             /* Identification number */
-  unsigned char arch;      /* type of architecture */
-  unsigned char os;        /* type of operating system */
-  unsigned char proctype;  /* type of processors */
+  uint8_t  arch;      /* type of architecture */
+  uint8_t  os;        /* type of operating system */
+  uint8_t  proctype;  /* type of processors */
   uint32_t procspeed;      /* speed of the processors */
   uint16_t ncpus;          /* number of processors that the computer has */
   uint32_t speedindex;     /* global speed index for making comparisons between different computers */

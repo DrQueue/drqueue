@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -18,44 +20,33 @@
 //
 // $Id$
 //
-// The request structure is not just used for the requests themselves
-// but also for the answers to the requests
-//
 
 #ifndef _REQUEST_H_
 #define _REQUEST_H_
-
-#pragma pack(push,1)
-
-#ifdef __LINUX
-#include <stdint.h>
-#elif defined (__IRIX)
-#include <sys/types.h>
-#elif defined (__OSX)
-#include <stdint.h>
-#elif defined (__FREEBSD)
-#include <stdint.h>
-#elif defined (__CYGWIN)
-#include <stdint.h>
-#else
-#error You need to define the OS, or OS defined not supported
-#endif
 
 #include "job.h"
 #include "database.h"
 #include "request_errors.h"
 #include "request_codes.h"
+
 #include <stdint.h>
+#include <sys/types.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #ifdef __CPLUSPLUS
 extern "C" {
 #endif
+
+#pragma pack(push,1)
 
   struct request {
     uint8_t type;   /* Kind of request */
     uint8_t who;    /* who sends this request, a master, a client, a slave... (constants.h) */
     uint32_t data;  /* Data number that might be needed for the request */
   };
+
+#pragma pack(pop)
 
   void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockaddr_in *addr);
   void handle_request_slave (int sfd,struct slave_database *sdb);
@@ -156,8 +147,6 @@ extern "C" {
 #ifdef __CPLUSPLUS
 }
 #endif
-
-#pragma pack(pop)
 
 #endif /* _REQUEST_H_ */
 
