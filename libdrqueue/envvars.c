@@ -75,14 +75,14 @@ int envvars_attach (struct envvars *envvars) {
   // evshmid to the data structure
   
   if (!envvars) {
-    // TODO: log
+    log_auto (L_WARNING,"envvars_attach(): received NULL pointer.");
     return 0;
   }
 
   if (envvars->evshmid == (int64_t)-1) {
     // This could happen when trying to attach an empty list to
     // search for existing variables, like envvars_variable_find()
-    log_auto (L_WARNING,"envvars_attach(): attempting to use an invalid identifier for environment variables. (%ji)",
+    log_auto (L_DEBUG,"envvars_attach(): attempting to use an invalid identifier for environment variables. (%ji)",
               envvars->evshmid);
     drerrno = DRE_ATTACHSHMEM;
     return 0;
@@ -97,7 +97,7 @@ int envvars_attach (struct envvars *envvars) {
     //return 0;
 
     log_auto (L_INFO,"envvars_attach(): envvars already attached (?). Detacching whatever was there.");
-    if (shmdt ((int)envvars->variables) == -1) {
+    if (shmdt (envvars->variables) == -1) {
       drerrno_system = errno;
       // Explanation: memory was freed and detached but the variable was not updated.
       log_auto (L_WARNING,"envvars_attach(): could not detach successfully. (%s)",strerror(drerrno_system));

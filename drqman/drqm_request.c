@@ -41,7 +41,6 @@ drqm_request_joblist (struct drqm_jobs_info *info) {
   /* This function is called from inside drqman */
   struct job *tjob;
   uint32_t njobs;
-  int i;
 
   njobs = request_job_list(&tjob,CLIENT);
   
@@ -66,7 +65,6 @@ void drqm_clean_joblist (struct drqm_jobs_info *info) {
 void
 drqm_request_computerlist (struct drqm_computers_info *info) {
   struct computer *tcomputer;
-  int i;
 
   drqm_clean_computerlist (info);
 
