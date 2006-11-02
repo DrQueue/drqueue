@@ -228,7 +228,7 @@ void handle_request_slave (int sfd,struct slave_database *sdb) {
   struct request request;
 
   if (!recv_request (sfd,&request)) {
-    log_slave_computer (L_WARNING,"Error receiving request (handle_request_slave)");
+    log_slave_computer (L_ERROR,"handle_request_slave(): Error receiving request. (%s)",strerror(drerrno_system));
     // Log the problem and finish with this handler process
     exit(1);
   }
@@ -830,10 +830,11 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp) {
 }
 
 
-int request_job_available (struct slave_database *sdb, uint16_t *itask) {
-  /* Here we (slave) ask the master for an available job and in case */
-  /* of finding it we store the info into *job, and fill the task record */
-  /* except what cannot be filled until the proper execution of the task */
+int
+request_job_available (struct slave_database *sdb, uint16_t *itask) {
+  /* The slave requests the master an available job, and in case */
+  /* of finding it the master stores the info into *job and fills the task record */
+  /* except those fields that cannot be filled until the task is running (pid, etc.) */
 
   /* This function SETS *itask local to this process */
   /* This function returns 0 if there is no job available */
@@ -842,22 +843,22 @@ int request_job_available (struct slave_database *sdb, uint16_t *itask) {
   int sfd;
   struct task ttask;  /* Temporary task structure */
 
-  log_slave_computer (L_DEBUG,"Entering request_job_available");
+  log_auto (L_DEBUG3,"request_job_available(): >Entering");
 
   if ((sfd = connect_to_master ()) == -1) {
-    log_slave_computer(L_ERROR,"Connecting to master (request_job_available) : %s",drerrno_str());
-    kill(0,SIGINT);
+    log_auto(L_ERROR,"request_job_available(): could not connecti to master. (%s)",strerror(drerrno_system));
+    return 0;
   }
 
   req.type = R_R_AVAILJOB;
 
   if (!send_request (sfd,&req,SLAVE)) {
     log_slave_computer (L_ERROR,"Sending request for available job: %s",drerrno_str());
-    kill (0,SIGINT);
+    return 0;
   }
   if (!recv_request (sfd,&req)) {
     log_slave_computer (L_ERROR,"Receiving request for available job: %s",drerrno_str());
-    kill (0,SIGINT);
+    return 0;
   }
 
   if (req.type == R_R_AVAILJOB) {
@@ -870,17 +871,18 @@ int request_job_available (struct slave_database *sdb, uint16_t *itask) {
       log_slave_computer(L_DEBUG,"No available job");
       close (sfd);
       return 0;
+      break;
     case RERR_NOREGIS:
       log_slave_computer(L_ERROR,"Computer not registered. Requesting available job.");
-      kill (0,SIGINT);
+      return 0;
       break;
     default:
       log_slave_computer(L_ERROR,"Error code not listed on answer to R_R_AVAILJOB");
-      kill (0,SIGINT);
+      return 0;
     }
   } else {
     log_slave_computer (L_ERROR,"Not appropiate answer to request R_R_REGISJOB");
-    kill (0,SIGINT);
+    return 0;
   }
 
   if (((*itask) = task_available (sdb)) == (uint16_t)-1) {
@@ -890,7 +892,6 @@ int request_job_available (struct slave_database *sdb, uint16_t *itask) {
     req.data = RERR_NOSPACE;
     if (!send_request(sfd,&req,SLAVE)) {
       log_slave_computer (L_ERROR,"Sending request (request_job_available) : %s",drerrno_str());
-      kill (0,SIGINT);
     }
     close (sfd);  /* Finish */
     return 0;
@@ -902,7 +903,8 @@ int request_job_available (struct slave_database *sdb, uint16_t *itask) {
   req.data = RERR_NOERROR;
   if (!send_request(sfd,&req,SLAVE)) {
     log_slave_computer (L_ERROR,"Sending request (request_job_available) : %s",drerrno_str());
-    kill (0,SIGINT);
+    //kill (0,SIGINT);
+    return 0;
   }
 
   log_slave_computer (L_DEBUG,"Sending index to task.");
@@ -910,14 +912,16 @@ int request_job_available (struct slave_database *sdb, uint16_t *itask) {
   req.data = *itask;
   if (!send_request(sfd,&req,SLAVE)) {
     log_slave_computer (L_ERROR,"Sending request (request_job_available) : %s",drerrno_str());
-    kill (0,SIGINT);
+    //kill (0,SIGINT);
+    return 0;
   }
 
   log_slave_computer (L_DEBUG,"Receiving the task");
   /* Then we receive the task */
   if (!recv_task(sfd,&ttask)) {
     log_slave_computer (L_ERROR,"Receiving the task (request_job_available) : %s",drerrno_str());
-    kill (0,SIGINT);
+    //kill (0,SIGINT);
+    return 0;
   }
 
   /* The we update the computer structure to reflect the new assigned task */
@@ -2923,7 +2927,8 @@ void handle_rs_r_setautoenable (int sfd,struct slave_database *sdb,struct reques
   log_slave_computer(L_DEBUG,"Exiting handle_rs_r_setnmaxcpus");
 }
 
-void update_computer_limits (struct computer_limits *limits) {
+int
+update_computer_limits (struct computer_limits *limits) {
   /* The slave calls this function to update the information about */
   /* its limits structure when it is changed */
   struct request req;
@@ -2931,17 +2936,20 @@ void update_computer_limits (struct computer_limits *limits) {
 
   if ((sfd = connect_to_master ()) == -1) {
     log_slave_computer(L_ERROR,"Connecting to master (update_computer_limits) : %s",drerrno_str());
-    kill(0,SIGINT);
+    drerrno = DRE_CONNMASTER;
+    return 0;
   }
 
   req.type = R_R_UCLIMITS;
   if (!send_request (sfd,&req,SLAVE)) {
-    log_slave_computer (L_ERROR,"Sending request (update_computer_limits) : %s",drerrno_str());
-    kill (0,SIGINT);
+    log_slave_computer (L_ERROR,"Sending request (update_computer_limits) : %s",strerror(drerrno_system));
+    drerrno = DRE_COMMPROBLEM;
+    return 0;
   }
   if (!recv_request (sfd,&req)) {
     log_slave_computer (L_ERROR,"Receiving request (update_computer_limits) : %s",drerrno_str());
-    kill (0,SIGINT);
+    drerrno = DRE_COMMPROBLEM;
+    return 0;
   }
 
   if (req.type == R_R_UCLIMITS) {
@@ -2950,23 +2958,28 @@ void update_computer_limits (struct computer_limits *limits) {
       if (!send_computer_limits (sfd,limits,0)) {
         log_slave_computer (L_ERROR,"Sending computer limits (update_computer_limits) : %s",drerrno_str());
         log_auto (L_ERROR,"Sending computer limits (update_computer_limits) : %s (%s)",drerrno_str(),strerror(drerrno_system));
-        //kill(0,SIGINT);
+        drerrno = DRE_COMMPROBLEM;
+        return 0;
       }
       break;
     case RERR_NOREGIS:
       log_slave_computer (L_ERROR,"Computer not registered");
-      kill (0,SIGINT);
+      drerrno = DRE_NOTREGISTERED;
+      return 0;
       break;
     default:
       log_slave_computer (L_ERROR,"Error code not listed on answer to R_R_UCLIMITS");
-      kill (0,SIGINT);
+      drerrno = DRE_ANSWERNOTLISTED;
+      return 0;
       break;
     }
   } else {
     log_slave_computer (L_ERROR,"Not appropiate answer to request R_R_UCLIMITS");
-    kill (0,SIGINT);
+    drerrno = DRE_ANSWERNOTRIGHT;
+    return 0;
   }
   close (sfd);
+  return 1;
 }
 
 void handle_r_r_uclimits (int sfd,struct database *wdb,int icomp, struct request *req) {
@@ -3014,20 +3027,20 @@ void handle_r_r_uclimits (int sfd,struct database *wdb,int icomp, struct request
 void handle_rs_r_setmaxfreeloadcpu (int sfd,struct slave_database *sdb,struct request *req) {
   struct computer_limits limits;
 
-  log_slave_computer(L_DEBUG,"Entering handle_rs_r_setmaxfreeloadcpu");
-  log_slave_computer(L_DEBUG,"Received maximum free load cpu: %i",req->data);
+  log_slave_computer(L_DEBUG3,"handle_rs_r_setmaxfreeloadcpu(): >Entering...");
+  log_slave_computer(L_DEBUG2,"handle_rs_r_setmaxfreeloadcpu(): received maximum free load cpu: %u",req->data);
+
+  log_slave_computer(L_DEBUG2,"handle_rs_r_setmaxfreeloadcpu(): previous maximum free load cpu: %u",sdb->comp->limits.maxfreeloadcpu);
 
   semaphore_lock(sdb->semid);
-
-  log_slave_computer(L_DEBUG,"Previous maximum free load cpu: %i",sdb->comp->limits.maxfreeloadcpu);
-  sdb->comp->limits.maxfreeloadcpu = req->data;
-  log_slave_computer(L_DEBUG,"Set maximum free load cpu: %i",sdb->comp->limits.maxfreeloadcpu);
+  sdb->comp->limits.maxfreeloadcpu = (uint16_t)req->data;
   memcpy (&limits,&sdb->comp->limits,sizeof(struct computer_limits));
-
   semaphore_release(sdb->semid);
 
+  log_slave_computer(L_DEBUG,"handle_rs_r_setmaxfreeloadcpu(): set maximum free load cpu: %u",sdb->comp->limits.maxfreeloadcpu);
+
   update_computer_limits (&limits);
-  log_slave_computer(L_DEBUG,"Exiting handle_rs_r_setmaxfreeloadcpu");
+  log_slave_computer(L_DEBUG3,"handle_rs_r_setmaxfreeloadcpu(): <Exiting...");
 }
 
 int request_slave_limits_maxfreeloadcpu_set (char *slave, uint32_t maxfreeloadcpu, uint16_t who) {
@@ -3863,11 +3876,13 @@ int request_computer_list (struct computer **computer, uint16_t who) {
       close (sfd);
       return -1;
     }
-
+    
     tcomputer = *computer;
     for (i=0;i<ncomputers;i++) {
+      computer_init(tcomputer);
       if (!recv_computer (sfd,tcomputer)) {
-        fprintf (stderr,"ERROR: Receiving computer (request_computer_list)\n");
+        log_auto (L_ERROR,"request_computer_list(): problem while receiving computer on position %i. (%s)",
+                  i,strerror(drerrno_system));
         break;
       }
       tcomputer++;

@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -31,6 +33,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 #define L_ERROR 0
 #define L_WARNING 1
@@ -52,27 +55,21 @@ typedef enum {
 extern int loglevel;
 extern int logonscreen;
 extern logtooltype logtool;
+extern struct job *logger_job;
+extern struct task *logger_task;
+extern struct computer *logger_computer;
 
 void log_auto (int level, char *fmt, ...);
 void log_auto_job (struct job *job, int level, char *fmt, ...);
 
 void log_slave_task (struct task *task,int level,char *fmt,...);
-FILE *log_slave_open_task (struct task *task);
 void log_slave_computer (int level, char *fmt, ...);
-FILE *log_slave_open_computer (char *name);
 
 void log_master (int level, char *fmt, ...);
 void log_master_job (struct job *job, int level, char *fmt, ...);
 void log_master_computer (struct computer *computer, int level, char *fmt, ...);
-FILE *log_master_open (void);
 
 char *log_level_str (int level);
-
-int log_dumptask_open (struct task *t);
-int log_dumptask_open_ro (struct task *t);
-
-int log_job_path_get (uint32_t jobid,char *path,int pathlen);
-int log_task_filename_get (struct task *task, char *path, int pathlen);
 
 #endif
 

@@ -97,14 +97,16 @@ int get_socket (uint16_t port) {
   return sfd;
 }
 
-int accept_socket (int sfd,struct database *wdb,struct sockaddr_in *addr) {
+// FIXME: should be named accept_socket_master
+int
+accept_socket (int sfd,struct database *wdb,struct sockaddr_in *addr) {
   int fd;
   socklen_t len = sizeof (struct sockaddr_in);
 
   if ((fd = accept (sfd,(struct sockaddr *)addr,&len)) == -1) {
     drerrno_system = errno;
     log_auto (L_ERROR,"accept_socket(): error accepting connection. Msg: %s",strerror(drerrno_system));
-    return -1;
+    return fd;
   }
 
 #ifdef LIBWRAP
@@ -126,21 +128,22 @@ int accept_socket (int sfd,struct database *wdb,struct sockaddr_in *addr) {
   return fd;
 }
 
-int accept_socket_slave (int sfd) {
+int
+accept_socket_slave (int sfd) {
   int fd;
   struct sockaddr_in addr;
   socklen_t len = sizeof (struct sockaddr_in);
 
   if ((fd = accept (sfd,(struct sockaddr *)&addr,&len)) == -1) {
-    perror ("accept");
-    log_slave_computer (L_ERROR,"Accepting connection.");
-    exit (1);
+    drerrno_system = errno;
+    log_auto (L_ERROR,"accept_socket_slave(): error accepting connection. (%s)",strerror(drerrno_system));
+    drerrno = DRE_COMMPROBLEM;
+    return fd;
   }
 
 #ifdef LIBWRAP
   /* Check whether logins are denied from this host. */
   {
-    printf ("cleb\n");
     struct request_info req;
 
     request_init(&req, RQ_DAEMON, "drqueue-slave", RQ_FILE, fd, 0);
@@ -153,7 +156,6 @@ int accept_socket_slave (int sfd) {
     }
   }
 #endif /* LIBWRAP */
-
 
   return fd;
 }
@@ -168,7 +170,10 @@ int connect_to_master (void) {
   struct sockaddr_in addr;
   struct hostent *hostinfo;
 
+  drerrno = DRE_NOERROR;
+
   if ((master = getenv ("DRQUEUE_MASTER")) == NULL) {
+    drerrno_system = errno;
     drerrno = DRE_NOENVMASTER;
     return -1;
   }
@@ -177,6 +182,7 @@ int connect_to_master (void) {
   addr.sin_port = htons(MASTERPORT);  /* Whatever */
   hostinfo = gethostbyname (master);
   if (hostinfo == NULL) {
+    drerrno_system = errno;
     drerrno = DRE_NOTRESOLVE;
     return -1;
   }
@@ -184,16 +190,17 @@ int connect_to_master (void) {
 
   sfd = socket (PF_INET,SOCK_STREAM,0);
   if (sfd == -1) {
+    drerrno_system = errno;
     drerrno = DRE_NOSOCKET;
     return -1;
   }
 
   if (connect (sfd,(struct sockaddr *)&addr,sizeof (addr)) == -1) {
+    drerrno_system = errno;
     drerrno = DRE_NOCONNECT;
     return -1;
   }
 
-  drerrno = DRE_NOERROR;
   return sfd;
 }
 
@@ -207,6 +214,7 @@ int connect_to_slave (char *slave) {
   addr.sin_port = htons(SLAVEPORT); /* Whatever */
   hostinfo = gethostbyname (slave);
   if (hostinfo == NULL) {
+    drerrno_system = errno;
     drerrno = DRE_NOTRESOLVE;
     return -1;
   }
@@ -214,11 +222,13 @@ int connect_to_slave (char *slave) {
 
   sfd = socket (PF_INET,SOCK_STREAM,0);
   if (sfd == -1) {
+    drerrno_system = errno;
     drerrno = DRE_NOSOCKET;
     return -1;
   }
 
   if (connect (sfd,(struct sockaddr *)&addr,sizeof (addr)) == -1) {
+    drerrno_system = errno;
     drerrno = DRE_NOCONNECT;
     return -1;
   }
@@ -226,7 +236,8 @@ int connect_to_slave (char *slave) {
   return sfd;
 }
 
-int check_recv_datasize (int sfd, uint32_t datasize) {
+int
+check_recv_datasize (int sfd, uint32_t datasize) {
   uint32_t remotesize = 0;
   uint32_t localsize;
 
@@ -251,7 +262,8 @@ int check_recv_datasize (int sfd, uint32_t datasize) {
   return 1;
 }
 
-int check_send_datasize (int sfd, uint32_t datasize) {
+int
+check_send_datasize (int sfd, uint32_t datasize) {
   uint32_t remotesize = 0;
   uint32_t localsize;
   
@@ -539,6 +551,10 @@ int send_envvars (int sfd, struct envvars *envvars) {
 int recv_envvars (int sfd, struct envvars *envvars) {
   // This function leaves envvars DETACHED
   uint16_t nvariables;
+
+  if (!envvars) {
+    return 0;
+  }
 
   if (!envvars_free (envvars)) {
     fprintf (stderr,"ERROR: recv_envvars() error calling envvars_free(). (%s)\n",drerrno_str());
@@ -993,7 +1009,7 @@ int recv_computer_pools (int sfd, struct computer_limits *cl) {
   uint32_t datasize;
   struct computer_limits limits,old_cl;
 
-  log_auto (L_DEBUG2,"recv_computer_pools(): Entering...");
+  log_auto (L_DEBUG3,"recv_computer_pools(): >Entering...");
 
   datasize = sizeof(npools);
   if (!check_recv_datasize(sfd,datasize)) {
@@ -1003,12 +1019,12 @@ int recv_computer_pools (int sfd, struct computer_limits *cl) {
 
   log_auto (L_DEBUG3,"recv_computer_pools() : _before_ receiving the number of pools");
   if (!dr_read (sfd,(char*)&npools,datasize)) {
-    log_auto (L_ERROR,"recv_computer_pools(): error reading from file or socket.");
+    log_auto (L_ERROR,"recv_computer_pools(): error reading from file or socket. (%s)",strerror(drerrno_system));
     return 0;
   }
   npools = ntohs (npools);
 
-  log_auto (L_DEBUG,"recv_computer_pools(): received number of pools, that will be = %u",npools);
+  log_auto (L_DEBUG2,"recv_computer_pools(): received number of pools, that will be = %u",npools);
 
   memset (&limits,0,sizeof(struct computer_limits));
   computer_pool_init (&limits);
@@ -1022,6 +1038,7 @@ int recv_computer_pools (int sfd, struct computer_limits *cl) {
     if (!dr_read(sfd,(char*)&pool,datasize)) {
       log_auto (L_ERROR,"recv_computer_pools() : could not read pool from file or socket (pool number: %i). Msg: %s",
 		i,strerror(drerrno_system));
+      // FIXME: if we return, old data is still there.
       return 0;
     }
     log_auto (L_DEBUG3,"recv_computer_pools(): received pool name='%s'. Attempting to add...",pool.name);
@@ -1030,11 +1047,10 @@ int recv_computer_pools (int sfd, struct computer_limits *cl) {
 
   computer_pool_copy(cl,&old_cl);
   computer_pool_copy(&limits,cl);
-  computer_pool_detach_shared_memory(cl);
   computer_pool_free(&old_cl);
 
-  log_auto (L_DEBUG2,"recv_computer_pools(): returning success after receiving %i pools",npools);
-  log_auto (L_DEBUG2,"recv_computer_pools(): Exiting...");
+  log_auto (L_DEBUG,"recv_computer_pools(): %i pools received successfully",npools);
+  log_auto (L_DEBUG3,"recv_computer_pools(): <Exiting...");
 
   return 1;
 }
@@ -1051,31 +1067,36 @@ int recv_computer_limits (int sfd, struct computer_limits *cl) {
     log_auto (L_ERROR,"recv_computer_limits(): different data sizes for 'struct computer_limits'. Local size: %u",datasize);
     return 0;
   }
+
+  // Receive limits struct
   if (!dr_read (sfd,(char*)buf,datasize)) {
     log_auto (L_ERROR,"recv_computer_limits(): error while receiving computer limits. (%s)",strerror(errno));
     return 0;
   }
+  // Remove references to remote shared memory
   computer_limits_cleanup_received (&limits);
-  computer_limits_init (&limits);
+
+  // Receive pools
   if (!recv_computer_pools (sfd,&limits)) {
     log_auto (L_ERROR,"recv_computer_limits(): error while receiving computer pool list. (%s)",strerror(errno));
     return 0;
   }
-
+  
+  // Delete old pool data
   computer_pool_free(cl);
+  // Put new one in place
   memcpy (cl,&limits,sizeof(limits));
 
-  /* Swapping bytes */
+  // Byteswapping
   cl->nmaxcpus = ntohs (cl->nmaxcpus);
   cl->maxfreeloadcpu = ntohs (cl->maxfreeloadcpu);
-
-  /* Autoenable stuff */
   cl->autoenable.last = ntohl (cl->autoenable.last);
 
   return 1;
 }
 
-int send_computer_limits (int sfd, struct computer_limits *cl, uint8_t use_local_pools) {
+int
+send_computer_limits (int sfd, struct computer_limits *cl, uint8_t use_local_pools) {
   struct computer_limits bswapped;
   void *buf = &bswapped;
   uint32_t datasize;
@@ -1094,12 +1115,8 @@ int send_computer_limits (int sfd, struct computer_limits *cl, uint8_t use_local
   bswapped.autoenable.last = htonl (bswapped.autoenable.last);
 
   // Clean up shared memory info
-  bswapped.npools = 0;
-  bswapped.poolshmid = 0;
-  bswapped.poolsemid = 0;
-  bswapped.npoolsattached = 0;
-  
   computer_limits_cleanup_to_send (&bswapped);
+ 
   datasize = sizeof (struct computer_limits);
   if (!check_send_datasize (sfd,datasize)) {
     log_auto (L_ERROR,"send_computer_limits(): different data sizes for 'struct computer_limits'. Local size: %u",datasize);

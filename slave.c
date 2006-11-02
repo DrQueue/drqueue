@@ -58,6 +58,8 @@ char buffer[BUFFERLEN];     /* Buffer to read from phantom */
 
 int main (int argc,char *argv[]) {
   int force = 0;
+  pid_t consistency_pid;
+  pid_t listener_pid;
 
   slave_get_options(&argc,&argv,&force,&sdb);
   
@@ -104,20 +106,32 @@ int main (int argc,char *argv[]) {
     exit (1);
   }
 
-  if (fork() == 0) {
+  if ((listener_pid = fork()) == 0) {
     /* Create the listening process */
+    log_auto (L_INFO,"Listener process starting...");
     set_signal_handlers_child_listening ();
     slave_listening_process (&sdb);
-    exit (0);
+    log_auto (L_INFO,"Listener process exiting...");
+    exit (0); 
+  } else if (listener_pid == -1) {
+    drerrno_system = errno;
+    log_auto (L_ERROR,"Could not create the listener process. (%s)", strerror(drerrno_system));
+    slave_exit(1);
   }
 
-  if (fork() == 0) {
+  if ((consistency_pid = fork()) == 0) {
     // Create the consistency checks process
     // Signal are treated the same way as the listening process
+    log_auto (L_INFO,"Consistency process starting...");
     set_signal_handlers_child_listening ();
     slave_consistency_process (&sdb);
+    log_auto (L_INFO,"Consistency process exiting...");
     exit (0);
-  }
+  } else if (consistency_pid == -1) {
+    drerrno_system = errno;
+    log_auto (L_ERROR,"Could not create the listener process. (%s)", strerror(drerrno_system));
+    slave_exit(1);
+  } 
 
   while (1) {
     get_computer_status (&sdb.comp->status,sdb.semid);
@@ -130,7 +144,8 @@ int main (int argc,char *argv[]) {
         launch_task(&sdb,itask);
         update_computer_status (&sdb);
       } else {
-        break;   /* The while */
+        // computer not available
+        break;   // break the while loop
       }
     } /* WARNING could be in this loop forever if no care is taken !! */
 
@@ -397,13 +412,14 @@ void slave_consistency_process (struct slave_database *sdb) {
     for (i=0;i<MAXTASKS;i++) {
       if ((sdb->comp->status.task[i].used)
           && (sdb->comp->status.task[i].status != TASKSTATUS_LOADING)
-          && (kill(sdb->comp->status.task[i].pid,0) == -1)) {
-        // There is process registered as running, but not running.
-        semaphore_lock(sdb->semid);
-        sdb->comp->status.task[i].used = 0;
-        semaphore_release(sdb->semid);
-        log_slave_computer(L_WARNING,"Process registered as running was not running. Removed.");
-      }
+          && (kill(sdb->comp->status.task[i].pid,0) == -1))
+        {
+          // There is process registered as running, but not running.
+          semaphore_lock(sdb->semid);
+          sdb->comp->status.task[i].used = 0;
+          semaphore_release(sdb->semid);
+          log_slave_computer(L_WARNING,"Process registered as running was not running. Removed.");
+        }
     }
     sleep (SLAVEDELAY);
   }
@@ -415,16 +431,17 @@ void slave_listening_process (struct slave_database *sdb) {
 
   if ((sfd = get_socket(SLAVEPORT)) == -1) {
     log_slave_computer (L_ERROR,"Unable to open socket (server)");
-    kill(0,SIGINT);
+    slave_exit(1);
   }
   highest_fd = sfd+1;
-  printf ("Highest file descriptor after initialization %i\n",highest_fd);
-  printf ("Waiting for connections...\n");
+  log_auto (L_DEBUG,"Highest file descriptor after initialization %i",highest_fd);
+  log_auto (L_INFO,"Slave waiting for remote requests");
   while (1) {
     if ((csfd = accept_socket_slave (sfd)) != -1) {
+      // Ignore children exit codes & do not let zombies around
       signal(SIGCHLD,SIG_IGN); // FIXME: sigaction
       if ((child_pid = fork()) == 0) {
-        /* Create a connection handler */
+        // Child process
         set_signal_handlers_child_chandler ();
         close (sfd);
         alarm (MAXTIMECONNECTION);
@@ -432,14 +449,19 @@ void slave_listening_process (struct slave_database *sdb) {
         close (csfd);
         exit (0);
       } else if (child_pid == -1) {
-        log_slave_computer (L_WARNING,"Failed to fork on slave_listening_process");
+        // Parent still
+        drerrno_system = errno;
+        log_auto (L_ERROR,"slave_listening_process(): error forking on slave_listening_process. (%s)",strerror(drerrno_system));
       }
-      /* Father */
+      // Parent
       close (csfd);
       if (csfd > highest_fd)
-        printf ("csfd has grown over the default highest (csfd=%i)\n",csfd);
+        log_auto (L_DEBUG,"slave_listening_process(): csfd has grown over the default highest (csfd=%i)",csfd);
+    } else { // csfd == -1
+      log_auto (L_ERROR,"slave_listening_process(): error accepting connection. (%s)",strerror(drerrno_system));
     }
   }
+  exit (0);
 }
 
 void sigalarm_handler (int signal, siginfo_t *info, void *data) {
@@ -462,12 +484,19 @@ void launch_task (struct slave_database *sdb, uint16_t itask) {
   char *exec_path;
 
   if ((waiter_pid = fork()) == 0) {
-    /* This child reports the execution of the command itself */
+    //
+    // WAITER PROCESS
+    // This process reports the execution of the command itself
+    //
     set_signal_handlers_child_launcher ();
     if ((task_pid = fork()) == 0) {
-      /* This child execs the command */
-      /* This child also creates the directory for logging if it doesn't exist */
-      /* and prepares the file descriptors so every output will be logged */
+      //
+      // TASK PROCESS
+      // This process executes the task
+      // This child also creates the directory for logging if it doesn't exist
+      // and prepares the file descriptors so every output will be logged
+      //
+
       const char *new_argv[4];
       int lfd;   /* logger fd */
 
@@ -475,7 +504,7 @@ void launch_task (struct slave_database *sdb, uint16_t itask) {
 
       new_argv[0] = SHELL_NAME;
       if ((new_argv[1] = malloc(MAXCMDLEN)) == NULL)
-        return;
+        exit (1);
       cygwin_conv_to_posix_path(sdb->comp->status.task[itask].jobcmd,(char*)new_argv[1]);
       new_argv[2] = NULL;
 #else
@@ -490,6 +519,7 @@ void launch_task (struct slave_database *sdb, uint16_t itask) {
       set_signal_handlers_task_exec ();
 
       if ((lfd = log_dumptask_open (&sdb->comp->status.task[itask])) != -1) {
+        // Log on the logger file whatever goes to stdout and stderr
         dup2 (lfd,STDOUT_FILENO);
         dup2 (lfd,STDERR_FILENO);
         close (lfd);
@@ -499,22 +529,29 @@ void launch_task (struct slave_database *sdb, uint16_t itask) {
 
 #ifdef __CYGWIN
 
-      exec_path = malloc(MAXCMDLEN);
-      snprintf (exec_path,BUFFERLEN-1,"%s/tcsh.exe",getenv("DRQUEUE_BIN"));
+      exec_path = malloc(PATH_MAX);
+      char *dr_bin = getenv("DRQUEUE_BIN");
+      if (dr_bin) {
+        snprintf (exec_path,PATH_MAX,"%s/tcsh.exe",dr_bin);
 #else
 
       exec_path = SHELL_PATH;
 #endif
 
       execve(exec_path,(char*const*)new_argv,environ);
-      perror("execve");
-      exit(errno);  /* If we arrive here, something happened exec'ing */
+      // Wouldn't reach this point unless error on execve
+      drerrno_system = errno;
+      log_auto(L_ERROR,"launch_task(): error on execve. (%s)",strerror(drerrno_system));
+      exit(drerrno_system);
     } else if (task_pid == -1) {
-      log_slave_task(&sdb->comp->status.task[itask],L_WARNING,"Fork failed for task");
-      semaphore_lock(sdb->semid);
-      sdb->comp->status.task[itask].used = 0; /* We don't need the task anymore */
-      semaphore_release(sdb->semid);
-      exit (2);
+      // FIXME <<__EOFIX
+      log_auto(L_ERROR,"lauch_task(): Fork failed. Task not created.");
+      log_slave_task(&sdb->comp->status.task[itask],L_ERROR,"lauch_task(): Fork failed. Task not created.");
+      // __EOFIX
+
+      //semaphore_lock(sdb->semid);
+      //sdb->comp->status.task[itask].used = 0; /* We don't need the task anymore */
+      //semaphore_release(sdb->semid);
     }
 
     /* Then we set the process as running */
@@ -524,12 +561,19 @@ void launch_task (struct slave_database *sdb, uint16_t itask) {
     semaphore_release(sdb->semid);
 
     if (waitpid(task_pid,&rc,0) == -1) {
-      /* Some problem exec'ing */
-      log_slave_task(&sdb->comp->status.task[itask],L_ERROR,"Exec'ing cmdline (No child on launcher)");
+      // It forked on task_pid but waitpid says it doesn't exist.
+      drerrno_system = errno;
+      // FIXME <<__EOFIX
+      log_auto(L_ERROR,"lauch_task(): task process (%i) does not exist. (%s)",task_pid,strerror(drerrno_system));
+      log_slave_task(&sdb->comp->status.task[itask],L_ERROR,"lauch_task(): task process (%i) does not exist. (%s)",
+                     task_pid,strerror(drerrno_system));
+      // __EOFIX
       semaphore_lock(sdb->semid);
       sdb->comp->status.task[itask].used = 0; /* We don't need the task anymore */
       semaphore_release(sdb->semid);
+      // TODO: notify the master ?
     } else {
+      // waitpid returned successfully
       /* We have to clean the task and send the info to the master */
       /* consider WIFSIGNALED(status), WTERMSIG(status), WEXITSTATUS(status) */
       /* we pass directly the status (translated to DR) to the master and he decides what to do with the frame */
@@ -568,7 +612,9 @@ void launch_task (struct slave_database *sdb, uint16_t itask) {
     sdb->comp->status.task[itask].used = 0; /* We don't need the task anymore */
     semaphore_release(sdb->semid);
     exit (1);
-  }
+  } else {
+    // in this "else" waiter_pid actually contains the PID of the waiter process
+  } 
 }
 
 
@@ -658,4 +704,8 @@ void slave_set_limits (struct slave_database *sdb) {
   }
 }
 
-
+void
+slave_exit (int rc) {
+  // Slave's clean exit procedure
+  
+}

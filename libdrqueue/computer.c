@@ -289,7 +289,9 @@ computer_nrunning (struct computer *comp) {
 void
 computer_limits_cleanup_received (struct computer_limits *cl) {
   // This function should initialize only those values that could only mean something remotely and not locally
+  // namely: shared memory pointers, pointers of any other type, identifiers...
   cl->pool = NULL;
+  cl->local_pool = NULL;
   cl->poolshmid = (int64_t)-1;
   cl->poolsemid = (int64_t)-1;
   cl->npoolsattached = 0;
@@ -345,14 +347,20 @@ computer_nrunning_job (struct computer *comp,uint32_t ijob) {
   return n;
 }
 
-void computer_autoenable_check (struct slave_database *sdb) {
+void
+computer_autoenable_check (struct slave_database *sdb) {
   /* This function will check if it's the time for auto enable */
   /* If so, it will change the number of available processors to be the maximum */
   time_t now;
   struct tm *tm_now;
   struct computer_limits limits;
 
-  log_auto (L_DEBUG2,"computer_autoenable_check(): Entering...");
+  if (sdb->comp->limits.enabled) {
+    // Already enabled, why bother ?
+    return;
+  }
+
+  log_auto (L_DEBUG3,"computer_autoenable_check(): >Entering...");
   time (&now);
   if ((sdb->comp->limits.autoenable.flags & AEF_ACTIVE)
       && ((now - sdb->comp->limits.autoenable.last) > AE_DELAY)) {
@@ -372,7 +380,7 @@ void computer_autoenable_check (struct slave_database *sdb) {
 
       semaphore_release (sdb->semid);
 
-      log_auto (L_INFO,"Autoenabled at %i:%02i",tm_now->tm_hour,tm_now->tm_min);
+      log_auto (L_INFO,"Slave autoenabled at %i:%02i",tm_now->tm_hour,tm_now->tm_min);
 
       update_computer_limits (&limits);
     }
