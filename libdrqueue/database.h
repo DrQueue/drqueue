@@ -22,16 +22,17 @@
 #ifndef _DATABASE_H_
 #define _DATABASE_H_
 
+#pragma pack(push,1)
+
 #include "constants.h"
 #include "job.h"
 #include "computer.h"
 
 #include <stdint.h>
+#include <sys/types.h>
 
 #define DB_VERSION 10          // Database version. This version must change when we change the job structure
 #define DB_MAGIC   0xADDEEFBE  // magic number
-
-#pragma pack(push,1)
 
 struct load_balancing {
   struct tpol pol[MAXJOBS]; // Priority ordered list of jobs
