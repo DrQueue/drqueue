@@ -3761,7 +3761,11 @@ void handle_rs_r_limitspoolremove (int sfd,struct slave_database *sdb,struct req
   log_slave_computer(L_DEBUG,"Exiting handle_rs_r_limitspooladd");
 }
 
-int request_job_list (struct job **job, uint16_t who) {
+int
+request_job_list (struct job **job, uint16_t who) {
+  //
+  // Returns the numbers of jobs that has copied into the returned pointer
+  //
   struct request req;
   int sfd;
   struct job *tjob;

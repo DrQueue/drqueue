@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -16,84 +18,53 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-/* $Id$ */
+// $Id$
+//
 
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdint.h>
+#include <sys/types.h>
+#include <stdio.h>
+#include <errno.h>
+#include <string.h>
 
-#include <libdrqueue.h>
-
+#include "libdrqueue.h"
 #include "drqm_jobs.h"
 #include "drqm_computers.h"
 #include "drqm_request.h"
+#include "logger.h"
 
-void drqm_request_joblist (struct drqm_jobs_info *info) {
+void
+drqm_request_joblist (struct drqm_jobs_info *info) {
   /* This function is called non-blocked */
   /* This function is called from inside drqman */
-  struct request req;
-  int sfd;
   struct job *tjob;
   uint32_t njobs;
   int i;
 
-  if ((sfd = connect_to_master ()) == -1) {
-    fprintf(stderr,"%s\n",drerrno_str());
-    return;
-  }
-
-  req.type = R_R_LISTJOBS;
-
-  if (!send_request (sfd,&req,CLIENT)) {
-    close (sfd);
-    return;
-  }
-
-  if (!recv_request (sfd,&req)) {
-    close (sfd);
-    return;
-  }
-
-  if (req.type == R_R_LISTJOBS) {
-    njobs = req.data;
-  } else {
-    fprintf (stderr,"ERROR: Not appropiate answer to request R_R_LISTJOBS\n");
-    close (sfd);
-    return;
-  }
-
+  njobs = request_job_list(&tjob,CLIENT);
+  
   drqm_clean_joblist (info);
   if (njobs) {
-    if ((info->jobs = g_malloc (sizeof (struct job) * njobs)) == NULL) {
-      fprintf (stderr,"Not enough memory for job structures\n");
-      close (sfd);
-      return;
-    }
     info->njobs = njobs;
-    tjob = info->jobs;
-    for (i=0;i<njobs;i++) {
-      if (!recv_job (sfd,tjob)) {
-        fprintf (stderr,"ERROR: Receiving job (drqm_request_joblist)\n");
-        break;
-      }
-      tjob++;
-    }
+    info->jobs = tjob;
   } else {
     info->jobs = NULL;
     info->njobs = 0;
   }
-
-  close (sfd);
 }
 
 void drqm_clean_joblist (struct drqm_jobs_info *info) {
   if (info->jobs) {
     free_job_list(NULL,info);
-    g_free (info->jobs);
+    free (info->jobs);
     info->jobs = NULL;
   }
 }
 
-void drqm_request_computerlist (struct drqm_computers_info *info) {
+void
+drqm_request_computerlist (struct drqm_computers_info *info) {
   struct computer *tcomputer;
   int i;
 

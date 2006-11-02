@@ -18,9 +18,9 @@ elif env['arch'] == 'i686':
 elif env['arch'] == 'x86_64':
   bitsFlag='-m64'
   env.Append (CCFLAGS = Split('-march=athlon64'),CXXFLAGS = env.subst('$CCFLAGS'))
-elif env['arch'] == 'ppc':
-  bitsFlag='-m32'
-  env.Append (CCFLAGS = Split('-march=ppc'))
+elif env['arch'] == 'Power Macintosh':
+  bitsFlag='-mpowerpc'
+  env.Append (CCFLAGS = Split('-mtune=powerpc'))
 
 #dict = env.Dictionary()
 #keys = dict.keys()
@@ -28,7 +28,6 @@ elif env['arch'] == 'ppc':
 #for key in keys:
 #  print "construction variable = '%s', value = '%s'" % (key, dict[key])
    
-
 env.Append (CCFLAGS = Split ('-DCOMM_REPORT -D_GNU_SOURCE -D_NO_COMPUTER_POOL_SEMAPHORES -D_NO_COMPUTER_SEMAPHORES'),
             CXXFLAGS = ['-D__CPLUSPLUS',env.subst('$CCFLAGS')])
 env.Append (CCFLAGS = [bitsFlag,])
@@ -36,6 +35,8 @@ env.Append (CCFLAGS = [bitsFlag,])
 print "Platform is: ",sys.platform
 if sys.platform == "linux2":
 	env.Append (CCFLAGS = Split ('-D__LINUX'))
+  #if coreduo
+  #env.Append(CCFLAGS = Split('-march=nocona -pipe -O2'), CXXFLAGS=Split('-march=nocona -O2 -pipe'))
 elif sys.platform == "darwin":
 	#env.Append (CCFLAGS = Split ('-D__OSX -no-cpp-precomp -fstrict-aliasing -mno-fused-madd'))
 	env.Append (CCFLAGS = Split ('-D__OSX'))
@@ -52,7 +53,7 @@ libdrqueue = env.StaticLibrary ('drqueue', libdrqueue_src)
 #
 # drqman
 #
-drqman_c = glob.glob ("drqman/*.c")
+drqman_c = glob.glob (os.path.join('.','drqman','*.c'))
 gtkcflags = os.popen('pkg-config --cflags gtk+-2.0').read()
 gtklibs = os.popen('pkg-config --libs gtk+-2.0').read()
 env_gtkstuff = env.Copy ()
