@@ -56,7 +56,7 @@ def get_wordsize_flags():
 def get_define_macros():
   get_wordsize_flags()
   print "Platform is: ",sys.platform
-  l_define_macros=[('COMM_REPORT',None),('_GNU_SOURCE',None)]
+  l_define_macros=[('COMM_REPORT',None),('_GNU_SOURCE',None),('_NO_COMPUTER_SEMAPHORES',None),('_NO_COMPUTER_POOL_SEMAPHORES',None)]
   if sys.platform == "linux2":
     l_define_macros = l_define_macros + [('__LINUX',None)]
   elif sys.platform == "darwin":
