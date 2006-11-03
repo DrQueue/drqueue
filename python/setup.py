@@ -56,7 +56,7 @@ def get_wordsize_flags():
 def get_define_macros():
   get_wordsize_flags()
   print "Platform is: ",sys.platform
-  l_define_macros=[('COMM_REPORT',None),('_GNU_SOURCE',None)]
+  l_define_macros=[('COMM_REPORT',None),('_GNU_SOURCE',None),('_NO_COMPUTER_POOL_SEMAPHORES',None),('_NO_COMPUTER_SEMAPHORES',None)]
   if sys.platform == "linux2":
     l_define_macros = l_define_macros + [('__LINUX',None)]
   elif sys.platform == "darwin":
@@ -87,6 +87,14 @@ def get_swig_flags():
 setup(
     name = "drqueue",
     version = "0.64.2c0",
+    # metadata for upload to PyPI
+    # could also include long_description, download_url, classifiers, etc.
+    author = "Jorge Daza",
+    author_email = "jorge@drqueue.org",
+    description = "DrQueue bindings with Python",
+    license = "GPL General Public License version 2",
+    url = "http://drqueue.org/",
+
     packages = find_packages(),
 
     ext_modules=[Extension('_drqueue', ['drqueue.i'] + get_abspath_glob(os.path.join('..','libdrqueue','*.c')),
@@ -96,8 +104,6 @@ setup(
 
     py_modules = ['drqueue',],
 
-    # Project uses reStructuredText, so ensure that the docutils get
-    # installed or upgraded on the target machine
     #install_requires = ['docutils>=0.3'],
 
     package_data = {
@@ -105,13 +111,5 @@ setup(
         '': ['*.txt', '*.rst'],
     },
 
-    # metadata for upload to PyPI
-    author = "Jorge Daza",
-    author_email = "jorge@drqueue.org",
-    description = "DrQueue bindings with Python",
-    license = "GPL General Public License version 2",
-    url = "http://drqueue.org/",
-
-    # could also include long_description, download_url, classifiers, etc.
 )
 
