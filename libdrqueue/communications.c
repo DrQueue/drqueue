@@ -670,7 +670,8 @@ recv_job (int sfd, struct job *job) {
   return 1;
 }
 
-int send_job (int sfd, struct job *job) {
+int
+send_job (int sfd, struct job *job) {
   /* This function _sets_ frame_info = NULL before sending */
   struct job bswapped;
   void *buf = &bswapped;
