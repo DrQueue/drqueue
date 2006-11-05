@@ -65,8 +65,8 @@ int recv_frame_info (int sfd, struct frame_info *fi);
 int send_frame_info (int sfd, struct frame_info *fi);
 int recv_autoenable (int sfd, struct autoenable *ae);
 int send_autoenable (int sfd, struct autoenable *ae);
-int send_blocked_host (int sdf, struct blocked_host *bh);
-int recv_blocked_host (int sdf, struct blocked_host *bh);
+int send_blocked_host (int sdf, struct blocked_host *bh, int do_checksize);
+int recv_blocked_host (int sdf, struct blocked_host *bh, int do_checksize);
 int send_computer_pools (int sfd, struct computer_limits *cl,uint8_t use_local_pools);
 int recv_computer_pools (int sfd, struct computer_limits *cl);
 int send_envvars (int sfd, struct envvars *envvars);
@@ -85,5 +85,7 @@ int read_16b (int sfd, void *data);
 int dr_read (int fd, char *buf, uint32_t len);
 int dr_write (int fd, char *buf, uint32_t len);
 
+int send_blocked_host_list (int sfd, struct blocked_host *bh, uint32_t size, int do_checksize);
+int recv_blocked_host_list (int sfd, struct blocked_host **bh, uint32_t *size, int do_checksize);
 
 #endif /* _COMMUNICATIONS_H_ */

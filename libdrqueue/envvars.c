@@ -62,7 +62,6 @@ envvars_free (struct envvars *envvars) {
       rv = 0;
     }
   }
-
   // everything should be fine, so default correct values need to be
   // assigned
   envvars_init (envvars);

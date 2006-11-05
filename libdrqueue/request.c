@@ -2573,7 +2573,7 @@ request_job_list_blocked_host (uint32_t ijob, struct blocked_host **bh, uint16_t
 
   tbh = *bh;
   for (i=0;i<*nblocked;i++) {
-    recv_blocked_host(sfd,tbh);
+    recv_blocked_host(sfd,tbh,1);
     tbh++;
   }
 
@@ -2606,7 +2606,7 @@ void handle_r_r_joblstblkhost (int sfd, struct database *wdb, int icomp, struct 
 
   for (i=0;i<wdb->job[ijob].nblocked;i++) {
     // log_master (L_DEBUG,"Listing: %s",nbh[i].name);
-    send_blocked_host (sfd,&nbh[i]);
+    send_blocked_host (sfd,&nbh[i],1);
   }
 
   log_master(L_DEBUG,"Exiting handle_r_r_joblstblkhost");
