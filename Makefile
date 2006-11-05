@@ -79,12 +79,15 @@ endif
 
 BASE_C_TOOLS = slave master requeue jobfinfo blockhost ctask cjob jobinfo compinfo
 BASE_CXX_TOOLS = sendjob
+BASE_C_GUI = drqman
 
 all: base drqman/drqman
 
 drqman: drqman/drqman
 
 base: $(BASE_C_TOOLS) $(BASE_CXX_TOOLS)
+
+gui: $(BASE_GUI)
 
 install: miniinstall $(systype)_install 
 

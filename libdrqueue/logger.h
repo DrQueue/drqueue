@@ -42,6 +42,8 @@
 #define L_DEBUG2 4
 #define L_DEBUG3 5
 
+#define MAXLOGLINELEN 16384
+
 typedef enum {
   DRQ_LOG_TOOL_UNKNOWN,
   DRQ_LOG_TOOL_MASTER,
@@ -60,7 +62,6 @@ extern struct task *logger_task;
 extern struct computer *logger_computer;
 
 void log_auto (int level, char *fmt, ...);
-void log_auto_job (struct job *job, int level, char *fmt, ...);
 
 void log_slave_task (struct task *task,int level,char *fmt,...);
 void log_slave_computer (int level, char *fmt, ...);
