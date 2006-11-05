@@ -199,7 +199,7 @@ job_delete (struct job *job) {
       drerrno_system = errno;
       drerrno = DRE_RMSHMEM;
       // FIXME: this function is not called only by the master.
-      log_auto_job(job,L_ERROR,"job_delete(): could not remove frame shared memory. (%s)",strerror(drerrno_system));
+      log_auto(L_ERROR,"job_delete(): could not remove frame shared memory. (%s)",strerror(drerrno_system));
     }
     job->fishmid = (int64_t)-1;
     job->frame_info = NULL;
@@ -209,7 +209,7 @@ job_delete (struct job *job) {
     if (shmctl ((int)job->bhshmid,IPC_RMID,NULL) == -1) {
       drerrno_system = errno;
       drerrno = DRE_RMSHMEM;
-      log_auto_job(job,L_ERROR,"job_delete(): could not remove blocked hosts shared memory. (%s)",strerror(drerrno_system));
+      log_auto(job,L_ERROR,"job_delete(): could not remove blocked hosts shared memory. (%s)",strerror(drerrno_system));
     }
     job->bhshmid = (int64_t)-1;
     job->nblocked = 0;
@@ -1297,7 +1297,6 @@ job_block_host_remove_by_name (struct job *job, char *name) {
   int64_t nbhshmid;
   int i;
 
-
   if (!job_block_host_exists_by_name (job,name)) {
     return 1;
   }
@@ -1322,7 +1321,7 @@ job_block_host_remove_by_name (struct job *job, char *name) {
         memcpy ((void*)tnbh,(void*)&obh[i],sizeof(*obh));
         tnbh++;
       } else {
-        log_auto_job(job,L_INFO,"Deleted host %s from block list.",obh[i].name);
+        log_auto(L_INFO,"Deleted host %s from block list.",obh[i].name);
       }
     }
     // Once copied all but the removed host we can detach and remove the old shared memory

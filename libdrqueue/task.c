@@ -117,7 +117,9 @@ task_is_running (struct task *task) {
   }
   if (task->used != 1) {
     if (task->used > 1) {
+      logger_task = task;
       log_auto (L_WARNING,"task_is_running(): task.used > 1 ! (value: %u)",task->used);
+      logger_task = NULL;
     } else {
       // task->used == 0
       //empty
@@ -132,8 +134,10 @@ task_is_running (struct task *task) {
     case TASKSTATUS_LOADING:
       break;
     default:
+      logger_task = task;
       log_auto (L_WARNING,"task_is_running(): unknown task status %u (Str: %s)",
 		task->status,task_status_string(task->used));
+      logger_task = NULL;      
     }
   }
   
