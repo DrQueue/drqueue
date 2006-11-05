@@ -17,23 +17,24 @@ systype := $(shell bash -c "source ../bin/shlib; get_env_kernel")
 machinetype := $(shell bash -c "source ../bin/shlib; get_env_machine")
 endif
 
-CPPFLAGS += -D_NO_COMPUTER_SEMAPHORES -D_NO_COMPUTER_POOL_SEMAPHORES -D_GNU_SOURCE -DCOMM_REPORT -I.. -I../libdrqueue
-CFLAGS += -g -O0 -Wall 
-CXXFLAGS += $(CFLAGS) $(CPPFLAGS) -D__CPLUSPLUS
+CPPFLAGS ?= -D_NO_COMPUTER_SEMAPHORES -D_NO_COMPUTER_POOL_SEMAPHORES -D_GNU_SOURCE -DCOMM_REPORT -I.. -I../libdrqueue
+CFLAGS ?= -g -O0 -Wall $(ARCHFLAGS)
+LDFLAGS ?= $(CFLAGS)
+CXXFLAGS ?= $(CFLAGS) $(CPPFLAGS) -D__CPLUSPLUS
 
 ifeq ($(systype),Linux)
  CPPFLAGS += -D__LINUX
  CFLAGS += `pkg-config --cflags gtk+-2.0`
  LDFLAGS += `pkg-config --libs gtk+-2.0`
  ifeq ($(machinetype),i686)
-  CFLAGS += -march=i686 -m32
+  ARCHFLAGS ?= -march=i686 -m32
  else
   ifeq ($(machinetype),x86_64)
    CHOST ?= x86_64-pc-linux-gnu
-   CFLAGS += -march=nocona -m64 -pipe
+   ARCHFLAGS ?= -march=x86-64 -m64 -pipe
   endif
  endif
- CXXFLAGS += ${CFLAGS}
+ CXXFLAGS += $(CFLAGS)
 else 
  ifeq ($(systype),IRIX)
   CPPFLAGS += -D__IRIX
