@@ -292,11 +292,6 @@ void set_signal_handlers (void) {
   sigemptyset (&ignore.sa_mask);
   ignore.sa_flags = 0;
   sigaction (SIGHUP, &ignore, NULL); // So we keep running as a daemon
-#ifdef __OSX
-  // sigaction (SIGCHLD, &ignore, NULL);
-#else
-  // sigaction (SIGCLD, &ignore, NULL);
-#endif
 }
 
 
@@ -366,7 +361,6 @@ void clean_out (int signal, siginfo_t *info, void *data) {
   database_save(wdb);
 
 #ifdef COMM_REPORT
-
   tstop = time(NULL);
   ttotal = tstop - tstart;
   printf ("Report of communications:\n");
