@@ -39,7 +39,12 @@
 #include "job.h"
 
 #define REVISION "$Rev$"
-#define VERSION  "0.64.2c0"
+#define VERSION_MAJOR  0
+#define VERSION_MINOR  64
+#define VERSION_PATCH  2
+#define VERSION_POST   0
+#define VERSION_PRE    1
+
 
 int common_environment_check (void);
 void show_version (char **argv);
@@ -52,6 +57,10 @@ int common_date_check (void);
 
 /* Mail notifications */
 void mn_job_finished (struct job *job);
+
+char *get_version_prepost ();
+char *get_revision_string ();
+char *get_version_complete ();
 
 #endif /* _COMMON_H_ */
 
