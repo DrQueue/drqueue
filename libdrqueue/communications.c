@@ -588,15 +588,18 @@ int recv_envvars (int sfd, struct envvars *envvars) {
   return 1;
 }
 
-int recv_job (int sfd, struct job *job) {
+int
+recv_job (int sfd, struct job *job) {
 
   // We should empty all locally reserved structures
-  envvars_free(&job->envvars);
+  job_delete (job);
 
   if (!dr_read(sfd,(char*)job,sizeof (struct job))) {
     return 0;
   }
   
+  job_fix_received_invalid (job);
+
   // Environment variables
   if (!recv_envvars (sfd,&job->envvars)) {
     fprintf (stderr,"ERROR: recv_job() there was an error while receiving envvars (%s)\n",drerrno_str());
@@ -608,15 +611,6 @@ int recv_job (int sfd, struct job *job) {
   job->id = ntohl (job->id);
   job->nprocs = ntohs (job->nprocs);
   job->status = ntohs (job->status);
-
-  // Frame info
-  job->frame_info = NULL;
-  job->fishmid = (int64_t)-1;
-
-  // Blocked hosts
-  job->blocked_host = NULL;
-  job->bhshmid = (int64_t)-1;
-  job->nblocked = 0;
 
   /* Koj Stuff */
   job->koj = ntohs (job->koj);
@@ -763,9 +757,18 @@ int send_job (int sfd, struct job *job) {
 
 int recv_task (int sfd, struct task *task) {
   void *buf;
+  uint32_t datasize;
 
-  buf = task;   /* So when copying to buf we're really copying into job */
-  if (!dr_read(sfd,(char*)buf,sizeof(struct task))) {
+  buf = task;   /* So when copying to buf we're really copying into
+		   job */
+  datasize = sizeof (*task);
+  if (!check_recv_datasize(sfd,datasize)) {
+    // TODO
+    return 0;
+  }
+
+  task_init (task);
+  if (!dr_read(sfd,(char*)buf,datasize)) {
     return 0;
   }
 
@@ -780,16 +783,22 @@ int recv_task (int sfd, struct task *task) {
   task->frame_end   = ntohl (task->frame_end);
   task->frame_step  = ntohl (task->frame_step);
   task->block_size  = ntohl (task->block_size);
-  //task->frame_pad   = ntohs (task->frame_pad); // it's an uint8_t
   task->pid         = ntohl (task->pid);
   task->exitstatus  = ntohl (task->exitstatus);
 
   return 1;
 }
 
-int send_task (int sfd, struct task *task) {
+int
+send_task (int sfd, struct task *task) {
   struct task bswapped;
   void *buf = &bswapped;
+  uint32_t datasize = sizeof (*task);
+
+  if (!check_send_datasize(sfd,datasize)) {
+    // TODO
+    return 0;
+  }
 
   /* We make a copy coz we need to modify the values */
   memcpy (buf,task,sizeof(bswapped));
@@ -803,11 +812,10 @@ int send_task (int sfd, struct task *task) {
   bswapped.frame_end   = htonl (bswapped.frame_end);
   bswapped.frame_step  = htonl (bswapped.frame_step);
   bswapped.block_size  = htonl (bswapped.block_size);
-  //bswapped.frame_pad   = htonl (bswapped.frame_pad);
   bswapped.pid         = htonl (bswapped.pid);
   bswapped.exitstatus  = htonl (bswapped.exitstatus);
 
-  if (!dr_write (sfd,(char*)buf,sizeof(struct task))) {
+  if (!dr_write (sfd,(char*)buf,datasize)) {
     return 0;
   }
 
@@ -1215,7 +1223,15 @@ int recv_autoenable (int sfd, struct autoenable *ae) {
 }
 
 int send_blocked_host (int sfd, struct blocked_host *bh) {
-  if (!dr_write(sfd,(char*)bh,sizeof (struct blocked_host))) {
+  uint32_t datasize;
+  datasize = sizeof (*bh);
+
+  if (!check_send_datasize(sfd,datasize)) {
+    // TODO: log
+    return 0;
+  }
+
+  if (!dr_write(sfd,(char*)bh,datasize)) {
     return 0;
   }
 
@@ -1223,7 +1239,15 @@ int send_blocked_host (int sfd, struct blocked_host *bh) {
 }
 
 int recv_blocked_host (int sfd, struct blocked_host *bh) {
-  if (!dr_read (sfd,(char*)bh,sizeof (struct blocked_host))) {
+  uint32_t datasize;
+  datasize = sizeof (*bh);
+
+  if (!check_recv_datasize(sfd,datasize)) {
+    // TODO: log
+    return 0;
+  }
+
+  if (!dr_read (sfd,(char*)bh,datasize)) {
     return 0;
   }
 

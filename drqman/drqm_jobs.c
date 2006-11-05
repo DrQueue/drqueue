@@ -1311,7 +1311,7 @@ static void djd_bok_pressed (GtkWidget *button, struct drqm_jobs_info *info) {
       drqm_request_job_delete (info->jobs[info->row].id);
     } else {
       for (;sel;sel = sel->next) {
-        struct job *job = (struct job *)gtk_clist_get_row_data(GTK_CLIST(info->clist),(gint)sel->data);
+        struct job *job = (struct job *)gtk_clist_get_row_data(GTK_CLIST(info->clist),GPOINTER_TO_INT(sel->data));
         drqm_request_job_delete (job->id);
       }
     }

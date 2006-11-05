@@ -347,6 +347,11 @@ int priority_job_compare (const void *a,const void *b);
 
 char *job_koj_string (struct job *job);
 
+
+int job_block_host_add_by_name (struct job *job, char *name);
+int job_block_host_remove_by_name (struct job *job, char *name);
+int job_block_host_exists_by_name (struct job *job, char *name);
+
 #ifdef __CPLUSPLUS
 }
 #endif

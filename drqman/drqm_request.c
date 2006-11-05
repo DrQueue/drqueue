@@ -49,8 +49,8 @@ drqm_request_joblist (struct drqm_jobs_info *info) {
     info->njobs = njobs;
     info->jobs = tjob;
   } else {
-    info->jobs = NULL;
     info->njobs = 0;
+    info->jobs = NULL;
   }
 }
 
