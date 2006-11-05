@@ -58,9 +58,9 @@ int common_date_check (void);
 /* Mail notifications */
 void mn_job_finished (struct job *job);
 
-char *get_version_prepost ();
-char *get_revision_string ();
-char *get_version_complete ();
+char *get_version_prepost (void);
+char *get_revision_string (void);
+char *get_version_complete (void);
 
 #endif /* _COMMON_H_ */
 

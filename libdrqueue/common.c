@@ -255,7 +255,7 @@ void set_default_env(void) {
 char *
 get_revision_string () {
   char *duprev = strdup(REVISION);
-  char *number;
+  char *number = duprev;
   char *p = duprev;
   char *e = p + strlen(REVISION);
 
@@ -285,7 +285,7 @@ get_version_prepost () {
   } else if (VERSION_POST > 0) {
     snprintf (buf,BUFFERLEN,"p%u",VERSION_POST);
   } else {
-    sprintf (buf,"");
+    sprintf (buf,"%s","");
   }
   return buf;
 }
