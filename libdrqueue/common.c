@@ -32,6 +32,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <string.h>
+#include <ctype.h>
 
 int common_environment_check (void) {
   /* This function checks the environment AND the directory structure */
@@ -254,4 +255,18 @@ void set_default_env(void) {
   }
 }
 
+char *
+get_revision_string () {
+  char *number;
+  char *p = REVISION;
+  char *e = p + strlen(REVISION);
 
+  while ((p!=e) && !isdigit(p)) {
+    p++;
+  }
+  if (p!=e) {
+    number = p;
+  }
+
+  return number;
+}

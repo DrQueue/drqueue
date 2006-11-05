@@ -71,7 +71,7 @@ int main (int argc, char *argv[]) {
 #endif
 
   logtool = DRQ_LOG_TOOL_MASTER;
-  log_auto (L_INFO,"Starting master...");
+  log_auto (L_INFO,"Starting master... (Revision: %s)",get_revision_string());
   master_get_options (&argc,&argv,&force);
   
   // Set some standard defaults based on DRQUEUE_ROOT (must be already set!)
