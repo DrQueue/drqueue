@@ -302,7 +302,6 @@ database_job_load_frames (int sfd,struct job *job) {
 int
 database_job_save_blocked_hosts (int sfd, struct job *job) {
   struct blocked_host *obh;
-  uint32_t nblocked;
 
   if (!job) {
     return 0;

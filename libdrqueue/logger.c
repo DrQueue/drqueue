@@ -58,9 +58,10 @@ struct computer *logger_computer = NULL;
 /* One important detail about the logger functions is that all of them */
 /* add the trailing newline (\n). So the message shouldn't have it. */
 
-FILE *log_slave_open_task (struct task *task);
-FILE *log_slave_open_computer (char *name);
-FILE *log_master_open (void);
+FILE *log_slave_open_task (int level, struct task *task);
+FILE *log_slave_open_computer (int level, char *name);
+FILE *log_master_open (int level);
+
 int log_job_path_get (uint32_t jobid,char *path,int pathlen);
 int log_task_filename_get (struct task *task, char *path, int pathlen);
 
@@ -90,11 +91,11 @@ log_slave_task (struct task *task,int level,char *fmt,...) {
   buf[strlen(buf)-1] = '\0';
 
   if (!logonscreen) {
-    f_log = log_slave_open_task (task);
+    f_log = log_slave_open_task (level,task);
     if (!f_log)
-      f_log = stdout;
+      f_log = stderr;
   } else {
-    f_log = stdout;
+    f_log = stderr;
   }
 
   if (loglevel < L_DEBUG) {
@@ -113,11 +114,15 @@ log_slave_task (struct task *task,int level,char *fmt,...) {
   }
 }
 
-FILE *log_slave_open_task (struct task *task) {
+FILE *log_slave_open_task (int level, struct task *task) {
   FILE *f;
   char filename[BUFFERLEN];
   char dir[BUFFERLEN];
   char *basedir;
+
+  if ((L_OUTMASK & level) | L_ONSCREEN) {
+    return stderr;
+  } 
 
   if ((basedir = getenv("DRQUEUE_LOGS")) == NULL) {
     logonscreen = 1;
@@ -133,7 +138,8 @@ FILE *log_slave_open_task (struct task *task) {
       /* If its because the directory does not exist we try creating it first */
       if (mkdir (dir,0775) == -1) {
         logonscreen = 1;
-        log_auto (L_ERROR,"log_slave_open_task(): couldn't create directory for task logging '%s', logging on the screen. (%s)",dir,strerror(errno));
+        log_auto (L_ERROR,"log_slave_open_task(): couldn't create directory for task logging '%s', "
+		  "logging on the screen. (%s)",dir,strerror(errno));
         return f;
       }
       log_auto (L_INFO,"log_slave_open_task(): directory for task logs has been created '%s'.",dir);
@@ -178,11 +184,11 @@ void log_slave_computer (int level, char *fmt, ...) {
   }
 
   if (!logonscreen) {
-    f_log = log_slave_open_computer (name);
+    f_log = log_slave_open_computer (level,name);
     if (!f_log)
-      f_log = stdout;
+      f_log = stderr;
   } else {
-    f_log = stdout;
+    f_log = stderr;
   }
 
   if (loglevel < L_DEBUG)
@@ -194,10 +200,14 @@ void log_slave_computer (int level, char *fmt, ...) {
     fclose (f_log);
 }
 
-FILE *log_slave_open_computer (char *name) {
+FILE *log_slave_open_computer (int level, char *name) {
   FILE *f;
   char filename[BUFFERLEN];
   char *basedir;
+
+  if ((L_OUTMASK & level) | L_ONSCREEN) {
+    return stderr;
+  } 
 
   if ((basedir = getenv("DRQUEUE_LOGS")) == NULL) {
     fprintf (stderr,"Environment variable DRQUEUE_LOGS not set. Aborting...\n");
@@ -234,11 +244,11 @@ void log_master_job (struct job *job, int level, char *fmt, ...) {
   buf[strlen(buf)-1] = '\0';
 
   if (!logonscreen) {
-    f_log = log_master_open ();
+    f_log = log_master_open (level);
     if (!f_log)
-      f_log = stdout;
+      f_log = stderr;
   } else {
-    f_log = stdout;
+    f_log = stderr;
   }
 
   if (loglevel < L_DEBUG)
@@ -269,11 +279,11 @@ void log_master_computer (struct computer *computer, int level, char *fmt, ...) 
   buf[strlen(buf)-1] = '\0';
 
   if (!logonscreen) {
-    f_log = log_master_open ();
+    f_log = log_master_open (level);
     if (!f_log)
-      f_log = stdout;
+      f_log = stderr;
   } else {
-    f_log = stdout;
+    f_log = stderr;
   }
 
   if (loglevel < L_DEBUG)
@@ -304,11 +314,11 @@ void log_master (int level,char *fmt, ...) {
   buf[strlen(buf)-1] = '\0';
 
   if (!logonscreen) {
-    f_log = log_master_open ();
+    f_log = log_master_open (level);
     if (!f_log)
-      f_log = stdout;
+      f_log = stderr;
   } else {
-    f_log = stdout;
+    f_log = stderr;
   }
 
   if (loglevel < L_DEBUG) {
@@ -321,10 +331,14 @@ void log_master (int level,char *fmt, ...) {
     fclose (f_log);
 }
 
-FILE *log_master_open (void) {
+FILE *log_master_open (int level) {
   FILE *f;
   char filename[BUFFERLEN];
   char *basedir;
+
+  if ((L_OUTMASK & level) | L_ONSCREEN) {
+    return stderr;
+  }
 
   if ((basedir = getenv("DRQUEUE_LOGS")) == NULL) {
     fprintf (stderr,"Environment variable DRQUEUE_LOGS not set. Aborting...\n");
@@ -586,8 +600,6 @@ void log_auto (int level, char *fmt, ...) {
   // this will be the way to send log messages when no one is known
   // for sure.
   FILE *f_log;
-  char hostname_buf[MAXNAMELEN];
-  char *hostname_ptr = NULL;
   char time_buf[BUFFERLEN];
   char job_buf[BUFFERLEN];
   char task_buf[BUFFERLEN];
@@ -598,21 +610,33 @@ void log_auto (int level, char *fmt, ...) {
 
   va_list ap;
 
-  if (level > loglevel)
+  if ((L_LEVELMASK & level) > loglevel)
     return;
+
+  switch (logtool) {
+  case DRQ_LOG_TOOL_MASTER:
+    f_log = log_master_open(level);
+    break;
+  case DRQ_LOG_TOOL_SLAVE:
+    if (logger_computer) 
+      f_log = log_slave_open_computer(level,logger_computer->hwinfo.name);
+    break;
+  case DRQ_LOG_TOOL_SLAVE_TASK:
+    if (logger_task)
+      f_log = log_slave_open_task(level,logger_task);
+    break;
+  default:
+    f_log = stderr;
+  }
+
+  if (logonscreen || !f_log) {
+    f_log = stderr;
+  }
 
   va_start (ap,fmt);
   vsnprintf (origmsg,MAXLOGLINELEN,fmt,ap);
   va_end (ap);
 
-  if (hostname_ptr == NULL) {
-    if (gethostname(hostname_buf,MAXNAMELEN-1) == -1) {
-      strcpy (hostname_buf,"UNKNOWN_hostname.error_on_gethostname");
-    }
-    hostname_ptr = hostname_buf;
-  }
-
-  f_log = stderr;
   log_get_time_str (time_buf,BUFFERLEN);
   snprintf (bkpmsg,MAXLOGLINELEN,"%s :",time_buf); // Time and pid
   strcpy(msg,bkpmsg);

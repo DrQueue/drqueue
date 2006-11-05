@@ -35,12 +35,18 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#define L_ERROR 0
-#define L_WARNING 1
-#define L_INFO 2
-#define L_DEBUG 3
-#define L_DEBUG2 4
-#define L_DEBUG3 5
+
+#define L_ERROR         0
+#define L_WARNING       1
+#define L_INFO          2
+#define L_DEBUG         3
+#define L_DEBUG2        4
+#define L_DEBUG3        5
+
+#define L_LEVELMASK  0x00ff
+#define L_OUTMASK    0xff00
+
+#define L_ONSCREEN    1<<15
 
 #define MAXLOGLINELEN 16384
 
