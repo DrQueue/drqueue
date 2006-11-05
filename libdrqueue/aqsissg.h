@@ -51,6 +51,8 @@
 extern "C" {
 #endif
 
+#pragma pack(push,1)
+
   struct aqsissgi {  /* Aqsis Script Generator Info */
     char scene[BUFFERLEN];
     char scriptdir[BUFFERLEN];
@@ -63,6 +65,8 @@ extern "C" {
     char verbose;
     char custom_beep;
   };
+
+#pragma pack(pop)
 
   char *aqsissg_create (struct aqsissgi *info);
   char *aqsissg_default_script_path (void);

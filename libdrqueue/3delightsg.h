@@ -24,13 +24,13 @@
 #ifndef _3DELIGHTSG_H_
 #define _3DELIGHTSG_H_
 
-#pragma pack(push,1)
-
 #include "constants.h"
 
 #ifdef __CPLUSPLUS
 extern "C" {
 #endif
+
+#pragma pack(push,1)
 
   struct threedelightsgi {  /* Mental Ray Script Generator Info */
     char scene[BUFFERLEN];
@@ -38,13 +38,13 @@ extern "C" {
     char file_owner[BUFFERLEN];
   };
 
+#pragma pack(pop)
+
   char *threedelightsg_create (struct threedelightsgi *info);
   char *threedelightsg_default_script_path (void);
 
 #ifdef __CPLUSPLUS
 }
 #endif
-
-#pragma pack(pop)
 
 #endif /* _3DELIGHTSG_H_ */

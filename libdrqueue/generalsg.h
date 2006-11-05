@@ -36,6 +36,7 @@ extern "C" {
     uid_t uid_owner;
     gid_t gid_owner;
   };
+
 #pragma pack(pop)
 
   char *generalsg_create (struct generalsgi *info);

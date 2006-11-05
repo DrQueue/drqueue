@@ -22,13 +22,13 @@
 #ifndef _AFTEREFFECTSSG_H_
 #define _AFTEREFFECTSSG_H_
 
-#pragma pack(push,1)
-
 #include "constants.h"
 
 #ifdef __CPLUSPLUS
 extern "C" {
 #endif
+
+#pragma pack(push,1)
 
   struct aftereffectssgi {  // After Effects Script Generator Info
     char project[BUFFERLEN];
@@ -36,13 +36,13 @@ extern "C" {
     char scriptdir[BUFFERLEN];
   };
 
+#pragma pack(pop)
+
   char *aftereffectssg_create (struct aftereffectssgi *info);
   char *aftereffectssg_default_script_path (void);
 
 #ifdef __CPLUSPLUS
 }
 #endif
-
-#pragma pack(pop)
 
 #endif // _AFTEREFFECTSSG_H_
