@@ -115,10 +115,7 @@ int common_environment_check (void) {
 }
 
 void show_version (char **argv) {
-  printf ("\nDistributed Rendering Queue\n");
-  printf ("by Jorge Daza Garcia Blanes\n\n");
-  printf ("%s version: %s\n",argv[0],VERSION);
-  printf ("\n");
+  printf ("DrQueue (Version: %s)\n",get_version_complete());
 }
 
 int rmdir_check_str (char *path) {
@@ -257,16 +254,46 @@ void set_default_env(void) {
 
 char *
 get_revision_string () {
+  char *duprev = strdup(REVISION);
   char *number;
-  char *p = REVISION;
+  char *p = duprev;
   char *e = p + strlen(REVISION);
 
-  while ((p!=e) && !isdigit(p)) {
+  while ((p!=e) && !isdigit(*p)) {
     p++;
   }
   if (p!=e) {
+    char *t = e;
     number = p;
+    e=p;
+    while ((e!=t) && isdigit(*e)) {
+      e++;
+    }
+    if (e!=t) {
+      *e = 0 ;
+    }
   }
 
   return number;
+}
+
+char *
+get_version_prepost () {
+  static char buf[BUFFERLEN];
+  if (VERSION_PRE > 0) {
+    snprintf(buf,BUFFERLEN,"c%u",VERSION_PRE);
+  } else if (VERSION_POST > 0) {
+    snprintf (buf,BUFFERLEN,"p%u",VERSION_POST);
+  } else {
+    sprintf (buf,"");
+  }
+  return buf;
+}
+
+char *
+get_version_complete () {
+  static char buffer[BUFFERLEN];
+  snprintf (buffer,BUFFERLEN,"%i.%02i.%i%s-r%s",VERSION_MAJOR,VERSION_MINOR,VERSION_PATCH,
+	    get_version_prepost(),get_revision_string());
+  return buffer;
 }
