@@ -46,7 +46,7 @@
 #define L_LEVELMASK  0x00ff
 #define L_OUTMASK    0xff00
 
-#define L_ONSCREEN    1<<15
+#define L_ONSCREEN    1<<8
 
 #define MAXLOGLINELEN 16384
 

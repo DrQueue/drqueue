@@ -120,7 +120,7 @@ FILE *log_slave_open_task (int level, struct task *task) {
   char dir[BUFFERLEN];
   char *basedir;
 
-  if ((L_OUTMASK & level) | L_ONSCREEN) {
+  if ((L_OUTMASK & level) & L_ONSCREEN) {
     return stderr;
   } 
 
@@ -205,7 +205,7 @@ FILE *log_slave_open_computer (int level, char *name) {
   char filename[BUFFERLEN];
   char *basedir;
 
-  if ((L_OUTMASK & level) | L_ONSCREEN) {
+  if ((L_OUTMASK & level) & L_ONSCREEN) {
     return stderr;
   } 
 
@@ -336,7 +336,7 @@ FILE *log_master_open (int level) {
   char filename[BUFFERLEN];
   char *basedir;
 
-  if ((L_OUTMASK & level) | L_ONSCREEN) {
+  if ((L_OUTMASK & level) & L_ONSCREEN) {
     return stderr;
   }
 

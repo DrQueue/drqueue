@@ -35,6 +35,7 @@
 #include "communications.h"
 #include "drerrno.h"
 #include "logger.h"
+#include "semaphores.h"
 
 void
 database_init (struct database *wdb) {
@@ -153,7 +154,7 @@ database_save (struct database *wdb) {
   char dir[BUFFERLEN];
   char filename[BUFFERLEN];
   int fd;
-  int c;
+  uint32_t c;
 
   // TODO: this all filename guessing should be inside a function
   if ((basedir = getenv ("DRQUEUE_DB")) == NULL) {
@@ -172,12 +173,17 @@ database_save (struct database *wdb) {
   snprintf (filename, BUFFERLEN - 1, "%s\\drqueue.db", dir);
 #endif
   
+  // Lock it
+  semaphore_lock(wdb->semid);
+
   if (database_backup(wdb) == 0) {
     // TODO: filename should be a value returned by a function
     log_auto (L_ERROR,"database_save() : there was an error while backing up old database. NOT SAVING current one. (file: %s)",
-	      filename);
+              filename);
   }
 
+  // TODO:
+  // dbfd = database_file_open(filename)
   log_auto (L_INFO,"Storing DB into: '%s'",filename);
 
   if ((fd = open (filename, O_CREAT | O_TRUNC | O_RDWR, 0664)) == -1) {
@@ -205,15 +211,15 @@ database_save (struct database *wdb) {
     }
   }
 
+  // TODO: database_header_save()
   hdr.magic = DB_MAGIC;
   hdr.version = database_version_id();
   hdr.job_size = MAXJOBS;
-
   write_32b (fd, &hdr.magic);
   write_32b (fd, &hdr.version);
   write_16b (fd, &hdr.job_size);
 
-  for (c = 0; c < MAXJOBS; c++) {
+  for (c = 0; c < hdr.job_size; c++) {
     logger_job = &wdb->job[c];
     if (!send_job (fd, &wdb->job[c])) {
       // TODO: report
@@ -233,6 +239,9 @@ database_save (struct database *wdb) {
   }
   
   log_auto (L_INFO,"Database saved successfully.");
+
+  semaphore_release(wdb->semid);
+  // Unlock it
 
   return 1;
 }
