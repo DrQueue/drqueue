@@ -362,6 +362,9 @@ void clean_out (int signal, siginfo_t *info, void *data) {
   ignore.sa_flags = 0;
   sigaction (SIGINT, &ignore, NULL);
 
+  log_master (L_INFO,"Saving...");
+  database_save(wdb);
+
 #ifdef COMM_REPORT
 
   tstop = time(NULL);
@@ -377,9 +380,6 @@ void clean_out (int signal, siginfo_t *info, void *data) {
   while ((child_pid = wait (&rc)) != -1) {
     //  printf ("Child arrived ! %i\n",(int)child_pid);
   }
-
-  log_master (L_INFO,"Saving...");
-  database_save(wdb);
 
   log_master (L_INFO,"Cleaning...");
   for (i=0;i<MAXJOBS;i++) {
@@ -441,7 +441,7 @@ void master_consistency_checks (struct database *wdb) {
   log_auto (L_INFO,"master_consistency_checks(): Starting... (PID: %i)",getpid());
 
   while (1) {
-    log_auto (L_DEBUG,"Master consistency checks loop");
+    log_auto (L_DEBUG2,"Master consistency checks loop");
     check_lastconn_times (wdb);
 
     for (i=0;i<MAXJOBS;i++) {

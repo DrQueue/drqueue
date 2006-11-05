@@ -222,18 +222,16 @@ void computer_init (struct computer *computer) {
   //
   computer->used = 0;
   computer_lock_check(computer);
+  computer_limits_init(&computer->limits);
   computer_status_init(&computer->status);
-  computer_pool_init (&computer->limits);
 }
 
 int computer_free (struct computer *computer) {
-  computer->used = 0;
-  computer_status_init(&computer->status);
   if (!computer_pool_free (&computer->limits)) {
     log_auto (L_ERROR,"computer_pool_free() found a problem while freeing computer pool memory. (%s) (%s)\n",
 	      drerrno_str(),strerror(drerrno_system));
   }
-
+  computer_init(computer);
   return 1;
 }
 

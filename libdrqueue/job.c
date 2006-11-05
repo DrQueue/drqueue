@@ -170,6 +170,7 @@ job_init (struct job *job) {
 
   job_shared_frame_info_init (job);
   job_shared_blocked_hosts_init (job);
+  envvars_init(&job->envvars);
 
   job->frame_start = 1;
   job->frame_end = 1;
@@ -183,10 +184,38 @@ job_init (struct job *job) {
 
   job->koj = KOJ_GENERAL;
 
-  // Environment variables Init
-  envvars_init(&job->envvars);
-
   job_limits_init (&job->limits);
+}
+
+int
+job_frame_info_free (struct job *job) {
+  int rv = 1;
+  if (job->fishmid != (int64_t)-1) {
+    if (shmctl ((int)job->fishmid,IPC_RMID,NULL) == -1) {
+      drerrno_system = errno;
+      drerrno = DRE_RMSHMEM;
+      log_auto(L_ERROR,"job_delete(): could not remove frame shared memory. (%s)",strerror(drerrno_system));
+      rv = 0;
+    }
+  }
+  job_shared_frame_info_init (job);
+  return rv;
+}
+
+int
+job_block_host_free (struct job *job) {
+  int rv = 1;
+
+  if (job->bhshmid != (int64_t)-1) {
+    if (shmctl ((int)job->bhshmid,IPC_RMID,NULL) == -1) {
+      drerrno_system = errno;
+      drerrno = DRE_RMSHMEM;
+      log_auto(L_ERROR,"job_delete(): could not remove blocked hosts shared memory. (%s)",strerror(drerrno_system));
+      rv = 0;
+    }
+  }
+  job_shared_blocked_hosts_init(job);
+  return rv;
 }
 
 void
@@ -194,29 +223,8 @@ job_delete (struct job *job) {
   //
   // Deallocates all memory reserved for the job and initializes it.
   //
-  if (job->fishmid != (int64_t)-1) {
-    if (shmctl ((int)job->fishmid,IPC_RMID,NULL) == -1) {
-      drerrno_system = errno;
-      drerrno = DRE_RMSHMEM;
-      // FIXME: this function is not called only by the master.
-      log_auto(L_ERROR,"job_delete(): could not remove frame shared memory. (%s)",strerror(drerrno_system));
-    }
-    job->fishmid = (int64_t)-1;
-    job->frame_info = NULL;
-  }
-
-  if (job->bhshmid != (int64_t)-1) {
-    if (shmctl ((int)job->bhshmid,IPC_RMID,NULL) == -1) {
-      drerrno_system = errno;
-      drerrno = DRE_RMSHMEM;
-      log_auto(job,L_ERROR,"job_delete(): could not remove blocked hosts shared memory. (%s)",strerror(drerrno_system));
-    }
-    job->bhshmid = (int64_t)-1;
-    job->nblocked = 0;
-    job->blocked_host = NULL;
-  }
-
-  // Remove from memory what it could be holding
+  job_frame_info_free (job);
+  job_block_host_free (job);
   envvars_free(&job->envvars);
   
   job_init (job);
@@ -417,7 +425,8 @@ get_blocked_host_shared_memory (uint32_t nhosts) {
   return shmid;
 }
 
-struct blocked_host *attach_blocked_host_shared_memory (int64_t shmid) {
+struct blocked_host *
+attach_blocked_host_shared_memory (int64_t shmid) {
   void *rv;   /* return value */
 
   if ((rv = shmat ((int)shmid,0,0)) == (void *)-1) {
@@ -429,8 +438,9 @@ struct blocked_host *attach_blocked_host_shared_memory (int64_t shmid) {
   return (struct blocked_host *) rv;
 }
 
-void detach_blocked_host_shared_memory (struct blocked_host *bhshp) {
-  if (shmdt((char*)bhshp) == -1) {
+void
+detach_blocked_host_shared_memory (struct blocked_host *bhshp) {
+  if (bhshp && shmdt((char*)bhshp) == -1) {
     drerrno = DRE_RMSHMEM;
     log_master (L_ERROR,"Call to shmdt failed (detach_blocked_host_shared_memory): %s",drerrno_str());
     perror ("shmdt: detach_blocked_host_shared_memory");

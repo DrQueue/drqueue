@@ -1211,6 +1211,8 @@ int send_autoenable (int sfd, struct autoenable *ae) {
 }
 
 int recv_autoenable (int sfd, struct autoenable *ae) {
+
+  // FIXME: check size
   if (!dr_read(sfd,(char*)ae,sizeof(struct autoenable))) {
     return 0;
   }
@@ -1220,13 +1222,78 @@ int recv_autoenable (int sfd, struct autoenable *ae) {
   ae->last = ntohl (ae->last);
 
   return 1;
+} 
+
+int
+send_blocked_host_list (int sfd, struct blocked_host *bh, uint32_t size, int do_checksize) {
+  uint32_t datasize,bssize;
+  struct blocked_host *tbh = bh;
+  int i;
+
+  datasize = sizeof (size);
+  if (do_checksize && !check_send_datasize(sfd,datasize)) {
+    log_auto (L_ERROR,"send_blocked_host_list(): data size mismatch.");
+    return 0;
+  }
+
+  bssize = htonl(size);
+  if (!dr_write(sfd,(char*)&bssize,datasize)) {
+    return 0;
+  }
+
+  for (i=0;i<size;i++) {
+    if (!send_blocked_host(sfd,tbh,do_checksize)) {
+      return 0;
+    }
+    tbh++;
+  }
+
+  return 1;
 }
 
-int send_blocked_host (int sfd, struct blocked_host *bh) {
+int
+recv_blocked_host_list (int sfd, struct blocked_host **bh, uint32_t *size, int do_checksize) {
+  uint32_t datasize;
+  struct blocked_host *tbh;
+  int i;
+
+  datasize = sizeof (*size);
+  if (do_checksize && !check_recv_datasize(sfd,datasize)) {
+    log_auto (L_ERROR,"recv_blocked_host_list(): size mismatch. (%s)",strerror(drerrno_system));
+    return 0;
+  }
+
+  if (!dr_read(sfd,(char*)size,datasize)) {
+    return 0;
+  }
+  *size = ntohl(*size);
+
+  if (*size) {
+    *bh = (struct blocked_host *) malloc (sizeof (struct blocked_host) * *size);
+    if (!*bh) {
+      drerrno_system = errno;
+      return 0;
+    }
+
+    tbh = *bh;
+    for (i=0;i<*size;i++) {
+      if (!recv_blocked_host(sfd,tbh,do_checksize)) {
+	log_auto (L_ERROR,"recv_blocked_host_list(): error receiving blocked host '%i'. (%s)",i,strerror(drerrno_system));
+	return 0;
+      }
+      tbh++;
+    }
+  }
+
+  return 1;
+}
+
+int
+send_blocked_host (int sfd, struct blocked_host *bh, int do_checksize) {
   uint32_t datasize;
   datasize = sizeof (*bh);
 
-  if (!check_send_datasize(sfd,datasize)) {
+  if (do_checksize && !check_send_datasize(sfd,datasize)) {
     // TODO: log
     return 0;
   }
@@ -1238,11 +1305,11 @@ int send_blocked_host (int sfd, struct blocked_host *bh) {
   return 1;
 }
 
-int recv_blocked_host (int sfd, struct blocked_host *bh) {
+int recv_blocked_host (int sfd, struct blocked_host *bh, int do_checksize) {
   uint32_t datasize;
   datasize = sizeof (*bh);
 
-  if (!check_recv_datasize(sfd,datasize)) {
+  if (do_checksize && !check_recv_datasize(sfd,datasize)) {
     // TODO: log
     return 0;
   }

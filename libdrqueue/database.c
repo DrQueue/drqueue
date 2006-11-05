@@ -78,9 +78,7 @@ database_load (struct database *wdb) {
   char *basedir;
   char filename[BUFFERLEN];
   int fd;
-  int c, d;           /* counters */
-  struct frame_info *fi;
-  int nframes;
+  int c;           /* counters */
 
   // TODO: no filename guessing.
   if ((basedir = getenv ("DRQUEUE_DB")) == NULL) {
@@ -121,31 +119,16 @@ database_load (struct database *wdb) {
   }
 
   for (c = 0; c < hdr.job_size; c++) {
-    recv_job (fd, &wdb->job[c]);
+    job_init(&wdb->job[c]);
+    if (!recv_job (fd, &wdb->job[c])) {
+      // TODO
+      return 0;
+    }
     if (wdb->job[c].used) {
-      nframes = job_nframes (&wdb->job[c]);
-      if (nframes) {
-        if ((wdb->job[c].fishmid = get_frame_shared_memory (nframes)) == (int64_t)-1) {
-          drerrno = DRE_GETSHMEM;
-          close (fd);
-          return 0;
-        }
-        if ((fi = attach_frame_shared_memory (wdb->job[c].fishmid)) == (void *) -1) {
-          drerrno = DRE_ATTACHSHMEM;
-          close (fd);
-          return 0;
-        }
-        for (d = 0; d < nframes; d++) {
-          if (!recv_frame_info (fd, &fi[d])) {
-            /* CHECK : If there is an error we should FREE the allocated shared memory */
-            job_delete(&wdb->job[c]);
-            drerrno = DRE_ERRORREADING;
-            close (fd);
-            return 0;
-          }
-        }
-        detach_frame_shared_memory (fi);
-      }
+      if (!database_job_load_frames(fd,&wdb->job[c]))
+	return 0;
+      if (!database_job_load_blocked_hosts(fd,&wdb->job[c]))
+	return 0;
     }
   }
 
@@ -171,7 +154,6 @@ database_save (struct database *wdb) {
   char filename[BUFFERLEN];
   int fd;
   int c;
-  struct frame_info *fi;
 
   // TODO: this all filename guessing should be inside a function
   if ((basedir = getenv ("DRQUEUE_DB")) == NULL) {
@@ -196,27 +178,27 @@ database_save (struct database *wdb) {
 	      filename);
   }
 
+  log_auto (L_INFO,"Storing DB into: '%s'",filename);
+
   if ((fd = open (filename, O_CREAT | O_TRUNC | O_RDWR, 0664)) == -1) {
     if (errno == ENOENT) {
       /* If its because the directory does not exist we try creating it first */
       if (mkdir (dir, 0775) == -1) {
-        log_master (L_WARNING,
-                    "Could not create database directory. Check permissions: %s",
-                    dir);
+	drerrno_system = errno;
+        log_auto (L_WARNING,"Could not create database directory. Check permissions: %s. (%s)",
+		  dir,strerror(drerrno_system));
         drerrno = DRE_COULDNOTCREATE;
         return 0;
       }
       if ((fd = open (filename, O_CREAT | O_TRUNC | O_RDWR, 0664)) == -1) {
-        log_master (L_WARNING,
-                    "Could not open database file for writing. Check permissions: %s",
-                    filename);
+        log_auto (L_WARNING,"Could not open database file for writing. Check permissions: %s. (%s)",
+                    filename,strerror(drerrno_system));
         drerrno = DRE_COULDNOTCREATE;
         return 0;
       }
     } else {
       /* could not open the file for other reasons */
-      log_master (L_WARNING,
-                  "Could not open database file for writing. Check permissions: %s",
+      log_auto (L_WARNING,"Could not open database file for writing. Check permissions: %s",
                   filename);
       drerrno = DRE_COULDNOTCREATE;
       return 0;
@@ -232,37 +214,151 @@ database_save (struct database *wdb) {
   write_16b (fd, &hdr.job_size);
 
   for (c = 0; c < MAXJOBS; c++) {
+    logger_job = &wdb->job[c];
     if (!send_job (fd, &wdb->job[c])) {
       // TODO: report
+      log_auto (L_ERROR,"could not save job. Phase 1. (%s)",strerror(drerrno_system));
       return 0;
     }
     if (wdb->job[c].used) {
-      int nframes = job_nframes (&wdb->job[c]);
-      int i;
-      if ((fi = attach_frame_shared_memory (wdb->job[c].fishmid)) == (void *) -1) {
-        /* If we fail to attach the frame shared memory we need to save empty frames */
-        /* because we already save the info about the job and then when loading it will try */
-        /* to load the number of frames there specified */
-        struct frame_info fi2;
-        job_frame_info_init (&fi2);
-        for (i = 0; i < nframes; i++) {
-          /* So we save empty frame infos */
-          if (!send_frame_info (fd, &fi2)) {
-            return 0;
-          }
-        }
-      } else {
-        /* We have the frame info attached */
-        for (i = 0; i < nframes; i++) {
-          if (!send_frame_info (fd, &fi[i])) {
-            detach_frame_shared_memory (fi);
-            return 0;
-          }
-        }
-        detach_frame_shared_memory (fi);
+      if (!database_job_save_frames(fd,&wdb->job[c])) {
+	log_auto (L_ERROR,"could not save job frames. Phase 2. (%s)",strerror(drerrno_system));
+	return 0;
+      }
+      if (!database_job_save_blocked_hosts(fd,&wdb->job[c])) {
+	log_auto (L_ERROR,"could not save job blocked hosts. Phase 3. (%s)",strerror(drerrno_system));
+	return 0;
       }
     }
   }
+  
+  log_auto (L_INFO,"Database saved successfully.");
+
+  return 1;
+}
+
+int
+database_job_save_frames (int sfd,struct job *job) {
+  int nframes = job_nframes (job);
+  struct frame_info *fi;
+  int i;
+
+  if ((fi = attach_frame_shared_memory (job->fishmid)) == (void *) -1) {
+    // Store empty frames in an attemp to save other jobs
+    // TODO: Warning CORRUPT
+    struct frame_info fi2;
+    job_frame_info_init (&fi2);
+    for (i = 0; i < nframes; i++) {
+      if (!send_frame_info (sfd, &fi2)) {
+	return 0;
+      }
+    }
+  } else {
+    for (i = 0; i < nframes; i++) {
+      if (!send_frame_info (sfd, &fi[i])) {
+	detach_frame_shared_memory (fi);
+	return 0;
+      }
+    }
+    detach_frame_shared_memory (fi);
+  }
+  return 1;
+}
+
+int
+database_job_load_frames (int sfd,struct job *job) {
+  uint32_t nframes = job_nframes (job);
+  struct frame_info *fi;
+  int d;
+
+  if (nframes) {
+    if ((job->fishmid = get_frame_shared_memory (nframes)) == (int64_t)-1) {
+      drerrno = DRE_GETSHMEM;
+      return 0;
+    }
+    if ((fi = attach_frame_shared_memory (job->fishmid)) == (void *) -1) {
+      drerrno = DRE_ATTACHSHMEM;
+      return 0;
+    }
+    for (d = 0; d < nframes; d++) {
+      if (!recv_frame_info (sfd, &fi[d])) {
+	drerrno = DRE_ERRORREADING;
+	close (sfd);
+	detach_frame_shared_memory(fi);
+	job_delete(job);
+	return 0;
+      }
+    }
+    detach_frame_shared_memory (fi);
+  } else {
+    job->fishmid = -1;
+    job->frame_info = NULL;
+  }
+  
+
+  return 1;
+}
+
+int
+database_job_save_blocked_hosts (int sfd, struct job *job) {
+  struct blocked_host *obh;
+  uint32_t nblocked;
+
+  if (!job) {
+    return 0;
+  }
+  
+  if (job->nblocked) {
+    if ((obh = (struct blocked_host *)attach_blocked_host_shared_memory(job->bhshmid)) == (void*)-1) {
+      return 0;
+    }
+  } else {
+    obh = NULL;
+  }
+
+  if (!send_blocked_host_list(sfd,obh,job->nblocked,0)) {
+    detach_blocked_host_shared_memory(obh);
+    return 0;
+  }
+
+  if (obh) {
+    detach_blocked_host_shared_memory(obh);
+  }
+
+  return 1;
+}
+ 
+int
+database_job_load_blocked_hosts (int sfd, struct job *job) {
+  struct blocked_host *obh,*tbh;
+  int64_t bhshmid = -1;
+  uint32_t nblocked = 0;
+  
+  if (!job) {
+    return 0;
+  }
+    
+  if (!recv_blocked_host_list(sfd,&obh,&nblocked,0)) {
+    return 0;
+  }
+
+  if (nblocked) {
+    if ((bhshmid = get_blocked_host_shared_memory(nblocked)) == (int64_t)-1) {
+      return 0;
+    }
+
+    if ((tbh = attach_blocked_host_shared_memory(bhshmid)) == (void*)-1) {
+      return 0;
+    }
+
+    memcpy (tbh,obh,sizeof(*obh)*nblocked);
+    free (obh);
+    detach_blocked_host_shared_memory(tbh);
+  }
+
+  job->bhshmid = bhshmid;
+  job->nblocked = nblocked;
+  job->blocked_host = NULL;
 
   return 1;
 }
