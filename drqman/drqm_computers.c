@@ -25,6 +25,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <sys/types.h>
+#include <stdint.h>
 
 #include "drqman.h"
 #include "drqm_request.h"
@@ -248,7 +250,8 @@ void drqm_update_computerlist (struct drqm_computers_info *info) {
     gtk_clist_set_row_data (GTK_CLIST(info->clist),i,(gpointer)info->computers[i].hwinfo.name);
 
     // We don't need the pool any more
-    computer_pool_free(&info->computers[i].limits);
+    // ----TESTING----
+    //computer_pool_free(&info->computers[i].limits);
   }
   gtk_clist_thaw(GTK_CLIST(info->clist));
 
@@ -697,9 +700,9 @@ cdd_update (GtkWidget *w, struct drqm_computers_info *info) {
       itaskp = NULL;
       itaskp = gtk_clist_get_row_data(GTK_CLIST(info->cdd.clist),row);
       if (!itaskp) {
-	log_auto (L_DEBUG,"cdd_update() : computer row doesn't returned NULL when getting it's data. Allocating memory. (row = %i)",
+	log_auto (L_DEBUG,"cdd_update() : computer row returned NULL when getting it's data. Allocating memory. (row = %i)",
 		  row);
-	itaskp = (uint16_t*) malloc (sizeof(uint16_t));
+	itaskp = (uint16_t*) malloc (sizeof(*itaskp));
 	if (!itaskp) {
 	  perror ("ERROR: no memory for itask pointer");
 	  // CHECK: does it free shared memory on exit ?
@@ -916,7 +919,7 @@ static void dtk_bok_pressed (GtkWidget *button,struct drqm_computers_info *info)
   }
 
   for (;sel;sel = sel->next) {
-    itaskp = (uint16_t*)gtk_clist_get_row_data(GTK_CLIST(info->cdd.clist),(gint)sel->data);
+    itaskp = (uint16_t*)gtk_clist_get_row_data(GTK_CLIST(info->cdd.clist),GPOINTER_TO_INT(sel->data));
     if (itaskp != NULL) {
       drqm_request_slave_task_kill (info->computers[info->row].hwinfo.name,*itaskp);
       /*   printf ("Killing task: %i on computer: %s\n",itask,info->computers[info->row].hwinfo.name); */
@@ -1217,7 +1220,7 @@ static void EnableComputers (GtkWidget *button,struct drqm_computers_info *info)
   }
 
   for (;sel;sel = sel->next) {
-    name = (char*) gtk_clist_get_row_data(GTK_CLIST(info->clist),(gint)sel->data);
+    name = (char*) gtk_clist_get_row_data(GTK_CLIST(info->clist),GPOINTER_TO_INT(sel->data));
     drqm_request_slave_limits_enabled_set(name,1);
   }
 
@@ -1233,7 +1236,7 @@ static void DisableComputers (GtkWidget *button,struct drqm_computers_info *info
   }
 
   for (;sel;sel = sel->next) {
-    name = (char*) gtk_clist_get_row_data(GTK_CLIST(info->clist),(gint)sel->data);
+    name = (char*) gtk_clist_get_row_data(GTK_CLIST(info->clist),GPOINTER_TO_INT(sel->data));
     drqm_request_slave_limits_enabled_set(name,0);
   }
 

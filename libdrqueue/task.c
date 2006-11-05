@@ -43,6 +43,7 @@ void task_init (struct task *task) {
   if (!task) {
     return;
   }
+  memset(task,0,sizeof(*task));
   task->used = 0;
   strcpy(task->jobname,"EMPTY");
   task->ijob = 0;

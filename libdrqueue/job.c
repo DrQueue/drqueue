@@ -72,8 +72,10 @@ void job_fix_received_invalid (struct job *job) {
   // warning messages, as well as undefined behaviour.
   job->envvars.evshmid = (int64_t)-1;
   job->envvars.variables = NULL;
+  job->envvars.nvariables = 0;
   job->blocked_host = NULL;
   job->bhshmid = (int64_t)-1;
+  job->nblocked = 0;
   job->frame_info = NULL;
   job->fishmid = (int64_t)-1;
 }
@@ -146,16 +148,28 @@ void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job) {
   log_master_job (&wdb->job[ijob],L_INFO,"Registered on position %i",ijob);
 }
 
-void job_init (struct job *job) {
+void
+job_shared_frame_info_init (struct job *job) {
+  job->frame_info = NULL;
+  job->fishmid = (int64_t)-1;
+}
+
+void
+job_shared_blocked_hosts_init (struct job *job) {
+  job->blocked_host = NULL;
+  job->bhshmid = (int64_t)-1;  // -1 when not reserved
+  job->nblocked = 0;
+}
+
+void
+job_init (struct job *job) {
   // Zeroed
   memset (job,0,sizeof(struct job));
 
   job->used = 0;
-  job->frame_info = NULL;
-  job->fishmid = (int64_t)-1;  // -1 when not reserved
-  job->bhshmid = (int64_t)-1;  // -1 when not reserved
-  job->blocked_host = NULL;
-  job->nblocked = 0;
+
+  job_shared_frame_info_init (job);
+  job_shared_blocked_hosts_init (job);
 
   job->frame_start = 1;
   job->frame_end = 1;
@@ -421,6 +435,7 @@ void detach_blocked_host_shared_memory (struct blocked_host *bhshp) {
     log_master (L_ERROR,"Call to shmdt failed (detach_blocked_host_shared_memory): %s",drerrno_str());
     perror ("shmdt: detach_blocked_host_shared_memory");
   }
+  bhshp = NULL;
 }
 
 int64_t get_frame_shared_memory (uint32_t nframes) {
@@ -586,8 +601,10 @@ void job_update_info (struct database *wdb,uint32_t ijob) {
         wdb->job[ijob].est_finish_time = time(NULL);
         if (wdb->job[ijob].flags & JF_MAILNOTIFY)
           mn_job_finished (&wdb->job[ijob]); /* Mail no tification */
-        if (wdb->job[ijob].flags & JF_JOBDELETE)
+        if (wdb->job[ijob].flags & JF_JOBDELETE) {
+	  log_auto (L_INFO,"Deleting job because flag is set");
           job_delete (&wdb->job[ijob]);
+	}
       } else {
         wdb->job[ijob].status = JOBSTATUS_WAITING;
       }
@@ -1184,4 +1201,145 @@ uint32_t job_first_frame_available_no_icomp (struct database *wdb,uint32_t ijob)
   }
 
   return r;
+}
+
+int
+job_block_host_add_by_name (struct job *job, char *name) {
+  struct blocked_host *obh,*nbh;
+  int64_t nbhshmid;
+  struct blocked_host single;
+  int i;
+  
+  if (job->nblocked) {
+    if ((obh = attach_blocked_host_shared_memory (job->bhshmid)) == (void *)-1) {
+      return 0;
+    }
+
+    // TODO: block_host_exists
+    // Search for coincidence
+    for (i = 0; i < job->nblocked; i++) {
+      if (strcmp (obh[i].name,name) == 0) {
+        // Host already on the list of blocked hosts
+        return 1;
+      }
+    }
+  }
+
+  if ((nbhshmid = get_blocked_host_shared_memory (job->nblocked+1)) == (int64_t)-1) {
+    return 0;
+  }
+
+  if ((nbh = attach_blocked_host_shared_memory (nbhshmid)) == (void *)-1) {
+    return 0;
+  }
+
+  if (job->nblocked) {
+    memcpy (nbh,obh,sizeof(struct blocked_host)*job->nblocked);
+    // Once copied we can remove the previous list
+    detach_blocked_host_shared_memory (obh);
+    if (shmctl ((int)job->bhshmid,IPC_RMID,NULL) == -1) {
+      // TODO: log error
+      // ...
+    }
+  }
+
+  job->bhshmid = nbhshmid;
+
+  snprintf(single.name,MAXNAMELEN,"%s",name);
+  // Add to the end of the block list, we use the old nblocked value
+  memcpy (&nbh[job->nblocked],&single,sizeof(single));
+  job->nblocked++;
+
+  return 1;
+}
+
+int
+job_block_host_shared_memory_remove (int64_t shmid) {
+  if (shmctl ((int)shmid,IPC_RMID,NULL) == -1) {
+    drerrno_system = errno;
+    drerrno = DRE_RMSHMEM;
+    return 0;
+  }
+  return 1;
+}
+
+int
+job_block_host_exists_by_name (struct job *job, char *name) {
+  int i;
+  struct blocked_host *obh,*tbh;
+  int exists = 0;
+
+  if (!job->nblocked) {
+    return exists;
+  }
+
+  if ((obh = attach_blocked_host_shared_memory (job->bhshmid)) == (void *)-1) {
+    // TODO
+    return exists;
+  }
+  
+  tbh = obh;
+  for (i=0; i<job->nblocked; i++) {
+    if (strcmp(tbh->name,name) == 0) {
+      exists = 1;
+      break;
+    }
+    tbh++;
+  }
+
+  return exists;
+}
+
+int
+job_block_host_remove_by_name (struct job *job, char *name) {
+  struct blocked_host *obh,*nbh;
+  struct blocked_host *tnbh;
+  int64_t nbhshmid;
+  int i;
+
+
+  if (!job_block_host_exists_by_name (job,name)) {
+    return 1;
+  }
+
+  if (job->nblocked) {
+    if ((obh = attach_blocked_host_shared_memory (job->bhshmid)) == (void *)-1) {
+      // TODO
+      return 0;
+    }
+    if ((nbhshmid = get_blocked_host_shared_memory (sizeof(struct blocked_host)*(job->nblocked-1))) == (int64_t)-1) {
+      // TODO
+      detach_blocked_host_shared_memory(obh);
+      return 0;
+    }
+    if ((nbh = attach_blocked_host_shared_memory (nbhshmid)) == (void *)-1) {
+      job_block_host_shared_memory_remove(nbhshmid);
+      return 0;
+    }
+    tnbh = nbh;
+    for (i=0; i < job->nblocked; i++) {
+      if (strcmp(obh[i].name,name) != 0) {
+        memcpy ((void*)tnbh,(void*)&obh[i],sizeof(*obh));
+        tnbh++;
+      } else {
+        log_auto_job(job,L_INFO,"Deleted host %s from block list.",obh[i].name);
+      }
+    }
+    // Once copied all but the removed host we can detach and remove the old shared memory
+    detach_blocked_host_shared_memory (obh);
+    detach_blocked_host_shared_memory (nbh);
+    if (!job_block_host_shared_memory_remove(job->bhshmid)) {
+      log_auto(L_WARNING,"job_block_host_remove_by_name(): could not remove previous blocked host list. Could be a memory leak."
+	       " (%s)",strerror(drerrno_system));
+    }
+    job->bhshmid = nbhshmid;
+    job->nblocked--;
+    if (job->nblocked == 0) {
+      job_block_host_shared_memory_remove(nbhshmid);
+      job->bhshmid = -1;
+      job->blocked_host = NULL;
+    }
+  }
+
+  return 1;
 }

@@ -8,7 +8,7 @@
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -214,6 +214,14 @@ void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockad
   case R_R_JOBENVVARS:
     log_master (L_DEBUG,"Request job environment variables");
     handle_r_r_jobenvvars (sfd,wdb,icomp,&request);
+    break;
+  case R_R_JOBBLKHOSTNAME:
+    log_master (L_DEBUG,"Block host add by name");
+    handle_r_r_jobblkhostname (sfd,wdb,icomp,&request);
+    break;
+  case R_R_JOBUNBLKHOSTNAME:
+    log_master (L_DEBUG,"Unblock host by name");
+    handle_r_r_jobunblkhostname (sfd,wdb,icomp,&request);
     break;
   default:
     log_master (L_WARNING,"Unknown request");
@@ -846,7 +854,7 @@ request_job_available (struct slave_database *sdb, uint16_t *itask) {
   log_auto (L_DEBUG3,"request_job_available(): >Entering");
 
   if ((sfd = connect_to_master ()) == -1) {
-    log_auto(L_ERROR,"request_job_available(): could not connecti to master. (%s)",strerror(drerrno_system));
+    log_auto(L_ERROR,"request_job_available(): could not connect to master. (%s)",strerror(drerrno_system));
     return 0;
   }
 
@@ -2033,7 +2041,63 @@ int request_job_delete_blocked_host (uint32_t ijob, uint32_t icomp, uint16_t who
   return 1;
 }
 
-int request_job_add_blocked_host (uint32_t ijob, uint32_t icomp, uint16_t who) {
+int
+request_job_block_host_by_name (uint32_t ijob, char *name, uint16_t who) {
+  int sfd;
+  struct request req;
+  
+  if ((sfd = connect_to_master ()) == -1) {
+    drerrno = DRE_NOCONNECT;
+    return 0;
+  }
+
+  req.type = R_R_JOBBLKHOSTNAME;
+  req.data = ijob;
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORWRITING;
+    close (sfd);
+    return 0;
+  }
+
+  if (!send_string(sfd,name)) {
+    drerrno = DRE_ERRORWRITING;
+    close (sfd);
+    return 0;
+  }
+  
+  return 1;
+}
+
+int
+request_job_unblock_host_by_name (uint32_t ijob, char *name, uint16_t who) {
+  int sfd;
+  struct request req;
+
+  if ((sfd = connect_to_master ()) == -1) {
+    drerrno = DRE_NOCONNECT;
+    return 0;
+  }
+
+  req.type = R_R_JOBUNBLKHOSTNAME;
+  req.data = ijob;
+
+  if (!send_request (sfd,&req,who)) {
+    drerrno = DRE_ERRORWRITING;
+    close (sfd);
+    return 0;
+  }
+
+  if (!send_string (sfd,name)) {
+    drerrno = DRE_ERRORWRITING;
+    close (sfd);
+    return 0;
+  }
+
+  return 1;
+}
+
+int
+request_job_add_blocked_host (uint32_t ijob, uint32_t icomp, uint16_t who) {
   int sfd;
   struct request req;
 
@@ -2466,11 +2530,18 @@ void handle_r_r_jobdelblkhost (int sfd, struct database *wdb, int icomp, struct 
   log_master(L_DEBUG,"Exiting handle_r_r_jobdelblkhost");
 }
 
-int request_job_list_blocked_host (uint32_t ijob, struct blocked_host **bh, uint16_t *nblocked, uint16_t who) {
+int
+request_job_list_blocked_host (uint32_t ijob, struct blocked_host **bh, uint16_t *nblocked, uint16_t who) {
   int sfd;
   struct request req;
   struct blocked_host *tbh;
   int i;
+
+  if (*bh != NULL) {
+    // Free previous memory
+    free (*bh);
+    *bh = NULL;
+  }
 
   *nblocked = 0;
 
@@ -2491,10 +2562,12 @@ int request_job_list_blocked_host (uint32_t ijob, struct blocked_host **bh, uint
     return 0;
   }
 
-  *nblocked = req.data;
+  *nblocked = (uint16_t)req.data;
 
+    
   if ((*bh = (struct blocked_host *) malloc (sizeof (struct blocked_host)* (*nblocked))) == NULL) {
     // FIXME error handlind
+    *nblocked = 0;
     return 0;
   }
 
@@ -2562,6 +2635,7 @@ void handle_r_r_jobblkhost (int sfd, struct database *wdb, int icomp, struct req
     semaphore_release (wdb->semid);
     return;
   }
+
 
   if (!wdb->computer[ihost].used) {
     semaphore_release (wdb->semid);
@@ -3821,6 +3895,7 @@ request_job_list (struct job **job, uint16_t who) {
 
     tjob = *job;
     for (i=0;i<njobs;i++) {
+      job_init(tjob);
       if (!recv_job (sfd,tjob)) {
         fprintf (stderr,"ERROR: Receiving job (drqm_request_joblist)\n");
         break;
@@ -3894,4 +3969,74 @@ int request_computer_list (struct computer **computer, uint16_t who) {
   close (sfd);
 
   return ncomputers;
+}
+
+void
+handle_r_r_jobblkhostname (int sfd, struct database *wdb, int icomp, struct request *req) {
+  uint32_t ijob;
+  uint32_t ihost;
+  char *name;
+
+  log_master(L_DEBUG,"Entering handle_r_r_jobblkhostname");
+
+  ijob = req->data;
+
+  if (!recv_string(sfd,&name)) {
+    // TODO: log
+    return;
+  }
+
+  semaphore_lock (wdb->semid);
+
+  if ((ihost = computer_index_name (wdb,name)) == (uint32_t)-1) {
+    log_auto (L_WARNING,"Blocking a host that is not registered: %s",name);
+    return;
+  }
+
+  if (!job_index_correct_master (wdb,ijob)) {
+    semaphore_release (wdb->semid);
+    return;
+  }
+
+  job_block_host_add_by_name (&wdb->job[ijob],name);
+
+  // log_master(L_DEBUG,"Requested host (%i) block for job %i",ihost,ijob);
+  // log_master(L_DEBUG,"Already blocked: %i",wdb->job[ijob].nblocked);
+  // If there are blocked hosts, attach the memory
+
+  semaphore_release (wdb->semid);
+
+  log_master(L_DEBUG,"Exiting handle_r_r_jobblkhost");
+}
+
+void
+handle_r_r_jobunblkhostname (int sfd, struct database *wdb, int icomp, struct request *req) {
+  uint32_t ijob;
+  char *name;
+
+  log_master(L_DEBUG,"Entering handle_r_r_jobunblkhostname");
+
+  ijob = req->data;
+
+  if (!recv_string(sfd,&name)) {
+    // TODO: log
+    return;
+  }
+
+  semaphore_lock (wdb->semid);
+
+  if (!job_index_correct_master (wdb,ijob)) {
+    semaphore_release (wdb->semid);
+    return;
+  }
+
+  job_block_host_remove_by_name (&wdb->job[ijob],name);
+
+  // log_master(L_DEBUG,"Requested host (%i) block for job %i",ihost,ijob);
+  // log_master(L_DEBUG,"Already blocked: %i",wdb->job[ijob].nblocked);
+  // If there are blocked hosts, attach the memory
+
+  semaphore_release (wdb->semid);
+
+  log_master(L_DEBUG,"Exiting handle_r_r_jobblkhost");
 }
