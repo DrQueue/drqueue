@@ -367,8 +367,8 @@ void clean_out (int signal, siginfo_t *info, void *data) {
   tstop = time(NULL);
   ttotal = tstop - tstart;
   printf ("Report of communications:\n");
-  printf ("Kbytes sent:\t\t%lli\tBytes:\t%lli\n",wdb->bsent/1024,wdb->bsent);
-  printf ("Kbytes recv:\t\t%lli\tBytes:\t%lli\n",wdb->brecv/1024,wdb->brecv);
+  printf ("Kbytes sent:\t\t%ji\tBytes:\t%ji\n",wdb->bsent/1024,wdb->bsent);
+  printf ("Kbytes recv:\t\t%ji\tBytes:\t%ji\n",wdb->brecv/1024,wdb->brecv);
   printf ("Kbytes sent/second:\t%f\n",(float)(wdb->bsent/1024)/ttotal);
   printf ("Kbytes recv/second:\t%f\n",(float)(wdb->brecv/1024)/ttotal);
 #endif

@@ -395,6 +395,7 @@ int log_job_path_get (uint32_t jobid, char *path, int pathlen) {
     return -1;
   }
 
+  job_init(&job);
   if (!request_job_xfer (jobid,&job,CLIENT)) {
     //log_message (L_WARNING,"log_get_job_path: Could not retrieve job information on jobid %u\n",jobid);
     return -1;
