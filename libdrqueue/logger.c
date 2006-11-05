@@ -599,7 +599,7 @@ log_get_task_str (char *buffer, int buflen) {
 void log_auto (int level, char *fmt, ...) {
   // this will be the way to send log messages when no one is known
   // for sure.
-  FILE *f_log;
+  FILE *f_log = stderr;
   char time_buf[BUFFERLEN];
   char job_buf[BUFFERLEN];
   char task_buf[BUFFERLEN];

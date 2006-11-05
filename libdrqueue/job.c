@@ -1215,7 +1215,8 @@ uint32_t job_first_frame_available_no_icomp (struct database *wdb,uint32_t ijob)
 
 int
 job_block_host_add_by_name (struct job *job, char *name) {
-  struct blocked_host *obh,*nbh;
+  struct blocked_host *obh=NULL;
+  struct blocked_host *nbh=NULL;
   int64_t nbhshmid;
   struct blocked_host single;
   int i;
