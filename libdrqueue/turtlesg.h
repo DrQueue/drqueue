@@ -28,6 +28,8 @@
 extern "C" {
 #endif
 
+#pragma pack(push,1)
+
   struct turtlesgi {  /* Maya Script Generator Info */
     char renderdir[BUFFERLEN]; // -imageOutputPath
     char projectdir[BUFFERLEN]; // -projectPath
@@ -44,6 +46,8 @@ extern "C" {
     // char precommand[BUFFERLEN]; // allows a prerender command (mel script) to be executed before the render
     // char postcommand[BUFFERLEN]; // allows a postrender command (mel script to be executed after the render
   };
+
+#pragma pack(pop)
 
   char *turtlesg_create (struct turtlesgi *info);
 

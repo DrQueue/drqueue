@@ -28,6 +28,8 @@
 extern "C" {
 #endif
 
+#pragma pack(push,1)
+
   struct terragensgi {  /* Maya Script Generator Info */
     char worldfile[BUFFERLEN];
     char terrainfile[BUFFERLEN];
@@ -40,6 +42,8 @@ extern "C" {
     char format[BUFFERLEN];
     int  mentalray;  // 1 if we should render with mr
   };
+
+#pragma pack(pop)
 
   char *terragensg_create (struct terragensgi *info);
 

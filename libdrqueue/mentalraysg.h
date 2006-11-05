@@ -26,6 +26,8 @@
 extern "C" {
 #endif
 
+#pragma pack(push,1)
+
   struct mentalraysgi {  /* Menatl Ray Script Generator Info */
     char renderdir[BUFFERLEN];
     char scene[BUFFERLEN];
@@ -37,6 +39,8 @@ extern "C" {
     char format[BUFFERLEN];
     int  mentalray;  // 1 if we should render with mr
   };
+
+#pragma pack(pop)
 
   char *mentalraysg_create (struct mentalraysgi *info);
 

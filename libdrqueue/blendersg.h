@@ -28,10 +28,14 @@
 extern "C" {
 #endif
 
+#pragma pack(push,1)
+
   struct blendersgi {  /* Blender Script Generator Info */
     char scene[BUFFERLEN];
     char scriptdir[BUFFERLEN];
   };
+
+#pragma pack(pop)
 
   char *blendersg_create (struct blendersgi *info);
   char *blendersg_default_script_path (void);
