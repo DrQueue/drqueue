@@ -682,7 +682,9 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp) {
         for (j=wdb->lb.next_i;j<MAXJOBS;j++) {
           ijob = pol[j].index;
           if (job_available(wdb,ijob,&iframe,icomp)) {
-            log_master_job(&wdb->job[ijob],L_INFO,"Frame %i assigned",job_frame_index_to_number(&wdb->job[ijob],iframe));
+	    logger_computer = &wdb->computer[icomp];
+	    logger_job = &wdb->job[ijob];
+            log_auto(L_INFO,"Frame %i assigned",job_frame_index_to_number(&wdb->job[ijob],iframe));
             wdb->lb.next_i = j+1;
             break;
           }
@@ -693,7 +695,9 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp) {
       /* ATENTION job_available sets the available frame as FS_ASSIGNED !! */
       /* We need to set it back to FS_WAITING if something fails */
       if (job_available(wdb,ijob,&iframe,icomp)) {
-        log_master_job(&wdb->job[ijob],L_INFO,"Frame %i assigned",job_frame_index_to_number(&wdb->job[ijob],iframe));
+	logger_computer = &wdb->computer[icomp];
+	logger_job = &wdb->job[ijob];
+        log_auto(L_INFO,"Frame %i assigned",job_frame_index_to_number(&wdb->job[ijob],iframe));
         wdb->lb.next_i = i+1;
         break;
       }
@@ -708,7 +712,9 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp) {
           /* ATENTION job_available sets the available frame as FS_ASSIGNED !! */
           /* We need to set it back to FS_WAITING if something fails */
           if (job_available(wdb,ijob,&iframe,icomp)) {
-            log_master_job(&wdb->job[ijob],L_INFO,"Frame %i assigned",job_frame_index_to_number(&wdb->job[ijob],iframe));
+	    logger_computer = &wdb->computer[icomp];
+	    logger_job = &wdb->job[ijob];
+            log_auto(L_INFO,"Frame %i assigned",job_frame_index_to_number(&wdb->job[ijob],iframe));
             wdb->lb.next_i = i+1;
             break;
           }
@@ -720,7 +726,9 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp) {
         /* ATENTION job_available sets the available frame as FS_ASSIGNED !! */
         /* We need to set it back to FS_WAITING if something fails */
         if (job_available(wdb,ijob,&iframe,icomp)) {
-          log_master_job(&wdb->job[ijob],L_INFO,"Frame %i assigned",job_frame_index_to_number(&wdb->job[ijob],iframe));
+	  logger_computer = &wdb->computer[icomp];
+	  logger_job = &wdb->job[ijob];
+          log_auto(L_INFO,"Frame %i assigned",job_frame_index_to_number(&wdb->job[ijob],iframe));
           wdb->lb.next_i = i+1;
           break;
         }
@@ -730,7 +738,9 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp) {
           /* ATENTION job_available sets the available frame as FS_ASSIGNED !! */
           /* We need to set it back to FS_WAITING if something fails */
           if (job_available(wdb,ijob,&iframe,icomp)) {
-            log_master_job(&wdb->job[ijob],L_INFO,"Frame %i assigned",job_frame_index_to_number(&wdb->job[ijob],iframe));
+	    logger_computer = &wdb->computer[icomp];
+	    logger_job = &wdb->job[ijob];
+            log_auto(L_INFO,"Frame %i assigned",job_frame_index_to_number(&wdb->job[ijob],iframe));
             wdb->lb.next_i = i+1;
             break;
           }
@@ -748,12 +758,17 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp) {
       /* ATENTION job_available sets the available frame as FS_ASSIGNED !! */
       /* We need to set it back to FS_WAITING if something fails */
       if (job_available(wdb,ijob,&iframe,icomp)) {
-        log_master_job(&wdb->job[ijob],L_INFO,"Frame %i assigned",job_frame_index_to_number(&wdb->job[ijob],iframe));
+	logger_computer = &wdb->computer[icomp];
+	logger_job = &wdb->job[ijob];
+        log_auto(L_INFO,"Frame %i assigned",job_frame_index_to_number(&wdb->job[ijob],iframe));
         wdb->lb.next_i = i+1;
         break;
       }
     }
   }
+
+  logger_computer = NULL;
+  logger_job = NULL;
 
   if (i>=MAXJOBS) {
     // No available one neither before.
