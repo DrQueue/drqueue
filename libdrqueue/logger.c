@@ -527,46 +527,59 @@ int log_dumptask_open_ro (struct task *t) {
   return lfd;
 }
 
-void log_get_time_str (char *timebuf,int buflen) { 
+void log_get_time_str (char *timebuf,int buflen) {
   time_t now;
   size_t len = 0;
+  char tbuf[MAXLOGLINELEN];
+
   if ((timebuf == NULL) || (buflen <= 0))
     return;
   time (&now);
   snprintf (timebuf,buflen,"%s",ctime(&now));
   len = strlen(timebuf);
   timebuf[len-1] = '\0';
+  snprintf (tbuf,buflen,"%s (PID:%i)",timebuf,getpid());
+  strcpy(timebuf,tbuf);
 }
 
-char *log_get_job_str(struct job *job) {
-  static char jobmsg[BUFFERLEN];
-
-  snprintf (jobmsg,BUFFERLEN,"Name: '%8s' || Owner: '%8s'",job->name,job->owner);
-
-  return jobmsg;
-}
-
-void log_auto_job (struct job *job, int level, char *fmt, ...) {
-  FILE *f_log;
-  char time_buf[BUFFERLEN];
-  char msg[BUFFERLEN];
-  va_list ap;
-
-  if (level > loglevel)
+void
+log_get_job_str (char *buffer,int buflen) {
+  if (!buffer) {
     return;
+  }
 
-  va_start (ap,fmt);
-  vsnprintf (msg,BUFFERLEN-1,fmt,ap);
-  va_end (ap);
+  if (!logger_job || !logger_job->used) {
+    return;
+  }
 
-  log_get_time_str (time_buf,BUFFERLEN);
+  snprintf (buffer,buflen,"Job: name:'%s' owner:'%s' id:'%u'",logger_job->name,logger_job->owner,logger_job->id);
+}
 
-  f_log = stderr;
+void
+log_get_computer_str (char *buffer, int buflen) {
+  if (!buffer) {
+    return;
+  }
 
-  if (loglevel < L_DEBUG)
-    fprintf (f_log,"%8s : (JOB: %s) %s: %s\n",time_buf,log_get_job_str(job),log_level_str(level),msg);
-  else
-    fprintf (f_log,"%8s : (JOB: %s) (%i) %s: %s\n",time_buf,log_get_job_str(job),(int) getpid(), log_level_str(level),msg);
+  if (!logger_computer || !logger_computer->used) {
+    return;
+  }
+
+  snprintf (buffer,buflen,"Computer: name:'%s' id:'%u'",logger_computer->hwinfo.name,logger_computer->hwinfo.id);
+}
+  
+void
+log_get_task_str (char *buffer, int buflen) {
+  if (!buffer) {
+    return;
+  }
+
+  if (!logger_task) {
+    return;
+  }
+
+  snprintf (buffer,buflen,"Task: Jobid:'%i' Jobname:'%s' Frame:'%i' Taskid:'%i' Compid:'%i'",logger_task->ijob,
+	    logger_task->jobname,logger_task->frame,logger_task->itask,logger_task->icomp);
 }
 
 void log_auto (int level, char *fmt, ...) {
@@ -576,17 +589,21 @@ void log_auto (int level, char *fmt, ...) {
   char hostname_buf[MAXNAMELEN];
   char *hostname_ptr = NULL;
   char time_buf[BUFFERLEN];
-  char msg[BUFFERLEN];
+  char job_buf[BUFFERLEN];
+  char task_buf[BUFFERLEN];
+  char computer_buf[BUFFERLEN];
+  char msg[MAXLOGLINELEN];
+  char bkpmsg[MAXLOGLINELEN];
+  char origmsg[MAXLOGLINELEN];
+
   va_list ap;
 
   if (level > loglevel)
     return;
 
   va_start (ap,fmt);
-  vsnprintf (msg,BUFFERLEN,fmt,ap);
+  vsnprintf (origmsg,MAXLOGLINELEN,fmt,ap);
   va_end (ap);
-
-  log_get_time_str (time_buf,BUFFERLEN);
 
   if (hostname_ptr == NULL) {
     if (gethostname(hostname_buf,MAXNAMELEN-1) == -1) {
@@ -595,21 +612,27 @@ void log_auto (int level, char *fmt, ...) {
     hostname_ptr = hostname_buf;
   }
 
-/*   if (!logonscreen) { */
-/*     f_log = log_slave_open_computer (name); */
-/*     if (!f_log) */
-/*       f_log = stdout; */
-/*   } else { */
-/*     f_log = stdout; */
-/*   } */
-
   f_log = stderr;
+  log_get_time_str (time_buf,BUFFERLEN);
+  snprintf (bkpmsg,MAXLOGLINELEN,"%s :",time_buf); // Time and pid
+  strcpy(msg,bkpmsg);
+  snprintf (bkpmsg,MAXLOGLINELEN,"%s | %6s |",msg,log_level_str(level)); // Log level
+  strcpy(msg,bkpmsg);
+  if (logger_job) {
+    log_get_job_str (job_buf,BUFFERLEN);
+    snprintf (bkpmsg,MAXLOGLINELEN,"%s %s :",msg,job_buf);
+    strcpy(msg,bkpmsg);
+  }						       
+  if (logger_computer) {
+    log_get_computer_str (computer_buf,BUFFERLEN);
+    snprintf (bkpmsg,MAXLOGLINELEN,"%s %s :",msg,computer_buf);
+    strcpy(msg,bkpmsg);
+  }						       
+  if (logger_task) {
+    log_get_task_str (task_buf,BUFFERLEN);
+    snprintf (bkpmsg,MAXLOGLINELEN,"%s %s :",msg,task_buf);
+    strcpy(msg,bkpmsg);
+  }
 
-  if (loglevel < L_DEBUG)
-    fprintf (f_log,"%8s : %s: %s\n",time_buf,log_level_str(level),msg);
-  else
-    fprintf (f_log,"%8s : (%i) %s: %s\n",time_buf,(int) getpid(), log_level_str(level),msg);
-
-/*   if (!logonscreen) */
-/*     fclose (f_log); */
+  fprintf (f_log,"%s -> MSG: %s\n",msg,origmsg);
 }

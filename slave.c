@@ -83,9 +83,11 @@ int main (int argc,char *argv[]) {
   //system ("env | grep DRQUEUE");
   sdb.shmid = get_shared_memory_slave (force);
   sdb.comp = attach_shared_memory_slave (sdb.shmid);
+  logger_computer = sdb.comp;
   sdb.semid = get_semaphores_slave ();
 
   computer_init (sdb.comp);
+  sdb.comp->used = 1;
   get_hwinfo (&sdb.comp->hwinfo);
   computer_init_limits (sdb.comp); /* computer_init_limits depends on the hardware information */
   slave_set_limits (&sdb);
