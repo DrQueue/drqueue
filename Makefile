@@ -30,20 +30,20 @@ machinetype := $(shell bash -c "source ./bin/shlib; get_env_machine")
 endif
 
 CPPFLAGS += -D_NO_COMPUTER_SEMAPHORES -D_NO_COMPUTER_POOL_SEMAPHORES -D_GNU_SOURCE -DCOMM_REPORT -I. -Ilibdrqueue
-CFLAGS += -g -O0 -Wall
+CFLAGS ?= -g -O0 -Wall $(ARCHFLAGS)
+LDFLAGS ?= $(CFLAGS)
 CXXFLAGS += $(CFLAGS) $(CPPFLAGS) -D__CPLUSPLUS 
 
 ifeq ($(systype),Linux)
  CPPFLAGS += -D__LINUX
  ifeq ($(machinetype),i686)
-  CFLAGS += -march=i686 -m32
+  ARCHFLAGS += -march=i686 -m32
  else
   ifeq ($(machinetype),x86_64)
    CHOST ?= x86_64-pc-linux-gnu
-   CFLAGS += -march=nocona -m64 -pipe
+   ARCHFLAGS += -march=x86-64 -m64 -pipe
   endif
  endif
- CXXFLAGS += ${CFLAGS}
 else
  ifeq ($(systype),IRIX)
   CPPFLAGS += -D__IRIX

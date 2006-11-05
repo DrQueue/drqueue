@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-# $Id: requeue 784 2004-10-15 03:10:46Z jorge $
+# $Id$
 #
 
 SHLIB=$DRQUEUE_ROOT/bin/shlib
