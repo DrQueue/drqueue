@@ -1126,7 +1126,7 @@ send_computer_limits (int sfd, struct computer_limits *cl, uint8_t use_local_poo
   // Clean up shared memory info
   computer_limits_cleanup_to_send (&bswapped);
  
-  datasize = sizeof (struct computer_limits);
+  datasize = sizeof (struct computer_limits) - (sizeof(void*)*2);
   if (!check_send_datasize (sfd,datasize)) {
     log_auto (L_ERROR,"send_computer_limits(): different data sizes for 'struct computer_limits'. Local size: %u",datasize);
     return 0;
