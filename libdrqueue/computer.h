@@ -51,12 +51,13 @@ struct computer_limits {
   uint16_t nmaxcpus;    /* Maximum number of cpus running */
   uint16_t maxfreeloadcpu; /* Maximum load that a cpu can have to be considered free */
   struct autoenable autoenable;
-  struct pool *pool,*local_pool;
   uint16_t npools;
   int64_t poolshmid; // Pool's shared memory id
   int64_t poolsemid; // Pool's semaphore id
   uint32_t npoolsattached;
-};
+  struct pool *pool;
+  struct pool *local_pool;
+} __attribute__((__packed__));
 
 struct computer {
   struct computer_hwinfo hwinfo;

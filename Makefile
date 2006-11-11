@@ -51,7 +51,6 @@ else
  else
   ifeq ($(systype),Darwin)
    CPPFLAGS += -D__OSX
-   CFLAGS += -mtune=powerpc -mpowerpc
 #   MAKE = make
   else 
    ifeq ($(systype),FreeBSD)
@@ -82,7 +81,7 @@ BASE_CXX_TOOLS = sendjob
 BASE_C_GUI = drqman
 PYTHON_MODULE = python
 
-all: base drqman/drqman
+all: base
 
 drqman: drqman/drqman
 

@@ -1069,7 +1069,7 @@ int recv_computer_limits (int sfd, struct computer_limits *cl) {
   void *buf=&limits;
   uint32_t datasize;
 
-  datasize = sizeof(struct computer_limits);
+  datasize = sizeof(struct computer_limits) - (sizeof (void*)*2);
   memset (buf,0,datasize);
   computer_limits_init(&limits);
   if (!check_recv_datasize(sfd,datasize)) {

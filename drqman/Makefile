@@ -44,7 +44,10 @@ else
  else
   ifeq ($(systype),Darwin)
    CPPFLAGS += -D__OSX
-   CFLAGS += `pkg-config --cflags gtk+-2.0` -mtune=powerpc -mpowerpc
+   CFLAGS += `pkg-config --cflags gtk+-2.0`
+   ifeq ($(machinetype),ppc)
+    ARCHFLAGS += -mtune=powerpc -mpowerpc
+   endif
    LDFLAGS = `pkg-config --libs gtk+-2.0`
 #   MAKE = make
   else
