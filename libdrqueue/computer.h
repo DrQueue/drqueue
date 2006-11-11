@@ -57,7 +57,7 @@ struct computer_limits {
   uint32_t npoolsattached;
   struct pool *pool;
   struct pool *local_pool;
-} __attribute__((__packed__));
+}; // __attribute__((__packed__)); // fails with swig but doesn't seem necessary
 
 struct computer {
   struct computer_hwinfo hwinfo;
