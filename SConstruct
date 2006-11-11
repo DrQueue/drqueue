@@ -11,16 +11,16 @@ env.Append (CPPPATH=['.','./libdrqueue'])
 print "Architecture: %s"%(env['arch'],)
 if env['arch'] == 'i386':
   bitsFlag='-m32'
-  env.Append (CCFLAGS = Split('-march=i386'),CXXFLAGS = env.subst('$CCFLAGS'))
+  env.Append (CCFLAGS = Split('-march=i386 -pipe'),CXXFLAGS = env.subst('$CCFLAGS'))
 elif env['arch'] == 'i686':
   bitsFlag='-m32'
-  env.Append (CCFLAGS = Split('-march=i686'),CXXFLAGS = env.subst('$CCFLAGS'))
+  env.Append (CCFLAGS = Split('-march=i686 -pipe'),CXXFLAGS = env.subst('$CCFLAGS'))
 elif env['arch'] == 'x86_64':
   bitsFlag='-m64'
-  env.Append (CCFLAGS = Split('-march=athlon64'),CXXFLAGS = env.subst('$CCFLAGS'))
+  env.Append (CCFLAGS = Split('-march=x86-64 -pipe'),CXXFLAGS = env.subst('$CCFLAGS'))
 elif env['arch'] == 'Power Macintosh':
   bitsFlag='-mpowerpc'
-  env.Append (CCFLAGS = Split('-mtune=powerpc'))
+  env.Append (CCFLAGS = Split('-mtune=powerpc -pipe'),CXXFLAGS = env.subst('$CCFLAGS'))
 
 #dict = env.Dictionary()
 #keys = dict.keys()
@@ -29,7 +29,7 @@ elif env['arch'] == 'Power Macintosh':
 #  print "construction variable = '%s', value = '%s'" % (key, dict[key])
    
 env.Append (CCFLAGS = Split ('-DCOMM_REPORT -D_GNU_SOURCE -D_NO_COMPUTER_POOL_SEMAPHORES -D_NO_COMPUTER_SEMAPHORES -g -O0'),
-            CXXFLAGS = ['-D__CPLUSPLUS',env.subst('$CCFLAGS')])
+            CXXFLAGS = ['-D__CPLUSPLUS',Split(env.subst('$CCFLAGS'))])
 env.Append (CCFLAGS = [bitsFlag,])
 
 print "Platform is: ",sys.platform

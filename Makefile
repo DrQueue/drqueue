@@ -51,6 +51,9 @@ else
  else
   ifeq ($(systype),Darwin)
    CPPFLAGS += -D__OSX
+   ifeq ($(machinetype),Power_Macintosh)
+    ARCHFLAGS += -mpowerpc -mtune=powerpc
+   endif
 #   MAKE = make
   else 
    ifeq ($(systype),FreeBSD)
