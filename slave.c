@@ -63,6 +63,8 @@ int main (int argc,char *argv[]) {
 
   slave_get_options(&argc,&argv,&force,&sdb);
   
+  logtool = DRQ_LOG_TOOL_SLAVE;
+
   // Set some standard defaults based on DRQUEUE_ROOT (must be already set!)
   set_default_env(); 
   
@@ -93,6 +95,7 @@ int main (int argc,char *argv[]) {
   slave_set_limits (&sdb);
 
   report_hwinfo (&sdb.comp->hwinfo);
+  fprintf (stderr,"Working silently...");
 
   register_slave (sdb.comp);
   // Before sending the limits we have to set the pools

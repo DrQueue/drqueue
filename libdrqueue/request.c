@@ -866,8 +866,6 @@ request_job_available (struct slave_database *sdb, uint16_t *itask) {
   int sfd;
   struct task ttask;  /* Temporary task structure */
 
-  log_auto (L_DEBUG3,"request_job_available(): >Entering");
-
   if ((sfd = connect_to_master ()) == -1) {
     log_auto(L_ERROR,"request_job_available(): could not connect to master. (%s)",strerror(drerrno_system));
     return 0;

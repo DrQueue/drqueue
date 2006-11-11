@@ -62,94 +62,52 @@ FILE *log_slave_open_task (int level, struct task *task);
 FILE *log_slave_open_computer (int level, char *name);
 FILE *log_master_open (int level);
 
+int log_level_dest (int level);
+int log_on_screen (int level);
 int log_job_path_get (uint32_t jobid,char *path,int pathlen);
 int log_task_filename_get (struct task *task, char *path, int pathlen);
 
 void
 log_slave_task (struct task *task,int level,char *fmt,...) {
-  FILE *f_log;
-  char name[MAXNAMELEN];
-  char buf[BUFFERLEN];  /* Buffer used to store ctime */
-  char msg[BUFFERLEN];
-  char msg2[BUFFERLEN];
-  time_t now;
   va_list ap;
 
-  if (level > loglevel)
+  if (!log_level_dest(level))
     return;
-
-  va_start (ap,fmt);
-  vsnprintf (msg,BUFFERLEN-1,fmt,ap);
-  va_end (ap);
-
-  if (gethostname (name,MAXNAMELEN-1) == -1) {
-    strcpy (name,"UNKNOWN");
-  }
-
-  time (&now);
-  strncpy (buf,ctime(&now),BUFFERLEN-1);
-  buf[strlen(buf)-1] = '\0';
-
-  if (!logonscreen) {
-    f_log = log_slave_open_task (level,task);
-    if (!f_log)
-      f_log = stderr;
-  } else {
-    f_log = stderr;
-  }
-
-  if (loglevel < L_DEBUG) {
-    snprintf (msg2,BUFFERLEN,"%8s -> Job: %8s || Owner: %8s || Frame: %4i || %s: %s\n",name,
-              task->jobname,task->owner,task->frame,log_level_str(level),msg);
-  } else {
-    snprintf (msg2,BUFFERLEN,"%8s -> Job: %8s || Owner: %8s || Frame: %4i || (%i) %s: %s\n",name,
-              task->jobname,task->owner,task->frame,(int)getpid(),log_level_str(level),msg);
-  }
   
-  fprintf(f_log,"%8s : %s",buf,msg2);
+  logger_task = task;
+  va_start (ap,fmt);
+  log_auto (level,fmt,ap);
+  va_end (ap);
+}
 
-  if (!logonscreen) {
-    fclose (f_log);
-    log_slave_computer (level,"COPY from task log: %s",msg2);
+int
+log_on_screen (int level) {
+  if ((L_OUTMASK & level) & L_ONSCREEN) {
+    return 1;
   }
+  return 0;
 }
 
 FILE *log_slave_open_task (int level, struct task *task) {
   FILE *f;
-  char filename[BUFFERLEN];
+  char filename[PATH_MAX];
   char dir[BUFFERLEN];
   char *basedir;
 
-  if ((L_OUTMASK & level) & L_ONSCREEN) {
+  if (log_on_screen (level)) {
     return stderr;
   } 
 
-  if ((basedir = getenv("DRQUEUE_LOGS")) == NULL) {
-    logonscreen = 1;
-    log_auto (L_ERROR,"log_slave_open_task(): environment variable DRQUEUE_LOGS not set. Logging on screen.");
-    return NULL;
+  if (!log_task_filename_get(task,filename,PATH_MAX)) {
+    // FIXME: missing warning
+    return stderr;
   }
 
-  // Backup method
-  snprintf(dir,BUFFERLEN-1,"%s/%s",basedir,task->jobname);
-  snprintf(filename,BUFFERLEN-1,"%s/%s.log",dir,task->jobname);
   if ((f = fopen (filename, "a")) == NULL) {
-    if (errno == ENOENT) {
-      /* If its because the directory does not exist we try creating it first */
-      if (mkdir (dir,0775) == -1) {
-        logonscreen = 1;
-        log_auto (L_ERROR,"log_slave_open_task(): couldn't create directory for task logging '%s', "
-		  "logging on the screen. (%s)",dir,strerror(errno));
-        return f;
-      }
-      log_auto (L_INFO,"log_slave_open_task(): directory for task logs has been created '%s'.",dir);
-      if ((f = fopen (filename, "a")) == NULL) {
-        logonscreen = 1;
-        log_auto (L_ERROR,"log_slave_open_task(): Couldn't open file for writing '%s', logging on the screen. (%s)",filename,strerror(errno));
-        return f;
-      }
-      log_auto (L_INFO,"log_slave_open_task(): log file for task '%s' could be created after creating it's parent directory.",filename);
-    }
+    drerrno_system = errno;
+    log_auto (L_ERROR,"log_slave_open_task(): Couldn't open file for writing '%s', logging on the screen. (%s)",
+              filename,strerror(drerrno_system));
+    return stderr;
   }
 
   return f;
@@ -196,7 +154,7 @@ void log_slave_computer (int level, char *fmt, ...) {
   else
     fprintf (f_log,"%8s : (%i) %s: %s\n",buf,(int) getpid(), log_level_str(level),msg);
 
-  if (!logonscreen)
+  if (f_log != stderr)
     fclose (f_log);
 }
 
@@ -210,8 +168,8 @@ FILE *log_slave_open_computer (int level, char *name) {
   } 
 
   if ((basedir = getenv("DRQUEUE_LOGS")) == NULL) {
-    fprintf (stderr,"Environment variable DRQUEUE_LOGS not set. Aborting...\n");
-    kill(0,SIGINT);
+    fprintf (stderr,"Environment variable DRQUEUE_LOGS not set. Logging on screen...\n");
+    return stderr;
   }
 
   snprintf(filename,BUFFERLEN-1,"%s/%s.log",basedir,name);
@@ -219,7 +177,7 @@ FILE *log_slave_open_computer (int level, char *name) {
   if ((f = fopen (filename,"a")) == NULL) {
     perror ("log_slave_open_computer: Couldn't open file for writing");
     fprintf (stderr,"So... logging on screen.\n");
-    logonscreen = 1;
+    return stderr;
   }
 
   return f;
@@ -232,67 +190,39 @@ void log_master_job (struct job *job, int level, char *fmt, ...) {
   time_t now;
   va_list ap;
 
-  if (level > loglevel)
+  if (!log_level_dest (level))
     return;
 
+  logger_job = job;
   va_start (ap,fmt);
-  vsnprintf (msg,BUFFERLEN-1,fmt,ap);
+  log_auto(level,fmt,ap);
   va_end (ap);
+  logger_job = NULL;
 
-  time (&now);
-  strncpy (buf,ctime(&now),BUFFERLEN-1);
-  buf[strlen(buf)-1] = '\0';
-
-  if (!logonscreen) {
-    f_log = log_master_open (level);
-    if (!f_log)
-      f_log = stderr;
-  } else {
-    f_log = stderr;
-  }
-
-  if (loglevel < L_DEBUG)
-    fprintf (f_log,"%8s : Job: %8s || Owner: %8s || %s: %s\n",buf,job->name,job->owner,log_level_str(level),msg);
-  else
-    fprintf (f_log,"%8s : Job: %8s || Owner: %8s || (%i) %s: %s\n",buf,job->name,job->owner,(int)getpid(),
-             log_level_str(level),msg);
-  if (!logonscreen)
-    fclose (f_log);
+  return;
 }
 
-void log_master_computer (struct computer *computer, int level, char *fmt, ...) {
-  FILE *f_log;
-  char buf[BUFFERLEN];
-  char msg[BUFFERLEN];
-  time_t now;
+void
+log_master_computer (struct computer *computer, int level, char *fmt, ...) {
   va_list ap;
 
-  if (level > loglevel)
+  if (!log_level_dest(level))
     return;
 
+  logger_computer = computer;
   va_start (ap,fmt);
-  vsnprintf (msg,BUFFERLEN-1,fmt,ap);
+  log_auto (level,fmt,ap);
   va_end (ap);
+  logger_computer = NULL;
+  
+  return;  
+}
 
-  time (&now);
-  strncpy (buf,ctime(&now),BUFFERLEN-1);
-  buf[strlen(buf)-1] = '\0';
-
-  if (!logonscreen) {
-    f_log = log_master_open (level);
-    if (!f_log)
-      f_log = stderr;
-  } else {
-    f_log = stderr;
-  }
-
-  if (loglevel < L_DEBUG)
-    fprintf (f_log,"%8s : Computer: %8s || %s: %s\n",buf,computer->hwinfo.name,log_level_str(level),msg);
-  else
-    fprintf (f_log,"%8s : Computer: %8s || (%i) %s: %s\n",buf,computer->hwinfo.name,(int) getpid(),log_level_str(level),msg);
-
-  if (!logonscreen)
-    fclose (f_log);
+int
+log_level_dest (int level) {
+  if ((level & L_LEVELMASK) > loglevel)
+    return 0;
+  return 1;
 }
 
 void log_master (int level,char *fmt, ...) {
@@ -302,7 +232,7 @@ void log_master (int level,char *fmt, ...) {
   time_t now;
   va_list ap;
 
-  if (level > loglevel)
+  if (!log_level_dest(level))
     return;
 
   va_start (ap,fmt);
@@ -313,21 +243,11 @@ void log_master (int level,char *fmt, ...) {
   strncpy (buf,ctime(&now),BUFFERLEN-1);
   buf[strlen(buf)-1] = '\0';
 
-  if (!logonscreen) {
-    f_log = log_master_open (level);
-    if (!f_log)
-      f_log = stderr;
-  } else {
-    f_log = stderr;
-  }
+  f_log = log_master_open (level);
 
-  if (loglevel < L_DEBUG) {
-    fprintf (f_log,"%8s : %s: %s\n",buf,log_level_str(level),msg);
-  } else {
-    fprintf (f_log,"%8s : (%i) %s: %s\n",buf,(int)getpid(),log_level_str(level),msg);
-  }
+  fprintf (f_log,"%8s : %s: %s\n",buf,log_level_str(level),msg);
 
-  if (!logonscreen)
+  if (f_log != stderr)
     fclose (f_log);
 }
 
@@ -336,13 +256,13 @@ FILE *log_master_open (int level) {
   char filename[BUFFERLEN];
   char *basedir;
 
-  if ((L_OUTMASK & level) & L_ONSCREEN) {
+  if (log_on_screen(level)) {
     return stderr;
   }
 
   if ((basedir = getenv("DRQUEUE_LOGS")) == NULL) {
     fprintf (stderr,"Environment variable DRQUEUE_LOGS not set. Aborting...\n");
-    kill(0,SIGINT);
+    return stderr;
   }
 
   snprintf(filename,BUFFERLEN-1,"%s/master.log",basedir);
@@ -351,13 +271,13 @@ FILE *log_master_open (int level) {
   if ((f = fopen (filename,"a")) == NULL) {
     perror ("log_master_open: Couldn't open file for writing");
     fprintf (stderr,"So... logging on screen.\n");
-    logonscreen = 1;
+    f = stderr;
   }
 #else
   if ((f = fopen (filename,"ab")) == NULL) {
     perror ("log_master_open: Couldn't open file for writing");
     fprintf (stderr,"So... logging on screen.\n");
-    logonscreen = 1;
+    f = stderr;
   }
 #endif
 

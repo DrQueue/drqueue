@@ -951,7 +951,7 @@ int send_computer_pools (int sfd, struct computer_limits *cl, uint8_t use_local_
   struct pool *pool;
   uint32_t datasize;
 
-  log_auto (L_DEBUG2,"send_computer_pools() : Entering...");
+  log_auto (L_DEBUG3,"send_computer_pools() : Entering...");
 
   computer_pool_lock (cl);
   datasize = sizeof (npools);
@@ -1004,9 +1004,8 @@ int send_computer_pools (int sfd, struct computer_limits *cl, uint8_t use_local_
   }
 
   log_auto (L_DEBUG2,"send_computer_pools(): following pool list has been sent:");
-  computer_pool_list (cl);
 
-  log_auto (L_DEBUG2,"send_computer_pools() : Returning...");
+  log_auto (L_DEBUG3,"send_computer_pools() : Returning...");
 
   return 1;
 }
