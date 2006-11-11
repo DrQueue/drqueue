@@ -254,10 +254,10 @@ void set_default_env(void) {
 
 char *
 get_revision_string () {
-  char *duprev = strdup(REVISION);
+  char *duprev = strdup("$Rev$");
   char *number = duprev;
   char *p = duprev;
-  char *e = p + strlen(REVISION);
+  char *e = p + strlen(duprev);
 
   while ((p!=e) && !isdigit(*p)) {
     p++;
