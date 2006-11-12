@@ -229,14 +229,12 @@ void
 log_level_severity_set (int severity) {
   loglevel &= L_OUTMASK;
   loglevel |= severity & L_LEVELMASK;
-  fprintf (stderr,"----------------> SEV %i\n",loglevel);
 }
 
 void
 log_level_out_set (int outlevel) {
   loglevel &= L_LEVELMASK;
   loglevel |= outlevel & L_OUTMASK;
-  fprintf (stderr,"----------------> OUT %i\n",loglevel);
 }
 
 char *log_level_str (int level) {
