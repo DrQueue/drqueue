@@ -87,6 +87,7 @@ extern "C" {
   void handle_r_r_jobenvvars (int sfd,struct database *wdb,int icomp,struct request *req);
   void handle_r_r_jobblkhostname (int sfd,struct database *wdb,int icomp,struct request *req);
   void handle_r_r_jobunblkhostname (int sfd,struct database *wdb,int icomp,struct request *req);
+  void handle_r_r_jobname (int sfd, struct database *wdb, int icomp, struct request *req);
 
   /* sent TO MASTER */
   void update_computer_status (struct slave_database *database); /* The slave calls this function to update the */
@@ -127,6 +128,7 @@ extern "C" {
   int request_job_envvars (uint32_t ijob, struct envvars *envvars, uint16_t who);
   int request_job_block_host_by_name (uint32_t ijob, char *name, uint16_t who);
   int request_job_unblock_host_by_name (uint32_t ijob, char *name, uint16_t who);
+  int request_job_name (uint ijob, char **jobname, uint16_t who);
 
   /* sent TO SLAVE */
   int request_slave_killtask (char *slave,uint16_t itask,uint16_t who);

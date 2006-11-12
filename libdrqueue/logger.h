@@ -61,7 +61,6 @@ typedef enum {
 #define LAPP_SLAVE  1
 
 extern int loglevel;
-extern int logonscreen;
 extern logtooltype logtool;
 extern struct job *logger_job;
 extern struct task *logger_task;
@@ -69,14 +68,9 @@ extern struct computer *logger_computer;
 
 void log_auto (int level, char *fmt, ...);
 
-void log_slave_task (struct task *task,int level,char *fmt,...);
-void log_slave_computer (int level, char *fmt, ...);
-
-void log_master (int level, char *fmt, ...);
-void log_master_job (struct job *job, int level, char *fmt, ...);
-void log_master_computer (struct computer *computer, int level, char *fmt, ...);
-
 char *log_level_str (int level);
+void log_level_out_set (int outlevel);
+void log_level_severity_set (int severity);
 
 int log_dumptask_open (struct task *t);
 int log_dumptask_open_ro (struct task *t);

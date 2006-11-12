@@ -59,6 +59,7 @@
 #define R_R_JOBENVVARS          33 // Job environment variables
 #define R_R_JOBBLKHOSTNAME      34 // Job block a host by name
 #define R_R_JOBUNBLKHOSTNAME    35 // Job block a host by name
+#define R_R_JOBNAME             36 // Requesting job name
 
 /* Requests to the slave */
 #define RS_R_KILLTASK      1 /* Request to slave to kill a task */

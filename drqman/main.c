@@ -117,11 +117,11 @@ void drqman_get_options (int *argc,char ***argv) {
   while ((opt = getopt (*argc,*argv,"l:o")) != -1) {
     switch (opt) {
     case 'l':
-      loglevel = atoi (optarg);
+      log_level_severity_set (atoi(optarg));
       printf ("Logging level set to: %i (%s)\n",loglevel,log_level_str(loglevel));
       break;
     case 'o':
-      logonscreen = 1;
+      log_level_out_set (L_ONSCREEN);
       printf ("Logging on screen.\n");
       break;
     case '?':

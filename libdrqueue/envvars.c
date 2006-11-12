@@ -73,8 +73,11 @@ int envvars_attach (struct envvars *envvars) {
   // This function just tries to attach the segment identified by
   // evshmid to the data structure
   
+  drerrno = DRE_NOERROR;
+
   if (!envvars) {
     log_auto (L_WARNING,"envvars_attach(): received NULL pointer.");
+    drerrno = DRE_ATTACHSHMEM;
     return 0;
   }
 
@@ -90,11 +93,6 @@ int envvars_attach (struct envvars *envvars) {
   if (envvars->variables != NULL) {
     // Already attached (?)
     //
-
-    //fprintf (stderr,"WARNING: envvars_attach() variables segment seems to be already attached. Not attaching again.\n");
-    //drerrno = DRE_ATTACHSHMEM;
-    //return 0;
-
     log_auto (L_INFO,"envvars_attach(): envvars already attached (?). Detacching whatever was there.");
     if (shmdt (envvars->variables) == -1) {
       drerrno_system = errno;
@@ -104,13 +102,12 @@ int envvars_attach (struct envvars *envvars) {
     envvars->variables = NULL;
   }
 
-  if ((envvars->variables = (struct envvar *) shmat ((int)envvars->evshmid,0,0)) 
-      == (struct envvar *)-1)
-    {
-      envvars->variables = NULL;
-      drerrno = DRE_ATTACHSHMEM;
-      return 0;
-    }
+  if ((envvars->variables = (struct envvar *) shmat ((int)envvars->evshmid,0,0)) == (struct envvar *)-1) {
+    drerrno_system = errno;
+    log_auto (L_ERROR,"envvars_attach(): could not attach on 'shmat'. (%s)",strerror(drerrno_system));
+    drerrno = DRE_ATTACHSHMEM;
+    return 0;
+  }
 
 #ifdef __DEBUG_ENVVARS
   fprintf (stderr,"++++ envvars_attach() ++++ variables == -1 (shmat)\n");
@@ -118,7 +115,6 @@ int envvars_attach (struct envvars *envvars) {
   fprintf (stderr,"+++++++++ envvars_attach() EXIT\n");
 #endif
 
-  drerrno = DRE_NOERROR;
   return 1;
 }
 
