@@ -55,10 +55,10 @@ int computer_index_addr (void *pwdb,struct in_addr addr) {
   char *dot;
   char *name;
 
-  log_master (L_DEBUG,"Entering computer_index_addr");
+  log_auto (L_DEBUG,"Entering computer_index_addr");
 
   if ((host = gethostbyaddr ((const void *)&addr.s_addr,sizeof (struct in_addr),AF_INET)) == NULL) {
-    log_master (L_INFO,"computer_index_addr(). Using IP address as host name because '%s' could not be resolved",inet_ntoa(addr));
+    log_auto (L_INFO,"computer_index_addr(). Using IP address as host name because '%s' could not be resolved",inet_ntoa(addr));
     name=inet_ntoa(addr);
   } else {
     //int i=0;
@@ -75,7 +75,7 @@ int computer_index_addr (void *pwdb,struct in_addr addr) {
   index = computer_index_name (pwdb,name);
   semaphore_release(((struct database *)pwdb)->semid);
 
-  log_master (L_DEBUG,"Exiting computer_index_addr. Index of computer %s is %i.",name,index);
+  log_auto (L_DEBUG,"Exiting computer_index_addr. Index of computer %s is %i.",name,index);
 
   return index;
 }
@@ -126,11 +126,11 @@ int computer_available (struct computer *computer) {
   /* This means that never will be assigned more tasks than processors */
   /* This behaviour could be changed in the future */
   npt = (computer->limits.nmaxcpus < computer->hwinfo.ncpus) ? computer->limits.nmaxcpus : computer->hwinfo.ncpus;
-  log_slave_computer(L_DEBUG2,"computer_available() phase 1 (limits on cpus) : npt = %i",npt);
+  log_auto(L_DEBUG2,"computer_available() phase 1 (limits on cpus) : npt = %i",npt);
 
   /* then npt is the minimum of npt or the number of free tasks structures */
   npt = (npt < MAXTASKS) ? npt : MAXTASKS;
-  log_slave_computer(L_DEBUG2,"computer_available() phase 2 (<maxtasks) : npt = %i",npt);
+  log_auto(L_DEBUG2,"computer_available() phase 2 (<maxtasks) : npt = %i",npt);
 
   /* Care must be taken because we substract the running tasks TWO times */
   /* one because of the load, another one here. */
@@ -145,24 +145,24 @@ int computer_available (struct computer *computer) {
     t = npt;
   }
   npt -= t;
-  log_slave_computer(L_DEBUG2,"computer_available() phase 3 (after considering the loadavg) : npt = %i",npt);
+  log_auto(L_DEBUG2,"computer_available() phase 3 (after considering the loadavg) : npt = %i",npt);
 
   /* Number of current working tasks */
   npt -= computer->status.nrunning;
-  log_slave_computer(L_DEBUG2,"computer_available() phase 3 (substract nrunning) : npt = %i",npt);
+  log_auto(L_DEBUG2,"computer_available() phase 3 (substract nrunning) : npt = %i",npt);
 
   if (computer->status.nrunning > MAXTASKS) {
     /* This should never happen, btw */
-    log_slave_computer (L_ERROR,"The computer has exceeded the MAXTASKS limit");
+    log_auto (L_ERROR,"The computer has exceeded the MAXTASKS limit");
     kill (0,SIGINT);
   }
 
   if (npt <= 0) {
-    log_slave_computer(L_DEBUG2,"computer_available() returning 0 : NOT available");
+    log_auto(L_DEBUG2,"computer_available() returning 0 : NOT available");
     return 0;
   }
 
-  log_slave_computer(L_DEBUG2,"computer_available() returning 1 : available");
+  log_auto(L_DEBUG2,"computer_available() returning 1 : available");
   return 1;
 }
 
@@ -258,7 +258,7 @@ computer_ntasks (struct computer *comp) {
 
   for (i=0; i < MAXTASKS; i++) {
     if (comp->status.task[i].used) {
-      ntasks ++;
+      ntasks++;
     }
   }
 
@@ -277,7 +277,7 @@ computer_nrunning (struct computer *comp) {
     // Old: if (comp->status.task[i].used && comp->status.task[i].status != TASKSTATUS_FINISHED) {
     if (task_is_running(&comp->status.task[i])) {
       nrunning++;
-    }      
+    }
   }
   computer_release (comp);
 
@@ -416,7 +416,6 @@ computer_lock (struct computer *computer) {
 	      strerror(drerrno_system));
     return 0;
   }
-  // TODO: log_auto_computer
   log_auto (L_DEBUG3,"computer_lock(): computer locked successfully. (Comp Id: %u)",computer->hwinfo.id);
   return 1;
 }
@@ -432,7 +431,6 @@ computer_release (struct computer *computer) {
 	      strerror(drerrno_system));
     return 0;
   }
-  // TODO: log_auto_computer
   log_auto (L_DEBUG3,"computer_release(): computer released successfully. (Comp Id: %u)",computer->hwinfo.id);
   return 1;
 }

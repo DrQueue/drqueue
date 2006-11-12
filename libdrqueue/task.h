@@ -66,6 +66,7 @@ struct task {
 
 struct slave_database;
 struct job;
+
 #pragma pack(pop)
 
 void task_init_all (struct task *task);

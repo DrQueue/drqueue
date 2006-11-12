@@ -503,12 +503,13 @@ int recv_computer_status (int sfd, struct computer_status *status) {
 
 int recv_envvar (int sfd, struct envvar *var) {
   // receives a single environment variable structure
-  if ( dr_read (sfd,(char *)var,sizeof (struct envvar)) == 0 ) {
-    perror ("recv_envvar");
+  drerrno = DRE_NOERROR;
+
+  if (!dr_read (sfd,(char *)var,sizeof (struct envvar))) {
+    drerrno = DRE_ERRORREADING;
     return 0;
   }
 
-  drerrno = DRE_NOERROR;
   return 1;
 }
 
@@ -525,8 +526,10 @@ int send_envvar (int sfd, struct envvar *var) {
 
 int send_envvars (int sfd, struct envvars *envvars) {
   //fprintf (stderr,"DEBUG: send_envvars() we have %i environment variables available for the request\n",envvars->nvariables);
+  uint16_t nvariables;
 
-  if (!write_16b (sfd,(char *)&envvars->nvariables)) {
+  nvariables = htons (envvars->nvariables);
+  if (!dr_write (sfd,(char *)&nvariables,sizeof(nvariables))) {
     return 0;
   }
 
@@ -561,11 +564,12 @@ int recv_envvars (int sfd, struct envvars *envvars) {
     return 0;
   }
 
-  if (!read_16b (sfd,&nvariables)) {
+  if (!dr_read(sfd,(char*)&nvariables,sizeof(nvariables))) {
     fprintf (stderr,"ERROR: recv_envvars() while receiving nvariables. (%s)\n",drerrno_str());
     return 0;
   }
-
+  nvariables = ntohs (nvariables);
+  
   int i;
   struct envvar var;
   if (nvariables) {
@@ -756,7 +760,8 @@ send_job (int sfd, struct job *job) {
   return 1;
 }
 
-int recv_task (int sfd, struct task *task) {
+int
+recv_task (int sfd, struct task *task) {
   void *buf;
   uint32_t datasize;
 

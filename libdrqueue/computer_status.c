@@ -82,7 +82,7 @@ void check_tasks (struct computer_status *cstatus, int64_t semid) {
           cstatus->ntasks++;
         } else {
           /* task is registered but not running */
-          log_slave_task(&cstatus->task[i],L_WARNING,"Check tasks found no task where there should have been one.");
+          log_auto(L_WARNING,"Check tasks found no task where there should have been one.");
           cstatus->task[i].used = 0;
         }
       } else {
@@ -136,7 +136,7 @@ void get_loadavg (uint16_t *loadavg) {
         while (!isdigit((int)*fd))
           fd++;
         if (sscanf (fd,"%f, %f, %f",&f1,&f2,&f3) != 3) {
-          log_slave_computer (L_WARNING,"Problems on get_loadavg\n");
+          log_auto (L_WARNING,"Problems on get_loadavg\n");
           f1 = f2 = f3 = 0;
         }
         tla[0] = f1 * 1000;
@@ -170,7 +170,7 @@ void get_loadavg (uint16_t *loadavg) {
       while (!isdigit((int)*fd))
         fd++;
       if (sscanf (fd,"%f %f %f",&f1,&f2,&f3) != 3) {
-        log_slave_computer (L_WARNING,"Problems on get_loadavg\n");
+        log_auto (L_WARNING,"Problems on get_loadavg\n");
         f1 = f2 = f3 = 0;
       }
     }
@@ -186,7 +186,7 @@ void get_loadavg (uint16_t *loadavg) {
 
   double fls[3];
   if (getloadavg(fls,3)<3) {
-    log_slave_computer (L_WARNING,"Problems on getloadavg\n");
+    log_auto (L_WARNING,"Problems on getloadavg\n");
     fls[0]=fls[1]=fls[2]=0.0;
   }
   loadavg[0] = (uint16_t) (fls[0] * 100);

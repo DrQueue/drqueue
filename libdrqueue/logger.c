@@ -42,7 +42,6 @@
 #include "libdrqueue.h"
 
 int loglevel = L_INFO;
-int logonscreen = 0;
 logtooltype logtool = DRQ_LOG_TOOL_UNKNOWN;
 struct job *logger_job = NULL;
 struct task *logger_task = NULL;
@@ -63,7 +62,7 @@ FILE *log_slave_open_computer (int level, char *name);
 FILE *log_master_open (int level);
 
 int log_level_dest (int level);
-int log_on_screen (int level);
+int log_on_screen (void);
 int log_job_path_get (uint32_t jobid,char *path,int pathlen);
 int log_task_filename_get (struct task *task, char *path, int pathlen);
 
@@ -81,8 +80,8 @@ log_slave_task (struct task *task,int level,char *fmt,...) {
 }
 
 int
-log_on_screen (int level) {
-  if ((L_OUTMASK & level) & L_ONSCREEN) {
+log_on_screen (void) {
+  if ((L_OUTMASK & loglevel) & L_ONSCREEN) {
     return 1;
   }
   return 0;
@@ -91,10 +90,8 @@ log_on_screen (int level) {
 FILE *log_slave_open_task (int level, struct task *task) {
   FILE *f;
   char filename[PATH_MAX];
-  char dir[BUFFERLEN];
-  char *basedir;
 
-  if (log_on_screen (level)) {
+  if (log_on_screen()) {
     return stderr;
   } 
 
@@ -105,8 +102,6 @@ FILE *log_slave_open_task (int level, struct task *task) {
 
   if ((f = fopen (filename, "a")) == NULL) {
     drerrno_system = errno;
-    log_auto (L_ERROR,"log_slave_open_task(): Couldn't open file for writing '%s', logging on the screen. (%s)",
-              filename,strerror(drerrno_system));
     return stderr;
   }
 
@@ -114,25 +109,13 @@ FILE *log_slave_open_task (int level, struct task *task) {
 }
 
 void log_slave_computer (int level, char *fmt, ...) {
-  FILE *f_log;
   char name2[MAXNAMELEN];
   char *name = NULL;  /* To only make a call to gethostname */
-  char buf[BUFFERLEN];  /* Buffer to hold the current time */
-  char msg[BUFFERLEN];
-  time_t now;
   va_list ap;
 
-  if (level > loglevel) {
+  if (!log_level_dest(level)) {
     return;
   }
-
-  va_start (ap,fmt);
-  vsnprintf (msg,BUFFERLEN-1,fmt,ap);
-  va_end (ap);
-
-  time (&now);
-  strncpy (buf,ctime(&now),BUFFERLEN-1);
-  buf[strlen(buf)-1] = '\0';
 
   if (name == NULL) {
     if (gethostname(name2,MAXNAMELEN-1) == -1) {
@@ -141,21 +124,9 @@ void log_slave_computer (int level, char *fmt, ...) {
     name = name2;
   }
 
-  if (!logonscreen) {
-    f_log = log_slave_open_computer (level,name);
-    if (!f_log)
-      f_log = stderr;
-  } else {
-    f_log = stderr;
-  }
-
-  if (loglevel < L_DEBUG)
-    fprintf (f_log,"%8s : %s: %s\n",buf,log_level_str(level),msg);
-  else
-    fprintf (f_log,"%8s : (%i) %s: %s\n",buf,(int) getpid(), log_level_str(level),msg);
-
-  if (f_log != stderr)
-    fclose (f_log);
+  va_start (ap,fmt);
+  log_auto(level,fmt,ap);
+  va_end (ap);
 }
 
 FILE *log_slave_open_computer (int level, char *name) {
@@ -163,7 +134,7 @@ FILE *log_slave_open_computer (int level, char *name) {
   char filename[BUFFERLEN];
   char *basedir;
 
-  if ((L_OUTMASK & level) & L_ONSCREEN) {
+  if (log_on_screen()) {
     return stderr;
   } 
 
@@ -184,10 +155,6 @@ FILE *log_slave_open_computer (int level, char *name) {
 }
 
 void log_master_job (struct job *job, int level, char *fmt, ...) {
-  FILE *f_log;
-  char buf[BUFFERLEN];  /* Buffer to hold the time */
-  char msg[BUFFERLEN];
-  time_t now;
   va_list ap;
 
   if (!log_level_dest (level))
@@ -225,38 +192,12 @@ log_level_dest (int level) {
   return 1;
 }
 
-void log_master (int level,char *fmt, ...) {
-  FILE *f_log;
-  char buf[BUFFERLEN];  /* Buffer to hold the time */
-  char msg[BUFFERLEN];
-  time_t now;
-  va_list ap;
-
-  if (!log_level_dest(level))
-    return;
-
-  va_start (ap,fmt);
-  vsnprintf (msg,BUFFERLEN-1,fmt,ap);
-  va_end (ap);
-
-  time (&now);
-  strncpy (buf,ctime(&now),BUFFERLEN-1);
-  buf[strlen(buf)-1] = '\0';
-
-  f_log = log_master_open (level);
-
-  fprintf (f_log,"%8s : %s: %s\n",buf,log_level_str(level),msg);
-
-  if (f_log != stderr)
-    fclose (f_log);
-}
-
 FILE *log_master_open (int level) {
   FILE *f;
   char filename[BUFFERLEN];
   char *basedir;
 
-  if (log_on_screen(level)) {
+  if (log_on_screen()) {
     return stderr;
   }
 
@@ -271,23 +212,37 @@ FILE *log_master_open (int level) {
   if ((f = fopen (filename,"a")) == NULL) {
     perror ("log_master_open: Couldn't open file for writing");
     fprintf (stderr,"So... logging on screen.\n");
-    f = stderr;
+    return stderr;
   }
 #else
   if ((f = fopen (filename,"ab")) == NULL) {
     perror ("log_master_open: Couldn't open file for writing");
     fprintf (stderr,"So... logging on screen.\n");
-    f = stderr;
+    return stderr;
   }
 #endif
 
   return f;
 }
 
+void
+log_level_severity_set (int severity) {
+  loglevel &= L_OUTMASK;
+  loglevel |= severity & L_LEVELMASK;
+  fprintf (stderr,"----------------> SEV %i\n",loglevel);
+}
+
+void
+log_level_out_set (int outlevel) {
+  loglevel &= L_LEVELMASK;
+  loglevel |= outlevel & L_OUTMASK;
+  fprintf (stderr,"----------------> OUT %i\n",loglevel);
+}
+
 char *log_level_str (int level) {
   char *msg;
 
-  switch (level) {
+  switch (level & L_LEVELMASK) {
   case L_ERROR:
     msg = "ERROR";
     break;
@@ -314,8 +269,8 @@ char *log_level_str (int level) {
 }
 
 int log_job_path_get (uint32_t jobid, char *path, int pathlen) {
-  struct job job;
   char *log_basedir;
+  char *jobname;
   int nwritten; // number of bytes written
 
   if ((log_basedir = getenv("DRQUEUE_LOGS")) == NULL) {
@@ -323,22 +278,20 @@ int log_job_path_get (uint32_t jobid, char *path, int pathlen) {
     return -1;
   }
 
-  if ((path ==NULL) || (pathlen <= 0)) {
+  if (!path) {
     // TODO: Show error
     //fprintf (stderr,"Non valid values for path or pathlen.\n");
     return -1;
   }
 
-  job_init(&job);
-  if (!request_job_xfer (jobid,&job,CLIENT)) {
-    //log_message (L_WARNING,"log_get_job_path: Could not retrieve job information on jobid %u\n",jobid);
+  if (!request_job_name (jobid,&jobname,CLIENT)) {
     return -1;
   }
 
-  nwritten = snprintf (path,pathlen,"%s/%03u.%s",log_basedir,job.id,job.name);
+  nwritten = snprintf (path,pathlen,"%s/%03u.%s",log_basedir,jobid,jobname);
+  free (jobname);
 
   // we do not need the job anymore
-  job_delete (&job);
 
   if (nwritten >= pathlen) {
     // TODO: Show error
@@ -352,18 +305,20 @@ int log_task_filename_get (struct task *task, char *path, int pathlen) {
   // Returns len of the written string or -1 on failure
   char job_path[PATH_MAX];
   int nwritten;
+  struct task *ttask;
 
-  if ((nwritten = log_job_path_get(task->ijob,job_path,PATH_MAX)) == -1) {
-    // TODO: Show error
-    return -1;
-  }
-  
-  if ((path ==NULL) || (pathlen <= 0)) {
+  if (!path) {
     // TODO: Show error
     //fprintf (stderr,"Non valid values for path or pathlen.\n");
     return -1;
   }
 
+  if ((nwritten = log_job_path_get(task->ijob,job_path,PATH_MAX)) == -1) {
+    // TODO: Show error
+    logger_task = ttask;
+    return -1;
+  }
+  
   nwritten = snprintf(path,pathlen,"%s/%s.%04u",job_path,task->jobname,task->frame);
   if (nwritten >= pathlen) {
     // TODO: Show error
@@ -371,6 +326,30 @@ int log_task_filename_get (struct task *task, char *path, int pathlen) {
   }
 
   return nwritten;
+}
+
+int
+log_path_exists (char *path) {
+  struct stat info;
+
+  if (stat(path,&info) == -1) {
+    drerrno_system = errno;
+    return 0;
+  }
+
+  return 1;
+}
+
+int
+log_path_create (char *path) {
+  int rv;
+
+  if ((rv = mkdir (path,0777)) == -1) {
+    drerrno_system = errno;
+    return 0;
+  }
+
+  return 1;
 }
 
 int log_dumptask_open (struct task *t) {
@@ -390,14 +369,21 @@ int log_dumptask_open (struct task *t) {
     // Backup code
     char *basedir;
     if ((basedir = getenv("DRQUEUE_LOGS")) == NULL) {
-      log_auto (L_WARNING,"log_dumptask_open(): environment variable DRQUEUE_LOGS not set.");
+      //log_auto (L_WARNING,"log_dumptask_open(): environment variable DRQUEUE_LOGS not set.");
       return -1;
     }
     // TODO: path
     snprintf(job_path,PATH_MAX,"%s/%03u.%s.DEFAULT",basedir,t->ijob,t->jobname);
   }
 
-  log_auto(L_DEBUG2,"log_dumptask_open(): logs for job go to directory on path '%s'",job_path);
+  //log_auto(L_DEBUG2,"log_dumptask_open(): logs for job go to directory on path '%s'",job_path);
+
+  if (!log_path_exists(job_path)) {
+    if (!log_path_create(job_path)) {
+      //log_auto(L_ERROR,"log_dumptask_open(): could not create log path directory '%s'. (%s)",job_path,strerror(drerrno_system));
+      return -1;
+    }
+  }
 
   if (log_task_filename_get(t,task_filename,PATH_MAX) == -1) {
     // Backup code
@@ -405,21 +391,14 @@ int log_dumptask_open (struct task *t) {
     snprintf(task_filename,PATH_MAX,"%s/%s.%04i.DEFAULT",job_path,t->jobname,t->frame);
   }
 
-  log_auto(L_DEBUG,"log_dumptask_open(): logs for this task go to path '%s'",task_filename);
+  //log_auto(L_DEBUG,"log_dumptask_open(): logs for this task go to path '%s'",task_filename);
+
 
   // TODO: Check for directory and creation on another function.
   if ((lfd = open (task_filename, O_CREAT|O_APPEND|O_RDWR, 0664)) == -1) {
-    if (errno == ENOENT) {
-      /* If its because the directory does not exist we try creating it first */
-      if (mkdir (job_path,0775) == -1) {
-        log_slave_task (t,L_ERROR,"Couldn't create directory for task logs on '%s'",job_path);
-        return -1;
-      }
-      if ((lfd = open (task_filename, O_CREAT|O_APPEND|O_RDWR, 0664)) == -1) {
-        log_slave_task (t,L_ERROR,"Couldn't open or create file for task log on '%s'",task_filename);
-        return -1;
-      }
-    }
+    drerrno_system = errno;
+    //log_auto (L_ERROR,"log_dumptask_open(): error on open. (%s)",strerror(drerrno_system));
+    return -1;
   }
 
   time (&tm);
@@ -441,7 +420,7 @@ int log_dumptask_open_ro (struct task *t) {
       // Backup code 
       char *basedir;
       if ((basedir = getenv("DRQUEUE_LOGS")) == NULL) {
-        log_auto (L_ERROR,"log_dumptask_open_ro(): environment variable DRQUEUE_LOGS not set.");
+        //log_auto (L_ERROR,"log_dumptask_open_ro(): environment variable DRQUEUE_LOGS not set.");
         return -1;
       }
       // TODO: path
@@ -451,10 +430,10 @@ int log_dumptask_open_ro (struct task *t) {
     snprintf(task_filename,PATH_MAX,"%s/%s.%04i.DEFAULT",job_path,t->jobname,t->frame);
   }
   
-  log_auto(L_DEBUG,"log_dumptask_open_ro(): trying to read task log from path '%s'",task_filename);
+  //log_auto(L_DEBUG,"log_dumptask_open_ro(): trying to read task log from path '%s'",task_filename);
 
   if ((lfd = open (task_filename,O_RDONLY)) == -1) {
-    log_auto (L_ERROR,"log_dumptask_open_ro(): couldn't open log file for task on '%s'",task_filename);
+    //log_auto (L_ERROR,"log_dumptask_open_ro(): couldn't open log file for task on '%s'",task_filename);
     return -1;
   }
 
@@ -530,27 +509,29 @@ void log_auto (int level, char *fmt, ...) {
 
   va_list ap;
 
-  if ((L_LEVELMASK & level) > loglevel)
+  if (!log_level_dest(level))
     return;
 
-  switch (logtool) {
-  case DRQ_LOG_TOOL_MASTER:
-    f_log = log_master_open(level);
-    break;
-  case DRQ_LOG_TOOL_SLAVE:
-    if (logger_computer) 
-      f_log = log_slave_open_computer(level,logger_computer->hwinfo.name);
-    break;
-  case DRQ_LOG_TOOL_SLAVE_TASK:
-    if (logger_task)
-      f_log = log_slave_open_task(level,logger_task);
-    break;
-  default:
+  if (log_on_screen()) {
     f_log = stderr;
-  }
-
-  if (logonscreen || !f_log) {
-    f_log = stderr;
+  } else {
+    switch (logtool) {
+    case DRQ_LOG_TOOL_MASTER:
+      f_log = log_master_open(level);
+      break;
+    case DRQ_LOG_TOOL_SLAVE_TASK:
+      if (logger_task) {
+	f_log = log_slave_open_task(level,logger_task);
+	break;
+      }
+    case DRQ_LOG_TOOL_SLAVE:
+    default:
+      if (gethostname(computer_buf,BUFFERLEN) != -1) {
+	f_log = log_slave_open_computer(level,computer_buf);
+      } else {
+	f_log = stderr;
+      }
+    }
   }
 
   va_start (ap,fmt);
@@ -579,4 +560,7 @@ void log_auto (int level, char *fmt, ...) {
   }
 
   fprintf (f_log,"%s -> MSG: %s\n",msg,origmsg);
+
+  if (fileno(f_log) != fileno(stderr))
+    fclose(f_log);
 }
