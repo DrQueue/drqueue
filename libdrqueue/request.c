@@ -1151,6 +1151,7 @@ void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp) {
           log_auto (L_INFO,"Frame %i died without signal.",job_frame_index_to_number (&wdb->job[task.ijob],task.frame));
           fi[task.frame].status = FS_ERROR;
           fi[task.frame].end_time = time (NULL);
+          wdb->job[task.ijob].ffailed++;
         } else {
           // TODO: complete this.
           // log_auto ( /*<FILLME>*/ ,L_INFO,"Frame %i died without signal but was not assigned.",

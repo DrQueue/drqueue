@@ -354,6 +354,7 @@ void *attach_shared_memory_slave (int64_t shmid) {
 void set_signal_handlers_child_listening (void) {
   struct sigaction action_dfl;
 
+  action_dfl.sa_flags = 0;
   action_dfl.sa_handler = (void *)SIG_DFL;
   sigemptyset (&action_dfl.sa_mask);
   sigaction (SIGINT, &action_dfl, NULL);
@@ -378,12 +379,14 @@ void set_signal_handlers_child_launcher (void) {
   struct sigaction action_ignore;
   struct sigaction action_dfl;
 
+  action_ignore.sa_flags = 0;
   action_ignore.sa_handler = SIG_IGN;
   sigemptyset (&action_ignore.sa_mask);
   sigaction (SIGINT, &action_ignore, NULL);
   sigaction (SIGTERM, &action_ignore, NULL);
 
   action_dfl.sa_handler = (void *)SIG_DFL;
+  action_dfl.sa_flags = 0;
   sigemptyset (&action_dfl.sa_mask);
 #ifdef __OSX
 
@@ -397,6 +400,7 @@ void set_signal_handlers_child_launcher (void) {
 void set_signal_handlers_task_exec (void) {
   struct sigaction action_dfl;
 
+  action_dfl.sa_flags = 0;
   action_dfl.sa_handler = (void *)SIG_DFL;
   sigemptyset (&action_dfl.sa_mask);
   sigaction (SIGINT, &action_dfl, NULL);
@@ -606,7 +610,9 @@ void launch_task (struct slave_database *sdb, uint16_t itask) {
           /* printf ("\n\nEXITED with
 	     %i\n",DR_WEXITSTATUS(sdb->comp->status.task[itask].exitstatus)); */
 	  log_auto(L_INFO,"Task finished");
-        }
+        } else {
+	  log_auto(L_WARNING,"Task finished with rc = %i",rc);
+	}
       }
       semaphore_release(sdb->semid);
 
