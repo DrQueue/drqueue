@@ -88,7 +88,7 @@ void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job) {
   semaphore_lock(wdb->semid);
 
   if (!job_index_correct_master(wdb,ijob)) {
-    log_master (L_ERROR,"Job index should be valid when registering and it is not");
+    log_auto (L_ERROR,"Job index should be valid when registering and it is not");
     return;
   }
 
@@ -104,14 +104,14 @@ void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job) {
     if ((wdb->job[ijob].fishmid = (int64_t) get_frame_shared_memory (nframes)) == (int64_t)-1) {
       job_init (&wdb->job[ijob]);
       semaphore_release(wdb->semid);
-      log_master(L_ERROR,"Getting frame shared memory. New job could not be registered.");
+      log_auto (L_ERROR,"Getting frame shared memory. New job could not be registered.");
       return;
     }
 
     if ((wdb->job[ijob].frame_info = attach_frame_shared_memory (wdb->job[ijob].fishmid)) == (void *)-1) {
       job_init (&wdb->job[ijob]);
       semaphore_release(wdb->semid);
-      log_master(L_ERROR,"Attaching frame shared memory. New job could not be registered.");
+      log_auto (L_ERROR,"Attaching frame shared memory. New job could not be registered.");
       return;
     }
 
@@ -145,7 +145,8 @@ void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job) {
 
   semaphore_release(wdb->semid);
 
-  log_master_job (&wdb->job[ijob],L_INFO,"Registered on position %i",ijob);
+  
+  log_auto(L_INFO,"Registered on position %i",ijob);
 }
 
 void
@@ -223,6 +224,10 @@ job_delete (struct job *job) {
   //
   // Deallocates all memory reserved for the job and initializes it.
   //
+  if (!job) {
+    // TODO: log it
+    return;
+  }
   job_frame_info_free (job);
   job_block_host_free (job);
   envvars_free(&job->envvars);
@@ -388,7 +393,7 @@ void job_update_assigned (struct database *wdb, uint32_t ijob, uint32_t iframe, 
 
   /* The status should already be FS_ASSIGNED */
   if (wdb->job[ijob].frame_info[iframe].status != FS_ASSIGNED) {
-    log_master (L_ERROR,"(wdb->job[%i].frame_info[%i].status != FS_ASSIGNED)",ijob,iframe);
+    log_auto (L_ERROR,"(wdb->job[%i].frame_info[%i].status != FS_ASSIGNED)",ijob,iframe);
     wdb->job[ijob].frame_info[iframe].status = FS_ASSIGNED;
   }
 
@@ -417,7 +422,7 @@ get_blocked_host_shared_memory (uint32_t nhosts) {
 
   if ((shmid = (int64_t) shmget (IPC_PRIVATE,sizeof(struct blocked_host)*nhosts, IPC_EXCL|IPC_CREAT|0600)) == (int64_t)-1) {
     drerrno = DRE_GETSHMEM;
-    log_master (L_ERROR,"get_blocked_host_shared_memory: shmget (%s)",drerrno_str());
+    log_auto (L_ERROR,"get_blocked_host_shared_memory: shmget (%s)",drerrno_str());
     perror ("shmget");
     return shmid;
   }
@@ -431,7 +436,7 @@ attach_blocked_host_shared_memory (int64_t shmid) {
 
   if ((rv = shmat ((int)shmid,0,0)) == (void *)-1) {
     drerrno = DRE_ATTACHSHMEM;
-    log_master (L_ERROR,"attach_blocked_host_shared_memory (shmat): %s",drerrno_str());
+    log_auto (L_ERROR,"attach_blocked_host_shared_memory (shmat): %s",drerrno_str());
     perror ("blocked host shmat");
   }
 
@@ -442,7 +447,7 @@ void
 detach_blocked_host_shared_memory (struct blocked_host *bhshp) {
   if (bhshp && shmdt((char*)bhshp) == -1) {
     drerrno = DRE_RMSHMEM;
-    log_master (L_ERROR,"Call to shmdt failed (detach_blocked_host_shared_memory): %s",drerrno_str());
+    log_auto (L_ERROR,"Call to shmdt failed (detach_blocked_host_shared_memory): %s",drerrno_str());
     perror ("shmdt: detach_blocked_host_shared_memory");
   }
   bhshp = NULL;
@@ -489,7 +494,8 @@ uint32_t job_njobs_masterdb (struct database *wdb) {
   return c;
 }
 
-void job_update_info (struct database *wdb,uint32_t ijob) {
+void
+job_update_info (struct database *wdb,uint32_t ijob) {
   /* This function is called by the master */
   /* It updates the number of process running */
   /* This function is called unlocked */
@@ -506,7 +512,7 @@ void job_update_info (struct database *wdb,uint32_t ijob) {
                                     // the number of finished ones.
   struct job job;
 
-  log_master (L_DEBUG,"Entering job_update_info.");
+  log_auto (L_DEBUG3,"job_update_info(): >Entering job_update_info.");
 
   ///
   semaphore_lock(wdb->semid);
@@ -540,7 +546,7 @@ void job_update_info (struct database *wdb,uint32_t ijob) {
 
   for (i=0;i<total;i++) {
     if (!job_check_frame_status (wdb,ijob,i,job.frame_info)) {
-      log_master (L_WARNING,"Problem in job_check_frame_status inside job_update_info");
+      log_auto (L_WARNING,"Problem in job_check_frame_status inside job_update_info");
       free (job.frame_info);
       return;
     }
@@ -631,7 +637,7 @@ void job_update_info (struct database *wdb,uint32_t ijob) {
   semaphore_release(wdb->semid);
   ///
 
-  log_master (L_DEBUG,"Exiting job_update_info.");
+  log_auto (L_DEBUG3,"job_update_info(): <Returning...");
 }
 
 int job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe, struct frame_info *fi) {
@@ -641,79 +647,81 @@ int job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe,
   int running = 1;
   uint16_t icomp,itask;
   t_taskstatus tstatus;
-  struct job job;
+  struct job *job;
 
   //
   semaphore_lock (wdb->semid);
 
   if (!job_index_correct_master (wdb,ijob)) {
-    log_master (L_WARNING,"Job index not correct (%i)",ijob);
+    log_auto (L_WARNING,"Job index not correct (%i)",ijob);
     semaphore_release(wdb->semid);
     return 0;
   }
 
   if (!job_frame_number_correct(&wdb->job[ijob],job_frame_index_to_number(&wdb->job[ijob],iframe))) {
-    log_master (L_WARNING,"Frame index %i not correct for job %i",iframe,ijob);
+    log_auto (L_WARNING,"Frame index %i not correct for job %i",iframe,ijob);
     semaphore_release (wdb->semid);
     return 0;
   }
 
-  job_copy(&wdb->job[ijob],&job);
+  job = &wdb->job[ijob];
 
-  job.frame_info = fi;
+  job->frame_info = fi;
 
-  fistatus = (t_framestatus) job.frame_info[iframe].status;
-  icomp = job.frame_info[iframe].icomp;
-  itask = job.frame_info[iframe].itask;
+  fistatus = (t_framestatus) job->frame_info[iframe].status;
+  icomp = job->frame_info[iframe].icomp;
+  itask = job->frame_info[iframe].itask;
 
   if (fistatus == FS_ASSIGNED) {
     if (!computer_index_correct_master(wdb,icomp)) {
-      log_master (L_WARNING,"Computer index not correct (%i)",icomp);
+      log_auto (L_WARNING,"Computer index not correct (%i)",icomp);
       running = 0;
     } else if (itask != (uint16_t)-1) {
       if (wdb->computer[icomp].status.task[itask].used == 0) {
         /* If it has a task assigned and that's not beign used */
-        log_master (L_WARNING,"Task in computer (%s:%i) is not being used",wdb->computer[icomp].hwinfo.name,icomp);
+        log_auto (L_WARNING,"Task in computer (%s:%i) is not being used",wdb->computer[icomp].hwinfo.name,icomp);
         running = 0;
       } else {
         tstatus = (t_taskstatus) wdb->computer[icomp].status.task[itask].status;
 
         /* check if the task status is running */
         if ((tstatus != TASKSTATUS_RUNNING) && (tstatus != TASKSTATUS_LOADING)) {
-          log_master (L_WARNING,"Task status in computer (%s:%i) is not running or loading", wdb->computer[icomp].hwinfo.name,icomp);
+          log_auto (L_WARNING,"Task status in computer (%s:%i) is not running or loading", wdb->computer[icomp].hwinfo.name,icomp);
           running = 0;
         }
 
         /* check if the job is the same in index */
         if (wdb->computer[icomp].status.task[itask].ijob != ijob) {
-          log_master (L_WARNING,"Job indices between task and frame info differ");
+          log_auto (L_WARNING,"Job indices between task and frame info differ");
           running = 0;
         }
         /* check if the job is the same in name */
         if (!job_index_correct_master (wdb,ijob)) {
-          log_master (L_WARNING,"Job index is not correct");
+          log_auto (L_WARNING,"Job index is not correct");
           running = 0;
-        } else if (strcmp (wdb->computer[icomp].status.task[itask].jobname,job.name) != 0) {
-          log_master (L_WARNING,"Job names are different between task and job");
+        } else if (strcmp (wdb->computer[icomp].status.task[itask].jobname,job->name) != 0) {
+          log_auto (L_WARNING,"Job names are different between task and job");
           running = 0;
         }
       }
     } else { // itask == -1
       /* The task is being loaded, so it hasn't yet a itask assigned */
       // TODO: check for timeout
+      log_auto(L_WARNING,"job_check_frame_status(): task is being loaded (?). itask == -1.");
+      running = 0;
     }
   }
 
   if (!running) {
     struct frame_info *fitmp;
-    log_master (L_DEBUG,"Checking iframe %i of ijob %i. icomp: %i itask: %i", iframe,ijob,icomp,itask);
-    log_master_job (&job,L_WARNING,"Task registered as running not running. Requeued");
-    fitmp = attach_frame_shared_memory (job.fishmid);
+    log_auto (L_DEBUG,"Checking iframe %i of ijob %i. icomp: %i itask: %i", iframe,ijob,icomp,itask);
+    log_auto (L_WARNING,"Task registered as running not running. Requeued");
+    fitmp = attach_frame_shared_memory (job->fishmid);
     if (fitmp == (void *) -1) {
       // Couldn't attach frame_info shared memory
       semaphore_release (wdb->semid);
       drerrno = DRE_ATTACHSHMEM;
-      log_master_job (&job,L_ERROR,"%s", drerrno_str());
+      log_auto (L_ERROR,"job_check_frame_status(): error attaching frame memory. (%s)",strerror(drerrno_system));
       return 0;
     } else {
       fitmp[iframe].status = FS_WAITING;
@@ -1215,7 +1223,8 @@ uint32_t job_first_frame_available_no_icomp (struct database *wdb,uint32_t ijob)
 
 int
 job_block_host_add_by_name (struct job *job, char *name) {
-  struct blocked_host *obh,*nbh;
+  struct blocked_host *obh=NULL;
+  struct blocked_host *nbh=NULL;
   int64_t nbhshmid;
   struct blocked_host single;
   int i;

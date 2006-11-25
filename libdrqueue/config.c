@@ -76,6 +76,7 @@ void config_parse (char *cfg) {
         snprintf (renv,BUFFERLEN,"DRQUEUE_LOGS=%s",token);
         if ((penv = (char*) malloc (strlen (renv)+1)) == NULL) {
           fprintf (stderr,"ERROR allocating memory for DRQUEUE_LOGS.\n");
+	  fclose (f_conf);
           exit (1);
         }
         strncpy(penv,renv,strlen(renv)+1);
@@ -91,6 +92,7 @@ void config_parse (char *cfg) {
         snprintf (renv,BUFFERLEN,"DRQUEUE_TMP=%s",token);
         if ((penv = (char*) malloc (strlen(renv)+1)) == NULL) {
           fprintf (stderr,"ERROR allocating memory for DRQUEUE_TMP.\n");
+	  fclose(f_conf);
           exit (1);
         }
         strncpy(penv,renv,strlen(renv)+1);
@@ -106,6 +108,7 @@ void config_parse (char *cfg) {
         snprintf (renv,BUFFERLEN,"DRQUEUE_BIN=%s",token);
         if ((penv = (char*) malloc (strlen(renv)+1)) == NULL) {
           fprintf (stderr,"ERROR allocating memory for DRQUEUE_BIN.\n");
+	  fclose(f_conf);
           exit (1);
         }
         strncpy(penv,renv,strlen(renv)+1);
@@ -121,6 +124,7 @@ void config_parse (char *cfg) {
         snprintf (renv,BUFFERLEN,"DRQUEUE_ETC=%s",token);
         if ((penv = (char*) malloc (strlen(renv)+1)) == NULL) {
           fprintf (stderr,"ERROR allocating memory for DRQUEUE_ETC.\n");
+	  fclose(f_conf);
           exit (1);
         }
         strncpy(penv,renv,strlen(renv)+1);
@@ -136,12 +140,14 @@ void config_parse (char *cfg) {
         snprintf (renv,BUFFERLEN,"DRQUEUE_DB=%s",token);
         if ((penv = (char*) malloc (strlen(renv)+1)) == NULL) {
           fprintf (stderr,"ERROR allocating memory for DRQUEUE_DB.\n");
+	  fclose(f_conf);
           exit (1);
         }
         strncpy(penv,renv,strlen(renv)+1);
         if (putenv (penv) != 0) {
           fprintf (stderr,"ERROR seting the environment: '%s'\n",penv);
         }
+	free(penv);
       } else {
         fprintf (stderr,"Warning parsing config file. No value for db. Using default.\n");
       }
@@ -151,21 +157,24 @@ void config_parse (char *cfg) {
         snprintf (renv,BUFFERLEN,"DRQUEUE_POOL=%s",token);
         if ((penv = (char*) malloc (strlen(renv)+1)) == NULL) {
           fprintf (stderr,"ERROR allocating memory for DRQUEUE_POOL.\n");
+	  fclose(f_conf);
           exit (1);
         }
         strncpy(penv,renv,strlen(renv)+1);
         if (putenv (penv) != 0) {
           fprintf (stderr,"ERROR seting the environment: '%s'\n",penv);
         }
+	free(penv);
       } else {
         fprintf (stderr,"Warning parsing config file. No value for pool. Using default.\n");
       }
     } else {
       fprintf (stderr,"ERROR parsing config file. Unknown token: '%s'\n",token);
+      fclose(f_conf);
       exit (1);
     }
   }
-  
+  fclose(f_conf);
 }
 
 FILE *
@@ -301,6 +310,8 @@ config_read (char *filename,char *tool) {
   struct config_node *config = config_node_new (NULL,tool,"Root config node",cfg_file);
 
   config_find_nodes (config,cfg_file);
+
+  fclose(cfg_file);
 
   return config;
 }

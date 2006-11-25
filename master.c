@@ -144,7 +144,7 @@ int main (int argc, char *argv[]) {
 #endif
 
         } else {
-          log_master (L_ERROR,"Accepting connection.");
+          log_auto (L_ERROR,"Accepting connection.");
         }
         exit (0);
       } else if (child != -1) {
@@ -357,7 +357,7 @@ void clean_out (int signal, siginfo_t *info, void *data) {
   ignore.sa_flags = 0;
   sigaction (SIGINT, &ignore, NULL);
 
-  log_master (L_INFO,"Saving...");
+  log_auto (L_INFO,"Saving...");
   database_save(wdb);
 
 #ifdef COMM_REPORT
@@ -375,7 +375,7 @@ void clean_out (int signal, siginfo_t *info, void *data) {
     //  printf ("Child arrived ! %i\n",(int)child_pid);
   }
 
-  log_master (L_INFO,"Cleaning...");
+  log_auto (L_INFO,"Cleaning...");
   for (i=0;i<MAXJOBS;i++) {
     job_delete(&wdb->job[i]);
   }
@@ -401,31 +401,19 @@ void set_alarm (void) {
 
 void sigalarm_handler (int signal, siginfo_t *info, void *data) {
   char *msg = "Connection time exceeded";
-
-  if (icomp != -1)
-    log_master_computer (&wdb->computer[icomp],L_WARNING,msg);
-  else
-    log_master (L_WARNING,msg);
+  log_auto (L_WARNING,msg);
   exit (1);
 }
 
 void sigpipe_handler (int signal, siginfo_t *info, void *data) {
   char *msg = "Broken connection while reading or writing (SIGPIPE)";
-
-  if (icomp != -1)
-    log_master_computer (&wdb->computer[icomp],L_WARNING,msg);
-  else
-    log_master (L_WARNING,msg);
+  log_auto (L_WARNING,msg);
   exit (1);
 }
 
 void sigsegv_handler (int signal, siginfo_t *info, void *data) {
   char *msg = "Segmentation fault... too bad";
-
-  if (icomp != -1)
-    log_master_computer (&wdb->computer[icomp],L_ERROR,msg);
-  else
-    log_master (L_ERROR,msg);
+  log_auto (L_ERROR,msg);
   exit (1);
 }
 
@@ -458,8 +446,7 @@ void check_lastconn_times (struct database *wdb) {
     semaphore_lock(wdb->semid);
     if (wdb->computer[i].used) {
       if ((now - wdb->computer[i].lastconn) > MAXTIMENOCONN) {
-        log_master_computer (&wdb->computer[i],L_WARNING,
-                             "Maximum time without connecting exceeded. Deleting. (Time not connected: %i)",
+        log_auto (L_WARNING,"Maximum time without connecting exceeded. Deleting. (Time not connected: %i)",
                              (int) (now - wdb->computer[i].lastconn));
         /* We only need to remove it this  way, without requeueing its frames because */
         /* the frames will be requeued on the consistency checks (job_update_info) */
@@ -492,7 +479,7 @@ void master_get_options (int *argc,char ***argv, int *force) {
       fprintf (stderr,"WARNING: Forcing usage of pre-existing shared memory (-f). Do not do this unless you really know what it means.\n");
       break;
     case 'l':
-      loglevel = atoi (optarg);
+      log_level_severity_set(atoi(optarg));
       printf ("Logging level set to: %i (%s)\n",loglevel,log_level_str(loglevel));
       break;
     case 'c':
@@ -500,7 +487,7 @@ void master_get_options (int *argc,char ***argv, int *force) {
       printf ("Reading config file from: '%s'\n",conf);
       break;
     case 'o':
-      logonscreen = 1;
+      log_level_out_set(L_ONSCREEN);
       printf ("Logging on screen.\n");
       break;
     case 'v':

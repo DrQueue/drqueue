@@ -221,6 +221,7 @@ void set_default_env(void) {
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
+    //free(penv);
   }
 
   if (!getenv("DRQUEUE_ETC")) {
@@ -228,6 +229,7 @@ void set_default_env(void) {
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
+    //free(penv);
   }
 
   if (!getenv("DRQUEUE_BIN")) {
@@ -235,6 +237,7 @@ void set_default_env(void) {
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
+    //free(penv);
   }
 
   if (!getenv("DRQUEUE_LOGS")) {
@@ -242,6 +245,7 @@ void set_default_env(void) {
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
+    //free(penv);
   }
 
   if (!getenv("DRQUEUE_DB")) {
@@ -249,15 +253,16 @@ void set_default_env(void) {
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
+    //free(penv);
   }
 }
 
 char *
 get_revision_string () {
-  char *duprev = strdup(REVISION);
-  char *number;
+  char *duprev = strdup("$Rev$");
+  char *number = duprev;
   char *p = duprev;
-  char *e = p + strlen(REVISION);
+  char *e = p + strlen(duprev);
 
   while ((p!=e) && !isdigit(*p)) {
     p++;
@@ -285,7 +290,7 @@ get_version_prepost () {
   } else if (VERSION_POST > 0) {
     snprintf (buf,BUFFERLEN,"p%u",VERSION_POST);
   } else {
-    sprintf (buf,"");
+    sprintf (buf,"%s","");
   }
   return buf;
 }

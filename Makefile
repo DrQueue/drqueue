@@ -51,7 +51,9 @@ else
  else
   ifeq ($(systype),Darwin)
    CPPFLAGS += -D__OSX
-   CFLAGS += -mtune=powerpc -mpowerpc
+   ifeq ($(machinetype),Power_Macintosh)
+    ARCHFLAGS += -mpowerpc -mtune=powerpc
+   endif
 #   MAKE = make
   else 
    ifeq ($(systype),FreeBSD)
@@ -80,14 +82,21 @@ endif
 BASE_C_TOOLS = slave master requeue jobfinfo blockhost ctask cjob jobinfo compinfo
 BASE_CXX_TOOLS = sendjob
 BASE_C_GUI = drqman
+PYTHON_MODULE = python
 
-all: base drqman/drqman
+all: base
 
 drqman: drqman/drqman
 
 base: $(BASE_C_TOOLS) $(BASE_CXX_TOOLS)
 
 gui: $(BASE_GUI)
+
+python.clean:
+	cd python; python setup.py clean --all
+
+python.build: python/drqueue.i $(SRCS_LIBDRQUEUE)
+	cd python; python setup.py build_ext; python setup.py build
 
 install: miniinstall $(systype)_install 
 

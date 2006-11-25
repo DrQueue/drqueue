@@ -59,9 +59,10 @@ void task_init (struct task *task) {
   task->status = 0;
 }
 
-int task_available (struct slave_database *sdb) {
+uint16_t
+task_available (struct slave_database *sdb) {
   int i;
-  int r = -1;
+  uint16_t r = -1;
 
   semaphore_lock(sdb->semid);
   for (i=0;i<MAXTASKS;i++) {
@@ -115,15 +116,7 @@ task_is_running (struct task *task) {
     log_auto (L_ERROR,"task_is_running(): received NULL pointer as task.");
     return 0;
   }
-  if (task->used != 1) {
-    if (task->used > 1) {
-      logger_task = task;
-      log_auto (L_WARNING,"task_is_running(): task.used > 1 ! (value: %u)",task->used);
-      logger_task = NULL;
-    } else {
-      // task->used == 0
-      //empty
-    }
+  if (!task->used) {
     return 0;
   } else if (task->status == TASKSTATUS_FINISHED) {
     return 0;
@@ -144,7 +137,8 @@ task_is_running (struct task *task) {
   return running;
 }
 
-void task_environment_set (struct task *task) {
+void
+task_environment_set (struct task *task) {
   static char padformat[BUFFERLEN];
   static char padframe[BUFFERLEN];
   static char padframes[BUFFERLEN];
@@ -228,21 +222,21 @@ void task_environment_set (struct task *task) {
   struct envvars envvars;
   envvars_init(&envvars);
   if (!request_job_envvars (task->ijob,&envvars,SLAVE_LAUNCHER)) {
-    log_slave_task (task,L_WARNING,"Could not receive job environment variables");
+    log_auto (L_WARNING,"Could not receive job environment variables");
     return;
   }
-  log_slave_task (task,L_DEBUG,"Received %i environment variables",envvars.nvariables);
+  log_auto (L_DEBUG,"Received %u environment variables",envvars.nvariables);
   char *buffer;
   if (!envvars_attach(&envvars)) {
     if (envvars.nvariables > 0) {
-      log_slave_task (task,L_WARNING,"Custom environment variables could not be attached. There should be %i available. (%s)",
-                      envvars.nvariables,strerror(drerrno_system));
+      log_auto (L_WARNING,"Custom environment variables could not be attached. There should be %i available. (%s)",
+		envvars.nvariables,strerror(drerrno_system));
     }
   } else {
     for (i = 0; i < envvars.nvariables; i++) {
       buffer = (char *) malloc (BUFFERLEN);
       snprintf (buffer,BUFFERLEN,"%s=%s",envvars.variables[i].name,envvars.variables[i].value);
-      log_slave_task (task,L_DEBUG,"Putting \"%s\" in the environment",buffer);
+      log_auto (L_DEBUG,"Putting \"%s\" in the environment",buffer);
       putenv (buffer);
     }
     envvars_detach(&envvars);

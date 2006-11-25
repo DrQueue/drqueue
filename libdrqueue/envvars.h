@@ -39,10 +39,10 @@ struct envvar {
 
 // The group of all environment variables
 struct envvars {
-  struct envvar *variables;
   uint16_t nvariables;
   int64_t evshmid;
   int64_t evsemid; // semaphore exclusive for envvars
+  struct envvar *variables;
 };
 
 #pragma pack(pop)

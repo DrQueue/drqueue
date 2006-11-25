@@ -264,6 +264,7 @@ check_recv_datasize (int sfd, uint32_t datasize) {
 
 int
 check_send_datasize (int sfd, uint32_t datasize) {
+  drerrno = DRE_NOERROR;
   uint32_t remotesize = 0;
   uint32_t localsize;
   
@@ -458,7 +459,7 @@ int send_computer_ntasks (int sfd, struct computer_status *status) {
   uint16_t nbo_nrunning; // network byte ordered
   
   nbo_ntasks = htons(status->ntasks);
-  nbo_ntasks = htons(status->nrunning);
+  nbo_nrunning = htons(status->nrunning);
   if (!dr_write(sfd,(char*)&nbo_ntasks,sizeof(uint16_t))) {
     return 0;
   }
@@ -503,30 +504,48 @@ int recv_computer_status (int sfd, struct computer_status *status) {
 
 int recv_envvar (int sfd, struct envvar *var) {
   // receives a single environment variable structure
-  if ( dr_read (sfd,(char *)var,sizeof (struct envvar)) == 0 ) {
-    perror ("recv_envvar");
+  uint32_t datasize;
+  drerrno = DRE_NOERROR;
+
+  datasize = sizeof (struct envvar) - sizeof (void*);
+  if (!check_recv_datasize(sfd, datasize)) {
+    // TODO: log it
     return 0;
   }
 
-  drerrno = DRE_NOERROR;
+  if (!dr_read (sfd,(char *)var, datasize)) {
+    drerrno = DRE_ERRORREADING;
+    return 0;
+  }
+
   return 1;
 }
 
 int send_envvar (int sfd, struct envvar *var) {
   // sends a single environment variable structure
-  if (!dr_write (sfd,(char *)var,sizeof (struct envvar))) {
-    perror ("send_envvar");
+  uint32_t datasize;
+  drerrno = DRE_NOERROR;
+
+  datasize = sizeof (struct envvar) - sizeof (void*);
+  if (!check_send_datasize(sfd,datasize)) {
+    // TODO: log it
     return 0;
   }
 
-  drerrno = DRE_NOERROR;
+  if (!dr_write (sfd,(char *)var, datasize)) {
+    // TODO: log it
+    return 0;
+  }
+
   return 1;
 }
 
 int send_envvars (int sfd, struct envvars *envvars) {
   //fprintf (stderr,"DEBUG: send_envvars() we have %i environment variables available for the request\n",envvars->nvariables);
+  uint16_t nvariables;
 
-  if (!write_16b (sfd,(char *)&envvars->nvariables)) {
+  nvariables = htons (envvars->nvariables);
+  if (!dr_write (sfd,(char *)&nvariables,sizeof(nvariables))) {
     return 0;
   }
 
@@ -561,11 +580,12 @@ int recv_envvars (int sfd, struct envvars *envvars) {
     return 0;
   }
 
-  if (!read_16b (sfd,&nvariables)) {
+  if (!dr_read(sfd,(char*)&nvariables,sizeof(nvariables))) {
     fprintf (stderr,"ERROR: recv_envvars() while receiving nvariables. (%s)\n",drerrno_str());
     return 0;
   }
-
+  nvariables = ntohs (nvariables);
+  
   int i;
   struct envvar var;
   if (nvariables) {
@@ -756,7 +776,8 @@ send_job (int sfd, struct job *job) {
   return 1;
 }
 
-int recv_task (int sfd, struct task *task) {
+int
+recv_task (int sfd, struct task *task) {
   void *buf;
   uint32_t datasize;
 
@@ -951,7 +972,7 @@ int send_computer_pools (int sfd, struct computer_limits *cl, uint8_t use_local_
   struct pool *pool;
   uint32_t datasize;
 
-  log_auto (L_DEBUG2,"send_computer_pools() : Entering...");
+  log_auto (L_DEBUG3,"send_computer_pools() : Entering...");
 
   computer_pool_lock (cl);
   datasize = sizeof (npools);
@@ -1004,9 +1025,8 @@ int send_computer_pools (int sfd, struct computer_limits *cl, uint8_t use_local_
   }
 
   log_auto (L_DEBUG2,"send_computer_pools(): following pool list has been sent:");
-  computer_pool_list (cl);
 
-  log_auto (L_DEBUG2,"send_computer_pools() : Returning...");
+  log_auto (L_DEBUG3,"send_computer_pools() : Returning...");
 
   return 1;
 }
@@ -1069,7 +1089,7 @@ int recv_computer_limits (int sfd, struct computer_limits *cl) {
   void *buf=&limits;
   uint32_t datasize;
 
-  datasize = sizeof(struct computer_limits);
+  datasize = sizeof(struct computer_limits) - (sizeof (void*)*2);
   memset (buf,0,datasize);
   computer_limits_init(&limits);
   if (!check_recv_datasize(sfd,datasize)) {
@@ -1126,7 +1146,7 @@ send_computer_limits (int sfd, struct computer_limits *cl, uint8_t use_local_poo
   // Clean up shared memory info
   computer_limits_cleanup_to_send (&bswapped);
  
-  datasize = sizeof (struct computer_limits);
+  datasize = sizeof (struct computer_limits) - (sizeof(void*)*2);
   if (!check_send_datasize (sfd,datasize)) {
     log_auto (L_ERROR,"send_computer_limits(): different data sizes for 'struct computer_limits'. Local size: %u",datasize);
     return 0;

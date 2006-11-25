@@ -113,6 +113,8 @@ free_job_list(GtkWidget *joblist,gpointer userdata) {
   for (i = 0; i < info->njobs; i++) {
     job_delete (&info->jobs[i]);
   }
+  info->jobs=NULL;
+  info->njobs=0;
 }
 
 void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info) {
@@ -1206,6 +1208,7 @@ static int dnj_submit (struct drqmj_dnji *info) {
   }
 
   // Environment variables
+  envvars_init (&job.envvars);
   job.envvars = info->envvars.envvars;
 
   if (!register_job (&job)) {

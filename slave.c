@@ -63,6 +63,8 @@ int main (int argc,char *argv[]) {
 
   slave_get_options(&argc,&argv,&force,&sdb);
   
+  logtool = DRQ_LOG_TOOL_SLAVE;
+
   // Set some standard defaults based on DRQUEUE_ROOT (must be already set!)
   set_default_env(); 
   
@@ -76,7 +78,6 @@ int main (int argc,char *argv[]) {
     exit (1);
   }
 
-  log_slave_computer (L_INFO,"Starting...");
 
   set_signal_handlers ();
 
@@ -85,6 +86,7 @@ int main (int argc,char *argv[]) {
   sdb.comp = attach_shared_memory_slave (sdb.shmid);
   logger_computer = sdb.comp;
   sdb.semid = get_semaphores_slave ();
+  log_auto (L_INFO,"Starting...");
 
   computer_init (sdb.comp);
   sdb.comp->used = 1;
@@ -93,6 +95,7 @@ int main (int argc,char *argv[]) {
   slave_set_limits (&sdb);
 
   report_hwinfo (&sdb.comp->hwinfo);
+  fprintf (stderr,"Working silently...");
 
   register_slave (sdb.comp);
   // Before sending the limits we have to set the pools
@@ -162,16 +165,16 @@ int main (int argc,char *argv[]) {
     switch (rs) {
     case -1:
       /* Error in select */
-      log_slave_computer(L_ERROR,"Select call failed");
+      log_auto(L_ERROR,"Select call failed");
     case 0:
-      log_slave_computer(L_DEBUG,"Slave loop (select call timeout)");
+      log_auto(L_DEBUG,"Slave loop (select call timeout)");
       break;
     default:
       if (FD_ISSET(phantom[0],&read_set)) {
-        log_slave_computer(L_DEBUG,"Select call, notification came. Available for reading.");
+        log_auto(L_DEBUG,"Select call, notification came. Available for reading.");
         read(phantom[0],buffer,BUFFERLEN);
       } else {
-        log_slave_computer(L_WARNING,"Select call, report this message, please. It should never happen.");
+        log_auto(L_WARNING,"Select call, report this message, please. It should never happen.");
       }
     }
   }
@@ -228,7 +231,7 @@ void clean_out (int signal, siginfo_t *info, void *data) {
 #endif
 
 
-  log_slave_computer (L_INFO,"Cleaning...");
+  log_auto (L_INFO,"Cleaning...");
 
   for (i=0;i<MAXTASKS;i++) {
     if (sdb.comp->status.task[i].used)
@@ -311,17 +314,17 @@ int64_t get_semaphores_slave (void) {
   
 
   if ((key = ftok (file,'A')) == -1) {
-    log_slave_computer (L_ERROR,"Getting key for semaphores");
+    log_auto (L_ERROR,"Getting key for semaphores");
     kill (0,SIGINT);
   }
 
   if ((semid = (int64_t)semget (key,1, IPC_CREAT|0600)) == (int64_t)-1) {
-    log_slave_computer (L_ERROR,"Getting semaphores: %s",strerror(errno));
+    log_auto (L_ERROR,"Getting semaphores: %s",strerror(errno));
     kill (0,SIGINT);
   }
 
   if (semctl ((int)semid,0,SETVAL,1) == -1) {
-    log_slave_computer (L_ERROR,"semctl SETVAL -> 1 : (%s)",strerror(errno));
+    log_auto (L_ERROR,"semctl SETVAL -> 1 : (%s)",strerror(errno));
     kill (0,SIGINT);
   }
   if (semctl ((int)semid,0,GETVAL) == 0) {
@@ -329,7 +332,7 @@ int64_t get_semaphores_slave (void) {
     op.sem_op = 1;
     op.sem_flg = 0;
     if (semop((int)semid,&op,1) == -1) {
-      log_slave_computer (L_ERROR,"semaphore_release: %s",strerror(errno));
+      log_auto (L_ERROR,"semaphore_release: %s",strerror(errno));
       kill(0,SIGINT);
     }
   }
@@ -341,7 +344,7 @@ void *attach_shared_memory_slave (int64_t shmid) {
   void *rv;   /* return value */
 
   if ((rv = shmat ((int)shmid,0,0)) == (void *)-1) {
-    log_slave_computer (L_ERROR,"Problem attaching slave shared memory segment");
+    log_auto (L_ERROR,"Problem attaching slave shared memory segment");
     kill(0,SIGINT);
   }
 
@@ -351,6 +354,7 @@ void *attach_shared_memory_slave (int64_t shmid) {
 void set_signal_handlers_child_listening (void) {
   struct sigaction action_dfl;
 
+  action_dfl.sa_flags = 0;
   action_dfl.sa_handler = (void *)SIG_DFL;
   sigemptyset (&action_dfl.sa_mask);
   sigaction (SIGINT, &action_dfl, NULL);
@@ -375,12 +379,14 @@ void set_signal_handlers_child_launcher (void) {
   struct sigaction action_ignore;
   struct sigaction action_dfl;
 
+  action_ignore.sa_flags = 0;
   action_ignore.sa_handler = SIG_IGN;
   sigemptyset (&action_ignore.sa_mask);
   sigaction (SIGINT, &action_ignore, NULL);
   sigaction (SIGTERM, &action_ignore, NULL);
 
   action_dfl.sa_handler = (void *)SIG_DFL;
+  action_dfl.sa_flags = 0;
   sigemptyset (&action_dfl.sa_mask);
 #ifdef __OSX
 
@@ -394,6 +400,7 @@ void set_signal_handlers_child_launcher (void) {
 void set_signal_handlers_task_exec (void) {
   struct sigaction action_dfl;
 
+  action_dfl.sa_flags = 0;
   action_dfl.sa_handler = (void *)SIG_DFL;
   sigemptyset (&action_dfl.sa_mask);
   sigaction (SIGINT, &action_dfl, NULL);
@@ -420,7 +427,7 @@ void slave_consistency_process (struct slave_database *sdb) {
           semaphore_lock(sdb->semid);
           sdb->comp->status.task[i].used = 0;
           semaphore_release(sdb->semid);
-          log_slave_computer(L_WARNING,"Process registered as running was not running. Removed.");
+          log_auto(L_WARNING,"Process registered as running was not running. Removed.");
         }
     }
     sleep (SLAVEDELAY);
@@ -432,7 +439,7 @@ void slave_listening_process (struct slave_database *sdb) {
   int sfd,csfd,highest_fd;
 
   if ((sfd = get_socket(SLAVEPORT)) == -1) {
-    log_slave_computer (L_ERROR,"Unable to open socket (server)");
+    log_auto(L_ERROR,"Unable to open socket (server)");
     slave_exit(1);
   }
   highest_fd = sfd+1;
@@ -468,13 +475,13 @@ void slave_listening_process (struct slave_database *sdb) {
 
 void sigalarm_handler (int signal, siginfo_t *info, void *data) {
   /* This is not an error because it only happens on a connection handler */
-  log_slave_computer (L_WARNING,"Connection time exceeded");
+  log_auto (L_WARNING,"Connection time exceeded");
   exit (1);
 }
 
 void sigpipe_handler (int signal, siginfo_t *info, void *data) {
   /* This is not an error because it only happens on a connection handler */
-  log_slave_computer (L_WARNING,"Broken connection while reading or writing");
+  log_auto (L_WARNING,"Broken connection while reading or writing");
   exit (1);
 }
 
@@ -484,6 +491,12 @@ void launch_task (struct slave_database *sdb, uint16_t itask) {
   pid_t task_pid,waiter_pid;
   extern char **environ;
   char *exec_path;
+  struct task *ttask;
+
+  logtool = DRQ_LOG_TOOL_SLAVE_TASK;
+  ttask = malloc (sizeof(*ttask));
+  memcpy(ttask,&sdb->comp->status.task[itask],sizeof(*ttask));
+  logger_task = ttask;
 
   if ((waiter_pid = fork()) == 0) {
     //
@@ -526,7 +539,6 @@ void launch_task (struct slave_database *sdb, uint16_t itask) {
         dup2 (lfd,STDERR_FILENO);
         close (lfd);
       }
-
       task_environment_set(&sdb->comp->status.task[itask]);
 
 #ifdef __CYGWIN
@@ -544,12 +556,9 @@ void launch_task (struct slave_database *sdb, uint16_t itask) {
       // Wouldn't reach this point unless error on execve
       drerrno_system = errno;
       log_auto(L_ERROR,"launch_task(): error on execve. (%s)",strerror(drerrno_system));
-      exit(drerrno_system);
+      slave_exit(drerrno_system);
     } else if (task_pid == -1) {
-      // FIXME <<__EOFIX
       log_auto(L_ERROR,"lauch_task(): Fork failed. Task not created.");
-      log_slave_task(&sdb->comp->status.task[itask],L_ERROR,"lauch_task(): Fork failed. Task not created.");
-      // __EOFIX
 
       //semaphore_lock(sdb->semid);
       //sdb->comp->status.task[itask].used = 0; /* We don't need the task anymore */
@@ -560,43 +569,50 @@ void launch_task (struct slave_database *sdb, uint16_t itask) {
     semaphore_lock(sdb->semid);
     sdb->comp->status.task[itask].status = TASKSTATUS_RUNNING;
     sdb->comp->status.task[itask].pid = task_pid;
+    sdb->comp->status.ntasks = computer_ntasks (sdb->comp);
+    sdb->comp->status.nrunning = computer_nrunning (sdb->comp);
     semaphore_release(sdb->semid);
 
     if (waitpid(task_pid,&rc,0) == -1) {
       // It forked on task_pid but waitpid says it doesn't exist.
       drerrno_system = errno;
-      // FIXME <<__EOFIX
       log_auto(L_ERROR,"lauch_task(): task process (%i) does not exist. (%s)",task_pid,strerror(drerrno_system));
-      log_slave_task(&sdb->comp->status.task[itask],L_ERROR,"lauch_task(): task process (%i) does not exist. (%s)",
-                     task_pid,strerror(drerrno_system));
-      // __EOFIX
+
       semaphore_lock(sdb->semid);
       sdb->comp->status.task[itask].used = 0; /* We don't need the task anymore */
+      sdb->comp->status.ntasks = computer_ntasks (sdb->comp);
+      sdb->comp->status.nrunning = computer_nrunning (sdb->comp);
       semaphore_release(sdb->semid);
       // TODO: notify the master ?
+
     } else {
       // waitpid returned successfully
       /* We have to clean the task and send the info to the master */
       /* consider WIFSIGNALED(status), WTERMSIG(status), WEXITSTATUS(status) */
-      /* we pass directly the status (translated to DR) to the master and he decides what to do with the frame */
+      /* we pass directly the status (translated to DR) to the master
+	 and he decides what to do with the frame */
       semaphore_lock(sdb->semid);
       sdb->comp->status.task[itask].exitstatus = 0;
       sdb->comp->status.task[itask].status = TASKSTATUS_FINISHED;
-      sdb->comp->status.nrunning--;
+      sdb->comp->status.ntasks = computer_ntasks (sdb->comp);
+      sdb->comp->status.nrunning = computer_nrunning (sdb->comp);
       if (WIFSIGNALED(rc)) {
         /* Process exited abnormally either killed by us or by itself (SIGSEGV) */
         /*  printf ("\n\nSIGNALED with %i\n",WTERMSIG(rc)); */
         sdb->comp->status.task[itask].exitstatus |= DR_SIGNALEDFLAG ;
         sdb->comp->status.task[itask].exitstatus |= WTERMSIG(rc);
-        log_slave_task(&sdb->comp->status.task[itask],L_INFO,"Task signaled");
+        log_auto(L_INFO,"Task signaled");
       } else {
         if (WIFEXITED(rc)) {
           /*   printf ("\n\nEXITED with %i\n",WEXITSTATUS(rc)); */
           sdb->comp->status.task[itask].exitstatus |= DR_EXITEDFLAG ;
           sdb->comp->status.task[itask].exitstatus |= WEXITSTATUS(rc);
-          /* printf ("\n\nEXITED with %i\n",DR_WEXITSTATUS(sdb->comp->status.task[itask].exitstatus)); */
-          log_slave_task(&sdb->comp->status.task[itask],L_INFO,"Task finished");
-        }
+          /* printf ("\n\nEXITED with
+	     %i\n",DR_WEXITSTATUS(sdb->comp->status.task[itask].exitstatus)); */
+	  log_auto(L_INFO,"Task finished");
+        } else {
+	  log_auto(L_WARNING,"Task finished with rc = %i",rc);
+	}
       }
       semaphore_release(sdb->semid);
 
@@ -608,8 +624,9 @@ void launch_task (struct slave_database *sdb, uint16_t itask) {
     }
 
     exit (0);
+
   } else if (waiter_pid == -1) {
-    log_slave_task(&sdb->comp->status.task[itask],L_WARNING,"Fork failed for task waiter");
+    log_auto(L_WARNING,"Fork failed for task waiter");
     semaphore_lock(sdb->semid);
     sdb->comp->status.task[itask].used = 0; /* We don't need the task anymore */
     semaphore_release(sdb->semid);
@@ -673,11 +690,11 @@ void slave_get_options (int *argc,char ***argv, int *force, struct slave_databas
       fprintf (stderr,"WARNING: Forcing usage of pre-existing shared memory (-f). Do not do this unless you really know what it means.\n");
       break;
     case 'l':
-      loglevel = atoi (optarg);
-      printf ("Logging level set to: %i (%s)\n",loglevel,log_level_str(loglevel));
+      log_level_severity_set (atoi(optarg));
+      printf ("Logging level set to: %s\n",log_level_str(loglevel));
       break;
     case 'o':
-      logonscreen = 1;
+      log_level_out_set (L_ONSCREEN);
       printf ("Logging on screen.\n");
       break;
     case 'v':
@@ -696,18 +713,19 @@ void slave_set_limits (struct slave_database *sdb) {
     sdb->comp->limits.autoenable.flags = sdb->limits.autoenable.flags;
     sdb->comp->limits.autoenable.h = sdb->limits.autoenable.h % 24;
     sdb->comp->limits.autoenable.m = sdb->limits.autoenable.m % 60;
-    log_slave_computer (L_INFO,"Setting autoenable time to %i:%02i",
+    log_auto (L_INFO,"Setting autoenable time to %i:%02i",
                         sdb->comp->limits.autoenable.h, sdb->comp->limits.autoenable.m);
   }
   if (sdb->flags & SDBF_SETMAXCPUS) {
     sdb->comp->limits.nmaxcpus = (sdb->limits.nmaxcpus > sdb->comp->limits.nmaxcpus) ?
                                  sdb->comp->limits.nmaxcpus : sdb->limits.nmaxcpus;
-    log_slave_computer (L_INFO,"Setting maximum number of CPUs to %i",sdb->comp->limits.nmaxcpus);
+    log_auto (L_INFO,"Setting maximum number of CPUs to %i",sdb->comp->limits.nmaxcpus);
   }
 }
 
 void
 slave_exit (int rc) {
   // Slave's clean exit procedure
-  
+  // FIXME: this is the OLD procedure
+  kill(0,SIGINT);
 }

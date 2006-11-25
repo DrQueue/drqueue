@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.4
 # 
 # Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 #
@@ -36,14 +36,14 @@ def get_wordsize_flags():
   flagPrefix = '-Xcompiler'
   arch=platform.machine()
   if arch == 'i386':
-    os.environ['CFLAGS'] = '-m32 -march=i386'
+    os.environ['CFLAGS'] = '-m32'
     bitsFlag = [ flagPrefix + ' -m32', flagPrefix + ' -march=i386']
   elif arch == 'i686':
     os.environ['CFLAGS'] = '-m32 -march=i686'
     bitsFlag = [ flagPrefix + ' -m32', flagPrefix + ' -march=i686']
   elif arch == 'x86_64':
-    os.environ['CFLAGS'] = '-m64 -march=athlon64'
-    bitsFlag = [ flagPrefix + ' -m64', flagPrefix + ' -march=athlon64']
+    os.environ['CFLAGS'] = '-m64 -march=x86-64 -pipe'
+    bitsFlag = [ flagPrefix + ' -m64', flagPrefix + ' -march=x86_64']
   elif arch == 'Power Macintosh':
     os.environ['CFLAGS'] = '-mpowerpc -mtune=powerpc'
     bitsFlag = [ flagPrefix + ' -mpowerpc', flagPrefix + ' -mtune=powerpc']
