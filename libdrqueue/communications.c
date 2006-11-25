@@ -459,7 +459,7 @@ int send_computer_ntasks (int sfd, struct computer_status *status) {
   uint16_t nbo_nrunning; // network byte ordered
   
   nbo_ntasks = htons(status->ntasks);
-  nbo_ntasks = htons(status->nrunning);
+  nbo_nrunning = htons(status->nrunning);
   if (!dr_write(sfd,(char*)&nbo_ntasks,sizeof(uint16_t))) {
     return 0;
   }
