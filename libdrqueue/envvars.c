@@ -34,9 +34,11 @@
 #include <errno.h>
 #include <sys/types.h>
 
+#include "pointer.h"
+
 int
 envvars_init (struct envvars *envvars) {
-  envvars->variables = NULL;
+  envvars->variables.ptr = NULL;
   envvars->nvariables = 0;
   envvars->evshmid = (int64_t)-1;
   envvars->evsemid = (int64_t)-1;            // FIXME: init with a new semaphore if current invalid
@@ -90,19 +92,19 @@ int envvars_attach (struct envvars *envvars) {
     return 0;
   }
 
-  if (envvars->variables != NULL) {
+  if (envvars->variables.ptr != NULL) {
     // Already attached (?)
     //
     log_auto (L_INFO,"envvars_attach(): envvars already attached (?). Detacching whatever was there.");
-    if (shmdt (envvars->variables) == -1) {
+    if (shmdt (envvars->variables.ptr) == -1) {
       drerrno_system = errno;
       // Explanation: memory was freed and detached but the variable was not updated.
       log_auto (L_WARNING,"envvars_attach(): could not detach successfully. (%s)",strerror(drerrno_system));
     }
-    envvars->variables = NULL;
+    envvars->variables.ptr = NULL;
   }
 
-  if ((envvars->variables = (struct envvar *) shmat ((int)envvars->evshmid,0,0)) == (struct envvar *)-1) {
+  if ((envvars->variables.ptr = (struct envvar *) shmat ((int)envvars->evshmid,0,0)) == (struct envvar *)-1) {
     drerrno_system = errno;
     log_auto (L_ERROR,"envvars_attach(): could not attach on 'shmat'. (%s)",strerror(drerrno_system));
     drerrno = DRE_ATTACHSHMEM;
@@ -124,7 +126,7 @@ envvars_dump_info (struct envvars *envvars) {
   int i;
 
   fprintf (stderr,"envvars_dump_info() Starting...\n");
-  fprintf (stderr,"variables=%p\n",(void*)envvars->variables);
+  fprintf (stderr,"variables=%p\n",(void*)envvars->variables.ptr);
   fprintf (stderr,"nvariables=%i\n",envvars->nvariables);
   fprintf (stderr,"evshmid=%ji\n",envvars->evshmid);
 
@@ -133,12 +135,12 @@ envvars_dump_info (struct envvars *envvars) {
     struct envvar *temp;
     temp = (struct envvar *) shmat ((int)envvars->evshmid,0,0);
     if ( temp != (struct envvar *)-1 ) {
-      if (envvars->variables != NULL) {
+      if (envvars->variables.ptr != NULL) {
         // variables had a non-null pointer. Is it valid ?
         // lets compare them
         if (envvars->nvariables) {
           // It supposedly stores nvariables
-          if (memcmp (temp,envvars->variables,sizeof(struct envvar)*envvars->nvariables) == 0) {
+          if (memcmp (temp,envvars->variables.ptr,sizeof(struct envvar)*envvars->nvariables) == 0) {
             log_auto (L_DEBUG,"envvars_dump_info() The received envvars pointer cotained a VALID but not detached (that could be perfecty normal) shared memory segment\n");
           } else {
             fprintf (stderr,"envvars_dump_info() The received envvars pointxer cotained a non detached shared memory segment\n");
@@ -167,9 +169,9 @@ envvars_dump_info (struct envvars *envvars) {
       
     }
   } else {
-    if (envvars->variables != NULL) {
+    if (envvars->variables.ptr != NULL) {
       // evshmid is set to -1 but variables contains a wrong pointer.
-      fprintf (stderr,"envvars_dump_info() evshmid equals -1 but variables is pointing to non-null (%p).\n",envvars->variables);
+      fprintf (stderr,"envvars_dump_info() evshmid equals -1 but variables is pointing to non-null (%p).\n",envvars->variables.ptr);
       if (envvars->nvariables != 0) {
         // and even nvariables was not properly initialized.
         fprintf (stderr,"envvars_dump_info() evshmid equals -1 and even nvariables is set to non-zero (%i).\n",envvars->nvariables);
@@ -189,10 +191,10 @@ envvars_dump_info (struct envvars *envvars) {
 int
 envvars_detach (struct envvars *envvars) {
 
-  if (envvars->variables != NULL) {
-    if (shmdt (envvars->variables) != -1) {
+  if (envvars->variables.ptr != NULL) {
+    if (shmdt (envvars->variables.ptr) != -1) {
       // detached 
-      envvars->variables = NULL;
+      envvars->variables.ptr = NULL;
       drerrno = DRE_NOERROR;
       return 1;
     } else {
@@ -206,7 +208,7 @@ envvars_detach (struct envvars *envvars) {
 #ifdef __DEBUG_ENVVARS
   if (envvars->evshmid == (int64_t)-1) {
     fprintf (stderr,"WARNING: envvars_dettach() A shared memory segment with id == -1 was requested to be detached.\n");
-  } else if (envvars->variables == NULL) { 
+  } else if (envvars->variables.ptr == NULL) { 
     fprintf (stderr,"WARNING: envvars_dettach() A shared memory segment pointing to NULL was requested to be detached.\n");
   } else if (!envvars->nvariables) {
     // No need to warn
@@ -243,8 +245,8 @@ envvars_variable_find (struct envvars *envvars, char *name) {
   }
 
   for (i = 0; i < envvars->nvariables; i++) {
-    if (strncmp (envvars->variables[i].name,name,MAXNAMELEN) == 0) {
-      result = &envvars->variables[i];
+    if (strncmp (envvars->variables.ptr[i].name,name,MAXNAMELEN) == 0) {
+      result = &envvars->variables.ptr[i];
       return result;
     }
   }
@@ -324,21 +326,21 @@ int envvars_variable_add (struct envvars *envvars, char *name, char *value) {
   if (envvars->nvariables > 0) {
     envvars_attach(envvars);
     //fprintf (stderr,"DEBUG: copying %i variables from old to new list.\n",envvars->nvariables);
-    memcpy (new_envvars.variables,envvars->variables,sizeof(struct envvar)*envvars->nvariables);
+    memcpy (new_envvars.variables.ptr,envvars->variables.ptr,sizeof(struct envvar)*envvars->nvariables);
     envvars_detach(envvars); // And we're done with old variables
     envvars_free(envvars);  // surely
   }
 
   // Add new variable to new envvars
   // copy the variable that we were adding to the list with this call.
-  strncpy (new_envvars.variables[new_size-1].name,name,MAXNAMELEN);
-  strncpy (new_envvars.variables[new_size-1].value,value,MAXNAMELEN);
+  strncpy (new_envvars.variables.ptr[new_size-1].name,name,MAXNAMELEN);
+  strncpy (new_envvars.variables.ptr[new_size-1].value,value,MAXNAMELEN);
 
   // Copy new values to old structure
   // so the envvars pointer argument of the function gets updated
   envvars->nvariables = new_size;
   envvars->evshmid = nshmid;
-  envvars->variables = new_envvars.variables;
+  envvars->variables.ptr = new_envvars.variables.ptr;
 
   // We're done using new_envvars...
   envvars_detach(envvars);
@@ -392,10 +394,10 @@ int envvars_variable_delete (struct envvars *envvars, char *name) {
   int i,j;
   for (i = 0,j = 0; i < envvars->nvariables; i++) {
     // FIXME: What would happen with two variables with the same name ?
-    if (strncmp(envvars->variables[i].name,name,MAXNAMELEN) == 0) {
+    if (strncmp(envvars->variables.ptr[i].name,name,MAXNAMELEN) == 0) {
       continue;
     }
-    memcpy (&new_envvars.variables[j],&envvars->variables[i],sizeof(struct envvar));
+    memcpy (&new_envvars.variables.ptr[j],&envvars->variables.ptr[i],sizeof(struct envvar));
     j++;
   }
 
@@ -406,7 +408,7 @@ int envvars_variable_delete (struct envvars *envvars, char *name) {
   // Copy new values to old structure
   envvars->nvariables = new_size;
   envvars->evshmid = nshmid;
-  envvars->variables = new_envvars.variables;
+  envvars->variables.ptr = new_envvars.variables.ptr;
   envvars_detach (envvars);
 
   drerrno = DRE_NOERROR;

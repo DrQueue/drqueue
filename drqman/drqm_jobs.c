@@ -1022,7 +1022,7 @@ static int dnj_submit (struct drqmj_dnji *info) {
   }
   job.owner[MAXNAMELEN-1] = 0;
   job.status = JOBSTATUS_WAITING;
-  job.frame_info = NULL;
+  job.frame_info.ptr = NULL;
   job.autoRequeue = 1;
 
   /* KOJ */
@@ -1982,8 +1982,8 @@ void dnj_envvars_list (GtkWidget *bclicked, struct drqmj_envvars *info) {
     for (i = 0; i < info->envvars.nvariables; i++) {
       gtk_list_store_append (store,&iter);
       gtk_list_store_set (store, &iter,
-                          DNJ_ENVVARS_COL_NAME, info->envvars.variables[i].name,
-                          DNJ_ENVVARS_COL_VALUE, info->envvars.variables[i].value,
+                          DNJ_ENVVARS_COL_NAME, info->envvars.variables.ptr[i].name,
+                          DNJ_ENVVARS_COL_VALUE, info->envvars.variables.ptr[i].value,
                           -1);
     }
     envvars_detach (&info->envvars);

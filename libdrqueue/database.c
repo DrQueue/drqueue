@@ -30,6 +30,7 @@
 #include <unistd.h>
 #include <stdint.h>
 
+#include "pointer.h"
 #include "database.h"
 #include "computer.h"
 #include "communications.h"
@@ -301,7 +302,7 @@ database_job_load_frames (int sfd,struct job *job) {
     detach_frame_shared_memory (fi);
   } else {
     job->fishmid = -1;
-    job->frame_info = NULL;
+    job->frame_info.ptr = NULL;
   }
   
 
@@ -366,7 +367,7 @@ database_job_load_blocked_hosts (int sfd, struct job *job) {
 
   job->bhshmid = bhshmid;
   job->nblocked = nblocked;
-  job->blocked_host = NULL;
+  job->blocked_host.ptr = NULL;
 
   return 1;
 }

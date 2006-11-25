@@ -25,6 +25,7 @@
 #define _ENVVARS_H_
 
 #include "constants.h"
+#include "pointer.h"
 
 #include <sys/types.h>
 #include <stdint.h>
@@ -42,7 +43,7 @@ struct envvars {
   uint16_t nvariables;
   int64_t evshmid;
   int64_t evsemid; // semaphore exclusive for envvars
-  struct envvar *variables;
+  fptr_type(struct envvar,variables);
 };
 
 #pragma pack(pop)

@@ -38,6 +38,7 @@
 #error You need to define the OS, or OS defined not supported
 #endif
 
+#include "pointer.h"
 #include "job.h"
 
 #define REVISION "$Rev$"

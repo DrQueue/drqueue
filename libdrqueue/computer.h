@@ -29,6 +29,7 @@
 #include <time.h>
 #include <stdint.h>
 
+#include "pointer.h"
 #include "computer_info.h"
 #include "computer_status.h"
 
@@ -55,8 +56,8 @@ struct computer_limits {
   int64_t poolshmid; // Pool's shared memory id
   int64_t poolsemid; // Pool's semaphore id
   uint32_t npoolsattached;
-  struct pool *pool;
-  struct pool *local_pool;
+  fptr_type (struct pool,pool);
+  fptr_type (struct pool,local_pool);
 }; // __attribute__((__packed__)); // fails with swig but doesn't seem necessary
 
 struct computer {

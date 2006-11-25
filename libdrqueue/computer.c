@@ -288,8 +288,8 @@ void
 computer_limits_cleanup_received (struct computer_limits *cl) {
   // This function should initialize only those values that could only mean something remotely and not locally
   // namely: shared memory pointers, pointers of any other type, identifiers...
-  cl->pool = NULL;
-  cl->local_pool = NULL;
+  cl->pool.ptr = NULL;
+  cl->local_pool.ptr = NULL;
   cl->poolshmid = (int64_t)-1;
   cl->poolsemid = (int64_t)-1;
   cl->npoolsattached = 0;
@@ -451,8 +451,8 @@ int computer_attach (struct computer *computer) {
     }
     
     pool = (struct pool *) malloc (sizeof (struct pool) * computer->limits.npools);
-    memcpy ((void*)pool,(void*)computer->limits.pool,sizeof(struct pool) * computer->limits.npools);
-    computer->limits.local_pool = pool;
+    memcpy ((void*)pool,(void*)computer->limits.pool.ptr,sizeof(struct pool) * computer->limits.npools);
+    computer->limits.local_pool.ptr = pool;
     computer_pool_detach_shared_memory (&computer->limits);
   }
   computer_release(computer);
@@ -464,9 +464,9 @@ int computer_attach (struct computer *computer) {
 int computer_detach (struct computer *computer) {
   // This function frees allocated memory for local pools.
   log_auto (L_DEBUG2,"computer_detach(): Entering...");
-  if (computer->limits.local_pool) {
-    free (computer->limits.local_pool);
-    computer->limits.local_pool = NULL;
+  if (computer->limits.local_pool.ptr) {
+    free (computer->limits.local_pool.ptr);
+    computer->limits.local_pool.ptr = NULL;
   }
   computer_release(computer);
   log_auto (L_DEBUG2,"computer_detach(): Exiting...");
