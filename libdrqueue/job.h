@@ -270,12 +270,10 @@ struct job {
   uint32_t avg_frame_time;      // Average frame time
   uint32_t est_finish_time;     // Estimated finish time
                                 // we checked.
-  struct frame_info *frame_info; // Status of every frame
-  int64_t fishmid;               // Frame info shared memory id
 
-  struct blocked_host *blocked_host;  // Blocked hosts
-  int64_t bhshmid;                    // Shared memory id for the blocked_host structure
-  uint16_t nblocked;                  // Number of blocked hosts
+  int64_t fishmid;               // Frame info shared memory id
+  int64_t bhshmid;               // Shared memory id for the blocked_host structure
+  uint16_t nblocked;             // Number of blocked hosts
 
   uint32_t flags;                // Job flags
 
@@ -283,6 +281,8 @@ struct job {
 
   struct job_limits limits;      // Job limits
   struct envvars envvars;        // Environment variables
+  struct frame_info *frame_info; // Status of every frame
+  struct blocked_host *blocked_host;  // Blocked hosts
 };
 
 struct database;
