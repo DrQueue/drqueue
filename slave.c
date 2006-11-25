@@ -720,5 +720,6 @@ void slave_set_limits (struct slave_database *sdb) {
 void
 slave_exit (int rc) {
   // Slave's clean exit procedure
-  
+  // FIXME: this is the OLD procedure
+  kill(0,SIGINT);
 }
