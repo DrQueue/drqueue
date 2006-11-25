@@ -264,6 +264,7 @@ check_recv_datasize (int sfd, uint32_t datasize) {
 
 int
 check_send_datasize (int sfd, uint32_t datasize) {
+  drerrno = DRE_NOERROR;
   uint32_t remotesize = 0;
   uint32_t localsize;
   
@@ -503,9 +504,16 @@ int recv_computer_status (int sfd, struct computer_status *status) {
 
 int recv_envvar (int sfd, struct envvar *var) {
   // receives a single environment variable structure
+  uint32_t datasize;
   drerrno = DRE_NOERROR;
 
-  if (!dr_read (sfd,(char *)var,sizeof (struct envvar))) {
+  datasize = sizeof (struct envvar) - sizeof (void*);
+  if (!check_recv_datasize(sfd, datasize)) {
+    // TODO: log it
+    return 0;
+  }
+
+  if (!dr_read (sfd,(char *)var, datasize)) {
     drerrno = DRE_ERRORREADING;
     return 0;
   }
@@ -515,12 +523,20 @@ int recv_envvar (int sfd, struct envvar *var) {
 
 int send_envvar (int sfd, struct envvar *var) {
   // sends a single environment variable structure
-  if (!dr_write (sfd,(char *)var,sizeof (struct envvar))) {
-    perror ("send_envvar");
+  uint32_t datasize;
+  drerrno = DRE_NOERROR;
+
+  datasize = sizeof (struct envvar) - sizeof (void*);
+  if (!check_send_datasize(sfd,datasize)) {
+    // TODO: log it
     return 0;
   }
 
-  drerrno = DRE_NOERROR;
+  if (!dr_write (sfd,(char *)var, datasize)) {
+    // TODO: log it
+    return 0;
+  }
+
   return 1;
 }
 

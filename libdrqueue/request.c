@@ -855,7 +855,7 @@ void handle_r_r_availjob (int sfd,struct database *wdb,int icomp) {
   if (!send_task (sfd,&wdb->computer[icomp].status.task[itask])) {
     log_auto (L_ERROR,"Could not send updated task information to the slave: %s",drerrno_str());
     job_frame_waiting (wdb,ijob,iframe);
-  }  
+  }
 }
 
 
