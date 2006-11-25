@@ -365,11 +365,11 @@ static int jdd_update_blocked_hosts (GtkWidget *w, struct drqm_jobs_info *info) 
   uint32_t i;
   char **buff;
 
-  if (!request_job_list_blocked_host(info->jdd.job.id, &info->jdd.job.blocked_host, &info->jdd.job.nblocked, CLIENT)) {
+  if (!request_job_list_blocked_host(info->jdd.job.id, &info->jdd.job.blocked_host.ptr, &info->jdd.job.nblocked, CLIENT)) {
     log_auto (L_ERROR,"jdd_update_blocked_hosts(): could not receive list of blocked hosts. (%s)",strerror(drerrno_system));
-    if (info->jdd.job.blocked_host) {
-      free (info->jdd.job.blocked_host);
-      info->jdd.job.blocked_host = NULL;
+    if (info->jdd.job.blocked_host.ptr) {
+      free (info->jdd.job.blocked_host.ptr);
+      info->jdd.job.blocked_host.ptr = NULL;
     }
     info->jdd.job.nblocked = 0;
     return 0;
@@ -385,7 +385,7 @@ static int jdd_update_blocked_hosts (GtkWidget *w, struct drqm_jobs_info *info) 
 
   for (i=0; i < info->jdd.job.nblocked; i++) {
     snprintf (buff[0],BUFFERLEN,"%u",i);
-    snprintf (buff[1],BUFFERLEN,"%s",info->jdd.job.blocked_host[i].name);
+    snprintf (buff[1],BUFFERLEN,"%s",info->jdd.job.blocked_host.ptr[i].name);
 
     gtk_clist_append (GTK_CLIST(info->jdd.clist_bh),buff);
 
@@ -398,9 +398,9 @@ static int jdd_update_blocked_hosts (GtkWidget *w, struct drqm_jobs_info *info) 
     free(buff[i]);
   free(buff);
 
-  if (info->jdd.job.blocked_host) {
-    free (info->jdd.job.blocked_host);
-    info->jdd.job.blocked_host = NULL;
+  if (info->jdd.job.blocked_host.ptr) {
+    free (info->jdd.job.blocked_host.ptr);
+    info->jdd.job.blocked_host.ptr = NULL;
   }
   info->jdd.job.nblocked = 0;
 
@@ -443,7 +443,7 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
 
   nframes = job_nframes (&info->jdd.job);
 
-  if ((!info->jdd.job.frame_info) && nframes) {
+  if ((!info->jdd.job.frame_info.ptr) && nframes) {
     if (!(fi = malloc(sizeof (struct frame_info) * nframes))) {
       fprintf (stderr,"Error allocating memory for frame information\n");
       return 0;
@@ -455,7 +455,7 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
       return 0;
     }
 
-    info->jdd.job.frame_info = fi;
+    info->jdd.job.frame_info.ptr = fi;
   }
 
   gtk_label_set_text (GTK_LABEL(info->jdd.lname),info->jdd.job.name);
@@ -563,15 +563,15 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
     struct row_data *rdata;
 
     snprintf (buff[0],BUFFERLEN-1,"%i",job_frame_index_to_number (&info->jdd.job,i));
-    strncpy(buff[1],job_frame_status_string(info->jdd.job.frame_info[i].status),BUFFERLEN);
-    snprintf (buff[2],BUFFERLEN-1,"%i",info->jdd.job.frame_info[i].requeued);
-    if (info->jdd.job.frame_info[i].start_time != 0) {
-      time_t ttime = info->jdd.job.frame_info[i].start_time;
+    strncpy(buff[1],job_frame_status_string(info->jdd.job.frame_info.ptr[i].status),BUFFERLEN);
+    snprintf (buff[2],BUFFERLEN-1,"%i",info->jdd.job.frame_info.ptr[i].requeued);
+    if (info->jdd.job.frame_info.ptr[i].start_time != 0) {
+      time_t ttime = info->jdd.job.frame_info.ptr[i].start_time;
       strncpy(buff[3],ctime(&ttime),BUFFERLEN);
       buf = strchr (buff[3],'\n');
       if (buf != NULL)
         *buf = '\0';
-      ttime = info->jdd.job.frame_info[i].end_time;
+      ttime = info->jdd.job.frame_info.ptr[i].end_time;
       strncpy(buff[4],ctime(&ttime),BUFFERLEN);
       buf = strchr (buff[4],'\n');
       if (buf != NULL)
@@ -581,11 +581,11 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
       strncpy(buff[4],"Not started",BUFFERLEN);
     }
     // Depending on the exitcode we set the background
-    snprintf (buff[5],BUFFERLEN,"%i",info->jdd.job.frame_info[i].exitcode);
-    snprintf (buff[6],BUFFERLEN,"%i",info->jdd.job.frame_info[i].icomp);
-    snprintf (buff[7],BUFFERLEN,"%i",info->jdd.job.frame_info[i].itask);
+    snprintf (buff[5],BUFFERLEN,"%i",info->jdd.job.frame_info.ptr[i].exitcode);
+    snprintf (buff[6],BUFFERLEN,"%i",info->jdd.job.frame_info.ptr[i].icomp);
+    snprintf (buff[7],BUFFERLEN,"%i",info->jdd.job.frame_info.ptr[i].itask);
     gtk_clist_append(GTK_CLIST(info->jdd.clist),buff);
-    if (info->jdd.job.frame_info[i].exitcode != 0) {
+    if (info->jdd.job.frame_info.ptr[i].exitcode != 0) {
       GdkColor color;
       color.pixel = 0;
       color.red = 0xffff;
@@ -593,25 +593,25 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
       color.blue = 0x8000;
       gtk_clist_set_background (GTK_CLIST(info->jdd.clist),i,&color);
     }
-    switch (info->jdd.job.frame_info[i].status) {
+    switch (info->jdd.job.frame_info.ptr[i].status) {
     case FS_WAITING:
       gtk_clist_set_pixtext (GTK_CLIST(info->jdd.clist),i,1,
-                             job_frame_status_string(info->jdd.job.frame_info[i].status), 2,
+                             job_frame_status_string(info->jdd.job.frame_info.ptr[i].status), 2,
                              w_data,w_mask);
       break;
     case FS_ASSIGNED:
       gtk_clist_set_pixtext (GTK_CLIST(info->jdd.clist),i,1,
-                             job_frame_status_string(info->jdd.job.frame_info[i].status), 2,
+                             job_frame_status_string(info->jdd.job.frame_info.ptr[i].status), 2,
                              r_data,r_mask);
       break;
     case FS_FINISHED:
       gtk_clist_set_pixtext (GTK_CLIST(info->jdd.clist),i,1,
-                             job_frame_status_string(info->jdd.job.frame_info[i].status), 2,
+                             job_frame_status_string(info->jdd.job.frame_info.ptr[i].status), 2,
                              f_data,f_mask);
       break;
     case FS_ERROR:
       gtk_clist_set_pixtext (GTK_CLIST(info->jdd.clist),i,1,
-                             job_frame_status_string(info->jdd.job.frame_info[i].status), 2,
+                             job_frame_status_string(info->jdd.job.frame_info.ptr[i].status), 2,
                              e_data,e_mask);
       break;
     }
@@ -2430,8 +2430,8 @@ int jdd_framelist_cmp_requeued (GtkCList *clist, gconstpointer ptr1, gconstpoint
   ifa = job_frame_number_to_index (&ra->info->jdd.job,ra->frame);
   ifb = job_frame_number_to_index (&rb->info->jdd.job,rb->frame);
 
-  a = ra->info->jdd.job.frame_info[ifa].requeued;
-  b = rb->info->jdd.job.frame_info[ifb].requeued;
+  a = ra->info->jdd.job.frame_info.ptr[ifa].requeued;
+  b = rb->info->jdd.job.frame_info.ptr[ifb].requeued;
 
   if (a > b) {
     return 1;
@@ -2476,8 +2476,8 @@ int jdd_framelist_cmp_exitcode (GtkCList *clist, gconstpointer ptr1, gconstpoint
   ifa = job_frame_number_to_index (&ra->info->jdd.job,ra->frame);
   ifb = job_frame_number_to_index (&rb->info->jdd.job,rb->frame);
 
-  a = ra->info->jdd.job.frame_info[ifa].exitcode;
-  b = rb->info->jdd.job.frame_info[ifb].exitcode;
+  a = ra->info->jdd.job.frame_info.ptr[ifa].exitcode;
+  b = rb->info->jdd.job.frame_info.ptr[ifb].exitcode;
 
   if (a > b) {
     return 1;
@@ -2501,8 +2501,8 @@ int jdd_framelist_cmp_status (GtkCList *clist, gconstpointer ptr1, gconstpointer
   ifa = job_frame_number_to_index (&ra->info->jdd.job,ra->frame);
   ifb = job_frame_number_to_index (&rb->info->jdd.job,rb->frame);
 
-  a = ra->info->jdd.job.frame_info[ifa].status;
-  b = rb->info->jdd.job.frame_info[ifb].status;
+  a = ra->info->jdd.job.frame_info.ptr[ifa].status;
+  b = rb->info->jdd.job.frame_info.ptr[ifb].status;
 
   if (a > b) {
     return 1;
@@ -2526,8 +2526,8 @@ int jdd_framelist_cmp_icomp (GtkCList *clist, gconstpointer ptr1, gconstpointer 
   ifa = job_frame_number_to_index (&ra->info->jdd.job,ra->frame);
   ifb = job_frame_number_to_index (&rb->info->jdd.job,rb->frame);
 
-  a = ra->info->jdd.job.frame_info[ifa].icomp;
-  b = rb->info->jdd.job.frame_info[ifb].icomp;
+  a = ra->info->jdd.job.frame_info.ptr[ifa].icomp;
+  b = rb->info->jdd.job.frame_info.ptr[ifb].icomp;
 
   if (a > b) {
     return 1;
@@ -2551,8 +2551,8 @@ int jdd_framelist_cmp_start_time (GtkCList *clist, gconstpointer ptr1, gconstpoi
   ifa = job_frame_number_to_index (&ra->info->jdd.job,ra->frame);
   ifb = job_frame_number_to_index (&rb->info->jdd.job,rb->frame);
 
-  a = ra->info->jdd.job.frame_info[ifa].start_time;
-  b = rb->info->jdd.job.frame_info[ifb].start_time;
+  a = ra->info->jdd.job.frame_info.ptr[ifa].start_time;
+  b = rb->info->jdd.job.frame_info.ptr[ifb].start_time;
 
   if (a > b) {
     return 1;
@@ -2576,8 +2576,8 @@ int jdd_framelist_cmp_end_time (GtkCList *clist, gconstpointer ptr1, gconstpoint
   ifa = job_frame_number_to_index (&ra->info->jdd.job,ra->frame);
   ifb = job_frame_number_to_index (&rb->info->jdd.job,rb->frame);
 
-  a = ra->info->jdd.job.frame_info[ifa].end_time;
-  b = rb->info->jdd.job.frame_info[ifb].end_time;
+  a = ra->info->jdd.job.frame_info.ptr[ifa].end_time;
+  b = rb->info->jdd.job.frame_info.ptr[ifb].end_time;
 
   if (a > b) {
     return 1;

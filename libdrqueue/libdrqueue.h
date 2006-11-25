@@ -32,6 +32,7 @@ extern "C" {
 
 extern int drerrno;
 
+#include "pointer.h"
 #include "computer.h"
 #include "job.h"
 #include "task.h"

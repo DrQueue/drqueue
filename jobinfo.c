@@ -144,7 +144,7 @@ void show_job (struct job *job) {
   envvars_attach(&job->envvars);
   printf("\tEnvironment variables\n");
   for (i = 0; i < job->envvars.nvariables; i++) {
-    printf ("\t%s=%s\n",job->envvars.variables[i].name,job->envvars.variables[i].value);
+    printf ("\t%s=%s\n",job->envvars.variables.ptr[i].name,job->envvars.variables.ptr[i].value);
   }
   envvars_detach(&job->envvars);
 }
