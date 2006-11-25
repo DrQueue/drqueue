@@ -89,6 +89,7 @@ slaves. Also provides access to all data structures of DrQueue."
 	}
 }
 
+%include "pointer.h"
 %include "libdrqueue.h"
 %include "computer.h"
 %include "computer_info.h"
@@ -274,11 +275,11 @@ typedef unsigned char uint8_t;
 			return (struct pool *)PyErr_NoMemory();
 
 		if (self->npools) {
-			if ((self->pool = (struct pool *) computer_pool_attach_shared_memory(self)) == (void*)-1) {
+			if ((self->pool.ptr = (struct pool *) computer_pool_attach_shared_memory(self)) == (void*)-1) {
 				return pool;
 			}
 		}
-		memcpy(pool,&self->pool[n],sizeof(struct pool));
+		memcpy(pool,&self->pool.ptr[n],sizeof(struct pool));
 
 		computer_pool_detach_shared_memory (self);
 
@@ -381,7 +382,7 @@ typedef unsigned char uint8_t;
     PyObject *l = PyList_New(0);
 		int npools = self->limits.npools;
 
-    if ((self->limits.pool = (struct pool *) computer_pool_attach_shared_memory(&self->limits)) == (void*)-1) {
+    if ((self->limits.pool.ptr = (struct pool *) computer_pool_attach_shared_memory(&self->limits)) == (void*)-1) {
       PyErr_SetString(PyExc_MemoryError,drerrno_str());
 		}
 
@@ -391,7 +392,7 @@ typedef unsigned char uint8_t;
 			if (!pool_i) {
 				return PyErr_NoMemory();
 			}
-      memcpy (pool_i,&self->limits.pool[i],sizeof(struct pool));
+      memcpy (pool_i,&self->limits.pool.ptr[i],sizeof(struct pool));
 			PyObject *o = SWIG_NewPointerObj((void*)(pool_i), SWIGTYPE_p_pool, 0);
 			PyList_Append(l,o);
 		}
