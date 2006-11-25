@@ -1206,6 +1206,7 @@ static int dnj_submit (struct drqmj_dnji *info) {
   }
 
   // Environment variables
+  envvars_init (&job.envvars);
   job.envvars = info->envvars.envvars;
 
   if (!register_job (&job)) {
@@ -1302,7 +1303,7 @@ static void djd_bok_pressed (GtkWidget *button, struct drqm_jobs_info *info) {
     drqm_request_job_delete (info->jdd.job.id);
     update_joblist(button,info->jdd.oldinfo);
     gtk_widget_destroy (info->jdd.dialog);
-    info->jdd.dialog = NULL;
+    //info->jdd.dialog = NULL;
   } else {
     GList *sel;
 
