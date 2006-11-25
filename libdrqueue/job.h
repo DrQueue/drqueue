@@ -32,6 +32,8 @@ extern "C" {
 #include <sys/types.h>
 #include <stdint.h>
 #include <time.h>
+#include <stdio.h>
+#include <limits.h>
 
 #include "constants.h"
 #include "envvars.h"
@@ -78,7 +80,7 @@ struct job_limits {
 /* this union must have the appropiate information for every kind of job */
 union koj_info {  /* Kind of job information */
   struct koji_general {
-    char *scriptdir;
+    char scriptdir[PATH_MAX];
   }
   general;
   struct koji_maya {
@@ -271,7 +273,10 @@ struct job {
   uint32_t est_finish_time;     // Estimated finish time
                                 // we checked.
 
+  fptr_type (struct frame_info,frame_info);      // Status of every frame (1 pointer)
   int64_t fishmid;               // Frame info shared memory id
+
+  fptr_type (struct blocked_host,blocked_host);  // Blocked hosts    (1 pointer)
   int64_t bhshmid;               // Shared memory id for the blocked_host structure
   uint16_t nblocked;             // Number of blocked hosts
 
@@ -279,10 +284,8 @@ struct job {
 
   uint32_t dependid;             // Jobid on which this one depends
 
-  struct job_limits limits;      // Job limits
-  struct envvars envvars;        // Environment variables
-  struct frame_info *frame_info; // Status of every frame
-  struct blocked_host *blocked_host;  // Blocked hosts
+  struct job_limits limits;           // Job limits
+  struct envvars envvars;             // Environment variables (1 pointer)
 };
 
 struct database;

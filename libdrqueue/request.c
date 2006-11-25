@@ -2548,7 +2548,7 @@ void handle_r_r_jobdelblkhost (int sfd, struct database *wdb, int icomp, struct 
     }
     wdb->job[ijob].bhshmid = (int64_t)-1;
     wdb->job[ijob].nblocked = 0;
-    wdb->job[ijob].blocked_host = NULL;
+    wdb->job[ijob].blocked_host.ptr = NULL;
   }
   semaphore_release(wdb->semid);
 

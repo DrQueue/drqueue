@@ -36,6 +36,7 @@
 #include <unistd.h>
 #include <stdint.h>
 
+#include "pointer.h"
 #include "semaphores.h"
 #include "computer_pool.h"
 #include "computer.h"
@@ -142,7 +143,7 @@ computer_pool_set_from_environment (struct computer_limits *cl) {
 
 void
 computer_pool_init (struct computer_limits *cl) {
-  cl->pool = NULL;
+  cl->pool.ptr = NULL;
   cl->poolshmid = (int64_t)-1;
   computer_pool_lock_check(cl);
   cl->npools = 0;
@@ -182,7 +183,7 @@ computer_pool_attach_shared_memory (struct computer_limits *cl) {
     log_auto (L_ERROR,"computer_pool_attach_shared_memory() : removing poolshmid from previous error (%ji)",cl->poolshmid);
     computer_pool_init(cl);
   } else {
-    cl->pool = pool;
+    cl->pool.ptr = pool;
     log_auto (L_DEBUG,"computer_pool_attach_shared_memory() : successful attach, pool pointer = %p",cl->pool);
   }
   
@@ -226,20 +227,20 @@ computer_pool_detach_shared_memory (struct computer_limits *cl) {
 
   log_auto (L_DEBUG2,"computer_pool_detach_shared_memory() : > Entering...");
 
-  if (cl->pool) {
-    if (shmdt((void*)cl->pool) == -1) {
+  if (cl->pool.ptr) {
+    if (shmdt((void*)cl->pool.ptr) == -1) {
       drerrno_system = errno;
       drerrno = DRE_DTSHMEM;
       log_auto(L_ERROR,"computer_pool_detach_shared_memory(): error detaching shared memory: %s",strerror(drerrno_system));
       rv = 0;
     }
-    cl->pool = NULL;
+    cl->pool.ptr = NULL;
   } else {
     if (cl->poolshmid != (int64_t) -1) {
       log_auto(L_DEBUG2,"computer_pool_detach_shared_memory(): already detached, can't do it again.");
     } else {
       log_auto(L_DEBUG2,"computer_pool_detach_shared_memory(): tried to detach NULL with a poolshmid == -1. Not an issue.");
-      cl->pool = NULL;
+      cl->pool.ptr = NULL;
     }
     rv = 0;
   }
@@ -292,16 +293,16 @@ int computer_pool_add (struct computer_limits *cl, char *poolname) {
     return 0;
   }
   
-  new_cl.pool = npool;
-  if ((cl->npools) && (cl->pool != (void*) -1)) {
+  new_cl.pool.ptr = npool;
+  if ((cl->npools) && (cl->pool.ptr != (void*) -1)) {
     memcpy (npool,opool,sizeof (struct pool) * cl->npools);
     log_auto(L_DEBUG2,"computer_pool_add() : copied %i pools from old list",cl->npools);
   } else {
-    log_auto(L_DEBUG2,"computer_pool_add() : no pools to copy from old pool list (npools=%i,pool=%p)",cl->npools,cl->pool);
+    log_auto(L_DEBUG2,"computer_pool_add() : no pools to copy from old pool list (npools=%i,pool=%p)",cl->npools,cl->pool.ptr);
   }
 
-  strncpy (new_cl.pool[cl->npools].name,poolname,MAXNAMELEN);
-  log_auto(L_DEBUG2,"computer_pool_add() : copied pool name '%s' to the end of the new list.",new_cl.pool[cl->npools].name);
+  strncpy (new_cl.pool.ptr[cl->npools].name,poolname,MAXNAMELEN);
+  log_auto(L_DEBUG2,"computer_pool_add() : copied pool name '%s' to the end of the new list.",new_cl.pool.ptr[cl->npools].name);
 
 
   computer_pool_copy (cl,&old_cl);           // Store a copy of the old one
@@ -318,8 +319,8 @@ computer_pool_copy (struct computer_limits *cl_src, struct computer_limits *cl_d
   cl_dst->npoolsattached = cl_src->npoolsattached;
   cl_dst->poolshmid = cl_src->poolshmid;
   cl_dst->poolsemid = cl_src->poolsemid;
-  cl_dst->local_pool = cl_src->local_pool;
-  cl_dst->pool = cl_src->pool;
+  cl_dst->local_pool.ptr = cl_src->local_pool.ptr;
+  cl_dst->pool.ptr = cl_src->pool.ptr;
   cl_dst->npools = cl_src->npools;
 }
 
@@ -368,10 +369,10 @@ computer_pool_remove (struct computer_limits *cl, char *poolname) {
   }
 
   for (i=0,j=0;i<cl->npools;i++) {
-    if (strncmp(cl->pool[i].name,poolname,strlen(poolname)+1) == 0) {
+    if (strncmp(cl->pool.ptr[i].name,poolname,strlen(poolname)+1) == 0) {
       continue;
     }
-    memcpy(&new_cl.pool[j],&cl->pool[i],sizeof(struct pool));
+    memcpy(&new_cl.pool.ptr[j],&cl->pool.ptr[i],sizeof(struct pool));
     j++;
   }
 
@@ -379,7 +380,7 @@ computer_pool_remove (struct computer_limits *cl, char *poolname) {
   computer_pool_free(cl);
   cl->poolshmid = new_cl.poolshmid;
   cl->npools = new_cl.npools;
-  cl->pool = new_cl.pool;
+  cl->pool.ptr = new_cl.pool.ptr;
   computer_pool_detach_shared_memory (cl); // now it points to new_cl
 
   return 1;

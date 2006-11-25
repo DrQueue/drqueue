@@ -37,6 +37,7 @@
 #include <string.h>
 #include <errno.h>
 
+#include "pointer.h"
 #include "communications.h"
 #include "database.h"
 #include "semaphores.h"
@@ -507,7 +508,7 @@ int recv_envvar (int sfd, struct envvar *var) {
   uint32_t datasize;
   drerrno = DRE_NOERROR;
 
-  datasize = sizeof (struct envvar) - sizeof (void*);
+  datasize = sizeof (struct envvar);
   if (!check_recv_datasize(sfd, datasize)) {
     // TODO: log it
     return 0;
@@ -526,7 +527,7 @@ int send_envvar (int sfd, struct envvar *var) {
   uint32_t datasize;
   drerrno = DRE_NOERROR;
 
-  datasize = sizeof (struct envvar) - sizeof (void*);
+  datasize = sizeof (struct envvar);
   if (!check_send_datasize(sfd,datasize)) {
     // TODO: log it
     return 0;
@@ -555,7 +556,7 @@ int send_envvars (int sfd, struct envvars *envvars) {
     envvars_attach (envvars);
     int i;
     for (i = 0; i < envvars->nvariables; i++) {
-      if (!send_envvar (sfd,&(envvars->variables[i]))) {
+      if (!send_envvar (sfd,&(envvars->variables.ptr[i]))) {
         return 0;
       }
       //fprintf (stderr,"DEBUG: send_envvars() just sent (%s,%s)\n",envvars->variables[i].name,envvars->variables[i].value);
@@ -612,7 +613,7 @@ int
 recv_job (int sfd, struct job *job) {
   uint32_t datasize;
 
-  datasize = sizeof (struct job) - sizeof (void*)*3;
+  datasize = sizeof (struct job);
   if (!check_recv_datasize(sfd,datasize)) {
     // TODO: log it
     fprintf (stderr,"datasize: %i\n",datasize);
@@ -675,7 +676,7 @@ recv_job (int sfd, struct job *job) {
     break;
   }
 
-  job->frame_info = NULL;
+  job->frame_info.ptr = NULL;
   job->frame_start = ntohl (job->frame_start);
   job->frame_end = ntohl (job->frame_end);
   job->frame_step = ntohl (job->frame_step);
@@ -705,7 +706,7 @@ send_job (int sfd, struct job *job) {
   void *buf = &bswapped;
   uint32_t datasize;
 
-  datasize = sizeof(struct job) - sizeof(void*)*3; // one envvar pointer inside the job struct
+  datasize = sizeof(struct job);
   if (!check_send_datasize(sfd,datasize)) {
     // TODO: log it
     fprintf (stderr,"datasize: %i",datasize);
@@ -754,7 +755,7 @@ send_job (int sfd, struct job *job) {
   }
   bswapped.koj = htons (bswapped.koj);
 
-  bswapped.frame_info = NULL;  
+  bswapped.frame_info.ptr = NULL;  
   bswapped.frame_start = htonl (bswapped.frame_start);
   bswapped.frame_end = htonl (bswapped.frame_end);
   bswapped.frame_step = htonl (bswapped.frame_step);
@@ -775,7 +776,7 @@ send_job (int sfd, struct job *job) {
   // Filling the envvars with neutral values
   envvars_init(&bswapped.envvars);
   bswapped.envvars.nvariables = htons(bswapped.envvars.nvariables);
-  bswapped.envvars.variables = NULL;
+  bswapped.envvars.variables.ptr = NULL;
   bswapped.envvars.evshmid = (int64_t)-1; // 64bit 
 
   if (!dr_write (sfd,(char*)buf,sizeof(struct job))) {
@@ -1014,7 +1015,7 @@ int send_computer_pools (int sfd, struct computer_limits *cl, uint8_t use_local_
       }
     } else {
       log_auto (L_DEBUG3,"send_computer_pools(): USING local pools");
-      pool = cl->local_pool;
+      pool = cl->local_pool.ptr;
     }
     log_auto (L_DEBUG2,"send_computer_pools(): npools = %u",cl->npools);
     for (i=0;i<cl->npools;i++) {
@@ -1105,7 +1106,7 @@ int recv_computer_limits (int sfd, struct computer_limits *cl) {
   void *buf=&limits;
   uint32_t datasize;
 
-  datasize = sizeof(struct computer_limits) - (sizeof (void*)*2);
+  datasize = sizeof(struct computer_limits);
   memset (buf,0,datasize);
   computer_limits_init(&limits);
   if (!check_recv_datasize(sfd,datasize)) {
@@ -1162,7 +1163,7 @@ send_computer_limits (int sfd, struct computer_limits *cl, uint8_t use_local_poo
   // Clean up shared memory info
   computer_limits_cleanup_to_send (&bswapped);
  
-  datasize = sizeof (struct computer_limits) - (sizeof(void*)*2);
+  datasize = sizeof (struct computer_limits);
   if (!check_send_datasize (sfd,datasize)) {
     log_auto (L_ERROR,"send_computer_limits(): different data sizes for 'struct computer_limits'. Local size: %u",datasize);
     return 0;

@@ -235,7 +235,7 @@ task_environment_set (struct task *task) {
   } else {
     for (i = 0; i < envvars.nvariables; i++) {
       buffer = (char *) malloc (BUFFERLEN);
-      snprintf (buffer,BUFFERLEN,"%s=%s",envvars.variables[i].name,envvars.variables[i].value);
+      snprintf (buffer,BUFFERLEN,"%s=%s",envvars.variables.ptr[i].name,envvars.variables.ptr[i].value);
       log_auto (L_DEBUG,"Putting \"%s\" in the environment",buffer);
       putenv (buffer);
     }

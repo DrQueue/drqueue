@@ -38,6 +38,7 @@
 #include <sys/sysctl.h>
 #endif
 
+#include "pointer.h"
 #include "constants.h"
 #include "computer_info.h"
 
