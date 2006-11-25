@@ -1439,6 +1439,7 @@ void handle_r_r_jobenvvars (int sfd,struct database *wdb,int icomp,struct reques
 
   if (!job_index_correct_master(wdb,ijob)) {
     log_auto (L_INFO,"Request for hard stopping of an unused job");
+    close(sfd);
     return;
   }
 
@@ -1447,6 +1448,7 @@ void handle_r_r_jobenvvars (int sfd,struct database *wdb,int icomp,struct reques
   if (wdb->job[ijob].used) {
     log_auto (L_DEBUG,"Sending %i environment variables",wdb->job[ijob].envvars.nvariables);
     if (!send_envvars(sfd,&wdb->job[ijob].envvars)) {
+      close (sfd);
       log_auto (L_WARNING,"Error while sending the environment variables: %s",drerrno_str());
     }
   }
@@ -4086,6 +4088,8 @@ request_job_name (uint32_t ijob, char **jobname, uint16_t who) {
     close (sfd);
     return 0;
   }
+
+  close (sfd);
 
   return 1;
 }

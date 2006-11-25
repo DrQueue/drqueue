@@ -302,5 +302,7 @@ config_read (char *filename,char *tool) {
 
   config_find_nodes (config,cfg_file);
 
+  fclose(cfg_file);
+
   return config;
 }
