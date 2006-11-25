@@ -224,6 +224,10 @@ job_delete (struct job *job) {
   //
   // Deallocates all memory reserved for the job and initializes it.
   //
+  if (!job) {
+    // TODO: log it
+    return;
+  }
   job_frame_info_free (job);
   job_block_host_free (job);
   envvars_free(&job->envvars);

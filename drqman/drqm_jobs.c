@@ -113,6 +113,8 @@ free_job_list(GtkWidget *joblist,gpointer userdata) {
   for (i = 0; i < info->njobs; i++) {
     job_delete (&info->jobs[i]);
   }
+  info->jobs=NULL;
+  info->njobs=0;
 }
 
 void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info) {
