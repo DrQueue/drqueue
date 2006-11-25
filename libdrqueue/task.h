@@ -71,7 +71,7 @@ struct job;
 
 void task_init_all (struct task *task);
 void task_init (struct task *task);
-int task_available (struct slave_database *sdb);
+uint16_t task_available (struct slave_database *sdb);
 void task_report (struct task *task);
 char *task_status_string (unsigned char status);
 void task_environment_set (struct task *task);

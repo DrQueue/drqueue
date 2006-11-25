@@ -59,9 +59,10 @@ void task_init (struct task *task) {
   task->status = 0;
 }
 
-int task_available (struct slave_database *sdb) {
+uint16_t
+task_available (struct slave_database *sdb) {
   int i;
-  int r = -1;
+  uint16_t r = -1;
 
   semaphore_lock(sdb->semid);
   for (i=0;i<MAXTASKS;i++) {
