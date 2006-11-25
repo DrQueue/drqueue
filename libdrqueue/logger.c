@@ -140,6 +140,7 @@ FILE *log_slave_open_computer (int level, char *name) {
 
   if ((basedir = getenv("DRQUEUE_LOGS")) == NULL) {
     fprintf (stderr,"Environment variable DRQUEUE_LOGS not set. Logging on screen...\n");
+    log_level_out_set (L_ONSCREEN);
     return stderr;
   }
 
@@ -148,6 +149,7 @@ FILE *log_slave_open_computer (int level, char *name) {
   if ((f = fopen (filename,"a")) == NULL) {
     perror ("log_slave_open_computer: Couldn't open file for writing");
     fprintf (stderr,"So... logging on screen.\n");
+    log_level_out_set (L_ONSCREEN);
     return stderr;
   }
 
@@ -203,6 +205,7 @@ FILE *log_master_open (int level) {
 
   if ((basedir = getenv("DRQUEUE_LOGS")) == NULL) {
     fprintf (stderr,"Environment variable DRQUEUE_LOGS not set. Aborting...\n");
+    log_level_out_set(L_ONSCREEN);
     return stderr;
   }
 
@@ -212,12 +215,14 @@ FILE *log_master_open (int level) {
   if ((f = fopen (filename,"a")) == NULL) {
     perror ("log_master_open: Couldn't open file for writing");
     fprintf (stderr,"So... logging on screen.\n");
+    log_level_out_set(L_ONSCREEN);
     return stderr;
   }
 #else
   if ((f = fopen (filename,"ab")) == NULL) {
     perror ("log_master_open: Couldn't open file for writing");
     fprintf (stderr,"So... logging on screen.\n");
+    log_level_out_set(L_ONSCREEN);
     return stderr;
   }
 #endif
@@ -527,6 +532,7 @@ void log_auto (int level, char *fmt, ...) {
       if (gethostname(computer_buf,BUFFERLEN) != -1) {
 	f_log = log_slave_open_computer(level,computer_buf);
       } else {
+	log_level_out_set(L_ONSCREEN);
 	f_log = stderr;
       }
     }

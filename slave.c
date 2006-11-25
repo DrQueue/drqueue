@@ -552,7 +552,7 @@ void launch_task (struct slave_database *sdb, uint16_t itask) {
       // Wouldn't reach this point unless error on execve
       drerrno_system = errno;
       log_auto(L_ERROR,"launch_task(): error on execve. (%s)",strerror(drerrno_system));
-      exit(drerrno_system);
+      slave_exit(drerrno_system);
     } else if (task_pid == -1) {
       log_auto(L_ERROR,"lauch_task(): Fork failed. Task not created.");
 
