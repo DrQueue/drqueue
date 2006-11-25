@@ -610,11 +610,18 @@ int recv_envvars (int sfd, struct envvars *envvars) {
 
 int
 recv_job (int sfd, struct job *job) {
+  uint32_t datasize;
+
+  datasize = sizeof (*job) - sizeof (void*);
+  if (!check_recv_datasize(sfd,datasize)) {
+    // TODO: log it
+    return 0;
+  }
 
   // We should empty all locally reserved structures
   job_delete (job);
 
-  if (!dr_read(sfd,(char*)job,sizeof (struct job))) {
+  if (!dr_read(sfd,(char*)job,datasize)) {
     return 0;
   }
   
@@ -695,9 +702,16 @@ send_job (int sfd, struct job *job) {
   /* This function _sets_ frame_info = NULL before sending */
   struct job bswapped;
   void *buf = &bswapped;
+  uint32_t datasize;
+
+  datasize = sizeof(bswapped) - sizeof(void*); // one envvar pointer inside the job struct
+  if (!check_send_datasize(sfd,datasize)) {
+    // TODO: log it
+    return 0;
+  }
 
   /* We make a copy coz we need to modify the values */
-  memcpy (buf,job,sizeof(bswapped));
+  memcpy (buf,job,datasize);
   /* Prepare for sending */
   bswapped.id = htonl (bswapped.id);
   bswapped.nprocs = htons (bswapped.nprocs);
