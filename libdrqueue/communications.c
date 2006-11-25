@@ -612,9 +612,10 @@ int
 recv_job (int sfd, struct job *job) {
   uint32_t datasize;
 
-  datasize = sizeof (*job) - sizeof (void*);
+  datasize = sizeof (struct job) - sizeof (void*);
   if (!check_recv_datasize(sfd,datasize)) {
     // TODO: log it
+    fprintf (stderr,"datasize: %i\n"datasize);
     return 0;
   }
 
@@ -704,9 +705,10 @@ send_job (int sfd, struct job *job) {
   void *buf = &bswapped;
   uint32_t datasize;
 
-  datasize = sizeof(bswapped) - sizeof(void*); // one envvar pointer inside the job struct
+  datasize = sizeof(struct job) - sizeof(void*); // one envvar pointer inside the job struct
   if (!check_send_datasize(sfd,datasize)) {
     // TODO: log it
+    fprintf (stderr,"datasize: %i",datasize);
     return 0;
   }
 
