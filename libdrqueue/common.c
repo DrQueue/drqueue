@@ -221,7 +221,7 @@ void set_default_env(void) {
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
-    free(penv);
+    //free(penv);
   }
 
   if (!getenv("DRQUEUE_ETC")) {
@@ -229,7 +229,7 @@ void set_default_env(void) {
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
-    free(penv);
+    //free(penv);
   }
 
   if (!getenv("DRQUEUE_BIN")) {
@@ -237,7 +237,7 @@ void set_default_env(void) {
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
-    free(penv);
+    //free(penv);
   }
 
   if (!getenv("DRQUEUE_LOGS")) {
@@ -245,7 +245,7 @@ void set_default_env(void) {
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
-    free(penv);
+    //free(penv);
   }
 
   if (!getenv("DRQUEUE_DB")) {
@@ -253,7 +253,7 @@ void set_default_env(void) {
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
-    free(penv);
+    //free(penv);
   }
 }
 
