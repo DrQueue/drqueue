@@ -375,9 +375,9 @@ static int jdd_update_blocked_hosts (GtkWidget *w, struct drqm_jobs_info *info) 
     return 0;
   }
 
-  buff = (char**) g_malloc((ncols + 1) * sizeof(char*));
+  buff = (char**) malloc((ncols + 1) * sizeof(char*));
   for (i=0;i<ncols;i++)
-    buff[i] = (char*) g_malloc (BUFFERLEN);
+    buff[i] = (char*) malloc (BUFFERLEN);
   buff[ncols] = NULL;
 
   gtk_clist_freeze(GTK_CLIST(info->jdd.clist_bh));
@@ -444,14 +444,14 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
   nframes = job_nframes (&info->jdd.job);
 
   if ((!info->jdd.job.frame_info) && nframes) {
-    if (!(fi = g_malloc(sizeof (struct frame_info) * nframes))) {
+    if (!(fi = malloc(sizeof (struct frame_info) * nframes))) {
       fprintf (stderr,"Error allocating memory for frame information\n");
       return 0;
     }
 
     if (!request_job_xferfi (info->jdd.job.id,fi,nframes,CLIENT)) {
       fprintf (stderr,"Error request job frame info xfer: %s\n",drerrno_str());
-      g_free (fi);
+      free (fi);
       return 0;
     }
 
@@ -552,9 +552,9 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
   adj = gtk_scrolled_window_get_hadjustment (GTK_SCROLLED_WINDOW(info->jdd.swindow));
   hadj_value = gtk_adjustment_get_value (GTK_ADJUSTMENT(adj));
 
-  buff = (char**) g_malloc((ncols + 1) * sizeof(char*));
+  buff = (char**) malloc((ncols + 1) * sizeof(char*));
   for (i=0;i<ncols;i++)
-    buff[i] = (char*) g_malloc (BUFFERLEN);
+    buff[i] = (char*) malloc (BUFFERLEN);
   buff[ncols] = NULL;
 
   gtk_clist_freeze(GTK_CLIST(info->jdd.clist));
@@ -619,11 +619,11 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
     /* Set the information for the row */
     rdata = gtk_clist_get_row_data (GTK_CLIST(info->jdd.clist),i);
     if (!rdata) {
-      rdata = g_malloc (sizeof (*rdata));
+      rdata = malloc (sizeof (*rdata));
     }
     rdata->frame = job_frame_index_to_number (&info->jdd.job,i);
     rdata->info = info;
-    gtk_clist_set_row_data_full (GTK_CLIST(info->jdd.clist),i,(gpointer)rdata, g_free);
+    gtk_clist_set_row_data_full (GTK_CLIST(info->jdd.clist),i,(gpointer)rdata, free);
   }
 
   gtk_clist_sort (GTK_CLIST(info->jdd.clist));
@@ -637,8 +637,8 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
   gtk_adjustment_set_value (GTK_ADJUSTMENT(adj),hadj_value);
 
   for(i=0;i<ncols;i++)
-    g_free (buff[i]);
-  g_free (buff);
+    free (buff[i]);
+  free (buff);
 
   return 1;
 }
@@ -659,7 +659,6 @@ static void jdd_add_blocked_host (GtkWidget *button, struct drqm_jobs_info *info
 
   // We need to remove hosts in reverse order
   sel = g_list_reverse (sel); // Because we are removing indexes if remove 0 and then 1, after removing 0, 1 would be 0 again.
-
 
   for (;sel;sel = sel->next) {
     name = (char*)gtk_clist_get_row_data(GTK_CLIST(info->jdd.bhdi_computers_info.clist), GPOINTER_TO_INT(sel->data));
@@ -697,7 +696,7 @@ static void jdd_destroy (GtkWidget *w, struct drqm_jobs_info *info) {
     g_source_remove (info->ari.sourceid);
   }
 
-  g_free (info);
+  drqm_clean_joblist (info);
 }
 
 static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info) {
@@ -723,12 +722,15 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info) {
   }
 
   // We create a new info structure for this window.
-  newinfo = g_malloc (sizeof (struct drqm_jobs_info));
+  newinfo = malloc (sizeof (struct drqm_jobs_info));
   if (!newinfo) {
     return NULL;
   }
-  memcpy (newinfo,info,sizeof(struct drqm_jobs_info));
-  memcpy (&newinfo->jdd.job,&info->jobs[info->row],sizeof (struct job));
+  memcpy(newinfo,info,sizeof(struct drqm_jobs_info));
+/*   drqm_request_joblist (newinfo); */
+/*   drqm_update_joblist (newinfo); */
+  memcpy(&newinfo->jdd.job,&info->jobs[info->row],sizeof(struct job));
+  job_fix_received_invalid(&newinfo->jdd.job);
   newinfo->jdd.oldinfo = info;
 
   tooltips = TooltipsNew ();
@@ -1120,13 +1122,13 @@ static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info) {
   task.ijob = info->jdd.job.id;
   
   // Allocate memory for idle info
-  iinfo = (struct idle_info *)g_malloc(sizeof (struct idle_info));
+  iinfo = (struct idle_info *) malloc(sizeof (struct idle_info));
 
   /* Dialog */
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW(window),"Frame log");
   g_signal_connect_swapped (G_OBJECT(window),"destroy",G_CALLBACK(g_idle_remove_by_data),iinfo);
-  g_signal_connect_swapped (G_OBJECT(window),"destroy",G_CALLBACK(g_free),iinfo);
+  g_signal_connect_swapped (G_OBJECT(window),"destroy",G_CALLBACK(free),iinfo);
   gtk_window_set_default_size(GTK_WINDOW(window),600,200);
   gtk_container_set_border_width (GTK_CONTAINER(window),5);
 

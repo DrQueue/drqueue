@@ -121,7 +121,7 @@ char *shakesg_default_script_path (void) {
     return ("/drqueue_tmp/not/set/report/bug/please/");
   }
 
-  if (p[strlen(p)-1] == '/')
+  if (p[strlen(p)] == '/')
     snprintf (buf,BUFFERLEN-1,"%s",p);
   else
     snprintf (buf,BUFFERLEN-1,"%s/",p);
