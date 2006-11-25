@@ -71,7 +71,7 @@
 /* master the computer is erased from the db */
 
 /* Others */
-#define MAXLISTEN 100  /* Maximum number of connections waiting to be accepted */
+#define MAXLISTEN 300  /* Maximum number of connections waiting to be accepted */
 #define MAXLOADAVG 160  /* Load average from which we consider a computer unavailable */
 #define DFLTAVGFTIME 120 /* Default average frame time in seconds */
 
