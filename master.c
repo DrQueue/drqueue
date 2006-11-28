@@ -186,7 +186,8 @@ int64_t get_shared_memory (int force) {
   log_auto (L_DEBUG,"Using file '%s' to obtain shared memory id.",file);
 
   if ((skey = (key_t) ftok (file,(int)'Z')) == (key_t)-1) {
-    perror ("Getting key for shared memory");
+    drerrno_system = errno;
+    log_auto (L_ERROR,"Couldn't find the file '%s'. (%s)",file,strerror); 
     exit (1);
   }
 

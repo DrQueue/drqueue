@@ -56,13 +56,22 @@ int common_environment_check (void) {
     snprintf (dir_str,BUFFERLEN-1,"%s/tmp",getenv("DRQUEUE_ROOT"));
   } 
   if (stat (dir_str,&s_stat) == -1) {
+    drerrno_system = errno;
     drerrno = DRE_NOTMPDIR;
+    log_auto (L_ERROR,"Could not find temp path '%s'. (%s)",dir_str,strerror(drerrno_system));
     return 0;
   } else {
+#ifdef __CYGWIN
+    if (!S_ISDIR(s_stat.st_mode)) {
+      drerrno = DRE_NOTMPDIR;
+      return 0;
+    }
+#else
     if ((!S_ISDIR(s_stat.st_mode)) || (!(S_IWOTH & s_stat.st_mode))) {
       drerrno = DRE_NOTMPDIR;
       return 0;
     }
+#endif
   }
 
   if (getenv("DRQUEUE_DB") != NULL) {
@@ -73,9 +82,18 @@ int common_environment_check (void) {
   if (stat (dir_str,&s_stat) == -1) {
     drerrno = DRE_NODBDIR;
     return 0;
-  } else if ((!S_ISDIR(s_stat.st_mode)) || (!(S_IWUSR & s_stat.st_mode))) {
-    drerrno = DRE_NODBDIR;
-    return 0;
+  } else {
+#ifdef __CYGWIN
+    if (!S_ISDIR(s_stat.st_mode)) {
+      drerrno = DRE_NODBDIR;
+      return 0;
+    }
+#else
+    if ((!S_ISDIR(s_stat.st_mode)) || (!(S_IWUSR & s_stat.st_mode))) {
+      drerrno = DRE_NODBDIR;
+      return 0;
+    }
+#endif
   }
 
   if (getenv("DRQUEUE_LOGS")) {
@@ -86,9 +104,18 @@ int common_environment_check (void) {
   if (stat (dir_str,&s_stat) == -1) {
     drerrno = DRE_NOLOGDIR;
     return 0;
-  } else if ((!S_ISDIR(s_stat.st_mode)) || (!(S_IWUSR & s_stat.st_mode))) {
-    drerrno = DRE_NOLOGDIR;
-    return 0;
+  } else {
+#ifdef __CYGWIN
+    if (!S_ISDIR(s_stat.st_mode)) {
+      drerrno = DRE_NOLOGDIR;
+      return 0;
+    }
+#else
+    if ((!S_ISDIR(s_stat.st_mode)) || (!(S_IWUSR & s_stat.st_mode))) {
+      drerrno = DRE_NOLOGDIR;
+      return 0;
+    }
+#endif
   }
 
   if (getenv("DRQUEUE_BIN")) {
@@ -206,7 +233,7 @@ int common_date_check (void) {
 }
 
 void set_default_env(void) {
-  char *penv,renv[BUFFERLEN],*drq_root;
+  char *penv,renv[BUFFERLEN],*drq_root,*drq_root_cp;
 
   if ((drq_root = getenv("DRQUEUE_ROOT")) == NULL) {
     drerrno = DRE_NOENVROOT;
@@ -215,6 +242,12 @@ void set_default_env(void) {
 	      "installation. Check the documentation for more help.");
     exit (1);
   }
+  drq_root_cp = strdup (drq_root);
+  drq_root = drq_root_cp;
+
+#ifdef __CYGWIN
+  drq_root[strlen(drq_root)-1] = 0;
+#endif
 
   if (!getenv("DRQUEUE_TMP")) {
     snprintf(renv,BUFFERLEN,"DRQUEUE_TMP=%s/tmp",drq_root);
@@ -255,6 +288,17 @@ void set_default_env(void) {
     putenv(penv);
     //free(penv);
   }
+
+#ifdef __CYGWIN
+  if (!getenv("CYGWIN")) {
+    snprintf(renv,BUFFERLEN,"CYGWIN=server");
+    penv = (char*) malloc (strlen(renv)+1);
+    strncpy(penv,renv,strlen(renv)+1);
+    putenv(penv);
+    //free(penv);
+  }
+#endif
+  
 }
 
 char *
