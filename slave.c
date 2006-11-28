@@ -547,6 +547,7 @@ void launch_task (struct slave_database *sdb, uint16_t itask) {
       char *dr_bin = getenv("DRQUEUE_BIN");
       if (dr_bin) {
         snprintf (exec_path,PATH_MAX,"%s/tcsh.exe",dr_bin);
+      }
 #else
 
       exec_path = SHELL_PATH;

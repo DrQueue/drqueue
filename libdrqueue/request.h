@@ -128,7 +128,7 @@ extern "C" {
   int request_job_envvars (uint32_t ijob, struct envvars *envvars, uint16_t who);
   int request_job_block_host_by_name (uint32_t ijob, char *name, uint16_t who);
   int request_job_unblock_host_by_name (uint32_t ijob, char *name, uint16_t who);
-  int request_job_name (uint ijob, char **jobname, uint16_t who);
+  int request_job_name (uint32_t ijob, char **jobname, uint16_t who);
 
   /* sent TO SLAVE */
   int request_slave_killtask (char *slave,uint16_t itask,uint16_t who);
