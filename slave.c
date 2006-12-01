@@ -518,10 +518,14 @@ void launch_task (struct slave_database *sdb, uint16_t itask) {
 #ifdef __CYGWIN
 
       new_argv[0] = SHELL_NAME;
-      if ((new_argv[1] = malloc(MAXCMDLEN)) == NULL)
-        exit (1);
-      cygwin_conv_to_posix_path(sdb->comp->status.task[itask].jobcmd,(char*)new_argv[1]);
-      new_argv[2] = NULL;
+      new_argv[1] = "-c";
+      new_argv[2] = sdb->comp->status.task[itask].jobcmd;
+      new_argv[3] = NULL;
+/*       new_argv[0] = SHELL_NAME; */
+/*       if ((new_argv[1] = malloc(MAXCMDLEN)) == NULL) */
+/*         exit (1); */
+/*       cygwin_conv_to_posix_path(sdb->comp->status.task[itask].jobcmd,(char*)new_argv[1]); */
+/*       new_argv[2] = NULL; */
 #else
 
       new_argv[0] = SHELL_NAME;
@@ -543,11 +547,12 @@ void launch_task (struct slave_database *sdb, uint16_t itask) {
 
 #ifdef __CYGWIN
 
-      exec_path = malloc(PATH_MAX);
-      char *dr_bin = getenv("DRQUEUE_BIN");
-      if (dr_bin) {
-        snprintf (exec_path,PATH_MAX,"%s/tcsh.exe",dr_bin);
-      }
+      exec_path = SHELL_PATH;
+/*       exec_path = malloc(PATH_MAX); */
+/*       char *dr_bin = getenv("DRQUEUE_BIN"); */
+/*       if (dr_bin) { */
+/*         snprintf (exec_path,PATH_MAX,"%s/tcsh.exe",dr_bin); */
+/*       } */
 #else
 
       exec_path = SHELL_PATH;

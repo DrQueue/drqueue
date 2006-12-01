@@ -246,7 +246,8 @@ void set_default_env(void) {
   drq_root = drq_root_cp;
 
 #ifdef __CYGWIN
-  drq_root[strlen(drq_root)-1] = 0;
+  if (drq_root[strlen(drq_root)-1] == '\r')
+    drq_root[strlen(drq_root)-1] = 0;
 #endif
 
   if (!getenv("DRQUEUE_TMP")) {
