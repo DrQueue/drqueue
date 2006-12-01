@@ -245,9 +245,9 @@ void drqm_update_joblist (struct drqm_jobs_info *info) {
   char **buff;
   int ncols = 11;
 
-  buff = (char**) g_malloc((ncols + 1) * sizeof(char*));
+  buff = (char**) malloc((ncols + 1) * sizeof(char*));
   for (i=0;i<ncols;i++)
-    buff[i] = (char*) g_malloc (BUFFERLEN);
+    buff[i] = (char*) malloc (BUFFERLEN);
   buff[ncols] = NULL;
 
   gtk_clist_freeze(GTK_CLIST(info->clist));
@@ -274,8 +274,8 @@ void drqm_update_joblist (struct drqm_jobs_info *info) {
   gtk_clist_thaw(GTK_CLIST(info->clist));
 
   for(i=0;i<ncols;i++)
-    g_free (buff[i]);
-  g_free(buff);
+    free (buff[i]);
+  free(buff);
 }
 
 static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *info) {
