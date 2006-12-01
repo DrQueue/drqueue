@@ -189,7 +189,7 @@ log_master_computer (struct computer *computer, int level, char *fmt, ...) {
 
 int
 log_level_dest (int level) {
-  if ((level & L_LEVELMASK) > loglevel)
+  if ((level & L_LEVELMASK) > (loglevel & L_LEVELMASK))
     return 0;
   return 1;
 }
