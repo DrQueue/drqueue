@@ -213,16 +213,16 @@ database_save (struct database *wdb) {
     logger_job = &wdb->job[c];
     if (!send_job (fd, &wdb->job[c])) {
       // TODO: report
-      log_auto (L_ERROR,"could not save job. Phase 1. (%s)",strerror(drerrno_system));
+      log_auto (L_ERROR,"database_save(): could not save job. Phase 1. (%s)",strerror(drerrno_system));
       return 0;
     }
     if (wdb->job[c].used) {
       if (!database_job_save_frames(fd,&wdb->job[c])) {
-	log_auto (L_ERROR,"could not save job frames. Phase 2. (%s)",strerror(drerrno_system));
+	log_auto (L_ERROR,"database_save(): could not save job frames. Phase 2. (%s)",strerror(drerrno_system));
 	return 0;
       }
       if (!database_job_save_blocked_hosts(fd,&wdb->job[c])) {
-	log_auto (L_ERROR,"could not save job blocked hosts. Phase 3. (%s)",strerror(drerrno_system));
+	log_auto (L_ERROR,"database_save(): could not save job blocked hosts. Phase 3. (%s)",strerror(drerrno_system));
 	return 0;
       }
     }

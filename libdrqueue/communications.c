@@ -615,8 +615,7 @@ recv_job (int sfd, struct job *job) {
 
   datasize = sizeof (struct job);
   if (!check_recv_datasize(sfd,datasize)) {
-    // TODO: log it
-    fprintf (stderr,"datasize: %i\n",datasize);
+    log_auto(L_ERROR,"recv_job(): error on datasize check. Local datasize: %u. (%s)",datasize,strerror(drerrno_system));
     return 0;
   }
 
