@@ -1209,7 +1209,6 @@ void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp) {
   struct computer computer[MAXCOMPUTERS];
   int i;
 
-  fprintf (stderr,"1a\n");
   log_auto (L_DEBUG3,"Entering handle_r_r_listcomp");
 
   semaphore_lock(wdb->semid);
@@ -1219,14 +1218,16 @@ void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp) {
 
   // We attach shared memory and copy it
   for (i=0;i<MAXCOMPUTERS;i++) {
+    fprintf (stderr,"%i",i);
     if (computer[i].used) {
+      fprintf (stderr,"%i,used",i);
       if (!computer_attach(&computer[i])) {
-        log_auto (L_WARNING,"Could not locally attach computer pool's shared memory.");
+	fprintf (stderr,"%i,used,NOTATTACH (%s)",i,strerror(drerrno_system));
+	log_auto (L_WARNING,"Could not locally attach computer pool's shared memory.");
         //computer[i].limits.npools = 0;
       }
     }
   }
-
   semaphore_release(wdb->semid);
 
   if (!send_request (sfd,&answer,MASTER)) {
@@ -3945,6 +3946,8 @@ int request_computer_list (struct computer **computer, uint16_t who) {
   int i;
 
   if ((sfd = connect_to_master ()) == -1) {
+    drerrno_system = errno;
+    log_auto (L_ERROR,"request_computer_list(): could not connect to master. (%s)",strerror(drerrno_system));
     drerrno = DRE_NOCONNECT;
     return -1;
   }
@@ -3952,12 +3955,14 @@ int request_computer_list (struct computer **computer, uint16_t who) {
   req.type = R_R_LISTCOMP;
 
   if (!send_request (sfd,&req,who)) {
+    log_auto (L_ERROR,"request_computer_list(): could not send request. (%s)",strerror(drerrno_system));
     drerrno = DRE_ERRORWRITING;
     close (sfd);
     return -1;
   }
 
   if (!recv_request (sfd,&req)) {
+    log_auto (L_ERROR,"request_computer_list(): could not receive request reply. (%s)",strerror(drerrno_system));
     drerrno = DRE_ERRORREADING;
     close (sfd);
     return -1;
@@ -3967,12 +3972,15 @@ int request_computer_list (struct computer **computer, uint16_t who) {
     ncomputers = req.data;
   } else {
     drerrno = DRE_ANSWERNOTRIGHT;
+    log_auto (L_ERROR,"request_computer_list(): %s.",drerrno_str());
     close (sfd);
     return -1;
   }
 
   if (ncomputers) {
     if ((*computer = (struct computer *) malloc (sizeof (struct computer) * ncomputers)) == NULL) {
+      drerrno_system = errno;
+      log_auto (L_ERROR,"request_computer_list(): could not allocate memory. (%s)",strerror(drerrno_system));
       drerrno = DRE_NOMEMORY;
       close (sfd);
       return -1;

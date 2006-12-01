@@ -78,6 +78,9 @@ static void cdd_limits_pool_remove_clicked (GtkWidget *bclicked, struct drqm_com
 static void KillTask (GtkWidget *menu_item, struct drqm_computers_info *info);
 static void dtk_bok_pressed (GtkWidget *button,struct drqm_computers_info *info);
 
+// init
+static void drqm_computer_list_init (struct drqm_computers_info *cinfo);
+
 
 void CreateComputersPage (GtkWidget *notebook,struct info_drqm *info) {
   GtkWidget *label;
@@ -123,6 +126,9 @@ void CreateComputersPage (GtkWidget *notebook,struct info_drqm *info) {
   autorefreshWidgets = CreateAutoRefreshWidgets (&info->idc.ari);
   gtk_box_pack_start(GTK_BOX(hbox2),autorefreshWidgets,FALSE,FALSE,2);
 
+  // Init computer lists
+  drqm_computer_list_init(&info->idc);
+  
   // Append the page
   gtk_notebook_append_page (GTK_NOTEBOOK(notebook), container, hbox);
 
@@ -131,6 +137,12 @@ void CreateComputersPage (GtkWidget *notebook,struct info_drqm *info) {
   drqm_update_computerlist (&info->idc);
 
   gtk_widget_show_all(container);
+}
+
+static void
+drqm_computer_list_init (struct drqm_computers_info *cinfo) {
+  cinfo->ncomputers = 0;
+  cinfo->computers = NULL;
 }
 
 static gboolean AutoRefreshUpdate (gpointer info) {
@@ -206,9 +218,9 @@ void drqm_update_computerlist (struct drqm_computers_info *info) {
   char **buff;
   int ncols = 8;
 
-  buff = (char**) g_malloc((ncols+1) * sizeof(char*));
+  buff = (char**) malloc((ncols+1) * sizeof(char*));
   for (i=0;i<ncols;i++)
-    buff[i] = (char*) g_malloc (BUFFERLEN);
+    buff[i] = (char*) malloc (BUFFERLEN);
   buff[ncols] = NULL;
 
   gtk_clist_freeze(GTK_CLIST(info->clist));
@@ -666,9 +678,9 @@ cdd_update (GtkWidget *w, struct drqm_computers_info *info) {
   }
 
   /* Tasks clist */
-  buff = (char**) g_malloc((ncols + 1) * sizeof(char*));
+  buff = (char**) malloc((ncols + 1) * sizeof(char*));
   for (i=0;i<ncols;i++)
-    buff[i] = (char*) g_malloc (BUFFERLEN);
+    buff[i] = (char*) malloc (BUFFERLEN);
   buff[ncols] = NULL;
 
   gtk_clist_freeze(GTK_CLIST(info->cdd.clist));
@@ -718,7 +730,8 @@ cdd_update (GtkWidget *w, struct drqm_computers_info *info) {
   gtk_clist_thaw(GTK_CLIST(info->cdd.clist));
 
   for(i=0;i<ncols;i++)
-    g_free (buff[i]);
+    free (buff[i]);
+  free(buff);
 
   return 1;
 }

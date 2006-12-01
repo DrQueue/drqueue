@@ -71,9 +71,13 @@ drqm_request_computerlist (struct drqm_computers_info *info) {
   info->ncomputers = request_computer_list(&tcomputer,CLIENT);
   if (info->ncomputers == -1) {
     fprintf (stderr,"Error receiving computer list");
+    info->ncomputers = 0;
     return;
+  } else if (info->ncomputers == 0) {
+    info->computers = NULL;
+  } else {
+    info->computers = tcomputer;
   }
-  info->computers = tcomputer;
 
   return;
 }
