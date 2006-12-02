@@ -1416,7 +1416,7 @@ request_job_envvars (uint32_t ijob, struct envvars *envvars, uint16_t who) {
     return 0;
   }
 
-  if (!recv_envvars (sfd,envvars)) {
+  if (!recv_envvars (sfd,envvars,1)) {
     close (sfd);
     return 0;
   }
@@ -1449,7 +1449,7 @@ void handle_r_r_jobenvvars (int sfd,struct database *wdb,int icomp,struct reques
 
   if (wdb->job[ijob].used) {
     log_auto (L_DEBUG,"Sending %i environment variables",wdb->job[ijob].envvars.nvariables);
-    if (!send_envvars(sfd,&wdb->job[ijob].envvars)) {
+    if (!send_envvars(sfd,&wdb->job[ijob].envvars,1)) {
       close (sfd);
       log_auto (L_WARNING,"Error while sending the environment variables: %s",drerrno_str());
     }
