@@ -11,6 +11,15 @@ SRCS := $(wildcard *.c)
 OBJS := $(patsubst %.c,%.o,$(SRCS))
 
 
+kversion = $(shell uname -r)
+universal = 0
+ifeq ($(kversion),7.9.0)
+SDK = /Developer/SDKs/MacOSX10.3.0.sdk
+else
+SDK = /Developer/SDKs/MacOSX10.4u.sdk
+universal = 1
+endif
+
 #Figure out OS-specific Configuration parameters
 ifeq ($(origin systype),undefined)
 systype := $(shell bash -c "source ../bin/shlib; get_env_kernel")
@@ -43,11 +52,19 @@ else
  else
   ifeq ($(systype),Darwin)
    CPPFLAGS += -D__OSX
-   CFLAGS +=-isysroot /Developer/SDKs/MacOSX10.4u.sdk
-   #LDFLAGS +=-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk
+   ifeq ($(universal),1)
+      CFLAGS +=-isysroot ${SDK}
+      LDFLAGS +=-Wl,-syslibroot,${SDK}
+      ARCHFLAGS += -arch ppc -arch i386
+   else 
+     ifeq ($(machinetype),Power_Macintosh)
+      ARCHFLAGS += -arch ppc
+     else
+      ARCHFLAGS += -arch i386
+     endif
+   endif
    CFLAGS += `pkg-config --cflags gtk+-2.0`
    LDFLAGS += `pkg-config --libs gtk+-2.0`
-   ARCHFLAGS += -arch ppc -arch i386
    CFLAGS += $(ARCHFLAGS)
 #   MAKE = make
   else
