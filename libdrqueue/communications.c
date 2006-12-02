@@ -503,13 +503,13 @@ int recv_computer_status (int sfd, struct computer_status *status) {
   return 1;
 }
 
-int recv_envvar (int sfd, struct envvar *var) {
+int
+recv_envvar (int sfd, struct envvar *var, int do_checksize) {
   // receives a single environment variable structure
   uint32_t datasize;
-  drerrno = DRE_NOERROR;
 
   datasize = sizeof (struct envvar);
-  if (!check_recv_datasize(sfd, datasize)) {
+  if (do_checksize && !check_recv_datasize(sfd, datasize)) {
     // TODO: log it
     return 0;
   }
@@ -519,16 +519,17 @@ int recv_envvar (int sfd, struct envvar *var) {
     return 0;
   }
 
+  drerrno = DRE_NOERROR;
   return 1;
 }
 
-int send_envvar (int sfd, struct envvar *var) {
+int
+send_envvar (int sfd, struct envvar *var, int do_checksize) {
   // sends a single environment variable structure
   uint32_t datasize;
-  drerrno = DRE_NOERROR;
 
   datasize = sizeof (struct envvar);
-  if (!check_send_datasize(sfd,datasize)) {
+  if (do_checksize && !check_send_datasize(sfd,datasize)) {
     // TODO: log it
     return 0;
   }
@@ -538,10 +539,12 @@ int send_envvar (int sfd, struct envvar *var) {
     return 0;
   }
 
+  drerrno = DRE_NOERROR;
   return 1;
 }
 
-int send_envvars (int sfd, struct envvars *envvars) {
+int
+send_envvars (int sfd, struct envvars *envvars, int do_checksize) {
   //fprintf (stderr,"DEBUG: send_envvars() we have %i environment variables available for the request\n",envvars->nvariables);
   uint16_t nvariables;
 
@@ -556,7 +559,7 @@ int send_envvars (int sfd, struct envvars *envvars) {
     envvars_attach (envvars);
     int i;
     for (i = 0; i < envvars->nvariables; i++) {
-      if (!send_envvar (sfd,&(envvars->variables.ptr[i]))) {
+      if (!send_envvar (sfd,&(envvars->variables.ptr[i]),do_checksize)) {
         return 0;
       }
       //fprintf (stderr,"DEBUG: send_envvars() just sent (%s,%s)\n",envvars->variables[i].name,envvars->variables[i].value);
@@ -568,7 +571,8 @@ int send_envvars (int sfd, struct envvars *envvars) {
   return 1;
 }
 
-int recv_envvars (int sfd, struct envvars *envvars) {
+int
+recv_envvars (int sfd, struct envvars *envvars, int do_checksize) {
   // This function leaves envvars DETACHED
   uint16_t nvariables;
 
@@ -595,7 +599,7 @@ int recv_envvars (int sfd, struct envvars *envvars) {
     for (i = 0; i < nvariables; i++) {
       //fprintf (stderr,"DEBUG: recv_envvars() receive variable number %i\n",i);
 
-      if (!recv_envvar (sfd, &var)) {
+      if (!recv_envvar (sfd, &var, do_checksize)) {
         fprintf (stderr,"ERROR: recv_envvars() while receiving a single variable. (%s)\n",drerrno_str());
         return 0;
       }
@@ -629,7 +633,7 @@ recv_job (int sfd, struct job *job) {
   job_fix_received_invalid (job);
 
   // Environment variables
-  if (!recv_envvars (sfd,&job->envvars)) {
+  if (!recv_envvars (sfd,&job->envvars,1)) {
     fprintf (stderr,"ERROR: recv_job() there was an error while receiving envvars (%s)\n",drerrno_str());
     return 0;
   }
@@ -664,7 +668,7 @@ send_job (int sfd, struct job *job) {
   }
 
   // Environment variables
-  if (!send_envvars (sfd,&job->envvars)) {
+  if (!send_envvars (sfd,&job->envvars,1)) {
     fprintf (stderr,"ERROR: Failed to send Environment\n");
     return 0;
   }

@@ -82,7 +82,7 @@ database_job_save (int sfd, struct job *job) {
   }
 
   if (job->used) {
-    if (!send_envvars (sfd,&job->envvars)) {
+    if (!database_job_save_envvars (sfd,job)) {
       log_auto (L_ERROR,"database_job_save(): error saving job environment variables. (%s)",strerror(drerrno_system));
       return 0;
     }
@@ -124,7 +124,7 @@ database_job_load (int sfd, struct job *job) {
   job_fix_received_invalid (job);
 
   if (job->used) {
-    if (!recv_envvars (sfd,&job->envvars)) {
+    if (!database_job_load_envvars (sfd,job)) {
       log_auto (L_ERROR,"database_job_load(): error reading job environment variables. (%s)",strerror(drerrno_system));
       return 0;
     }
@@ -425,4 +425,14 @@ database_job_load_blocked_hosts (int sfd, struct job *job) {
   job->blocked_host.ptr = NULL;
 
   return 1;
+}
+
+int
+database_job_save_envvars (int sfd, struct job *job) {
+  return send_envvars (sfd,&job->envvars,0);
+}
+ 
+int
+database_job_load_envvars (int sfd, struct job *job) {
+  return recv_envvars (sfd,&job->envvars,0);
 }

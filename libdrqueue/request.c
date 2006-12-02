@@ -1218,9 +1218,7 @@ void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp) {
 
   // We attach shared memory and copy it
   for (i=0;i<MAXCOMPUTERS;i++) {
-    fprintf (stderr,"%i",i);
     if (computer[i].used) {
-      fprintf (stderr,"%i,used",i);
       if (!computer_attach(&computer[i])) {
 	      //fprintf (stderr,"%i,used,NOTATTACH (%s)",i,strerror(drerrno_system));
         log_auto (L_WARNING,"Could not locally attach computer pool's shared memory.");
