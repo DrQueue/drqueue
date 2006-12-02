@@ -421,7 +421,7 @@ computer_lock (struct computer *computer) {
 }
 
 int
-sizeof(struct computer) * MAXCOMPUTERScomputer_release (struct computer *computer) {
+computer_release (struct computer *computer) {
 #if defined (_NO_COMPUTER_SEMAPHORES)
   return 1;
 #endif
