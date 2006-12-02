@@ -77,11 +77,7 @@
 #define MAXLOADAVG 160  /* Load average from which we consider a computer unavailable */
 #define DFLTAVGFTIME 120 /* Default average frame time in seconds */
 
-#ifdef __CYGWIN
 #define MASTERNCHILDREN 10 // Number of master listener procs
-#else
-#define MASTERNCHILDREN 10 // Number of master listener procs
-#endif
 
 // Autoenable
 #define AE_DELAY 120  /* The time between possible autoenables */
