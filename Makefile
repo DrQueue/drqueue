@@ -60,6 +60,7 @@ else
 #  MAKE = /usr/freeware/bin/gmake
  else
   ifeq ($(systype),Darwin)
+   USE_LIBTOOL = 1
    CPPFLAGS += -D__OSX
    ifneq ($(origin SDK),undefined)
       MAC_CFLAGS +=-isysroot ${SDK}
@@ -277,9 +278,10 @@ clean:
 
 #actual object make targets
 libdrqueue.a: $(OBJS_LIBDRQUEUE) $(HDRS_LIBDRQUEUE)
-	#libtool -static -o $@ $(OBJS_LIBDRQUEUE) 
-	ar rc $@ $(OBJS_LIBDRQUEUE)
-	ranlib $@
+	if [ $(USE_LIBTOOL) ]; then libtool -static -o $@ $(OBJS_LIBDRQUEUE); else \
+    ar rc $@ $(OBJS_LIBDRQUEUE); \
+    ranlib $@; \
+  fi
 	
 ifeq ($(systype),CYGWIN_NT-5.1)
 contrib/windows/Resources/drqueue.res: contrib/windows/Resources/drqueue.rc

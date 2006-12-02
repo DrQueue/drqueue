@@ -78,5 +78,8 @@ int database_job_load_frames (int sfd,struct job *job);
 int database_job_save_frames (int sfd,struct job *job);
 int database_job_load_blocked_hosts (int sfd, struct job *job);
 int database_job_save_blocked_hosts (int sfd, struct job *job);
+int database_job_load_envvars (int sfd, struct job *job);
+int database_job_save_envvars (int sfd, struct job *job);
+
 
 #endif /* _DATABASE_H_ */
