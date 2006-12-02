@@ -8,6 +8,15 @@ host-type := $(shell arch)
 MAKE := ${MAKE} host-type=${host-type} whoami=${whoami}
 endif
 
+kversion = $(shell uname -r)
+universal = 0
+ifeq ($(kversion),7.9.0)
+SDK = /Developer/SDKs/MacOSX10.3.9.sdk
+else
+SDK = /Developer/SDKs/MacOSX10.4u.sdk
+universal = 1
+endif
+
 SRCS_LIBDRQUEUE := $(wildcard libdrqueue/*.c)
 HDRS_LIBDRQUEUE := $(wildcard libdrqueue/*.h)
 OBJS_LIBDRQUEUE := $(patsubst %.c,%.o,$(SRCS_LIBDRQUEUE))
@@ -31,7 +40,7 @@ machinetype := $(shell bash -c "source ./bin/shlib; get_env_machine")
 endif
 
 CPPFLAGS += -D_NO_COMPUTER_SEMAPHORES -D_NO_COMPUTER_POOL_SEMAPHORES -D_GNU_SOURCE -DCOMM_REPORT -I. -Ilibdrqueue
-CFLAGS ?= -g -O3 -Wall $(ARCHFLAGS)
+CFLAGS ?= -g -O3 -Wall 
 CXXFLAGS += $(CFLAGS) $(CPPFLAGS) -D__CPLUSPLUS 
 
 ifeq ($(systype),Linux)
@@ -51,16 +60,21 @@ else
  else
   ifeq ($(systype),Darwin)
    CPPFLAGS += -D__OSX
-#   CFLAGS +=-isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch ppc -arch i386
-#   LDFLAGS +=-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch ppc -arch i386
-   CFLAGS +=-isysroot /Developer/SDKs/MacOSX10.4u.sdk
-   LDFLAGS +=-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk
-   ARCHFLAGS += -arch ppc -arch i386
-#   ifeq ($(machinetype),Power_Macintosh)
-#    ARCHFLAGS += -arch ppc
-#   else
-#    ARCHFLAGS += -arch i386
-#   endif
+   ifneq ($(origin SDK),undefined)
+      MAC_CFLAGS +=-isysroot ${SDK}
+      MAC_LDFLAGS +=-Wl,-syslibroot,${SDK}
+   endif 
+   ifeq ($(universal),1)
+     CFLAGS += $(MAC_FLAGS)
+     LDFLAGS += $(MAC_LDFLAGS)
+     archflags += -arch ppc -arch i386
+   else 
+     ifeq ($(machinetype),power_macintosh)
+      archflags += -arch ppc
+     else
+      archflags += -arch i386
+     endif
+   endif
    CFLAGS += $(ARCHFLAGS)
    LDFLAGS += $(ARCHFLAGS)
 #   MAKE = make
@@ -262,7 +276,9 @@ clean:
 
 #actual object make targets
 libdrqueue.a: $(OBJS_LIBDRQUEUE) $(HDRS_LIBDRQUEUE)
-	libtool -static -o $@ $(OBJS_LIBDRQUEUE) || (ar rc $@ $(OBJS_LIBDRQUEUE); ranlib $@)
+	#libtool -static -o $@ $(OBJS_LIBDRQUEUE) 
+	ar rc $@ $(OBJS_LIBDRQUEUE)
+	ranlib $@
 	
 ifeq ($(systype),CYGWIN_NT-5.1)
 contrib/windows/Resources/drqueue.res: contrib/windows/Resources/drqueue.rc
@@ -271,8 +287,8 @@ endif
 
 %.c: %.h
 %.cpp: %.h
-%.o: %.c %.h constants.h
-	$(CC) -c $(CFLAGS) $< -o $@
+%.o: %.c %.h
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
 
 slave: slave.o libdrqueue.a
 	$(CC) $(LDFLAGS) $^ -o $@
