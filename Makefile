@@ -11,10 +11,11 @@ endif
 kversion = $(shell uname -r)
 universal = 0
 ifeq ($(kversion),7.9.0)
+universal = 0
 SDK = /Developer/SDKs/MacOSX10.3.9.sdk
 else
-SDK = /Developer/SDKs/MacOSX10.4u.sdk
 universal = 1
+SDK = /Developer/SDKs/MacOSX10.4u.sdk
 endif
 
 SRCS_LIBDRQUEUE := $(wildcard libdrqueue/*.c)
@@ -65,14 +66,14 @@ else
       MAC_LDFLAGS +=-Wl,-syslibroot,${SDK}
    endif 
    ifeq ($(universal),1)
-     CFLAGS += $(MAC_FLAGS)
+     CFLAGS += $(MAC_CFLAGS)
      LDFLAGS += $(MAC_LDFLAGS)
-     archflags += -arch ppc -arch i386
+     ARCHFLAGS += -arch ppc -arch i386
    else 
      ifeq ($(machinetype),power_macintosh)
-      archflags += -arch ppc
+      ARCHFLAGS += -arch ppc
      else
-      archflags += -arch i386
+      ARCHFLAGS += -arch i386
      endif
    endif
    CFLAGS += $(ARCHFLAGS)

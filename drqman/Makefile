@@ -14,7 +14,7 @@ OBJS := $(patsubst %.c,%.o,$(SRCS))
 kversion = $(shell uname -r)
 universal = 0
 ifeq ($(kversion),7.9.0)
-SDK = /Developer/SDKs/MacOSX10.3.0.sdk
+SDK = /Developer/SDKs/MacOSX10.3.9.sdk
 else
 SDK = /Developer/SDKs/MacOSX10.4u.sdk
 universal = 1
@@ -54,7 +54,7 @@ else
    CPPFLAGS += -D__OSX
    ifeq ($(universal),1)
       CFLAGS +=-isysroot ${SDK}
-      LDFLAGS +=-Wl,-syslibroot,${SDK}
+      #LDFLAGS +=-Wl,-syslibroot,${SDK}
       ARCHFLAGS += -arch ppc -arch i386
    else 
      ifeq ($(machinetype),Power_Macintosh)
