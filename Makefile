@@ -9,6 +9,7 @@ MAKE := ${MAKE} host-type=${host-type} whoami=${whoami}
 endif
 
 SRCS_LIBDRQUEUE := $(wildcard libdrqueue/*.c)
+HDRS_LIBDRQUEUE := $(wildcard libdrqueue/*.h)
 OBJS_LIBDRQUEUE := $(patsubst %.c,%.o,$(SRCS_LIBDRQUEUE))
 
 ifeq ($(origin INSTROOT),undefined)
@@ -30,7 +31,7 @@ machinetype := $(shell bash -c "source ./bin/shlib; get_env_machine")
 endif
 
 CPPFLAGS += -D_NO_COMPUTER_SEMAPHORES -D_NO_COMPUTER_POOL_SEMAPHORES -D_GNU_SOURCE -DCOMM_REPORT -I. -Ilibdrqueue
-CFLAGS ?= -g -O0 -Wall $(ARCHFLAGS)
+CFLAGS ?= -g -O3 -Wall $(ARCHFLAGS)
 CXXFLAGS += $(CFLAGS) $(CPPFLAGS) -D__CPLUSPLUS 
 
 ifeq ($(systype),Linux)
@@ -54,12 +55,14 @@ else
 #   LDFLAGS +=-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch ppc -arch i386
    CFLAGS +=-isysroot /Developer/SDKs/MacOSX10.4u.sdk
    LDFLAGS +=-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk
-   ifeq ($(machinetype),Power_Macintosh)
-    ARCHFLAGS += -arch ppc
-   else
-    ARCHFLAGS += -arch i386
-   endif
+   ARCHFLAGS += -arch ppc -arch i386
+#   ifeq ($(machinetype),Power_Macintosh)
+#    ARCHFLAGS += -arch ppc
+#   else
+#    ARCHFLAGS += -arch i386
+#   endif
    CFLAGS += $(ARCHFLAGS)
+   LDFLAGS += $(ARCHFLAGS)
 #   MAKE = make
   else 
    ifeq ($(systype),FreeBSD)
@@ -258,10 +261,8 @@ clean:
 	$(MAKE) -C drqman clean
 
 #actual object make targets
-libdrqueue.h: $(wildcard libdrqueue/*.h)
-libdrqueue.a: $(OBJS_LIBDRQUEUE) libdrqueue.h
-	ar r $@ $(OBJS_LIBDRQUEUE)
-	ranlib $@
+libdrqueue.a: $(OBJS_LIBDRQUEUE) $(HDRS_LIBDRQUEUE)
+	libtool -static -o $@ $(OBJS_LIBDRQUEUE)
 
 ifeq ($(systype),CYGWIN_NT-5.1)
 contrib/windows/Resources/drqueue.res: contrib/windows/Resources/drqueue.rc

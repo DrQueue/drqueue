@@ -18,7 +18,7 @@ machinetype := $(shell bash -c "source ../bin/shlib; get_env_machine")
 endif
 
 CPPFLAGS ?= -D_NO_COMPUTER_SEMAPHORES -D_NO_COMPUTER_POOL_SEMAPHORES -D_GNU_SOURCE -DCOMM_REPORT -I.. -I../libdrqueue
-CFLAGS ?= -g -O0 -Wall $(ARCHFLAGS)
+CFLAGS ?= -g -O3 -Wall
 CXXFLAGS ?= $(CFLAGS) $(CPPFLAGS) -D__CPLUSPLUS
 
 ifeq ($(systype),Linux)
@@ -44,20 +44,16 @@ else
   ifeq ($(systype),Darwin)
    CPPFLAGS += -D__OSX
    CFLAGS +=-isysroot /Developer/SDKs/MacOSX10.4u.sdk
-   LDFLAGS +=-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk
+   #LDFLAGS +=-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk
    CFLAGS += `pkg-config --cflags gtk+-2.0`
-   LDFLAGS = `pkg-config --libs gtk+-2.0`
-   ifeq ($(machinetype),Power_Macintosh)
-    ARCHFLAGS += -arch ppc
-   else
-    ARCHFLAGS += -arch i386
-   endif
+   LDFLAGS += `pkg-config --libs gtk+-2.0`
+   ARCHFLAGS += -arch ppc -arch i386
    CFLAGS += $(ARCHFLAGS)
 #   MAKE = make
   else
    ifeq ($(systype),FreeBSD)
     CPPFLAGS += -D__FREEBSD
-    CFLAGS += -D__FREEBSD `pkg-config --cflags gtk+-2.0`
+    CFLAGS += `pkg-config --cflags gtk+-2.0`
     LDFLAGS = `pkg-config --libs gtk+-2.0`
     MAKE = gmake
    else
@@ -91,11 +87,15 @@ ifeq ($(systype),CYGWIN_NT-5.1)
 
 ../contrib/windows/Resources/drqueue.res: ../contrib/windows/Resources/drqueue.rc
 	$(MAKE) -C ../contrib/windows/Resources
- 
+
 drqman: $(OBJS) ../libdrqueue.a ../contrib/windows/Resources/drqueue.res 
-	$(CC) -o $@ $(OBJS) ../libdrqueue.a $(LDFLAGS) $(UIFLAGS)
+	$(CC) -o $@ $(OBJS) libdrqueue.a $(LDFLAGS) $(UIFLAGS)
 
 else
+
+#libdrqueue.i386: ../libdrqueue.a
+#	lipo -output $@ -extract $(machinetype) $^
+#	ranlib $@  
 
 drqman: $(OBJS) ../libdrqueue.a
 	$(CC) -o $@ $^ $(LDFLAGS)

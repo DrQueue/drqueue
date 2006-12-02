@@ -1222,8 +1222,8 @@ void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp) {
     if (computer[i].used) {
       fprintf (stderr,"%i,used",i);
       if (!computer_attach(&computer[i])) {
-	fprintf (stderr,"%i,used,NOTATTACH (%s)",i,strerror(drerrno_system));
-	log_auto (L_WARNING,"Could not locally attach computer pool's shared memory.");
+	      //fprintf (stderr,"%i,used,NOTATTACH (%s)",i,strerror(drerrno_system));
+        log_auto (L_WARNING,"Could not locally attach computer pool's shared memory.");
         //computer[i].limits.npools = 0;
       }
     }

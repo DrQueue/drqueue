@@ -819,7 +819,8 @@ void job_frame_waiting (struct database *wdb,uint32_t ijob, uint32_t iframe) {
   semaphore_release(wdb->semid);
 }
 
-uint32_t job_frame_index_to_number (struct job *job,uint32_t index) {
+uint32_t
+job_frame_index_to_number (struct job *job,uint32_t index) {
   return (job->frame_start + (index * job->block_size * job->frame_step));
 }
 
@@ -1020,6 +1021,137 @@ job_limits_init (struct job_limits *limits) {
                                                       // the default pool
 }
 
+void
+job_bswap_from_network (struct job *orig, struct job *dest) {
+  // CHECK: what about the environment and frame info ?
+  dest->id = ntohl (orig->id);
+  dest->nprocs = ntohs (orig->nprocs);
+  dest->status = ntohs (orig->status);
+
+  /* Koj Stuff */
+  dest->koj = ntohs (orig->koj);
+  switch (dest->koj) {
+  case KOJ_GENERAL:
+    break;
+  case KOJ_MAYA:
+    break;
+  case KOJ_MENTALRAY:
+  case KOJ_BLENDER:
+  case KOJ_LIGHTWAVE:
+  case KOJ_TERRAGEN:
+  case KOJ_NUKE:
+  case KOJ_AFTEREFFECTS:
+  case KOJ_SHAKE:
+    break;
+  case KOJ_BMRT:
+    dest->koji.bmrt.xmin = ntohl (orig->koji.bmrt.xmin);
+    dest->koji.bmrt.xmax = ntohl (orig->koji.bmrt.xmax);
+    dest->koji.bmrt.ymin = ntohl (orig->koji.bmrt.ymin);
+    dest->koji.bmrt.ymax = ntohl (orig->koji.bmrt.ymax);
+    dest->koji.bmrt.xsamples = ntohl (orig->koji.bmrt.xsamples);
+    dest->koji.bmrt.ysamples = ntohl (orig->koji.bmrt.ysamples);
+    dest->koji.bmrt.radiosity_samples = ntohl (orig->koji.bmrt.radiosity_samples);
+    dest->koji.bmrt.raysamples = ntohl (orig->koji.bmrt.raysamples);
+    break;
+  case KOJ_3DELIGHT:
+  case KOJ_PIXIE:
+  case KOJ_XSI:
+    break;
+  case KOJ_TURTLE:
+    dest->koji.turtle.resx = ntohl (orig->koji.turtle.resx);
+    dest->koji.turtle.resy = ntohl (orig->koji.turtle.resy);
+    break;
+  }
+
+  dest->frame_info.ptr = NULL;
+  dest->frame_start = ntohl (orig->frame_start);
+  dest->frame_end = ntohl (orig->frame_end);
+  dest->frame_step = ntohl (orig->frame_step);
+  dest->frame_step = (orig->frame_step == 0) ? 1 : orig->frame_step; /* No 0 on step !! */
+  dest->block_size = ntohl (orig->block_size);
+  dest->avg_frame_time = ntohl (orig->avg_frame_time);
+  dest->est_finish_time = ntohl (orig->est_finish_time);
+  dest->fleft = ntohl (orig->fleft);
+  dest->fdone = ntohl (orig->fdone);
+  dest->ffailed = ntohl (orig->ffailed);
+
+  dest->priority = ntohl (orig->priority);
+
+  dest->flags = ntohl (orig->flags);
+
+  /* Limits */
+  job_limits_bswap_from_network (&orig->limits,&orig->limits);
+}
+
+void
+job_bswap_to_network (struct job *orig, struct job *dest) {
+  /* We make a copy coz we need to modify the values */
+  memcpy (dest,orig,sizeof(struct job));
+
+  dest->id = htonl (orig->id);
+  dest->nprocs = htons (orig->nprocs);
+  dest->status = htons (orig->status);
+
+  /* Koj Stuff */
+  switch (orig->koj) {
+  case KOJ_GENERAL:
+    break;
+  case KOJ_MAYA:
+    break;
+  case KOJ_MENTALRAY:
+  case KOJ_BLENDER:
+  case KOJ_LIGHTWAVE:
+  case KOJ_TERRAGEN:
+  case KOJ_NUKE:
+  case KOJ_AFTEREFFECTS:
+  case KOJ_SHAKE:
+    break;
+  case KOJ_BMRT:
+    dest->koji.bmrt.xmin = htonl (orig->koji.bmrt.xmin);
+    dest->koji.bmrt.xmax = htonl (orig->koji.bmrt.xmax);
+    dest->koji.bmrt.ymin = htonl (orig->koji.bmrt.ymin);
+    dest->koji.bmrt.ymax = htonl (orig->koji.bmrt.ymax);
+    dest->koji.bmrt.xsamples = htonl (orig->koji.bmrt.xsamples);
+    dest->koji.bmrt.ysamples = htonl (orig->koji.bmrt.ysamples);
+    dest->koji.bmrt.radiosity_samples = htonl (orig->koji.bmrt.radiosity_samples);
+    dest->koji.bmrt.raysamples = htonl (orig->koji.bmrt.raysamples);
+    break;
+  case KOJ_3DELIGHT:
+  case KOJ_PIXIE:
+  case KOJ_XSI:
+    break;
+  case KOJ_TURTLE:
+    dest->koji.turtle.resx = htonl (orig->koji.turtle.resx);
+    dest->koji.turtle.resy = htonl (orig->koji.turtle.resy);
+    break;
+  }
+  dest->koj = htons (orig->koj);
+
+  dest->frame_info.ptr = NULL;  
+  dest->frame_start = htonl (orig->frame_start);
+  dest->frame_end = htonl (orig->frame_end);
+  dest->frame_step = htonl (orig->frame_step);
+  dest->block_size = htonl (orig->block_size);
+  dest->avg_frame_time = htonl (orig->avg_frame_time);
+  dest->est_finish_time = htonl (orig->est_finish_time);
+  dest->fleft = htonl (orig->fleft);
+  dest->fdone = htonl (orig->fdone);
+  dest->ffailed = htonl (orig->ffailed);
+
+  dest->priority = htonl (orig->priority);
+
+  dest->flags = htonl (orig->flags);
+
+  // Limits
+  job_limits_bswap_to_network (&orig->limits,&dest->limits);
+
+  // Filling the envvars with neutral values
+  envvars_init(&dest->envvars);
+  dest->envvars.nvariables = htons(orig->envvars.nvariables);
+//  dest->envvars.variables.ptr = NULL;
+//  dest->envvars.evshmid = (int64_t)-1; // 64bit 
+}
+
 int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp) {
   /* This function should return 0 in case the limits are not met for the computer */
   uint32_t i;
@@ -1082,18 +1214,20 @@ void job_frame_info_init (struct frame_info *fi) {
   fi->flags = 0;
 }
 
-void job_limits_bswap_to_network (struct job_limits *limits) {
-  limits->nmaxcpus         = htons (limits->nmaxcpus);
-  limits->nmaxcpuscomputer = htons (limits->nmaxcpuscomputer);
-  limits->os_flags         = htons (limits->os_flags);
-  limits->memory           = htonl (limits->memory);
+void
+job_limits_bswap_to_network (struct job_limits *orig, struct job_limits *dest) {
+  dest->nmaxcpus         = htons (orig->nmaxcpus);
+  dest->nmaxcpuscomputer = htons (orig->nmaxcpuscomputer);
+  dest->os_flags         = htons (orig->os_flags);
+  dest->memory           = htonl (orig->memory);
 }
 
-void job_limits_bswap_from_network (struct job_limits *limits) {
-  limits->nmaxcpus         = ntohs (limits->nmaxcpus);
-  limits->nmaxcpuscomputer = ntohs (limits->nmaxcpuscomputer);
-  limits->os_flags         = ntohs (limits->os_flags);
-  limits->memory           = ntohl (limits->memory);
+void
+job_limits_bswap_from_network (struct job_limits *orig, struct job_limits *dest) {
+  dest->nmaxcpus         = ntohs (orig->nmaxcpus);
+  dest->nmaxcpuscomputer = ntohs (orig->nmaxcpuscomputer);
+  dest->os_flags         = ntohs (orig->os_flags);
+  dest->memory           = ntohl (orig->memory);
 }
 
 void job_logs_remove (struct job *job) {
