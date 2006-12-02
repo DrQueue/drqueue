@@ -262,8 +262,8 @@ clean:
 
 #actual object make targets
 libdrqueue.a: $(OBJS_LIBDRQUEUE) $(HDRS_LIBDRQUEUE)
-	libtool -static -o $@ $(OBJS_LIBDRQUEUE)
-
+	libtool -static -o $@ $(OBJS_LIBDRQUEUE) || (ar rc $@ $(OBJS_LIBDRQUEUE); ranlib $@)
+	
 ifeq ($(systype),CYGWIN_NT-5.1)
 contrib/windows/Resources/drqueue.res: contrib/windows/Resources/drqueue.rc
 	$(MAKE) -C contrib/windows/Resources
