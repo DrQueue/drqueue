@@ -70,6 +70,9 @@ void config_parse (char *cfg) {
       continue;
     }
     token = strtok(buffer,"=\n\r");
+    if (!token) {
+      continue;
+    }
     if (strcmp(token,"logs") == 0) {
       if ((token = strtok (NULL,"=\n\r")) != NULL) {
         fprintf (stderr,"Logs on: '%s'\n",token);
