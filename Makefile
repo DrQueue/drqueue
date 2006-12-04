@@ -54,6 +54,10 @@ ifeq ($(systype),Linux)
   endif
  endif
 else
+ifeq ($(systype),GNU__kFreeBSD)
+ CPPFLAGS += -D__LINUX
+ MAKE = make
+else
  ifeq ($(systype),IRIX)
   CPPFLAGS += -D__IRIX
 #  MAKE = /usr/freeware/bin/gmake
@@ -92,6 +96,7 @@ else
     endif
    endif
   endif
+ endif
  endif
 endif
 
@@ -149,6 +154,9 @@ IRIX_install:
 	chown -R $(INSTUID):$(INSTGID) $(INSTROOT)/bin/*
 	chown $(INSTUID):$(INSTGID) $(INSTROOT)/contrib/*
 
+# Same as Linux since the userspace is the same
+GNU__kFreeBSD_install: Linux_install
+
 Linux_install:
 	install -d -m 0777 $(INSTROOT)/tmp
 	install -d -m 0777 $(INSTROOT)/logs
@@ -163,6 +171,8 @@ Linux_install:
 	chmod 0755 $(INSTROOT)/contrib/* || exit 0
 	chown -R $(INSTUID):$(INSTGID) $(INSTROOT)/bin/*
 	chown $(INSTUID):$(INSTGID) $(INSTROOT)/contrib/*
+	install -d -m 0755 $(DRQMAN_INSTROOT)/usr/bin
+	cp -r ./drqman/drqman $(DRQMAN_INSTROOT)/usr/bin || exit 0
 
 CYGWIN_NT-5.1_install:
 	install -d -m 0777 $(INSTROOT)/tmp

@@ -22,6 +22,18 @@ underscore_spaces () {
     return 0
 }
 
+underscore_slashes () {
+    ORIG_STRING="$1"
+    echo $(echo $ORIG_STRING | tr '/' '_')
+    return 0
+}
+
+underscore_spaces_and_slashes () {
+    ORIG_STRING="$1"
+    echo $(underscore_slashes $(underscore_spaces $ORIG_STRING))
+    return 0
+}
+
 escape_spaces_string () {
   ORIG_STRING="$1"
   if [ -z "$1" ]; then
@@ -63,7 +75,7 @@ get_env_base_tool () {
 
 get_env_kernel () {
     if [ ! -z "$DRQ_SH_UNDERSCORE" -o ! -z "$1" ]; then
-        echo $(underscore_spaces "`uname -s`")
+        echo $(underscore_spaces_and_slashes "`uname -s`")
     else
         echo "`uname -s`"
     fi
@@ -71,7 +83,7 @@ get_env_kernel () {
 
 get_env_machine () {
     if [ ! -z "$DRQ_SH_UNDERSCORE" -o ! -z "$1" ]; then
-        echo $(underscore_spaces "`uname -m`")
+        echo $(underscore_spaces_and_slashes "`uname -m`")
     else
         echo `uname -m`
     fi

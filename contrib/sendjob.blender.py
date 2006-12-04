@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+#
 # press ALT+P in this text window to send a job to Dr.Queue
 #
 # Tips:

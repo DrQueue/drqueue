@@ -43,6 +43,12 @@ ifeq ($(systype),Linux)
   endif
  endif
  CXXFLAGS += $(CFLAGS)
+else
+ ifeq ($(systype),GNU__kFreeBSD)
+  CPPFLAGS += -D__LINUX
+  CFLAGS += -D__LINUX `pkg-config --cflags gtk+-2.0`
+  LDFLAGS = `pkg-config --libs gtk+-2.0`
+  MAKE = make
 else 
  ifeq ($(systype),IRIX)
   CPPFLAGS += -D__IRIX
@@ -86,6 +92,8 @@ $(error Cannot make DrQueueManager -- systype "$(systype)" is unknown)
    endif
   endif
  endif	
+endif
+endif
 endif
 
 ifneq ($(origin LIBWRAP),undefined)
