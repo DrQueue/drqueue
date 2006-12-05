@@ -94,7 +94,6 @@ $(error Cannot make DrQueueManager -- systype "$(systype)" is unknown)
  endif	
 endif
 endif
-endif
 
 ifneq ($(origin LIBWRAP),undefined)
  CFLAGS += -DLIBWRAP

@@ -323,10 +323,23 @@ int64_t get_semaphores_slave (void) {
     kill (0,SIGINT);
   }
 
-  if (semctl ((int)semid,0,SETVAL,1) == -1) {
-    log_auto (L_ERROR,"semctl SETVAL -> 1 : (%s)",strerror(errno));
+#if _SEM_SEMUN_UNDEFINED == 1
+  union semun {
+    int val;
+    struct semid_ds *buf;
+    unsigned short int *array;
+    struct seminfo *__buf;
+  } u_semun;
+#else
+  union semun u_semun;
+#endif
+  u_semun.val = 1;
+  if (semctl ((int)semid,0,SETVAL,u_semun) == -1) {
+    drerrno_system = errno;
+    log_auto (L_ERROR,"get_semaphores_slave(): could not set initial semaphore value. (%s)",strerror(drerrno_system));
     kill (0,SIGINT);
   }
+
   if (semctl ((int)semid,0,GETVAL) == 0) {
     op.sem_num = 0;
     op.sem_op = 1;

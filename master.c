@@ -249,8 +249,21 @@ int64_t get_semaphores (int force) {
       fprintf (stderr,"Try with option -f (if you are sure that no other master is running)\n");
     kill (0,SIGINT);
   }
-  if (semctl ((int)semid,0,SETVAL,1) == -1) {
-    perror ("semctl SETVAL -> 1");
+
+#if _SEM_SEMUN_UNDEFINED == 1
+  union semun {
+    int val;
+    struct semid_ds *buf;
+    unsigned short int *array;
+    struct seminfo *__buf;
+  } u_semun;
+#else
+  union semun u_semun;
+#endif
+  u_semun.val = 1;
+  if (semctl ((int)semid,0,SETVAL,u_semun) == -1) {
+    drerrno_system = errno;
+    log_auto (L_ERROR,"get_semaphores(): error on call to semctl. (%s)",strerror(drerrno_system));
     kill (0,SIGINT);
   }
   if (semctl ((int)semid,0,GETVAL) == 0) {
@@ -258,7 +271,8 @@ int64_t get_semaphores (int force) {
     op.sem_op = 1;
     op.sem_flg = 0;
     if (semop((int)semid,&op,1) == -1) {
-      perror ("semaphore_release");
+      drerrno_system = errno;
+      log_auto (L_ERROR,"get_semaphores(): error on call to semop. (%s)",strerror(drerrno_system));
       kill(0,SIGINT);
     }
   }
