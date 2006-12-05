@@ -308,7 +308,7 @@ int log_task_filename_get (struct task *task, char *path, int pathlen) {
   // Returns len of the written string or -1 on failure
   char job_path[PATH_MAX];
   int nwritten;
-  struct task *ttask;
+  struct task *ttask = NULL;
 
   if (!path) {
     // TODO: Show error
@@ -318,6 +318,7 @@ int log_task_filename_get (struct task *task, char *path, int pathlen) {
 
   if ((nwritten = log_job_path_get(task->ijob,job_path,PATH_MAX)) == -1) {
     // TODO: Show error
+    fprintf (stderr,"log_task_filename_get(): could not obtain job logs path. (%s)",strerror(drerrno_system));
     logger_task = ttask;
     return -1;
   }
@@ -328,6 +329,7 @@ int log_task_filename_get (struct task *task, char *path, int pathlen) {
     return -1;
   }
 
+  drerrno = DRE_NOERROR;
   return nwritten;
 }
 
