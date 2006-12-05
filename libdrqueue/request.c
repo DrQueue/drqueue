@@ -1206,7 +1206,7 @@ void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp) {
   /* This function is called unlocked */
   /* This function is called by the master */
   struct request answer;
-  struct computer computer[MAXCOMPUTERS];
+  struct computer *computer;
   int i;
 
   log_auto (L_DEBUG3,"Entering handle_r_r_listcomp");
@@ -1214,6 +1214,12 @@ void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp) {
   semaphore_lock(wdb->semid);
   answer.type = R_R_LISTCOMP;
   answer.data = computer_ncomputers_masterdb (wdb);
+  computer = malloc (sizeof(struct computer) * MAXCOMPUTERS);
+  if (!computer) {
+    // FIXME: log
+    return;
+  }
+  memset (computer,0,sizeof(struct computer) * MAXCOMPUTERS);
   memcpy (computer,wdb->computer,sizeof(struct computer) * MAXCOMPUTERS);
 
   // We attach shared memory and copy it
@@ -1248,6 +1254,8 @@ void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp) {
       computer_detach (&computer[i]);
     }
   }
+
+  free(computer);
 
   log_auto (L_DEBUG3,"Exiting handle_r_r_listcomp");
 }
