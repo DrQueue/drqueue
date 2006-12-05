@@ -31,7 +31,6 @@ endif
 
 CPPFLAGS += -D_NO_COMPUTER_SEMAPHORES -D_NO_COMPUTER_POOL_SEMAPHORES -D_GNU_SOURCE -DCOMM_REPORT -I. -Ilibdrqueue
 CFLAGS ?= -g -O0 -Wall $(ARCHFLAGS)
-LDFLAGS ?= $(CFLAGS)
 CXXFLAGS += $(CFLAGS) $(CPPFLAGS) -D__CPLUSPLUS 
 
 ifeq ($(systype),Linux)
@@ -51,9 +50,16 @@ else
  else
   ifeq ($(systype),Darwin)
    CPPFLAGS += -D__OSX
+#   CFLAGS +=-isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch ppc -arch i386
+#   LDFLAGS +=-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch ppc -arch i386
+   CFLAGS +=-isysroot /Developer/SDKs/MacOSX10.4u.sdk
+   LDFLAGS +=-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk
    ifeq ($(machinetype),Power_Macintosh)
-    ARCHFLAGS += -mpowerpc -mtune=powerpc
+    ARCHFLAGS += -arch ppc
+   else
+    ARCHFLAGS += -arch i386
    endif
+   CFLAGS += $(ARCHFLAGS)
 #   MAKE = make
   else 
    ifeq ($(systype),FreeBSD)
@@ -287,7 +293,7 @@ compinfo: compinfo.o libdrqueue.a
 	$(CC) $(LDFLAGS) $^ -o $@
 
 sendjob.o: sendjob.cpp sendjob.h
-	$(CXX) -c $(CXXFLAGS) $<
+	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) $<
 sendjob: sendjob.o libdrqueue.a
 	$(CXX) $^ $(LDFLAGS) -o $@ 
 
