@@ -69,10 +69,10 @@ int send_blocked_host (int sdf, struct blocked_host *bh, int do_checksize);
 int recv_blocked_host (int sdf, struct blocked_host *bh, int do_checksize);
 int send_computer_pools (int sfd, struct computer_limits *cl,uint8_t use_local_pools);
 int recv_computer_pools (int sfd, struct computer_limits *cl);
-int send_envvars (int sfd, struct envvars *envvars);
-int recv_envvars (int sfd, struct envvars *envvars);
-int send_envvar (int sfd, struct envvar *var);
-int recv_envvar (int sfd, struct envvar *var);
+int send_envvars (int sfd, struct envvars *envvars, int do_checksize);
+int recv_envvars (int sfd, struct envvars *envvars, int do_checksize);
+int send_envvar (int sfd, struct envvar *var, int do_checksize);
+int recv_envvar (int sfd, struct envvar *var, int do_checksize);
 
 int send_string (int sfd, char *str);
 int recv_string (int sfd, char **str);
