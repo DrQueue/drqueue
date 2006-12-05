@@ -77,7 +77,7 @@ ifneq ($(origin LIBWRAP),undefined)
 endif
 
 #abstract make targets
-.PHONY: default all install miniinstall irix_install linux_install doc tags clean testing_env drqman
+.PHONY: default all install miniinstall irix_install linux_install doc tags clean testing_env drqman python.build python.install
 
 BASE_C_TOOLS = slave master requeue jobfinfo blockhost ctask cjob jobinfo compinfo
 BASE_CXX_TOOLS = sendjob
@@ -97,6 +97,9 @@ python.clean:
 
 python.build: python/drqueue.i $(SRCS_LIBDRQUEUE)
 	cd python; python setup.py build_ext; python setup.py build
+
+python.install: python.build
+	cd python; python setup.py install
 
 install: miniinstall $(systype)_install 
 
