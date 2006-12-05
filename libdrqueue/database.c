@@ -61,6 +61,87 @@ database_init (struct database *wdb) {
   wdb->lb.next_i = 0;
 }
 
+int
+database_job_save (int sfd, struct job *job) {
+  struct job bswapped;
+  char *buf = (char*)&bswapped;
+  uint32_t datasize;
+  
+  datasize = sizeof (struct job);
+  datasize = htonl (datasize);
+  if (!dr_write(sfd,(char*)&datasize,sizeof(datasize))) {
+    log_auto (L_ERROR,"database_job_save(): error saving job data size (%u). (%s)",ntohl(datasize),strerror(drerrno_system));
+    return 0;
+  }
+  datasize = ntohl (datasize);
+
+  job_bswap_to_network (job,&bswapped);
+  if (!dr_write(sfd,buf,datasize)) {
+    log_auto (L_ERROR,"database_job_save(): error saving job main information. (%s)",strerror(drerrno_system));
+    return 0;
+  }
+
+  if (job->used) {
+    if (!send_envvars (sfd,&job->envvars)) {
+      log_auto (L_ERROR,"database_job_save(): error saving job environment variables. (%s)",strerror(drerrno_system));
+      return 0;
+    }
+    if (!database_job_save_frames(sfd,job)) {
+      log_auto (L_ERROR,"database_job_save(): could not save job frames. (%s)",strerror(drerrno_system));
+      return 0;
+    }
+    if (!database_job_save_blocked_hosts(sfd,job)) {
+      log_auto (L_ERROR,"database_job_save(): could not save job blocked hosts. (%s)",strerror(drerrno_system));
+      return 0;
+    }
+  }
+
+  drerrno = DRE_NOERROR;
+  return 1;
+}
+
+int
+database_job_load (int sfd, struct job *job) {
+  uint32_t datasize;
+  
+  if (!dr_read(sfd,(char*)&datasize,sizeof(datasize))) {
+    log_auto (L_ERROR,"database_job_load(): error reading job data size (%u). (%s)",ntohl(datasize),strerror(drerrno_system));
+    return 0;
+  }
+  datasize = ntohl (datasize);
+
+  if (datasize != sizeof (struct job)) {
+    log_auto (L_ERROR,"database_job_load(): job data sizes do not match. Read: %u Current: %u",datasize,sizeof(struct job));
+    return 0;
+  }
+  
+  job_delete(job);
+  if (!dr_read(sfd,(char*)job,datasize)) {
+    log_auto (L_ERROR,"database_job_load(): error reading job main information. (%s)",strerror(drerrno_system));
+    return 0;
+  }
+  job_bswap_from_network (job,job);
+  job_fix_received_invalid (job);
+
+  if (job->used) {
+    if (!recv_envvars (sfd,&job->envvars)) {
+      log_auto (L_ERROR,"database_job_load(): error reading job environment variables. (%s)",strerror(drerrno_system));
+      return 0;
+    }
+    if (!database_job_load_frames(sfd,job)) {
+      log_auto (L_ERROR,"database_job_load(): error reading job frame information. (%s)",strerror(drerrno_system));
+      return 0;
+    }
+    if (!database_job_load_blocked_hosts(sfd,job)) {
+      log_auto (L_ERROR,"database_job_load(): error reading job blocked hosts list. (%s)",strerror(drerrno_system));
+      return 0;
+    }
+  }
+
+  drerrno = DRE_NOERROR;
+  return 1;
+}
+
 uint32_t
 database_version_id () {
   // The real version number stored on the database will depend on the
@@ -117,15 +198,10 @@ database_load (struct database *wdb) {
 
   for (c = 0; c < hdr.job_size; c++) {
     job_init(&wdb->job[c]);
-    if (!recv_job (fd, &wdb->job[c])) {
-      // TODO
+    if (!database_job_load (fd, &wdb->job[c])) {
+      log_auto (L_ERROR,"database_load(): error loading job number %i. (%s)",c,strerror(drerrno_system));
+      close (fd);
       return 0;
-    }
-    if (wdb->job[c].used) {
-      if (!database_job_load_frames(fd,&wdb->job[c]))
-	return 0;
-      if (!database_job_load_blocked_hosts(fd,&wdb->job[c]))
-	return 0;
     }
   }
 
@@ -211,20 +287,10 @@ database_save (struct database *wdb) {
 
   for (c = 0; c < hdr.job_size; c++) {
     logger_job = &wdb->job[c];
-    if (!send_job (fd, &wdb->job[c])) {
+    if (!database_job_save (fd, &wdb->job[c])) {
       // TODO: report
-      log_auto (L_ERROR,"database_save(): could not save job. Phase 1. (%s)",strerror(drerrno_system));
+      log_auto (L_ERROR,"database_save(): error saving job number %i. (%s)",c,strerror(drerrno_system));
       return 0;
-    }
-    if (wdb->job[c].used) {
-      if (!database_job_save_frames(fd,&wdb->job[c])) {
-	log_auto (L_ERROR,"database_save(): could not save job frames. Phase 2. (%s)",strerror(drerrno_system));
-	return 0;
-      }
-      if (!database_job_save_blocked_hosts(fd,&wdb->job[c])) {
-	log_auto (L_ERROR,"database_save(): could not save job blocked hosts. Phase 3. (%s)",strerror(drerrno_system));
-	return 0;
-      }
     }
   }
   

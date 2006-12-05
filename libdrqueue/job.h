@@ -308,6 +308,8 @@ int job_frame_number_correct (struct job *job,uint32_t number);
 uint32_t job_nframes (struct job *job);
 void job_copy (struct job *src, struct job *dst);
 void job_fix_received_invalid (struct job *job);
+void job_bswap_from_network (struct job *orig, struct job *dest);
+void job_bswap_to_network (struct job *orig, struct job *dest);
 
 int job_available (struct database *wdb,uint32_t ijob, uint32_t *iframe, uint32_t icomp);
 int job_available_no_icomp (struct database *wdb,uint32_t ijob, uint32_t *iframe);
@@ -329,8 +331,8 @@ int job_index_correct_master (struct database *wdb,uint32_t ijob); // bool
 
 void job_limits_init (struct job_limits *limits);
 int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp); // bool
-void job_limits_bswap_from_network (struct job_limits *limits);
-void job_limits_bswap_to_network (struct job_limits *limits);
+void job_limits_bswap_from_network (struct job_limits *orig, struct job_limits *dest);
+void job_limits_bswap_to_network (struct job_limits *orig, struct job_limits *dest);
 
 void job_environment_set (struct job *job, uint32_t iframe);
 void job_logs_remove (struct job *job);   // WARN: this function

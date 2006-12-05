@@ -634,69 +634,12 @@ recv_job (int sfd, struct job *job) {
     return 0;
   }
 
-  /* Now we should have the job info with the values in */
-  /* network byte order, so we put them in host byte order */
-  job->id = ntohl (job->id);
-  job->nprocs = ntohs (job->nprocs);
-  job->status = ntohs (job->status);
-
-  /* Koj Stuff */
-  job->koj = ntohs (job->koj);
-  switch (job->koj) {
-  case KOJ_GENERAL:
-    break;
-  case KOJ_MAYA:
-    break;
-  case KOJ_MENTALRAY:
-  case KOJ_BLENDER:
-  case KOJ_LIGHTWAVE:
-  case KOJ_TERRAGEN:
-  case KOJ_NUKE:
-  case KOJ_AFTEREFFECTS:
-  case KOJ_SHAKE:
-    break;
-  case KOJ_BMRT:
-    job->koji.bmrt.xmin = ntohl (job->koji.bmrt.xmin);
-    job->koji.bmrt.xmax = ntohl (job->koji.bmrt.xmax);
-    job->koji.bmrt.ymin = ntohl (job->koji.bmrt.ymin);
-    job->koji.bmrt.ymax = ntohl (job->koji.bmrt.ymax);
-    job->koji.bmrt.xsamples = ntohl (job->koji.bmrt.xsamples);
-    job->koji.bmrt.ysamples = ntohl (job->koji.bmrt.ysamples);
-    job->koji.bmrt.radiosity_samples = ntohl (job->koji.bmrt.radiosity_samples);
-    job->koji.bmrt.raysamples = ntohl (job->koji.bmrt.raysamples);
-    break;
-  case KOJ_3DELIGHT:
-  case KOJ_PIXIE:
-  case KOJ_XSI:
-    break;
-  case KOJ_TURTLE:
-    job->koji.turtle.resx = ntohl (job->koji.turtle.resx);
-    job->koji.turtle.resy = ntohl (job->koji.turtle.resy);
-    break;
-  }
-
-  job->frame_info.ptr = NULL;
-  job->frame_start = ntohl (job->frame_start);
-  job->frame_end = ntohl (job->frame_end);
-  job->frame_step = ntohl (job->frame_step);
-  job->frame_step = (job->frame_step == 0) ? 1 : job->frame_step; /* No 0 on step !! */
-  job->block_size = ntohl (job->block_size);
-  job->avg_frame_time = ntohl (job->avg_frame_time);
-  job->est_finish_time = ntohl (job->est_finish_time);
-  job->fleft = ntohl (job->fleft);
-  job->fdone = ntohl (job->fdone);
-  job->ffailed = ntohl (job->ffailed);
-
-  job->priority = ntohl (job->priority);
-
-  job->flags = ntohl (job->flags);
-
-  /* Limits */
-  job_limits_bswap_from_network (&job->limits);
+  job_bswap_from_network (job,job);
 
   drerrno = DRE_NOERROR;
   return 1;
 }
+
 
 int
 send_job (int sfd, struct job *job) {
@@ -712,73 +655,10 @@ send_job (int sfd, struct job *job) {
     return 0;
   }
 
-  /* We make a copy coz we need to modify the values */
-  memcpy (buf,job,datasize);
   /* Prepare for sending */
-  bswapped.id = htonl (bswapped.id);
-  bswapped.nprocs = htons (bswapped.nprocs);
-  bswapped.status = htons (bswapped.status);
+  job_bswap_to_network (job,&bswapped);
 
-  /* Koj Stuff */
-  switch (bswapped.koj) {
-  case KOJ_GENERAL:
-    break;
-  case KOJ_MAYA:
-    break;
-  case KOJ_MENTALRAY:
-  case KOJ_BLENDER:
-  case KOJ_LIGHTWAVE:
-  case KOJ_TERRAGEN:
-  case KOJ_NUKE:
-  case KOJ_AFTEREFFECTS:
-  case KOJ_SHAKE:
-    break;
-  case KOJ_BMRT:
-    bswapped.koji.bmrt.xmin = htonl (bswapped.koji.bmrt.xmin);
-    bswapped.koji.bmrt.xmax = htonl (bswapped.koji.bmrt.xmax);
-    bswapped.koji.bmrt.ymin = htonl (bswapped.koji.bmrt.ymin);
-    bswapped.koji.bmrt.ymax = htonl (bswapped.koji.bmrt.ymax);
-    bswapped.koji.bmrt.xsamples = htonl (bswapped.koji.bmrt.xsamples);
-    bswapped.koji.bmrt.ysamples = htonl (bswapped.koji.bmrt.ysamples);
-    bswapped.koji.bmrt.radiosity_samples = htonl (bswapped.koji.bmrt.radiosity_samples);
-    bswapped.koji.bmrt.raysamples = htonl (bswapped.koji.bmrt.raysamples);
-    break;
-  case KOJ_3DELIGHT:
-  case KOJ_PIXIE:
-  case KOJ_XSI:
-    break;
-  case KOJ_TURTLE:
-    bswapped.koji.turtle.resx = htonl (bswapped.koji.turtle.resx);
-    bswapped.koji.turtle.resy = htonl (bswapped.koji.turtle.resy);
-    break;
-  }
-  bswapped.koj = htons (bswapped.koj);
-
-  bswapped.frame_info.ptr = NULL;  
-  bswapped.frame_start = htonl (bswapped.frame_start);
-  bswapped.frame_end = htonl (bswapped.frame_end);
-  bswapped.frame_step = htonl (bswapped.frame_step);
-  bswapped.block_size = htonl (bswapped.block_size);
-  bswapped.avg_frame_time = htonl (bswapped.avg_frame_time);
-  bswapped.est_finish_time = htonl (bswapped.est_finish_time);
-  bswapped.fleft = htonl (bswapped.fleft);
-  bswapped.fdone = htonl (bswapped.fdone);
-  bswapped.ffailed = htonl (bswapped.ffailed);
-
-  bswapped.priority = htonl (bswapped.priority);
-
-  bswapped.flags = htonl (bswapped.flags);
-
-  // Limits
-  job_limits_bswap_to_network (&bswapped.limits);
-
-  // Filling the envvars with neutral values
-  envvars_init(&bswapped.envvars);
-  bswapped.envvars.nvariables = htons(bswapped.envvars.nvariables);
-  bswapped.envvars.variables.ptr = NULL;
-  bswapped.envvars.evshmid = (int64_t)-1; // 64bit 
-
-  if (!dr_write (sfd,(char*)buf,sizeof(struct job))) {
+  if (!dr_write (sfd,(char*)buf,datasize)) {
     fprintf (stderr,"ERROR: Failed to write job to sfd\n");
     return 0;
   }
