@@ -89,7 +89,7 @@ char *drerrno_str (void) {
     msg = "Could not attach shared memory";
     break;
   case DRE_NOTMPDIR:
-    msg = "Directory for temporary files ($DRQUEUE_TMP)does not exist or is not writeable";
+    msg = "Directory for temporary files ($DRQUEUE_TMP) does not exist or is not writeable";
     break;
   case DRE_NODBDIR:
     msg = "Directory for database files ($DRQUEUE_DB) does not exist or is not writeable";

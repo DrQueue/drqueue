@@ -23,6 +23,7 @@
 
 #include "logger.h"
 #include "computer_info.h"
+#include "drerrno.h"
 
 #include <stdio.h>
 #include <string.h>
