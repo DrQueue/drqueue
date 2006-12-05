@@ -30,7 +30,9 @@ underscore_slashes () {
 
 underscore_spaces_and_slashes () {
     ORIG_STRING="$1"
-    echo $(underscore_slashes $(underscore_spaces $ORIG_STRING))
+    echo DEBUG spaces: $(underscore_spaces "$ORIG_STRING") >> .shdebug
+    echo DEBUG spaces and slashes: $(underscore_slashes "$(underscore_spaces "$ORIG_STRING")") >> .shdebug
+    echo $(underscore_slashes "$(underscore_spaces "$ORIG_STRING")")
     return 0
 }
 
@@ -83,24 +85,31 @@ get_env_kernel () {
 
 get_env_machine () {
     if [ ! -z "$DRQ_SH_UNDERSCORE" -o ! -z "$1" ]; then
-        echo $(underscore_spaces_and_slashes "`uname -m`")
+        echo $(underscore_spaces_and_slashes "$(uname -m)")
     else
         echo `uname -m`
     fi
 }
 
+get_env_drqueue_bin () {
+    if [ ! -z "$DRQUEUE_BIN" ]; then
+        echo $DRQUEUE_BIN
+    else
+        echo $(get_env_drqueue_root)/bin 
+    fi
+}
 
 wrapper_cmd () {
   CMD_TO_WRAP=$1
   _conv_to_underscores=$2
   unset WRAP_CMD
-  _full_unwrapped_tool_path="$(get_env_drqueue_root)/bin/$CMD_TO_WRAP"
+  _full_unwrapped_tool_path="$(get_env_drqueue_bin)/$CMD_TO_WRAP"
   if [ ! -x "$_full_unwrapped_tool_path" ]; then
     echo ERROR: Command "$_full_unwrapped_tool_path" does not exist. Cannot be wrapped.
     exit 1
   fi
 
-  _full_wrapped_path=$(get_env_drqueue_root)/bin/$(get_env_base_tool).$(get_env_kernel).$(get_env_machine)
+  _full_wrapped_path=$(get_env_drqueue_bin)/$(get_env_base_tool).$(get_env_kernel).$(get_env_machine)
   WRAP_CMD="$_full_wrapped_path"
 
   if [ ! -x "${WRAP_CMD}" ]; then
