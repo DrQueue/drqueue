@@ -40,7 +40,7 @@ machinetype := $(shell bash -c "source ./bin/shlib; get_env_machine")
 endif
 
 CPPFLAGS += -D_NO_COMPUTER_SEMAPHORES -D_NO_COMPUTER_POOL_SEMAPHORES -D_GNU_SOURCE -DCOMM_REPORT -I. -Ilibdrqueue
-CFLAGS ?= -g -O0 -Wall 
+CFLAGS ?= -g -O3 -Wall 
 CXXFLAGS += $(CFLAGS) $(CPPFLAGS) -D__CPLUSPLUS 
 
 ifeq ($(systype),Linux)
