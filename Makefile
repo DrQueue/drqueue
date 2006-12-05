@@ -40,7 +40,7 @@ machinetype := $(shell bash -c "source ./bin/shlib; get_env_machine")
 endif
 
 CPPFLAGS += -D_NO_COMPUTER_SEMAPHORES -D_NO_COMPUTER_POOL_SEMAPHORES -D_GNU_SOURCE -DCOMM_REPORT -I. -Ilibdrqueue
-CFLAGS ?= -g -O3 -Wall 
+CFLAGS ?= -g -O0 -Wall 
 CXXFLAGS += $(CFLAGS) $(CPPFLAGS) -D__CPLUSPLUS 
 
 ifeq ($(systype),Linux)
@@ -53,6 +53,10 @@ ifeq ($(systype),Linux)
    ARCHFLAGS += -march=x86-64 -m64 -pipe
   endif
  endif
+else
+ifeq ($(systype),GNU__kFreeBSD)
+ CPPFLAGS += -D__LINUX
+ MAKE = make
 else
 ifeq ($(systype),GNU__kFreeBSD)
  CPPFLAGS += -D__LINUX
@@ -96,6 +100,7 @@ else
     endif
    endif
   endif
+ endif
  endif
  endif
 endif
@@ -157,6 +162,9 @@ IRIX_install:
 # Same as Linux since the userspace is the same
 GNU__kFreeBSD_install: Linux_install
 
+# Same as Linux since the userspace is the same
+GNU__kFreeBSD_install: Linux_install
+
 Linux_install:
 	install -d -m 0777 $(INSTROOT)/tmp
 	install -d -m 0777 $(INSTROOT)/logs
@@ -214,6 +222,8 @@ FreeBSD_install:
 	chmod 0755 $(INSTROOT)/contrib/* || exit 0
 	chown -R $(INSTUID):$(INSTGID) $(INSTROOT)/bin/*
 	chown $(INSTUID):$(INSTGID) $(INSTROOT)/contrib/*
+	install -d -m 0755 $(DRQMAN_INSTROOT)/usr/bin
+	cp -r ./drqman/drqman $(DRQMAN_INSTROOT)/usr/bin || exit 0
 
 Darwin_install:
 	install -d -m 0777 $(INSTROOT)/tmp
