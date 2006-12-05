@@ -11,7 +11,6 @@ endif
 kversion = $(shell uname -r)
 universal = 0
 ifeq ($(kversion),7.9.0)
-universal = 0
 SDK = /Developer/SDKs/MacOSX10.3.9.sdk
 else
 universal = 1
@@ -71,7 +70,7 @@ else
      LDFLAGS += $(MAC_LDFLAGS)
      ARCHFLAGS += -arch ppc -arch i386
    else 
-     ifeq ($(machinetype),power_macintosh)
+     ifeq ($(machinetype),Power_Macintosh)
       ARCHFLAGS += -arch ppc
      else
       ARCHFLAGS += -arch i386
@@ -313,7 +312,7 @@ compinfo: compinfo.o libdrqueue.a
 	$(CC) $(LDFLAGS) $^ -o $@
 
 sendjob.o: sendjob.cpp sendjob.h
-	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) $<
+	$(CXX) -c $(CXXFLAGS) $<
 sendjob: sendjob.o libdrqueue.a
 	$(CXX) $^ $(LDFLAGS) -o $@ 
 
