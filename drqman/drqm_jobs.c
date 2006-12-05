@@ -113,6 +113,7 @@ free_job_list(GtkWidget *joblist,gpointer userdata) {
   for (i = 0; i < info->njobs; i++) {
     job_delete (&info->jobs[i]);
   }
+  free (info->jobs);
   info->jobs=NULL;
   info->njobs=0;
 }
@@ -1696,7 +1697,7 @@ void dnj_envvars_delete_accept (GtkWidget *bpressed, gpointer userdata) {
     gchar *name;
     gtk_tree_model_get (model, &iter, DNJ_ENVVARS_COL_NAME, &name, -1);
     envvars_variable_delete(&info->envvars,(char *)name);
-    g_free(name);
+    free(name);
   }
 }
 

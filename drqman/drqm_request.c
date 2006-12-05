@@ -57,8 +57,8 @@ drqm_request_joblist (struct drqm_jobs_info *info) {
 void drqm_clean_joblist (struct drqm_jobs_info *info) {
   if (info->jobs) {
     free_job_list(NULL,info);
-    free (info->jobs);
-    info->jobs = NULL;
+  } else {
+    log_auto (L_WARNING,"drqm_clean_joblist(): received NULL pointer.");
   }
 }
 

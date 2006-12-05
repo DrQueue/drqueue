@@ -251,12 +251,12 @@ void drqm_update_computerlist (struct drqm_computers_info *info) {
         }
         computer_pool_detach_shared_memory(&info->computers[i].limits);
       } else {
-        g_free(buff[7]);
+        free(buff[7]);
         buff[7] = g_strdup("Cannot attach shared memory");
       }
     } else {
-      g_free(buff[7]);
-      buff[7] = g_strdup("NO POOLS !!");
+      free(buff[7]);
+      buff[7] = strdup("NO POOLS !!");
     }
     gtk_clist_append(GTK_CLIST(info->clist),buff);
     gtk_clist_set_row_data (GTK_CLIST(info->clist),i,(gpointer)info->computers[i].hwinfo.name);
@@ -269,8 +269,8 @@ void drqm_update_computerlist (struct drqm_computers_info *info) {
 
 
   for(i=0;i<ncols;i++)
-    g_free (buff[i]);
-  g_free (buff);
+    free (buff[i]);
+  free (buff);
 
   gtk_clist_sort (GTK_CLIST(info->clist));
 
