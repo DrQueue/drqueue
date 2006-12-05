@@ -89,12 +89,7 @@ database_load (struct database *wdb) {
     return 0;
   }
 
-#ifndef __CYGWIN
   snprintf (filename, BUFFERLEN - 1, "%s/drqueue.db", basedir);
-#else
-
-  snprintf (filename, BUFFERLEN - 1, "%s\\drqueue.db", basedir);
-#endif
 
   if ((fd = open (filename, O_RDONLY)) == -1) {
     drerrno = DRE_ERROROPENING;
@@ -166,13 +161,7 @@ database_save (struct database *wdb) {
   }
 
   snprintf (dir, BUFFERLEN - 1, "%s", basedir);
-#ifndef __CYGWIN
-
   snprintf (filename, BUFFERLEN - 1, "%s/drqueue.db", dir);
-#else
-
-  snprintf (filename, BUFFERLEN - 1, "%s\\drqueue.db", dir);
-#endif
   
   // Lock it
   semaphore_lock(wdb->semid);

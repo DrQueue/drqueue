@@ -547,11 +547,13 @@ void log_auto (int level, char *fmt, ...) {
   strcpy(msg,bkpmsg);
   snprintf (bkpmsg,MAXLOGLINELEN,"%s | %6s |",msg,log_level_str(level)); // Log level
   strcpy(msg,bkpmsg);
+
   if (logger_job) {
     log_get_job_str (job_buf,BUFFERLEN);
     snprintf (bkpmsg,MAXLOGLINELEN,"%s %s :",msg,job_buf);
     strcpy(msg,bkpmsg);
   }						       
+
   if (logger_computer) {
     log_get_computer_str (computer_buf,BUFFERLEN);
     snprintf (bkpmsg,MAXLOGLINELEN,"%s %s :",msg,computer_buf);
@@ -567,4 +569,5 @@ void log_auto (int level, char *fmt, ...) {
 
   if (fileno(f_log) != fileno(stderr))
     fclose(f_log);
+
 }
