@@ -80,16 +80,22 @@ int common_environment_check (void) {
     snprintf (dir_str,BUFFERLEN-1,"%s/db",getenv("DRQUEUE_ROOT"));
   } 
   if (stat (dir_str,&s_stat) == -1) {
+    drerrno_system = errno;  
+    log_auto (L_ERROR,"no database directory found on '%s'. (%s)",dir_str,strerror(drerrno_system));
     drerrno = DRE_NODBDIR;
     return 0;
   } else {
 #ifdef __CYGWIN
     if (!S_ISDIR(s_stat.st_mode)) {
+      drerrno_system = errno;  
+      log_auto (L_ERROR,"no database directory found on '%s'. It's not a directory. (%s)",dir_str,strerror(drerrno_system));
       drerrno = DRE_NODBDIR;
       return 0;
     }
 #else
     if ((!S_ISDIR(s_stat.st_mode)) || (!(S_IWUSR & s_stat.st_mode))) {
+      drerrno_system = errno;  
+      log_auto (L_ERROR,"no database directory found on '%s'. It's not a directory or not user writable. (%s)",dir_str,strerror(drerrno_system));
       drerrno = DRE_NODBDIR;
       return 0;
     }

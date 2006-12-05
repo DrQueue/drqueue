@@ -1212,12 +1212,10 @@ void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp) {
   fprintf (stderr,"1a\n");
   log_auto (L_DEBUG3,"Entering handle_r_r_listcomp");
 
-  fprintf (stderr,"1b\n");
   semaphore_lock(wdb->semid);
   answer.type = R_R_LISTCOMP;
   answer.data = computer_ncomputers_masterdb (wdb);
   memcpy (computer,wdb->computer,sizeof(struct computer) * MAXCOMPUTERS);
-  fprintf (stderr,"1c\n");
 
   // We attach shared memory and copy it
   for (i=0;i<MAXCOMPUTERS;i++) {
@@ -1228,7 +1226,7 @@ void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp) {
       }
     }
   }
-  fprintf (stderr,"1d\n");
+
   semaphore_release(wdb->semid);
 
   if (!send_request (sfd,&answer,MASTER)) {
