@@ -117,6 +117,9 @@ get_proctype (void) {
     } else if ((strstr(buf,"arch") != NULL) &&  (strstr(buf,"IA-64") != NULL)) {
       proctype = PROCTYPE_INTELIA64;
       found = 1;
+    } else if ((strstr(buf,"platform") != NULL) && (strstr(buf,"PowerMac") != NULL)) {
+      proctype = PROCTYPE_PPC;
+      found = 1;
     }
   }
 
@@ -150,6 +153,12 @@ get_procspeed (void) {
       while (!isdigit(buf[index]))
         index++;
       sscanf (&buf[index],"%f\n",&st);
+      procspeed = (int) st;
+      found = 1;
+    } else if (strstr(buf,"clock") != NULL) {
+      while (!isdigit(buf[index]))
+        index++;
+      sscanf (&buf[index],"%fMHz\n",&st);
       procspeed = (int) st;
       found = 1;
     }

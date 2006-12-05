@@ -47,11 +47,14 @@ def get_wordsize_flags():
   elif arch == 'Power Macintosh':
     os.environ['CFLAGS'] = '-mpowerpc -mtune=powerpc'
     bitsFlag = [ flagPrefix + ' -mpowerpc', flagPrefix + ' -mtune=powerpc']
+  elif arch == 'ppc':
+    # Linux ppc
+    # let's set no flags for now
+    bitsFlag = [ ]
   else:
     print "Machine not listed: %s"%(arch,)
     sys.exit(1)
   return bitsFlag
-
 
 def get_define_macros():
   get_wordsize_flags()
