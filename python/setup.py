@@ -61,6 +61,8 @@ def get_define_macros():
     l_define_macros = l_define_macros + [('__LINUX',None)]
   elif sys.platform == "darwin":
     l_define_macros = l_define_macros + [('__OSX',None)]
+  elif sys.platform == "cygwin":
+    l_define_macros = l_define_macros + [('__CYGWIN',None)]
   return l_define_macros
 
 def get_abspath(path):
@@ -82,6 +84,8 @@ def get_swig_flags():
     swigflags = swigflags + ['-D__LINUX']
   elif sys.platform == "darwin":
     swigflags = swigflags + ['-D__OSX']
+  elif sys.platform == "cygwin":
+    swigflags = swigflags + ['-D__CYGWIN']
   return swigflags
 
 setup(
