@@ -74,7 +74,7 @@ void config_parse (char *cfg) {
       continue;
     }
     if (strcmp(token,"logs") == 0) {
-      if ((token = strtok (NULL,"=\n\r")) != NULL) {
+      if ((token = strtok (NULL,"=\r\n")) != NULL) {
         fprintf (stderr,"Logs on: '%s'\n",token);
         snprintf (renv,BUFFERLEN,"DRQUEUE_LOGS=%s",token);
         if ((penv = (char*) malloc (strlen (renv)+1)) == NULL) {
