@@ -52,8 +52,13 @@ def get_wordsize_flags():
     # let's set no flags for now
     bitsFlag = [ ]
   else:
-    print "Machine not listed: %s"%(arch,)
-    sys.exit(1)
+    plat_os = platform.architecture()[1]
+    if plat_os == 'WindowsPE':
+      os.environ['CFLAGS'] = '-m32'
+      bitsFlag = [ flagPrefix + ' -m32', flagPrefix + ' -march=i386']
+    else:
+      print "Machine not listed: %s"%(arch,)
+      sys.exit(1)
   return bitsFlag
 
 def get_define_macros():

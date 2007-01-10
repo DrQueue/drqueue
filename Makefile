@@ -111,7 +111,7 @@ ifneq ($(origin LIBWRAP),undefined)
 endif
 
 #abstract make targets
-.PHONY: default all install miniinstall irix_install linux_install doc tags clean testing_env drqman python.build python.install
+.PHONY: default all install miniinstall irix_install linux_install doc tags clean testing_env python.build python.install drqman
 
 BASE_C_TOOLS = slave master requeue jobfinfo blockhost ctask cjob jobinfo compinfo
 BASE_CXX_TOOLS = sendjob
