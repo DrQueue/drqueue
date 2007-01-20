@@ -56,15 +56,14 @@ ifeq ($(systype),Linux)
 else
 ifeq ($(systype),GNU__kFreeBSD)
  CPPFLAGS += -D__LINUX
- MAKE = make
+ MAKE ?= make
 else
 ifeq ($(systype),GNU__kFreeBSD)
  CPPFLAGS += -D__LINUX
- MAKE = make
+ MAKE ?= make
 else
  ifeq ($(systype),IRIX)
   CPPFLAGS += -D__IRIX
-#  MAKE = /usr/freeware/bin/gmake
  else
   ifeq ($(systype),Darwin)
    USE_LIBTOOL = 1
@@ -86,11 +85,10 @@ else
    endif
    CFLAGS += $(ARCHFLAGS)
    LDFLAGS += $(ARCHFLAGS)
-#   MAKE = make
   else 
    ifeq ($(systype),FreeBSD)
     CPPFLAGS += -D__FREEBSD
-    MAKE = gmake
+    MAKE ?= gmake
    else
     ifeq ($(systype),CYGWIN_NT-5.1)
      CPPFLAGS += -D__CYGWIN
