@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.4
+#!/usr/bin/env python
 # 
 # Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 #
@@ -35,6 +35,7 @@ import platform
 def get_wordsize_flags():
   flagPrefix = '-Xcompiler'
   arch=platform.machine()
+  bitsFlag = []
   if arch == 'i386':
     os.environ['CFLAGS'] = '-m32'
     bitsFlag = [ flagPrefix + ' -m32', flagPrefix + ' -march=i386']
@@ -50,12 +51,13 @@ def get_wordsize_flags():
   elif arch == 'ppc':
     # Linux ppc
     # let's set no flags for now
-    bitsFlag = [ ]
+    bitsFlag = []
   else:
     plat_os = platform.architecture()[1]
+    print 'No "platform.machine()" available. Using "platform.architecture()": %s'%(plat_os,)
     if plat_os == 'WindowsPE':
       os.environ['CFLAGS'] = '-m32'
-      bitsFlag = [ flagPrefix + ' -m32', flagPrefix + ' -march=i386']
+      #bitsFlag = [ flagPrefix + ' -m32', flagPrefix + ' -march=i386']
     else:
       print "Machine not listed: %s"%(arch,)
       sys.exit(1)
@@ -69,8 +71,9 @@ def get_define_macros():
     l_define_macros = l_define_macros + [('__LINUX',None)]
   elif sys.platform == "darwin":
     l_define_macros = l_define_macros + [('__OSX',None)]
-  elif sys.platform == "cygwin":
+  elif sys.platform == "cygwin" or sys.platform == "win32":
     l_define_macros = l_define_macros + [('__CYGWIN',None)]
+#    l_define_macros = l_define_macros + [('__WIN32__',None)]
   return l_define_macros
 
 def get_abspath(path):
@@ -92,7 +95,8 @@ def get_swig_flags():
     swigflags = swigflags + ['-D__LINUX']
   elif sys.platform == "darwin":
     swigflags = swigflags + ['-D__OSX']
-  elif sys.platform == "cygwin":
+  elif sys.platform == "cygwin" or sys.platform == "win32":
+    #swigflags = swigflags + ['-D__CYGWIN','-D__WIN32__']
     swigflags = swigflags + ['-D__CYGWIN']
   return swigflags
 
