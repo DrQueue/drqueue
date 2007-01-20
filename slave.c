@@ -323,7 +323,7 @@ int64_t get_semaphores_slave (void) {
     kill (0,SIGINT);
   }
 
-#if _SEM_SEMUN_UNDEFINED == 1
+#if _SEM_SEMUN_UNDEFINED == 1 || defined (__CYGWIN)
   union semun {
     int val;
     struct semid_ds *buf;
