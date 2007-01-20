@@ -152,6 +152,9 @@ void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job) {
 
 void
 job_shared_frame_info_init (struct job *job) {
+  if (!job) {
+    return;
+  }
   job->frame_info.ptr = NULL;
   job->fishmid = (int64_t)-1;
 }
@@ -192,7 +195,9 @@ job_init (struct job *job) {
 int
 job_frame_info_free (struct job *job) {
   int rv = 1;
-  if (job->fishmid != (int64_t)-1) {
+  if (!job) {
+    rv = 0;
+  } else if (job->fishmid != (int64_t)-1) {
     if (shmctl ((int)job->fishmid,IPC_RMID,NULL) == -1) {
       drerrno_system = errno;
       drerrno = DRE_RMSHMEM;
