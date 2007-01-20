@@ -1,7 +1,9 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
@@ -16,9 +18,9 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-/*
- * $Header: /root/cvs/drqueue/drqman/drqman.h,v 1.5 2001/11/08 11:47:42 jorge Exp $
- */
+//
+// $Header: /root/cvs/drqueue/drqman/drqman.h,v 1.5 2001/11/08 11:47:42 jorge Exp $
+//
 
 #ifndef _DRQMAN_H_
 #define _DRQMAN_H_

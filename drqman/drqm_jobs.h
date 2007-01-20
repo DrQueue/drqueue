@@ -25,7 +25,6 @@
 #ifndef _DRQM_JOBS_H_
 #define _DRQM_JOBS_H_
 
-#include <gtk/gtk.h>
 #include "libdrqueue.h"
 #include "drqm_jobs_common.h"
 #include "drqm_jobs_jdd.h"
@@ -49,6 +48,7 @@
 #include "drqm_jobs_xsi.h"
 
 #include <string.h>
+#include <gtk/gtk.h>
 
 enum {
   DNJ_FLAGS_DEPEND_COL_ID = 0,

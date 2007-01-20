@@ -23,13 +23,15 @@
 //
 
 #include <string.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <pwd.h>
 #include <sys/types.h>
-#include <gtk/gtk.h>
+#include <stdint.h>
+#include <unistd.h>
 
 #include "libdrqueue.h"
+
+#include <gtk/gtk.h>
 #include "drqman.h"
 #include "drqm_request.h"
 #include "drqm_jobs.h"
