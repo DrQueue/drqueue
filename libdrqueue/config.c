@@ -31,6 +31,8 @@
 #include "constants.h"
 
 void config_close (FILE *f_cfg);
+char *config_eol_remove (char *buffer, int len);
+char *config_read_line (char *buffer, int buflen, FILE *f_conf);
 
 void config_get_default_file (char *dst,char *tool,int dstlen) {
   snprintf (dst,dstlen,"%s/%s.%s",BASE_CONF_PATH,tool,BASE_CONF_EXT);
@@ -51,7 +53,56 @@ void config_parse_tool (char *tool) {
   }
 }
 
-void config_parse (char *cfg) {
+char *
+config_eol_remove (char *buffer, int buflen) {
+  // This funtion looks for EOL (being it unix-like or windows-like) and removes it, placing a 0 at the first of those characters found
+  // Returns the position to that new EOL
+  // In case of failure, returns NULL
+  char *beol; 
+
+  if (!buffer) {
+    return NULL;
+  }
+
+  // TODO: Check return pointers in lenght range
+  // Check windows
+  beol = strchr(buffer,'\r');
+  if (beol) {
+    *beol = 0;
+    return beol;
+  }
+  
+  // Check unix
+  beol = strchr(buffer,'\n');
+  if (beol) {
+    *beol = 0;
+    return beol;
+  }
+
+  beol = strchr(buffer,'\0');
+  if (beol) {
+    return beol;
+  }
+
+  // No '\0' or EOL found.
+  return NULL;
+}
+
+char *
+config_read_line (char *buffer, int buflen, FILE *f_conf) {
+  char *neol = NULL;
+  if (fgets(buffer,buflen,f_conf) != NULL) {
+    neol = config_eol_remove (buffer,buflen);
+    if (neol) {
+      return buffer;
+    }
+  }
+
+  return NULL;
+}
+
+void
+config_parse (char *cfg) {
   FILE *f_conf;
   char buffer[BUFFERLEN];
   char *token;
@@ -64,17 +115,17 @@ void config_parse (char *cfg) {
 
   printf ("Parsing config at: %s\n",cfg);
 
-  while ((fgets (buffer,BUFFERLEN-1,f_conf)) != NULL) {
+  while ((config_read_line (buffer,BUFFERLEN-1,f_conf)) != NULL) {
     if (buffer[0] == '#') {
       //fprintf (stderr,"ign line: '%s'\n",buffer);
       continue;
     }
-    token = strtok(buffer,"=\n\r");
+    token = strtok(buffer,"=");
     if (!token) {
       continue;
     }
     if (strcmp(token,"logs") == 0) {
-      if ((token = strtok (NULL,"=\r\n")) != NULL) {
+      if ((token = strtok (NULL,"=")) != NULL) {
         fprintf (stderr,"Logs on: '%s'\n",token);
         snprintf (renv,BUFFERLEN,"DRQUEUE_LOGS=%s",token);
         if ((penv = (char*) malloc (strlen (renv)+1)) == NULL) {
@@ -90,7 +141,7 @@ void config_parse (char *cfg) {
         fprintf (stderr,"Warning parsing config file. No value for logs. Using default.\n");
       }
     } else if (strcmp(token,"tmp") == 0) {
-      if ((token = strtok (NULL,"=\n\r")) != NULL) {
+      if ((token = strtok (NULL,"=")) != NULL) {
         fprintf (stderr,"Tmp on: '%s'\n",token);
         snprintf (renv,BUFFERLEN,"DRQUEUE_TMP=%s",token);
         if ((penv = (char*) malloc (strlen(renv)+1)) == NULL) {
@@ -106,7 +157,7 @@ void config_parse (char *cfg) {
         fprintf (stderr,"Warning parsing config file. No value for tmp. Using default.\n");
       }
     } else if (strcmp(token,"bin") == 0) {
-      if ((token = strtok (NULL,"=\n\r")) != NULL) {
+      if ((token = strtok (NULL,"=")) != NULL) {
         fprintf (stderr,"Bin on: '%s'\n",token);
         snprintf (renv,BUFFERLEN,"DRQUEUE_BIN=%s",token);
         if ((penv = (char*) malloc (strlen(renv)+1)) == NULL) {
@@ -122,7 +173,7 @@ void config_parse (char *cfg) {
         fprintf (stderr,"Warning parsing config file. No value for bin. Using default.\n");
       }
     } else if (strcmp(token,"etc") == 0) {
-      if ((token = strtok (NULL,"=\n\r")) != NULL) {
+      if ((token = strtok (NULL,"=")) != NULL) {
         fprintf (stderr,"Etc on: '%s'\n",token);
         snprintf (renv,BUFFERLEN,"DRQUEUE_ETC=%s",token);
         if ((penv = (char*) malloc (strlen(renv)+1)) == NULL) {
@@ -138,7 +189,7 @@ void config_parse (char *cfg) {
         fprintf (stderr,"Warning parsing config file. No value for etc. Using default.\n");
       }
     } else if (strcmp(token,"db") == 0) {
-      if ((token = strtok (NULL,"=\n\r")) != NULL) {
+      if ((token = strtok (NULL,"=")) != NULL) {
         fprintf (stderr,"Db on: '%s'\n",token);
         snprintf (renv,BUFFERLEN,"DRQUEUE_DB=%s",token);
         if ((penv = (char*) malloc (strlen(renv)+1)) == NULL) {
@@ -150,24 +201,24 @@ void config_parse (char *cfg) {
         if (putenv (penv) != 0) {
           fprintf (stderr,"ERROR seting the environment: '%s'\n",penv);
         }
-	free(penv);
+        free(penv);
       } else {
         fprintf (stderr,"Warning parsing config file. No value for db. Using default.\n");
       }
     } else if (strcmp(token,"pool") == 0) {
-      if ((token = strtok (NULL,"=\n\r")) != NULL) {
+      if ((token = strtok (NULL,"=")) != NULL) {
         fprintf (stderr,"Pools are: '%s'\n",token);
         snprintf (renv,BUFFERLEN,"DRQUEUE_POOL=%s",token);
         if ((penv = (char*) malloc (strlen(renv)+1)) == NULL) {
           fprintf (stderr,"ERROR allocating memory for DRQUEUE_POOL.\n");
-	  fclose(f_conf);
+          fclose(f_conf);
           exit (1);
         }
         strncpy(penv,renv,strlen(renv)+1);
         if (putenv (penv) != 0) {
           fprintf (stderr,"ERROR seting the environment: '%s'\n",penv);
         }
-	free(penv);
+        free(penv);
       } else {
         fprintf (stderr,"Warning parsing config file. No value for pool. Using default.\n");
       }
@@ -266,7 +317,7 @@ void config_add_node (struct config_node *base, FILE *file, char *line) {
 int config_find_nodes (struct config_node *base,FILE *file) {
   char line[BUFFERLEN];
   char *res;
-  while ( (res = fgets (line,BUFFERLEN,file)) != NULL ) {
+  while ((res = config_read_line (line,BUFFERLEN,file)) != NULL) {
     if ((line[0]=='[') && line[strlen(line)-2]==']')
       config_add_node (base,file,line);
   }
