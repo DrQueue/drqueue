@@ -1,4 +1,4 @@
-export DRQUEUE_ROOT=.
+export DRQUEUE_ROOT=$(pwd)
 export DRQUEUE_MASTER=localhost
-setenv DRQUEUE_ROOT .
-setenv DRQUEUE_MASTER webster
+#setenv DRQUEUE_ROOT .
+#setenv DRQUEUE_MASTER webster

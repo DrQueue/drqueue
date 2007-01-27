@@ -1,7 +1,9 @@
 // 
-// Copyright (C) 2001,2002,2003,2004,2005 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
+//
+// This file is part of DrQueue
 // 
-// This program is free software; you can redistribute it and/or modify
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
@@ -87,6 +89,7 @@ slaves. Also provides access to all data structures of DrQueue."
 	}
 }
 
+%include "pointer.h"
 %include "libdrqueue.h"
 %include "computer.h"
 %include "computer_info.h"
@@ -97,6 +100,7 @@ slaves. Also provides access to all data structures of DrQueue."
 %include "job.h"
 %include "envvars.h"
 %include "common.h"
+%include "computer_pool.h"
 
 typedef unsigned int time_t;
 typedef unsigned short int uint16_t;
@@ -250,7 +254,7 @@ typedef unsigned char uint8_t;
 %extend computer_limits {
 	%exception get_pool {
 		$action
-		if (!result) {
+		if (!result || result == (void*)-1) {
 			PyErr_SetString(PyExc_IndexError,"Index out of range");
 			return NULL;
 		}
@@ -271,15 +275,13 @@ typedef unsigned char uint8_t;
 			return (struct pool *)PyErr_NoMemory();
 
 		if (self->npools) {
-			if ((self->pool = (struct pool *) computer_pool_attach_shared_memory(self->poolshmid)) == (void*)-1) {
-				perror ("Attaching");
-				fprintf (stderr,"ERROR attaching memory %d shmid\n", self->poolshmid);
+			if ((self->pool.ptr = (struct pool *) computer_pool_attach_shared_memory(self)) == (void*)-1) {
 				return pool;
 			}
 		}
-		memcpy(pool,&self->pool[n],sizeof(struct pool));
+		memcpy(pool,&self->pool.ptr[n],sizeof(struct pool));
 
-		computer_pool_detach_shared_memory (self->pool);
+		computer_pool_detach_shared_memory (self);
 
 		return pool;
 	}
@@ -380,22 +382,22 @@ typedef unsigned char uint8_t;
     PyObject *l = PyList_New(0);
 		int npools = self->limits.npools;
 
-    if ((self->limits.pool = (struct pool *) computer_pool_attach_shared_memory(self->limits.poolshmid)) == (void*)-1) {
+    if ((self->limits.pool.ptr = (struct pool *) computer_pool_attach_shared_memory(&self->limits)) == (void*)-1) {
       PyErr_SetString(PyExc_MemoryError,drerrno_str());
 		}
 
     int i;
     for (i=0;i<npools;i++) {
-      struct pool *pool_i = malloc (sizeof(struct pool));
+      struct pool *pool_i = (struct pool *)malloc (sizeof(struct pool));
 			if (!pool_i) {
 				return PyErr_NoMemory();
 			}
-      memcpy (pool_i,&self->limits.pool[i],sizeof(struct pool));
+      memcpy (pool_i,&self->limits.pool.ptr[i],sizeof(struct pool));
 			PyObject *o = SWIG_NewPointerObj((void*)(pool_i), SWIGTYPE_p_pool, 0);
 			PyList_Append(l,o);
 		}
 
-    computer_pool_detach_shared_memory (self->limits.pool);
+    computer_pool_detach_shared_memory (&self->limits);
 		return l; 
   }
 

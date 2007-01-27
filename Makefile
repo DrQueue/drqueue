@@ -1,64 +1,107 @@
+#
 # $Id$
+#
 
-CC = gcc
-CXX = g++
-OBJS_LIBDRQUEUE = $(patsubst %.c,%.o,$(wildcard libdrqueue/*.c))
+ifeq (0,${MAKELEVEL})
+whoami := $(shell whoami)
+host-type := $(shell arch)
+MAKE := ${MAKE} host-type=${host-type} whoami=${whoami}
+endif
+
+kversion = $(shell uname -r)
+universal = 0
+ifeq ($(kversion),7.9.0)
+SDK = /Developer/SDKs/MacOSX10.3.9.sdk
+else
+universal = 1
+SDK = /Developer/SDKs/MacOSX10.4u.sdk
+endif
+
+SRCS_LIBDRQUEUE := $(wildcard libdrqueue/*.c)
+HDRS_LIBDRQUEUE := $(wildcard libdrqueue/*.h)
+OBJS_LIBDRQUEUE := $(patsubst %.c,%.o,$(SRCS_LIBDRQUEUE))
 
 ifeq ($(origin INSTROOT),undefined)
 INSTROOT = /usr/local/drqueue
+$(warning Using default installation directory $(INSTROOT))
 endif
 
-ifeq ($(origin INSTUID),undefined)
-INSTUID = drqueue
-endif
+INSTUID ?= drqueue
+INSTGID ?= drqueue 
 
-ifeq ($(origin INSTGID),undefined)
-INSTGID = drqueue 
-endif
+DOTNETPATH ?= C:/WINDOWS/Microsoft.NET/Framework/v1.1.4322
+NSISPATH ?= C:/Program\ Files/NSIS
 
-ifeq ($(origin DOTNETPATH),undefined)
-DOTNETPATH = C:/WINDOWS/Microsoft.NET/Framework/v1.1.4322
-endif
-
-ifeq ($(origin NSISPATH),undefined)
-NSISPATH = C:/Program\ Files/NSIS
-endif
 
 #Figure out OS-specific Configuration parameters
 ifeq ($(origin systype),undefined)
-systype = $(shell bash -c "source ./bin/shlib; get_env_kernel")
-machinetype = $(shell bash -c "source ./bin/shlib; get_env_machine")
+systype := $(shell bash -c "source ./bin/shlib; get_env_kernel")
+machinetype := $(shell bash -c "source ./bin/shlib; get_env_machine")
 endif
 
-CFLAGS += -g -O2 -Wall
-CPPFLAGS += -D_GNU_SOURCE -DCOMM_REPORT -I. -Ilibdrqueue 
-CXXFLAGS += $(CFLAGS) -D__CPLUSPLUS 
+CPPFLAGS += -D_NO_COMPUTER_SEMAPHORES -D_NO_COMPUTER_POOL_SEMAPHORES -D_GNU_SOURCE -DCOMM_REPORT -I. -Ilibdrqueue
+CFLAGS ?= -g -O3 -Wall 
+CXXFLAGS += $(CFLAGS) $(CPPFLAGS) -D__CPLUSPLUS 
 
 ifeq ($(systype),Linux)
+ CPPFLAGS += -D__LINUX
+ ifeq ($(machinetype),i686)
+  ARCHFLAGS += -march=i686 -m32
+ else
+  ifeq ($(machinetype),x86_64)
+   CHOST ?= x86_64-pc-linux-gnu
+   ARCHFLAGS += -march=x86-64 -m64 -pipe
+  endif
+ endif
+else
+ifeq ($(systype),GNU__kFreeBSD)
+ CPPFLAGS += -D__LINUX
+ MAKE = make
+else
+ifeq ($(systype),GNU__kFreeBSD)
  CPPFLAGS += -D__LINUX
  MAKE = make
 else
  ifeq ($(systype),IRIX)
   CPPFLAGS += -D__IRIX
-  MAKE = /usr/freeware/bin/gmake
+#  MAKE = /usr/freeware/bin/gmake
  else
   ifeq ($(systype),Darwin)
+   USE_LIBTOOL = 1
    CPPFLAGS += -D__OSX
-   MAKE = make
+   ifneq ($(origin SDK),undefined)
+      MAC_CFLAGS +=-isysroot ${SDK}
+      MAC_LDFLAGS +=-Wl,-syslibroot,${SDK}
+   endif 
+   ifeq ($(universal),1)
+     CFLAGS += $(MAC_CFLAGS)
+     LDFLAGS += $(MAC_LDFLAGS)
+     ARCHFLAGS += -arch ppc -arch i386
+   else 
+     ifeq ($(machinetype),Power_Macintosh)
+      ARCHFLAGS += -arch ppc
+     else
+      ARCHFLAGS += -arch i386
+     endif
+   endif
+   CFLAGS += $(ARCHFLAGS)
+   LDFLAGS += $(ARCHFLAGS)
+#   MAKE = make
   else 
    ifeq ($(systype),FreeBSD)
-    CPPFLAGS = -D__FREEBSD
+    CPPFLAGS += -D__FREEBSD
     MAKE = gmake
    else
     ifeq ($(systype),CYGWIN_NT-5.1)
-     CPPFLAGS = -D__CYGWIN
-     MAKE = make
+     CPPFLAGS += -D__CYGWIN
      UIFLAGS += -e _mainCRTStartup -mwindows contrib/windows/Resources/drqueue.res 
     else	
      $(error Cannot make DrQueue -- systype "$(systype)" is unknown)
     endif
    endif
   endif
+ endif
+ endif
  endif
 endif
 
@@ -68,21 +111,34 @@ ifneq ($(origin LIBWRAP),undefined)
 endif
 
 #abstract make targets
-.PHONY: default all install miniinstall irix_install linux_install doc tags clean testing_env drqman
+.PHONY: default all install miniinstall irix_install linux_install doc tags clean testing_env python.build python.install drqman
 
 BASE_C_TOOLS = slave master requeue jobfinfo blockhost ctask cjob jobinfo compinfo
 BASE_CXX_TOOLS = sendjob
+BASE_C_GUI = drqman
+PYTHON_MODULE = python
 
-all: base drqman/drqman
+all: base
 
 drqman: drqman/drqman
 
 base: $(BASE_C_TOOLS) $(BASE_CXX_TOOLS)
 
+gui: $(BASE_GUI)
+
+python.clean:
+	cd python; python setup.py clean --all
+
+python.build: python/drqueue.i $(SRCS_LIBDRQUEUE)
+	cd python; python setup.py build_ext; python setup.py build
+
+python.install: python.build
+	cd python; python setup.py install
+
 install: miniinstall $(systype)_install 
 
 drqman/drqman: libdrqueue.a
-	$(MAKE) -C drqman
+	cd drqman && $(MAKE)
 
 testing_env:
 	mkdir tmp logs db
@@ -103,6 +159,12 @@ IRIX_install:
 	chown -R $(INSTUID):$(INSTGID) $(INSTROOT)/bin/*
 	chown $(INSTUID):$(INSTGID) $(INSTROOT)/contrib/*
 
+# Same as Linux since the userspace is the same
+GNU__kFreeBSD_install: Linux_install
+
+# Same as Linux since the userspace is the same
+GNU__kFreeBSD_install: Linux_install
+
 Linux_install:
 	install -d -m 0777 $(INSTROOT)/tmp
 	install -d -m 0777 $(INSTROOT)/logs
@@ -117,6 +179,8 @@ Linux_install:
 	chmod 0755 $(INSTROOT)/contrib/* || exit 0
 	chown -R $(INSTUID):$(INSTGID) $(INSTROOT)/bin/*
 	chown $(INSTUID):$(INSTGID) $(INSTROOT)/contrib/*
+	install -d -m 0755 $(DRQMAN_INSTROOT)/usr/bin
+	cp -r ./drqman/drqman $(DRQMAN_INSTROOT)/usr/bin || exit 0
 
 CYGWIN_NT-5.1_install:
 	install -d -m 0777 $(INSTROOT)/tmp
@@ -158,6 +222,8 @@ FreeBSD_install:
 	chmod 0755 $(INSTROOT)/contrib/* || exit 0
 	chown -R $(INSTUID):$(INSTGID) $(INSTROOT)/bin/*
 	chown $(INSTUID):$(INSTGID) $(INSTROOT)/contrib/*
+	install -d -m 0755 $(DRQMAN_INSTROOT)/usr/bin
+	cp -r ./drqman/drqman $(DRQMAN_INSTROOT)/usr/bin || exit 0
 
 Darwin_install:
 	install -d -m 0777 $(INSTROOT)/tmp
@@ -223,15 +289,19 @@ tags:
 	etags *.[ch] libdrqueue/*.[ch] drqman/*.[ch]
 
 clean:
-	rm -fR *.o *.os *.exe *~ libdrqueue.a $(BASE_C_TOOLS) $(BASE_CXX_TOOLS) TAGS tmp/* logs/* db/* contrib/windows/*.exe bin/*.$(systype).$(machinetype) $(OBJS_LIBDRQUEUE)
+	rm -fR *.o *.os *.exe *~ libdrqueue.a $(BASE_C_TOOLS) $(BASE_CXX_TOOLS) TAGS tmp/* logs/* db/* contrib/windows/*.exe \
+        bin/*.$(systype).$(machinetype) $(OBJS_LIBDRQUEUE)
+	rm -fR libdrqueue/*~
+	rm -f libdrqueue/*.os
 	$(MAKE) -C drqman clean
 
 #actual object make targets
-libdrqueue.h: $(OBJS_LIBDRQUEUE:.o=.h)
-libdrqueue.a: $(OBJS_LIBDRQUEUE) libdrqueue.h
-	ar r $@ $(OBJS_LIBDRQUEUE)
-	ranlib $@
-
+libdrqueue.a: $(OBJS_LIBDRQUEUE) $(HDRS_LIBDRQUEUE)
+	if [ $(USE_LIBTOOL) ]; then libtool -static -o $@ $(OBJS_LIBDRQUEUE); else \
+    ar rc $@ $(OBJS_LIBDRQUEUE); \
+    ranlib $@; \
+  fi
+	
 ifeq ($(systype),CYGWIN_NT-5.1)
 contrib/windows/Resources/drqueue.res: contrib/windows/Resources/drqueue.rc
 	$(MAKE) -C contrib/windows/Resources
@@ -239,7 +309,7 @@ endif
 
 %.c: %.h
 %.cpp: %.h
-%.o: %.c %.h constants.h
+%.o: %.c %.h
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
 
 slave: slave.o libdrqueue.a
@@ -262,7 +332,7 @@ compinfo: compinfo.o libdrqueue.a
 	$(CC) $(LDFLAGS) $^ -o $@
 
 sendjob.o: sendjob.cpp sendjob.h
-	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) $<
+	$(CXX) -c $(CXXFLAGS) $<
 sendjob: sendjob.o libdrqueue.a
 	$(CXX) $^ $(LDFLAGS) -o $@ 
 

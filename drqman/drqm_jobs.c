@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004,2005 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -26,7 +28,6 @@
 #include <pwd.h>
 #include <sys/types.h>
 #include <gtk/gtk.h>
-
 
 #include "libdrqueue.h"
 #include "drqman.h"
@@ -57,7 +58,6 @@
 
 /* Static functions declaration */
 static GtkWidget *CreateJobsList(struct drqm_jobs_info *info);
-//static GtkWidget *CreateClist (GtkWidget *window);
 static GtkWidget *CreateClist ();
 static GtkWidget *CreateButtonRefresh (struct drqm_jobs_info *info);
 static void PressedButtonRefresh (GtkWidget *b, struct drqm_jobs_info *info);
@@ -106,14 +106,16 @@ static void djd_bok_pressed (GtkWidget *button, struct drqm_jobs_info *info);
 static void job_hstop_cb (GtkWidget *button, struct drqm_jobs_info *info);
 static void job_rerun_cb (GtkWidget *button, struct drqm_jobs_info *info);
 
-void free_job_list(GtkWidget *joblist,gpointer userdata) {
+void
+free_job_list(GtkWidget *joblist,gpointer userdata) {
   struct drqm_jobs_info *info = userdata;
-
   int i;
-
   for (i = 0; i < info->njobs; i++) {
-    job_init (&info->jobs[i]);
+    job_delete (&info->jobs[i]);
   }
+  free (info->jobs);
+  info->jobs=NULL;
+  info->njobs=0;
 }
 
 void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info) {
@@ -244,9 +246,9 @@ void drqm_update_joblist (struct drqm_jobs_info *info) {
   char **buff;
   int ncols = 11;
 
-  buff = (char**) g_malloc((ncols + 1) * sizeof(char*));
+  buff = (char**) malloc((ncols + 1) * sizeof(char*));
   for (i=0;i<ncols;i++)
-    buff[i] = (char*) g_malloc (BUFFERLEN);
+    buff[i] = (char*) malloc (BUFFERLEN);
   buff[ncols] = NULL;
 
   gtk_clist_freeze(GTK_CLIST(info->clist));
@@ -273,8 +275,8 @@ void drqm_update_joblist (struct drqm_jobs_info *info) {
   gtk_clist_thaw(GTK_CLIST(info->clist));
 
   for(i=0;i<ncols;i++)
-    g_free (buff[i]);
-  g_free(buff);
+    free (buff[i]);
+  free(buff);
 }
 
 static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *info) {
@@ -418,6 +420,8 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info) {
   snprintf(buf,BUFFERLEN-1,"%i",info->jobs[info->row].frame_end);
   gtk_entry_set_text(GTK_ENTRY(info->dnj.eef),buf);
   snprintf(buf,BUFFERLEN-1,"%i",info->jobs[info->row].frame_step);
+  gtk_entry_set_text(GTK_ENTRY(info->dnj.estf),buf);
+  snprintf(buf,BUFFERLEN-1,"%hhu",info->jobs[info->row].frame_pad);
   gtk_entry_set_text(GTK_ENTRY(info->dnj.estf),buf);
 
   /* Priority */
@@ -650,7 +654,7 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info) {
 }
 
 static void dnj_destroy (GtkWidget *dialog, struct drqm_jobs_info *info) {
-  envvars_empty (&info->dnj.envvars.envvars);
+  //envvars_empty (&info->dnj.envvars.envvars);
 }
 
 static GtkWidget *NewJobDialog (struct drqm_jobs_info *info) {
@@ -670,7 +674,7 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info) {
 
   tooltips = TooltipsNew ();
 
-  envvars_init (&info->dnj.envvars.envvars);
+  envvars_free (&info->dnj.envvars.envvars);
 
   /* Dialog */
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -978,23 +982,39 @@ static int dnj_submit (struct drqmj_dnji *info) {
 
   job_init(&job);
   strncpy(job.name,gtk_entry_get_text(GTK_ENTRY(info->ename)),MAXNAMELEN-1);
-  if (strlen(job.name) == 0)
+  if (strlen(job.name) == 0) {
+    fprintf (stderr,"Job needs a name\n");
     return 0;
+  }
   strncpy(job.cmd,gtk_entry_get_text(GTK_ENTRY(info->ecmd)),MAXCMDLEN-1);
-  if (strlen(job.cmd) == 0)
+  if (strlen(job.cmd) == 0) {
+    fprintf (stderr,"Job needs a command.\n");
     return 0;
-  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->esf)),"%u",&job.frame_start) != 1)
+  }
+  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->esf)),"%u",&job.frame_start) != 1) {
+    fprintf (stderr,"start frame could not be read\n");
     return 0;
-  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->eef)),"%u",&job.frame_end) != 1)
+  }
+  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->eef)),"%u",&job.frame_end) != 1) {
+    fprintf (stderr,"end frame could not be read\n");
     return 0;
-  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->estf)),"%u",&job.frame_step) != 1)
+  }
+  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->estf)),"%u",&job.frame_step) != 1) {
+    fprintf (stderr,"step frame could not be read\n");
     return 0;
-  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->ebs)),"%u",&job.block_size) != 1)
+  }
+  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->ebs)),"%u",&job.block_size) != 1) {
+    fprintf (stderr,"block size could not be read\n");
     return 0;
-  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->efp)),"%c",&job.frame_pad) != 1)
+  }
+  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->efp)),"%hhu",&job.frame_pad) != 1) { 
+    fprintf (stderr,"frame pad could not be read\n");
     return 0;
-  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->epri)),"%u",&job.priority) != 1)
+  }
+  if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->epri)),"%u",&job.priority) != 1) {
+    fprintf (stderr,"priority could not be read\n");
     return 0;
+  }
 
   if (!(pw = getpwuid(geteuid()))) {
     strncpy (job.owner,"ERROR",MAXNAMELEN-1);
@@ -1003,7 +1023,7 @@ static int dnj_submit (struct drqmj_dnji *info) {
   }
   job.owner[MAXNAMELEN-1] = 0;
   job.status = JOBSTATUS_WAITING;
-  job.frame_info = NULL;
+  job.frame_info.ptr = NULL;
   job.autoRequeue = 1;
 
   /* KOJ */
@@ -1036,22 +1056,34 @@ static int dnj_submit (struct drqmj_dnji *info) {
     /* Custom crop */
     job.koji.bmrt.custom_crop = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbcrop)->active;
     if (job.koji.bmrt.custom_crop) {
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropxmin)),"%u",&job.koji.bmrt.xmin) != 1)
+      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropxmin)),"%u",&job.koji.bmrt.xmin) != 1) {
+        fprintf (stderr,"x min could not be read\n");
         return 0;
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropxmax)),"%u",&job.koji.bmrt.xmax) != 1)
+      }
+      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropxmax)),"%u",&job.koji.bmrt.xmax) != 1) {
+        fprintf (stderr,"x max could not be read\n");
         return 0;
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropymin)),"%u",&job.koji.bmrt.ymin) != 1)
+      }
+      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropymin)),"%u",&job.koji.bmrt.ymin) != 1) {
+        fprintf (stderr,"y min could not be read\n");
         return 0;
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropymax)),"%u",&job.koji.bmrt.ymax) != 1)
+      }
+      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropymax)),"%u",&job.koji.bmrt.ymax) != 1) {
+        fprintf (stderr,"y max could not be read\n");
         return 0;
+      }
     }
     /* Custom samples */
     job.koji.bmrt.custom_samples = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbsamples)->active;
     if (job.koji.bmrt.custom_samples) {
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.exsamples)),"%u",&job.koji.bmrt.xsamples) != 1)
+      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.exsamples)),"%u",&job.koji.bmrt.xsamples) != 1) {
+        fprintf (stderr,"x samples could not be read\n");
         return 0;
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eysamples)),"%u",&job.koji.bmrt.ysamples) != 1)
+      }
+      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eysamples)),"%u",&job.koji.bmrt.ysamples) != 1) {
+        fprintf (stderr,"y samples could not be read\n");
         return 0;
+      }
     }
     /* Stats, verbose, beep */
     job.koji.bmrt.disp_stats = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbstats)->active;
@@ -1060,14 +1092,18 @@ static int dnj_submit (struct drqmj_dnji *info) {
     /* Custom radiosity */
     job.koji.bmrt.custom_radiosity = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbradiositysamples)->active;
     if (job.koji.bmrt.custom_radiosity) {
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eradiositysamples)),"%u",&job.koji.bmrt.radiosity_samples) != 1)
+      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eradiositysamples)),"%u",&job.koji.bmrt.radiosity_samples) != 1) {
+        fprintf (stderr,"radiosity_samples could not be read\n");
         return 0;
+      }
     }
     /* Custom ray samples */
     job.koji.bmrt.custom_raysamples = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbraysamples)->active;
     if (job.koji.bmrt.custom_raysamples) {
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eraysamples)),"%u",&job.koji.bmrt.raysamples) != 1)
+      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eraysamples)),"%u",&job.koji.bmrt.raysamples) != 1) {
+        fprintf (stderr,"ray samples could not be read\n");
         return 0;
+      }
     }
     break;
   case KOJ_PIXIE:
@@ -1173,10 +1209,13 @@ static int dnj_submit (struct drqmj_dnji *info) {
   }
 
   // Environment variables
+  envvars_init (&job.envvars);
   job.envvars = info->envvars.envvars;
 
-  if (!register_job (&job))
+  if (!register_job (&job)) {
+    fprintf (stderr,"Job could not be registered: %s\n",drerrno_str());
     return 0;
+  }
 
   // job.id is set on the call to register_job
   if (info->submitstopped) {
@@ -1272,10 +1311,11 @@ static void djd_bok_pressed (GtkWidget *button, struct drqm_jobs_info *info) {
     GList *sel;
 
     if (!(sel = GTK_CLIST(info->clist)->selection)) {
+      // FIXME: needs a message !! (or remove the row, but not the id on the master !!)
       drqm_request_job_delete (info->jobs[info->row].id);
     } else {
       for (;sel;sel = sel->next) {
-        struct job *job = (struct job *)gtk_clist_get_row_data(GTK_CLIST(info->clist),(uint32_t)sel->data);
+        struct job *job = (struct job *)gtk_clist_get_row_data(GTK_CLIST(info->clist),GPOINTER_TO_INT(sel->data));
         drqm_request_job_delete (job->id);
       }
     }
@@ -1657,7 +1697,7 @@ void dnj_envvars_delete_accept (GtkWidget *bpressed, gpointer userdata) {
     gchar *name;
     gtk_tree_model_get (model, &iter, DNJ_ENVVARS_COL_NAME, &name, -1);
     envvars_variable_delete(&info->envvars,(char *)name);
-    g_free(name);
+    free(name);
   }
 }
 
@@ -1936,12 +1976,15 @@ void dnj_envvars_list (GtkWidget *bclicked, struct drqmj_envvars *info) {
 
   gtk_list_store_clear (GTK_LIST_STORE(store));
   if (info->envvars.nvariables) {
-    envvars_attach (&info->envvars);
+    if (!envvars_attach (&info->envvars)) {
+      fprintf(stderr,"dnj_envvars_list() it's been not possible to attach environment variables. (%s)\n",drerrno_str());
+      return;
+    }
     for (i = 0; i < info->envvars.nvariables; i++) {
       gtk_list_store_append (store,&iter);
       gtk_list_store_set (store, &iter,
-                          DNJ_ENVVARS_COL_NAME, info->envvars.variables[i].name,
-                          DNJ_ENVVARS_COL_VALUE, info->envvars.variables[i].value,
+                          DNJ_ENVVARS_COL_NAME, info->envvars.variables.ptr[i].name,
+                          DNJ_ENVVARS_COL_VALUE, info->envvars.variables.ptr[i].value,
                           -1);
     }
     envvars_detach (&info->envvars);

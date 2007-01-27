@@ -27,6 +27,9 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#include <sys/types.h>
+
+#pragma pack(push,1)
 
 struct list_item;
 struct list_item {
@@ -38,6 +41,8 @@ struct list {
   struct list_item *current;
   uint32_t nitems;
 };
+
+#pragma pack(pop)
 
 struct list *list_new (void *data);
 struct list *list_add (struct list *list, void *data);

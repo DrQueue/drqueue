@@ -31,7 +31,7 @@ listed if you want to do it your way.
 
 scriptability
 -------------
-DrQueue if fully scriptable, through it's API one can code complex
+DrQueue if fully scriptable, through its API one can code complex
 distributed systems but out of the box is easily managed by advanced end
 users.
 

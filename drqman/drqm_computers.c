@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -23,6 +25,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <sys/types.h>
+#include <stdint.h>
 
 #include "drqman.h"
 #include "drqm_request.h"
@@ -53,15 +57,15 @@ static GtkWidget *CreateMenuTasks (struct drqm_computers_info *info);
 static gint PopupMenuTasks (GtkWidget *clist, GdkEvent *event, struct drqm_computers_info *info);
 // enabled
 static void cdd_limits_enabled_bcp (GtkWidget *button, struct drqm_computers_info *info);
-/* nmaxcpus */
+// nmaxcpus
 static void cdd_limits_nmaxcpus_bcp (GtkWidget *button, struct drqm_computers_info *info);
 static GtkWidget *nmc_dialog (struct drqm_computers_info *info);
 static void nmcd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info);
-/* maxfreeloadcpu */
+// maxfreeloadcpu
 static void cdd_limits_maxfreeloadcpu_bcp (GtkWidget *button, struct drqm_computers_info *info);
 static GtkWidget *mflc_dialog (struct drqm_computers_info *info);
 static void mflcd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info);
-/* autoenable */
+// autoenable
 static void cdd_limits_autoenable_bcp (GtkWidget *button, struct drqm_computers_info *info);
 static GtkWidget *autoenable_change_dialog (struct drqm_computers_info *info);
 static void aecd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info);
@@ -70,9 +74,12 @@ static void cdd_limits_pool_bcp (GtkWidget *bclicked, struct drqm_computers_info
 static void cdd_limits_pool_refresh_pool_list (GtkWidget *bclicked, struct drqm_computers_info *info);
 static void cdd_limits_pool_add_clicked (GtkWidget *bclicked, struct drqm_computers_info *info);
 static void cdd_limits_pool_remove_clicked (GtkWidget *bclicked, struct drqm_computers_info *info);
-/* kill task */
+// kill task
 static void KillTask (GtkWidget *menu_item, struct drqm_computers_info *info);
 static void dtk_bok_pressed (GtkWidget *button,struct drqm_computers_info *info);
+
+// init
+static void drqm_computer_list_init (struct drqm_computers_info *cinfo);
 
 
 void CreateComputersPage (GtkWidget *notebook,struct info_drqm *info) {
@@ -119,14 +126,23 @@ void CreateComputersPage (GtkWidget *notebook,struct info_drqm *info) {
   autorefreshWidgets = CreateAutoRefreshWidgets (&info->idc.ari);
   gtk_box_pack_start(GTK_BOX(hbox2),autorefreshWidgets,FALSE,FALSE,2);
 
-  /* Append the page */
+  // Init computer lists
+  drqm_computer_list_init(&info->idc);
+  
+  // Append the page
   gtk_notebook_append_page (GTK_NOTEBOOK(notebook), container, hbox);
 
-  /* Put the computers on the list */
+  // Put the computers on the list
   drqm_request_computerlist (&info->idc);
   drqm_update_computerlist (&info->idc);
 
   gtk_widget_show_all(container);
+}
+
+static void
+drqm_computer_list_init (struct drqm_computers_info *cinfo) {
+  cinfo->ncomputers = 0;
+  cinfo->computers = NULL;
 }
 
 static gboolean AutoRefreshUpdate (gpointer info) {
@@ -155,7 +171,6 @@ static GtkWidget *CreateComputersList(struct drqm_computers_info *info) {
   return (window);
 }
 
-//static GtkWidget *CreateClist (GtkWidget *window)
 static GtkWidget *CreateClist () {
   gchar *titles[] = { "ID","Enabled","Running","Name","OS","CPUs","Load Avg", "Pools" };
   GtkWidget *clist;
@@ -203,9 +218,9 @@ void drqm_update_computerlist (struct drqm_computers_info *info) {
   char **buff;
   int ncols = 8;
 
-  buff = (char**) g_malloc((ncols+1) * sizeof(char*));
+  buff = (char**) malloc((ncols+1) * sizeof(char*));
   for (i=0;i<ncols;i++)
-    buff[i] = (char*) g_malloc (BUFFERLEN);
+    buff[i] = (char*) malloc (BUFFERLEN);
   buff[ncols] = NULL;
 
   gtk_clist_freeze(GTK_CLIST(info->clist));
@@ -228,33 +243,34 @@ void drqm_update_computerlist (struct drqm_computers_info *info) {
     if (info->computers[i].limits.npools) {
       struct pool *pool;
       char *tmp = (char *)malloc(BUFFERLEN);
-      if ((pool = computer_pool_attach_shared_memory(info->computers[i].limits.poolshmid)) != (void*)-1) {
+      if ((pool = computer_pool_attach_shared_memory(&info->computers[i].limits)) != (void*)-1) {
         snprintf(buff[7],BUFFERLEN,"%s",pool[0].name);
         for (j=1;j<info->computers[i].limits.npools;j++) {
           snprintf(tmp,BUFFERLEN,"%s,%s",buff[7],pool[j].name);
           strncpy(buff[7],tmp,BUFFERLEN-1);
         }
-        computer_pool_detach_shared_memory(pool);
+        computer_pool_detach_shared_memory(&info->computers[i].limits);
       } else {
-        g_free(buff[7]);
+        free(buff[7]);
         buff[7] = g_strdup("Cannot attach shared memory");
       }
     } else {
-      g_free(buff[7]);
-      buff[7] = g_strdup("NO POOLS !!");
+      free(buff[7]);
+      buff[7] = strdup("NO POOLS !!");
     }
     gtk_clist_append(GTK_CLIST(info->clist),buff);
     gtk_clist_set_row_data (GTK_CLIST(info->clist),i,(gpointer)info->computers[i].hwinfo.name);
 
     // We don't need the pool any more
-    computer_pool_free(&info->computers[i].limits);
+    // ----TESTING----
+    //computer_pool_free(&info->computers[i].limits);
   }
   gtk_clist_thaw(GTK_CLIST(info->clist));
 
 
   for(i=0;i<ncols;i++)
-    g_free (buff[i]);
-  g_free (buff);
+    free (buff[i]);
+  free (buff);
 
   gtk_clist_sort (GTK_CLIST(info->clist));
 
@@ -577,7 +593,8 @@ GtkWidget *CreateTasksClist (void) {
 
 }
 
-int cdd_update (GtkWidget *w, struct drqm_computers_info *info) {
+int
+cdd_update (GtkWidget *w, struct drqm_computers_info *info) {
   /* This function depends on info->icomp and info->row properly set */
   /* info->icomp and info->row are related, the first is the id of the computer in */
   /* the master, the second is the index in the local structure of computer */
@@ -645,15 +662,14 @@ int cdd_update (GtkWidget *w, struct drqm_computers_info *info) {
 
   if (info->computers[info->row].limits.npools) {
     struct pool *pool;
-    if ((pool = computer_pool_attach_shared_memory(info->computers[info->row].limits.poolshmid)) != (void*)-1) {
+    if ((pool = computer_pool_attach_shared_memory(&info->computers[info->row].limits)) != (void*)-1) {
       snprintf (msg,BUFFERLEN,"%s",pool[0].name);
       for (i=1;i<info->computers[info->row].limits.npools;i++) {
         snprintf (msg2,BUFFERLEN,"%s,%s",msg,pool[i].name);
         strncpy (msg,msg2,BUFFERLEN-1);
       }
       gtk_label_set_text (GTK_LABEL(info->cdd.limits.lpools),msg);
-      computer_pool_detach_shared_memory(pool);
-      computer_pool_free(&info->computers[info->row].limits);
+      computer_pool_detach_shared_memory(&info->computers[info->row].limits);
     } else {
       gtk_label_set_text (GTK_LABEL(info->cdd.limits.lpools),"WARNING: Could not attach pool shared memory");
     }
@@ -662,15 +678,23 @@ int cdd_update (GtkWidget *w, struct drqm_computers_info *info) {
   }
 
   /* Tasks clist */
-  buff = (char**) g_malloc((ncols + 1) * sizeof(char*));
+  buff = (char**) malloc((ncols + 1) * sizeof(char*));
   for (i=0;i<ncols;i++)
-    buff[i] = (char*) g_malloc (BUFFERLEN);
+    buff[i] = (char*) malloc (BUFFERLEN);
   buff[ncols] = NULL;
 
   gtk_clist_freeze(GTK_CLIST(info->cdd.clist));
+  for (i=0; i < GTK_CLIST(info->cdd.clist)->rows; i++) {
+    void *ptr;
+    ptr = gtk_clist_get_row_data (GTK_CLIST(info->cdd.clist),i);
+    if (ptr != NULL) {
+      free (ptr);
+    }
+  }
   gtk_clist_clear(GTK_CLIST(info->cdd.clist));
   row = 0;
   for (i=0; i < MAXTASKS; i++) {
+    uint16_t *itaskp;
     if (info->computers[info->row].status.task[i].used) {
       snprintf (buff[0],BUFFERLEN-1,"%i",info->computers[info->row].status.task[i].itask);
       snprintf (buff[1],BUFFERLEN-1,"%s",
@@ -685,8 +709,20 @@ int cdd_update (GtkWidget *w, struct drqm_computers_info *info) {
       gtk_clist_append(GTK_CLIST(info->cdd.clist),buff);
 
       /* Row data */
-      gtk_clist_set_row_data (GTK_CLIST(info->cdd.clist),row,
-                              (gpointer)(uint32_t)info->computers[info->row].status.task[i].itask);
+      itaskp = NULL;
+      itaskp = gtk_clist_get_row_data(GTK_CLIST(info->cdd.clist),row);
+      if (!itaskp) {
+	log_auto (L_DEBUG,"cdd_update() : computer row returned NULL when getting it's data. Allocating memory. (row = %i)",
+		  row);
+	itaskp = (uint16_t*) malloc (sizeof(*itaskp));
+	if (!itaskp) {
+	  perror ("ERROR: no memory for itask pointer");
+	  // CHECK: does it free shared memory on exit ?
+	  exit(1);
+	}
+      }
+      *itaskp = info->computers[info->row].status.task[i].itask;
+      gtk_clist_set_row_data (GTK_CLIST(info->cdd.clist),row,itaskp);
       row++;
     }
   }
@@ -694,7 +730,8 @@ int cdd_update (GtkWidget *w, struct drqm_computers_info *info) {
   gtk_clist_thaw(GTK_CLIST(info->cdd.clist));
 
   for(i=0;i<ncols;i++)
-    g_free (buff[i]);
+    free (buff[i]);
+  free(buff);
 
   return 1;
 }
@@ -888,16 +925,20 @@ static void dtk_bok_pressed (GtkWidget *button,struct drqm_computers_info *info)
   /* Kill the tasks */
   /* Requeues the finished frames, sets them as waiting again */
   GList *sel;
-  uint16_t itask;
+  uint16_t *itaskp;
 
   if (!(sel = GTK_CLIST(info->cdd.clist)->selection)) {
     return;
   }
 
   for (;sel;sel = sel->next) {
-    itask = (uint16_t)(uint32_t) gtk_clist_get_row_data(GTK_CLIST(info->cdd.clist),(gint)sel->data);
-    drqm_request_slave_task_kill (info->computers[info->row].hwinfo.name,itask);
-    /*   printf ("Killing task: %i on computer: %s\n",itask,info->computers[info->row].hwinfo.name); */
+    itaskp = (uint16_t*)gtk_clist_get_row_data(GTK_CLIST(info->cdd.clist),GPOINTER_TO_INT(sel->data));
+    if (itaskp != NULL) {
+      drqm_request_slave_task_kill (info->computers[info->row].hwinfo.name,*itaskp);
+      /*   printf ("Killing task: %i on computer: %s\n",itask,info->computers[info->row].hwinfo.name); */
+    } else {
+      log_auto (L_ERROR,"dtk_bok_pressed() : itaskp stored on clist data == NULL");
+    }
   }
 }
 
@@ -1052,15 +1093,16 @@ void cdd_limits_pool_refresh_pool_list (GtkWidget *bclicked, struct drqm_compute
   }
   if (info->computers[info->row].limits.npools) {
     struct pool *pool;
-    pool = computer_pool_attach_shared_memory(info->computers[info->row].limits.poolshmid);
-    for (i=0;i<info->computers[info->row].limits.npools;i++) {
-      gtk_list_store_append (store,&iter);
-      gtk_list_store_set (store, &iter,
-                          CDD_POOL_COL_NAME,pool[i].name,
-                          -1);
+    pool = computer_pool_attach_shared_memory(&info->computers[info->row].limits);
+    if (pool != (struct pool *)-1) {
+      for (i=0;i<info->computers[info->row].limits.npools;i++) {
+        gtk_list_store_append (store,&iter);
+        gtk_list_store_set (store, &iter,
+                            CDD_POOL_COL_NAME,pool[i].name,
+                            -1);
+      }
+      computer_pool_detach_shared_memory(&info->computers[info->row].limits);
     }
-    computer_pool_detach_shared_memory(pool);
-    computer_pool_free(&info->computers[info->row].limits);
   }
 }
 
@@ -1191,7 +1233,7 @@ static void EnableComputers (GtkWidget *button,struct drqm_computers_info *info)
   }
 
   for (;sel;sel = sel->next) {
-    name = (char*) gtk_clist_get_row_data(GTK_CLIST(info->clist),(gint)sel->data);
+    name = (char*) gtk_clist_get_row_data(GTK_CLIST(info->clist),GPOINTER_TO_INT(sel->data));
     drqm_request_slave_limits_enabled_set(name,1);
   }
 
@@ -1207,7 +1249,7 @@ static void DisableComputers (GtkWidget *button,struct drqm_computers_info *info
   }
 
   for (;sel;sel = sel->next) {
-    name = (char*) gtk_clist_get_row_data(GTK_CLIST(info->clist),(gint)sel->data);
+    name = (char*) gtk_clist_get_row_data(GTK_CLIST(info->clist),GPOINTER_TO_INT(sel->data));
     drqm_request_slave_limits_enabled_set(name,0);
   }
 
@@ -1407,11 +1449,15 @@ int computers_cmp_loadavg (GtkCList *clist, gconstpointer ptr1, gconstpointer pt
 
 int computers_cmp_pools (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   struct computer *ca,*cb;
+  struct computer_limits *cla,*clb;
 
   int diff;
 
   ca = (struct computer *) ((GtkCListRow*)ptr1)->data;
   cb = (struct computer *) ((GtkCListRow*)ptr2)->data;
+
+  cla = &ca->limits;
+  clb = &cb->limits;
 
   char pa[BUFFERLEN];
   char pb[BUFFERLEN];
@@ -1419,16 +1465,15 @@ int computers_cmp_pools (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2
 
   int i;
 
-  if (ca->limits.npools) {
+  if (cla->npools) {
     struct pool *pool;
-    if ((pool = computer_pool_attach_shared_memory(ca->limits.poolshmid)) != (void*)-1) {
+    if ((pool = computer_pool_attach_shared_memory(cla)) != (void*)-1) {
       snprintf (pa,BUFFERLEN,"%s",pool[0].name);
-      for (i=1;i<ca->limits.npools;i++) {
+      for (i=1;i<cla->npools;i++) {
         snprintf (msg2,BUFFERLEN,"%s,%s",pa,pool[i].name);
         strncpy (pa,msg2,BUFFERLEN-1);
       }
-      computer_pool_detach_shared_memory(pool);
-      computer_pool_free(&ca->limits);
+      computer_pool_detach_shared_memory(cla);
     } else {
       snprintf (pa,BUFFERLEN,"WARNING: Could not attach pool shared memory");
     }
@@ -1436,16 +1481,15 @@ int computers_cmp_pools (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2
     snprintf (pa,BUFFERLEN,"WARNING: This computer doesn't belong to any pool");
   }
 
-  if (cb->limits.npools) {
+  if (clb->npools) {
     struct pool *pool;
-    if ((pool = computer_pool_attach_shared_memory(ca->limits.poolshmid)) != (void*)-1) {
+    if ((pool = computer_pool_attach_shared_memory(clb)) != (void*)-1) {
       snprintf (pb,BUFFERLEN,"%s",pool[0].name);
       for (i=1;i<cb->limits.npools;i++) {
         snprintf (msg2,BUFFERLEN,"%s,%s",pb,pool[i].name);
         strncpy (pb,msg2,BUFFERLEN-1);
       }
-      computer_pool_detach_shared_memory(pool);
-      computer_pool_free(&cb->limits);
+      computer_pool_detach_shared_memory(clb);
     } else {
       snprintf (pb,BUFFERLEN,"WARNING: Could not attach pool shared memory");
     }

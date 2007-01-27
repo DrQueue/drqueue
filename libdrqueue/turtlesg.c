@@ -16,7 +16,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id: /drqueue/remote/trunk/turtlesg.c 2323 2005-05-22T16:58:03.195980Z oliverhotz $
+// $Id$
 //
 
 #include <stdio.h>

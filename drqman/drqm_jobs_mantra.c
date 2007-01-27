@@ -17,7 +17,7 @@
 // USA
 //
 //
-// $Id: drqm_jobs_aqsis.c 1330 2005-07-05 03:50:01Z jorge $
+// $Id$
 //
 
 #include <string.h>

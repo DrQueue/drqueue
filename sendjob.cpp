@@ -240,8 +240,8 @@ int RegisterGeneralJob (char* infile, int frameStart, int frameEnd, int frameSte
   }
 
   job.status = JOBSTATUS_WAITING;
-  job.frame_info = NULL;
-  job.envvars.variables = NULL;
+  job.frame_info.ptr = NULL;
+  job.envvars.variables.ptr = NULL;
   job.envvars.nvariables = 0;
   job.envvars.evshmid = -1;
   job.flags = 0;
@@ -261,7 +261,7 @@ int RegisterGeneralJob (char* infile, int frameStart, int frameEnd, int frameSte
 
 
   // strncpy (job.koji.general.scriptDir,scriptDir,BUFFERLEN);
-  job.koji.general.scriptdir = scriptdir;
+  strncpy(job.koji.general.scriptdir,scriptdir,PATH_MAX);
   // job.koji.general.scriptDir = scriptDir;
 
   // farm properties
@@ -1192,7 +1192,7 @@ int RegisterXSIJobFromFile (std::ifstream &infile) {
 
   job.autoRequeue = 1;
   job.status = JOBSTATUS_WAITING;
-  job.frame_info = NULL;
+  job.frame_info.ptr = NULL;
 
   job.frame_start = frameStart;
   job.frame_end = frameEnd;

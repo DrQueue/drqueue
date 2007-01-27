@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -22,13 +24,17 @@
 #include <sys/types.h>
 #include <sys/sysctl.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <signal.h>
+#include <netdb.h>
 
 #define STR_ARCH_INTEL "i386"
 #define STR_ARCH_PPC "Power Macintosh"
 
 t_arch get_architecture (void);
 
-void get_hwinfo (struct computer_hwinfo *hwinfo) {
+void
+get_hwinfo (struct computer_hwinfo *hwinfo) {
   if (gethostname (hwinfo->name,MAXNAMELEN-1) == -1) {
     perror ("get_hwinfo: gethostname");
     kill(0,SIGINT);
@@ -43,7 +49,8 @@ void get_hwinfo (struct computer_hwinfo *hwinfo) {
   hwinfo->nnbits = computer_info_nnbits();
 }
 
-uint32_t get_memory (void) {
+uint32_t
+get_memory (void) {
   size_t len;
   uint64_t memory;
   int retcode;
@@ -55,10 +62,11 @@ uint32_t get_memory (void) {
   }
   memory >>= 20;
 
-  return memory;
+  return (uint32_t)memory;
 }
 
-int get_numproc (void) {
+uint16_t
+get_numproc (void) {
   size_t len;
   int ncpu;
 
@@ -66,10 +74,11 @@ int get_numproc (void) {
   //sysctlbyname ("hw.ncpu",NULL,&len,NULL,0);
   sysctlbyname ("hw.ncpu",&ncpu,&len,NULL,0);
 
-  return ncpu;
+  return (uint16_t)ncpu;
 }
 
-t_arch get_architecture (void) {
+t_arch
+get_architecture (void) {
   size_t len;
   char *buffer;
   int retcode;
@@ -87,18 +96,19 @@ t_arch get_architecture (void) {
     return ARCH_UNKNOWN;
   }
   
-  // FIXME: Do al Intel Mac return "i386" ??
+  // FIXME: Do all Intel Mac return "i386" ??
   if (strncmp(buffer,STR_ARCH_INTEL,strlen(STR_ARCH_INTEL)) == 0) {
     return ARCH_INTEL;
   } else if (strncmp(buffer,STR_ARCH_PPC,strlen(STR_ARCH_PPC)) == 0) {
-	  // FIXME: And do al PPC Mac return "Power Macintosh" ?
+    // FIXME: And do al PPC Mac return "Power Macintosh" ?
     return ARCH_PPC;
   }
 
   return ARCH_UNKNOWN;
 }
 
-t_proctype get_proctype (void) {
+t_proctype
+get_proctype (void) {
   // TODO: check values "hw.cputype" and "hw.cpusubtype"
   t_arch arch;
 
@@ -113,7 +123,8 @@ t_proctype get_proctype (void) {
   return PROCTYPE_UNKNOWN;
 }
 
-int get_procspeed (void) {
+uint32_t
+get_procspeed (void) {
   // README: found on "hw.cpufrequency"
   size_t len;
   uint64_t procspeed;
@@ -127,5 +138,5 @@ int get_procspeed (void) {
   // procspeed is returned in hertz we should return Mhz
   procspeed /= 1000000;
 
-  return procspeed;
+  return (uint32_t)procspeed;
 }

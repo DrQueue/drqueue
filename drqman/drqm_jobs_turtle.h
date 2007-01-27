@@ -16,7 +16,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-/* $Id: drqm_jobs_turtle.h 1330 2005-07-05 03:50:01Z jorge $ */
+/* $Id$ */
 
 #ifndef _DRQM_JOBS_TURTLE_H_
 #define _DRQM_JOBS_TURTLE_H_

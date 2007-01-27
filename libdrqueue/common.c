@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -19,16 +21,18 @@
 // $Id$
 //
 
+#include "common.h"
+#include "drerrno.h"
+#include "constants.h"
+#include "logger.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <string.h>
-
-#include "common.h"
-#include "drerrno.h"
-#include "constants.h"
+#include <ctype.h>
 
 int common_environment_check (void) {
   /* This function checks the environment AND the directory structure */
@@ -46,44 +50,95 @@ int common_environment_check (void) {
     return 0;
   }
 
-#ifndef __CYGWIN
-  snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_TMP"));
+  if (getenv("DRQUEUE_TMP") != NULL) {
+    snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_TMP"));
+  } else {
+    snprintf (dir_str,BUFFERLEN-1,"%s/tmp",getenv("DRQUEUE_ROOT"));
+  } 
   if (stat (dir_str,&s_stat) == -1) {
+    drerrno_system = errno;
     drerrno = DRE_NOTMPDIR;
+    log_auto (L_ERROR,"Could not find temp path '%s'. (%s)",dir_str,strerror(drerrno_system));
     return 0;
   } else {
+#ifdef __CYGWIN
+    if (!S_ISDIR(s_stat.st_mode)) {
+      drerrno = DRE_NOTMPDIR;
+      return 0;
+    }
+#else
     if ((!S_ISDIR(s_stat.st_mode)) || (!(S_IWOTH & s_stat.st_mode))) {
       drerrno = DRE_NOTMPDIR;
       return 0;
     }
-  }
 #endif
-
-  snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_DB"));
-  if (stat (dir_str,&s_stat) == -1) {
-    drerrno = DRE_NODBDIR;
-    return 0;
-  } else if ((!S_ISDIR(s_stat.st_mode)) || (!(S_IWUSR & s_stat.st_mode))) {
-    drerrno = DRE_NODBDIR;
-    return 0;
   }
 
-  snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_LOGS"));
+  if (getenv("DRQUEUE_DB") != NULL) {
+    snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_DB"));
+  } else {
+    snprintf (dir_str,BUFFERLEN-1,"%s/db",getenv("DRQUEUE_ROOT"));
+  } 
+  if (stat (dir_str,&s_stat) == -1) {
+    drerrno_system = errno;  
+    log_auto (L_ERROR,"no database directory found on '%s'. (%s)",dir_str,strerror(drerrno_system));
+    drerrno = DRE_NODBDIR;
+    return 0;
+  } else {
+#ifdef __CYGWIN
+    if (!S_ISDIR(s_stat.st_mode)) {
+      drerrno_system = errno;  
+      log_auto (L_ERROR,"no database directory found on '%s'. It's not a directory. (%s)",dir_str,strerror(drerrno_system));
+      drerrno = DRE_NODBDIR;
+      return 0;
+    }
+#else
+    if ((!S_ISDIR(s_stat.st_mode)) || (!(S_IWUSR & s_stat.st_mode))) {
+      drerrno_system = errno;  
+      log_auto (L_ERROR,"no database directory found on '%s'. It's not a directory or not user writable. (%s)",dir_str,strerror(drerrno_system));
+      drerrno = DRE_NODBDIR;
+      return 0;
+    }
+#endif
+  }
+
+  if (getenv("DRQUEUE_LOGS")) {
+    snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_LOGS"));
+  } else {
+    snprintf (dir_str,BUFFERLEN-1,"%s/logs",getenv("DRQUEUE_ROOT"));
+  } 
   if (stat (dir_str,&s_stat) == -1) {
     drerrno = DRE_NOLOGDIR;
     return 0;
-  } else if ((!S_ISDIR(s_stat.st_mode)) || (!(S_IWUSR & s_stat.st_mode))) {
-    drerrno = DRE_NOLOGDIR;
-    return 0;
+  } else {
+#ifdef __CYGWIN
+    if (!S_ISDIR(s_stat.st_mode)) {
+      drerrno = DRE_NOLOGDIR;
+      return 0;
+    }
+#else
+    if ((!S_ISDIR(s_stat.st_mode)) || (!(S_IWUSR & s_stat.st_mode))) {
+      drerrno = DRE_NOLOGDIR;
+      return 0;
+    }
+#endif
   }
 
-  snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_BIN"));
+  if (getenv("DRQUEUE_BIN")) {
+    snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_BIN"));
+  } else {
+    snprintf (dir_str,BUFFERLEN-1,"%s/bin",getenv("DRQUEUE_ROOT"));
+  } 
   if (stat (dir_str,&s_stat) == -1) {
     drerrno = DRE_NOBINDIR;
     return 0;
   }
 
-  snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_ETC"));
+  if (getenv("DRQUEUE_ETC")) {
+    snprintf (dir_str,BUFFERLEN-1,"%s",getenv("DRQUEUE_ETC"));
+  } else {
+    snprintf (dir_str,BUFFERLEN-1,"%s/etc",getenv("DRQUEUE_ROOT"));
+  } 
   if (stat (dir_str,&s_stat) == -1) {
     drerrno = DRE_NOETCDIR;
     return 0;
@@ -93,10 +148,7 @@ int common_environment_check (void) {
 }
 
 void show_version (char **argv) {
-  printf ("\nDistributed Rendering Queue\n");
-  printf ("by Jorge Daza Garcia Blanes\n\n");
-  printf ("%s version: %s\n",argv[0],VERSION);
-  printf ("\n");
+  printf ("DrQueue (Version: %s)\n",get_version_complete());
 }
 
 int rmdir_check_str (char *path) {
@@ -187,42 +239,117 @@ int common_date_check (void) {
 }
 
 void set_default_env(void) {
-  char *penv,renv[BUFFERLEN];
+  char *penv,renv[BUFFERLEN],*drq_root,*drq_root_cp;
+
+  if ((drq_root = getenv("DRQUEUE_ROOT")) == NULL) {
+    drerrno = DRE_NOENVROOT;
+    log_auto (L_ERROR,"Environment variable DRQUEUE_ROOT is not set. Please set your environment "
+	      "variables properly. DRQUEUE_ROOT should point to the base path of DrQueue's "
+	      "installation. Check the documentation for more help.");
+    exit (1);
+  }
+  drq_root_cp = strdup (drq_root);
+  drq_root = drq_root_cp;
+
+#ifdef __CYGWIN
+  if (drq_root[strlen(drq_root)-1] == '\r')
+    drq_root[strlen(drq_root)-1] = 0;
+#endif
 
   if (!getenv("DRQUEUE_TMP")) {
-    snprintf(renv,BUFFERLEN,"DRQUEUE_TMP=%s/tmp",getenv("DRQUEUE_ROOT"));
+    snprintf(renv,BUFFERLEN,"DRQUEUE_TMP=%s/tmp",drq_root);
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
+    //free(penv);
   }
 
   if (!getenv("DRQUEUE_ETC")) {
-    snprintf(renv,BUFFERLEN,"DRQUEUE_ETC=%s/etc",getenv("DRQUEUE_ROOT"));
+    snprintf(renv,BUFFERLEN,"DRQUEUE_ETC=%s/etc",drq_root);
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
+    //free(penv);
   }
 
   if (!getenv("DRQUEUE_BIN")) {
-    snprintf(renv,BUFFERLEN,"DRQUEUE_BIN=%s/bin",getenv("DRQUEUE_ROOT"));
+    snprintf(renv,BUFFERLEN,"DRQUEUE_BIN=%s/bin",drq_root);
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
+    //free(penv);
   }
 
   if (!getenv("DRQUEUE_LOGS")) {
-    snprintf(renv,BUFFERLEN,"DRQUEUE_LOGS=%s/logs",getenv("DRQUEUE_ROOT"));
+    snprintf(renv,BUFFERLEN,"DRQUEUE_LOGS=%s/logs",drq_root);
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
+    //free(penv);
   }
 
   if (!getenv("DRQUEUE_DB")) {
-    snprintf(renv,BUFFERLEN,"DRQUEUE_DB=%s/db",getenv("DRQUEUE_ROOT"));
+    snprintf(renv,BUFFERLEN,"DRQUEUE_DB=%s/db",drq_root);
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
+    //free(penv);
   }
+
+#ifdef __CYGWIN
+  if (!getenv("CYGWIN")) {
+    snprintf(renv,BUFFERLEN,"CYGWIN=server");
+    penv = (char*) malloc (strlen(renv)+1);
+    strncpy(penv,renv,strlen(renv)+1);
+    putenv(penv);
+    //free(penv);
+  }
+#endif
+  
 }
 
+char *
+get_revision_string () {
+  char *duprev = strdup("$Rev$");
+  char *number = duprev;
+  char *p = duprev;
+  char *e = p + strlen(duprev);
 
+  while ((p!=e) && !isdigit(*p)) {
+    p++;
+  }
+  if (p!=e) {
+    char *t = e;
+    number = p;
+    e=p;
+    while ((e!=t) && isdigit(*e)) {
+      e++;
+    }
+    if (e!=t) {
+      *e = 0 ;
+    }
+  }
+
+  return number;
+}
+
+char *
+get_version_prepost () {
+  static char buf[BUFFERLEN];
+  if (VERSION_PRE > 0) {
+    snprintf(buf,BUFFERLEN,"c%u",VERSION_PRE);
+  } else if (VERSION_POST > 0) {
+    snprintf (buf,BUFFERLEN,"p%u",VERSION_POST);
+  } else {
+    sprintf (buf,"%s","");
+  }
+  return buf;
+}
+
+char *
+get_version_complete () {
+  static char buffer[BUFFERLEN];
+  snprintf (buffer,BUFFERLEN,"%i.%02i.%i%s-r%s",VERSION_MAJOR,VERSION_MINOR,VERSION_PATCH,
+	    get_version_prepost(),get_revision_string());
+  return buffer;
+}

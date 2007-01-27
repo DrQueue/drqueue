@@ -1,12 +1,14 @@
 //
 // Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -28,7 +30,10 @@ extern "C" {
 
 #include <stdio.h>
 #include <stdint.h>
+#include <sys/types.h>
 #include <limits.h>
+
+#pragma pack(push,1)
 
 typedef enum {
   JOBSCRIPT_TCSH
@@ -39,6 +44,8 @@ struct jobscript_info {
   FILE *file;
   char filename[PATH_MAX];
 };
+
+#pragma pack(pop)
 
 #define JS_MAX_VAR_NAME 48
 #define JS_MAX_VAR_VALUE 256

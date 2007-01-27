@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -55,7 +57,7 @@ time_t tstart;    /* Time at wich the master has started running */
 int main (int argc, char *argv[]) {
   int sfd;   /* socket file descriptor */
   int csfd;   /* child sfd, the socket once accepted the connection */
-  int shmid;   /* shared memory id */
+  int64_t shmid;   /* shared memory id */
   int force = 0;  /* force even if shmem already exists */
   struct sockaddr_in addr; /* Address of the remote host */
   pid_t child,child_wait;
@@ -64,29 +66,37 @@ int main (int argc, char *argv[]) {
   int i; // For loops
 
 #ifdef COMM_REPORT
-
   bsent = brecv = 0;
   tstart = time(NULL);
 #endif
 
+  logtool = DRQ_LOG_TOOL_MASTER;
   master_get_options (&argc,&argv,&force);
-
-  set_default_env(); // Config files overrides environment
+  
+  // Set some standard defaults based on DRQUEUE_ROOT (must be already set!)
+  set_default_env(); 
+  log_auto (L_INFO,"Starting master... (Revision: %s)",get_revision_string());
+  
+  // Config files override environment variables
   // Read the config file after reading the arguments, as those may change
   // the path to the config file
   config_parse_tool("master");
-  log_master (L_INFO,"Starting...");
+
 
   if (!common_environment_check()) {
-    fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
+    log_auto (L_ERROR,"Error checking the environment: %s",drerrno_str());
     exit (1);
   }
+
   set_signal_handlers ();
 
+  //system ("env | grep DRQ");
   shmid = get_shared_memory (force);
 
-  if ((wdb = attach_shared_memory (shmid)) == (void *) -1)
+  if ((wdb = attach_shared_memory (shmid)) == (void *) -1) {
     exit (1);
+  }
+
   wdb->shmid = shmid;
   wdb->semid = get_semaphores (force);
 
@@ -125,8 +135,8 @@ int main (int argc, char *argv[]) {
           icomp = computer_index_addr (wdb,addr.sin_addr);
           handle_request_master (csfd,wdb,icomp,&addr);
           close (csfd);
-#ifdef COMM_REPORT
 
+#ifdef COMM_REPORT
           semaphore_lock(wdb->semid);
           wdb->bsent += bsent - bsentb;
           wdb->brecv += brecv - brecvb;
@@ -134,13 +144,13 @@ int main (int argc, char *argv[]) {
 #endif
 
         } else {
-          log_master (L_ERROR,"Accepting connection.");
+          log_auto (L_ERROR,"Accepting connection.");
         }
         exit (0);
       } else if (child != -1) {
         n_children++;
       } else {
-        log_master (L_ERROR,"Forking !!\n");
+        log_auto (L_ERROR,"Forking !!\n");
         sleep (5);
       }
     } else {
@@ -153,18 +163,31 @@ int main (int argc, char *argv[]) {
   exit (0);
 }
 
-int get_shared_memory (int force) {
-  key_t key;
-  int shmid;
+int64_t get_shared_memory (int force) {
+  key_t skey;
+  int64_t shmid;
   int shmflg;
   char file[BUFFERLEN];
-  char *root;
+  char *root = NULL;
 
+  memset (file,0,BUFFERLEN);
   root = getenv("DRQUEUE_BIN");
-  snprintf (file,BUFFERLEN-1,KEY_MASTER,root);
+  if (root) {
+    snprintf (file,BUFFERLEN-1,"%s/%s",root,KEY_MASTER);
+  } else {
+    root = getenv("DRQUEUE_ROOT");
+    if (!root) {
+      fprintf (stderr,"What the heck\n");
+      log_auto (L_ERROR,"DRQUEUE_ROOT not set. (file='%s')",file);
+      exit (1);
+    }
+    snprintf (file,BUFFERLEN-1,"%s/bin/%s",root,KEY_MASTER);
+  }
+  log_auto (L_DEBUG,"Using file '%s' to obtain shared memory id.",file);
 
-  if ((key = ftok (file,'Z')) == -1) {
-    perror ("Getting key for shared memory");
+  if ((skey = (key_t) ftok (file,(int)'Z')) == (key_t)-1) {
+    drerrno_system = errno;
+    log_auto (L_ERROR,"Couldn't find the file '%s'. (%s)",file,strerror); 
     exit (1);
   }
 
@@ -174,28 +197,42 @@ int get_shared_memory (int force) {
     shmflg = IPC_EXCL|IPC_CREAT|0600;
   }
 
-  if ((shmid = shmget (key,sizeof(struct database), shmflg)) == -1) {
-    perror ("Getting shared memory");
-    if (!force)
+  if ((shmid = (int64_t) shmget (skey,(size_t)sizeof(struct database), shmflg)) == (int64_t)-1) {
+    perror ("ERROR: Getting shared memory");
+    if (!force) {
       fprintf (stderr,"Try with option -f (if you are sure that no other master is running)\n");
+    }
     exit (1);
   }
 
   return shmid;
 }
 
-int get_semaphores (int force) {
+int64_t get_semaphores (int force) {
   key_t key;
-  int semid;
+  int64_t semid;
   struct sembuf op;
   int semflg;
   char file[BUFFERLEN];
   char *root;
 
   root = getenv("DRQUEUE_BIN");
-  snprintf (file,BUFFERLEN-1,KEY_MASTER,root);
+  if (root) {
+    snprintf (file,BUFFERLEN-1,"%s/%s",root,KEY_MASTER);
+  } else {
+    log_auto (L_WARNING,"DRQUEUE_BIN not set.");
+    root = getenv("DRQUEUE_ROOT");
+    if (!root) {
+      fprintf (stderr,"What the heck\n");
+      log_auto (L_ERROR,"DRQUEUE_ROOT not set. (file='%s')",file);
+      exit (1);
+    }
+    snprintf (file,BUFFERLEN-1,"%s/bin/%s",root,KEY_MASTER);
+    log_auto (L_WARNING,"DRQUEUE_BIN set to default.");
+  }
+  log_auto (L_DEBUG,"Using file '%s' to obtain semaphores id.",file);
 
-  if ((key = ftok (file,'Z')) == -1) {
+  if ((key = (key_t)ftok (file,(int)'Z')) == (key_t)-1) {
     perror ("Getting key for semaphores");
     kill (0,SIGINT);
   }
@@ -206,35 +243,48 @@ int get_semaphores (int force) {
     semflg = IPC_EXCL|IPC_CREAT|0600;
   }
 
-  if ((semid = semget (key,1,semflg)) == -1) {
+  if ((semid = (int64_t) semget (key,1,semflg)) == (int64_t) -1) {
     perror ("Getting semaphores");
     if (!force)
       fprintf (stderr,"Try with option -f (if you are sure that no other master is running)\n");
     kill (0,SIGINT);
   }
-  if (semctl (semid,0,SETVAL,1) == -1) {
-    perror ("semctl SETVAL -> 1");
+
+#if _SEM_SEMUN_UNDEFINED == 1 || defined (__CYGWIN)
+  union semun {
+    int val;
+    struct semid_ds *buf;
+    unsigned short int *array;
+    struct seminfo *__buf;
+  } u_semun;
+#else
+  union semun u_semun;
+#endif
+  u_semun.val = 1;
+  if (semctl ((int)semid,0,SETVAL,u_semun) == -1) {
+    drerrno_system = errno;
+    log_auto (L_ERROR,"get_semaphores(): error on call to semctl. (%s)",strerror(drerrno_system));
     kill (0,SIGINT);
   }
-  if (semctl (semid,0,GETVAL) == 0) {
+  if (semctl ((int)semid,0,GETVAL) == 0) {
     op.sem_num = 0;
     op.sem_op = 1;
     op.sem_flg = 0;
-    if (semop(semid,&op,1) == -1) {
-      perror ("semaphore_release");
+    if (semop((int)semid,&op,1) == -1) {
+      drerrno_system = errno;
+      log_auto (L_ERROR,"get_semaphores(): error on call to semop. (%s)",strerror(drerrno_system));
       kill(0,SIGINT);
     }
   }
 
   /*  fprintf (stderr,"semval: %i semid: %i\n",semctl (semid,0,GETVAL),semid); */
-
   return semid;
 }
 
-void *attach_shared_memory (int shmid) {
+void *attach_shared_memory (int64_t shmid) {
   void *rv;   /* return value */
 
-  if ((rv = shmat (shmid,0,0)) == (void *)-1) {
+  if ((rv = shmat ((int)shmid,0,0)) == (void *)-1) {
     perror ("master shmat");
     return ((void *) -1);
   }
@@ -257,11 +307,6 @@ void set_signal_handlers (void) {
   sigemptyset (&ignore.sa_mask);
   ignore.sa_flags = 0;
   sigaction (SIGHUP, &ignore, NULL); // So we keep running as a daemon
-#ifdef __OSX
-  // sigaction (SIGCHLD, &ignore, NULL);
-#else
-  // sigaction (SIGCLD, &ignore, NULL);
-#endif
 }
 
 
@@ -327,13 +372,15 @@ void clean_out (int signal, siginfo_t *info, void *data) {
   ignore.sa_flags = 0;
   sigaction (SIGINT, &ignore, NULL);
 
-#ifdef COMM_REPORT
+  log_auto (L_INFO,"Saving...");
+  database_save(wdb);
 
+#ifdef COMM_REPORT
   tstop = time(NULL);
   ttotal = tstop - tstart;
   printf ("Report of communications:\n");
-  printf ("Kbytes sent:\t\t%lli\tBytes:\t%lli\n",wdb->bsent/1024,wdb->bsent);
-  printf ("Kbytes recv:\t\t%lli\tBytes:\t%lli\n",wdb->brecv/1024,wdb->brecv);
+  printf ("Kbytes sent:\t\t%ji\tBytes:\t%ji\n",wdb->bsent/1024,wdb->bsent);
+  printf ("Kbytes recv:\t\t%ji\tBytes:\t%ji\n",wdb->brecv/1024,wdb->brecv);
   printf ("Kbytes sent/second:\t%f\n",(float)(wdb->bsent/1024)/ttotal);
   printf ("Kbytes recv/second:\t%f\n",(float)(wdb->brecv/1024)/ttotal);
 #endif
@@ -343,10 +390,7 @@ void clean_out (int signal, siginfo_t *info, void *data) {
     //  printf ("Child arrived ! %i\n",(int)child_pid);
   }
 
-  log_master (L_INFO,"Saving...");
-  database_save(wdb);
-
-  log_master (L_INFO,"Cleaning...");
+  log_auto (L_INFO,"Cleaning...");
   for (i=0;i<MAXJOBS;i++) {
     job_delete(&wdb->job[i]);
   }
@@ -354,10 +398,10 @@ void clean_out (int signal, siginfo_t *info, void *data) {
     computer_free (&wdb->computer[i]);
   }
 
-  if (semctl (wdb->semid,0,IPC_RMID,NULL) == -1) {
+  if (semctl ((int)wdb->semid,0,IPC_RMID,NULL) == -1) {
     perror ("wdb->semid");
   }
-  if (shmctl (wdb->shmid,IPC_RMID,NULL) == -1) {
+  if (shmctl ((int)wdb->shmid,IPC_RMID,NULL) == -1) {
     perror ("wdb->shmid");
   }
 
@@ -372,39 +416,29 @@ void set_alarm (void) {
 
 void sigalarm_handler (int signal, siginfo_t *info, void *data) {
   char *msg = "Connection time exceeded";
-
-  if (icomp != -1)
-    log_master_computer (&wdb->computer[icomp],L_WARNING,msg);
-  else
-    log_master (L_WARNING,msg);
+  log_auto (L_WARNING,msg);
   exit (1);
 }
 
 void sigpipe_handler (int signal, siginfo_t *info, void *data) {
   char *msg = "Broken connection while reading or writing (SIGPIPE)";
-
-  if (icomp != -1)
-    log_master_computer (&wdb->computer[icomp],L_WARNING,msg);
-  else
-    log_master (L_WARNING,msg);
+  log_auto (L_WARNING,msg);
   exit (1);
 }
 
 void sigsegv_handler (int signal, siginfo_t *info, void *data) {
   char *msg = "Segmentation fault... too bad";
-
-  if (icomp != -1)
-    log_master_computer (&wdb->computer[icomp],L_ERROR,msg);
-  else
-    log_master (L_ERROR,msg);
+  log_auto (L_ERROR,msg);
   exit (1);
 }
 
 void master_consistency_checks (struct database *wdb) {
   uint32_t i;
 
+  log_auto (L_INFO,"master_consistency_checks(): Starting... (PID: %i)",getpid());
+
   while (1) {
-    log_master (L_DEBUG,"Master consistency checks loop");
+    log_auto (L_DEBUG2,"Master consistency checks loop");
     check_lastconn_times (wdb);
 
     for (i=0;i<MAXJOBS;i++) {
@@ -427,12 +461,11 @@ void check_lastconn_times (struct database *wdb) {
     semaphore_lock(wdb->semid);
     if (wdb->computer[i].used) {
       if ((now - wdb->computer[i].lastconn) > MAXTIMENOCONN) {
-        log_master_computer (&wdb->computer[i],L_WARNING,
-                             "Maximum time without connecting exceeded. Deleting. (Time not connected: %i)",
+        log_auto (L_WARNING,"Maximum time without connecting exceeded. Deleting. (Time not connected: %i)",
                              (int) (now - wdb->computer[i].lastconn));
         /* We only need to remove it this  way, without requeueing its frames because */
         /* the frames will be requeued on the consistency checks (job_update_info) */
-        wdb->computer[i].used = 0;
+        computer_free (&wdb->computer[i]);
       }
     }
     semaphore_release(wdb->semid);
@@ -452,6 +485,8 @@ void usage (void) {
 void master_get_options (int *argc,char ***argv, int *force) {
   int opt;
 
+  log_auto (L_DEBUG3,"Parsing command line");
+
   while ((opt = getopt (*argc,*argv,"c:fl:ohv")) != -1) {
     switch (opt) {
     case 'f':
@@ -459,7 +494,7 @@ void master_get_options (int *argc,char ***argv, int *force) {
       fprintf (stderr,"WARNING: Forcing usage of pre-existing shared memory (-f). Do not do this unless you really know what it means.\n");
       break;
     case 'l':
-      loglevel = atoi (optarg);
+      log_level_severity_set(atoi(optarg));
       printf ("Logging level set to: %i (%s)\n",loglevel,log_level_str(loglevel));
       break;
     case 'c':
@@ -467,7 +502,7 @@ void master_get_options (int *argc,char ***argv, int *force) {
       printf ("Reading config file from: '%s'\n",conf);
       break;
     case 'o':
-      logonscreen = 1;
+      log_level_out_set(L_ONSCREEN);
       printf ("Logging on screen.\n");
       break;
     case 'v':

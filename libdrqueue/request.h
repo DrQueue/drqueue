@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -18,41 +20,33 @@
 //
 // $Id$
 //
-// The request structure is not just used for the requests themselves
-// but also for the answers to the requests
-//
 
 #ifndef _REQUEST_H_
 #define _REQUEST_H_
-
-#ifdef __LINUX
-#include <stdint.h>
-#elif defined (__IRIX)
-#include <sys/types.h>
-#elif defined (__OSX)
-#include <stdint.h>
-#elif defined (__FREEBSD)
-#include <stdint.h>
-#elif defined (__CYGWIN)
-#include <stdint.h>
-#else
-#error You need to define the OS, or OS defined not supported
-#endif
 
 #include "job.h"
 #include "database.h"
 #include "request_errors.h"
 #include "request_codes.h"
 
+#include <stdint.h>
+#include <sys/types.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #ifdef __CPLUSPLUS
 extern "C" {
 #endif
+
+#pragma pack(push,1)
 
   struct request {
     uint8_t type;   /* Kind of request */
     uint8_t who;    /* who sends this request, a master, a client, a slave... (constants.h) */
     uint32_t data;  /* Data number that might be needed for the request */
   };
+
+#pragma pack(pop)
 
   void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockaddr_in *addr);
   void handle_request_slave (int sfd,struct slave_database *sdb);
@@ -91,11 +85,14 @@ extern "C" {
   void handle_r_r_joblms (int sfd,struct database *wdb,int icomp,struct request *req);
   void handle_r_r_joblps (int sfd,struct database *wdb,int icomp,struct request *req);
   void handle_r_r_jobenvvars (int sfd,struct database *wdb,int icomp,struct request *req);
+  void handle_r_r_jobblkhostname (int sfd,struct database *wdb,int icomp,struct request *req);
+  void handle_r_r_jobunblkhostname (int sfd,struct database *wdb,int icomp,struct request *req);
+  void handle_r_r_jobname (int sfd, struct database *wdb, int icomp, struct request *req);
 
   /* sent TO MASTER */
   void update_computer_status (struct slave_database *database); /* The slave calls this function to update the */
   /* information that the master has about him */
-  void update_computer_limits (struct computer_limits *limits);
+  int update_computer_limits (struct computer_limits *limits);
 
   void register_slave (struct computer *computer);
   int request_comp_xfer (uint32_t icomp, struct computer *comp, uint16_t who);
@@ -129,6 +126,9 @@ extern "C" {
   int request_job_delete_blocked_host (uint32_t ijob, uint32_t icomp, uint16_t who);
   int request_job_list_blocked_host (uint32_t ijob, struct blocked_host **bh, uint16_t *nblocked, uint16_t who);
   int request_job_envvars (uint32_t ijob, struct envvars *envvars, uint16_t who);
+  int request_job_block_host_by_name (uint32_t ijob, char *name, uint16_t who);
+  int request_job_unblock_host_by_name (uint32_t ijob, char *name, uint16_t who);
+  int request_job_name (uint32_t ijob, char **jobname, uint16_t who);
 
   /* sent TO SLAVE */
   int request_slave_killtask (char *slave,uint16_t itask,uint16_t who);
@@ -143,12 +143,12 @@ extern "C" {
 
   /* handled by SLAVE */
   void handle_rs_r_killtask (int sfd,struct slave_database *sdb,struct request *req);
+  void handle_rs_r_setenabled (int sfd,struct slave_database *sdb,struct request *req);
   void handle_rs_r_setnmaxcpus (int sfd,struct slave_database *sdb,struct request *req);
   void handle_rs_r_setmaxfreeloadcpu (int sfd,struct slave_database *sdb,struct request *req);
   void handle_rs_r_setautoenable (int sfd,struct slave_database *sdb,struct request *req);
   void handle_rs_r_limitspooladd (int sfd,struct slave_database *sdb,struct request *req);
   void handle_rs_r_limitspoolremove (int sfd,struct slave_database *sdb,struct request *req);
-  void handle_rs_r_setenabled (int sfd,struct slave_database *sdb,struct request *req);
 
 #ifdef __CPLUSPLUS
 }

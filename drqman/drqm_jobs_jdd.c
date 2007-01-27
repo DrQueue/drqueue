@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004,2005 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -23,6 +25,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdint.h>
+#include <sys/types.h>
+#include <stdio.h>
 
 // Graphics
 #include "waiting.xpm"
@@ -357,37 +362,47 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info) {
 
 static int jdd_update_blocked_hosts (GtkWidget *w, struct drqm_jobs_info *info) {
   int ncols = 2;
-  int i;
+  uint32_t i;
   char **buff;
 
-  if (!request_job_list_blocked_host(info->jdd.job.id, &info->jdd.job.blocked_host, &info->jdd.job.nblocked, CLIENT)) {
-    fprintf (stderr,"Error request_job_list_blocked_host\n");
-    if (info->jdd.job.blocked_host) {
-      free (info->jdd.job.blocked_host);
+  if (!request_job_list_blocked_host(info->jdd.job.id, &info->jdd.job.blocked_host.ptr, &info->jdd.job.nblocked, CLIENT)) {
+    log_auto (L_ERROR,"jdd_update_blocked_hosts(): could not receive list of blocked hosts. (%s)",strerror(drerrno_system));
+    if (info->jdd.job.blocked_host.ptr) {
+      free (info->jdd.job.blocked_host.ptr);
+      info->jdd.job.blocked_host.ptr = NULL;
     }
+    info->jdd.job.nblocked = 0;
     return 0;
   }
 
-  buff = (char**) g_malloc((ncols + 1) * sizeof(char*));
+  buff = (char**) malloc((ncols + 1) * sizeof(char*));
   for (i=0;i<ncols;i++)
-    buff[i] = (char*) g_malloc (BUFFERLEN);
+    buff[i] = (char*) malloc (BUFFERLEN);
   buff[ncols] = NULL;
 
   gtk_clist_freeze(GTK_CLIST(info->jdd.clist_bh));
   gtk_clist_clear(GTK_CLIST(info->jdd.clist_bh));
 
   for (i=0; i < info->jdd.job.nblocked; i++) {
-    snprintf (buff[0],BUFFERLEN-1,"%i",i);
-    snprintf (buff[1],BUFFERLEN,"%s",info->jdd.job.blocked_host[i].name);
+    snprintf (buff[0],BUFFERLEN,"%u",i);
+    snprintf (buff[1],BUFFERLEN,"%s",info->jdd.job.blocked_host.ptr[i].name);
 
     gtk_clist_append (GTK_CLIST(info->jdd.clist_bh),buff);
 
-    gtk_clist_set_row_data (GTK_CLIST(info->jdd.clist_bh),i,(gpointer)i);
+    gtk_clist_set_row_data (GTK_CLIST(info->jdd.clist_bh),i,GINT_TO_POINTER(i));
   }
 
   gtk_clist_thaw(GTK_CLIST(info->jdd.clist_bh));
+  
+  for (i=0;i<ncols;i++)
+    free(buff[i]);
+  free(buff);
 
-  free (info->jdd.job.blocked_host);
+  if (info->jdd.job.blocked_host.ptr) {
+    free (info->jdd.job.blocked_host.ptr);
+    info->jdd.job.blocked_host.ptr = NULL;
+  }
+  info->jdd.job.nblocked = 0;
 
   return 1;
 }
@@ -428,19 +443,19 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
 
   nframes = job_nframes (&info->jdd.job);
 
-  if ((!info->jdd.job.frame_info) && nframes) {
-    if (!(fi = g_malloc(sizeof (struct frame_info) * nframes))) {
+  if ((!info->jdd.job.frame_info.ptr) && nframes) {
+    if (!(fi = malloc(sizeof (struct frame_info) * nframes))) {
       fprintf (stderr,"Error allocating memory for frame information\n");
       return 0;
     }
 
     if (!request_job_xferfi (info->jdd.job.id,fi,nframes,CLIENT)) {
       fprintf (stderr,"Error request job frame info xfer: %s\n",drerrno_str());
-      g_free (fi);
+      free (fi);
       return 0;
     }
 
-    info->jdd.job.frame_info = fi;
+    info->jdd.job.frame_info.ptr = fi;
   }
 
   gtk_label_set_text (GTK_LABEL(info->jdd.lname),info->jdd.job.name);
@@ -537,9 +552,9 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
   adj = gtk_scrolled_window_get_hadjustment (GTK_SCROLLED_WINDOW(info->jdd.swindow));
   hadj_value = gtk_adjustment_get_value (GTK_ADJUSTMENT(adj));
 
-  buff = (char**) g_malloc((ncols + 1) * sizeof(char*));
+  buff = (char**) malloc((ncols + 1) * sizeof(char*));
   for (i=0;i<ncols;i++)
-    buff[i] = (char*) g_malloc (BUFFERLEN);
+    buff[i] = (char*) malloc (BUFFERLEN);
   buff[ncols] = NULL;
 
   gtk_clist_freeze(GTK_CLIST(info->jdd.clist));
@@ -548,15 +563,15 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
     struct row_data *rdata;
 
     snprintf (buff[0],BUFFERLEN-1,"%i",job_frame_index_to_number (&info->jdd.job,i));
-    strncpy(buff[1],job_frame_status_string(info->jdd.job.frame_info[i].status),BUFFERLEN);
-    snprintf (buff[2],BUFFERLEN-1,"%i",info->jdd.job.frame_info[i].requeued);
-    if (info->jdd.job.frame_info[i].start_time != 0) {
-      time_t ttime = info->jdd.job.frame_info[i].start_time;
+    strncpy(buff[1],job_frame_status_string(info->jdd.job.frame_info.ptr[i].status),BUFFERLEN);
+    snprintf (buff[2],BUFFERLEN-1,"%i",info->jdd.job.frame_info.ptr[i].requeued);
+    if (info->jdd.job.frame_info.ptr[i].start_time != 0) {
+      time_t ttime = info->jdd.job.frame_info.ptr[i].start_time;
       strncpy(buff[3],ctime(&ttime),BUFFERLEN);
       buf = strchr (buff[3],'\n');
       if (buf != NULL)
         *buf = '\0';
-      ttime = info->jdd.job.frame_info[i].end_time;
+      ttime = info->jdd.job.frame_info.ptr[i].end_time;
       strncpy(buff[4],ctime(&ttime),BUFFERLEN);
       buf = strchr (buff[4],'\n');
       if (buf != NULL)
@@ -566,11 +581,11 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
       strncpy(buff[4],"Not started",BUFFERLEN);
     }
     // Depending on the exitcode we set the background
-    snprintf (buff[5],BUFFERLEN,"%i",info->jdd.job.frame_info[i].exitcode);
-    snprintf (buff[6],BUFFERLEN,"%i",info->jdd.job.frame_info[i].icomp);
-    snprintf (buff[7],BUFFERLEN,"%i",info->jdd.job.frame_info[i].itask);
+    snprintf (buff[5],BUFFERLEN,"%i",info->jdd.job.frame_info.ptr[i].exitcode);
+    snprintf (buff[6],BUFFERLEN,"%i",info->jdd.job.frame_info.ptr[i].icomp);
+    snprintf (buff[7],BUFFERLEN,"%i",info->jdd.job.frame_info.ptr[i].itask);
     gtk_clist_append(GTK_CLIST(info->jdd.clist),buff);
-    if (info->jdd.job.frame_info[i].exitcode != 0) {
+    if (info->jdd.job.frame_info.ptr[i].exitcode != 0) {
       GdkColor color;
       color.pixel = 0;
       color.red = 0xffff;
@@ -578,25 +593,25 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
       color.blue = 0x8000;
       gtk_clist_set_background (GTK_CLIST(info->jdd.clist),i,&color);
     }
-    switch (info->jdd.job.frame_info[i].status) {
+    switch (info->jdd.job.frame_info.ptr[i].status) {
     case FS_WAITING:
       gtk_clist_set_pixtext (GTK_CLIST(info->jdd.clist),i,1,
-                             job_frame_status_string(info->jdd.job.frame_info[i].status), 2,
+                             job_frame_status_string(info->jdd.job.frame_info.ptr[i].status), 2,
                              w_data,w_mask);
       break;
     case FS_ASSIGNED:
       gtk_clist_set_pixtext (GTK_CLIST(info->jdd.clist),i,1,
-                             job_frame_status_string(info->jdd.job.frame_info[i].status), 2,
+                             job_frame_status_string(info->jdd.job.frame_info.ptr[i].status), 2,
                              r_data,r_mask);
       break;
     case FS_FINISHED:
       gtk_clist_set_pixtext (GTK_CLIST(info->jdd.clist),i,1,
-                             job_frame_status_string(info->jdd.job.frame_info[i].status), 2,
+                             job_frame_status_string(info->jdd.job.frame_info.ptr[i].status), 2,
                              f_data,f_mask);
       break;
     case FS_ERROR:
       gtk_clist_set_pixtext (GTK_CLIST(info->jdd.clist),i,1,
-                             job_frame_status_string(info->jdd.job.frame_info[i].status), 2,
+                             job_frame_status_string(info->jdd.job.frame_info.ptr[i].status), 2,
                              e_data,e_mask);
       break;
     }
@@ -604,11 +619,11 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
     /* Set the information for the row */
     rdata = gtk_clist_get_row_data (GTK_CLIST(info->jdd.clist),i);
     if (!rdata) {
-      rdata = g_malloc (sizeof (*rdata));
+      rdata = malloc (sizeof (*rdata));
     }
     rdata->frame = job_frame_index_to_number (&info->jdd.job,i);
     rdata->info = info;
-    gtk_clist_set_row_data_full (GTK_CLIST(info->jdd.clist),i,(gpointer)rdata, g_free);
+    gtk_clist_set_row_data_full (GTK_CLIST(info->jdd.clist),i,(gpointer)rdata, free);
   }
 
   gtk_clist_sort (GTK_CLIST(info->jdd.clist));
@@ -622,8 +637,8 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
   gtk_adjustment_set_value (GTK_ADJUSTMENT(adj),hadj_value);
 
   for(i=0;i<ncols;i++)
-    g_free (buff[i]);
-  g_free (buff);
+    free (buff[i]);
+  free (buff);
 
   return 1;
 }
@@ -636,7 +651,7 @@ static gboolean AutoRefreshUpdate (gpointer info) {
 
 static void jdd_add_blocked_host (GtkWidget *button, struct drqm_jobs_info *info) {
   GList *sel;
-  uint32_t icomp;
+  char *name;
 
   if (!(sel = GTK_CLIST(info->jdd.bhdi_computers_info.clist)->selection)) {
     return;
@@ -645,10 +660,9 @@ static void jdd_add_blocked_host (GtkWidget *button, struct drqm_jobs_info *info
   // We need to remove hosts in reverse order
   sel = g_list_reverse (sel); // Because we are removing indexes if remove 0 and then 1, after removing 0, 1 would be 0 again.
 
-
   for (;sel;sel = sel->next) {
-    icomp = (uint32_t) gtk_clist_get_row_data(GTK_CLIST(info->jdd.bhdi_computers_info.clist), (gint)sel->data);
-    request_job_add_blocked_host (info->jdd.job.id,icomp, CLIENT);
+    name = (char*)gtk_clist_get_row_data(GTK_CLIST(info->jdd.bhdi_computers_info.clist), GPOINTER_TO_INT(sel->data));
+    request_job_block_host_by_name (info->jdd.job.id, name, CLIENT);
   }
 }
 
@@ -676,21 +690,13 @@ static GtkWidget *CreateFrameInfoClist (void) {
 }
 
 static void jdd_destroy (GtkWidget *w, struct drqm_jobs_info *info) {
-  if (info->jdd.job.frame_info) {
-    g_free (info->jdd.job.frame_info);
-    info->jdd.job.frame_info = NULL;
-  }
-
-  if (info->jdd.job.blocked_host) {
-    free (info->jdd.job.blocked_host);
-    info->jdd.job.blocked_host = NULL;
-  }
+  job_delete (&info->jdd.job);
 
   if (GTK_TOGGLE_BUTTON(info->ari.cbenabled)->active) {
     g_source_remove (info->ari.sourceid);
   }
 
-  g_free (info);
+  drqm_clean_joblist (info);
 }
 
 static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info) {
@@ -716,12 +722,15 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info) {
   }
 
   // We create a new info structure for this window.
-  newinfo = g_malloc (sizeof (struct drqm_jobs_info));
+  newinfo = malloc (sizeof (struct drqm_jobs_info));
   if (!newinfo) {
     return NULL;
   }
-  memcpy (newinfo,info,sizeof(struct drqm_jobs_info));
-  memcpy (&newinfo->jdd.job,&info->jobs[info->row],sizeof (struct job));
+  memcpy(newinfo,info,sizeof(struct drqm_jobs_info));
+/*   drqm_request_joblist (newinfo); */
+/*   drqm_update_joblist (newinfo); */
+  memcpy(&newinfo->jdd.job,&info->jobs[info->row],sizeof(struct job));
+  job_fix_received_invalid(&newinfo->jdd.job);
   newinfo->jdd.oldinfo = info;
 
   tooltips = TooltipsNew ();
@@ -1110,15 +1119,16 @@ static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info) {
   /* function */
   strncpy (task.jobname,info->jdd.job.name,MAXNAMELEN-1);
   task.frame = job_frame_index_to_number (&info->jdd.job,info->jdd.row);
-
+  task.ijob = info->jdd.job.id;
+  
   // Allocate memory for idle info
-  iinfo = (struct idle_info *)g_malloc(sizeof (struct idle_info));
+  iinfo = (struct idle_info *) malloc(sizeof (struct idle_info));
 
   /* Dialog */
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW(window),"Frame log");
   g_signal_connect_swapped (G_OBJECT(window),"destroy",G_CALLBACK(g_idle_remove_by_data),iinfo);
-  g_signal_connect_swapped (G_OBJECT(window),"destroy",G_CALLBACK(g_free),iinfo);
+  g_signal_connect_swapped (G_OBJECT(window),"destroy",G_CALLBACK(free),iinfo);
   gtk_window_set_default_size(GTK_WINDOW(window),600,200);
   gtk_container_set_border_width (GTK_CONTAINER(window),5);
 
@@ -1191,7 +1201,7 @@ static void jdd_requeue_frames (GtkWidget *button,struct drqm_jobs_info *info_dj
   }
 
   for (;sel;sel = sel->next) {
-    rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info_dj->jdd.clist), (gint)sel->data);
+    rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info_dj->jdd.clist),GPOINTER_TO_INT(sel->data));
     frame = rdata->frame;
     drqm_request_job_frame_waiting (info_dj->jdd.job.id,frame);
   }
@@ -1206,7 +1216,7 @@ static void jdd_delete_blocked_host (GtkWidget *w, struct drqm_jobs_info *info) 
   }
 
   for (;sel;sel = sel->next) {
-    ipos = (uint32_t) gtk_clist_get_row_data (GTK_CLIST(info->jdd.clist_bh), (gint)sel->data);
+    ipos = (uint32_t) gtk_clist_get_row_data (GTK_CLIST(info->jdd.clist_bh),GPOINTER_TO_INT(sel->data));
     request_job_delete_blocked_host (info->jdd.job.id,ipos,CLIENT);
   }
 }
@@ -1244,7 +1254,7 @@ static void jdd_kill_frames (GtkWidget *button,struct drqm_jobs_info *info) {
   }
 
   for (;sel;sel = sel->next) {
-    rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+    rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), GPOINTER_TO_INT(sel->data));
     frame = rdata->frame;
     drqm_request_job_frame_kill (info->jdd.job.id,frame);
   }
@@ -1261,7 +1271,7 @@ static void jdd_finish_frames (GtkWidget *button,struct drqm_jobs_info *info) {
   }
 
   for (;sel;sel = sel->next) {
-    rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+    rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), GPOINTER_TO_INT(sel->data));
     frame = rdata->frame;
     drqm_request_job_frame_finish (info->jdd.job.id,frame);
   }
@@ -1278,7 +1288,7 @@ static void jdd_frames_reset_requeued (GtkWidget *button,struct drqm_jobs_info *
   }
 
   for (;sel;sel = sel->next) {
-    rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+    rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), GPOINTER_TO_INT(sel->data));
     frame = rdata->frame;
     drqm_request_job_frame_reset_requeued (info->jdd.job.id,frame);
   }
@@ -1316,7 +1326,7 @@ static void jdd_kill_finish_frames (GtkWidget *button,struct drqm_jobs_info *inf
   }
 
   for (;sel;sel = sel->next) {
-    rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+    rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), GPOINTER_TO_INT(sel->data));
     frame = rdata->frame;
     drqm_request_job_frame_kill_finish (info->jdd.job.id,frame);
   }
@@ -1328,14 +1338,17 @@ static gint PopupMenuBlockedHosts (GtkWidget *clist, GdkEvent *event, struct drq
     if (bevent->button != 3) {
       return FALSE;
     }
-    info->jdd.selected = gtk_clist_get_selection_info(GTK_CLIST(info->jdd.clist),
-                         (int)bevent->x,(int)bevent->y,
-                         &info->jdd.row,&info->jdd.column);
-    if (info->selected) {
-      gtk_menu_popup (GTK_MENU(info->jdd.menu_bh), NULL, NULL, NULL, NULL,
-                      bevent->button, bevent->time);
-      return TRUE;
-    }
+    gtk_menu_popup (GTK_MENU(info->jdd.menu_bh),NULL,NULL,NULL,NULL,
+		    bevent->button, bevent->time);
+    return TRUE;
+/*     info->jdd.bh_selected = gtk_clist_get_selection_info(GTK_CLIST(info->jdd.clist_bh), */
+/* 							 (int)bevent->x,(int)bevent->y, */
+/* 							 &info->jdd.bh_row,&info->jdd.bh_column); */
+/*     if (info->jdd.bh_selected) { */
+/*       gtk_menu_popup (GTK_MENU(info->jdd.menu_bh), NULL, NULL, NULL, NULL, */
+/*                       bevent->button, bevent->time); */
+/*       return TRUE; */
+/*     } */
   }
 
   return FALSE;
@@ -1354,7 +1367,7 @@ static void jdd_maya_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *inf
     return;
   }
 
-  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), GPOINTER_TO_INT(sel->data));
   frame = rdata->frame;
 
   iframe = job_frame_number_to_index (&info->jdd.job,frame);
@@ -1401,7 +1414,7 @@ static void jdd_mentalray_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info
     return;
   }
 
-  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), GPOINTER_TO_INT(sel->data));
   frame = rdata->frame;
 
   iframe = job_frame_number_to_index (&info->jdd.job,frame);
@@ -1434,7 +1447,7 @@ static void jdd_blender_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *
     return;
   }
 
-  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), GPOINTER_TO_INT(sel->data));
   frame = rdata->frame;
 
   iframe = job_frame_number_to_index (&info->jdd.job,frame);
@@ -1467,7 +1480,7 @@ static void jdd_bmrt_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *inf
     return;
   }
 
-  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), GPOINTER_TO_INT(sel->data));
   frame = rdata->frame;
 
   iframe = job_frame_number_to_index (&info->jdd.job,frame);
@@ -1500,7 +1513,7 @@ static void jdd_pixie_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *in
     return;
   }
 
-  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), GPOINTER_TO_INT(sel->data));
   frame = rdata->frame;
 
   iframe = job_frame_number_to_index (&info->jdd.job,frame);
@@ -1532,7 +1545,7 @@ static void jdd_3delight_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info 
     return;
   }
 
-  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), GPOINTER_TO_INT(sel->data));
   frame = rdata->frame;
 
   iframe = job_frame_number_to_index (&info->jdd.job,frame);
@@ -1565,7 +1578,7 @@ static void jdd_turtle_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *i
     return;
   }
 
-  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), GPOINTER_TO_INT(sel->data));
   frame = rdata->frame;
 
   iframe = job_frame_number_to_index (&info->jdd.job,frame);
@@ -1612,7 +1625,7 @@ static void jdd_xsi_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info
     return;
   }
 
-  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), GPOINTER_TO_INT(sel->data));
   frame = rdata->frame;
 
   iframe = job_frame_number_to_index (&info->jdd.job,frame);
@@ -2417,8 +2430,8 @@ int jdd_framelist_cmp_requeued (GtkCList *clist, gconstpointer ptr1, gconstpoint
   ifa = job_frame_number_to_index (&ra->info->jdd.job,ra->frame);
   ifb = job_frame_number_to_index (&rb->info->jdd.job,rb->frame);
 
-  a = ra->info->jdd.job.frame_info[ifa].requeued;
-  b = rb->info->jdd.job.frame_info[ifb].requeued;
+  a = ra->info->jdd.job.frame_info.ptr[ifa].requeued;
+  b = rb->info->jdd.job.frame_info.ptr[ifb].requeued;
 
   if (a > b) {
     return 1;
@@ -2463,8 +2476,8 @@ int jdd_framelist_cmp_exitcode (GtkCList *clist, gconstpointer ptr1, gconstpoint
   ifa = job_frame_number_to_index (&ra->info->jdd.job,ra->frame);
   ifb = job_frame_number_to_index (&rb->info->jdd.job,rb->frame);
 
-  a = ra->info->jdd.job.frame_info[ifa].exitcode;
-  b = rb->info->jdd.job.frame_info[ifb].exitcode;
+  a = ra->info->jdd.job.frame_info.ptr[ifa].exitcode;
+  b = rb->info->jdd.job.frame_info.ptr[ifb].exitcode;
 
   if (a > b) {
     return 1;
@@ -2488,8 +2501,8 @@ int jdd_framelist_cmp_status (GtkCList *clist, gconstpointer ptr1, gconstpointer
   ifa = job_frame_number_to_index (&ra->info->jdd.job,ra->frame);
   ifb = job_frame_number_to_index (&rb->info->jdd.job,rb->frame);
 
-  a = ra->info->jdd.job.frame_info[ifa].status;
-  b = rb->info->jdd.job.frame_info[ifb].status;
+  a = ra->info->jdd.job.frame_info.ptr[ifa].status;
+  b = rb->info->jdd.job.frame_info.ptr[ifb].status;
 
   if (a > b) {
     return 1;
@@ -2513,8 +2526,8 @@ int jdd_framelist_cmp_icomp (GtkCList *clist, gconstpointer ptr1, gconstpointer 
   ifa = job_frame_number_to_index (&ra->info->jdd.job,ra->frame);
   ifb = job_frame_number_to_index (&rb->info->jdd.job,rb->frame);
 
-  a = ra->info->jdd.job.frame_info[ifa].icomp;
-  b = rb->info->jdd.job.frame_info[ifb].icomp;
+  a = ra->info->jdd.job.frame_info.ptr[ifa].icomp;
+  b = rb->info->jdd.job.frame_info.ptr[ifb].icomp;
 
   if (a > b) {
     return 1;
@@ -2538,8 +2551,8 @@ int jdd_framelist_cmp_start_time (GtkCList *clist, gconstpointer ptr1, gconstpoi
   ifa = job_frame_number_to_index (&ra->info->jdd.job,ra->frame);
   ifb = job_frame_number_to_index (&rb->info->jdd.job,rb->frame);
 
-  a = ra->info->jdd.job.frame_info[ifa].start_time;
-  b = rb->info->jdd.job.frame_info[ifb].start_time;
+  a = ra->info->jdd.job.frame_info.ptr[ifa].start_time;
+  b = rb->info->jdd.job.frame_info.ptr[ifb].start_time;
 
   if (a > b) {
     return 1;
@@ -2563,8 +2576,8 @@ int jdd_framelist_cmp_end_time (GtkCList *clist, gconstpointer ptr1, gconstpoint
   ifa = job_frame_number_to_index (&ra->info->jdd.job,ra->frame);
   ifb = job_frame_number_to_index (&rb->info->jdd.job,rb->frame);
 
-  a = ra->info->jdd.job.frame_info[ifa].end_time;
-  b = rb->info->jdd.job.frame_info[ifb].end_time;
+  a = ra->info->jdd.job.frame_info.ptr[ifa].end_time;
+  b = rb->info->jdd.job.frame_info.ptr[ifb].end_time;
 
   if (a > b) {
     return 1;
@@ -2589,7 +2602,7 @@ static void jdd_lightwave_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info
     return;
   }
 
-  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), GPOINTER_TO_INT(sel->data));
   frame = rdata->frame;
 
   iframe = job_frame_number_to_index (&info->jdd.job,frame);
@@ -2621,7 +2634,7 @@ static void jdd_nuke_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *inf
     return;
   }
 
-  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), GPOINTER_TO_INT(sel->data));
   frame = rdata->frame;
 
   iframe = job_frame_number_to_index (&info->jdd.job,frame);
@@ -2653,7 +2666,7 @@ static void jdd_aftereffects_viewcmd_exec (GtkWidget *button, struct drqm_jobs_i
     return;
   }
 
-  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), GPOINTER_TO_INT(sel->data));
   frame = rdata->frame;
 
   iframe = job_frame_number_to_index (&info->jdd.job,frame);
@@ -2685,7 +2698,7 @@ static void jdd_shake_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *in
     return;
   }
 
-  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), GPOINTER_TO_INT(sel->data));
   frame = rdata->frame;
 
   iframe = job_frame_number_to_index (&info->jdd.job,frame);
@@ -2718,7 +2731,7 @@ static void jdd_aqsis_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *in
     return;
   }
 
-  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), GPOINTER_TO_INT(sel->data));
   frame = rdata->frame;
 
   iframe = job_frame_number_to_index (&info->jdd.job,frame);
@@ -2751,7 +2764,7 @@ static void jdd_mantra_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *i
     return;
   }
 
-  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), GPOINTER_TO_INT(sel->data));
   frame = rdata->frame;
 
   iframe = job_frame_number_to_index (&info->jdd.job,frame);
@@ -2783,7 +2796,7 @@ static void jdd_terragen_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info 
     return;
   }
 
-  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), (gint)sel->data);
+  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), GPOINTER_TO_INT(sel->data));
   frame = rdata->frame;
 
   iframe = job_frame_number_to_index (&info->jdd.job,frame);

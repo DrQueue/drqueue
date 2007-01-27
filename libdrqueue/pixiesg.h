@@ -50,6 +50,8 @@
 extern "C" {
 #endif
 
+#pragma pack(push,1)
+
   struct pixiesgi {  /* Pixie Script Generator Info */
     char renderdir[BUFFERLEN];
     char scene[BUFFERLEN];
@@ -68,6 +70,8 @@ extern "C" {
      uint32_t raysamples;
     */
   };
+
+#pragma pack(pop)
 
   char *pixiesg_create (struct pixiesgi *info);
   char *pixiesg_default_script_path (void);

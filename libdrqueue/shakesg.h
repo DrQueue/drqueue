@@ -28,6 +28,9 @@
 extern "C" {
 #endif
 
+#pragma pack(push,1)
+
+
   struct shakesgi {  // Shake script generator information
     char script[BUFFERLEN];    // This is the shake script, has nothing to do with the render script
     char scriptdir[BUFFERLEN];
@@ -35,6 +38,8 @@ extern "C" {
 
   char *shakesg_create (struct shakesgi *info);
   char *shakesg_default_script_path (void);
+
+#pragma pack(pop)
 
 #ifdef __CPLUSPLUS
 }

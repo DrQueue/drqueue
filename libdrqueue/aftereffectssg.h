@@ -28,11 +28,15 @@
 extern "C" {
 #endif
 
+#pragma pack(push,1)
+
   struct aftereffectssgi {  // After Effects Script Generator Info
     char project[BUFFERLEN];
     char comp[BUFFERLEN];
     char scriptdir[BUFFERLEN];
   };
+
+#pragma pack(pop)
 
   char *aftereffectssg_create (struct aftereffectssgi *info);
   char *aftereffectssg_default_script_path (void);

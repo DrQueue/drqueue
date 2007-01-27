@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -28,12 +30,9 @@
 
 #include <limits.h>
 #include <signal.h>
+#include <stdint.h>
 
-#if defined (__CYGWIN)
-#define KEY_SLAVE "%s/slave.exe"/* Key file for shared memory and semaphores */
-#else
-#define KEY_SLAVE "%s/slave" /* Key file for shared memory and semaphores */
-#endif
+#define KEY_SLAVE "slave" /* Key file for shared memory and semaphores */
 
 /* Each slave has a slave_database global variable that is local to each */
 /* process. _Except_ the pointer to the computer struct that is a shared */
@@ -41,17 +40,20 @@
 
 #define SDBF_SETMAXCPUS (1<<0) // Set if we have to change the maximum number of CPUs at start.
 
+#pragma pack(push,1)
+
 struct slave_database {
   struct computer *comp;
-  int shmid;
-  int semid;
+  int64_t shmid;
+  int64_t semid;
   struct computer_limits limits;
   uint16_t flags;
   char conf[PATH_MAX];
-}
-;    /* slave database */
+};                                    /* slave database */
 
 extern int phantom[2];
+
+#pragma pack(pop)
 
 void slave_get_options (int *argc,char ***argv, int *force, struct slave_database *sdb);
 void usage (void);
@@ -74,10 +76,12 @@ void slave_listening_process (struct slave_database *sdb);
 void slave_consistency_process (struct slave_database *sdb);
 void launch_task (struct slave_database *sdb, uint16_t itask);
 
-int get_shared_memory_slave (int force);
-int get_semaphores_slave (void);
-void *attach_shared_memory_slave (int shmid);
+int64_t get_shared_memory_slave (int force);
+int64_t get_semaphores_slave (void);
+void *attach_shared_memory_slave (int64_t shmid);
 
 void zerocmd (char *cmd);
+
+void slave_exit (int rc);
 
 #endif

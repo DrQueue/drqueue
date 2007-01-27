@@ -16,7 +16,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id: /drqueue/remote/trunk/turtlesg.h 2283 2005-05-10T14:56:00.331140Z oliverhotz $
+// $Id$
 //
 
 #ifndef _TURTLESG_H_
@@ -27,6 +27,8 @@
 #ifdef __CPLUSPLUS
 extern "C" {
 #endif
+
+#pragma pack(push,1)
 
   struct turtlesgi {  /* Maya Script Generator Info */
     char renderdir[BUFFERLEN]; // -imageOutputPath
@@ -44,6 +46,8 @@ extern "C" {
     // char precommand[BUFFERLEN]; // allows a prerender command (mel script) to be executed before the render
     // char postcommand[BUFFERLEN]; // allows a postrender command (mel script to be executed after the render
   };
+
+#pragma pack(pop)
 
   char *turtlesg_create (struct turtlesgi *info);
 

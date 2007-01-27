@@ -51,6 +51,8 @@
 extern "C" {
 #endif
 
+#pragma pack(push,1)
+
   struct bmrtsgi {  /* Bmrt Script Generator Info */
     char renderdir[BUFFERLEN];
     char scene[BUFFERLEN];
@@ -67,6 +69,8 @@ extern "C" {
     char custom_raysamples;
     uint32_t raysamples;
   };
+
+#pragma pack(pop)
 
   char *bmrtsg_create (struct bmrtsgi *info);
   char *bmrtsg_default_script_path (void);

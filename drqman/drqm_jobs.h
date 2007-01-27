@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -86,15 +88,15 @@ struct drqmj_dnji {       /* dialog new job info */
   GtkWidget *ename;
   GtkWidget *ecmd;
   GtkWidget *esf,*eef,*estf; /* entry start frame, entry end frame, entry step frames */
-  GtkWidget *ebs,*efp;        /* entry block_size */
-  GtkWidget *cpri,*epri;    /* combo priority, entry priority */
-  GtkWidget *fs;        /* File selector */
+  GtkWidget *ebs,*efp;       /* entry block_size, entry frame pad */
+  GtkWidget *cpri,*epri;     /* combo priority, entry priority */
+  GtkWidget *fs;             /* File selector */
 
   /* koj */
   GtkWidget *ckoj;       /* combo koj */
   GtkWidget *fkoj;       /* frame koj */
-  GtkWidget *vbkoj;       /* vbox inside the koj's tab */
-  uint16_t koj;         /* koj */
+  GtkWidget *vbkoj;      /* vbox inside the koj's tab */
+  uint16_t koj;          /* koj */
   struct drqmj_koji_maya koji_maya; /* koj info for maya */
   struct drqmj_koji_mentalray koji_mentalray; /* koj info for mentalray */
   struct drqmj_koji_blender koji_blender; /* koj info for blender */
@@ -111,22 +113,22 @@ struct drqmj_dnji {       /* dialog new job info */
   struct drqmj_koji_turtle koji_turtle;
   struct drqmj_koji_xsi koji_xsi;
 
-  struct drqmj_limits limits;  /* limits info */
-  struct drqmj_flags flags;   /* flags info */
+  struct drqmj_limits limits;   /* limits info */
+  struct drqmj_flags flags;     /* flags info */
   struct drqmj_envvars envvars; // Environment variables info
 
-  int submitstopped;      /* Set if the job has to be stopped just after submission */
+  int submitstopped;            /* Set if the job has to be stopped just after submission */
 };
 
 struct drqm_jobs_info {
-  GtkWidget *clist;       /* main clist */
-  gint row, column;       /* selected job */
-  GtkWidget *menu;       /* Popup menu */
+  GtkWidget *clist;                  /* main clist */
+  gint row, column;                  /* selected job */
+  GtkWidget *menu;                   /* Popup menu */
   struct drqm_autorefresh_info ari;  // AutoRefresh info
-  int selected;         /* if a job is selected */
-  int ijob;           /* index to the selected job */
-  uint32_t njobs;        /* Number of jobs in the list */
-  struct job *jobs;       /* The job list */
+  int selected;             /* if a job is selected */
+  int ijob;                 /* index to the selected job */
+  uint32_t njobs;           /* Number of jobs in the list */
+  struct job *jobs;         /* The job list */
   struct drqmj_dnji dnj;    /* dialog new job */
   struct drqmj_jddi jdd;    /* job details dialog */
 };

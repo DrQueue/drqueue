@@ -1,12 +1,14 @@
 //
 // Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -28,15 +30,20 @@
 #include "semaphores.h"
 #include "logger.h"
 #include "request.h"
+#include "drerrno.h"
+
 
 void task_init_all (struct task *task) {
   int i;
-
   for (i=0;i < MAXTASKS; i++)
     task_init (&task[i]);
 }
 
 void task_init (struct task *task) {
+  if (!task) {
+    return;
+  }
+  memset(task,0,sizeof(*task));
   task->used = 0;
   strcpy(task->jobname,"EMPTY");
   task->ijob = 0;
@@ -52,9 +59,10 @@ void task_init (struct task *task) {
   task->status = 0;
 }
 
-int task_available (struct slave_database *sdb) {
+uint16_t
+task_available (struct slave_database *sdb) {
   int i;
-  int r = -1;
+  uint16_t r = -1;
 
   semaphore_lock(sdb->semid);
   for (i=0;i<MAXTASKS;i++) {
@@ -90,6 +98,9 @@ char *task_status_string (unsigned char status) {
   case TASKSTATUS_RUNNING:
     st_string = "Running";
     break;
+  case TASKSTATUS_FINISHED:
+    st_string = "Finished";
+    break;
   default:
     st_string = "UNKNOWN";
   }
@@ -97,7 +108,37 @@ char *task_status_string (unsigned char status) {
   return st_string;
 }
 
-void task_environment_set (struct task *task) {
+int
+task_is_running (struct task *task) {
+  int running = 1;
+  
+  if (!task) {
+    log_auto (L_ERROR,"task_is_running(): received NULL pointer as task.");
+    return 0;
+  }
+  if (!task->used) {
+    return 0;
+  } else if (task->status == TASKSTATUS_FINISHED) {
+    return 0;
+  } else {
+    // task->used == 1 && task->status != TASKSTATUS_FINISHED
+    switch (task->status) {
+    case TASKSTATUS_RUNNING:
+    case TASKSTATUS_LOADING:
+      break;
+    default:
+      logger_task = task;
+      log_auto (L_WARNING,"task_is_running(): unknown task status %u (Str: %s)",
+		task->status,task_status_string(task->used));
+      logger_task = NULL;      
+    }
+  }
+  
+  return running;
+}
+
+void
+task_environment_set (struct task *task) {
   static char padformat[BUFFERLEN];
   static char padframe[BUFFERLEN];
   static char padframes[BUFFERLEN];
@@ -109,11 +150,11 @@ void task_environment_set (struct task *task) {
   static char block_size[BUFFERLEN];
   static char ijob[BUFFERLEN];
   static char icomp[BUFFERLEN];
+  static char jobname[BUFFERLEN];
 
   /* Padded frame number */
   /* TODO: make padding length user defined */
-  snprintf (padformat,BUFFERLEN-1,"DRQUEUE_PADFRAME=%%0%uu",task->frame_pad);
-  snprintf (padframe,BUFFERLEN-1,padformat,task->frame);
+  snprintf (padframe,BUFFERLEN,"DRQUEUE_PADFRAME=%0*i",task->frame_pad,task->frame);
   putenv (padframe);
 
   //create a variable with a space delimited padded frames list
@@ -122,13 +163,13 @@ void task_environment_set (struct task *task) {
   if (block_end > task->frame_end + 1) {
     block_end = task->frame_end + 1;
   }
-  snprintf (padformat,BUFFERLEN-1,"DRQUEUE_PADFRAMES=%%0%uu",task->frame_pad);
-  snprintf (padframes,BUFFERLEN-1,padformat,task->frame);
+
+  snprintf (padformat,BUFFERLEN,"DRQUEUE_PADFRAMES=%0*i",task->frame_pad,task->frame);
+  snprintf (padframes,BUFFERLEN,"%s",padformat);
   for (i=task->frame+1; i<block_end; i++) {
-    snprintf (padformat,BUFFERLEN-1,"%s %%0%uu",padframes,task->frame_pad);
-    snprintf (padframes,BUFFERLEN-1,padformat,i);
+    snprintf (padformat,BUFFERLEN,"%s %0*i",padframes,task->frame_pad,i);
+    snprintf (padframes,BUFFERLEN,"%s",padformat);
   }
-  //snprintf (padformat,BUFFERLEN-1,"%s\"",padframes);
   putenv (padframes);
 
   /* Frame number */
@@ -148,6 +189,9 @@ void task_environment_set (struct task *task) {
   snprintf (block_size,BUFFERLEN-1,"DRQUEUE_BLOCKSIZE=%u",task->block_size);
   putenv (block_size);
 
+  // Job name
+  snprintf (jobname,BUFFERLEN-1,"DRQUEUE_JOBNAME=%s",task->jobname);
+  putenv (jobname);
   /* Job Index */
   snprintf (ijob,BUFFERLEN-1,"DRQUEUE_JOBID=%i",task->ijob);
   putenv (ijob);
@@ -178,19 +222,46 @@ void task_environment_set (struct task *task) {
   struct envvars envvars;
   envvars_init(&envvars);
   if (!request_job_envvars (task->ijob,&envvars,SLAVE_LAUNCHER)) {
-    log_slave_task (task,L_WARNING,"Could not receive job environment variables");
+    log_auto (L_WARNING,"Could not receive job environment variables");
     return;
   }
-
-  log_slave_task (task,L_DEBUG,"Received %i environment variables",envvars.nvariables);
+  log_auto (L_DEBUG,"Received %u environment variables",envvars.nvariables);
   char *buffer;
-  envvars_attach(&envvars);
-  for (i = 0; i < envvars.nvariables; i++) {
-    buffer = (char *) malloc (BUFFERLEN);
-    snprintf (buffer,BUFFERLEN,"%s=%s",envvars.variables[i].name,envvars.variables[i].value);
-    log_slave_task (task,L_DEBUG,"Putting \"%s\" in the environment",buffer);
-    putenv (buffer);
+  if (!envvars_attach(&envvars)) {
+    if (envvars.nvariables > 0) {
+      log_auto (L_WARNING,"Custom environment variables could not be attached. There should be %i available. (%s)",
+		envvars.nvariables,strerror(drerrno_system));
+    }
+  } else {
+    for (i = 0; i < envvars.nvariables; i++) {
+      buffer = (char *) malloc (BUFFERLEN);
+      snprintf (buffer,BUFFERLEN,"%s=%s",envvars.variables.ptr[i].name,envvars.variables.ptr[i].value);
+      log_auto (L_DEBUG,"Putting \"%s\" in the environment",buffer);
+      putenv (buffer);
+    }
+    envvars_detach(&envvars);
   }
-  envvars_detach(&envvars);
-  envvars_empty(&envvars);
+  envvars_free(&envvars);
+}
+
+int
+task_set_to_job_frame (struct task *task, struct job *job, uint32_t frame) {
+  if (!task) {
+    return 0;
+  }
+  if (!job) {
+    return 0;
+  }
+  task_init(task);
+  strncpy(task->jobname,job->name,MAXNAMELEN-1);
+  task->ijob = job->id;
+  strncpy(task->jobcmd,job->cmd,MAXCMDLEN-1);
+  strncpy(task->owner,job->owner,MAXCMDLEN-1);
+  task->frame = frame;
+  task->frame_start = job->frame_start;
+  task->frame_end = job->frame_end;
+  task->frame_step = job->frame_step;
+  task->frame_pad = job->frame_pad;
+  task->block_size= job->block_size;
+  return 1;
 }

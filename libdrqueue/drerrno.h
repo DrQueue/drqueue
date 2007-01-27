@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -22,7 +24,10 @@
 #ifndef _DRERRNO_H_
 #define _DRERRNO_H_
 
+#include <errno.h>
+
 extern int drerrno;              // global errno
+extern int drerrno_system;       // system's errno at the time of the error
 
 #define DRE_NOERROR     0 /* No error */
 #define DRE_ERROROPENING  1  /* Could not open file or directory */
@@ -51,6 +56,8 @@ extern int drerrno;              // global errno
 #define DRE_RMSHMEM     24 // Remove shared memory
 #define DRE_NOMEMORY    25 // Not enough memory
 #define DRE_DTSHMEM         26  // Detach shared memory
+#define DRE_CONNMASTER      27  // No connection to master
+#define DRE_COMMPROBLEM     28  // Communications problem
 
 char *drerrno_str (void);
 

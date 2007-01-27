@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -16,12 +18,14 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-/* $Id$ */
+// $Id$
+//
 
 #include "drerrno.h"
 #include "constants.h"
 
 int drerrno = DRE_NOERROR;
+int drerrno_system = 0;
 
 char *drerrno_str (void) {
   char *msg;
@@ -85,7 +89,7 @@ char *drerrno_str (void) {
     msg = "Could not attach shared memory";
     break;
   case DRE_NOTMPDIR:
-    msg = "Directory for temporary files ($DRQUEUE_TMP)does not exist or is not writeable";
+    msg = "Directory for temporary files ($DRQUEUE_TMP) does not exist or is not writeable";
     break;
   case DRE_NODBDIR:
     msg = "Directory for database files ($DRQUEUE_DB) does not exist or is not writeable";
@@ -107,6 +111,12 @@ char *drerrno_str (void) {
     break;
   case DRE_DTSHMEM:
     msg = "Could not detach shared memory";
+    break;
+  case DRE_CONNMASTER:
+    msg = "Could not connect to master";
+    break;
+  case DRE_COMMPROBLEM:
+    msg = "Communications error";
     break;
   default:
     msg = "drerrno NOT listed !!";

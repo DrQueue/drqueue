@@ -16,7 +16,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id: nukesg.h 1251 2005-05-02 02:35:47Z jorge $
+// $Id$
 //
 
 #ifndef _NUKESG_H_
@@ -28,7 +28,9 @@
 extern "C" {
 #endif
 
-  struct nukesgi {  /* Maya Script Generator Info */
+#pragma pack(push,1)
+
+  struct nukesgi {  /* Maya Script Generator  Info */
     char scene[BUFFERLEN];
     char image[BUFFERLEN];
     char scriptdir[BUFFERLEN];
@@ -38,6 +40,8 @@ extern "C" {
     char format[BUFFERLEN];
     int  mentalray;  // 1 if we should render with mr
   };
+
+#pragma pack(pop)
 
   char *nukesg_create (struct nukesgi *info);
 

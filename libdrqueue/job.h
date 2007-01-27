@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004,2005 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -19,6 +21,7 @@
 // $Id$
 //
 
+
 #ifndef _JOB_H_
 #define _JOB_H_
 
@@ -26,25 +29,16 @@
 extern "C" {
 #endif
 
-#if defined (__LINUX)
-#include <stdint.h>
-#elif defined (__IRIX)
 #include <sys/types.h>
-#elif defined (__OSX)
 #include <stdint.h>
-#elif defined (__FREEBSD)
-#include <stdint.h>
-#elif defined (__CYGWIN)
-#include <stdint.h>
-#else
-#error You need to define the OS, or OS defined not supported
-#endif
-
 #include <time.h>
+#include <stdio.h>
+#include <limits.h>
 
 #include "constants.h"
 #include "envvars.h"
 
+#pragma pack(push,1)
 
 /* FRAME SECTION */
 typedef enum {
@@ -86,7 +80,7 @@ struct job_limits {
 /* this union must have the appropiate information for every kind of job */
 union koj_info {  /* Kind of job information */
   struct koji_general {
-    char *scriptdir;
+    char scriptdir[PATH_MAX];
   }
   general;
   struct koji_maya {
@@ -278,19 +272,20 @@ struct job {
   uint32_t avg_frame_time;      // Average frame time
   uint32_t est_finish_time;     // Estimated finish time
                                 // we checked.
-  struct frame_info *frame_info; // Status of every frame
+
+  fptr_type (struct frame_info,frame_info);      // Status of every frame (1 pointer)
   int64_t fishmid;               // Frame info shared memory id
 
-  struct blocked_host *blocked_host;  // Blocked hosts
-  int64_t bhshmid;                    // Shared memory id for the blocked_host structure
-  uint16_t nblocked;                  // Number of blocked hosts
+  fptr_type (struct blocked_host,blocked_host);  // Blocked hosts    (1 pointer)
+  int64_t bhshmid;               // Shared memory id for the blocked_host structure
+  uint16_t nblocked;             // Number of blocked hosts
 
   uint32_t flags;                // Job flags
 
   uint32_t dependid;             // Jobid on which this one depends
 
-  struct job_limits limits;      // Job limits
-  struct envvars envvars;        // Environment variables
+  struct job_limits limits;           // Job limits
+  struct envvars envvars;             // Environment variables (1 pointer)
 };
 
 struct database;
@@ -301,23 +296,28 @@ struct tpol {           // Priority ordered list of jobs
   uint64_t submit_time; // submission time of the job
 };
 
-int job_index_free (void *pwdb);
+#pragma pack(pop)
+
+uint32_t job_index_free (void *pwdb);
 void job_report (struct job *job);
-char *job_status_string (char status);
-char *job_frame_status_string (char status);
+char *job_status_string (uint16_t status);
+char *job_frame_status_string (uint8_t status);
 uint32_t job_frame_index_to_number (struct job *job,uint32_t index);
 uint32_t job_frame_number_to_index (struct job *job,uint32_t number);
 int job_frame_number_correct (struct job *job,uint32_t number);
 uint32_t job_nframes (struct job *job);
 void job_copy (struct job *src, struct job *dst);
+void job_fix_received_invalid (struct job *job);
+void job_bswap_from_network (struct job *orig, struct job *dest);
+void job_bswap_to_network (struct job *orig, struct job *dest);
 
-int job_available (struct database *wdb,uint32_t ijob, int *iframe, uint32_t icomp);
-int job_available_no_icomp (struct database *wdb,uint32_t ijob, int *iframe);
+int job_available (struct database *wdb,uint32_t ijob, uint32_t *iframe, uint32_t icomp);
+int job_available_no_icomp (struct database *wdb,uint32_t ijob, uint32_t *iframe);
 uint32_t job_first_frame_available (struct database *wdb,uint32_t ijob,uint32_t icomp);
 uint32_t job_first_frame_available_no_icomp (struct database *wdb,uint32_t ijob);
 
-void job_frame_waiting (struct database *wdb,uint32_t ijob, int iframe);
-void job_update_assigned (struct database *wdb,uint32_t ijob, int iframe, int icomp, int itask);
+void job_frame_waiting (struct database *wdb,uint32_t ijob, uint32_t iframe);
+void job_update_assigned (struct database *wdb,uint32_t ijob, uint32_t iframe, uint32_t icomp, uint16_t itask);
 void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job);
 void job_init (struct job *job);
 void job_frame_info_init (struct frame_info *fi);
@@ -331,8 +331,8 @@ int job_index_correct_master (struct database *wdb,uint32_t ijob); // bool
 
 void job_limits_init (struct job_limits *limits);
 int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp); // bool
-void job_limits_bswap_from_network (struct job_limits *limits);
-void job_limits_bswap_to_network (struct job_limits *limits);
+void job_limits_bswap_from_network (struct job_limits *orig, struct job_limits *dest);
+void job_limits_bswap_to_network (struct job_limits *orig, struct job_limits *dest);
 
 void job_environment_set (struct job *job, uint32_t iframe);
 void job_logs_remove (struct job *job);   // WARN: this function
@@ -351,6 +351,11 @@ void detach_blocked_host_shared_memory (struct blocked_host *bhshp);
 int priority_job_compare (const void *a,const void *b);
 
 char *job_koj_string (struct job *job);
+
+
+int job_block_host_add_by_name (struct job *job, char *name);
+int job_block_host_remove_by_name (struct job *job, char *name);
+int job_block_host_exists_by_name (struct job *job, char *name);
 
 #ifdef __CPLUSPLUS
 }

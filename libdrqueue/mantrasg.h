@@ -17,7 +17,7 @@
 // USA
 //
 //
-// $Id: /drqueue/remote/trunk/aqsissg.h 2253 2005-05-02T03:55:54.970636Z jorge $
+// $Id$
 //
 
 #ifndef _MANTRASG_H_
@@ -50,6 +50,8 @@
 #ifdef __CPLUSPLUS
 extern "C" {
 #endif
+
+#pragma pack(push,1)
 
   struct mantrasgi {  /* Aqsis Script Generator Info */
     char scene[BUFFERLEN];
@@ -94,6 +96,8 @@ extern "C" {
     // char custom_Verbose;
     // char Verbose[BUFFERLEN];
   };
+
+#pragma pack(pop)
 
   char *mantrasg_create (struct mantrasgi *info);
   char *mantrasg_default_script_path (void);

@@ -1,122 +1,167 @@
 body {
- background: #eee;
- color: #111;
- margin: 10px;
- padding: 0;
+ background: #eef;
+ color: #447;
+ padding: 5px;
+ width: 100%;
+ margin-left: 10px;
 }
+
 body, th, td {
- font: bold 14px verdana,arial,'Bitstream Vera Sans',helvetica,sans-serif;
+ font-family: serif;
+ font-size: 10px;
+ font-weigth: normal;
+ text-align: right;
+ color: #224;
 }
-.jobtitle {
-	font: bold 21px verdana,arial,'Bitstream Vera Sans',helvetica,sans-serif;
-	text-align: center;
+
+table {
+ width: 90%;
+ margin-left: auto;
+ margin-right: auto;
 }
-.joblisttitle {
-	font: bold 21px verdana,arial,'Bitstream Vera Sans',helvetica,sans-serif;	
-	text-align: center;
-	padding: 10;
+
+body a {
+  color: #447;
+  text-decoration: none;
+  border-bottom: 1px dotted #335;
 }
-.joblisttable {
-	width: 90%;
-	text-align: center;
-	margin-left: auto;
-	margin-right: auto;
-}
-.jobrowtitle {
-	background: #aaa;
-}
-.jobrow {
-	background: #ddd;
-}
+
 .title {
-	text-align: center;
-	font-size: 21px;
-	background: #ddd;
-	border-style: solid;
-	border-color: #444;
-	border-width: 5;
+  color: #335;
+  text-align: left;
+  text-indent: 160px;
+  font-family: monospace;
+  font-size: 1.50em;
+  font-weight: bolder;
+  background-color: transparent;
+  background-image: url('http://drqueue.org/weasel_small.png');
+  background-attachment: scroll;
+  background-repeat: no-repeat;
+  background-position: center left;
+  padding: 2px;
+  padding-top: 30px;
+  padding-bottom: 30px;
 }
+
+#drqueue {
+  margin-top: 8px;
+  letter-spacing: -0.03em;
+  word-spacing: -0.30em;
+}
+
+#drkeewee a {
+  color: #447;
+  text-decoration: none;
+  border-bottom: 1px groove #55d;
+  font-weight: bold;
+  font-size: 1.50em;
+  font-style: italic;
+}
+.frametitle {
+  text-align: left;
+}
+.frametitle h2 {
+  font-weight: bold;
+}
+.frametitle h3 {
+  font-weight: normal;
+}
+
+.joblisttitle, .computerlisttitle, .jobtitle, .computertitle, .framelisttitle, .tasklisttitle {
+  font-size: 1.50em;
+  font-family: serif;
+  font-variant: small-caps;
+  font-style: italic;
+  text-align: center;
+  margin: 3px auto;
+  padding: 3px;
+}
+
+.joblisttable, .computerlisttable, .tasklisttable {
+}
+.jobrowtitle td, .computerrowtitle td, .taskrowtitle td, .framerowtitle td, .taskrowtitle th {
+  background: #bbd;
+  text-align: center;
+  border: 1px solid #88c;
+  color: #447;
+}
+.jobrow td, .computerrow td, .taskrow td, .framerow td {
+  background: #ddf;
+  text-align: center;
+  border: 1px solid #88c;
+  color: #447;
+  background: #ddf;
+}
+
+.job table, .computer table {
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid #66c;
+  color: #ddf;
+  background: #ddf;
+}
+tr.jobitemrow, tr.computeritemrow {
+}
+
 .jobitem {
-	font: normal 14px;
-	color: #111;
 }
-.jobitemrow {
+
+td.jobitemname, td.computeritemname {
+  font-size: 0.90em
+  text-align: rigth;
+  padding: 3px;
+  border: 1px solid #88c;
+  color: #447;
+  background: #bbd;
 }
-.jobitemname {
-	font-size: 16px;
-	color: #111;
-	background: #aaa;
+td.jobitemvalue, td.computeritemvalue {
+  color: #447;
+  font-size: 0.80em;
+  text-align: left;
+  border: 1px solid #88c;
+  background: #ddf;
+  padding-right: 300px;
 }
-.jobitemvalue {
-	font-size: 14px;
-	color: #222;
-	background: #ddd;
+
+.framelisttitle, .tasklisttitle {
 }
-.framelisttitle {
-	font: bold 17px verdana,arial,'Bitstream Vera Sans',helvetica,sans-serif;
-	text-align: center;
+.framerowtitle td, .taskrowtitle td {
+  background: #bbd;
+  text-align: center;
+  border: 1px solid #88c;
+  color: #447;
 }
-.framerowtitle {
-	background: #aaa;
-}
-.framerow {
-	background: #ddd;
+.framerow td, .taskrow td {
+  background: #ddf;
+  text-align: center;
+  border: 1px solid #88c;
+  color: #447;
+  background: #ddf;
 }
 .framelisttable {
-	width: 90%;
-	text-align: center;
-	margin-left: auto;
-	margin-right: auto;
+  width: 90%;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid #11c;
+  color: #447;
+  background: #ddf;
 }
 
+body .computer {
+  text-align: center;
+}
 
-.computerlisttitle {
-	font: bold 21px verdana,arial,'Bitstream Vera Sans',helvetica,sans-serif;	
-	text-align: center;
-	padding: 10;
-}
-.computerlisttable {
-	width: 90%;
-	text-align: center;
-	margin-left: auto;
-	margin-right: auto;
-}
 .computerrowtitle {
-	background: #aaa;
+  background: #bbd;
 }
 .computerrow {
-	background: #ddd;
+  background: #ddf;
+  text-align: center;
 }
 .computeritem {
-	font: normal 14px;
-	color: #111;
+	color: #447;
 }
 .computeritemrow {
-}
-.computeritemname {
-	font-size: 16px;
-	color: #111;
-	background: #aaa;
-}
-.computeritemvalue {
-	font-size: 14px;
-	color: #222;
-	background: #ddd;
-}
-
-.tasklisttitle {
-	font: bold 17px verdana,arial,'Bitstream Vera Sans',helvetica,sans-serif;
-	text-align: center;
-}
-.taskrowtitle {
-	background: #aaa;
-}
-.taskrow {
-	background: #ddd;
-}
-.tasklisttable {
-	width: 90%;
-	text-align: center;
-	margin-left: auto;
-	margin-right: auto;
 }
