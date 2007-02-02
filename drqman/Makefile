@@ -2,11 +2,6 @@
 # $Id$
 #
 
-ifeq ($(origin GTK_PATH),undefined)
-GTK_PATH = /usr/local/gtk/bin
-$(warning Using default path for GTK_PATH with value $(GTK_PATH))
-endif
-
 SRCS := $(wildcard *.c)
 OBJS := $(patsubst %.c,%.o,$(SRCS))
 
@@ -47,14 +42,12 @@ else
  ifeq ($(systype),GNU__kFreeBSD)
   CPPFLAGS += -D__LINUX
   CFLAGS += -D__LINUX `pkg-config --cflags gtk+-2.0`
-  LDFLAGS = `pkg-config --libs gtk+-2.0`
-  MAKE = make
+  LDFLAGS += `pkg-config --libs gtk+-2.0`
 else 
  ifeq ($(systype),IRIX)
   CPPFLAGS += -D__IRIX
   CFLAGS += `pkg-config --cflags gtk+-2.0`
   LDFLAGS += `pkg-config --libs gtk+-2.0`
-#  MAKE = /usr/freeware/bin/make
  else
   ifeq ($(systype),Darwin)
    CPPFLAGS += -D__OSX
@@ -72,20 +65,18 @@ else
    CFLAGS += `pkg-config --cflags gtk+-2.0`
    LDFLAGS += `pkg-config --libs gtk+-2.0`
    CFLAGS += $(ARCHFLAGS)
-#   MAKE = make
   else
    ifeq ($(systype),FreeBSD)
     CPPFLAGS += -D__FREEBSD
     CFLAGS += `pkg-config --cflags gtk+-2.0`
-    LDFLAGS = `pkg-config --libs gtk+-2.0`
-    MAKE = gmake
+    LDFLAGS += `pkg-config --libs gtk+-2.0`
+    MAKE ?= gmake
    else
     ifeq ($(systype),CYGWIN_NT-5.1)
      CPPFLAGS += -D__CYGWIN
-     CFLAGS += -D__CYGWIN `$(GTK_PATH)/pkg-config --cflags gtk+-2.0` -mms-bitfields
-     LDFLAGS = `$(GTK_PATH)/pkg-config --libs gtk+-2.0`
-     UIFLAGS = -e _mainCRTStartup -mwindows ../contrib/windows/Resources/drqueue.res 
-     MAKE = make
+     CFLAGS += -D__CYGWIN `pkg-config --cflags gtk+-2.0` -mms-bitfields
+     LDFLAGS += `pkg-config --libs gtk+-2.0`
+     UIFLAGS += -e _mainCRTStartup -mwindows ../contrib/windows/Resources/drqueue.res 
     else
 $(error Cannot make DrQueueManager -- systype "$(systype)" is unknown)
     endif
