@@ -5,6 +5,9 @@
 SRCS := $(wildcard *.c)
 OBJS := $(patsubst %.c,%.o,$(SRCS))
 
+GTK_PREFIX ?= /usr/local/gtk
+#GTK_PATH ?= $(GTK_PREFIX)/bin
+GTK_PATH ?= /usr/bin
 
 kversion = $(shell uname -r)
 universal = 0
@@ -73,10 +76,9 @@ else
     MAKE ?= gmake
    else
     ifeq ($(systype),CYGWIN_NT-5.1)
-     CPPFLAGS += -D__CYGWIN
-     CFLAGS += -D__CYGWIN `pkg-config --cflags gtk+-2.0` -mms-bitfields
-     LDFLAGS += `pkg-config --libs gtk+-2.0`
-     UIFLAGS += -e _mainCRTStartup -mwindows ../contrib/windows/Resources/drqueue.res 
+     CPPFLAGS += -D__CYGWIN 
+     CFLAGS += $(CPPFLAGS) `$(GTK_PATH)/pkg-config.exe --define-variable=prefix=$(GTK_PREFIX) --cflags gtk+-2.0`
+     LDFLAGS += `$(GTK_PATH)/pkg-config.exe --define-variable=prefix=$(GTK_PREFIX) --libs gtk+-2.0` -mwindows
     else
 $(error Cannot make DrQueueManager -- systype "$(systype)" is unknown)
     endif
@@ -98,16 +100,6 @@ endif
 
 all: drqman
 
-ifeq ($(systype),CYGWIN_NT-5.1)
-
-../contrib/windows/Resources/drqueue.res: ../contrib/windows/Resources/drqueue.rc
-	$(MAKE) -C ../contrib/windows/Resources
-
-drqman: $(OBJS) ../libdrqueue.a ../contrib/windows/Resources/drqueue.res 
-	$(CC) -o $@ $(OBJS) libdrqueue.a $(LDFLAGS) $(UIFLAGS)
-
-else
-
 #libdrqueue.i386: ../libdrqueue.a
 #	lipo -output $@ -extract $(machinetype) $^
 #	ranlib $@  
@@ -115,7 +107,6 @@ else
 drqman: $(OBJS) ../libdrqueue.a
 	$(CC) -o $@ $^ $(LDFLAGS)
 
-endif
 
 %.o : %.c %.h
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<

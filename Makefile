@@ -3,9 +3,19 @@
 #
 
 ifeq (0,${MAKELEVEL})
-whoami := $(shell whoami)
-host-type := $(shell arch)
-MAKE := ${MAKE} host-type=${host-type} whoami=${whoami}
+
+ whoami := $(shell whoami)
+ ifneq ("",$(whoami))
+  whoami-arg := whoami=${whoami}
+ endif
+ 
+ host-type ?= $(shell arch 2> /dev/null)
+ ifneq ("",$(host-type))
+  host-type-arg := host-type=${host-type}
+ endif
+ 
+ MAKE ?= ${MAKE} ${host-type-arg} ${whoami-arg}
+
 endif
 
 kversion = $(shell uname -r)
@@ -92,7 +102,7 @@ else
    else
     ifeq ($(systype),CYGWIN_NT-5.1)
      CPPFLAGS += -D__CYGWIN
-     UIFLAGS += -e _mainCRTStartup -mwindows contrib/windows/Resources/drqueue.res 
+     CFLAGS += -mwindows
     else	
      $(error Cannot make DrQueue -- systype "$(systype)" is unknown)
     endif
@@ -195,16 +205,16 @@ CYGWIN_NT-5.1_install:
 	cp `which tcsh.exe` $(INSTROOT)/bin || exit 0
 	cp `which cygpath.exe` $(INSTROOT)/bin || exit 0
 	cp ./etc/* $(INSTROOT)/etc/ || exit 0
-	sh ./contrib/windows/build_services.sh $(PWD)/contrib/windows $(DOTNETPATH) 
-	cp ./contrib/* $(INSTROOT)/contrib/ || exit 0
-	cp ./contrib/windows/*.exe $(INSTROOT)/contrib/windows || exit 0
-	cp ./contrib/windows/Installer/* $(INSTROOT)/contrib/windows/installer || exit 0
+	#sh ./contrib/windows/build_services.sh $(PWD)/contrib/windows $(DOTNETPATH) 
+	#cp ./contrib/* $(INSTROOT)/contrib/ || exit 0
+	#cp ./contrib/windows/*.exe $(INSTROOT)/contrib/windows || exit 0
+	#cp ./contrib/windows/Installer/* $(INSTROOT)/contrib/windows/installer || exit 0
 	cp COPYING $(INSTROOT)/
 	chmod -R 0755 $(INSTROOT)/bin/* || exit 0
 	chmod 0755 $(INSTROOT)/contrib/* || exit 0
-	sh contrib/windows/install_dlls.sh $(INSTROOT)/bin
-	$(NSISPATH)/makensis.exe `cygpath -w $(INSTROOT)/contrib/windows/Installer/installer.nsi`
-	mv $(INSTROOT)/contrib/windows/Installer/Install.exe $(INSTROOT)/contrib/drqueue-setup.exe  
+	#sh contrib/windows/install_dlls.sh $(INSTROOT)/bin
+	#$(NSISPATH)/makensis.exe `cygpath -w $(INSTROOT)/contrib/windows/Installer/installer.nsi`
+	#mv $(INSTROOT)/contrib/windows/Installer/Install.exe $(INSTROOT)/contrib/drqueue-setup.exe  
 
 FreeBSD_install:
 	install -d -m 0777 $(INSTROOT)/tmp
@@ -300,10 +310,10 @@ libdrqueue.a: $(OBJS_LIBDRQUEUE) $(HDRS_LIBDRQUEUE)
     ranlib $@; \
   fi
 	
-ifeq ($(systype),CYGWIN_NT-5.1)
-contrib/windows/Resources/drqueue.res: contrib/windows/Resources/drqueue.rc
-	$(MAKE) -C contrib/windows/Resources
-endif
+#ifeq ($(systype),CYGWIN_NT-5.1)
+#contrib/windows/Resources/drqueue.res: contrib/windows/Resources/drqueue.rc
+#	$(MAKE) -C contrib/windows/Resources
+#endif
 
 %.c: %.h
 %.cpp: %.h
@@ -333,5 +343,4 @@ sendjob.o: sendjob.cpp sendjob.h
 	$(CXX) -c $(CXXFLAGS) $<
 sendjob: sendjob.o libdrqueue.a
 	$(CXX) $^ $(LDFLAGS) -o $@ 
-
 

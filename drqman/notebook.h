@@ -23,8 +23,8 @@
 #ifndef _NOTEBOOK_H
 #define _NOTEBOOK_H
 
-#include <gtk/gtk.h>
 #include "drqman.h"
+#include <gtk/gtk.h>
 
 void CreateNotebook (GtkWidget *window,GtkWidget *vbox,struct info_drqm *info);
 
