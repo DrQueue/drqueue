@@ -77,7 +77,7 @@ else
    else
     ifeq ($(systype),CYGWIN_NT-5.1)
      CPPFLAGS += -D__CYGWIN 
-     CFLAGS += $(CPPFLAGS) `$(GTK_PATH)/pkg-config.exe --define-variable=prefix=$(GTK_PREFIX) --cflags gtk+-2.0`
+     CFLAGS += `$(GTK_PATH)/pkg-config.exe --define-variable=prefix=$(GTK_PREFIX) --cflags gtk+-2.0` -mwindows
      LDFLAGS += `$(GTK_PATH)/pkg-config.exe --define-variable=prefix=$(GTK_PREFIX) --libs gtk+-2.0` -mwindows
     else
 $(error Cannot make DrQueueManager -- systype "$(systype)" is unknown)
