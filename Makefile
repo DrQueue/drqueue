@@ -102,7 +102,7 @@ else
    else
     ifeq ($(systype),CYGWIN_NT-5.1)
      CPPFLAGS += -D__CYGWIN
-     CFLAGS += -mwindows
+     #CFLAGS += -mwindows # no console flag
     else	
      $(error Cannot make DrQueue -- systype "$(systype)" is unknown)
     endif
