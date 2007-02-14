@@ -51,7 +51,7 @@ def get_wordsize_flags():
     print 'No "platform.machine()" available. '+\
           'Using "platform.architecture()": %s'%(plat_os,)
     if plat_os == 'WindowsPE':
-      os.environ['CFLAGS'] = '-m32 -mcygwin'
+      os.environ['CFLAGS'] = '-m32'
   return bitsFlag
 
 def get_define_macros():
@@ -106,7 +106,7 @@ setup(
     #packages = find_packages(exclude='ez_setup.py'),
     package_dir = { '' : 'src' },
     packages = [ 'drqueue', 'drqueue.base'],
-    ext_modules=[Extension('_libdrqueue', ['src/drqueue/base/libdrqueue.i'] + \
+    ext_modules=[Extension('drqueue.base._libdrqueue', ['src/drqueue/base/libdrqueue.i'] + \
                  get_abspath_glob(os.path.join('..','libdrqueue','*.c')),
                  define_macros=get_define_macros(),
                  include_dirs=[get_abspath('..'),
