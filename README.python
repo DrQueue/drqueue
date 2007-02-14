@@ -1,0 +1,52 @@
+Information about the updates in the organization of the Python modules
+-----------------------------------------------------------------------
+
+Before this version all functions and data were located into the "drqueue" module.
+
+It is now a package that includes another package named "base".
+
+Inside the "base" package you'll find the module "libdrqueue" that contains everything that was before into the module "drqueue".
+
+So the package tree would be:
+
+-> drqueue
+   |
+   \-> base
+       |
+       \-> libdrqueue
+  
+
+Temporary workaround
+--------------------
+
+Until everything settles down, old scripts will keep on working using the import command:
+
+________________python___________________
+import drqueue.base.libdrqueue as drqueue
+_________________________________________
+
+That will make all previous scripts access the old information using the same syntax.
+
+
+INSTALLATION NOTES
+------------------
+
+To install the python modules type:
+
+bash$ cd python
+bash$ sudo python setup.py install
+
+
+It might be possible that you are already the administrator and do not need sudo to install.
+In that case it'd just be:
+
+bash# cd python
+bash# python setup.py install
+
+
+Setuptools / Distutils
+----------------------
+Please refer to the documentation of these project for more details and options regarding installation and setup.
+-> http://peak.telecommunity.com/DevCenter/setuptools
+-> http://www.python.org/community/sigs/current/distutils-sig/doc/
+
