@@ -267,7 +267,7 @@ int RegisterGeneralJob (char* infile, int frameStart, int frameEnd, int frameSte
   // farm properties
   //   (I'll need to create a flag for setting all these)
 
-  // job.limits.os_flags = OSF_LINUX;
+  // job.limits.os_flags = OSF_ALL;
   // job.limits.os_flags = OSF_OSX;
   // job.limits.os_flags = OSF_FREEBSD;
 
@@ -439,7 +439,7 @@ int RegisterMentalrayJobFromFile (std::ifstream &infile) {
   strncpy (job.koji.mentalray.image,"",BUFFERLEN-1);
   strncpy (job.koji.mentalray.viewcmd,"",BUFFERLEN-1);
 
-  job.limits.os_flags = OSF_LINUX;
+  job.limits.os_flags = OSF_ALL;
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
   job.limits.memory = 0;
@@ -496,7 +496,7 @@ int RegisterBlenderJobFromFile (std::ifstream &infile) {
   strncpy (job.koji.blender.scene,scenePath.c_str(),BUFFERLEN-1);
   strncpy (job.koji.blender.viewcmd,"",BUFFERLEN-1);
 
-  job.limits.os_flags = OSF_LINUX;
+  job.limits.os_flags = OSF_ALL;
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
   job.limits.memory = 0;
@@ -563,7 +563,7 @@ int RegisterLightwaveJobFromFile (std::ifstream &infile) {
   strncpy (job.koji.lightwave.projectdir,projectDir.c_str(),BUFFERLEN-1);
   strncpy (job.koji.lightwave.viewcmd,"",BUFFERLEN-1);
 
-  job.limits.os_flags = OSF_LINUX;
+  job.limits.os_flags = OSF_ALL;
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
   job.limits.memory = 0;
@@ -630,7 +630,7 @@ int RegisterTerragenJobFromFile (std::ifstream &infile) {
   strncpy (job.koji.terragen.terrainfile,terrainfile.c_str(),BUFFERLEN-1);
   strncpy (job.koji.terragen.viewcmd,"",BUFFERLEN-1);
 
-  job.limits.os_flags = OSF_LINUX;
+  job.limits.os_flags = OSF_ALL;
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
   job.limits.memory = 0;
@@ -689,7 +689,7 @@ int RegisterShakeJobFromFile (std::ifstream &infile) {
   strncpy (job.koji.shake.script,scenePath.c_str(),BUFFERLEN-1);
   strncpy (job.koji.shake.viewcmd,"",BUFFERLEN-1);
 
-  job.limits.os_flags = OSF_LINUX;
+  job.limits.os_flags = OSF_ALL;
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
   job.limits.memory = 0;
@@ -748,7 +748,7 @@ int RegisterNukeJobFromFile (std::ifstream &infile) {
   strncpy (job.koji.nuke.scene,scenePath.c_str(),BUFFERLEN-1);
   strncpy (job.koji.nuke.viewcmd,"",BUFFERLEN-1);
 
-  job.limits.os_flags = OSF_LINUX;
+  job.limits.os_flags = OSF_ALL;
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
   job.limits.memory = 0;
@@ -807,7 +807,7 @@ int RegisterThreedelightJobFromFile (std::ifstream &infile) {
   strncpy (job.koji.threedelight.scene,scenePath.c_str(),BUFFERLEN-1);
   strncpy (job.koji.threedelight.viewcmd,"",BUFFERLEN-1);
 
-  job.limits.os_flags = OSF_LINUX;
+  job.limits.os_flags = OSF_ALL;
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
   job.limits.memory = 0;
@@ -865,7 +865,7 @@ int RegisterPixieJobFromFile (std::ifstream &infile) {
   strncpy (job.koji.pixie.scene,scenePath.c_str(),BUFFERLEN-1);
   strncpy (job.koji.pixie.viewcmd,"",BUFFERLEN-1);
 
-  job.limits.os_flags = OSF_LINUX;
+  job.limits.os_flags = OSF_ALL;
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
   job.limits.memory = 0;
@@ -928,7 +928,7 @@ int RegisterAftereffectsJobFromFile (std::ifstream &infile) {
   strncpy (job.koji.aftereffects.comp,comp.c_str(),BUFFERLEN-1);
   strncpy (job.koji.aftereffects.viewcmd,"",BUFFERLEN-1);
 
-  job.limits.os_flags = OSF_LINUX;
+  job.limits.os_flags = OSF_ALL;
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
   job.limits.memory = 0;
@@ -987,7 +987,7 @@ int RegisterAqsisJobFromFile (std::ifstream &infile) {
   strncpy (job.koji.aqsis.scene,scenePath.c_str(),BUFFERLEN-1);
   strncpy (job.koji.aqsis.viewcmd,"",BUFFERLEN-1);
 
-  job.limits.os_flags = OSF_LINUX;
+  job.limits.os_flags = OSF_ALL;
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
   job.limits.memory = 0;
@@ -1044,7 +1044,7 @@ int RegisterMantraJobFromFile (std::ifstream &infile) {
   strncpy (job.koji.mantra.scene,scenePath.c_str(),BUFFERLEN-1);
   strncpy (job.koji.mantra.viewcmd,"",BUFFERLEN-1);
 
-  job.limits.os_flags = OSF_LINUX;
+  job.limits.os_flags = OSF_ALL;
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
   job.limits.memory = 0;
@@ -1103,7 +1103,7 @@ int RegisterBmrtJobFromFile (std::ifstream &infile) {
   strncpy (job.koji.bmrt.scene,scenePath.c_str(),BUFFERLEN-1);
   strncpy (job.koji.bmrt.viewcmd,"",BUFFERLEN-1);
 
-  job.limits.os_flags = OSF_LINUX;
+  job.limits.os_flags = OSF_ALL;
   job.limits.nmaxcpus = (uint16_t)-1;
   job.limits.nmaxcpuscomputer = (uint16_t)-1;
   job.limits.memory = 0;
