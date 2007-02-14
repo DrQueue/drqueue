@@ -45,7 +45,7 @@
 #define VERSION_MAJOR  0
 #define VERSION_MINOR  64
 #define VERSION_PATCH  2
-#define VERSION_POST   0
+#define VERSION_POST   1
 #define VERSION_PRE    0
 
 
