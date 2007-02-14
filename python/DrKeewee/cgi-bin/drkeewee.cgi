@@ -30,7 +30,7 @@ cgitb.enable()
 import cgi
 import os
 import sys
-import drqueue
+import drqueue.base.libdrqueue as drqueue
 import time
 
 class job:
