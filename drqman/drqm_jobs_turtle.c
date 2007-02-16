@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -16,9 +18,9 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-/*
- * $Id$ 
- */
+//
+// $Id$ 
+//
 
 #include <string.h>
 #include <unistd.h>
@@ -242,7 +244,7 @@ GtkWidget *dnj_koj_frame_turtle (struct drqm_jobs_info *info) {
 GtkWidget *jdd_koj_turtle_widgets (struct drqm_jobs_info *info) {
   GtkWidget *table;
   GtkWidget *label;
-  GtkAttachOptions options = GTK_EXPAND | GTK_SHRINK | GTK_FILL ;
+  GtkAttachOptions options = (GtkAttachOptions)(GTK_EXPAND | GTK_SHRINK | GTK_FILL) ;
 
   char resx_str[BUFFERLEN],resy_str[BUFFERLEN];
   snprintf(resx_str,BUFFERLEN,"%i",info->jdd.job.koji.turtle.resx);

@@ -3884,7 +3884,7 @@ void handle_rs_r_limitspoolremove (int sfd,struct slave_database *sdb,struct req
 int
 request_job_list (struct job **job, uint16_t who) {
   //
-  // Returns the numbers of jobs that has copied into the returned pointer
+  // Returns the numbers of jobs that has copied into the returned pointer, -1 in case of error
   //
   struct request req;
   int sfd;

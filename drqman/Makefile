@@ -48,7 +48,8 @@ else
   LDFLAGS += `pkg-config --libs gtk+-2.0`
 else 
  ifeq ($(systype),IRIX)
-  CPPFLAGS += -D__IRIX
+  CC ?= CC
+  CPPFLAGS += -D__IRIX -D__CPLUSPLUS -I.
   CFLAGS += `pkg-config --cflags gtk+-2.0`
   LDFLAGS += `pkg-config --libs gtk+-2.0`
  else
