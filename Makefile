@@ -73,6 +73,8 @@ ifeq ($(systype),GNU__kFreeBSD)
  MAKE ?= make
 else
  ifeq ($(systype),IRIX)
+  CC ?= c99
+  CXX ?= CC
   CPPFLAGS += -D__IRIX
  else
   ifeq ($(systype),Darwin)

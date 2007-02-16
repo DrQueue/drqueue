@@ -144,7 +144,7 @@ GtkWidget *dnj_koj_frame_aftereffects (struct drqm_jobs_info *info) {
 GtkWidget *jdd_koj_aftereffects_widgets (struct drqm_jobs_info *info) {
   GtkWidget *table;
   GtkWidget *label;
-  GtkAttachOptions options = GTK_EXPAND | GTK_SHRINK | GTK_FILL ;
+  GtkAttachOptions options = (GtkAttachOptions)(GTK_EXPAND | GTK_SHRINK | GTK_FILL) ;
   char *labels[] = { "Project file:", info->jdd.job.koji.aftereffects.project,
                      "Comp:", info->jdd.job.koji.aftereffects.comp,
                      "View command:", info->jdd.job.koji.aftereffects.viewcmd,
