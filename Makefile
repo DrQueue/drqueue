@@ -69,7 +69,7 @@ ifeq ($(systype),GNU__kFreeBSD)
  CPPFLAGS += -D__LINUX
  MAKE ?= make
 else
- ifeq ($(systype),IRIX)
+ ifeq ($(systype),IRIX64)
   CC := c99
   CXX := c99
   CPPFLAGS += -D__IRIX

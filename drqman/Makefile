@@ -48,11 +48,11 @@ else
   CFLAGS += -D__LINUX `pkg-config --cflags gtk+-2.0`
   LDFLAGS += `pkg-config --libs gtk+-2.0`
 else 
- ifeq ($(systype),IRIX)
+ ifeq ($(systype),IRIX64)
   CC := c99
   GTK_PATH = /usr/nekoware/bin
   MAKE = /usr/nekoware/bin/gmake
-  CPPFLAGS += -D__IRIX -D__CPLUSPLUS -I.
+  CPPFLAGS += -D__IRIX
   CFLAGS += `pkg-config --cflags gtk+-2.0`
   LDFLAGS += `pkg-config --libs gtk+-2.0`
  else
