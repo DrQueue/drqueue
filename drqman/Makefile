@@ -24,9 +24,10 @@ systype := $(shell bash -c "source ../bin/shlib; get_env_kernel")
 machinetype := $(shell bash -c "source ../bin/shlib; get_env_machine")
 endif
 
-CPPFLAGS ?= -D_NO_COMPUTER_SEMAPHORES -D_NO_COMPUTER_POOL_SEMAPHORES -D_GNU_SOURCE -DCOMM_REPORT -I.. -I../libdrqueue
-CFLAGS ?= -g -O3 -Wall
-CXXFLAGS ?= $(CFLAGS) $(CPPFLAGS) -D__CPLUSPLUS
+CPPFLAGS = -D_NO_COMPUTER_SEMAPHORES -D_NO_COMPUTER_POOL_SEMAPHORES -D_GNU_SOURCE -DCOMM_REPORT -I.. -I../libdrqueue
+CFLAGS = -g -O3 -Wall
+CXXFLAGS = $(CFLAGS) $(CPPFLAGS) -D__CPLUSPLUS
+LDFLAGS = 
 
 ifeq ($(systype),Linux)
  CPPFLAGS += -D__LINUX

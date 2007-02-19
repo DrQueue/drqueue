@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
 //
 // This file is part of DrQueue
 //
@@ -21,9 +21,10 @@
 // $Id$
 //
 
-#include "computer_info.h"
-#include "logger.h"
 
+#include "libdrqueue.h"
+
+#include <unistd.h>
 #include <signal.h>
 #include <sys/types.h>
 #include <stdint.h>
@@ -52,22 +53,34 @@ uint32_t
 get_memory (void) {
   FILE *hinv;
   char buf[BUFFERLEN];
-  char* offset;
+  char *offset,*end;
   uint32_t memsize = 0;
-  intmax_t memsize_read = 0;
+  int memsize_read = 0;
   int found = 0;
 
   if ((hinv = popen ("/sbin/hinv","r")) == NULL) {
     drerrno_system = errno;
-    log_auto (L_WARNING,"Problems executing '/sbin/hinv'");
+    log_auto (L_WARNING,"Problems executing '/sbin/hinv'. (%s)",strerror(drerrno_system));
     return memsize;
   }
 
   while (fgets (buf,BUFFERLEN,hinv) != NULL) {
     if ((offset=strstr(buf,"memory size:")) != NULL) {
-      /* system memory in mbytes is on this line */
-      if (sscanf (offset+13,"%ji",&memsize_read) == 1) {
-        found = 1;
+      while ((offset < (buf+BUFFERLEN)) && !isdigit(*offset)) {
+        offset++;
+      }
+      end = offset;
+      while ((end < (buf+BUFFERLEN)) && isdigit(*end)) {
+        end++;
+      }
+      if (end < (buf+BUFFERLEN)) {
+        /* system memory in mbytes is on this line */
+        *end = '\0';
+        if (sscanf (offset,"%i",&memsize_read) != 0) {
+          memsize = (uint32_t) memsize_read;
+          found = 1;
+          break;
+        }
       }
     }
   }
@@ -102,6 +115,9 @@ get_proctype (void) {
       } else if (strstr(buf,"R10000") != NULL) {
         proctype = PROCTYPE_MIPSR10000;
         found = 1;
+      } else if (strstr(buf,"R12000") != NULL) {
+        proctype = PROCTYPE_MIPSR12000;
+        found = 1;
       }
     }
   }
@@ -115,7 +131,8 @@ get_proctype (void) {
   return proctype;
 }
 
-int get_procspeed (void) {
+uint32_t
+get_procspeed (void) {
   FILE *hinv;
   int procspeed = 1;
   char buf[BUFFERLEN];

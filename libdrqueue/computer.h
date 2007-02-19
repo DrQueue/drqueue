@@ -83,7 +83,7 @@ void computer_init (struct computer *computer);
 int computer_free (struct computer *computer);
 int computer_ncomputers_masterdb (struct database *wdb);
 void computer_limits_init (struct computer_limits *cl); // This one should be used instead of the following
-void computer_init_limits (struct computer *comp);      // Deprecated
+void computer_limits_cpu_init (struct computer *comp);
 int computer_index_correct_master (struct database *wdb, uint32_t icomp);
 void computer_autoenable_check (struct slave_database *sdb);
 

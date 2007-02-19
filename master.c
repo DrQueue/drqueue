@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
 //
 // This file is part of DrQueue
 //
@@ -35,7 +35,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string.h>
-#ifdef __FREEBSD
+#if defined (__FREEBSD)
 # define SIGCLD SIGCHLD
 #endif
 
@@ -70,6 +70,7 @@ int main (int argc, char *argv[]) {
   tstart = time(NULL);
 #endif
 
+  setsid();
   logtool = DRQ_LOG_TOOL_MASTER;
   master_get_options (&argc,&argv,&force);
   
@@ -82,10 +83,15 @@ int main (int argc, char *argv[]) {
   // the path to the config file
   config_parse_tool("master");
 
-
   if (!common_environment_check()) {
     log_auto (L_ERROR,"Error checking the environment: %s",drerrno_str());
     exit (1);
+  }
+
+  if ((sfd = get_socket(MASTERPORT)) == -1) {
+    drerrno_system = errno;
+    log_auto (L_ERROR,"get_socket(): failed. (%s)",strerror(drerrno_system));
+    exit(1);
   }
 
   set_signal_handlers ();
@@ -113,9 +119,6 @@ int main (int argc, char *argv[]) {
     set_signal_handlers_child_cchecks ();
     master_consistency_checks (wdb);
     exit (0);
-  }
-  if ((sfd = get_socket(MASTERPORT)) == -1) {
-    kill(0,SIGINT);
   }
 
   printf ("Waiting for connections...\n");
@@ -296,9 +299,12 @@ void set_signal_handlers (void) {
   struct sigaction clean;
   struct sigaction ignore;
 
-  clean.sa_sigaction = clean_out;
+  clean.sa_handler = clean_out;
   sigemptyset (&clean.sa_mask);
-  clean.sa_flags = SA_SIGINFO;
+  sigaddset(&clean.sa_mask,SIGINT);
+  sigaddset(&clean.sa_mask,SIGTERM);
+  sigaddset(&clean.sa_mask,SIGSEGV);
+  clean.sa_flags = 0;
   sigaction (SIGINT, &clean, NULL);
   sigaction (SIGTERM, &clean, NULL);
   sigaction (SIGSEGV, &clean, NULL);
@@ -316,25 +322,35 @@ void set_signal_handlers_child_conn_handler (void) {
   struct sigaction action_pipe;
   struct sigaction action_sigsegv;
 
-  action_dfl.sa_sigaction = (void *)SIG_DFL;
+#ifdef __IRIX
+  action_dfl.sa_handler = SIG_DFL;
+#else
+  action_dfl.sa_handler = (void *)SIG_DFL;
+#endif
   sigemptyset (&action_dfl.sa_mask);
-  action_dfl.sa_flags = SA_SIGINFO;
+  sigaddset (&action_dfl.sa_mask,SIGINT);
+  sigaddset (&action_dfl.sa_mask,SIGTERM);
+  action_dfl.sa_flags = 0;
   sigaction (SIGINT, &action_dfl, NULL);
   sigaction (SIGTERM, &action_dfl, NULL);
 
-  action_alarm.sa_sigaction = sigalarm_handler;
+  action_alarm.sa_handler = sigalarm_handler;
   sigemptyset (&action_alarm.sa_mask);
-  action_alarm.sa_flags = SA_SIGINFO;
+  sigaddset (&action_alarm.sa_mask,SIGALRM);
+  action_alarm.sa_flags = 0;
   sigaction (SIGALRM, &action_alarm, NULL);
-  action_pipe.sa_sigaction = sigpipe_handler;
+
+  action_pipe.sa_handler = sigpipe_handler;
   sigemptyset (&action_pipe.sa_mask);
-  action_pipe.sa_flags = SA_SIGINFO;
+  sigaddset (&action_pipe.sa_mask,SIGPIPE);
+  action_pipe.sa_flags = 0;
   sigaction (SIGPIPE, &action_pipe, NULL);
 
   /* segv */
-  action_sigsegv.sa_sigaction = sigsegv_handler;
+  action_sigsegv.sa_handler = sigsegv_handler;
   sigemptyset (&action_sigsegv.sa_mask);
-  action_sigsegv.sa_flags = SA_SIGINFO;
+  sigaddset (&action_sigsegv.sa_mask,SIGSEGV);
+  action_sigsegv.sa_flags = 0;
   sigaction (SIGSEGV, &action_sigsegv, NULL);
 }
 
@@ -342,20 +358,27 @@ void set_signal_handlers_child_cchecks (void) {
   struct sigaction action_dfl;
   struct sigaction action_sigsegv;
 
-  action_dfl.sa_sigaction = (void *)SIG_DFL;
+#ifdef __IRIX
+  action_dfl.sa_handler = SIG_DFL;
+#else
+  action_dfl.sa_handler = (void *)SIG_DFL;
+#endif
   sigemptyset (&action_dfl.sa_mask);
-  action_dfl.sa_flags = SA_SIGINFO;
+  sigaddset (&action_dfl.sa_mask,SIGINT);
+  sigaddset (&action_dfl.sa_mask,SIGTERM);
+  action_dfl.sa_flags = 0;
   sigaction (SIGINT, &action_dfl, NULL);
   sigaction (SIGTERM, &action_dfl, NULL);
 
   // segv
-  action_sigsegv.sa_sigaction = sigsegv_handler;
+  action_sigsegv.sa_handler = sigsegv_handler;
   sigemptyset (&action_sigsegv.sa_mask);
-  action_sigsegv.sa_flags = SA_SIGINFO;
+  sigaddset (&action_sigsegv.sa_mask,SIGSEGV);
+  action_sigsegv.sa_flags = 0;
   sigaction (SIGSEGV, &action_sigsegv, NULL);
 }
 
-void clean_out (int signal, siginfo_t *info, void *data) {
+void clean_out (int signal) {
   int rc;
   pid_t child_pid;
   int i;
@@ -370,12 +393,12 @@ void clean_out (int signal, siginfo_t *info, void *data) {
   ignore.sa_handler = SIG_IGN;
   sigemptyset (&ignore.sa_mask);
   ignore.sa_flags = 0;
-  sigaction (SIGINT, &ignore, NULL);
+  //sigaction (SIGINT, &ignore, NULL);
 
   log_auto (L_INFO,"Saving...");
   database_save(wdb);
 
-#ifdef COMM_REPORT
+#ifdef COMM_REPORT_ILL
   tstop = time(NULL);
   ttotal = tstop - tstart;
   printf ("Report of communications:\n");
@@ -387,10 +410,10 @@ void clean_out (int signal, siginfo_t *info, void *data) {
 
   kill(0,SIGINT);  /* Kill all the children (Wow, I don't really want to do that...) */
   while ((child_pid = wait (&rc)) != -1) {
-    //  printf ("Child arrived ! %i\n",(int)child_pid);
+    log_auto (L_DEBUG,"clean_out: Child arrived (%i) with rc = %i",(int)child_pid,rc);
   }
 
-  log_auto (L_INFO,"Cleaning...");
+  log_auto (L_INFO,"Cleaning jobs from memory...");
   for (i=0;i<MAXJOBS;i++) {
     job_delete(&wdb->job[i]);
   }
@@ -414,19 +437,19 @@ void set_alarm (void) {
   alarm (MAXTIMECONNECTION);
 }
 
-void sigalarm_handler (int signal, siginfo_t *info, void *data) {
+void sigalarm_handler (int signal) {
   char *msg = "Connection time exceeded";
   log_auto (L_WARNING,msg);
   exit (1);
 }
 
-void sigpipe_handler (int signal, siginfo_t *info, void *data) {
+void sigpipe_handler (int signal) {
   char *msg = "Broken connection while reading or writing (SIGPIPE)";
   log_auto (L_WARNING,msg);
   exit (1);
 }
 
-void sigsegv_handler (int signal, siginfo_t *info, void *data) {
+void sigsegv_handler (int signal) {
   char *msg = "Segmentation fault... too bad";
   log_auto (L_ERROR,msg);
   exit (1);

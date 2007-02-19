@@ -2494,7 +2494,7 @@ void handle_r_r_jobdelblkhost (int sfd, struct database *wdb, int icomp, struct 
   uint32_t ijob;
   uint32_t ihost;
   struct blocked_host *nbh,*obh = NULL,*tnbh;
-  int nbhshmid;
+  int64_t nbhshmid;
   uint32_t i;
 
   log_auto(L_DEBUG,"Entering handle_r_r_jobdelblkhost");
@@ -2650,7 +2650,7 @@ void handle_r_r_jobblkhost (int sfd, struct database *wdb, int icomp, struct req
   uint32_t ijob;
   uint32_t ihost;
   struct blocked_host *nbh,*obh = NULL;
-  int nbhshmid;
+  int64_t nbhshmid;
   int i;
 
   log_auto(L_DEBUG,"Entering handle_r_r_jobblkhost");
