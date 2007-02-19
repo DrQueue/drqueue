@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
 //
 // This file is part of DrQueue
 //
@@ -298,7 +298,7 @@ computer_limits_cleanup_received (struct computer_limits *cl) {
 void
 computer_limits_cleanup_to_send (struct computer_limits *cl) {
   computer_limits_cleanup_received (cl);
-};
+}
 
 void
 computer_limits_init (struct computer_limits *cl) {
@@ -313,11 +313,10 @@ computer_limits_init (struct computer_limits *cl) {
   computer_pool_init (cl);
 }
 
-void computer_init_limits (struct computer *comp) {
-  computer_limits_init (&comp->limits);
+void computer_limits_cpu_init (struct computer *comp) {
   comp->limits.nmaxcpus = comp->hwinfo.ncpus;
   comp->limits.maxfreeloadcpu = MAXLOADAVG * comp->hwinfo.ncpus;
-}
+} 
 
 int computer_index_correct_master (struct database *wdb, uint32_t icomp) {
   if (icomp > MAXCOMPUTERS)
@@ -391,8 +390,7 @@ int
 computer_lock_check (struct computer *computer) {
 #if defined (_NO_COMPUTER_SEMAPHORES)
   return 1;
-#endif
-
+#else
   if (!semaphore_valid(computer->semid)) {
     log_auto (L_WARNING,"computer_lock(): semaphore not valid, creating a new one. Computer Id: %u",computer->hwinfo.id);
     computer->semid = semaphore_get();
@@ -403,13 +401,14 @@ computer_lock_check (struct computer *computer) {
     return 0;
   }
   return 1;
+#endif
 }
 
 int
 computer_lock (struct computer *computer) {
 #if defined (_NO_COMPUTER_SEMAPHORES)
   return 1;
-#endif
+#else
   computer_lock_check (computer);
   if (!semaphore_lock (computer->semid)) {
     log_auto (L_ERROR,"computer_lock(): There was an error while trying to lock the computer structure. Msg: %s",
@@ -418,13 +417,14 @@ computer_lock (struct computer *computer) {
   }
   log_auto (L_DEBUG3,"computer_lock(): computer locked successfully. (Comp Id: %u)",computer->hwinfo.id);
   return 1;
+#endif
 }
 
 int
 computer_release (struct computer *computer) {
 #if defined (_NO_COMPUTER_SEMAPHORES)
   return 1;
-#endif
+#else
   computer_lock_check (computer);
   if (!semaphore_release (computer->semid)) {
     log_auto (L_ERROR,"computer_release(): There was an error while trying to release the computer structure. Msg: %s",
@@ -433,6 +433,7 @@ computer_release (struct computer *computer) {
   }
   log_auto (L_DEBUG3,"computer_release(): computer released successfully. (Comp Id: %u)",computer->hwinfo.id);
   return 1;
+#endif
 }
 
 int computer_attach (struct computer *computer) {

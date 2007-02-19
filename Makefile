@@ -49,9 +49,10 @@ systype := $(shell bash -c "source ./bin/shlib; get_env_kernel")
 machinetype := $(shell bash -c "source ./bin/shlib; get_env_machine")
 endif
 
-CPPFLAGS += -D_NO_COMPUTER_SEMAPHORES -D_NO_COMPUTER_POOL_SEMAPHORES -D_GNU_SOURCE -DCOMM_REPORT -I. -Ilibdrqueue
-CFLAGS ?= -g -O3 -Wall 
-CXXFLAGS += $(CFLAGS) $(CPPFLAGS) -D__CPLUSPLUS 
+CPPFLAGS = -D_NO_COMPUTER_SEMAPHORES -D_NO_COMPUTER_POOL_SEMAPHORES -D_GNU_SOURCE -DCOMM_REPORT -I. -Ilibdrqueue
+CFLAGS = -g -O3 -Wall
+LDFLAGS = 
+CXXFLAGS = $(CFLAGS) $(CPPFLAGS) -D__CPLUSPLUS 
 
 ifeq ($(systype),Linux)
  CPPFLAGS += -D__LINUX
@@ -68,12 +69,12 @@ ifeq ($(systype),GNU__kFreeBSD)
  CPPFLAGS += -D__LINUX
  MAKE ?= make
 else
-ifeq ($(systype),GNU__kFreeBSD)
- CPPFLAGS += -D__LINUX
- MAKE ?= make
-else
- ifeq ($(systype),IRIX)
+ ifeq ($(systype),IRIX64)
+  CC := c99
+  CXX := c99
   CPPFLAGS += -D__IRIX
+  NORANLIB = 1
+  MAKE ?= /usr/nekoware/bin/gmake
  else
   ifeq ($(systype),Darwin)
    USE_LIBTOOL = 1
@@ -108,7 +109,6 @@ else
     endif
    endif
   endif
- endif
  endif
  endif
 endif
@@ -307,7 +307,7 @@ clean:
 libdrqueue.a: $(OBJS_LIBDRQUEUE) $(HDRS_LIBDRQUEUE)
 	if [ $(USE_LIBTOOL) ]; then libtool -static -o $@ $(OBJS_LIBDRQUEUE); else \
     ar rc $@ $(OBJS_LIBDRQUEUE); \
-    ranlib $@; \
+    if [ $(NORANLIB) -ne 1 ]; then ranlib $@; fi \
   fi
 	
 #ifeq ($(systype),CYGWIN_NT-5.1)

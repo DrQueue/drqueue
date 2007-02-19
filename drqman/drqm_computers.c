@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <stdint.h>
+#include <stdarg.h>
 
 #include "drqman.h"
 #include "drqm_request.h"

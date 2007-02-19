@@ -68,9 +68,9 @@ void set_signal_handlers_task_exec (void); /* For the child of the previous that
 void slave_set_limits (struct slave_database *sdb);
 
 // Signal stuff
-void clean_out (int signal, siginfo_t *info, void *data);
-void sigalarm_handler (int signal, siginfo_t *info, void *data);
-void sigpipe_handler (int signal, siginfo_t *info, void *data);
+void clean_out (int signal);
+void sigalarm_handler (int signal);
+void sigpipe_handler (int signal);
 
 void slave_listening_process (struct slave_database *sdb);
 void slave_consistency_process (struct slave_database *sdb);

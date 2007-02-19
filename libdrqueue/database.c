@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
 //
 // This file is part of DrQueue
 //
@@ -293,6 +293,7 @@ database_save (struct database *wdb) {
       return 0;
     }
   }
+  logger_job = NULL;
   
   log_auto (L_INFO,"Database saved successfully.");
 

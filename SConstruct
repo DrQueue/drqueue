@@ -21,6 +21,9 @@ elif env['arch'] == 'x86_64':
 elif env['arch'] == 'Power Macintosh':
   bitsFlag='-mpowerpc'
   env.Append (CCFLAGS = Split('-mtune=powerpc -pipe'),CXXFLAGS = env.subst('$CCFLAGS'))
+else:
+  bitsFlag=''
+  env.Append (CCFLAGS = Split('-pipe'),CXXFLAGS = env.subst('$CCFLAGS'))
 
 #dict = env.Dictionary()
 #keys = dict.keys()
@@ -34,15 +37,18 @@ env.Append (CCFLAGS = [bitsFlag,])
 
 print "Platform is: ",sys.platform
 if sys.platform == "linux2":
-	env.Append (CCFLAGS = Split ('-D__LINUX'))
+  env.Append (CCFLAGS = Split ('-D__LINUX'))
   #if coreduo
   #env.Append(CCFLAGS = Split('-march=nocona -pipe -O2'), CXXFLAGS=Split('-march=nocona -O2 -pipe'))
 elif sys.platform == "darwin":
-	#env.Append (CCFLAGS = Split ('-D__OSX -no-cpp-precomp -fstrict-aliasing -mno-fused-madd'))
-	env.Append (CCFLAGS = Split ('-D__OSX'))
+  #env.Append (CCFLAGS = Split ('-D__OSX -no-cpp-precomp -fstrict-aliasing -mno-fused-madd'))
+  env.Append (CCFLAGS = Split ('-D__OSX'))
+elif sys.platform == "irix6":
+  env.Append (CCFLAGS = Split ('-D__IRIX'))
+  env['CC'] = 'c99'
 else:
-	print "Unknown platform: %s"%(sys.platform,)
-	exit (1)
+  print "Unknown platform: %s"%(sys.platform,)
+  exit (1)
 
 #
 # libdrqueue.a
@@ -54,11 +60,8 @@ libdrqueue = env.StaticLibrary ('drqueue', libdrqueue_src)
 # drqman
 #
 drqman_c = glob.glob (os.path.join('.','drqman','*.c'))
-gtkcflags = os.popen('pkg-config --cflags gtk+-2.0').read()
-gtklibs = os.popen('pkg-config --libs gtk+-2.0').read()
 env_gtkstuff = env.Copy ()
-env_gtkstuff.Append (CCFLAGS = Split(gtkcflags))
-env_gtkstuff.Append (LINKFLAGS = Split(gtklibs))
+env_gtkstuff.ParseConfig ('pkg-config --cflags --libs gtk+-2.0')
 drqman = env_gtkstuff.Program ('drqman/drqman',drqman_c, LIBS=['drqueue',], LIBPATH=['.',])
 
 #

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
 //
 // This file is part of DrQueue
 //
@@ -84,15 +84,15 @@ int main (int argc,char *argv[]) {
   //system ("env | grep DRQUEUE");
   sdb.shmid = get_shared_memory_slave (force);
   sdb.comp = attach_shared_memory_slave (sdb.shmid);
-  logger_computer = sdb.comp;
   sdb.semid = get_semaphores_slave ();
   log_auto (L_INFO,"Starting...");
 
   computer_init (sdb.comp);
   sdb.comp->used = 1;
   get_hwinfo (&sdb.comp->hwinfo);
-  computer_init_limits (sdb.comp); /* computer_init_limits depends on the hardware information */
-  slave_set_limits (&sdb);
+  computer_limits_cpu_init (sdb.comp); // computer_init_limits depends on the hardware information
+  slave_set_limits (&sdb);	       // Override defaults
+  logger_computer = sdb.comp;
 
   report_hwinfo (&sdb.comp->hwinfo);
   fprintf (stderr,"Working silently...");
@@ -186,9 +186,9 @@ void set_signal_handlers (void) {
   struct sigaction clean;
   struct sigaction ignore;
 
-  clean.sa_sigaction = clean_out;
+  clean.sa_handler = clean_out;
   sigemptyset (&clean.sa_mask);
-  clean.sa_flags = SA_SIGINFO;
+  clean.sa_flags = 0;
   sigaction (SIGINT, &clean, NULL);
   sigaction (SIGTERM, &clean, NULL);
   sigaction (SIGSEGV, &clean, NULL);
@@ -206,7 +206,7 @@ void set_signal_handlers (void) {
 #endif
 }
 
-void clean_out (int signal, siginfo_t *info, void *data) {
+void clean_out (int signal) {
   int rc;
   pid_t child_pid;
   int i;
@@ -220,7 +220,13 @@ void clean_out (int signal, siginfo_t *info, void *data) {
   sigaction (SIGINT, &ignore, NULL);
 
   // Handle SIGCLD properly
+  action_dfl.sa_flags = 0;
+#ifdef __IRIX
+  action_dfl.sa_handler = SIG_DFL;
+#else
   action_dfl.sa_handler = (void *)SIG_DFL;
+#endif
+
   sigemptyset (&action_dfl.sa_mask);
 #ifdef __OSX
 
@@ -368,7 +374,11 @@ void set_signal_handlers_child_listening (void) {
   struct sigaction action_dfl;
 
   action_dfl.sa_flags = 0;
+#ifdef __IRIX
+  action_dfl.sa_handler = SIG_DFL;
+#else
   action_dfl.sa_handler = (void *)SIG_DFL;
+#endif
   sigemptyset (&action_dfl.sa_mask);
   sigaction (SIGINT, &action_dfl, NULL);
   sigaction (SIGTERM, &action_dfl, NULL);
@@ -378,13 +388,14 @@ void set_signal_handlers_child_chandler (void) {
   struct sigaction action_alarm;
   struct sigaction action_pipe;
 
-  action_alarm.sa_sigaction = sigalarm_handler;
+  action_alarm.sa_handler = sigalarm_handler;
   sigemptyset (&action_alarm.sa_mask);
-  action_alarm.sa_flags = SA_SIGINFO;
+  action_alarm.sa_flags = 0;
   sigaction (SIGALRM, &action_alarm, NULL);
-  action_pipe.sa_sigaction = sigpipe_handler;
+
+  action_pipe.sa_handler = sigpipe_handler;
   sigemptyset (&action_pipe.sa_mask);
-  action_pipe.sa_flags = SA_SIGINFO;
+  action_pipe.sa_flags = 0;
   sigaction (SIGPIPE, &action_pipe, NULL);
 }
 
@@ -398,7 +409,11 @@ void set_signal_handlers_child_launcher (void) {
   sigaction (SIGINT, &action_ignore, NULL);
   sigaction (SIGTERM, &action_ignore, NULL);
 
+#ifdef __IRIX
+  action_dfl.sa_handler = SIG_DFL;
+#else
   action_dfl.sa_handler = (void *)SIG_DFL;
+#endif
   action_dfl.sa_flags = 0;
   sigemptyset (&action_dfl.sa_mask);
 #ifdef __OSX
@@ -414,7 +429,11 @@ void set_signal_handlers_task_exec (void) {
   struct sigaction action_dfl;
 
   action_dfl.sa_flags = 0;
+#ifdef __IRIX
+  action_dfl.sa_handler = SIG_DFL;
+#else
   action_dfl.sa_handler = (void *)SIG_DFL;
+#endif
   sigemptyset (&action_dfl.sa_mask);
   sigaction (SIGINT, &action_dfl, NULL);
   sigaction (SIGTERM, &action_dfl, NULL);
@@ -486,13 +505,13 @@ void slave_listening_process (struct slave_database *sdb) {
   exit (0);
 }
 
-void sigalarm_handler (int signal, siginfo_t *info, void *data) {
+void sigalarm_handler (int signal) {
   /* This is not an error because it only happens on a connection handler */
   log_auto (L_WARNING,"Connection time exceeded");
   exit (1);
 }
 
-void sigpipe_handler (int signal, siginfo_t *info, void *data) {
+void sigpipe_handler (int signal) {
   /* This is not an error because it only happens on a connection handler */
   log_auto (L_WARNING,"Broken connection while reading or writing");
   exit (1);

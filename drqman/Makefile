@@ -24,9 +24,10 @@ systype := $(shell bash -c "source ../bin/shlib; get_env_kernel")
 machinetype := $(shell bash -c "source ../bin/shlib; get_env_machine")
 endif
 
-CPPFLAGS ?= -D_NO_COMPUTER_SEMAPHORES -D_NO_COMPUTER_POOL_SEMAPHORES -D_GNU_SOURCE -DCOMM_REPORT -I.. -I../libdrqueue
-CFLAGS ?= -g -O3 -Wall
-CXXFLAGS ?= $(CFLAGS) $(CPPFLAGS) -D__CPLUSPLUS
+CPPFLAGS = -D_NO_COMPUTER_SEMAPHORES -D_NO_COMPUTER_POOL_SEMAPHORES -D_GNU_SOURCE -DCOMM_REPORT -I.. -I../libdrqueue
+CFLAGS = -g -O3 -Wall
+CXXFLAGS = $(CFLAGS) $(CPPFLAGS) -D__CPLUSPLUS
+LDFLAGS = 
 
 ifeq ($(systype),Linux)
  CPPFLAGS += -D__LINUX
@@ -47,7 +48,10 @@ else
   CFLAGS += -D__LINUX `pkg-config --cflags gtk+-2.0`
   LDFLAGS += `pkg-config --libs gtk+-2.0`
 else 
- ifeq ($(systype),IRIX)
+ ifeq ($(systype),IRIX64)
+  CC := c99
+  GTK_PATH = /usr/nekoware/bin
+  MAKE = /usr/nekoware/bin/gmake
   CPPFLAGS += -D__IRIX
   CFLAGS += `pkg-config --cflags gtk+-2.0`
   LDFLAGS += `pkg-config --libs gtk+-2.0`
