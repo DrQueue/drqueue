@@ -70,9 +70,11 @@ ifeq ($(systype),GNU__kFreeBSD)
  MAKE ?= make
 else
  ifeq ($(systype),IRIX)
-  CC ?= c99
-  CXX ?= CC
+  CC := c99
+  CXX := c99
   CPPFLAGS += -D__IRIX
+  NORANLIB = 1
+  MAKE ?= /usr/nekoware/bin/gmake
  else
   ifeq ($(systype),Darwin)
    USE_LIBTOOL = 1
