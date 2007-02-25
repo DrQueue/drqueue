@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/bash -e
 #
 # $Id$
 #
@@ -18,21 +18,21 @@ BASETOOL=`basename $0`
 
 underscore_spaces () {
     ORIG_STRING="$1"
-    echo $(echo $ORIG_STRING | tr ' ' '_')
+    echo $( echo $ORIG_STRING | tr ' ' '_' )
     return 0
 }
 
 underscore_slashes () {
     ORIG_STRING="$1"
-    echo $(echo $ORIG_STRING | tr '/' '_')
+    echo $( echo $ORIG_STRING | tr '/' '_' )
     return 0
 }
 
 underscore_spaces_and_slashes () {
     ORIG_STRING="$1"
-    echo DEBUG spaces: $(underscore_spaces "$ORIG_STRING") >> .shdebug
-    echo DEBUG spaces and slashes: $(underscore_slashes "$(underscore_spaces "$ORIG_STRING")") >> .shdebug
-    echo $(underscore_slashes "$(underscore_spaces "$ORIG_STRING")")
+    echo DEBUG spaces: $( underscore_spaces "$ORIG_STRING" ) >> .shdebug
+    echo DEBUG spaces and slashes: $( underscore_slashes "$( underscore_spaces "$ORIG_STRING" )" ) >> .shdebug
+    echo -n $( underscore_slashes "$( underscore_spaces "$ORIG_STRING" )" )
     return 0
 }
 
@@ -41,7 +41,7 @@ escape_spaces_string () {
   if [ -z "$1" ]; then
       return 1
   else
-      echo $(echo $ORIG_STRING | sed 's/ /\\ /g')
+      echo -n $( echo $ORIG_STRING | sed 's/ /\\ /g' )
   fi
   return 0
 }
@@ -60,42 +60,42 @@ check_environment () {
 get_env_drqueue_root () {
     check_environment
     if [ ! -z $DRQ_SH_AUTOESCAPE -o ! -z "$1" ]; then
-      echo $(escape_spaces_string "$DRQUEUE_ROOT")
+      echo -n $( escape_spaces_string "$DRQUEUE_ROOT" )
     else
-      echo $DRQUEUE_ROOT
+      echo -n $DRQUEUE_ROOT
     fi
     return 0
 }
 
 get_env_base_tool () {
     if [ ! -z $DRQ_SH_AUTOESCAPE -o ! -z "$1" ]; then
-        echo $(escape_spaces_string "$BASETOOL")
+        echo -n $(escape_spaces_string "$BASETOOL")
     else
-        echo "$BASETOOL"
+        echo -n "$BASETOOL"
     fi
 }
 
 get_env_kernel () {
     if [ ! -z "$DRQ_SH_UNDERSCORE" -o ! -z "$1" ]; then
-        echo $(underscore_spaces_and_slashes "`uname -s`")
+        echo -n $( underscore_spaces_and_slashes "`uname -s`" )
     else
-        echo "`uname -s`"
+        echo -n "`uname -s`"
     fi
 }
 
 get_env_machine () {
     if [ ! -z "$DRQ_SH_UNDERSCORE" -o ! -z "$1" ]; then
-        echo $(underscore_spaces_and_slashes "$(uname -m)")
+        echo -n $( underscore_spaces_and_slashes "$( uname -m )" )
     else
-        echo `uname -m`
+        echo -n `uname -m`
     fi
 }
 
 get_env_drqueue_bin () {
     if [ ! -z "$DRQUEUE_BIN" ]; then
-        echo $DRQUEUE_BIN
+        echo -n $DRQUEUE_BIN
     else
-        echo $(get_env_drqueue_root)/bin 
+        echo -n $( get_env_drqueue_root )/bin 
     fi
 }
 
@@ -103,17 +103,17 @@ wrapper_cmd () {
   CMD_TO_WRAP=$1
   _conv_to_underscores=$2
   unset WRAP_CMD
-  _full_unwrapped_tool_path="$(get_env_drqueue_bin)/$CMD_TO_WRAP"
+  _full_unwrapped_tool_path="$( get_env_drqueue_bin )/$CMD_TO_WRAP"
   if [ ! -x "$_full_unwrapped_tool_path" ]; then
     echo ERROR: Command "$_full_unwrapped_tool_path" does not exist. Cannot be wrapped.
     exit 1
   fi
 
-  _full_wrapped_path=$(get_env_drqueue_bin)/$(get_env_base_tool).$(get_env_kernel).$(get_env_machine)
+  _full_wrapped_path=$( get_env_drqueue_bin )/$( get_env_base_tool ).$( get_env_kernel ).$( get_env_machine )
   WRAP_CMD="$_full_wrapped_path"
 
   if [ ! -x "${WRAP_CMD}" ]; then
-    echo ERROR: the wrapper "$(get_env_base_tool)" for your platform \(${WRAP_CMD}\) does not exist.
+    echo ERROR: the wrapper "$( get_env_base_tool )" for your platform \(${WRAP_CMD}\) does not exist.
     echo Perhaps you did not install it \(make miniinstall or make install\).
     exit 1
   fi

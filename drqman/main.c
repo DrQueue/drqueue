@@ -20,13 +20,14 @@
 //
 
 #include <stdlib.h>
-#include <gtk/gtk.h>
 #include <string.h>
 #include <unistd.h>
 
 #include "drqman.h"
 #include "notebook.h"
 #include "libdrqueue.h"
+
+#include <gtk/gtk.h>
 
 #include "weasel.xpm"
 
@@ -61,7 +62,6 @@ int main (int argc, char *argv[]) {
   gtk_init(&argc,&argv);
 
   
-
 #ifdef __CYGWIN
 
   snprintf(rc_file,MAXCMDLEN-1,"%s/drqman-windows.rc",getenv("DRQUEUE_ETC"));

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
 //
 // This file is part of DrQueue
 //
@@ -23,13 +23,15 @@
 //
 
 #include <string.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <pwd.h>
 #include <sys/types.h>
-#include <gtk/gtk.h>
+#include <stdint.h>
+#include <unistd.h>
 
 #include "libdrqueue.h"
+
+#include <gtk/gtk.h>
 #include "drqman.h"
 #include "drqm_request.h"
 #include "drqm_jobs.h"
@@ -108,7 +110,7 @@ static void job_rerun_cb (GtkWidget *button, struct drqm_jobs_info *info);
 
 void
 free_job_list(GtkWidget *joblist,gpointer userdata) {
-  struct drqm_jobs_info *info = userdata;
+  struct drqm_jobs_info *info = (struct drqm_jobs_info *) userdata;
   int i;
   for (i = 0; i < info->njobs; i++) {
     job_delete (&info->jobs[i]);
@@ -231,8 +233,8 @@ static GtkWidget *CreateButtonRefresh (struct drqm_jobs_info *info) {
 }
 
 static gboolean AutoRefreshUpdate (gpointer info) {
-  drqm_request_joblist (info);
-  drqm_update_joblist (info);
+  drqm_request_joblist ((struct drqm_jobs_info*)info);
+  drqm_update_joblist ((struct drqm_jobs_info*)info);
 
   return TRUE;
 }
@@ -814,12 +816,12 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info) {
   hbox2 = gtk_hbox_new (FALSE,0);
   gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
   gtk_widget_show (hbox2);
-  items = g_list_append (items,"Highest");
-  items = g_list_append (items,"High");
-  items = g_list_append (items,"Normal");
-  items = g_list_append (items,"Low");
-  items = g_list_append (items,"Lowest");
-  items = g_list_append (items,"Custom");
+  items = g_list_append (items,(char*)"Highest");
+  items = g_list_append (items,(char*)"High");
+  items = g_list_append (items,(char*)"Normal");
+  items = g_list_append (items,(char*)"Low");
+  items = g_list_append (items,(char*)"Lowest");
+  items = g_list_append (items,(char*)"Custom");
   combo = gtk_combo_new();
   gtk_combo_set_popdown_strings (GTK_COMBO(combo),items);
   gtk_widget_show (combo);
@@ -1226,8 +1228,8 @@ static int dnj_submit (struct drqmj_dnji *info) {
 }
 
 static void update_joblist (GtkWidget *widget, struct drqm_jobs_info *info) {
-  drqm_request_joblist (info);
-  drqm_update_joblist (info);
+  drqm_request_joblist ((struct drqm_jobs_info*)info);
+  drqm_update_joblist ((struct drqm_jobs_info*)info);
 }
 
 static gboolean dnj_deleted (GtkWidget *dialog, GdkEvent *event, struct drqm_jobs_info *info) {
@@ -1426,22 +1428,22 @@ static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info) {
   gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
   hbox2 = gtk_hbox_new (FALSE,2);
   gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,2);
-  items = g_list_append (items,"General");
-  items = g_list_append (items,"Maya");
-  items = g_list_append (items,"Mental Ray");
-  items = g_list_append (items,"Blender");
-  items = g_list_append (items,"Bmrt");
-  items = g_list_append (items,"Mantra");
-  items = g_list_append (items,"Aqsis");
-  items = g_list_append (items,"Pixie");
-  items = g_list_append (items,"3delight");
-  items = g_list_append (items,"Lightwave");
-  items = g_list_append (items,"After Effects");
-  items = g_list_append (items,"Shake");
-  items = g_list_append (items,"Terragen");
-  items = g_list_append (items,"Nuke");
-  items = g_list_append (items,"Turtle");
-  items = g_list_append (items,"XSI");
+  items = g_list_append (items,(char*)"General");
+  items = g_list_append (items,(char*)"Maya");
+  items = g_list_append (items,(char*)"Mental Ray");
+  items = g_list_append (items,(char*)"Blender");
+  items = g_list_append (items,(char*)"Bmrt");
+  items = g_list_append (items,(char*)"Mantra");
+  items = g_list_append (items,(char*)"Aqsis");
+  items = g_list_append (items,(char*)"Pixie");
+  items = g_list_append (items,(char*)"3delight");
+  items = g_list_append (items,(char*)"Lightwave");
+  items = g_list_append (items,(char*)"After Effects");
+  items = g_list_append (items,(char*)"Shake");
+  items = g_list_append (items,(char*)"Terragen");
+  items = g_list_append (items,(char*)"Nuke");
+  items = g_list_append (items,(char*)"Turtle");
+  items = g_list_append (items,(char*)"XSI");
   combo = gtk_combo_new();
   gtk_tooltips_set_tip(tooltips,GTK_COMBO(combo)->entry,"Selector for the kind of job",NULL);
   gtk_combo_set_popdown_strings (GTK_COMBO(combo),items);

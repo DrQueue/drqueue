@@ -3,9 +3,19 @@
 #
 
 ifeq (0,${MAKELEVEL})
-whoami := $(shell whoami)
-host-type := $(shell arch)
-MAKE := ${MAKE} host-type=${host-type} whoami=${whoami}
+
+ whoami := $(shell whoami)
+ ifneq ("",$(whoami))
+  whoami-arg := whoami=${whoami}
+ endif
+ 
+ host-type ?= $(shell arch 2> /dev/null)
+ ifneq ("",$(host-type))
+  host-type-arg := host-type=${host-type}
+ endif
+ 
+ MAKE ?= ${MAKE} ${host-type-arg} ${whoami-arg}
+
 endif
 
 kversion = $(shell uname -r)
@@ -39,9 +49,10 @@ systype := $(shell bash -c "source ./bin/shlib; get_env_kernel")
 machinetype := $(shell bash -c "source ./bin/shlib; get_env_machine")
 endif
 
-CPPFLAGS += -D_NO_COMPUTER_SEMAPHORES -D_NO_COMPUTER_POOL_SEMAPHORES -D_GNU_SOURCE -DCOMM_REPORT -I. -Ilibdrqueue
-CFLAGS ?= -g -O3 -Wall 
-CXXFLAGS += $(CFLAGS) $(CPPFLAGS) -D__CPLUSPLUS 
+CPPFLAGS = -D_NO_COMPUTER_SEMAPHORES -D_NO_COMPUTER_POOL_SEMAPHORES -D_GNU_SOURCE -DCOMM_REPORT -I. -Ilibdrqueue
+CFLAGS = -g -O3 -Wall
+LDFLAGS = 
+CXXFLAGS = $(CFLAGS) $(CPPFLAGS) -D__CPLUSPLUS 
 
 ifeq ($(systype),Linux)
  CPPFLAGS += -D__LINUX
@@ -56,15 +67,14 @@ ifeq ($(systype),Linux)
 else
 ifeq ($(systype),GNU__kFreeBSD)
  CPPFLAGS += -D__LINUX
- MAKE = make
+ MAKE ?= make
 else
-ifeq ($(systype),GNU__kFreeBSD)
- CPPFLAGS += -D__LINUX
- MAKE = make
-else
- ifeq ($(systype),IRIX)
+ ifeq ($(systype),IRIX64)
+  CC := c99
+  CXX := c99
   CPPFLAGS += -D__IRIX
-#  MAKE = /usr/freeware/bin/gmake
+  NORANLIB = 1
+  MAKE ?= /usr/nekoware/bin/gmake
  else
   ifeq ($(systype),Darwin)
    USE_LIBTOOL = 1
@@ -86,21 +96,19 @@ else
    endif
    CFLAGS += $(ARCHFLAGS)
    LDFLAGS += $(ARCHFLAGS)
-#   MAKE = make
   else 
    ifeq ($(systype),FreeBSD)
     CPPFLAGS += -D__FREEBSD
-    MAKE = gmake
+    MAKE ?= gmake
    else
     ifeq ($(systype),CYGWIN_NT-5.1)
      CPPFLAGS += -D__CYGWIN
-     UIFLAGS += -e _mainCRTStartup -mwindows contrib/windows/Resources/drqueue.res 
+     #CFLAGS += -mwindows # no console flag
     else	
      $(error Cannot make DrQueue -- systype "$(systype)" is unknown)
     endif
    endif
   endif
- endif
  endif
  endif
 endif
@@ -197,16 +205,16 @@ CYGWIN_NT-5.1_install:
 	cp `which tcsh.exe` $(INSTROOT)/bin || exit 0
 	cp `which cygpath.exe` $(INSTROOT)/bin || exit 0
 	cp ./etc/* $(INSTROOT)/etc/ || exit 0
-	sh ./contrib/windows/build_services.sh $(PWD)/contrib/windows $(DOTNETPATH) 
-	cp ./contrib/* $(INSTROOT)/contrib/ || exit 0
-	cp ./contrib/windows/*.exe $(INSTROOT)/contrib/windows || exit 0
-	cp ./contrib/windows/Installer/* $(INSTROOT)/contrib/windows/installer || exit 0
+	#sh ./contrib/windows/build_services.sh $(PWD)/contrib/windows $(DOTNETPATH) 
+	#cp ./contrib/* $(INSTROOT)/contrib/ || exit 0
+	#cp ./contrib/windows/*.exe $(INSTROOT)/contrib/windows || exit 0
+	#cp ./contrib/windows/Installer/* $(INSTROOT)/contrib/windows/installer || exit 0
 	cp COPYING $(INSTROOT)/
 	chmod -R 0755 $(INSTROOT)/bin/* || exit 0
 	chmod 0755 $(INSTROOT)/contrib/* || exit 0
-	sh contrib/windows/install_dlls.sh $(INSTROOT)/bin
-	$(NSISPATH)/makensis.exe `cygpath -w $(INSTROOT)/contrib/windows/Installer/installer.nsi`
-	mv $(INSTROOT)/contrib/windows/Installer/Install.exe $(INSTROOT)/contrib/drqueue-setup.exe  
+	#sh contrib/windows/install_dlls.sh $(INSTROOT)/bin
+	#$(NSISPATH)/makensis.exe `cygpath -w $(INSTROOT)/contrib/windows/Installer/installer.nsi`
+	#mv $(INSTROOT)/contrib/windows/Installer/Install.exe $(INSTROOT)/contrib/drqueue-setup.exe  
 
 FreeBSD_install:
 	install -d -m 0777 $(INSTROOT)/tmp
@@ -299,13 +307,13 @@ clean:
 libdrqueue.a: $(OBJS_LIBDRQUEUE) $(HDRS_LIBDRQUEUE)
 	if [ $(USE_LIBTOOL) ]; then libtool -static -o $@ $(OBJS_LIBDRQUEUE); else \
     ar rc $@ $(OBJS_LIBDRQUEUE); \
-    ranlib $@; \
+    if [ $(NORANLIB) -ne 1 ]; then ranlib $@; fi \
   fi
 	
-ifeq ($(systype),CYGWIN_NT-5.1)
-contrib/windows/Resources/drqueue.res: contrib/windows/Resources/drqueue.rc
-	$(MAKE) -C contrib/windows/Resources
-endif
+#ifeq ($(systype),CYGWIN_NT-5.1)
+#contrib/windows/Resources/drqueue.res: contrib/windows/Resources/drqueue.rc
+#	$(MAKE) -C contrib/windows/Resources
+#endif
 
 %.c: %.h
 %.cpp: %.h
@@ -335,5 +343,4 @@ sendjob.o: sendjob.cpp sendjob.h
 	$(CXX) -c $(CXXFLAGS) $<
 sendjob: sendjob.o libdrqueue.a
 	$(CXX) $^ $(LDFLAGS) -o $@ 
-
 

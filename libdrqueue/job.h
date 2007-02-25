@@ -231,11 +231,12 @@ typedef enum {
 #define JF_JOBDELETE    (1<<3) // Delete job when finished
 
 /* OS FLAGS */
-#define OSF_IRIX      (1<<0) // If set will run on Irix
-#define OSF_LINUX     (1<<1) // If set will run on Linux
-#define OSF_OSX       (1<<2) // If set will run on OSX
-#define OSF_FREEBSD   (1<<3) // If set will run on FreeBSD
-#define OSF_CYGWIN    (1<<4) // If set will run on Windows
+#define OSF_ALL       0xffff  //  All OS flags set
+#define OSF_IRIX      (1<<0)  // If set will run on Irix
+#define OSF_LINUX     (1<<1)  // If set will run on Linux
+#define OSF_OSX       (1<<2)  // If set will run on OSX
+#define OSF_FREEBSD   (1<<3)  // If set will run on FreeBSD
+#define OSF_CYGWIN    (1<<4)  // If set will run on Windows
 
 /* THE JOB ITSELF */
 struct job {

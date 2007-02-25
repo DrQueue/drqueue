@@ -196,7 +196,7 @@ void dnj_koj_frame_aqsis_cbcrop_toggled (GtkWidget *cbutton, struct drqm_jobs_in
 GtkWidget *jdd_koj_aqsis_widgets (struct drqm_jobs_info *info) {
   GtkWidget *table;
   GtkWidget *label;
-  GtkAttachOptions options = GTK_EXPAND | GTK_SHRINK | GTK_FILL ;
+  GtkAttachOptions options = (GtkAttachOptions)(GTK_EXPAND | GTK_SHRINK | GTK_FILL) ;
   char *labels[] = { "Scene:", info->jdd.job.koji.aqsis.scene,
                      "View command:", info->jdd.job.koji.aqsis.viewcmd,
                      NULL };

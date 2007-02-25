@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
 //
 // This file is part of DrQueue
 //
@@ -407,7 +407,8 @@ static int jdd_update_blocked_hosts (GtkWidget *w, struct drqm_jobs_info *info) 
   return 1;
 }
 
-static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
+static int
+jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
   /* This function depends on info->row properly set (like most) */
   int nframes;
   struct frame_info *fi = NULL;
@@ -444,7 +445,7 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
   nframes = job_nframes (&info->jdd.job);
 
   if ((!info->jdd.job.frame_info.ptr) && nframes) {
-    if (!(fi = malloc(sizeof (struct frame_info) * nframes))) {
+    if (!(fi = (struct frame_info*)malloc(sizeof (struct frame_info) * nframes))) {
       fprintf (stderr,"Error allocating memory for frame information\n");
       return 0;
     }
@@ -617,9 +618,9 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
     }
 
     /* Set the information for the row */
-    rdata = gtk_clist_get_row_data (GTK_CLIST(info->jdd.clist),i);
+    rdata = (struct row_data*) gtk_clist_get_row_data (GTK_CLIST(info->jdd.clist),i);
     if (!rdata) {
-      rdata = malloc (sizeof (*rdata));
+      rdata = (struct row_data*) malloc (sizeof (*rdata));
     }
     rdata->frame = job_frame_index_to_number (&info->jdd.job,i);
     rdata->info = info;
@@ -644,7 +645,7 @@ static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
 }
 
 static gboolean AutoRefreshUpdate (gpointer info) {
-  jdd_update (NULL,info);
+  jdd_update (NULL,(struct drqm_jobs_info*)info);
 
   return TRUE;
 }
@@ -722,13 +723,12 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info) {
   }
 
   // We create a new info structure for this window.
-  newinfo = malloc (sizeof (struct drqm_jobs_info));
+  newinfo = (struct drqm_jobs_info*) malloc (sizeof (struct drqm_jobs_info));
   if (!newinfo) {
     return NULL;
   }
   memcpy(newinfo,info,sizeof(struct drqm_jobs_info));
-/*   drqm_request_joblist (newinfo); */
-/*   drqm_update_joblist (newinfo); */
+  // Copy the details of the single job we're interested in
   memcpy(&newinfo->jdd.job,&info->jobs[info->row],sizeof(struct job));
   job_fix_received_invalid(&newinfo->jdd.job);
   newinfo->jdd.oldinfo = info;
@@ -738,7 +738,7 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info) {
   /* Dialog */
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW(window),"Job Details");
-  g_signal_connect (G_OBJECT(window),"destroy",G_CALLBACK(jdd_destroy),newinfo);
+  //g_signal_connect (G_OBJECT(window),"destroy",G_CALLBACK(jdd_destroy),newinfo);
   gtk_window_set_default_size(GTK_WINDOW(window),600,500);
   gtk_window_set_policy(GTK_WINDOW(window), FALSE, TRUE, FALSE);
   gtk_container_set_border_width (GTK_CONTAINER(window),5);
@@ -1165,7 +1165,7 @@ static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info) {
 }
 
 static gboolean show_log (gpointer data) {
-  struct idle_info *iinfo = data;
+  struct idle_info *iinfo = (struct idle_info*) data;
   int fd = iinfo->fd;
   char buf[BUFFERLEN];
   int n;
@@ -2146,12 +2146,12 @@ GtkWidget *jdd_priority_change_dialog (struct drqm_jobs_info *info) {
   hbox2 = gtk_hbox_new (FALSE,0);
   gtk_box_pack_start (GTK_BOX(hbox),hbox2,TRUE,TRUE,0);
   gtk_widget_show (hbox2);
-  items = g_list_append (items,"Highest");
-  items = g_list_append (items,"High");
-  items = g_list_append (items,"Normal");
-  items = g_list_append (items,"Low");
-  items = g_list_append (items,"Lowest");
-  items = g_list_append (items,"Custom");
+  items = g_list_append (items,(char*)"Highest");
+  items = g_list_append (items,(char*)"High");
+  items = g_list_append (items,(char*)"Normal");
+  items = g_list_append (items,(char*)"Low");
+  items = g_list_append (items,(char*)"Lowest");
+  items = g_list_append (items,(char*)"Custom");
   combo = gtk_combo_new();
   gtk_combo_set_popdown_strings (GTK_COMBO(combo),items);
   gtk_widget_show (combo);
@@ -2362,7 +2362,7 @@ GtkWidget *jdd_koj_widgets (struct drqm_jobs_info *info) {
 }
 
 void jdd_table_pack (GtkWidget *table, GtkWidget *label1, GtkWidget *label2, GtkWidget *button, int row) {
-  GtkAttachOptions options = GTK_EXPAND | GTK_SHRINK | GTK_FILL ;
+  GtkAttachOptions options = (GtkAttachOptions)(GTK_EXPAND | GTK_SHRINK | GTK_FILL) ;
 
   gtk_misc_set_alignment (GTK_MISC(label1), 0, .5);
   gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label1), 0, 1, row, row+1, options, options, 1 , 1);
@@ -2374,7 +2374,7 @@ void jdd_table_pack (GtkWidget *table, GtkWidget *label1, GtkWidget *label2, Gtk
   gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(label2), 1, 2, row, row+1, options, options, 1 , 1);
 
   if (button) {
-    gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(button), 2, 3, row, row+1, 0, 0, 1 , 1);
+    gtk_table_attach (GTK_TABLE(table),GTK_WIDGET(button), 2, 3, row, row+1, (GtkAttachOptions)0, (GtkAttachOptions)0, 1 , 1);
   }
 }
 

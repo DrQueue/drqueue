@@ -129,7 +129,7 @@ GtkWidget *dnj_koj_frame_blender (struct drqm_jobs_info *info) {
 GtkWidget *jdd_koj_blender_widgets (struct drqm_jobs_info *info) {
   GtkWidget *table;
   GtkWidget *label;
-  GtkAttachOptions options = GTK_EXPAND | GTK_SHRINK | GTK_FILL ;
+  GtkAttachOptions options = (GtkAttachOptions)(GTK_EXPAND | GTK_SHRINK | GTK_FILL) ;
   char *labels[] = { "Scene:", info->jdd.job.koji.blender.scene,
                      "View command:", info->jdd.job.koji.blender.viewcmd,
                      NULL };

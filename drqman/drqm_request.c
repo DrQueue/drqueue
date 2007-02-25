@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
 //
 // This file is part of DrQueue
 //
@@ -42,10 +42,14 @@ drqm_request_joblist (struct drqm_jobs_info *info) {
   struct job *tjob;
   uint32_t njobs;
 
-  njobs = request_job_list(&tjob,CLIENT);
+  njobs = (uint32_t)request_job_list(&tjob,CLIENT);
   
   drqm_clean_joblist (info);
-  if (njobs) {
+  if (njobs == (uint32_t)-1) {
+    log_auto (L_ERROR,"drqm_request_joblist(): error requesting job list. (%s)",strerror(drerrno_system));
+    info->njobs = 0;
+    info->jobs = NULL;
+  } else if (njobs != 0) {
     info->njobs = njobs;
     info->jobs = tjob;
   } else {
@@ -68,9 +72,9 @@ drqm_request_computerlist (struct drqm_computers_info *info) {
 
   drqm_clean_computerlist (info);
 
-  info->ncomputers = request_computer_list(&tcomputer,CLIENT);
-  if (info->ncomputers == -1) {
-    fprintf (stderr,"Error receiving computer list");
+  info->ncomputers = (uint32_t) request_computer_list(&tcomputer,CLIENT);
+  if (info->ncomputers == (uint32_t) -1) {
+    log_auto (L_ERROR,"drqm_request_computerlist(): error receiving computer list. (%s)",strerror(drerrno_system));
     info->ncomputers = 0;
     return;
   } else if (info->ncomputers == 0) {
