@@ -407,7 +407,8 @@ static int jdd_update_blocked_hosts (GtkWidget *w, struct drqm_jobs_info *info) 
   return 1;
 }
 
-static int jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
+static int
+jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
   /* This function depends on info->row properly set (like most) */
   int nframes;
   struct frame_info *fi = NULL;
@@ -727,8 +728,7 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info) {
     return NULL;
   }
   memcpy(newinfo,info,sizeof(struct drqm_jobs_info));
-/*   drqm_request_joblist (newinfo); */
-/*   drqm_update_joblist (newinfo); */
+  // Copy the details of the single job we're interested in
   memcpy(&newinfo->jdd.job,&info->jobs[info->row],sizeof(struct job));
   job_fix_received_invalid(&newinfo->jdd.job);
   newinfo->jdd.oldinfo = info;
@@ -738,7 +738,7 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info) {
   /* Dialog */
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW(window),"Job Details");
-  g_signal_connect (G_OBJECT(window),"destroy",G_CALLBACK(jdd_destroy),newinfo);
+  //g_signal_connect (G_OBJECT(window),"destroy",G_CALLBACK(jdd_destroy),newinfo);
   gtk_window_set_default_size(GTK_WINDOW(window),600,500);
   gtk_window_set_policy(GTK_WINDOW(window), FALSE, TRUE, FALSE);
   gtk_container_set_border_width (GTK_CONTAINER(window),5);
