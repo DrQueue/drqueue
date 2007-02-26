@@ -108,7 +108,7 @@ all: drqman
 #	lipo -output $@ -extract $(machinetype) $^
 #	ranlib $@  
 
-drqman: $(OBJS) ../libdrqueue.a
+drqman: $(OBJS) ../libdrqueue/libdrqueue.a
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 
