@@ -26,7 +26,7 @@
 #define _DRQMAN_H_
 
 #ifdef HAVE_CONFIG_H
-#include "drqm_config.h"
+#include "lconfig.h"
 #endif
 
 #include "drqm_jobs.h"

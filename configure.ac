@@ -15,7 +15,6 @@ AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 
 # Checks for libraries.
-# FIXME: Replace `main' with a function in `-lwrap':
 AC_CHECK_LIB([wrap], [host_access])
 
 # Checks for header files.
@@ -45,6 +44,10 @@ AC_TYPE_SIGNAL
 AC_FUNC_STAT
 AC_CHECK_FUNCS([alarm dup2 getcwd memset select strchr strdup strerror strrchr strstr])
 
-AC_CONFIG_FILES([Makefile])
-AC_CONFIG_SUBDIRS([libdrqueue],[drqman])
+
+AM_PATH_GTK_2_0 ([2.8.0])
+
+AC_CONFIG_FILES([Makefile
+		 libdrqueue/Makefile
+		 drqman/Makefile])
 AC_OUTPUT
