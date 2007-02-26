@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.60)
-AC_INIT
+AC_INIT(PACKAGE,PACKAGE_VERSION)
 AC_CONFIG_HEADERS([lconfig.h])
 AM_INIT_AUTOMAKE
 
