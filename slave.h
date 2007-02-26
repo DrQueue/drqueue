@@ -24,6 +24,7 @@
 #ifndef _SLAVE_H_
 #define _SLAVE_H_
 
+#include "libdrqueue.h"
 #include "computer.h"
 #include "job.h"
 #include "constants.h"
@@ -31,29 +32,6 @@
 #include <limits.h>
 #include <signal.h>
 #include <stdint.h>
-
-#define KEY_SLAVE "slave" /* Key file for shared memory and semaphores */
-
-/* Each slave has a slave_database global variable that is local to each */
-/* process. _Except_ the pointer to the computer struct that is a shared */
-/* memory one */
-
-#define SDBF_SETMAXCPUS (1<<0) // Set if we have to change the maximum number of CPUs at start.
-
-#pragma pack(push,1)
-
-struct slave_database {
-  struct computer *comp;
-  int64_t shmid;
-  int64_t semid;
-  struct computer_limits limits;
-  uint16_t flags;
-  char conf[PATH_MAX];
-};                                    /* slave database */
-
-extern int phantom[2];
-
-#pragma pack(pop)
 
 void slave_get_options (int *argc,char ***argv, int *force, struct slave_database *sdb);
 void usage (void);

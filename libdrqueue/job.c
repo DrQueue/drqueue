@@ -30,15 +30,7 @@
 #include <sys/shm.h>
 #include <errno.h>
 
-#include "job.h"
-#include "database.h"
-#include "constants.h"
-#include "slave.h"
-#include "logger.h"
-#include "semaphores.h"
-#include "common.h"
-#include "drerrno.h"
-#include "computer_pool.h"
+#include "libdrqueue.h"
 
 uint32_t job_index_free (void *pwdb) {
   /* Return the index to a free job record OR -1 if there */
