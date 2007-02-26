@@ -29,7 +29,7 @@ extern "C" {
 #endif
 
 #ifdef HAVE_CONFIG_H
-#include <config.h>
+#include <lconfig.h>
 #endif
 
 #pragma pack(push,1)
