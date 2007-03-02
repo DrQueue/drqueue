@@ -45,7 +45,7 @@ AC_FUNC_STAT
 AC_CHECK_FUNCS([alarm dup2 getcwd memset select strchr strdup strerror strrchr strstr])
 
 
-AM_PATH_GTK_2_0 ([2.8.0])
+AM_PATH_GTK_2_0 
 
 AC_CONFIG_FILES([Makefile
 		 libdrqueue/Makefile
