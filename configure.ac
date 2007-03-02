@@ -5,17 +5,37 @@ AC_PREREQ(2.60)
 AC_INIT([drqueue],[0.65.x])
 AC_CONFIG_HEADERS([lconfig.h])
 AM_INIT_AUTOMAKE 
+AC_GNU_SOURCE
+AC_CANONICAL_BUILD
+AC_USE_SYSTEM_EXTENSIONS
+
+case $build in
+	*linux*) my_sys=-D__LINUX ;;
+	*darwin*) my_sys=-D__OSX ;;
+	*irix*) my_sys=-D__IRIX ;;
+	*freebsd*) my_sys=-D__FREEBSD ;;
+	*win*) my_sys=-D__CYGWIN;;
+	*) AC_MSG_ERROR(No known build system $build) ;;
+esac
+AC_SUBST([my_sys])
 
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_CPP
+AC_LIBTOOL_DLOPEN
+AC_LIBLTDL_CONVENIENCE
+AC_PROG_LIBTOOL
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
-AC_PROG_LIBTOOL
 
 # Checks for libraries.
 AC_CHECK_LIB([wrap], [host_access])
+
+AC_CONFIG_SUBDIRS(libltdl)
+AC_SUBST(INCLTDL)
+AC_SUBST(LIBLTDL)
+AC_SUBST(LIBADD_DL)
 
 # Checks for header files.
 AC_HEADER_STDC

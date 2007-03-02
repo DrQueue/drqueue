@@ -2,7 +2,7 @@
 rm -f config.cache
 rm -fR autom4te.cache
 aclocal -I m4
-libtoolize --force --copy
+libtoolize --ltdl --force --copy
 autoheader -v
 automake -v --add-missing --include-deps --foreign 
 autoconf -v
