@@ -1,10 +1,11 @@
-AM_CPPFLAGS = -I$(srcdir)/libdrqueue -D_GNU_SOURCE -D_NO_COMPUTER_POOL_SEMAPHORES -D_NO_COMPUTER_SEMAPHORES
+AM_CPPFLAGS = -I$(srcdir)/libdrqueue -D_GNU_SOURCE -D_NO_COMPUTER_POOL_SEMAPHORES -D_NO_COMPUTER_SEMAPHORES @my_sys@
+INCLUDES = @INCLTDL@
 
 bin_PROGRAMS = slave master
 slave_SOURCES = slave.c slave.h
-slave_LDADD = libdrqueue/libdrqueue.la
+slave_LDADD = libdrqueue/libdrqueue.la @LIBLTDL@ @LIBADD_DL@
 master_SOURCES = master.c master.h
-master_LDADD = libdrqueue/libdrqueue.la
+master_LDADD = libdrqueue/libdrqueue.la @LIBLTDL@ @LIBADD_DL@
 
-SUBDIRS = libdrqueue drqman
+SUBDIRS = libltdl libdrqueue drqman 
 EXTRA_DIST = bootstrap configure

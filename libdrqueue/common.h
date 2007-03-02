@@ -24,20 +24,7 @@
 #ifndef _COMMON_H_
 #define _COMMON_H_
 
-#if defined (__LINUX)
-#include <stdint.h>
-#elif defined (__IRIX)
-#include <sys/types.h>
-#elif defined (__OSX)
-#include <stdint.h>
-#elif defined (__FREEBSD)
-#include <stdint.h>
-#elif defined (__CYGWIN)
-#include <stdint.h>
-#else
-#error You need to define the OS, or OS defined not supported
-#endif
-
+#include "libdrqueue.h"
 #include "pointer.h"
 #include "job.h"
 
@@ -45,7 +32,7 @@
 #define VERSION_MAJOR  0
 #define VERSION_MINOR  64
 #define VERSION_PATCH  2
-#define VERSION_POST   1
+#define VERSION_POST   3
 #define VERSION_PRE    0
 
 
