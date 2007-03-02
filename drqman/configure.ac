@@ -4,7 +4,7 @@
 AC_PREREQ(2.60)
 AC_INIT([PACKAGE],[PACKAGE_VERSION])
 AC_CONFIG_SRCDIR([drqm_jobs_lightwave.h])
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADER([drqm_config.h])
 AM_INIT_AUTOMAKE
 
 # Checks for programs.
