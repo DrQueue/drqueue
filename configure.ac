@@ -46,5 +46,5 @@ AC_FUNC_STAT
 AC_CHECK_FUNCS([alarm dup2 getcwd memset select strchr strdup strerror strrchr strstr])
 
 AC_CONFIG_FILES([Makefile])
-AC_CONFIG_SUBDIRS([libdrqueue])
+AC_CONFIG_SUBDIRS([libdrqueue],[drqman])
 AC_OUTPUT

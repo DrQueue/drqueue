@@ -1,4 +1,5 @@
-SUBDIRS = libdrqueue
+EXTRA_DIST = bootstrap
+SUBDIRS = libdrqueue . drqman
 AM_CPPFLAGS = -I$(srcdir)/libdrqueue
 
 bin_PROGRAMS = slave master
