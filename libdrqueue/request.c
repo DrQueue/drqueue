@@ -36,14 +36,7 @@
 #include <sys/shm.h>
 
 #include "request.h"
-#include "database.h"
-#include "logger.h"
-#include "communications.h"
-#include "semaphores.h"
-#include "slave.h"
-#include "drerrno.h"
-#include "job.h"
-#include "computer_pool.h"
+#include "libdrqueue.h"
 
 // ONGOING:
 // * check r_r_uclimits

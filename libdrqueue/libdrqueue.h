@@ -28,11 +28,16 @@
 extern "C" {
 #endif
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #pragma pack(push,1)
 
 extern int drerrno;
 
 #include "pointer.h"
+#include "slavedb.h"
 #include "computer.h"
 #include "job.h"
 #include "task.h"
