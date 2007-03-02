@@ -25,6 +25,10 @@
 #ifndef _DRQMAN_H_
 #define _DRQMAN_H_
 
+#ifdef HAVE_CONFIG_H
+#include "lconfig.h"
+#endif
+
 #include "drqm_jobs.h"
 #include "drqm_computers.h"
 #include "drqm_globals.h"

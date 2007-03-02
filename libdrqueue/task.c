@@ -26,11 +26,7 @@
 #include <string.h>
 
 #include "task.h"
-#include "slave.h"
-#include "semaphores.h"
-#include "logger.h"
-#include "request.h"
-#include "drerrno.h"
+#include "libdrqueue.h"
 
 
 void task_init_all (struct task *task) {

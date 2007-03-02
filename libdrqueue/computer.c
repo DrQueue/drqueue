@@ -38,7 +38,6 @@
 
 #include "libdrqueue.h"
 #include "computer_pool.h"
-#include "slave.h"
 #include "computer.h"
 #include "semaphore.h"
 
