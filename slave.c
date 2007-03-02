@@ -21,6 +21,10 @@
 // $Id$
 //
 
+#ifdef HAVE_CONFIG_H
+#include <lconfig.h>
+#endif
+
 #include <stdio.h>
 #include <unistd.h>
 #include <signal.h>
