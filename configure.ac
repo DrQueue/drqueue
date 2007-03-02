@@ -12,7 +12,7 @@ AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
-AC_PROG_RANLIB
+AC_PROG_LIBTOOL
 
 # Checks for libraries.
 AC_CHECK_LIB([wrap], [host_access])
