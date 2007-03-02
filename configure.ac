@@ -2,10 +2,9 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.60)
-AC_INIT([DrQueue],[0.65],[developers@drqueue.org])
-AM_INIT_AUTOMAKE
-AC_CONFIG_SRCDIR([master.h])
-#AC_CONFIG_HEADER([config.h])
+AC_INIT([drqueue],[0.65.x])
+AC_CONFIG_HEADERS([lconfig.h])
+AM_INIT_AUTOMAKE 
 
 # Checks for programs.
 AC_PROG_CXX

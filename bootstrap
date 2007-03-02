@@ -1,0 +1,6 @@
+#! /bin/sh
+autoreconf -fvi
+aclocal -I config
+autoheader
+automake --foreign --add-missing --copy
+autoconf
