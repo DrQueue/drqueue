@@ -1,7 +1,8 @@
 #! /bin/sh
 rm -f config.cache
+rm -fR autom4te.cache
 aclocal -I m4
-autoconf
-autoheader
-automake -a
+autoconf -v
+autoheader -v
+automake -v --add-missing --include-deps --foreign 
 exit
