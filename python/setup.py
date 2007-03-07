@@ -94,7 +94,7 @@ def get_swig_flags():
 
 setup(
     name = "drqueue",
-    version = "0.64.2p3",
+    version = "0.65.0b1",
     # metadata for upload to PyPI
     # could also include long_description, download_url, classifiers, etc.
     author = "Jorge Daza",
