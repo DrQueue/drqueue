@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -19,17 +21,26 @@
 // $Id$
 //
 
+#include <sys/unistd.h>
+#include <stdio.h>
+#include <signal.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <sys/sem.h>
+#include <errno.h>
+#include <sys/wait.h>
 #include <stdlib.h>
+#include <sys/types.h>
 #include <string.h>
-#include <unistd.h>
+#include <ctype.h>
 
 #include "drqman.h"
 #include "notebook.h"
 #include "libdrqueue.h"
 
-#include <gtk/gtk.h>
-
 #include "weasel.xpm"
+
+#include <gtk/gtk.h>
 
 GdkPixbuf *drqman_icon;
 GList *icon_list;
@@ -38,10 +49,6 @@ static struct info_drqm info;
 char conf[PATH_MAX];
 
 
-#ifdef __CYGWIN
-FILE *file_null;
-#endif
-
 void drqman_get_options (int *argc,char ***argv);
 
 int main (int argc, char *argv[]) {
@@ -49,6 +56,8 @@ int main (int argc, char *argv[]) {
   GtkWidget *main_vbox;
   char rc_file[MAXCMDLEN];
 
+  gtk_init(&argc,&argv);
+  
   // fprintf (stderr,"drqman pid: %i\n",getpid());
   drqman_get_options(&argc,&argv);
   set_default_env(); // Config files overrides environment
@@ -58,18 +67,9 @@ int main (int argc, char *argv[]) {
     fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
     exit (1);
   }
-
-  gtk_init(&argc,&argv);
-
   
-#ifdef __CYGWIN
-
-  snprintf(rc_file,MAXCMDLEN-1,"%s/drqman-windows.rc",getenv("DRQUEUE_ETC"));
-  file_null = fopen("/dev/null", "r+");
-#else
-
-  snprintf(rc_file,MAXCMDLEN-1,"%s/drqman.rc",getenv("DRQUEUE_ETC"));
-#endif
+  snprintf(rc_file,MAXCMDLEN-1,"%s%cdrqman.rc",getenv("DRQUEUE_ETC"),
+                   DIR_SEPARATOR_CHAR);
 
   gtk_rc_parse(rc_file);
 
@@ -103,11 +103,6 @@ int main (int argc, char *argv[]) {
 
   gtk_main();
 
-#ifdef __CYGWIN
-
-  fclose(file_null);
-#endif
-
   return (0);
 }
 
@@ -123,6 +118,10 @@ void drqman_get_options (int *argc,char ***argv) {
     case 'o':
       log_level_out_set (L_ONSCREEN);
       printf ("Logging on screen.\n");
+      break;
+    case 'v':
+      show_version (*argv);
+      exit (0);
       break;
     case '?':
     case 'h':

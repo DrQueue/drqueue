@@ -33,10 +33,6 @@
 #include "drqm_common.h"
 #include "drqm_jobs_lightwave.h"
 
-#ifdef __CYGWIN
-#include "drqm_cygwin.h"
-#endif
-
 static void dnj_koj_frame_lightwave_projectdir_search (GtkWidget *button, struct drqmj_koji_lightwave *info);
 static void dnj_koj_frame_lightwave_projectdir_set (GtkWidget *button, struct drqmj_koji_lightwave *info);
 static void dnj_koj_frame_lightwave_configdir_search (GtkWidget *button, struct drqmj_koji_lightwave *info);
@@ -228,8 +224,6 @@ static void dnj_koj_frame_lightwave_projectdir_search (GtkWidget *button, struct
   GtkWidget *dialog;
   char dir[BUFFERLEN];
 
-#ifndef __CYGWIN
-
   dialog = gtk_file_selection_new ("Please select the project directory");
   info->fsprojectdir = dialog;
 
@@ -248,11 +242,6 @@ static void dnj_koj_frame_lightwave_projectdir_search (GtkWidget *button, struct
                              (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-#else
-
-  gtk_entry_set_text (GTK_ENTRY(info->eprojectdir), cygwin_dir_dialog(NULL));
-#endif
-
 }
 
 
@@ -275,8 +264,6 @@ static void dnj_koj_frame_lightwave_configdir_search (GtkWidget *button, struct 
   GtkWidget *dialog;
   char dir[BUFFERLEN];
 
-#ifndef __CYGWIN
-
   dialog = gtk_file_selection_new ("Please select the config directory");
   info->fsconfigdir = dialog;
 
@@ -295,11 +282,6 @@ static void dnj_koj_frame_lightwave_configdir_search (GtkWidget *button, struct 
                              (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-#else
-
-  gtk_entry_set_text (GTK_ENTRY(info->econfigdir), cygwin_dir_dialog(NULL));
-#endif
-
 }
 
 
@@ -321,8 +303,6 @@ static void dnj_koj_frame_lightwave_configdir_set (GtkWidget *button, struct drq
 static void dnj_koj_frame_lightwave_scene_search (GtkWidget *button, struct drqmj_koji_lightwave *info) {
   GtkWidget *dialog;
 
-#ifndef __CYGWIN
-
   dialog = gtk_file_selection_new ("Please select a scene file");
   info->fsscene = dialog;
 
@@ -340,10 +320,6 @@ static void dnj_koj_frame_lightwave_scene_search (GtkWidget *button, struct drqm
                              (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-#else
-
-  gtk_entry_set_text (GTK_ENTRY(info->escene), cygwin_file_dialog(NULL, NULL, NULL, 0));
-#endif
 }
 
 static void dnj_koj_frame_lightwave_scene_set (GtkWidget *button, struct drqmj_koji_lightwave *info) {
@@ -416,8 +392,6 @@ static void dnj_koj_frame_lightwave_bcreate_pressed (GtkWidget *button, struct d
 static void dnj_koj_frame_lightwave_script_search (GtkWidget *button, struct drqmj_koji_lightwave *info) {
   GtkWidget *dialog;
 
-#ifndef __CYGWIN
-
   dialog = gtk_file_selection_new ("Please select a script directory");
   info->fsscript = dialog;
 
@@ -435,11 +409,6 @@ static void dnj_koj_frame_lightwave_script_search (GtkWidget *button, struct drq
                              (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-#else
-
-  gtk_entry_set_text (GTK_ENTRY(info->escript), cygwin_dir_dialog(NULL));
-#endif
-
 }
 
 static void dnj_koj_frame_lightwave_script_set (GtkWidget *button, struct drqmj_koji_lightwave *info) {

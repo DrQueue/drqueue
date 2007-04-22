@@ -1,30 +1,32 @@
-#                                               -*- Autoconf -*-
+# -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.60)
 AC_INIT([drqueue],[0.65.x])
 AC_CONFIG_HEADERS([lconfig.h])
-AM_INIT_AUTOMAKE 
+AM_INIT_AUTOMAKE(AC_PACKAGE_NAME,[0.65.x])
 AC_GNU_SOURCE
-AC_CANONICAL_BUILD
-AC_USE_SYSTEM_EXTENSIONS
 
-case $build in
+gtk_version=gtk+-2.0
+AC_CANONICAL_HOST()
+case "$host" in
 	*linux*) my_sys=-D__LINUX ;;
 	*darwin*) my_sys=-D__OSX ;;
 	*irix*) my_sys=-D__IRIX ;;
 	*freebsd*) my_sys=-D__FREEBSD ;;
-	*win*) my_sys=-D__CYGWIN;;
+	*win*) my_sys=-D__CYGWIN
+           platform_win32=yes
+           gtk_version=gtk+-win32-2.0
+           ;;
 	*) AC_MSG_ERROR(No known build system $build) ;;
 esac
 AC_SUBST([my_sys])
 
-# Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_CPP
-AC_LIBTOOL_DLOPEN
-AC_LIBLTDL_CONVENIENCE
+
+# Checks for programs.
+AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
@@ -32,15 +34,10 @@ AC_PROG_MAKE_SET
 # Checks for libraries.
 AC_CHECK_LIB([wrap], [host_access])
 
-AC_CONFIG_SUBDIRS(libltdl)
-AC_SUBST(INCLTDL)
-AC_SUBST(LIBLTDL)
-AC_SUBST(LIBADD_DL)
-
 # Checks for header files.
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS([arpa/inet.h limits.h malloc.h netinet/in.h stdint.h stdlib.h string.h sys/socket.h unistd.h])
+AC_CHECK_HEADERS([arpa/inet.h limits.h malloc.h netinet/in.h stdint.h stdlib.h string.h sys/socket.h unistd.h pwd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
@@ -64,10 +61,9 @@ AC_TYPE_SIGNAL
 AC_FUNC_STAT
 AC_CHECK_FUNCS([alarm dup2 getcwd memset select strchr strdup strerror strrchr strstr])
 
+PKG_CHECK_MODULES([GTK2],[$gtk_version >= 2.8],[have_gtk2=yes],[have_gtk2=no])
+AC_SUBST(GTK2_CFLAGS)
+AC_SUBST(GTK2_LIBS)
 
-AM_PATH_GTK_2_0 
-
-AC_CONFIG_FILES([Makefile
-		 libdrqueue/Makefile
-		 drqman/Makefile])
+AC_CONFIG_FILES([Makefile libdrqueue/Makefile drqman/Makefile])
 AC_OUTPUT

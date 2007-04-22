@@ -1,7 +1,35 @@
 
+BOOTSTRAP
+---------
+
+If you got the sources from the repository you'll need to bootstrap autotools.
+
+bash$ ./bootstrap
+
+That should create a configure script, besides all other related files.
+
+CONFIGURE
+---------
+
+bash$ ./configure
+
+To create the Makefiles and configuration headers.
+
+bash$ make
+
+To compile into binaries: slave,master,drqman and libdrqueue.
+
+GTK and pkg-config
+------------------
+
+To use the native windows gtk+ libraries you'll need to 
+point PKG_CONFIG_PATH to the right windows style path 
+(like "C:\GTK\lib\pkgconfig").
+
 >> IMPORTANT <<
 ---------------
->>> THIS DOCUMENT IS OUTDATED <<<
+
+>>> THE REST OF THIS DOCUMENT IS OUTDATED <<<
 ---------------------------------
 
 Full Windows documentation, modules, and binaries are on their way.

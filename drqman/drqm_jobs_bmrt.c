@@ -32,10 +32,6 @@
 #include "drqm_common.h"
 #include "drqm_jobs_bmrt.h"
 
-#ifdef __CYGWIN
-#include "drqm_cygwin.h"
-#endif
-
 static void dnj_koj_frame_bmrt_script_search (GtkWidget *button, struct drqmj_koji_bmrt *info);
 static void dnj_koj_frame_bmrt_script_set (GtkWidget *button, struct drqmj_koji_bmrt *info);
 static void dnj_koj_frame_bmrt_scene_search (GtkWidget *button, struct drqmj_koji_bmrt *info);
@@ -388,8 +384,6 @@ GtkWidget *jdd_koj_bmrt_widgets (struct drqm_jobs_info *info) {
 static void dnj_koj_frame_bmrt_scene_search (GtkWidget *button, struct drqmj_koji_bmrt *info) {
   GtkWidget *dialog;
 
-#ifndef __CYGWIN
-
   dialog = gtk_file_selection_new ("Please select a scene file");
   info->fsscene = dialog;
 
@@ -407,10 +401,6 @@ static void dnj_koj_frame_bmrt_scene_search (GtkWidget *button, struct drqmj_koj
                              (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-#else
-
-  gtk_entry_set_text (GTK_ENTRY(info->escene), cygwin_file_dialog(NULL, NULL, NULL, 0));
-#endif
 }
 
 static void dnj_koj_frame_bmrt_scene_set (GtkWidget *button, struct drqmj_koji_bmrt *info) {
@@ -479,13 +469,6 @@ static void dnj_koj_frame_bmrt_script_search (GtkWidget *button, struct drqmj_ko
 
   dialog = gtk_file_selection_new ("Please select a script directory");
   info->fsscript = dialog;
-
-#ifndef __CYGWIN
-
-  if (strlen(gtk_entry_get_text(GTK_ENTRY(info->escript)))) {
-    gtk_file_selection_set_filename (GTK_FILE_SELECTION(dialog),gtk_entry_get_text(GTK_ENTRY(info->escript)));
-  }
-#endif
 
   gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
                       "clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_bmrt_script_set), info);
