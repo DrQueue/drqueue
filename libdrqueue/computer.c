@@ -66,7 +66,7 @@ int computer_index_addr (void *pwdb,struct in_addr addr) {
       // whole name.
       *dot = '\0';
     }
-    name = host->h_name;
+    name = (char*) host->h_name;
   }
 
 

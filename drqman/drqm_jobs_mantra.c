@@ -18,9 +18,12 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-//
 // $Id$
 //
+
+#ifdef HAVE_CONFIG_H
+#   include <lconfig.h>
+#endif
 
 #include <string.h>
 #include <unistd.h>
@@ -357,10 +360,10 @@ GtkWidget *dnj_koj_frame_mantra (struct drqm_jobs_info *info) {
                        "rendered files will be changed to this. By default it "
                        "is the same as the owner of the job",NULL);
   info->dnj.koji_mantra.efile_owner = entry;
-  if (!(pw = getpwuid(geteuid()))) {
+  if (!(pw = (struct passwd*) getpwuid(geteuid()))) {
     gtk_entry_set_text(GTK_ENTRY(entry),"ERROR");
   } else {
-    gtk_entry_set_text(GTK_ENTRY(entry),pw->pw_name);
+    gtk_entry_set_text(GTK_ENTRY(entry),(char*)pw->pw_name);
   }
   gtk_box_pack_start (GTK_BOX(hbox),entry,TRUE,TRUE,2);
 
@@ -568,8 +571,6 @@ GtkWidget *jdd_koj_mantra_widgets (struct drqm_jobs_info *info) {
 static void dnj_koj_frame_mantra_scene_search (GtkWidget *button, struct drqmj_koji_mantra *info) {
   GtkWidget *dialog;
 
-#ifndef __CYGWIN
-
   dialog = gtk_file_selection_new ("Please select a scene file");
   info->fsscene = dialog;
 
@@ -587,10 +588,6 @@ static void dnj_koj_frame_mantra_scene_search (GtkWidget *button, struct drqmj_k
                              (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-#else
-
-  gtk_entry_set_text (GTK_ENTRY(info->escene), cygwin_file_dialog(NULL, NULL, NULL, 0));
-#endif
 }
 
 static void dnj_koj_frame_mantra_scene_set (GtkWidget *button, struct drqmj_koji_mantra *info) {
@@ -603,8 +600,6 @@ static void dnj_koj_frame_mantra_scene_set (GtkWidget *button, struct drqmj_koji
 static void dnj_koj_frame_mantra_renderdir_search (GtkWidget *button, struct drqmj_koji_mantra *info) {
   GtkWidget *dialog;
   char dir[BUFFERLEN];
-
-#ifndef __CYGWIN
 
   dialog = gtk_file_selection_new ("Please select the output directory");
   info->fsrenderdir = dialog;
@@ -624,11 +619,6 @@ static void dnj_koj_frame_mantra_renderdir_search (GtkWidget *button, struct drq
                              (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-#else
-
-  gtk_entry_set_text (GTK_ENTRY(info->erenderdir), cygwin_dir_dialog(NULL));
-#endif
-
 }
 
 static void dnj_koj_frame_mantra_renderdir_set (GtkWidget *button, struct drqmj_koji_mantra *info) {
@@ -766,8 +756,6 @@ static void dnj_koj_frame_mantra_bcreate_pressed (GtkWidget *button, struct drqm
 static void dnj_koj_frame_mantra_script_search (GtkWidget *button, struct drqmj_koji_mantra *info) {
   GtkWidget *dialog;
 
-#ifndef __CYGWIN
-
   dialog = gtk_file_selection_new ("Please select a script directory");
   info->fsscript = dialog;
 
@@ -785,10 +773,6 @@ static void dnj_koj_frame_mantra_script_search (GtkWidget *button, struct drqmj_
                              (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-#else
-
-  gtk_entry_set_text (GTK_ENTRY(info->escript), cygwin_dir_dialog(NULL));
-#endif
 }
 
 static void dnj_koj_frame_mantra_script_set (GtkWidget *button, struct drqmj_koji_mantra *info) {
@@ -796,7 +780,7 @@ static void dnj_koj_frame_mantra_script_set (GtkWidget *button, struct drqmj_koj
   char *p;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscript)),BUFFERLEN-1);
-  p = strrchr(buf,'/');
+  p = strrchr(buf,DIR_SEPARATOR_CHAR);
   if (p)
     *p = 0;
   gtk_entry_set_text (GTK_ENTRY(info->escript),buf);

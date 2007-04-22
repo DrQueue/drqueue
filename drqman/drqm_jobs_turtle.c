@@ -33,10 +33,6 @@
 #include "drqm_common.h"
 #include "drqm_jobs_turtle.h"
 
-#ifdef __CYGWIN
-#include "drqm_cygwin.h"
-#endif
-
 static void dnj_koj_frame_turtle_projectdir_search (GtkWidget *button, struct drqmj_koji_turtle *info);
 static void dnj_koj_frame_turtle_projectdir_set (GtkWidget *button, struct drqmj_koji_turtle *info);
 static void dnj_koj_frame_turtle_renderdir_search (GtkWidget *button, struct drqmj_koji_turtle *info);
@@ -327,8 +323,6 @@ static void dnj_koj_frame_turtle_renderdir_search (GtkWidget *button, struct drq
   GtkWidget *dialog;
   char dir[BUFFERLEN];
 
-#ifndef __CYGWIN
-
   dialog = gtk_file_selection_new ("Please select the output directory");
   info->fsrenderdir = dialog;
 
@@ -347,11 +341,6 @@ static void dnj_koj_frame_turtle_renderdir_search (GtkWidget *button, struct drq
                              (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-#else
-
-  gtk_entry_set_text (GTK_ENTRY(info->erenderdir), cygwin_dir_dialog(NULL));
-#endif
-
 }
 
 
@@ -363,7 +352,7 @@ static void dnj_koj_frame_turtle_renderdir_set (GtkWidget *button, struct drqmj_
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsrenderdir)),BUFFERLEN-1);
   stat(buf, &s);
   if (!S_ISDIR(s.st_mode)) {
-    p = strrchr(buf,'/');
+    p = strrchr(buf,DIR_SEPARATOR_CHAR);
     if (p)
       *p = 0;
   }
@@ -372,8 +361,6 @@ static void dnj_koj_frame_turtle_renderdir_set (GtkWidget *button, struct drqmj_
 
 static void dnj_koj_frame_turtle_scene_search (GtkWidget *button, struct drqmj_koji_turtle *info) {
   GtkWidget *dialog;
-
-#ifndef __CYGWIN
 
   dialog = gtk_file_selection_new ("Please select a scene file");
   info->fsscene = dialog;
@@ -392,10 +379,6 @@ static void dnj_koj_frame_turtle_scene_search (GtkWidget *button, struct drqmj_k
                              (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-#else
-
-  gtk_entry_set_text (GTK_ENTRY(info->escene), cygwin_file_dialog(NULL, NULL, NULL, 0));
-#endif
 }
 
 static void dnj_koj_frame_turtle_scene_set (GtkWidget *button, struct drqmj_koji_turtle *info) {
@@ -439,8 +422,6 @@ static void dnj_koj_frame_turtle_bcreate_pressed (GtkWidget *button, struct drqm
 static void dnj_koj_frame_turtle_script_search (GtkWidget *button, struct drqmj_koji_turtle *info) {
   GtkWidget *dialog;
 
-#ifndef __CYGWIN
-
   dialog = gtk_file_selection_new ("Please select a script directory");
   info->fsscript = dialog;
 
@@ -458,11 +439,6 @@ static void dnj_koj_frame_turtle_script_search (GtkWidget *button, struct drqmj_
                              (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-#else
-
-  gtk_entry_set_text (GTK_ENTRY(info->escript), cygwin_dir_dialog(NULL));
-#endif
-
 }
 
 static void dnj_koj_frame_turtle_script_set (GtkWidget *button, struct drqmj_koji_turtle *info) {
@@ -474,7 +450,7 @@ static void dnj_koj_frame_turtle_script_set (GtkWidget *button, struct drqmj_koj
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscript)),BUFFERLEN-1);
   stat(buf, &s);
   if (!S_ISDIR(s.st_mode)) {
-    p = strrchr(buf,'/');
+    p = strrchr(buf,DIR_SEPARATOR_CHAR);
     if (p)
       *p = 0;
   }

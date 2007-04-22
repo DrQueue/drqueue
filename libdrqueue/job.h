@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
 //
 // This file is part of DrQueue
 //
@@ -231,7 +231,7 @@ typedef enum {
 #define JF_JOBDELETE    (1<<3) // Delete job when finished
 
 /* OS FLAGS */
-#define OSF_ALL       0xffff  //  All OS flags set
+#define OSF_ALL       0xffff  // All OS flags set
 #define OSF_IRIX      (1<<0)  // If set will run on Irix
 #define OSF_LINUX     (1<<1)  // If set will run on Linux
 #define OSF_OSX       (1<<2)  // If set will run on OSX

@@ -1,12 +1,14 @@
 //
-// Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
 //
-// This program is free software; you can redistribute it and/or modify
+// This file is part of DrQueue
+//
+// DrQueue is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// DrQueue is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -16,9 +18,12 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-//
 // $Id$
 //
+
+#ifdef HAVE_CONFIG_H
+#   include <lconfig.h>
+#endif
 
 #include <string.h>
 #include <unistd.h>
@@ -228,8 +233,6 @@ GtkWidget *jdd_koj_aqsis_widgets (struct drqm_jobs_info *info) {
 static void dnj_koj_frame_aqsis_scene_search (GtkWidget *button, struct drqmj_koji_aqsis *info) {
   GtkWidget *dialog;
 
-#ifndef __CYGWIN
-
   dialog = gtk_file_selection_new ("Please select a scene file");
   info->fsscene = dialog;
 
@@ -247,10 +250,6 @@ static void dnj_koj_frame_aqsis_scene_search (GtkWidget *button, struct drqmj_ko
                              (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-#else
-
-  gtk_entry_set_text (GTK_ENTRY(info->escene), cygwin_file_dialog(NULL, NULL, NULL, 0));
-#endif
 }
 
 static void dnj_koj_frame_aqsis_scene_set (GtkWidget *button, struct drqmj_koji_aqsis *info) {
@@ -292,8 +291,6 @@ static void dnj_koj_frame_aqsis_bcreate_pressed (GtkWidget *button, struct drqmj
 static void dnj_koj_frame_aqsis_script_search (GtkWidget *button, struct drqmj_koji_aqsis *info) {
   GtkWidget *dialog;
 
-#ifndef __CYGWIN
-
   dialog = gtk_file_selection_new ("Please select a script directory");
   info->fsscript = dialog;
 
@@ -311,10 +308,6 @@ static void dnj_koj_frame_aqsis_script_search (GtkWidget *button, struct drqmj_k
                              (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-#else
-
-  gtk_entry_set_text (GTK_ENTRY(info->escript), cygwin_dir_dialog(NULL));
-#endif
 }
 
 static void dnj_koj_frame_aqsis_script_set (GtkWidget *button, struct drqmj_koji_aqsis *info) {

@@ -163,8 +163,6 @@ GtkWidget *jdd_koj_shake_widgets (struct drqm_jobs_info *info) {
 static void dnj_koj_frame_shake_shakescript_search (GtkWidget *button, struct drqmj_koji_shake *info) {
   GtkWidget *dialog;
 
-#ifndef __CYGWIN
-
   dialog = gtk_file_selection_new ("Please select a shake script file");
   info->fsshakescript = dialog;
 
@@ -182,10 +180,6 @@ static void dnj_koj_frame_shake_shakescript_search (GtkWidget *button, struct dr
                              (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-#else
-
-  gtk_entry_set_text (GTK_ENTRY(info->eshakescript), cygwin_file_dialog(NULL, NULL, NULL, 0));
-#endif
 }
 
 static void dnj_koj_frame_shake_shakescript_set (GtkWidget *button, struct drqmj_koji_shake *info) {
@@ -212,8 +206,6 @@ static void dnj_koj_frame_shake_bcreate_pressed (GtkWidget *button, struct drqmj
 static void dnj_koj_frame_shake_script_search (GtkWidget *button, struct drqmj_koji_shake *info) {
   GtkWidget *dialog;
 
-#ifndef __CYGWIN
-
   dialog = gtk_file_selection_new ("Please select a script directory");
   info->fsscript = dialog;
 
@@ -231,10 +223,6 @@ static void dnj_koj_frame_shake_script_search (GtkWidget *button, struct drqmj_k
                              (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-#else
-
-  gtk_entry_set_text (GTK_ENTRY(info->escript), cygwin_dir_dialog(NULL));
-#endif
 }
 
 static void dnj_koj_frame_shake_script_set (GtkWidget *button, struct drqmj_koji_shake *info) {
