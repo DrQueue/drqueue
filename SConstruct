@@ -88,8 +88,8 @@ Default (master)
 slave = env.Program ('slave.c')
 Default (slave)
 
-Export ('env','env_lib','libdrqueue','libdrqueue_src')
-SConscript(['python/SConscript'])
+#Export ('env','env_lib','libdrqueue','libdrqueue_src')
+#SConscript(['python/SConscript'])
 
 #
 # drqman
