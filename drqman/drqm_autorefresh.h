@@ -24,6 +24,7 @@
 #define _DRQM_AUTOREFRESH_H_
 
 #include <gtk/gtk.h>
+#include "libdrqueue.h"
 
 struct drqm_autorefresh_info {
   guint sourceid;        // id for the autorefresh source

@@ -33,10 +33,6 @@
 #include "drqm_common.h"
 #include "drqm_jobs_nuke.h"
 
-#ifdef __CYGWIN
-#include "drqm_cygwin.h"
-#endif
-
 static void dnj_koj_frame_nuke_script_search (GtkWidget *button, struct drqmj_koji_nuke *info);
 static void dnj_koj_frame_nuke_script_set (GtkWidget *button, struct drqmj_koji_nuke *info);
 static void dnj_koj_frame_nuke_scene_search (GtkWidget *button, struct drqmj_koji_nuke *info);
@@ -187,8 +183,6 @@ GtkWidget *jdd_koj_nuke_widgets (struct drqm_jobs_info *info) {
 static void dnj_koj_frame_nuke_scene_search (GtkWidget *button, struct drqmj_koji_nuke *info) {
   GtkWidget *dialog;
 
-#ifndef __CYGWIN
-
   dialog = gtk_file_selection_new ("Please select a scene file");
   info->fsscene = dialog;
 
@@ -206,10 +200,6 @@ static void dnj_koj_frame_nuke_scene_search (GtkWidget *button, struct drqmj_koj
                              (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-#else
-
-  gtk_entry_set_text (GTK_ENTRY(info->escene), cygwin_file_dialog(NULL, NULL, NULL, 0));
-#endif
 }
 
 static void dnj_koj_frame_nuke_scene_set (GtkWidget *button, struct drqmj_koji_nuke *info) {
@@ -247,8 +237,6 @@ static void dnj_koj_frame_nuke_bcreate_pressed (GtkWidget *button, struct drqmj_
 static void dnj_koj_frame_nuke_script_search (GtkWidget *button, struct drqmj_koji_nuke *info) {
   GtkWidget *dialog;
 
-#ifndef __CYGWIN
-
   dialog = gtk_file_selection_new ("Please select a script directory");
   info->fsscript = dialog;
 
@@ -266,11 +254,6 @@ static void dnj_koj_frame_nuke_script_search (GtkWidget *button, struct drqmj_ko
                              (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-#else
-
-  gtk_entry_set_text (GTK_ENTRY(info->escript), cygwin_dir_dialog(NULL));
-#endif
-
 }
 
 static void dnj_koj_frame_nuke_script_set (GtkWidget *button, struct drqmj_koji_nuke *info) {
@@ -278,7 +261,7 @@ static void dnj_koj_frame_nuke_script_set (GtkWidget *button, struct drqmj_koji_
   char *p;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscript)),BUFFERLEN-1);
-  p = strrchr(buf,'/');
+  p = strrchr(buf,DIR_SEPARATOR_CHAR);
   if (p)
     *p = 0;
   gtk_entry_set_text (GTK_ENTRY(info->escript),buf);

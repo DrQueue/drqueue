@@ -19,14 +19,14 @@
 // USA
 //
 //
-// $Header: /root/cvs/drqueue/drqman/drqman.h,v 1.5 2001/11/08 11:47:42 jorge Exp $
+// $Id$
 //
 
 #ifndef _DRQMAN_H_
 #define _DRQMAN_H_
 
 #ifdef HAVE_CONFIG_H
-#include "lconfig.h"
+#include <lconfig.h>
 #endif
 
 #include "drqm_jobs.h"

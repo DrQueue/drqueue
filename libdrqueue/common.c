@@ -251,13 +251,12 @@ void set_default_env(void) {
   drq_root_cp = strdup (drq_root);
   drq_root = drq_root_cp;
 
-#ifdef __CYGWIN
   if (drq_root[strlen(drq_root)-1] == '\r')
     drq_root[strlen(drq_root)-1] = 0;
-#endif
 
   if (!getenv("DRQUEUE_TMP")) {
-    snprintf(renv,BUFFERLEN,"DRQUEUE_TMP=%s/tmp",drq_root);
+    snprintf(renv,BUFFERLEN,"DRQUEUE_TMP=%s%ctmp",drq_root,
+                    DIR_SEPARATOR_CHAR);
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
@@ -265,7 +264,8 @@ void set_default_env(void) {
   }
 
   if (!getenv("DRQUEUE_ETC")) {
-    snprintf(renv,BUFFERLEN,"DRQUEUE_ETC=%s/etc",drq_root);
+    snprintf(renv,BUFFERLEN,"DRQUEUE_ETC=%s%cetc",drq_root,
+                    DIR_SEPARATOR_CHAR);
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
@@ -273,7 +273,8 @@ void set_default_env(void) {
   }
 
   if (!getenv("DRQUEUE_BIN")) {
-    snprintf(renv,BUFFERLEN,"DRQUEUE_BIN=%s/bin",drq_root);
+    snprintf(renv,BUFFERLEN,"DRQUEUE_BIN=%s%cbin",drq_root,
+                    DIR_SEPARATOR_CHAR);
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
@@ -281,7 +282,8 @@ void set_default_env(void) {
   }
 
   if (!getenv("DRQUEUE_LOGS")) {
-    snprintf(renv,BUFFERLEN,"DRQUEUE_LOGS=%s/logs",drq_root);
+    snprintf(renv,BUFFERLEN,"DRQUEUE_LOGS=%s%clogs",drq_root,
+                    DIR_SEPARATOR_CHAR);
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
@@ -289,7 +291,8 @@ void set_default_env(void) {
   }
 
   if (!getenv("DRQUEUE_DB")) {
-    snprintf(renv,BUFFERLEN,"DRQUEUE_DB=%s/db",drq_root);
+    snprintf(renv,BUFFERLEN,"DRQUEUE_DB=%s%cdb",drq_root,
+                    DIR_SEPARATOR_CHAR);
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);

@@ -297,7 +297,7 @@ int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_
   } else {
     if ((dot = strchr (host->h_name,'.')) != NULL)
       *dot = '\0';
-    name = host->h_name;
+    name = (char*)host->h_name;
   }
 
   semaphore_lock(wdb->semid); /* I put the lock here so no race condition can appear... */

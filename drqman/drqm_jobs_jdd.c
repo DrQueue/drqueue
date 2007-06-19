@@ -41,10 +41,6 @@
 #include "drqm_jobs.h"
 #include "drqm_autorefresh.h"
 
-#ifdef __CYGWIN
-#include "drqm_cygwin.h"
-#endif
-
 // Jdd static declarations
 static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info);
 static void jdd_destroy (GtkWidget *w, struct drqm_jobs_info *info);
@@ -749,21 +745,6 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info) {
   gtk_container_add (GTK_CONTAINER(window),main_vbox);
 
 
-  /* Button Open render directory */
-#ifdef __CYGWIN
-
-  switch (newinfo->jdd.job.koj) {
-  case KOJ_MAYA :
-    button = gtk_button_new_with_label ("Open render directory");
-    image = gtk_image_new_from_stock (GTK_STOCK_DIRECTORY,GTK_ICON_SIZE_BUTTON);
-    gtk_button_set_image (GTK_BUTTON(button),GTK_WIDGET(image));
-    gtk_container_border_width (GTK_CONTAINER(button),1);
-    gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_shellopen_exec), (char *) newinfo->jdd.job.koji.maya.renderdir);
-    gtk_box_pack_start (GTK_BOX(main_vbox),button,FALSE,FALSE,2);
-    break;
-  }
-#endif
-
   // Notebook
   notebook = gtk_notebook_new();
   gtk_box_pack_start(GTK_BOX(main_vbox),notebook,TRUE,TRUE,1);
@@ -1184,12 +1165,6 @@ static gboolean show_log (gpointer data) {
   return TRUE;
 }
 
-#ifdef __CYGWIN
-static void jdd_shellopen_exec(GtkWidget *button, char *path) {
-  cygwin_shell_execute("explore", path);
-}
-#endif
-
 static void jdd_requeue_frames (GtkWidget *button,struct drqm_jobs_info *info_dj) {
   /* Requeues the finished frames, sets them as waiting again */
   GList *sel;
@@ -1371,19 +1346,6 @@ static void jdd_maya_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *inf
   frame = rdata->frame;
 
   iframe = job_frame_number_to_index (&info->jdd.job,frame);
-
-#ifdef __CYGWIN
-
-  static char image[BUFFERLEN];
-
-  snprintf(image, BUFFERLEN-1, "%s\\%s.%04i.%s",
-           info->jdd.job.koji.maya.renderdir,
-           info->jdd.job.koji.maya.image,
-           iframe + 1,
-           info->jdd.job.koji.maya.viewcmd);
-  cygwin_shell_execute("open", image);
-  return;
-#endif
 
   if (fork() == 0) {
     new_argv[0] = SHELL_NAME;
@@ -1582,19 +1544,6 @@ static void jdd_turtle_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *i
   frame = rdata->frame;
 
   iframe = job_frame_number_to_index (&info->jdd.job,frame);
-
-#ifdef __CYGWIN
-
-  static char image[BUFFERLEN];
-
-  snprintf(image, BUFFERLEN-1, "%s\\%s.%04i.%s",
-           info->jdd.job.koji.turtle.renderdir,
-           info->jdd.job.koji.turtle.image,
-           iframe + 1,
-           info->jdd.job.koji.turtle.viewcmd);
-  cygwin_shell_execute("open", image);
-  return;
-#endif
 
   if (fork() == 0) {
     new_argv[0] = SHELL_NAME;
