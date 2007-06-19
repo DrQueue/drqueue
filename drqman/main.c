@@ -21,7 +21,7 @@
 // $Id$
 //
 
-#include <sys/unistd.h>
+#include <unistd.h>
 #include <stdio.h>
 #include <signal.h>
 #include <sys/ipc.h>
