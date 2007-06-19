@@ -1,9 +1,15 @@
 #! /bin/sh
-rm -f config.cache
 rm -fR autom4te.cache
-aclocal -I m4
-libtoolize --ltdl --force --copy
-autoheader -v
-automake -v --add-missing --include-deps --foreign 
-autoconf -v
+rm -f config.*
+rm -f lconfig.*
+find . -type d -name ".deps" -exec rm -fR {} \;
+find . -type f -name "*.in" -exec rm -f {} \;
+find . -type f -name "Makefile" --exclude "contrib/" -exec rm -f {} \;
+find . -type f -name "*.o" -exec rm -f {} \;
+find . -type f -name "*.lo" -exec rm -f {} \;
+aclocal --force # -I m4 $ACLOCAL_FLAGS
+libtoolize --force --copy
+autoheader
+automake --add-missing --include-deps --foreign --copy
+autoconf -f
 exit

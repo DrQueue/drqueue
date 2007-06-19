@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
 //
 // This file is part of DrQueue
 //
@@ -24,6 +24,10 @@
 #ifndef _COMMON_H_
 #define _COMMON_H_
 
+#ifdef __CPLUSPLUS
+extern "C" {
+#endif
+
 #include "libdrqueue.h"
 #include "pointer.h"
 #include "job.h"
@@ -31,9 +35,9 @@
 #define REVISION "$Rev$"
 #define VERSION_MAJOR  0
 #define VERSION_MINOR  64
-#define VERSION_PATCH  2
-#define VERSION_POST   3
-#define VERSION_PRE    0
+#define VERSION_PATCH  3
+#define VERSION_POST   0
+#define VERSION_PRE    1
 
 
 int common_environment_check (void);
@@ -51,6 +55,10 @@ void mn_job_finished (struct job *job);
 char *get_version_prepost (void);
 char *get_revision_string (void);
 char *get_version_complete (void);
+
+#ifdef __CPLUSPLUS
+}
+#endif
 
 #endif /* _COMMON_H_ */
 

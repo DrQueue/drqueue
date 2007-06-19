@@ -22,6 +22,7 @@
 // $Id$
 //
 
+
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -219,14 +220,6 @@ static void dnj_koj_frame_mentalray_renderdir_search (GtkWidget *button, struct 
   dialog = gtk_file_selection_new ("Please select the output directory");
   info->fsrenderdir = dialog;
 
-#ifndef __CYGWIN
-
-  if (strlen(gtk_entry_get_text(GTK_ENTRY(info->erenderdir)))) {
-    strncpy (dir,gtk_entry_get_text(GTK_ENTRY(info->erenderdir)),BUFFERLEN-1);
-    gtk_file_selection_set_filename (GTK_FILE_SELECTION(dialog),strcat(dir,"/"));
-  }
-#endif
-
   gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
                       "clicked", GTK_SIGNAL_FUNC (dnj_koj_frame_mentalray_renderdir_set), info);
   gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION(dialog)->ok_button),
@@ -247,7 +240,7 @@ static void dnj_koj_frame_mentalray_renderdir_set (GtkWidget *button, struct drq
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsrenderdir)),BUFFERLEN-1);
   stat(buf, &s);
   if (!S_ISDIR(s.st_mode)) {
-    p = strrchr(buf,'/');
+    p = strrchr(buf,DIR_SEPARATOR_CHAR);
     if (p)
       *p = 0;
   }
@@ -256,8 +249,6 @@ static void dnj_koj_frame_mentalray_renderdir_set (GtkWidget *button, struct drq
 
 static void dnj_koj_frame_mentalray_scene_search (GtkWidget *button, struct drqmj_koji_mentalray *info) {
   GtkWidget *dialog;
-
-#ifndef __CYGWIN
 
   dialog = gtk_file_selection_new ("Please select a scene file");
   info->fsscene = dialog;
@@ -276,10 +267,6 @@ static void dnj_koj_frame_mentalray_scene_search (GtkWidget *button, struct drqm
                              (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-#else
-
-  gtk_entry_set_text (GTK_ENTRY(info->escene), cygwin_file_dialog(NULL, NULL, NULL, 0));
-#endif
 }
 
 static void dnj_koj_frame_mentalray_scene_set (GtkWidget *button, struct drqmj_koji_mentalray *info) {

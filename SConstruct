@@ -1,83 +1,117 @@
-# vim:ft=python
+#
+# Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
+#
+# This file is part of DrQueue
+#
+# DrQueue is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# DrQueue is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+# USA
+#
+# $Id$
+#
 
 import sys
 import glob
 import os
 import platform
 
-env = Environment (arch=platform.machine(),)
-env.Append (CPPPATH=['.','./libdrqueue'])
+def get_platform_name():
+    name = sys.platform
+    if name == 'win32':
+       return 'cygwin'
+    return name
 
-print "Architecture: %s"%(env['arch'],)
-if env['arch'] == 'i386':
-  bitsFlag='-m32'
-  env.Append (CCFLAGS = Split('-march=i386 -pipe'),CXXFLAGS = env.subst('$CCFLAGS'))
-elif env['arch'] == 'i686':
-  bitsFlag='-m32'
-  env.Append (CCFLAGS = Split('-march=i686 -pipe'),CXXFLAGS = env.subst('$CCFLAGS'))
-elif env['arch'] == 'x86_64':
-  bitsFlag='-m64'
-  env.Append (CCFLAGS = Split('-march=x86-64 -pipe'),CXXFLAGS = env.subst('$CCFLAGS'))
-elif env['arch'] == 'Power Macintosh':
-  bitsFlag='-mpowerpc'
-  env.Append (CCFLAGS = Split('-mtune=powerpc -pipe'),CXXFLAGS = env.subst('$CCFLAGS'))
-else:
-  bitsFlag=''
-  env.Append (CCFLAGS = Split('-pipe'),CXXFLAGS = env.subst('$CCFLAGS'))
+def get_abspath_glob(path):
+    pathlist=glob.glob(path)
+    rlist=[]
+    for file in pathlist:
+      rlist.append(os.path.abspath(file))
+    return rlist
 
-#dict = env.Dictionary()
-#keys = dict.keys()
-#keys.sort()
-#for key in keys:
-#  print "construction variable = '%s', value = '%s'" % (key, dict[key])
-   
-env.Append (CCFLAGS = Split ('-DCOMM_REPORT -D_GNU_SOURCE -D_NO_COMPUTER_POOL_SEMAPHORES -D_NO_COMPUTER_SEMAPHORES -g -O3'),
-            CXXFLAGS = ['-D__CPLUSPLUS',Split(env.subst('$CCFLAGS'))])
-env.Append (CCFLAGS = [bitsFlag,])
+# Construction environment for the library (doesn't link with itself)
+env_lib = Environment ()
+if sys.platform == 'win32':
+    print "-> Win32 using Cygwin mode"
+    Tool('mingw')(env_lib)
+
+env_lib.Append (CPPPATH=['.','libdrqueue'])
+env_lib.Append (CPPDEFINES = Split ('-DCOMM_REPORT -D_GNU_SOURCE ' \
+                + '-D_NO_COMPUTER_POOL_SEMAPHORES -D_NO_COMPUTER_SEMAPHORES'),
+                CPPFLAGS = Split ('-g -O0'),
+                CXXFLAGS = ['-D__CPLUSPLUS',Split(env_lib.subst('$CCFLAGS')),
+                            Split(env_lib.subst('$CPPDEFINES'))])
 
 print "Platform is: ",sys.platform
 if sys.platform == "linux2":
-  env.Append (CCFLAGS = Split ('-D__LINUX'))
-  #if coreduo
-  #env.Append(CCFLAGS = Split('-march=nocona -pipe -O2'), CXXFLAGS=Split('-march=nocona -O2 -pipe'))
+  env_lib.Append (CPPDEFINES = Split ('-D__LINUX'))
 elif sys.platform == "darwin":
-  #env.Append (CCFLAGS = Split ('-D__OSX -no-cpp-precomp -fstrict-aliasing -mno-fused-madd'))
-  env.Append (CCFLAGS = Split ('-D__OSX'))
+  env_lib.Append (CPPDEFINES = Split ('-D__OSX'))
 elif sys.platform == "irix6":
-  env.Append (CCFLAGS = Split ('-D__IRIX'))
-  env['CC'] = 'c99'
+  env_lib.Append (CPPDEFINES = Split ('-D__IRIX'))
+  env_lib['CC'] = 'c99'
+elif sys.platform == "cygwin":
+  env_lib.Append (CPPDEFINES = Split ('-D__CYGWIN'))
+  os.environ['PKG_CONFIG_PATH'] = 'C:\GTK\lib\pkgconfig'
+elif sys.platform == "win32":
+  env_lib.Append (CPPDEFINES = Split ('-D__CYGWIN'))
 else:
   print "Unknown platform: %s"%(sys.platform,)
   exit (1)
 
+# Base construction environment that links with the library
+env = env_lib.Copy()
+env.Append (LIBS = ['drqueue'],LIBPATH = ['libdrqueue'])
+
 #
 # libdrqueue.a
 #
-libdrqueue_src = glob.glob(os.path.join('.','libdrqueue','*.c'))
-libdrqueue = env.StaticLibrary ('drqueue', libdrqueue_src)
-
-#
-# drqman
-#
-drqman_c = glob.glob (os.path.join('.','drqman','*.c'))
-env_gtkstuff = env.Copy ()
-env_gtkstuff.ParseConfig ('pkg-config --cflags --libs gtk+-2.0')
-drqman = env_gtkstuff.Program ('drqman/drqman',drqman_c, LIBS=['drqueue',], LIBPATH=['.',])
+libdrqueue_src = get_abspath_glob(os.path.join('libdrqueue','*.c'))
+libdrqueue = env_lib.Library ('libdrqueue/drqueue', libdrqueue_src)
+Default (libdrqueue)
 
 #
 # Main
 #
-master = env.Program ('master.c', LIBS=['drqueue',], LIBPATH=['.',])
-slave = env.Program ('slave.c', LIBS=['drqueue',], LIBPATH=['.',])
+master = env.Program ('master.c')
+Default (master)
+slave = env.Program ('slave.c')
+Default (slave)
+
+## Build python modules
+#Export ('env','env_lib','libdrqueue','libdrqueue_src')
+#SConscript(['python/SConscript'])
+
+#
+# drqman
+#
+drqman_c = glob.glob (os.path.join('drqman','*.c'))
+env_gtkstuff = env.Copy ()
+env_gtkstuff.ParseConfig ('pkg-config --cflags --libs gtk+-2.0')
+drqman = env_gtkstuff.Program ('drqman/drqman',drqman_c)
+Default (drqman)
 
 #
 # Tools
 #
-jobfinfo = env.Program ('jobfinfo.c', LIBS=['drqueue',], LIBPATH=['.',])
-jobinfo = env.Program ('jobinfo.c', LIBS=['drqueue',], LIBPATH=['.',])
-compinfo = env.Program ('compinfo.c', LIBS=['drqueue',], LIBPATH=['.',])
-requeue = env.Program ('requeue.c', LIBS=['drqueue',], LIBPATH=['.',])
-cfgreader = env.Program ('cfgreader.c', LIBS=['drqueue',], LIBPATH=['.',])
-cjob = env.Program ('cjob.c', LIBS=['drqueue',], LIBPATH=['.',])
-blockhost = env.Program ('blockhost.c', LIBS=['drqueue',], LIBPATH=['.',])
-sendjob = env.Program ('sendjob.cpp', LIBS=['drqueue',], LIBPATH=['.',])
+cmdline_tools = [ 'jobfinfo','jobinfo','compinfo','requeue','cfgreader',
+                  'cjob','blockhost','sendjob' ]
+ctools = {}
+for tool in cmdline_tools:
+    print "Tool: %s"%(tool,)
+    if tool != 'sendjob':
+        ctools[tool] = env.Program (tool+'.c')
+    else:
+        ctools[tool ]= env.Program (tool+'.cpp')
+    Default(ctools[tool])
+

@@ -21,6 +21,10 @@
 // $Id$
 //
 
+#ifdef HAVE_CONFIG_H
+#   include <lconfig.h>
+#endif
+
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -31,10 +35,6 @@
 #include "drqm_jobs.h"
 #include "drqm_common.h"
 #include "drqm_jobs_3delight.h"
-
-#ifdef __CYGWIN
-#include "drqm_cygwin.h"
-#endif
 
 static void dnj_koj_frame_3delight_script_search (GtkWidget *button, struct drqmj_koji_3delight *info);
 static void dnj_koj_frame_3delight_script_set (GtkWidget *button, struct drqmj_koji_3delight *info);
@@ -233,8 +233,6 @@ static void dnj_koj_frame_3delight_bcreate_pressed (GtkWidget *button, struct dr
 static void dnj_koj_frame_3delight_script_search (GtkWidget *button, struct drqmj_koji_3delight *info) {
   GtkWidget *dialog;
 
-#ifndef __CYGWIN
-
   dialog = gtk_file_selection_new ("Please select a script directory");
   info->fsscript = dialog;
 
@@ -252,10 +250,6 @@ static void dnj_koj_frame_3delight_script_search (GtkWidget *button, struct drqm
                              (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-#else
-
-  gtk_entry_set_text (GTK_ENTRY(info->escript), cygwin_dir_dialog(NULL));
-#endif
 }
 
 static void dnj_koj_frame_3delight_script_set (GtkWidget *button, struct drqmj_koji_3delight *info) {

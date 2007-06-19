@@ -33,10 +33,6 @@
 #include "drqm_common.h"
 #include "drqm_jobs_terragen.h"
 
-#ifdef __CYGWIN
-#include "drqm_cygwin.h"
-#endif
-
 static void dnj_koj_frame_terragen_worldfile_search (GtkWidget *button, struct drqmj_koji_terragen *info);
 static void dnj_koj_frame_terragen_worldfile_set (GtkWidget *button, struct drqmj_koji_terragen *info);
 static void dnj_koj_frame_terragen_terrainfile_search (GtkWidget *button, struct drqmj_koji_terragen *info);
@@ -230,8 +226,6 @@ static void dnj_koj_frame_terragen_worldfile_search (GtkWidget *button, struct d
   GtkWidget *dialog;
   char dir[BUFFERLEN];
 
-#ifndef __CYGWIN
-
   dialog = gtk_file_selection_new ("Please select the Terragen Worldfile");
   info->fsworldfile = dialog;
 
@@ -250,11 +244,6 @@ static void dnj_koj_frame_terragen_worldfile_search (GtkWidget *button, struct d
                              (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-#else
-
-  gtk_entry_set_text (GTK_ENTRY(info->eworldfile), cygwin_file_dialog(NULL, NULL, NULL, 0));
-#endif
-
 }
 
 
@@ -266,7 +255,7 @@ static void dnj_koj_frame_terragen_worldfile_set (GtkWidget *button, struct drqm
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsworldfile)),BUFFERLEN-1);
   stat(buf, &s);
   if (!S_ISDIR(s.st_mode)) {
-    p = strrchr(buf,'/');
+    p = strrchr(buf,DIR_SEPARATOR_CHAR);
     if (p)
       *p = 0;
   }
@@ -276,8 +265,6 @@ static void dnj_koj_frame_terragen_worldfile_set (GtkWidget *button, struct drqm
 static void dnj_koj_frame_terragen_terrainfile_search (GtkWidget *button, struct drqmj_koji_terragen *info) {
   GtkWidget *dialog;
   char dir[BUFFERLEN];
-
-#ifndef __CYGWIN
 
   dialog = gtk_file_selection_new ("Please select the Terragen Terrain File");
   info->fsterrainfile = dialog;
@@ -297,11 +284,6 @@ static void dnj_koj_frame_terragen_terrainfile_search (GtkWidget *button, struct
                              (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-#else
-
-  gtk_entry_set_text (GTK_ENTRY(info->eterrainfile), cygwin_file_dialog(NULL, NULL, NULL, 0));
-#endif
-
 }
 
 
@@ -313,7 +295,7 @@ static void dnj_koj_frame_terragen_terrainfile_set (GtkWidget *button, struct dr
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsterrainfile)),BUFFERLEN-1);
   stat(buf, &s);
   if (!S_ISDIR(s.st_mode)) {
-    p = strrchr(buf,'/');
+    p = strrchr(buf,DIR_SEPARATOR_CHAR);
     if (p)
       *p = 0;
   }
@@ -322,8 +304,6 @@ static void dnj_koj_frame_terragen_terrainfile_set (GtkWidget *button, struct dr
 
 static void dnj_koj_frame_terragen_scriptfile_search (GtkWidget *button, struct drqmj_koji_terragen *info) {
   GtkWidget *dialog;
-
-#ifndef __CYGWIN
 
   dialog = gtk_file_selection_new ("Please select a Terragen Scriptfile");
   info->fsscriptfile = dialog;
@@ -342,10 +322,6 @@ static void dnj_koj_frame_terragen_scriptfile_search (GtkWidget *button, struct 
                              (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-#else
-
-  gtk_entry_set_text (GTK_ENTRY(info->escriptfile), cygwin_file_dialog(NULL, NULL, NULL, 0));
-#endif
 }
 
 static void dnj_koj_frame_terragen_scriptfile_set (GtkWidget *button, struct drqmj_koji_terragen *info) {
@@ -385,8 +361,6 @@ static void dnj_koj_frame_terragen_bcreate_pressed (GtkWidget *button, struct dr
 static void dnj_koj_frame_terragen_script_search (GtkWidget *button, struct drqmj_koji_terragen *info) {
   GtkWidget *dialog;
 
-#ifndef __CYGWIN
-
   dialog = gtk_file_selection_new ("Please select a script directory");
   info->fsscript = dialog;
 
@@ -404,11 +378,6 @@ static void dnj_koj_frame_terragen_script_search (GtkWidget *button, struct drqm
                              (gpointer) dialog);
   gtk_widget_show (dialog);
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
-#else
-
-  gtk_entry_set_text (GTK_ENTRY(info->escript), cygwin_dir_dialog(NULL));
-#endif
-
 }
 
 static void dnj_koj_frame_terragen_script_set (GtkWidget *button, struct drqmj_koji_terragen *info) {
@@ -416,7 +385,7 @@ static void dnj_koj_frame_terragen_script_set (GtkWidget *button, struct drqmj_k
   char *p;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscript)),BUFFERLEN-1);
-  p = strrchr(buf,'/');
+  p = strrchr(buf,DIR_SEPARATOR_CHAR);
   if (p)
     *p = 0;
   gtk_entry_set_text (GTK_ENTRY(info->escript),buf);

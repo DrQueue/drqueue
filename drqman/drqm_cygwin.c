@@ -75,25 +75,6 @@ char *cygwin_dir_dialog(char *message) {
   return (path);
 }
 
-char *cygwin_file_dialog(char *fname, char *pat, char *message, char save) {
-  static char filenamebuffer[MAX_PATH];
-  static OPENFILENAME wreq;
-
-  memset(&wreq, 0, sizeof(wreq));
-  wreq.lStructSize = OPENFILENAME_SIZE_VERSION_400; // needed for Win < Win2k
-  wreq.lpstrFilter = pat;
-  wreq.nFilterIndex = (pat) ? 1 : 0;
-  wreq.lpstrFile = filenamebuffer;
-  wreq.nMaxFile = MAX_PATH;
-  wreq.lpstrTitle = message ? message : "Select the filename";
-  if (fname)
-    strncpy(filenamebuffer, fname, MAX_PATH);
-  wreq.Flags = OFN_NOCHANGEDIR;
-  if (save ? GetSaveFileName(&wreq) : GetOpenFileName(&wreq))
-    return (wreq.lpstrFile);
-  return (NULL);
-}
-
 char *conv_to_posix_path(char *win32_path) {
   char *posix_path;
 

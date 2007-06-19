@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
 //
 // This file is part of DrQueue
 //
@@ -19,15 +19,16 @@
 // USA
 //
 //
-// $Header: /root/cvs/drqueue/drqman/drqm_computers.h,v 1.8 2002/02/26 15:52:05 jorge Exp $
+// $Id$
 //
 
 #ifndef _DRQM_COMPUTERS_H
 #define _DRQM_COMPUTERS_H
 
 #include <gtk/gtk.h>
-#include "libdrqueue.h"
+
 #include "drqm_autorefresh.h"
+#include "libdrqueue.h"
 
 enum {
   CDD_POOL_COL_NAME = 0,
