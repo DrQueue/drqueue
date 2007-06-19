@@ -1,0 +1,10 @@
+#!/bin/sh
+#
+# The following sysctl lines should be added to /etc/rc on Mac OS X to solve shared memory problems
+# As explained at: http://drqueue.org/project/wiki/DrQueueMacOSX
+#
+sysctl -w kern.sysv.shmmax=536870912 
+sysctl -w kern.sysv.shmmin=1 
+sysctl -w kern.sysv.shmmni=128 
+sysctl -w kern.sysv.shmseg=32 
+sysctl -w kern.sysv.shmall=131072
