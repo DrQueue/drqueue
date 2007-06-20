@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
 //
 // This file is part of DrQueue
 //
@@ -180,6 +180,7 @@ job_init (struct job *job) {
   job->flags = 0;
 
   job->koj = KOJ_GENERAL;
+  snprintf (job->owner,MAXNAMELEN,"%s",getenv("USER"));
 
   job_limits_init (&job->limits);
 }
