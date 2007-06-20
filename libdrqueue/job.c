@@ -1015,8 +1015,8 @@ job_limits_init (struct job_limits *limits) {
   limits->nmaxcpuscomputer = (uint16_t)-1;   // the same
   limits->os_flags = (uint16_t) -1;          // All operating systems
   limits->memory = 0;                        // No memory limit
-  strncpy (limits->pool,DEFAULT_POOL,MAXNAMELEN-1);   // Belongs to
-                                                      // the default pool
+  snprintf(limits->pool,MAXNAMELEN,"%s",DEFAULT_POOL); // Belongs to
+                                                       // the default pool
 }
 
 void
