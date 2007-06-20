@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
 //
 // This file is part of DrQueue
 //
@@ -34,8 +34,8 @@ extern "C" {
 
 #define REVISION "$Rev$"
 #define VERSION_MAJOR  0
-#define VERSION_MINOR  65
-#define VERSION_PATCH  0
+#define VERSION_MINOR  64
+#define VERSION_PATCH  3
 #define VERSION_POST   0
 #define VERSION_PRE    1
 

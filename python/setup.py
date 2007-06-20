@@ -22,8 +22,8 @@
 # $Id$
 #
 
-#import ez_setup
-#ez_setup.use_setuptools()
+import ez_setup
+ez_setup.use_setuptools()
 
 import os
 import glob
@@ -115,7 +115,7 @@ def custom_library_paths():
 
 setup(
     name = "drqueue",
-    version = "0.65.0b2",
+    version = "0.64.3c1",
     # metadata for upload to PyPI
     # could also include long_description, download_url, classifiers, etc.
     author = "Jorge Daza",
@@ -130,8 +130,8 @@ setup(
     ext_modules=[Extension('drqueue.base._libdrqueue', 
                  ['src/drqueue/base/libdrqueue.i'] \
                  + get_abspath_glob(os.path.join('..','libdrqueue','*.c')),
-                 libraries = [ 'python'+distutils.sysconfig.get_python_version() ],
-                 library_dirs= [ distutils.sysconfig.get_python_lib() ] + custom_library_paths(),
+                 #libraries = [ 'python'+distutils.sysconfig.get_python_version() ],
+                 #library_dirs= [ distutils.sysconfig.get_python_lib() ] + custom_library_paths(),
                  define_macros=get_define_macros(),
                  include_dirs=[get_abspath('..'),
                                get_abspath(os.path.join('..','libdrqueue'))] + 

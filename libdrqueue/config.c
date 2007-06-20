@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
 //
 // This file is part of DrQueue
 //
@@ -194,7 +194,7 @@ config_parse (char *cfg) {
         snprintf (renv,BUFFERLEN,"DRQUEUE_DB=%s",token);
         if ((penv = (char*) malloc (strlen(renv)+1)) == NULL) {
           fprintf (stderr,"ERROR allocating memory for DRQUEUE_DB.\n");
-	  fclose(f_conf);
+          fclose(f_conf);
           exit (1);
         }
         strncpy(penv,renv,strlen(renv)+1);
