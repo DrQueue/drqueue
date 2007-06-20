@@ -26,6 +26,25 @@ import glob
 import os
 import platform
 
+def list_wrapped_binaries(list,base_path):
+    wrapped_list=[]
+    for name in list:
+        name = os.path.split(name)[1]
+        wrapped_list.append(get_wrapped_command(name,base_path))
+    return wrapped_list
+
+def get_wrapped_command(cmdname,base_path):
+    kernel = os.uname()[0]
+    arch = os.uname()[4]
+    if not base_path:
+        try:
+            base_path = os.environ['INST_ROOT']
+        except:
+            raise "ERROR: INST_ROOT not defined in the environment"
+    detail_cmd = '.'.join([cmdname,kernel,arch])
+    wrapped_cmd = os.path.join(base_path,detail_cmd)
+    return wrapped_cmd
+        
 def get_platform_name():
     name = sys.platform
     if name == 'win32':
@@ -41,6 +60,27 @@ def get_abspath_glob(path):
 
 # Construction environment for the library (doesn't link with itself)
 env_lib = Environment ()
+#conf = Configure(env_lib)
+# TODO: write configure tests
+#env_lib = conf.Finish()
+
+# Configuration options
+opts = Options('scons.conf')
+opts.Add(PathOption('PREFIX','Directory to install under','/usr/local'))
+opts.Update(env_lib)
+opts.Save('scons.conf',env_lib)
+
+Help(opts.GenerateHelpText(env_lib))
+
+# Installation paths
+idir_prefix = os.path.join(env_lib.subst('$PREFIX'),'drqueue')
+idir_bin    = os.path.join(idir_prefix,'bin')
+idir_etc    = os.path.join(idir_prefix,'etc')
+idir_db     = os.path.join(idir_prefix,'db')
+idir_logs   = os.path.join(idir_prefix,'logs')
+idir_tmp    = os.path.join(idir_prefix,'tmp')
+Export('env_lib idir_prefix idir_bin idir_etc idir_db idir_logs idir_tmp')
+
 if sys.platform == 'win32':
     print "-> Win32 using Cygwin mode"
     Tool('mingw')(env_lib)
@@ -84,8 +124,9 @@ Default (libdrqueue)
 # Main
 #
 master = env.Program ('master.c')
-Default (master)
 slave = env.Program ('slave.c')
+main_list = [ 'master', 'slave' ]
+Default (master)
 Default (slave)
 
 ## Build python modules
@@ -98,7 +139,8 @@ Default (slave)
 drqman_c = glob.glob (os.path.join('drqman','*.c'))
 env_gtkstuff = env.Copy ()
 env_gtkstuff.ParseConfig ('pkg-config --cflags --libs gtk+-2.0')
-drqman = env_gtkstuff.Program ('drqman/drqman',drqman_c)
+drqman = env_gtkstuff.Program (os.path.join('drqman','drqman'),drqman_c)
+main_list.append(os.path.join('drqman','drqman'))
 Default (drqman)
 
 #
@@ -106,12 +148,36 @@ Default (drqman)
 #
 cmdline_tools = [ 'jobfinfo','jobinfo','compinfo','requeue','cfgreader',
                   'cjob','blockhost','sendjob' ]
+cpp_tools = [ 'sendjob' ]
+gui_tools = [ os.path.join('drqman','drqman') ]
 ctools = {}
 for tool in cmdline_tools:
-    print "Tool: %s"%(tool,)
-    if tool != 'sendjob':
+    if tool not in cpp_tools:
         ctools[tool] = env.Program (tool+'.c')
     else:
         ctools[tool ]= env.Program (tool+'.cpp')
     Default(ctools[tool])
 
+install_base = idir_prefix
+bin_list = main_list + cmdline_tools + gui_tools
+wrapped_bin_list = list_wrapped_binaries(bin_list,'bin')
+wbin = env.InstallAs(wrapped_bin_list,bin_list)
+env.Clean(wbin,wrapped_bin_list)
+
+etc_files = glob.glob(os.path.join('etc','*'))
+env.Install (idir_etc,etc_files)
+bin_files = glob.glob(os.path.join('bin','*'))
+env.Install (idir_bin,bin_files)
+perm_logs = env.Command (idir_logs,[],[Mkdir("$TARGET"),Chmod("$TARGET",0777)])
+perm_tmp = env.Command (idir_tmp,[],[Mkdir("$TARGET"),Chmod("$TARGET",0777)])
+perm_db = env.Command (idir_db,[],[Mkdir("$TARGET")])
+#env.Depends (install_base,perm_logs)
+#env.Depends (install_base,perm_tmp)
+#env.Depends (install_base,perm_db)
+env.Alias('install-wrapped-bin',wrapped_bin_list)
+env.Alias('install-bin',idir_bin)
+env.Alias('install-etc',idir_etc)
+env.Alias('install-tmp',perm_tmp)
+env.Alias('install-db',perm_db)
+env.Alias('install-logs',perm_logs)
+env.Alias('install',['install-wrapped-bin','install-bin','install-etc','install-db','install-logs','install-tmp'])
