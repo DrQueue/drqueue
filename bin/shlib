@@ -69,9 +69,9 @@ get_env_drqueue_root () {
 
 get_env_base_tool () {
     if [ ! -z $DRQ_SH_AUTOESCAPE -o ! -z "$1" ]; then
-        echo -n $(escape_spaces_string "$BASETOOL")
+        echo -n $(escape_spaces_string "$1")
     else
-        echo -n "$BASETOOL"
+        echo -n "$1"
     fi
 }
 
@@ -106,16 +106,16 @@ wrapper_cmd () {
   _full_unwrapped_tool_path="$( get_env_drqueue_bin )/$CMD_TO_WRAP"
   if [ ! -x "$_full_unwrapped_tool_path" ]; then
     echo ERROR: Command "$_full_unwrapped_tool_path" does not exist. Cannot be wrapped.
-    exit 1
+    return 1
   fi
 
-  _full_wrapped_path=$( get_env_drqueue_bin )/$( get_env_base_tool ).$( get_env_kernel ).$( get_env_machine )
+  _full_wrapped_path=$( get_env_drqueue_bin )/$( get_env_base_tool "$BASETOOL" ).$( get_env_kernel ).$( get_env_machine )
   WRAP_CMD="$_full_wrapped_path"
 
   if [ ! -x "${WRAP_CMD}" ]; then
     echo ERROR: the wrapper "$( get_env_base_tool )" for your platform \(${WRAP_CMD}\) does not exist.
     echo Perhaps you did not install it \(make miniinstall or make install\).
-    exit 1
+    return 1
   fi
   return 0
 }
