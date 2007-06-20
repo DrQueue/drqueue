@@ -14,8 +14,18 @@ $ scons
 Installing the binaries
 =======================
 
-This section needs to be updated. Please refer to the wiki
-for details on the subject.
+For example:
+
+$ scons PREFIX=/usr/local install
+
+will install the drqueue tree into '/usr/local/drqueue'
+
+You may also modify the file 'scons.conf' to change the
+default values.
+
+To clean the installed files:
+
+$ scons install -c
 
 Python
 ======
@@ -26,6 +36,6 @@ it whould be:
 $ cd python
 $ sudo python setup.py install
 
-You'll need root privileges for system-wide installation
+You'll need root privileges to do a system-wide installation
 
 
