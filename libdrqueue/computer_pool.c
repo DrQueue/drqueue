@@ -192,6 +192,11 @@ computer_pool_free (struct computer_limits *cl) {
   //log_auto (L_DEBUG3,"computer_pool_free(): Entering...");
   //log_auto (L_DEBUG3,"computer_pool_free(): cl->poolshmid=%ji,cl->npools=%u,cl->pool=%p",cl->poolshmid,cl->npools,cl->pool);
 
+  if (!cl) {
+    rv = 0;
+    return rv;
+  }
+
   computer_pool_lock (cl);
   computer_pool_detach_shared_memory(cl);
   if (cl->poolshmid != -1) {
