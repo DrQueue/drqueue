@@ -26,25 +26,15 @@ import glob
 import os
 import platform
 
-def list_wrapped_binaries(list,base_path):
-    wrapped_list=[]
-    for name in list:
-        name = os.path.split(name)[1]
-        wrapped_list.append(get_wrapped_command(name,base_path))
-    return wrapped_list
-
-def get_wrapped_command(cmdname,base_path):
+def wrapper_complete_command (cmdlist):
     kernel = os.uname()[0]
     arch = os.uname()[4]
-    if not base_path:
-        try:
-            base_path = os.environ['INST_ROOT']
-        except:
-            raise "ERROR: INST_ROOT not defined in the environment"
-    detail_cmd = '.'.join([cmdname,kernel,arch])
-    wrapped_cmd = os.path.join(base_path,detail_cmd)
-    return wrapped_cmd
-        
+    rlist = []
+    for cmd in cmdlist:
+        cmd = os.path.split(cmd)[1] # Removes any directory component
+        rlist.append('.'.join([cmd,kernel,arch]))
+    return rlist
+     
 def get_platform_name():
     name = sys.platform
     if name == 'win32':
@@ -56,6 +46,14 @@ def get_abspath_glob(path):
     rlist=[]
     for file in pathlist:
       rlist.append(os.path.abspath(file))
+    return rlist
+
+def copy_with_clean(src_files,dest_files,dest_path,env):
+    rlist = []
+    for s,d in zip(src_files,dest_files):
+        t = env.Command(os.path.join(dest_path,d),s,[ Copy("$TARGET","$SOURCE") ])
+        env.Clean(t,env.subst("$TARGET"))
+        rlist.append(t)
     return rlist
 
 # Construction environment for the library (doesn't link with itself)
@@ -149,7 +147,6 @@ Default (drqman)
 cmdline_tools = [ 'jobfinfo','jobinfo','compinfo','requeue','cfgreader',
                   'cjob','blockhost','sendjob' ]
 cpp_tools = [ 'sendjob' ]
-gui_tools = [ os.path.join('drqman','drqman') ]
 ctools = {}
 for tool in cmdline_tools:
     if tool not in cpp_tools:
@@ -159,10 +156,9 @@ for tool in cmdline_tools:
     Default(ctools[tool])
 
 install_base = idir_prefix
-bin_list = main_list + cmdline_tools + gui_tools
-wrapped_bin_list = list_wrapped_binaries(bin_list,'bin')
-wbin = env.InstallAs(wrapped_bin_list,bin_list)
-env.Clean(wbin,wrapped_bin_list)
+bin_list = main_list + cmdline_tools
+wrapped_bin_list = wrapper_complete_command (bin_list)
+wrapped_bin_copies = copy_with_clean(bin_list,wrapped_bin_list,'bin',env)
 
 etc_files = glob.glob(os.path.join('etc','*'))
 env.Install (idir_etc,etc_files)
@@ -174,7 +170,7 @@ perm_db = env.Command (idir_db,[],[Mkdir("$TARGET")])
 #env.Depends (install_base,perm_logs)
 #env.Depends (install_base,perm_tmp)
 #env.Depends (install_base,perm_db)
-env.Alias('install-wrapped-bin',wrapped_bin_list)
+env.Alias('install-wrapped-bin',wrapped_bin_copies)
 env.Alias('install-bin',idir_bin)
 env.Alias('install-etc',idir_etc)
 env.Alias('install-tmp',perm_tmp)
