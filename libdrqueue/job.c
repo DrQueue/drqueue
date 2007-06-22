@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
 //
 // This file is part of DrQueue
 //
@@ -180,6 +180,7 @@ job_init (struct job *job) {
   job->flags = 0;
 
   job->koj = KOJ_GENERAL;
+  snprintf (job->owner,MAXNAMELEN,"%s",getenv("USER"));
 
   job_limits_init (&job->limits);
 }
@@ -1014,8 +1015,8 @@ job_limits_init (struct job_limits *limits) {
   limits->nmaxcpuscomputer = (uint16_t)-1;   // the same
   limits->os_flags = (uint16_t) -1;          // All operating systems
   limits->memory = 0;                        // No memory limit
-  strncpy (limits->pool,DEFAULT_POOL,MAXNAMELEN-1);   // Belongs to
-                                                      // the default pool
+  snprintf(limits->pool,MAXNAMELEN,"%s",DEFAULT_POOL); // Belongs to
+                                                       // the default pool
 }
 
 void

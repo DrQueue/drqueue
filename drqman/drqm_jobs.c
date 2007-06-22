@@ -109,13 +109,18 @@ static void job_hstop_cb (GtkWidget *button, struct drqm_jobs_info *info);
 static void job_rerun_cb (GtkWidget *button, struct drqm_jobs_info *info);
 
 void
-free_job_list(GtkWidget *joblist,gpointer userdata) {
+free_job_list(GtkWidget *joblist,void *userdata) {
   struct drqm_jobs_info *info = (struct drqm_jobs_info *) userdata;
   int i;
+  if (!info) {
+    return;
+  }
   for (i = 0; i < info->njobs; i++) {
     job_delete (&info->jobs[i]);
   }
-  free (info->jobs);
+  if (info->jobs) {
+    free (info->jobs);
+  }
   info->jobs=NULL;
   info->njobs=0;
 }
@@ -1306,7 +1311,7 @@ static GtkWidget *DeleteJobDialog (struct drqm_jobs_info *info) {
 static void djd_bok_pressed (GtkWidget *button, struct drqm_jobs_info *info) {
   if (info->jdd.dialog) {
     drqm_request_job_delete (info->jdd.job.id);
-    update_joblist(button,info->jdd.oldinfo);
+    //update_joblist(button,info->jdd.oldinfo);
     gtk_widget_destroy (info->jdd.dialog);
     info->jdd.dialog = NULL;
   } else {
@@ -1358,8 +1363,8 @@ void ReRunJob (GtkWidget *menu_item, struct drqm_jobs_info *info) {
 
   cbs = g_list_append (cbs,job_rerun_cb);
   cbs = g_list_append (cbs,info);
-  cbs = g_list_append (cbs,update_joblist);
-  cbs = g_list_append (cbs,info);
+  //cbs = g_list_append (cbs,update_joblist);
+  //cbs = g_list_append (cbs,info);
 
   dialog = ConfirmDialog ("Do you really want to Re-Run the job?\n(This will kill all current running processes)",
                           cbs);

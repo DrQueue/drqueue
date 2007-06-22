@@ -132,11 +132,18 @@ struct row_data {
 
 void JobDetails(GtkWidget *menu_item, struct drqm_jobs_info *info) {
   GtkWidget *dialog;
+  struct drqm_jobs_info *newinfo;
 
   if (!info->selected)
     return;
 
-  dialog = JobDetailsDialog(info);
+  newinfo = (struct drqm_jobs_info *) malloc (sizeof (struct drqm_jobs_info));
+  memcpy(newinfo,info,sizeof(struct drqm_jobs_info));
+  memcpy(&newinfo->jdd.job,&info->jobs[info->row],sizeof(struct job));
+  job_fix_received_invalid(&newinfo->jdd.job);
+  //newinfo->jdd.oldinfo = info;
+
+  dialog = JobDetailsDialog(newinfo);
 }
 
 static GtkWidget *CreateBlockedHostsClist (void) {
@@ -714,20 +721,22 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info) {
   GtkWidget *autorefreshWidgets;
   struct drqm_jobs_info *newinfo;
 
-  if (!info->njobs) {
+  if (!info || !info->njobs) {
     return NULL;
   }
 
+  newinfo = info;
+
   // We create a new info structure for this window.
-  newinfo = (struct drqm_jobs_info*) malloc (sizeof (struct drqm_jobs_info));
-  if (!newinfo) {
-    return NULL;
-  }
-  memcpy(newinfo,info,sizeof(struct drqm_jobs_info));
-  // Copy the details of the single job we're interested in
-  memcpy(&newinfo->jdd.job,&info->jobs[info->row],sizeof(struct job));
-  job_fix_received_invalid(&newinfo->jdd.job);
-  newinfo->jdd.oldinfo = info;
+  //newinfo = (struct drqm_jobs_info*) malloc (sizeof (struct drqm_jobs_info));
+  //if (!newinfo) {
+  //  return NULL;
+  //}
+  //memcpy(newinfo,info,sizeof(struct drqm_jobs_info));
+  //// Copy the details of the single job we're interested in
+  //memcpy(&newinfo->jdd.job,&info->jobs[info->row],sizeof(struct job));
+  //job_fix_received_invalid(&newinfo->jdd.job);
+  //newinfo->jdd.oldinfo = info;
 
   tooltips = TooltipsNew ();
 
@@ -915,7 +924,7 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info) {
   gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
   g_signal_connect (G_OBJECT(button),"clicked",
                     G_CALLBACK(ReRunJob),newinfo);
-  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_update),newinfo);
+  //gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_update),newinfo);
   gtk_tooltips_set_tip (tooltips,button,"Will restart this job again, killing all currently running frames",NULL);
 
   /* Stop */
@@ -925,7 +934,7 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info) {
   gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
   g_signal_connect (G_OBJECT(button),"clicked",
                     G_CALLBACK(StopJob),newinfo);
-  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_update),newinfo);
+  //gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_update),newinfo);
   gtk_tooltips_set_tip (tooltips,button,"Set the job as 'Stopped' but let the running frames finish",NULL);
 
   /* Hard Stop */
@@ -935,7 +944,7 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info) {
   gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
   g_signal_connect (G_OBJECT(button),"clicked",
                     G_CALLBACK(HStopJob),newinfo);
-  g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(jdd_update),newinfo);
+  //g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(jdd_update),newinfo);
   gtk_tooltips_set_tip (tooltips,button,"Set the job as 'Stopped' killing all running frames",NULL);
   gtk_widget_set_name (GTK_WIDGET(button),"warning");
 
@@ -946,7 +955,7 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info) {
   gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
   g_signal_connect (G_OBJECT(button),"clicked",
                     G_CALLBACK(ContinueJob),newinfo);
-  g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(jdd_update),newinfo);
+  //g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(jdd_update),newinfo);
   gtk_tooltips_set_tip (tooltips,button,"Set a 'Stopped' job as 'Waiting' again",NULL);
 
   /* Delete */
@@ -967,7 +976,7 @@ static GtkWidget *JobDetailsDialog (struct drqm_jobs_info *info) {
   image = gtk_image_new_from_stock (GTK_STOCK_REFRESH,GTK_ICON_SIZE_BUTTON);
   gtk_button_set_image (GTK_BUTTON(button),GTK_WIDGET(image));
   gtk_container_border_width (GTK_CONTAINER(button),5);
-  gtk_signal_connect(GTK_OBJECT(button),"clicked",GTK_SIGNAL_FUNC(jdd_update),newinfo);
+  g_signal_connect(G_OBJECT(button),"clicked",G_CALLBACK(jdd_update),newinfo);
   gtk_box_pack_start (GTK_BOX(hbox),button,TRUE,TRUE,2);
   // Auto refresh
   newinfo->ari.callback = AutoRefreshUpdate;

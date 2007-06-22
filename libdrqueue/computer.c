@@ -226,6 +226,9 @@ void computer_init (struct computer *computer) {
 }
 
 int computer_free (struct computer *computer) {
+  if (!computer) {
+    return 0;
+  }
   if (!computer_pool_free (&computer->limits)) {
     log_auto (L_ERROR,"computer_pool_free() found a problem while freeing computer pool memory. (%s) (%s)\n",
 	      drerrno_str(),strerror(drerrno_system));
