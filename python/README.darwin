@@ -1,0 +1,39 @@
+Known Issues
+************
+
+
+Python Frameworks
+-----------------
+You need to use the same python framework to use the module as the one
+you used to build it.
+
+Unexpected behavior may occur if you use the modules built under another
+system framework.
+
+Updating the profile for MacPython
+----------------------------------
+If you're running MacPython, you'll find a tool to update your shell
+profile on a path similar to the following:
+
+"/Applications/MacPython 2.4/Update Shell Profile.command"
+
+You need to run the script as all the users that will make use of it.
+For authoritative answer always refer to your own software version's
+documentation.
+
+More information on MacPython can be found at:
+http://www.cwi.nl/~jack/macpython and
+http://pythonmac.org/.  More information on
+Python in general can be found at
+http://www.python.org.
+
+Universal binaries
+------------------
+If you have the proper Frameworks installed, setuptools will build the
+binaries included in the module as Universal binaries, creating an .egg
+file that can be installed on any other mac system (>10.3.9) using the
+tool "easy_install".
+
+Refer to the setuptools documentation for more information:
+http://peak.telecommunity.com/DevCenter/setuptools
+
