@@ -51,8 +51,9 @@ def get_abspath_glob(path):
 def copy_with_clean(src_files,dest_files,dest_path,env):
     rlist = []
     for s,d in zip(src_files,dest_files):
-        t = env.Command(os.path.join(dest_path,d),s,[ Copy("$TARGET","$SOURCE") ])
-        env.Clean(t,env.subst("$TARGET"))
+        t = env.InstallAs(os.path.join(dest_path,d),s)
+        #t = env.Command(os.path.join(dest_path,d),s,[ Copy("$TARGET","$SOURCE") ])
+        #env.Clean(t,env.subst("$TARGET"))
         rlist.append(t)
     return rlist
 
@@ -158,15 +159,19 @@ for tool in cmdline_tools:
 install_base = idir_prefix
 bin_list = main_list + cmdline_tools
 wrapped_bin_list = wrapper_complete_command (bin_list)
-wrapped_bin_copies = copy_with_clean(bin_list,wrapped_bin_list,'bin',env)
+#wrapped_bin_copies = copy_with_clean(bin_list,wrapped_bin_list,'bin',env)
+wrapped_bin_copies = copy_with_clean(bin_list,wrapped_bin_list,idir_bin,env)
 
 etc_files = glob.glob(os.path.join('etc','*'))
-env.Install (idir_etc,etc_files)
+copy_with_clean(etc_files,etc_files,idir_prefix,env)
 bin_files = glob.glob(os.path.join('bin','*'))
-env.Install (idir_bin,bin_files)
+copy_with_clean(bin_files,bin_files,idir_prefix,env)
 perm_logs = env.Command (idir_logs,[],[Mkdir("$TARGET"),Chmod("$TARGET",0777)])
+env.Clean(perm_logs,idir_logs)
 perm_tmp = env.Command (idir_tmp,[],[Mkdir("$TARGET"),Chmod("$TARGET",0777)])
+env.Clean(perm_tmp,idir_tmp)
 perm_db = env.Command (idir_db,[],[Mkdir("$TARGET")])
+env.Clean(perm_db,idir_db)
 #env.Depends (install_base,perm_logs)
 #env.Depends (install_base,perm_tmp)
 #env.Depends (install_base,perm_db)
