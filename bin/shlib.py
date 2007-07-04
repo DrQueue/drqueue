@@ -19,7 +19,9 @@
 #
 # $Id: /drqueue/remote/branches/0.65.x/jobinfo.c 1754 2007-01-27T05:35:05.735857Z jorge  $
 #
-
+#
+# -*- coding: utf8 -*-
+#
 import sys,platform,os,re
 
 class shhelper:
@@ -27,14 +29,19 @@ class shhelper:
         self.basetool=basetool
         self.machine=self.machine(escape,underscore)
         self.kernel=self.kernel(escape,underscore)
-        self.distro=self.distro(escape,underscore)
+        self.os_info=self.os_info(escape,underscore)
 
     def report(self):
         print "Basetool: %s"%(self.basetool)
         print "Machine: %s"%(self.machine)
         print "Kernel:  %s"%(self.kernel)
-        print "Distro:  %s version %s"%(self.distro[0],self.distro[1])
-
+        if self.os_info['kernel'] == 'Linux':
+            print "Linux distro: %s version %s"%(self.os_info['distro'][0],self.os_info['distro'][1])
+        elif self.os_info['kernel'] == 'Darwin':
+            print "Darwin version: %s running on %s"%(self.os_info['mac_ver'][0],self.os_info['mac_ver'][2])
+        else:
+            print "OS Information not available"
+            
     def machine(self,escape,underscore):
         machine = platform.machine()
         if underscore:
@@ -51,11 +58,18 @@ class shhelper:
             kernel = re.escape(kernel)
         return kernel
 
-    def distro(self,escape,underscore):
+    def os_info(self,escape,underscore):
         """If available will store the distribution specific details into 'distro' ('Fedora','7','Moonshine')"""
-        distro = platform.dist()
-        return distro
-
+        result=[]
+        if self.kernel == 'Linux':
+            distro = platform.dist()
+            result = { 'kernel':'Linux', 'distro':distro }
+        elif self.kernel == 'Darwin':
+            distro = platform.mac_ver()
+            result = { 'kernel':'Darwin', 'mac_ver':distro }
+        else:
+            result = { 'kernel':'Unknown kernel' }
+        return result
 
 if __name__ == '__main__':
     helper = shhelper()
