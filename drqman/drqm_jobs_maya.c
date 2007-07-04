@@ -308,14 +308,18 @@ static void dnj_koj_frame_maya_projectdir_set (GtkWidget *button, struct drqmj_k
 
   snprintf(buf2,BUFFERLEN,"%s\\images\\",buf);
   gtk_entry_set_text (GTK_ENTRY(info->erenderdir),buf2);
-  snprintf(buf2,BUFFERLEN,"%s\\scenes\\",buf);
-  gtk_entry_set_text (GTK_ENTRY(info->escene),buf2);
+  if (!strlen(gtk_entry_get_text (GTK_ENTRY(info->escene))))  { 
+    snprintf(buf2,BUFFERLEN,"%s\\scenes\\",buf);
+    gtk_entry_set_text (GTK_ENTRY(info->escene),buf2);
+  }
 #else
 
   snprintf(buf2,BUFFERLEN,"%s/images/",buf);
   gtk_entry_set_text (GTK_ENTRY(info->erenderdir),buf2);
-  snprintf(buf2,BUFFERLEN,"%s/scenes/",buf);
-  gtk_entry_set_text (GTK_ENTRY(info->escene),buf2);
+  if (!strlen(gtk_entry_get_text (GTK_ENTRY(info->escene))))  {
+    snprintf(buf2,BUFFERLEN,"%s/scenes/",buf);
+    gtk_entry_set_text (GTK_ENTRY(info->escene),buf2);
+  }
 #endif
 }
 
