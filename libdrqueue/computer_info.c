@@ -198,6 +198,12 @@ char *proctypestring (t_proctype proctype) {
   case PROCTYPE_INTELXEON:
     msg = "Xeon";
     break;
+  case PROCTYPE_INTELCORE2DUO:
+    msg = "Intel Core 2 Duo";
+    break;
+  case PROCTYPE_INTELCOREDUO:
+    msg = "Intel Core Duo";
+    break;
   case PROCTYPE_INTELIA64:
     msg = "IA-64";
     break;
