@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
 //
 // This file is part of DrQueue
 //
@@ -112,6 +112,10 @@ get_proctype (void) {
         proctype = PROCTYPE_PENTIUMII;
       } else if (strstr(buf,"Pentium ") != NULL) {
         proctype = PROCTYPE_PENTIUM;
+      } else if (strstr(buf,"Intel(R) Core(TM)2 ") != NULL) {
+        proctype = PROCTYPE_INTELCORE2DUO;
+      } else if (strstr(buf,"Intel(R) Core(TM) ") != NULL) {
+        proctype = PROCTYPE_INTELCOREDUO;
       }
       found = 1;
     } else if ((strstr(buf,"arch") != NULL) &&  (strstr(buf,"IA-64") != NULL)) {

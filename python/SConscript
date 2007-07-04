@@ -45,10 +45,10 @@ env_lib.Append (SWIGFLAGS=Split('-python -Ilibdrqueue') +
 libpy = env_lib.SharedLibrary("drqueue",
                     [os.path.abspath('./src/drqueue/base/libdrqueue.i')] + 
                     libdrqueue_src,
-                    LIBPATH=[distutils.sysconfig.get_python_lib()],
-                    LIBS=['python'+distutils.sysconfig.get_python_version()],
-                    SHLINK=ldshared,
-                    SHLINKFLAGS=[],
+                    #LIBPATH=[distutils.sysconfig.get_python_lib()],
+                    #LIBS=['python'+distutils.sysconfig.get_python_version()],
+                    #SHLINK=ldshared,
+                    #SHLINKFLAGS=[],
                     SHLIBPREFIX="_",
                     SHLIBSUFFIX=so_ext)
 Default(libpy)
