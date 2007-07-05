@@ -22,7 +22,9 @@
 #
 # -*- coding: utf8 -*-
 #
-import sys,platform,os,re
+
+import sys,platform,os,re,signal
+from optparse import OptionParser
 
 class shhelper:
     def __init__(self,basetool=os.path.split(sys.argv[0])[1],escape=False,underscore=True):
@@ -71,6 +73,61 @@ class shhelper:
             result = { 'kernel':'Unknown kernel' }
         return result
 
-if __name__ == '__main__':
+    def get_full_exec(self,basetool):
+        try:
+            basepath = os.environ['DRQUEUE_ROOT']
+        except:
+            print u"ERROR: DRQUEUE_ROOT environment variable not set. Exiting."
+            sys.exit(1)
+        basepath = os.path.join(basepath,'bin')
+        basename = "%s.%s.%s"%(basetool,self.kernel,self.machine)
+        return os.path.join(basepath,basename)
+
+    def run_with_args(self,basetool,options,args):
+        exec_name = self.get_full_exec(basetool)
+        if options.daemon:
+            print "Running as daemon"
+            os.close(0)
+            os.close(1)
+            os.close(2)
+            signal.signal(SIGHUP,SIG_IGN)
+        self.pid = os.spawnl(os.P_NOWAIT,exec_name,args[1:])
+        print u"Spawning process: %s with args %s"%(exec_name,args[1:])
+        signal.signal(signal.SIGINT,self.kill_daemon)
+        signal.signal(signal.SIGCLD,self.daemon_finished)
+        if options.filename:
+            try:
+                pid_file = open (options.filename,'w+')
+            except:
+                print u"ERROR: Could not create pid file on: '%s'"%(options.filename,)
+                os.kill(self.pid,signal.SIGINT)
+                sys.exit(1)
+            pid_file.write("%i"%(self.pid,))
+            pid_file.close()
+            
+    def kill_daemon(self,signal,stack):
+        ret = os.kill (self.pid,0)
+        print "Ret: %i"%(ret,)
+        os.kill(pid,signal.SIGINT)
+        # Leaving 15 seconds to die cleanly
+        os.alarm(15)
+        signal.signal(SIGALARM,kill_daemon_kill)
+
+    def kill_daemon_kill(self,signal,stack):
+        ret = os.kill (self.pid,0)
+        print "Ret: %i"%(ret,)
+
+    def daemon_finished(self,signal,stack):
+        print "Daemon exited for unknown reasons"
+        sys.exit(1)
+        
+def main(basetool):
     helper = shhelper()
-    helper.report()
+    parser = OptionParser()
+    parser.add_option("-p","--pid",dest="filename",help="Writes the pid of the main daemon into FILE",metavar="FILE")
+    parser.add_option("-d","--daemon",action="store_const", const=1, dest="daemon", help="Runs the daemon in the background")
+    (options,args) = parser.parse_args()
+    helper.run_with_args(basetool,options,args)
+
+if __name__ == '__main__':
+    main(sys.argv[1])

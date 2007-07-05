@@ -46,57 +46,7 @@ escape_spaces_string () {
   return 0
 }
 
-check_environment () {
-  if [ -z ${DRQUEUE_ROOT} ]; then
-    echo ERROR: DRQUEUE_ROOT not set in environment
-    exit 1
-  fi
-  if [ -z ${DRQUEUE_MASTER} ]; then
-    echo ERROR: DRQUEUE_MASTER not set in environment
-    exit 1
-  fi
-}
-
-get_env_drqueue_root () {
-    check_environment
-    if [ ! -z $DRQ_SH_AUTOESCAPE -o ! -z "$1" ]; then
-      echo -n $( escape_spaces_string "$DRQUEUE_ROOT" )
-    else
-      echo -n $DRQUEUE_ROOT
-    fi
-    return 0
-}
-
-get_env_base_tool () {
-    if [ ! -z $DRQ_SH_AUTOESCAPE -o ! -z "$1" ]; then
-        echo -n $(escape_spaces_string "$1")
-    else
-        echo -n "$1"
-    fi
-}
-
-get_env_kernel () {
-    if [ ! -z "$DRQ_SH_UNDERSCORE" -o ! -z "$1" ]; then
-        echo -n $( underscore_spaces_and_slashes "`uname -s`" )
-    else
-        echo -n "`uname -s`"
-    fi
-}
-
-get_env_machine () {
-    if [ ! -z "$DRQ_SH_UNDERSCORE" -o ! -z "$1" ]; then
-        echo -n $( underscore_spaces_and_slashes "$( uname -m )" )
-    else
-        echo -n `uname -m`
-    fi
-}
-
-get_env_drqueue_bin () {
-    if [ ! -z "$DRQUEUE_BIN" ]; then
-        echo -n $DRQUEUE_BIN
-    else
-        echo -n $( get_env_drqueue_root )/bin 
-    fi
+checb    fi
 }
 
 wrapper_cmd () {
