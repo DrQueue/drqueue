@@ -2,12 +2,14 @@
 #
 # Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
 #
-# This program is free software; you can redistribute it and/or modify
+# This program is part of DrQueue
+#
+# DrQueue is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful,
+# DrQueue is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -19,20 +21,21 @@
 #
 # $Id: /drqueue/remote/branches/0.65.x/jobinfo.c 1754 2007-01-27T05:35:05.735857Z jorge  $
 #
-#
 # -*- coding: UTF-8 -*-
 #
 
 import sys,platform,os,re,signal
+import time
 from optparse import OptionParser
 
 class shhelper:
-    global_pid = 0
     def __init__(self,basetool=os.path.split(sys.argv[0])[1],escape=False,underscore=True):
         self.basetool=basetool
         self.machine=self.machine(escape,underscore)
         self.kernel=self.kernel(escape,underscore)
         self.os_info=self.os_info(escape,underscore)
+        self.pid_list=[]
+        self.do_exit=False
 
     def report(self):
         print "Basetool: %s"%(self.basetool)
@@ -92,16 +95,13 @@ class shhelper:
             os.close(1)
             os.close(2)
             signal.signal(SIGHUP,SIG_IGN)
-        try:
-            print u"Spawning process: %s with args %s"%(exec_name,args)
-            global_pid = os.spawnvp(os.P_NOWAIT,exec_name,args)
-        except:
-            print u"Daemon Interrumpted"
-            global_pid = 0
-        else:
-            print u"Daemon pid: %i"%(global_pid,)
-        signal.signal(signal.SIGINT,kill_daemon)
-        signal.signal(signal.SIGCLD,daemon_finished)
+        print u"Spawning process: %s with args %s"%(exec_name,args)
+        pid = os.spawnvp(os.P_NOWAIT,exec_name,args)
+        
+        # Add it to the list of pids
+        self.pid_list.append(pid)
+        signal.signal(signal.SIGINT,self.kill_daemon)
+        signal.signal(signal.SIGCHLD,signal.SIG_IGN)
         if options.filename:
             try:
                 pid_file = open (options.filename,'w+')
@@ -109,29 +109,36 @@ class shhelper:
                 print u"ERROR: Could not create pid file on: '%s'"%(options.filename,)
                 os.kill(self.pid,signal.SIGINT)
                 sys.exit(1)
-            pid_file.write("%i"%(global_pid,))
+            pid_file.write("%i%s"%(pid,os.linesep))
             pid_file.close()
+            
+    def kill_daemon(self,rsignal,stack):
+        """The wrapper has received a SIGINT signal, and should terminate as many daemon processes
+        as it might have created"""
+        for pid in self.pid_list:
+            try:
+                os.kill(pid,0)
+            except:
+                # Already dead
+                pass
+            else:
+                os.kill(pid,signal.SIGINT)
+                (opid,status) = os.waitpid(pid,0)
+                print "Process %i cleanly terminated."%(pid)
+        self.do_exit = True
 
-    def wait_forever(self,basetool,options,args):
-        (old_pid,status) = os.wait()
-        while old_pid:
-            print "Print process %i arrived with status %i, starting over..."%(old_pid,status)
-            self.run_with_args(basetool,options,args)
+    def wait_forever(self):
+        """This is the main script just checking the daemon stays alive"""
+        while self.do_exit == False: 
+            for pid in self.pid_list:
+                try:
+                    os.kill(pid,0)
+                except:
+                    print "Daemon died: restarting..."
+                    self.pid_list.remove(pid)
+                    self.run_with_args(self.basetool,self.options,self.args)
+            time.sleep(10)
 
-def kill_daemon(signal,stack):
-    os.kill(global_pid,signal.SIGINT)
-    # Leaving 15 seconds to die cleanly
-    os.alarm(15)
-    signal.signal(SIGALARM,kill_daemon_kill)
-
-def kill_daemon_kill(signal,stack):
-    os.kill(global_pid,signal.SIGKILL)
-
-def daemon_finished(signal,stack):
-    print "Daemon exited for unknown reasons"
-    sys.exit(1)
-
-    
 def main(basetool):
     helper = shhelper()
     parser = OptionParser()
@@ -139,7 +146,7 @@ def main(basetool):
     parser.add_option("-d","--daemon",action="store_const", const=1, dest="daemon", help="Runs the daemon in the background")
     (options,args) = parser.parse_args()
     helper.run_with_args(basetool,options,args)
-    helper.wait_forever(basetool,options,args)
+    helper.wait_forever()
 
 if __name__ == '__main__':
     main(sys.argv[1])
