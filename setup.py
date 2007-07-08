@@ -19,7 +19,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 # USA
 # 
-# $Id: /drqueue/remote/branches/0.65.x/python/setup.py 1892 2007-06-20T09:30:25.770029Z jorge  $
+# $Id$
 #
 
 import ez_setup

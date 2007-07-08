@@ -19,7 +19,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 # USA
 # 
-# $Id: /drqueue/remote/branches/0.65.x/python/DrKeewee/cgi-bin/drkeewee.cgi 1813 2007-02-25T23:33:33.078183Z jorge  $
+# $Id$
 #
 # This program returns the number of times a frame has been requeued.
 # Useful for avoiding endless loops
