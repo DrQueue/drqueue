@@ -58,7 +58,7 @@ def copy_with_clean(src_files,dest_files,dest_path,env):
     return rlist
 
 # Construction environment for the library (doesn't link with itself)
-env_lib = Environment ()
+env_lib = Environment (ENV=os.environ)
 #conf = Configure(env_lib)
 # TODO: write configure tests
 #env_lib = conf.Finish()
