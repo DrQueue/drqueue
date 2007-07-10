@@ -27,8 +27,10 @@ import os
 import platform
 
 def wrapper_complete_command (cmdlist):
-    kernel = os.uname()[0]
-    arch = os.uname()[4]
+    kernel = platform.system()
+    arch = platform.machine()
+    if arch == '':
+       arch = 'unknown'
     rlist = []
     for cmd in cmdlist:
         cmd = os.path.split(cmd)[1] # Removes any directory component
@@ -56,6 +58,21 @@ def copy_with_clean(src_files,dest_files,dest_path,env):
         #env.Clean(t,env.subst("$TARGET"))
         rlist.append(t)
     return rlist
+
+def add_suffix_to_list(list,suffix):
+    """Meant to add the .exe to list of binary files"""
+    result = []
+    for item in list:
+        result.append("%s%s"%(item,suffix))
+    return result
+
+def get_bin_extension():
+    """Returns '.exe' if system is win32"""
+    result = ''
+    print platform.system()
+    if platform.system() == 'Windows':
+        result = '.exe'
+    return result
 
 # Construction environment for the library (doesn't link with itself)
 env_lib = Environment (ENV=os.environ)
@@ -135,12 +152,12 @@ Default (slave)
 #
 # drqman
 #
-drqman_c = glob.glob (os.path.join('drqman','*.c'))
-env_gtkstuff = env.Copy ()
-env_gtkstuff.ParseConfig ('pkg-config --cflags --libs gtk+-2.0')
-drqman = env_gtkstuff.Program (os.path.join('drqman','drqman'),drqman_c)
-main_list.append(os.path.join('drqman','drqman'))
-Default (drqman)
+#drqman_c = glob.glob (os.path.join('drqman','*.c'))
+#env_gtkstuff = env.Copy ()
+#env_gtkstuff.ParseConfig (r'c:\cygwin\bin\pkg-config.exe --cflags --libs gtk+-2.0')
+#drqman = env_gtkstuff.Program (os.path.join('drqman','drqman'),drqman_c)
+#main_list.append(os.path.join('drqman','drqman'))
+#Default (drqman)
 
 #
 # Tools
@@ -159,7 +176,8 @@ for tool in cmdline_tools:
 install_base = idir_prefix
 bin_list = main_list + cmdline_tools
 wrapped_bin_list = wrapper_complete_command (bin_list)
-#wrapped_bin_copies = copy_with_clean(bin_list,wrapped_bin_list,'bin',env)
+bin_list = add_suffix_to_list(bin_list,get_bin_extension())
+wrapped_bin_list = add_suffix_to_list(wrapped_bin_list,get_bin_extension())
 wrapped_bin_copies = copy_with_clean(bin_list,wrapped_bin_list,idir_bin,env)
 
 etc_files = glob.glob(os.path.join('etc','*'))
