@@ -27,6 +27,7 @@
 import sys,platform,os,re,signal
 import time
 from optparse import OptionParser
+import subprocess
 
 class shhelper:
     def __init__(self,basetool=os.path.split(sys.argv[0])[1],escape=False,underscore=True):
@@ -54,6 +55,8 @@ class shhelper:
             machine = re.sub('\s','_',machine)
         if escape:
             machine = re.escape(machine)
+        if not machine:
+            machine = 'unknown'
         return machine
 
     def kernel(self,escape,underscore):
@@ -87,21 +90,26 @@ class shhelper:
         basename = "%s.%s.%s"%(basetool,self.kernel,self.machine)
         return os.path.join(basepath,basename)
 
-    def run_with_args(self,basetool,options,args):
-        exec_name = self.get_full_exec(basetool)
+    def run_with_args(self,basetool,options='',args=''):
+        self.options=options
+        full_exec=self.get_full_exec(basetool)
+        if args[0] != full_exec:
+            args[0] = full_exec
+        self.args=args
+        exec_name = args[0]
         if options.daemon:
             print "Running as daemon"
             os.close(0)
             os.close(1)
             os.close(2)
             signal.signal(SIGHUP,SIG_IGN)
-        print u"Spawning process: %s with args %s"%(exec_name,args)
-        pid = os.spawnvp(os.P_NOWAIT,exec_name,args)
-        
+        print u"Spawning process: '%s'"%(os.path.abspath(exec_name)+' '.join(args[1:]))
+        p = subprocess.Popen(os.path.abspath(exec_name)+' '.join(args[1:]),shell=False)
         # Add it to the list of pids
-        self.pid_list.append(pid)
+        self.pid_list.append(p.pid)
         signal.signal(signal.SIGINT,self.kill_daemon)
-        signal.signal(signal.SIGCHLD,signal.SIG_IGN)
+        if self.kernel != 'Windows':
+            signal.signal(signal.SIGCHLD,signal.SIG_IGN)
         if options.filename:
             try:
                 pid_file = open (options.filename,'w+')
@@ -140,7 +148,7 @@ class shhelper:
             time.sleep(10)
 
 def main(basetool):
-    helper = shhelper()
+    helper = shhelper(basetool=basetool)
     parser = OptionParser()
     parser.add_option("-p","--pid",dest="filename",help="Writes the pid of the main daemon into FILE",metavar="FILE")
     parser.add_option("-d","--daemon",action="store_const", const=1, dest="daemon", help="Runs the daemon in the background")
