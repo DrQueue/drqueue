@@ -158,12 +158,12 @@ Default (slave)
 #
 # drqman
 #
-drqman_c = glob.glob (os.path.join('drqman','*.c'))
-env_gtkstuff = env.Copy ()
-env_gtkstuff.ParseConfig (r'%s --cflags --libs gtk+-2.0'%(get_pkgconfig_path()))
-drqman = env_gtkstuff.Program (os.path.join('drqman','drqman'),drqman_c)
-main_list.append(os.path.join('drqman','drqman'))
-Default (drqman)
+#drqman_c = glob.glob (os.path.join('drqman','*.c'))
+#env_gtkstuff = env.Copy ()
+#env_gtkstuff.ParseConfig (r'%s --cflags --libs gtk+-2.0'%(get_pkgconfig_path()))
+#drqman = env_gtkstuff.Program (os.path.join('drqman','drqman'),drqman_c)
+#main_list.append(os.path.join('drqman','drqman'))
+#Default (drqman)
 
 #
 # Tools

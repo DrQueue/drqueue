@@ -146,7 +146,11 @@ class shhelper:
                     print "Daemon died with code %i: restarting..."%(retcode)
                     self.daemon_list.remove(daemon)
                     self.run_with_args(self.basetool,self.options,self.args)
-            time.sleep(10)
+            try:
+                time.sleep(10)
+            except IOError, e:
+                # Interrupted
+                self.do_exit = True
 
 def main(basetool):
     helper = shhelper(basetool=basetool)
