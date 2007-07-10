@@ -69,9 +69,15 @@ def add_suffix_to_list(list,suffix):
 def get_bin_extension():
     """Returns '.exe' if system is win32"""
     result = ''
-    print platform.system()
     if platform.system() == 'Windows':
         result = '.exe'
+    return result
+
+def get_pkgconfig_path():
+    """Returns the path to what should be the right pkg-config for every OS"""
+    result = r'pkg-config'
+    if platform.system() == "Windows":
+        result = r'c:\cygwin\bin\pkg-config.exe'
     return result
 
 # Construction environment for the library (doesn't link with itself)
@@ -152,12 +158,12 @@ Default (slave)
 #
 # drqman
 #
-#drqman_c = glob.glob (os.path.join('drqman','*.c'))
-#env_gtkstuff = env.Copy ()
-#env_gtkstuff.ParseConfig (r'c:\cygwin\bin\pkg-config.exe --cflags --libs gtk+-2.0')
-#drqman = env_gtkstuff.Program (os.path.join('drqman','drqman'),drqman_c)
-#main_list.append(os.path.join('drqman','drqman'))
-#Default (drqman)
+drqman_c = glob.glob (os.path.join('drqman','*.c'))
+env_gtkstuff = env.Copy ()
+env_gtkstuff.ParseConfig (r'%s --cflags --libs gtk+-2.0'%(get_pkgconfig_path()))
+drqman = env_gtkstuff.Program (os.path.join('drqman','drqman'),drqman_c)
+main_list.append(os.path.join('drqman','drqman'))
+Default (drqman)
 
 #
 # Tools

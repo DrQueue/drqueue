@@ -35,7 +35,7 @@ class shhelper:
         self.machine=self.machine(escape,underscore)
         self.kernel=self.kernel(escape,underscore)
         self.os_info=self.os_info(escape,underscore)
-        self.pid_list=[]
+        self.daemon_list=[]
         self.do_exit=False
 
     def report(self):
@@ -99,17 +99,15 @@ class shhelper:
         exec_name = args[0]
         if options.daemon:
             print "Running as daemon"
-            os.close(0)
-            os.close(1)
-            os.close(2)
+            sys.stdin.close()
+            sys.stdout.close()
+            sys.stderr.close()
             signal.signal(SIGHUP,SIG_IGN)
-        print u"Spawning process: '%s'"%(os.path.abspath(exec_name)+' '.join(args[1:]))
-        p = subprocess.Popen(os.path.abspath(exec_name)+' '.join(args[1:]),shell=False)
+        print u"Spawning process: '%s'"%(os.path.abspath(exec_name)+' '+' '.join(args[1:]))
+        self.daemon = subprocess.Popen(os.path.abspath(exec_name)+' '+' '.join(args[1:]),shell=True)
         # Add it to the list of pids
-        self.pid_list.append(p.pid)
+        self.daemon_list.append(self.daemon)
         signal.signal(signal.SIGINT,self.kill_daemon)
-        if self.kernel != 'Windows':
-            signal.signal(signal.SIGCHLD,signal.SIG_IGN)
         if options.filename:
             try:
                 pid_file = open (options.filename,'w+')
@@ -117,33 +115,36 @@ class shhelper:
                 print u"ERROR: Could not create pid file on: '%s'"%(options.filename,)
                 os.kill(self.pid,signal.SIGINT)
                 sys.exit(1)
-            pid_file.write("%i%s"%(pid,os.linesep))
+            for daemon in self.daemon_list:
+                pid_file.write("%i%s"%(daemon.pid,os.linesep))
             pid_file.close()
             
     def kill_daemon(self,rsignal,stack):
         """The wrapper has received a SIGINT signal, and should terminate as many daemon processes
         as it might have created"""
-        for pid in self.pid_list:
-            try:
-                os.kill(pid,0)
-            except:
-                # Already dead
-                pass
-            else:
-                os.kill(pid,signal.SIGINT)
-                (opid,status) = os.waitpid(pid,0)
-                print "Process %i cleanly terminated."%(pid)
+        print "Got signal %i"%(rsignal)
+        for daemon in self.daemon_list:
+            retcode = daemon.poll()
+            if retcode == None:
+                os.kill(daemon.pid,signal.SIGINT)
+                retcode = daemon.wait()
+                if retcode == None:
+                    print "Process could not be killed with an interrupt signal. Using force..."
+                    os.kill(daemon.pid,signal.SIGKILL)
+                    retcode = daemon.poll()
+                    if retcode == None:
+                        raise "SIGKILL did not kill the daemon"
+            print "Process %i cleanly terminated with code: %i."%(daemon.pid,daemon.returncode)
         self.do_exit = True
 
     def wait_forever(self):
         """This is the main script just checking the daemon stays alive"""
         while self.do_exit == False: 
-            for pid in self.pid_list:
-                try:
-                    os.kill(pid,0)
-                except:
-                    print "Daemon died: restarting..."
-                    self.pid_list.remove(pid)
+            for daemon in self.daemon_list:
+                retcode = daemon.poll()
+                if retcode != None:
+                    print "Daemon died with code %i: restarting..."%(retcode)
+                    self.daemon_list.remove(daemon)
                     self.run_with_args(self.basetool,self.options,self.args)
             time.sleep(10)
 
