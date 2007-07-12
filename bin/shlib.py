@@ -37,6 +37,13 @@ class shhelper:
         self.os_info=self.os_info(escape,underscore)
         self.daemon_list=[]
         self.do_exit=False
+        self.bin_ext=self.get_bin_extension()
+
+    def get_bin_extension(self):
+        result = ''
+        if platform.system() == 'Windows':
+            result = '.exe'
+        return result
 
     def report(self):
         print "Basetool: %s"%(self.basetool)
@@ -84,27 +91,32 @@ class shhelper:
         try:
             basepath = os.environ['DRQUEUE_ROOT']
         except:
-            print u"ERROR: DRQUEUE_ROOT environment variable not set. Exiting."
+            print "ERROR: DRQUEUE_ROOT environment variable not set. Exiting."
             sys.exit(1)
         basepath = os.path.join(basepath,'bin')
-        basename = "%s.%s.%s"%(basetool,self.kernel,self.machine)
-        return os.path.join(basepath,basename)
+        basename = "%s.%s.%s%s"%(basetool,self.kernel,self.machine,self.bin_ext)
+        result = os.path.normpath(os.path.join(basepath,basename))
+        return result
 
-    def run_with_args(self,basetool,options='',args=''):
+    def run_with_args(self,basetool,options,args):
         self.options=options
-        full_exec=self.get_full_exec(basetool)
-        if args[0] != full_exec:
-            args[0] = full_exec
         self.args=args
-        exec_name = args[0]
+        full_exec=self.get_full_exec(basetool)
+        print self.options
+        print self.args
+        print full_exec
+        #if args[0] != full_exec:
+        #    args[0] = full_exec
+        #exec_name = args[0]
         if options.daemon:
             print "Running as daemon"
             sys.stdin.close()
             sys.stdout.close()
             sys.stderr.close()
             signal.signal(SIGHUP,SIG_IGN)
-        print u"Spawning process: '%s'"%(os.path.abspath(exec_name)+' '+' '.join(args[1:]))
-        self.daemon = subprocess.Popen(os.path.abspath(exec_name)+' '+' '.join(args[1:]),shell=True)
+        cmd_line = "%s %s"%(full_exec,' '.join(args[1:]))
+        print "Spawning process: '%s'"%(cmd_line)
+        self.daemon = subprocess.Popen(cmd_line,shell=True)
         # Add it to the list of pids
         self.daemon_list.append(self.daemon)
         signal.signal(signal.SIGINT,self.kill_daemon)
