@@ -30,8 +30,6 @@ underscore_slashes () {
 
 underscore_spaces_and_slashes () {
     ORIG_STRING="$1"
-    echo DEBUG spaces: $( underscore_spaces "$ORIG_STRING" ) >> .shdebug
-    echo DEBUG spaces and slashes: $( underscore_slashes "$( underscore_spaces "$ORIG_STRING" )" ) >> .shdebug
     echo -n $( underscore_slashes "$( underscore_spaces "$ORIG_STRING" )" )
     return 0
 }

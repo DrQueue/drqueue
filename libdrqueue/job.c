@@ -707,7 +707,7 @@ int job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe,
       /* The task is being loaded, so it hasn't yet a itask assigned */
       // TODO: check for timeout
       log_auto(L_WARNING,"job_check_frame_status(): task is being loaded (?). itask == -1.");
-      running = 0;
+      running = 1;
     }
   }
 
