@@ -9,6 +9,8 @@
 
 SHLIB=$DRQUEUE_ROOT/bin/shlib
 
+BASETOOL=$( basename $0 )
+
 . $SHLIB || die "ERROR: Could not read $SHLIB"
 
 check_environment
