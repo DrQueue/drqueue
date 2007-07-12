@@ -14,7 +14,6 @@ DRQ_SH_UNDERSCORE=1
 
 MACHINE=`uname -m`
 KERNEL=`uname -s`
-BASETOOL=`basename $0`
 
 underscore_spaces () {
     ORIG_STRING="$1"
@@ -112,7 +111,7 @@ wrapper_cmd () {
 
   if [ ! -x "${WRAP_CMD}" ]; then
     echo ERROR: the wrapper "$( get_env_base_tool )" for your platform \(${WRAP_CMD}\) does not exist.
-    echo Perhaps you did not install it \(make miniinstall or make install\).
+    echo Please check your installation. If this problem keeps showing up, please report it.
     return 1
   fi
   return 0
