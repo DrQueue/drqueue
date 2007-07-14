@@ -84,6 +84,9 @@ as a way to make things easier to work from that point on.
 Environment variables
 ---------------------
 
+(There is a small helper tool 'bin/writedefaultenv.py' that will help
+you writting a very basic default environment file to be customized)
+
 There will be many ways of customizing the operation of DrQueue, but the
 first and most simple way will be through your environment variables. In
 particular, the two most important for DrQueue will be:
