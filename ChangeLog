@@ -2,6 +2,7 @@
 
 	* SConstruct: added svn:keywords and svn:eol-style properties.
 	(opts): added DESTDIR command line option
+	(idir_prefix): and fixed DESTDIR and PREFIX defined together
 
 	* Changelog: added to repo
 

@@ -57,14 +57,12 @@ def copy_with_clean(src_files,dest_files,dest_path,env):
         rlist.append(t)
     return rlist
 
-# Main environment
-env_lib = Environment (ENV=os.environ)
-
 # Configuration options
 opts = Options('scons.conf')
-opts.AddOptions(PathOption('DESTDIR','Staging directory','/'),
-				(PathOption('PREFIX','Directory to install under','/usr/local')))
-opts.Update(env_lib)
+opts.AddOptions(PathOption('DESTDIR','Alternate root directory','',[]),
+				PathOption('PREFIX','Directory to install under','/usr/local'),
+				BoolOption('drqman','Build drqman',1))
+env_lib = Environment (options=opts,ENV=os.environ)
 opts.Save('scons.conf',env_lib)
 
 Help(opts.GenerateHelpText(env_lib))
@@ -74,7 +72,7 @@ Help(opts.GenerateHelpText(env_lib))
 #env_lib = conf.Finish()
 
 # Installation paths
-idir_prefix = os.path.join(env_lib.subst('$DESTDIR'),env_lib.subst('$PREFIX'),'drqueue')
+idir_prefix = os.path.normpath(os.path.join('${DESTDIR}','${PREFIX}','drqueue'))
 idir_bin    = os.path.join(idir_prefix,'bin')
 idir_etc    = os.path.join(idir_prefix,'etc')
 idir_db     = os.path.join(idir_prefix,'db')
@@ -137,12 +135,13 @@ Default (slave)
 #
 # drqman
 #
-drqman_c = glob.glob (os.path.join('drqman','*.c'))
-env_gtkstuff = env.Copy ()
-env_gtkstuff.ParseConfig ('pkg-config --cflags --libs gtk+-2.0')
-drqman = env_gtkstuff.Program (os.path.join('drqman','drqman'),drqman_c)
-main_list.append(os.path.join('drqman','drqman'))
-Default (drqman)
+if env_lib.subst('drqman') == 'yes':
+   drqman_c = glob.glob (os.path.join('drqman','*.c'))
+   env_gtkstuff = env.Copy ()
+   env_gtkstuff.ParseConfig ('pkg-config --cflags --libs gtk+-2.0')
+   drqman = env_gtkstuff.Program (os.path.join('drqman','drqman'),drqman_c)
+   main_list.append(os.path.join('drqman','drqman'))
+   Default (drqman)
 
 #
 # Tools
