@@ -57,22 +57,24 @@ def copy_with_clean(src_files,dest_files,dest_path,env):
         rlist.append(t)
     return rlist
 
-# Construction environment for the library (doesn't link with itself)
-env_lib = Environment ()
-#conf = Configure(env_lib)
-# TODO: write configure tests
-#env_lib = conf.Finish()
+# Main environment
+env_lib = Environment (ENV=os.environ)
 
 # Configuration options
 opts = Options('scons.conf')
-opts.Add(PathOption('PREFIX','Directory to install under','/usr/local'))
+opts.AddOptions(PathOption('DESTDIR','Staging directory','/'),
+				(PathOption('PREFIX','Directory to install under','/usr/local')))
 opts.Update(env_lib)
 opts.Save('scons.conf',env_lib)
 
 Help(opts.GenerateHelpText(env_lib))
 
+#conf = Configure(env_lib)
+# TODO: write configure tests
+#env_lib = conf.Finish()
+
 # Installation paths
-idir_prefix = os.path.join(env_lib.subst('$PREFIX'),'drqueue')
+idir_prefix = os.path.join(env_lib.subst('$DESTDIR'),env_lib.subst('$PREFIX'),'drqueue')
 idir_bin    = os.path.join(idir_prefix,'bin')
 idir_etc    = os.path.join(idir_prefix,'etc')
 idir_db     = os.path.join(idir_prefix,'db')

@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+#
+# -*- coding: UTF-8 -*-
+#
+# Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
+#
 """This tool will try to set a minimun set of default environment variables to
 have at least a local running master/slave and will write them in bash format
 either to file received as first argument or to the one defined as
