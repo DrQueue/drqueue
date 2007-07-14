@@ -84,7 +84,7 @@ try:
     os.environ['DISPLAY']
 except:
     print "DISPLAY variable not set, setting to default: %s"
-    final_display=default_disply
+    final_display=default_display
 else:
     print "DISPLAY already set to: %s"%(os.environ['DISPLAY'])
 
