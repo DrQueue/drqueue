@@ -40,7 +40,7 @@ def write_environment_file(output_file=output_file):
 # If we receive an argument we set it as the default output file
 try:
     if sys.argv[1]:
-        output_file=sys.arg[1]
+        output_file=sys.argv[1]
 except:
     pass
 
