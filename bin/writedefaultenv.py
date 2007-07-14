@@ -15,9 +15,12 @@ default_name='drqueue'
 default_display=':0'
 default_master='127.0.0.1'
 
+def get_full_installation_path(location=default_location,name=default_name):
+    return os.path.join(location,name)
+
 def check_if_installed_on(location):
     result = None
-    full_path = os.path.join(default_location,default_name)
+    full_path = get_full_installation_path()
     if os.path.isdir(full_path):
         print "Found installation root on: %s"%(full_path)
         result = full_path
@@ -34,7 +37,7 @@ def write_environment_file(output_file=output_file):
     f.write("export DRQUEUE_MASTER=%s%s"%(final_master,os.linesep))
     if final_display:
         f.write("export DISPLAY=%s%s"%(final_display,os.linesep))
-    f.write("export PATH=$PATH:%s%s"%(final_path,os.linesep))
+    f.write("export PATH=$PATH:%s%s"%(os.path.join(final_path,'bin'),os.linesep))
     f.close()
 
 # If we receive an argument we set it as the default output file
@@ -45,9 +48,9 @@ except:
     pass
 
 # DRQUEUE_ROOT
-final_path=default_location
+final_path=get_full_installation_path()
 try:
-    full_path = os.environ['DRQUEUE_ROOT']
+    os.environ['DRQUEUE_ROOT']
 except:
     location = default_location
     print "DRQUEUE_ROOT not set. Trying to read installation prefix"
