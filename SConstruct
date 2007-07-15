@@ -132,7 +132,7 @@ def build_drqman():
         env_gtkstuff = env.Copy ()
         env_gtkstuff.ParseConfig ('pkg-config --cflags --libs gtk+-2.0')
         drqman = env_gtkstuff.Program (os.path.join('drqman','drqman'),drqman_c)
-        result.append('drqman')
+        result.append(os.path.join('drqman','drqman'))
         Default (drqman)
     else:
         print "Not building drqman"
