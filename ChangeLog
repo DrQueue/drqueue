@@ -1,0 +1,7 @@
+2007-07-14  Jorge Daza Garcia-Blanes  <jorge@drqueue.org>
+
+	* SConstruct: added svn:keywords and svn:eol-style properties.
+	(opts): added DESTDIR command line option
+
+	* Changelog: added to repo
+
