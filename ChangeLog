@@ -1,6 +1,7 @@
 2007-07-15  Jorge Daza Garcia-Blanes  <jorge@drqueue.org>
 
 	* SConstruct: added 'build_drqman' option as command line argument.
+	(install): fixed bug that installed the whole drqman path instead of the binary
 
 2007-07-14  Jorge Daza Garcia-Blanes  <jorge@drqueue.org>
 
