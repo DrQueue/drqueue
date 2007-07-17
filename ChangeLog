@@ -1,0 +1,17 @@
+2007-07-17  Jorge Daza Garcia-Blanes  <jorge@drqueue.org>
+
+	* SConstruct: Fixed problem on SConstruct not placing underscores instead of whitespaces on names like 'Power Macintosh'
+
+2007-07-15  Jorge Daza Garcia-Blanes  <jorge@drqueue.org>
+
+	* SConstruct: added 'build_drqman' option as command line argument.
+	(install): fixed bug that installed the whole drqman path instead of the binary
+
+2007-07-14  Jorge Daza Garcia-Blanes  <jorge@drqueue.org>
+
+	* SConstruct: added svn:keywords and svn:eol-style properties.
+	(opts): added DESTDIR command line option
+	(idir_prefix): and fixed DESTDIR and PREFIX defined together
+
+	* Changelog: added to repo
+

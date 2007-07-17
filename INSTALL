@@ -1,6 +1,36 @@
 Installation Instructions
 *************************
 
+Requirements for the base tools (no python bindings)
+====================================================
+
+To build the software you'll need several tools being those mainly the
+standard C and C++ compilers, the SCons tool version >= 2.97 (you'll
+probably find it as a package in your distribution) and the gtk2
+development headers (to build the GUI drqman).
+
+* gcc/g++
+* scons (depends on python)
+* gtk2 development headers
+* pkgconfig (usually related to gtk2-dev)
+* Mac OS X: needs macports/darwinports to install many of the previously
+  mentioned as well as XCode (providing the compilers) and X11 to run
+  drqman. X11 you'll be able to find on your installation CD/DVD. XCode
+  is best to be downloaded from Apple's developers site.
+
+Depending on your platform you there would be different ways to obtain
+the packages:
+
+* Mac OS X: XCode, Macports (scons,gtk2,pkgconfig), X11, Macpython
+* Linux: with different names in the various distributions all the
+  packages are already available
+* Windos: cygwin for most of the tools, the native gtk-glade
+  development package for windows, python for windows standard and the
+  pywin32 extensions (later on).
+
+Always refer to your own documentation for instructions on how to
+properly install every package.
+
 Building the software
 =====================
 
@@ -23,19 +53,127 @@ will install the drqueue tree into '/usr/local/drqueue'
 You may also modify the file 'scons.conf' to change the
 default values.
 
+This command will create the directory structure explained in:
+
+http://drqueue.org/project/wiki/DirectoryStructure
+
+That would be (for that example):
+
+/usr/local/drqueue/bin
+/usr/local/drqueue/etc
+/usr/local/drqueue/logs
+/usr/local/drqueue/tmp
+/usr/local/drqueue/db
+
+Everyone with they're own contents.
+
+Uninstalling the copied files
+=============================
+
 To clean the installed files:
 
 $ scons install -c
 
-Python
-======
+Basic usage
+===========
 
-The python module uses setuptools. The generic approach for
-it whould be:
+All DrQueue binaries will be found into the directory (following the
+example) '/usr/local/drqueue/bin' so you should add that to your PATH
+as a way to make things easier to work from that point on.
+
+Environment variables
+---------------------
+
+(There is a small helper tool 'bin/writedefaultenv.py' that will help
+you writting a very basic default environment file to be customized)
+
+There will be many ways of customizing the operation of DrQueue, but the
+first and most simple way will be through your environment variables. In
+particular, the two most important for DrQueue will be:
+
+* DRQUEUE_ROOT=/usr/local/drqueue
+    That should be pointint to the base path of the previosly created
+    directory structure.
+* DRQUEUE_MASTER=<IP_ADDRESS_OR_RESOLVABLE_NAME>
+    Containing the IP address or name of the computer that will be
+    acting as 'master' for the farm (refer to: http://drqueue.org/project/wiki/BasicTheory
+    for a global overview of the process)
+
+Having PATH,DRQUEUE_ROOT and DRQUEUE_MASTER set will allow you to run
+the tools right away.
+
+(Note to Mac OS users, due to the usage of shared memory on DrQueue some
+boot parameters need to be changed manually on file /etc/rc and the
+process is documented on http://drqueue.org/project/wiki/DrQueueMacOSX .
+I'd recommend to follow the 'easy way' as the others have failed with
+some configurations)
+
+The most simple test
+====================
+
+To have the most simple farm (a single computer running both master and
+slave locally) you would proceed in the following order:
+
+* Open a terminal window and type "master" (if you'd like some extra
+  verbosity and checking what's going on type "master -l3 -o" instead)
+* Open a new terminal window and type "slave" (same logic applies)
+* Having your X11 configured properly (that includes having set the
+  DISPLAY environment variable) you can then run "drqman"
+
+With those basic three tools you will be then able to create jobs or any
+other much more complex setup you might require.
+
+Python (brief)
+==============
+
+The python module uses setuptools and swig to be built and installed
+into the system (again check your documentation on how to obtain those
+packages for your system).
+
+Having all the former already working and installed the usual way to
+build the bindings and install them woulbe:
 
 $ cd python
 $ sudo python setup.py install
 
-You'll need root privileges to do a system-wide installation
+(You need sudo because the python module usually gets installed into
+your standard python site-packages directory which will probably need
+super-user privileges to install files on it)
+
+Check setuptools documentation on how to make a local user module
+installation.
+
+Windows notes
+-------------
+
+You can build the python bindings using cygwin python tools, but then
+(at least on my tests) the module won't work when using the standard
+native version of python.
+
+We are working on solving this problem.
+
+Extra Notes
+===========
+
+The daemons will spawn several processes each, that's normal (but can be
+changed). And you can close the windows where you started the processes
+without fear about stopping them, they'll keep on running even without a
+terminal.
+
+The daemons react properly to the usual interrupt or termination
+signals, so there's no especial way to stop the damons other that:
+
+* If you have the terminal running, just click ctrl+C
+* if that fails or you have no terminall you can use the command
+  "killall" with both executable names (short and long) like:
+  $ killall master
+  $ killall master.Linux.i386  (this last name will change for every
+    different operating system and architecture combination)
+
+That naming convention, having a single wrapper script named "master"
+(or whatever the tool is) that will then try to call the proper binary,
+is thought so you can have your drqueue installation shared over the
+network and every single computer will load the proper binary while the
+directory is in fact holding all of them.
 
 

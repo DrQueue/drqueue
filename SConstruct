@@ -24,13 +24,21 @@
 import sys
 import glob
 import os
-import platform
+import platform,re
+
+def get_architecture(escape=False,underscore=True):
+    machine = platform.machine()
+    if underscore:
+        machine = re.sub('\s','_',machine)
+    if escape:
+        machine = re.escape(machine)
+    if not machine:
+        machine = 'unknown'
+    return machine
 
 def wrapper_complete_command (cmdlist):
-    kernel = platform.system()
-    arch = platform.machine()
-    if arch == '':
-       arch = 'unknown'
+    kernel = os.uname()[0]
+    arch = get_architecture()
     rlist = []
     for cmd in cmdlist:
         cmd = os.path.split(cmd)[1] # Removes any directory component
@@ -88,14 +96,20 @@ env_lib = Environment (ENV=os.environ)
 
 # Configuration options
 opts = Options('scons.conf')
-opts.Add(PathOption('PREFIX','Directory to install under','/usr/local'))
+opts.AddOptions(PathOption('DESTDIR','Alternate root directory','',[]),
+				PathOption('PREFIX','Directory to install under','/usr/local'),
+				BoolOption('build_drqman','Build drqman',1))
 opts.Update(env_lib)
 opts.Save('scons.conf',env_lib)
 
 Help(opts.GenerateHelpText(env_lib))
 
+#conf = Configure(env_lib)
+# TODO: write configure tests
+#env_lib = conf.Finish()
+
 # Installation paths
-idir_prefix = os.path.join(env_lib.subst('$PREFIX'),'drqueue')
+idir_prefix = os.path.normpath(os.path.join('${DESTDIR}','${PREFIX}','drqueue'))
 idir_bin    = os.path.join(idir_prefix,'bin')
 idir_etc    = os.path.join(idir_prefix,'etc')
 idir_db     = os.path.join(idir_prefix,'db')
@@ -143,27 +157,34 @@ libdrqueue = env_lib.Library ('libdrqueue/drqueue', libdrqueue_src)
 Default (libdrqueue)
 
 #
+# drqman
+#
+def build_drqman():
+    result = []
+    if env_lib['build_drqman']:
+        print "Building drqman"
+        drqman_c = glob.glob (os.path.join('drqman','*.c'))
+        env_gtkstuff = env.Copy ()
+        env_gtkstuff.ParseConfig ('pkg-config --cflags --libs gtk+-2.0')
+        drqman = env_gtkstuff.Program (os.path.join('drqman','drqman'),drqman_c)
+        result.append(os.path.join('drqman','drqman'))
+        Default (drqman)
+    else:
+        print "Not building drqman"
+    return result
+
+#
 # Main
 #
 master = env.Program ('master.c')
 slave = env.Program ('slave.c')
-main_list = [ 'master', 'slave' ]
+main_list = [ 'master', 'slave' ] + build_drqman()
 Default (master)
 Default (slave)
 
 ## Build python modules
 #Export ('env','env_lib','libdrqueue','libdrqueue_src')
 #SConscript(['python/SConscript'])
-
-#
-# drqman
-#
-#drqman_c = glob.glob (os.path.join('drqman','*.c'))
-#env_gtkstuff = env.Copy ()
-#env_gtkstuff.ParseConfig (r'%s --cflags --libs gtk+-2.0'%(get_pkgconfig_path()))
-#drqman = env_gtkstuff.Program (os.path.join('drqman','drqman'),drqman_c)
-#main_list.append(os.path.join('drqman','drqman'))
-#Default (drqman)
 
 #
 # Tools
