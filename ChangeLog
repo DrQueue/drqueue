@@ -1,3 +1,7 @@
+2007-07-17  Jorge Daza Garcia-Blanes  <jorge@drqueue.org>
+
+	* SConstruct: Fixed problem on SConstruct not placing underscores instead of whitespaces on names like 'Power Macintosh'
+
 2007-07-15  Jorge Daza Garcia-Blanes  <jorge@drqueue.org>
 
 	* SConstruct: added 'build_drqman' option as command line argument.

@@ -24,11 +24,21 @@
 import sys
 import glob
 import os
-import platform
+import platform,re
+
+def get_architecture(escape=False,underscore=True):
+    machine = platform.machine()
+    if underscore:
+        machine = re.sub('\s','_',machine)
+    if escape:
+        machine = re.escape(machine)
+    if not machine:
+        machine = 'unknown'
+    return machine
 
 def wrapper_complete_command (cmdlist):
     kernel = os.uname()[0]
-    arch = os.uname()[4]
+    arch = get_architecture()
     rlist = []
     for cmd in cmdlist:
         cmd = os.path.split(cmd)[1] # Removes any directory component
