@@ -37,7 +37,7 @@ def get_architecture(escape=False,underscore=True):
     return machine
 
 def wrapper_complete_command (cmdlist):
-    kernel = os.uname()[0]
+    kernel = plattform.system()
     arch = get_architecture()
     rlist = []
     for cmd in cmdlist:
@@ -46,12 +46,14 @@ def wrapper_complete_command (cmdlist):
     return rlist
      
 def get_platform_name():
+    """Returns platform name as a string using module sys"""
     name = sys.platform
     if name == 'win32':
        return 'cygwin'
     return name
 
 def get_abspath_glob(path):
+    """Receives a path string to glob, and returns the list of absolute paths to every globbed file"""
     pathlist=glob.glob(path)
     rlist=[]
     for file in pathlist:
@@ -59,11 +61,11 @@ def get_abspath_glob(path):
     return rlist
 
 def copy_with_clean(src_files,dest_files,dest_path,env):
+    """Installs the list of src_files as dest_files on path dest_path.
+    Receives the build environment 'env' to add the installed files to the list of files to clean when uninstalling"""
     rlist = []
     for s,d in zip(src_files,dest_files):
         t = env.InstallAs(os.path.join(dest_path,d),s)
-        #t = env.Command(os.path.join(dest_path,d),s,[ Copy("$TARGET","$SOURCE") ])
-        #env.Clean(t,env.subst("$TARGET"))
         rlist.append(t)
     return rlist
 
@@ -75,17 +77,19 @@ def add_suffix_to_list(list,suffix):
     return result
 
 def get_bin_extension():
-    """Returns '.exe' if system is win32"""
+    """Returns '.exe' if system is win32, that is it should return the extension binaries should have on every platform.
+    At this point it is only Windows needing a particular extesion, so for the rest of platforms returns an empty string."""
     result = ''
     if platform.system() == 'Windows':
         result = '.exe'
     return result
 
-def get_pkgconfig_path():
-    """Returns the path to what should be the right pkg-config for every OS"""
-    result = r'pkg-config'
-    if platform.system() == "Windows":
-        result = r'c:\cygwin\bin\pkg-config.exe'
+def get_pkgconfig_path(win_path=r'c:\cygwin\bin\pkg-config.exe'):
+    """Returns the path to what should be the right pkg-config for every OS.
+    Note that the path for Windows is hardcoded and should be modified"""
+    result = win_path
+    if platform.system() != "Windows":
+        result = r'pkg-config'
     return result
 
 # Construction environment for the library (doesn't link with itself)
@@ -97,8 +101,8 @@ env_lib = Environment (ENV=os.environ)
 # Configuration options
 opts = Options('scons.conf')
 opts.AddOptions(PathOption('DESTDIR','Alternate root directory','',[]),
-				PathOption('PREFIX','Directory to install under','/usr/local'),
-				BoolOption('build_drqman','Build drqman',1))
+                PathOption('PREFIX','Directory to install under','/usr/local'),
+                BoolOption('build_drqman','Build drqman',1))
 opts.Update(env_lib)
 opts.Save('scons.conf',env_lib)
 
