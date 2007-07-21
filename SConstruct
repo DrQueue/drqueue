@@ -26,7 +26,9 @@ import glob
 import os
 import platform,re
 
-def get_architecture(escape=False,underscore=True):
+Universal_Binaries_Short_Name = 'fat'
+
+def get_architecture(env,escape=False,underscore=True):
     machine = platform.machine()
     if underscore:
         machine = re.sub('\s','_',machine)
@@ -34,11 +36,13 @@ def get_architecture(escape=False,underscore=True):
         machine = re.escape(machine)
     if not machine:
         machine = 'unknown'
+    elif os.uname()[0] == 'Darwin' and env.get('universal_binary'):
+        machine = Universal_Binaries_Short_Name
     return machine
 
-def wrapper_complete_command (cmdlist):
+def wrapper_complete_command (env,cmdlist):
     kernel = os.uname()[0]
-    arch = get_architecture()
+    arch = get_architecture(env)
     rlist = []
     for cmd in cmdlist:
         cmd = os.path.split(cmd)[1] # Removes any directory component
@@ -62,8 +66,6 @@ def copy_with_clean(src_files,dest_files,dest_path,env):
     rlist = []
     for s,d in zip(src_files,dest_files):
         t = env.InstallAs(os.path.join(dest_path,d),s)
-        #t = env.Command(os.path.join(dest_path,d),s,[ Copy("$TARGET","$SOURCE") ])
-        #env.Clean(t,env.subst("$TARGET"))
         rlist.append(t)
     return rlist
 
@@ -72,8 +74,9 @@ env_lib = Environment (ENV=os.environ)
 # Configuration options
 opts = Options('scons.conf')
 opts.AddOptions(PathOption('DESTDIR','Alternate root directory','',[]),
-				PathOption('PREFIX','Directory to install under','/usr/local'),
-				BoolOption('build_drqman','Build drqman',1))
+                PathOption('PREFIX','Directory to install under','/usr/local'),
+                BoolOption('universal_binary', 'Whether to build as an Universal Binary (MacOS X >= 10.3.9 only)', 0),
+                BoolOption('build_drqman', 'Build drqman', 1))
 opts.Update(env_lib)
 opts.Save('scons.conf',env_lib)
 
@@ -108,6 +111,10 @@ if sys.platform == "linux2":
   env_lib.Append (CPPDEFINES = Split ('-D__LINUX'))
 elif sys.platform == "darwin":
   env_lib.Append (CPPDEFINES = Split ('-D__OSX'))
+  if env_lib.get('universal_binary'):
+    print "Building as an MacOS X Universal Binary"
+    env_lib.Append (CCFLAGS = Split('-isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch ppc -arch i386'))
+    env_lib.Append (LINKFLAGS = Split('-isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch ppc -arch i386'))
 elif sys.platform == "irix6":
   env_lib.Append (CPPDEFINES = Split ('-D__IRIX'))
   env_lib['CC'] = 'c99'
@@ -177,7 +184,9 @@ for tool in cmdline_tools:
 
 install_base = idir_prefix
 bin_list = main_list + cmdline_tools
-wrapped_bin_list = wrapper_complete_command (bin_list)
+###print bin_list
+wrapped_bin_list = wrapper_complete_command (env,bin_list)
+###print wrapped_bin_list
 #wrapped_bin_copies = copy_with_clean(bin_list,wrapped_bin_list,'bin',env)
 wrapped_bin_copies = copy_with_clean(bin_list,wrapped_bin_list,idir_bin,env)
 
