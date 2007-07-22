@@ -115,7 +115,8 @@ def custom_library_paths():
 
 setup(
     name = "drqueue",
-    version = "0.64.3c1",
+    # TODO: get version from C header
+    version = "0.64.3",
     # metadata for upload to PyPI
     # could also include long_description, download_url, classifiers, etc.
     author = "Jorge Daza",
