@@ -1,3 +1,7 @@
+2007-07-22  Jorge Daza Garcia-Blanes  <jorge@drqueue.org>
+
+	* ruby/: Included kaazoo ruby bindings for those with interest in testing them sooner.
+
 2007-07-21  Jorge Daza Garcia-Blanes  <jorge@drqueue.org>
 
 	* bin/shlib: Included merges from Carlos Oliva's branch to call properly any Universal Binaries if available.
