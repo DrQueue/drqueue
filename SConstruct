@@ -26,7 +26,9 @@ import glob
 import os
 import platform,re
 
-def get_architecture(escape=False,underscore=True):
+Universal_Binaries_Short_Name = 'fat'
+
+def get_architecture(env,escape=False,underscore=True):
     machine = platform.machine()
     if underscore:
         machine = re.sub('\s','_',machine)
@@ -34,6 +36,8 @@ def get_architecture(escape=False,underscore=True):
         machine = re.escape(machine)
     if not machine:
         machine = 'unknown'
+    elif os.uname()[0] == 'Darwin' and env.get('universal_binary'):
+        machine = Universal_Binaries_Short_Name
     return machine
 
 def wrapper_complete_command (cmdlist):
@@ -102,7 +106,8 @@ env_lib = Environment (ENV=os.environ)
 opts = Options('scons.conf')
 opts.AddOptions(PathOption('DESTDIR','Alternate root directory','',[]),
                 PathOption('PREFIX','Directory to install under','/usr/local'),
-                BoolOption('build_drqman','Build drqman',1))
+                BoolOption('universal_binary', 'Whether to build as an Universal Binary (MacOS X >= 10.3.9 only)', 0),
+                BoolOption('build_drqman', 'Build drqman', 1))
 opts.Update(env_lib)
 opts.Save('scons.conf',env_lib)
 
@@ -137,6 +142,10 @@ if sys.platform == "linux2":
   env_lib.Append (CPPDEFINES = Split ('-D__LINUX'))
 elif sys.platform == "darwin":
   env_lib.Append (CPPDEFINES = Split ('-D__OSX'))
+  if env_lib.get('universal_binary'):
+    print "Building as an MacOS X Universal Binary"
+    env_lib.Append (CCFLAGS = Split('-isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch ppc -arch i386'))
+    env_lib.Append (LINKFLAGS = Split('-isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch ppc -arch i386'))
 elif sys.platform == "irix6":
   env_lib.Append (CPPDEFINES = Split ('-D__IRIX'))
   env_lib['CC'] = 'c99'
