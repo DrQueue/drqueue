@@ -42,7 +42,7 @@ def get_architecture(env,escape=False,underscore=True):
 
 def wrapper_complete_command (cmdlist):
     kernel = plattform.system()
-    arch = get_architecture()
+    arch = get_architecture(env)
     rlist = []
     for cmd in cmdlist:
         cmd = os.path.split(cmd)[1] # Removes any directory component

@@ -22,12 +22,13 @@
 # $Id$
 #
 
+import sys,os
+import drqueue_base_tools
+
 import ez_setup
 ez_setup.use_setuptools()
 
-import os
 import glob
-import sys
 from setuptools import setup, find_packages, Extension
 import platform
 from distutils.core import setup, Extension
@@ -116,7 +117,7 @@ def custom_library_paths():
 setup(
     name = "drqueue",
     # TODO: get version from C header
-    version = "0.64.3",
+    version = "%s"%(drqueue_base_tools.version()),
     # metadata for upload to PyPI
     # could also include long_description, download_url, classifiers, etc.
     author = "Jorge Daza",
