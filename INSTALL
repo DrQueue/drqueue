@@ -5,7 +5,7 @@ Requirements for the base tools (no python bindings)
 ====================================================
 
 To build the software you'll need several tools being those mainly the
-standard C and C++ compilers, the SCons tool version >= 2.97 (you'll
+standard C and C++ compilers, the SCons tool version >= 0.97 (you'll
 probably find it as a package in your distribution) and the gtk2
 development headers (to build the GUI drqman).
 
