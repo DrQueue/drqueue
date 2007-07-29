@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
 //
 // This file is part of DrQueue
 //
@@ -120,6 +120,9 @@ get_proctype (void) {
     } else if ((strstr(buf,"platform") != NULL) && (strstr(buf,"PowerMac") != NULL)) {
       proctype = PROCTYPE_PPC;
       found = 1;
+    } else if ((strstr(buf,"cpu") != NULL) && (strstr(buf,"UltraSparc") != NULL)) {
+      proctype = PROCTYPE_ULTRASPARC;
+      found = 1;
     }
   }
 
@@ -177,8 +180,9 @@ get_procspeed (void) {
 uint16_t
 get_numproc (void) {
   FILE *cpuinfo;
-  uint16_t numproc = 0;
+  int numproc = 0;
   char buf[BUFFERLEN];
+  int index = 0;
 
   if ((cpuinfo = fopen("/proc/cpuinfo","r")) == NULL) {
     perror ("get_numproc: fopen");
@@ -187,12 +191,18 @@ get_numproc (void) {
 
   while (!feof (cpuinfo)) {
     fgets (buf,BUFFERLEN-1,cpuinfo);
-    if (strcasestr(buf,"BogoMIPS") != NULL) {
+    if (strstr(buf,"ncpus active") != NULL) {
+      // UltraSparc issue
+      while (!isdigit(buf[index]))
+        index++;
+      sscanf (&buf[index],"%i\n",&numproc);
+      break;
+    } else if (strcasestr(buf,"BogoMIPS") != NULL) {
       numproc++;
     }
   }
 
   fclose (cpuinfo);
 
-  return numproc;
+  return (uint16_t)numproc;
 }
