@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
 //
 // This file is part of DrQueue
 //
@@ -37,7 +37,8 @@ typedef enum {
   ARCH_UNKNOWN,
   ARCH_INTEL,
   ARCH_MIPS,
-  ARCH_PPC
+  ARCH_PPC,
+  ARCH_SPARC
 } t_arch;
 
 typedef enum {
@@ -68,7 +69,8 @@ typedef enum {
   PROCTYPE_MIPSR10000,
   PROCTYPE_MIPSR12000,
   PROCTYPE_PPC,
-  PROCTYPE_INTEL_CORE2
+  PROCTYPE_INTEL_CORE2,
+  PROCTYPE_ULTRASPARC
 } t_proctype;
 
 struct computer_hwinfo {

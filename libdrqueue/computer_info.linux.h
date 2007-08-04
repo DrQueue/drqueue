@@ -31,6 +31,8 @@
 #include <sys/types.h>
 #include <stdint.h>
 
+uint8_t get_architecture(void);
+
 void
 get_hwinfo (struct computer_hwinfo *hwinfo) {
   if (gethostname (hwinfo->name,MAXNAMELEN-1) == -1) {
@@ -38,7 +40,7 @@ get_hwinfo (struct computer_hwinfo *hwinfo) {
     kill(0,SIGINT);
   }
   // FIXME: Linux has more architectures last time I checked.
-  hwinfo->arch = ARCH_INTEL;
+  hwinfo->arch = get_architecture();
   hwinfo->os = OS_LINUX;
   hwinfo->proctype = get_proctype();
   hwinfo->procspeed = get_procspeed();
@@ -124,6 +126,9 @@ get_proctype (void) {
     } else if ((strstr(buf,"platform") != NULL) && (strstr(buf,"PowerMac") != NULL)) {
       proctype = PROCTYPE_PPC;
       found = 1;
+    } else if ((strstr(buf,"cpu") != NULL) && (strstr(buf,"UltraSparc") != NULL)) {
+      proctype = PROCTYPE_ULTRASPARC;
+      found = 1;
     }
   }
 
@@ -181,8 +186,9 @@ get_procspeed (void) {
 uint16_t
 get_numproc (void) {
   FILE *cpuinfo;
-  uint16_t numproc = 0;
+  int numproc = 0;
   char buf[BUFFERLEN];
+  int index = 0;
 
   if ((cpuinfo = fopen("/proc/cpuinfo","r")) == NULL) {
     perror ("get_numproc: fopen");
@@ -191,12 +197,45 @@ get_numproc (void) {
 
   while (!feof (cpuinfo)) {
     fgets (buf,BUFFERLEN-1,cpuinfo);
-    if (strcasestr(buf,"BogoMIPS") != NULL) {
+    if (strstr(buf,"ncpus active") != NULL) {
+      // UltraSparc issue
+      while (!isdigit(buf[index]))
+        index++;
+      sscanf (&buf[index],"%i\n",&numproc);
+      break;
+    } else if (strcasestr(buf,"BogoMIPS") != NULL) {
       numproc++;
     }
   }
 
   fclose (cpuinfo);
 
-  return numproc;
+  return (uint16_t)numproc;
 }
+
+uint8_t
+get_architecture (void) {
+  FILE *cpuinfo;
+  int architecture = ARCH_INTEL;
+  char buf[BUFFERLEN];
+
+  if ((cpuinfo = fopen("/proc/cpuinfo","r")) == NULL) {
+    perror ("get_architecture: fopen");
+    kill (0,SIGINT);
+  }
+
+  while (!feof (cpuinfo)) {
+    fgets (buf,BUFFERLEN-1,cpuinfo);
+    if (strstr(buf,"Sparc") != NULL) {
+      // UltraSparc issue
+      architecture = ARCH_SPARC;
+      break;
+    } 
+  }
+
+  fclose (cpuinfo);
+
+  return (uint8_t)architecture;
+
+}
+
