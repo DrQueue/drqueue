@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
 //
 // This file is part of DrQueue
 //
@@ -707,7 +707,7 @@ recv_task (int sfd, struct task *task) {
   task->block_size  = ntohl (task->block_size);
   task->pid         = ntohl (task->pid);
   task->exitstatus  = ntohl (task->exitstatus);
-
+  task->start_loading_time = dr_ntoh64 (task->start_loading_time);
   return 1;
 }
 
@@ -736,6 +736,7 @@ send_task (int sfd, struct task *task) {
   bswapped.block_size  = htonl (bswapped.block_size);
   bswapped.pid         = htonl (bswapped.pid);
   bswapped.exitstatus  = htonl (bswapped.exitstatus);
+  bswapped.start_loading_time = dr_hton64 (bswapped.start_loading_time);
 
   if (!dr_write (sfd,(char*)buf,datasize)) {
     return 0;

@@ -37,6 +37,7 @@
 #include <sys/types.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 
 #ifdef __OSX
 # include <sys/select.h>
@@ -452,22 +453,55 @@ void set_signal_handlers_task_exec (void) {
 
 void slave_consistency_process (struct slave_database *sdb) {
   int i;
+  time_t now;
 
   while (1) {
     for (i=0;i<MAXTASKS;i++) {
       if ((sdb->comp->status.task[i].used)
-          && (sdb->comp->status.task[i].status != TASKSTATUS_LOADING)
+          //&& (sdb->comp->status.task[i].status != TASKSTATUS_LOADING)
           && (kill(sdb->comp->status.task[i].pid,0) == -1))
         {
-          // There is process registered as running, but not running.
+		  now = time(NULL);
+		  if ((sdb->comp->status.task[i].status != TASKSTATUS_LOADING)
+			  && now != -1
+			  && ((now - sdb->comp->status.task[i].start_loading_time) < MAXTASKLOADINGTIME)) {
+			// Still loading... no timeout
+			continue;
+		  }
+          // There is process registered as running, but not running. Or it could be loading but without the real process running after the timeout.
           semaphore_lock(sdb->semid);
           sdb->comp->status.task[i].used = 0;
           semaphore_release(sdb->semid);
           log_auto(L_WARNING,"Process registered as running was not running. Removed.");
-        }
-    }
+        } else if ((sdb->comp->status.task[i].used)
+				   && (sdb->comp->status.task[i].status == TASKSTATUS_LOADING))
+		{
+		  // The process is already running but marked as loading. We have to update.
+          semaphore_lock(sdb->semid);
+          sdb->comp->status.task[i].status = TASKSTATUS_RUNNING;
+          semaphore_release(sdb->semid);
+          log_auto(L_DEBUG2,"Process previously loading is now running.");
+		}
+	}
     sleep (SLAVEDELAY);
   }
+}
+
+void
+ignore_sigcld () {
+  struct sigaction ignore;
+
+  ignore.sa_handler = SIG_IGN;
+  sigemptyset (&ignore.sa_mask);
+  ignore.sa_flags = 0;
+  sigaction (SIGHUP, &ignore, NULL);
+#ifdef __OSX
+
+  sigaction (SIGCHLD, &ignore, NULL);
+#else
+
+  sigaction (SIGCLD, &ignore, NULL);
+#endif
 }
 
 void slave_listening_process (struct slave_database *sdb) {
@@ -484,7 +518,7 @@ void slave_listening_process (struct slave_database *sdb) {
   while (1) {
     if ((csfd = accept_socket_slave (sfd)) != -1) {
       // Ignore children exit codes & do not let zombies around
-      signal(SIGCHLD,SIG_IGN); // FIXME: sigaction
+      ignore_sigcld();
       if ((child_pid = fork()) == 0) {
         // Child process
         set_signal_handlers_child_chandler ();
@@ -607,9 +641,11 @@ void launch_task (struct slave_database *sdb, uint16_t itask) {
       //semaphore_release(sdb->semid);
     }
 
-    /* Then we set the process as running */
+    // Then we set the process as loading
+    // Later on, well make a check for every loading frame and if running change its status
     semaphore_lock(sdb->semid);
-    sdb->comp->status.task[itask].status = TASKSTATUS_RUNNING;
+    sdb->comp->status.task[itask].status = TASKSTATUS_LOADING;
+    sdb->comp->status.task[itask].start_loading_time = time(NULL);
     sdb->comp->status.task[itask].pid = task_pid;
     sdb->comp->status.ntasks = computer_ntasks (sdb->comp);
     sdb->comp->status.nrunning = computer_nrunning (sdb->comp);
@@ -626,7 +662,6 @@ void launch_task (struct slave_database *sdb, uint16_t itask) {
       sdb->comp->status.nrunning = computer_nrunning (sdb->comp);
       semaphore_release(sdb->semid);
       // TODO: notify the master ?
-
     } else {
       // waitpid returned successfully
       /* We have to clean the task and send the info to the master */
