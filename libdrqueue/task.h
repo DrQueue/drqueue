@@ -62,6 +62,7 @@ struct task {
   int32_t  pid;   /* pid */
   int32_t  exitstatus;  /* exit status */
   uint8_t  status;  /* status */
+  uint64_t start_loading_time;
 };
 
 struct slave_database;

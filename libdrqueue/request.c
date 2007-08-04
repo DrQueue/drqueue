@@ -926,6 +926,9 @@ request_job_available (struct slave_database *sdb, uint16_t *itask) {
   req.data = RERR_NOERROR;
   if (!send_request(sfd,&req,SLAVE)) {
     log_auto (L_ERROR,"Sending request (request_job_available) : %s",drerrno_str());
+	semaphore_lock(sdb->semid);
+	task_init(&sdb->comp->status.task[*itask]);
+	semaphore_release(sdb->semid);
     //kill (0,SIGINT);
     close (sfd);
     return 0;
@@ -936,6 +939,9 @@ request_job_available (struct slave_database *sdb, uint16_t *itask) {
   req.data = *itask;
   if (!send_request(sfd,&req,SLAVE)) {
     log_auto (L_ERROR,"Sending request (request_job_available) : %s",drerrno_str());
+	semaphore_lock(sdb->semid);
+	task_init(&sdb->comp->status.task[*itask]);
+	semaphore_release(sdb->semid);
     //kill (0,SIGINT);
     close (sfd);
     return 0;
@@ -945,6 +951,9 @@ request_job_available (struct slave_database *sdb, uint16_t *itask) {
   /* Then we receive the task */
   if (!recv_task(sfd,&ttask)) {
     log_auto (L_ERROR,"Receiving the task (request_job_available) : %s",drerrno_str());
+	semaphore_lock(sdb->semid);
+	task_init(&sdb->comp->status.task[*itask]);
+	semaphore_release(sdb->semid);
     //kill (0,SIGINT);
     close (sfd);
     return 0;
