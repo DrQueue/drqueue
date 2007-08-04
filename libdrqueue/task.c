@@ -53,6 +53,7 @@ void task_init (struct task *task) {
   task->itask = 0;
   task->exitstatus = 0;
   task->status = 0;
+  task->start_loading_time = 0;
 }
 
 uint16_t
@@ -67,6 +68,7 @@ task_available (struct slave_database *sdb) {
       sdb->comp->status.task[i].used = 1;
       sdb->comp->status.task[i].itask = (uint16_t) i;
       sdb->comp->status.task[i].status = TASKSTATUS_LOADING;
+      sdb->comp->status.task[i].start_loading_time = time(NULL);
       break;
     }
   }
