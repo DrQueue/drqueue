@@ -1,3 +1,7 @@
+2007-08-05  Jorge Daza  <jorge@nathan.vilan>
+
+	* libdrqueue/computer_info.linux.h (get_procspeed): Added Sparc cpu clock speed detection.
+
 2007-07-29  Jorge Daza  <jorge@nathan.vilan>
 
 	* libdrqueue/computer_info.linux.h (get_architecture): Added Sparc detection
