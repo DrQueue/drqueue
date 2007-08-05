@@ -107,7 +107,7 @@ opts = Options('scons.conf')
 opts.AddOptions(PathOption('DESTDIR','Alternate root directory','',[]),
                 PathOption('PREFIX','Directory to install under','/usr/local'),
                 BoolOption('universal_binary', 'Whether to build as an Universal Binary (MacOS X >= 10.3.9 only)', 0),
-                BoolOption('build_drqman', 'Build drqman', 1))
+                BoolOption('build_drqman','Build drqman',1))
 opts.Update(env_lib)
 opts.Save('scons.conf',env_lib)
 
@@ -215,7 +215,7 @@ for tool in cmdline_tools:
 
 install_base = idir_prefix
 bin_list = main_list + cmdline_tools
-wrapped_bin_list = wrapper_complete_command (bin_list)
+wrapped_bin_list = wrapper_complete_command (env,bin_list)
 bin_list = add_suffix_to_list(bin_list,get_bin_extension())
 wrapped_bin_list = add_suffix_to_list(wrapped_bin_list,get_bin_extension())
 wrapped_bin_copies = copy_with_clean(bin_list,wrapped_bin_list,idir_bin,env)

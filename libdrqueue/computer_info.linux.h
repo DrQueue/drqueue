@@ -39,7 +39,7 @@ get_hwinfo (struct computer_hwinfo *hwinfo) {
     perror ("get_hwinfo: gethostname");
     kill(0,SIGINT);
   }
-  // FIXME: Linux has more architectures last time I checked.
+  // FIXME: Linux supports more architectures than those considered here.
   hwinfo->arch = get_architecture();
   hwinfo->os = OS_LINUX;
   hwinfo->proctype = get_proctype();
@@ -169,6 +169,21 @@ get_procspeed (void) {
         index++;
       sscanf (&buf[index],"%fMHz\n",&st);
       procspeed = (int) st;
+      found = 1;
+    } else if (strstr(buf,"ClkTck") != NULL) {
+      // UltraSparc II case mentioned in the site's forums
+      // NOTE: We consider all CPUs run at the same clock speed as the first found.
+      uint64_t clockspeed = 0;
+
+      // First digit is the cpu number, jump over
+      while (!isdigit(buf[index]))
+        index++;
+      index++;
+      // Second should be the first 0 of the hex string containing the clock speed
+      while (!isdigit(buf[index]))
+        index++;
+      clockspeed = strtoll (&buf[index],NULL,16);
+      procspeed = (uint32_t)(clockspeed / 10e5);
       found = 1;
     }
   }

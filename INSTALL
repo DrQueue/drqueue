@@ -175,5 +175,3 @@ That naming convention, having a single wrapper script named "master"
 is thought so you can have your drqueue installation shared over the
 network and every single computer will load the proper binary while the
 directory is in fact holding all of them.
-
-

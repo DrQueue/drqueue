@@ -111,13 +111,13 @@ wrapper_cmd () {
   #
   # Universal Binaries workaround
   #
-  if [ ${KERNEL} == "Darwin" -a -x /usr/bin/lipo -a -f ${_full_wrapped_path_without_arch}.${Universal_Binaries_Short_Name} ]
+  if [ ! -z ${KERNEL} -a ${KERNEL} == "Darwin" -a -x /usr/bin/lipo -a -f ${_full_wrapped_path_without_arch}.${Universal_Binaries_Short_Name} ]
   then
     _full_wrapped_path=${_full_wrapped_path_without_arch}.${Universal_Binaries_Short_Name}
   else
     _full_wrapped_path=$( get_env_drqueue_bin )/$( get_env_base_tool "$BASETOOL" ).$( get_env_kernel ).$( get_env_machine )
   fi
-  WRAP_CMD="$_full_wrapped_path"
+  WRAP_CMD="${_full_wrapped_path}"
 
   if [ ! -x "${WRAP_CMD}" ]; then
     echo ERROR: the wrapper "$( get_env_base_tool )" for your platform \(${WRAP_CMD}\) does not exist.

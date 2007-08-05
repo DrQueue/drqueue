@@ -356,3 +356,38 @@ get_version_complete () {
 	    get_version_prepost(),get_revision_string());
   return buffer;
 }
+
+uint64_t
+swap64 (uint64_t source) {
+  uint64_t result;
+  char *s = (char*)&source;
+  char *r = (char*)&result;
+  int i;
+
+  s += 7;
+  for (i=0;i<8;i++) {
+	*r = *s;
+	r++;
+	s--;
+  }
+
+  return result;
+}
+
+uint64_t
+dr_hton64 (uint64_t source) {
+#if defined (BIG_ENDIAN) && ! defined (LITTLE_ENDIAN)
+  return source;
+#else
+  return swap64(source);
+#endif
+}
+
+uint64_t
+dr_ntoh64 (uint64_t source) {
+#if defined (BIG_ENDIAN) && ! defined (LITTLE_ENDIAN)
+  return source;
+#else
+  return swap64(source);
+#endif
+}

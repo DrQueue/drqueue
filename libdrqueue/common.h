@@ -56,6 +56,9 @@ char *get_version_prepost (void);
 char *get_revision_string (void);
 char *get_version_complete (void);
 
+uint64_t dr_hton64(uint64_t);
+uint64_t dr_ntoh64(uint64_t);
+
 #ifdef __CPLUSPLUS
 }
 #endif
