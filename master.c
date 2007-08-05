@@ -530,7 +530,7 @@ void master_get_options (int *argc,char ***argv, int *force) {
       break;
     case 'v':
       show_version (*argv);
-      exit (0);
+      exit (1);
       break;
     case '?':
     case 'h':
