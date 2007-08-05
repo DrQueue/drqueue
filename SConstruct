@@ -40,8 +40,8 @@ def get_architecture(env,escape=False,underscore=True):
         machine = Universal_Binaries_Short_Name
     return machine
 
-def wrapper_complete_command (cmdlist):
-    kernel = plattform.system()
+def wrapper_complete_command (env,cmdlist):
+    kernel = platform.system()
     arch = get_architecture(env)
     rlist = []
     for cmd in cmdlist:
