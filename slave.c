@@ -776,11 +776,11 @@ void slave_get_options (int *argc,char ***argv, int *force, struct slave_databas
       break;
     case 'v':
       show_version (*argv);
-      kill (0,SIGINT);
+      exit (0);
     case '?':
     case 'h':
       usage();
-      kill (0,SIGINT);
+      exit (0);
     }
   }
 }

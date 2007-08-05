@@ -13,9 +13,15 @@ check_environment
 
 wrapper_cmd "$BASETOOL"
 
+CATCH=1
 ## Being the slave
-while [ 1 ]; do
+while [ ${CATCH} -eq 1 ]; do
     $WRAP_CMD $*
-    # TODO: log when it dies and restarts
-    sleep 30
+	if [ $? -eq 0 ]
+	then
+		CATCH=0;
+	else
+    	# TODO: log when it dies and restarts
+    	sleep 30
+	fi
 done
