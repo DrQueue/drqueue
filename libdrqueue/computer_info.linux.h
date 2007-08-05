@@ -183,7 +183,7 @@ get_procspeed (void) {
       while (!isdigit(buf[index]))
         index++;
       clockspeed = strtoll (&buf[index],NULL,16);
-      procspeed = (uint32_t)(clockspeed / 10e5);
+      procspeed = (uint32_t)(clockspeed / 1e6);
       found = 1;
     }
   }
