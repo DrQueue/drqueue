@@ -99,7 +99,7 @@ if sys.platform == 'win32':
     print "-> Win32 using Cygwin mode"
     Tool('mingw')(env_lib)
 
-env_lib.Append (CPPPATH=['.','libdrqueue'])
+env_lib.Append (CPPPATH=['.','libdrqueue'],CCFLAGS=Split('-fPIC'))
 env_lib.Append (CPPDEFINES = Split ('-DCOMM_REPORT -D_GNU_SOURCE ' \
                 + '-D_NO_COMPUTER_POOL_SEMAPHORES -D_NO_COMPUTER_SEMAPHORES'),
                 CPPFLAGS = Split ('-g -O0'),
