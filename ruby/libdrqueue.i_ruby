@@ -118,6 +118,9 @@ slaves. Also provides access to all data structures of DrQueue."
 %include "common.h"
 %include "computer_pool.h"
 
+%include "blendersg.h"
+%include "mentalraysg.h"
+
 typedef unsigned int time_t;
 typedef unsigned short int uint16_t;
 typedef unsigned long int uint32_t;
@@ -283,6 +286,69 @@ typedef unsigned char uint8_t;
 		}
 		return 1;
 	}
+	
+	
+	/* Blender script file generation */
+	char *blendersg (char *scene, char *scriptdir)
+	{	
+		struct blendersgi *blend = (struct blendersgi *)malloc (sizeof(struct blendersgi));
+    	if (!blend) {
+ 	     	rb_raise(rb_eNoMemError,"out of memory");
+    	 	return NULL;
+   		}	
+		
+		char *outfile = (char *)malloc(sizeof(char *));
+		if (!outfile) {
+ 	     	rb_raise(rb_eNoMemError,"out of memory");
+    	 	return NULL;
+   		}
+		
+		memset (blend,0,sizeof(struct blendersgi));
+		
+		strncpy(blend->scene, scene, BUFFERLEN-1);
+		strncpy(blend->scriptdir, scriptdir, BUFFERLEN-1);
+		
+  		outfile = blendersg_create(blend);
+  		
+		if (!outfile) {
+			rb_raise(rb_eException,"Problem creating script file");
+      		return NULL;
+		}
+		
+		return outfile;
+	}
+	
+	
+	/* MentalRay script file generation */
+	char *mentalraysg (char *scene, char *scriptdir)
+	{	
+		struct mentalraysgi *ment = (struct mentalraysgi *)malloc (sizeof(struct mentalraysgi));
+    	if (!ment) {
+ 	     	rb_raise(rb_eNoMemError,"out of memory");
+    	 	return NULL;
+   		}	
+		
+		char *outfile = (char *)malloc(sizeof(char *));
+		if (!outfile) {
+ 	     	rb_raise(rb_eNoMemError,"out of memory");
+    	 	return NULL;
+   		}
+		
+		memset (ment,0,sizeof(struct mentalraysgi));
+		
+		strncpy(ment->scene, scene, BUFFERLEN-1);
+		strncpy(ment->scriptdir, scriptdir, BUFFERLEN-1);
+		
+  		outfile = mentalraysg_create(ment);
+  		
+		if (!outfile) {
+			rb_raise(rb_eException,"Problem creating script file");
+      		return NULL;
+		}
+		
+		return outfile;
+	}
+	
 }
 
 
