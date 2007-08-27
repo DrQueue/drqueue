@@ -41,9 +41,9 @@ endif
 
 
 
-# we run this in bash as it support inline env variables
+# we run this in bash as it supports inline env variables
 
-set command = "curpart=$DRQUEUE_FRAME maxparts=5 $BLENDER_PATH -b $SCENE -P $DRQUEUE_TMP/single_frame.py"
+set command = "curpart=$DRQUEUE_FRAME maxparts=5 $BLENDER_PATH -b $SCENE -P /usr/share/drqueue/tmp/single_frame.py"
 echo /bin/bash -c "$command"
 
 /bin/bash -c "$command"
