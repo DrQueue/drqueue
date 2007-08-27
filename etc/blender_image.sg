@@ -39,11 +39,12 @@ else
     set BLENDER_PATH="blender"
 endif
 
-#echo "$BLENDER_PATH" -b \"$SCENE\" -s $DRQUEUE_FRAME -e $BLOCK -a
-echo curpart=$DRQUEUE_FRAME maxparts=5 "$BLENDER_PATH" -b "$SCENE" -P $DRQUEUE_TMP/single_frame.py
 
-#"$BLENDER_PATH" -b "$SCENE" -s $DRQUEUE_FRAME -e $BLOCK -a
-curpart=$DRQUEUE_FRAME maxparts=5 "$BLENDER_PATH" -b "$SCENE" -P $DRQUEUE_TMP/single_frame.py
+
+# we run this in bash as it support inline env variables
+echo bash -c 'curpart=$DRQUEUE_FRAME maxparts=5 "$BLENDER_PATH" -b "$SCENE" -P $DRQUEUE_TMP/single_frame.py'
+
+bash -c 'curpart=$DRQUEUE_FRAME maxparts=5 "$BLENDER_PATH" -b "$SCENE" -P $DRQUEUE_TMP/single_frame.py'
 
 # This should requeue the frame if failed
 if ( $? != 0 ) then
