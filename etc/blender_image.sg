@@ -42,9 +42,9 @@ endif
 
 
 # we run this in bash as it support inline env variables
-echo bash -c 'curpart=$DRQUEUE_FRAME maxparts=5 "$BLENDER_PATH" -b "$SCENE" -P $DRQUEUE_TMP/single_frame.py'
+echo /bin/bash -c 'curpart=$DRQUEUE_FRAME maxparts=5 "$BLENDER_PATH" -b "$SCENE" -P $DRQUEUE_TMP/single_frame.py'
 
-bash -c 'curpart=$DRQUEUE_FRAME maxparts=5 "$BLENDER_PATH" -b "$SCENE" -P $DRQUEUE_TMP/single_frame.py'
+/bin/bash -c 'curpart=$DRQUEUE_FRAME maxparts=5 "$BLENDER_PATH" -b "$SCENE" -P $DRQUEUE_TMP/single_frame.py'
 
 # This should requeue the frame if failed
 if ( $? != 0 ) then
