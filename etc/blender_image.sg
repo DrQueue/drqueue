@@ -44,9 +44,9 @@ endif
 # we run this in bash as it support inline env variables
 
 set command = "curpart=$DRQUEUE_FRAME maxparts=5 $BLENDER_PATH -b $SCENE -P $DRQUEUE_TMP/single_frame.py"
-echo /bin/bash -c $command
+echo /bin/bash -c "$command"
 
-/bin/bash -c $command
+/bin/bash -c "$command"
 
 # This should requeue the frame if failed
 if ( $? != 0 ) then
