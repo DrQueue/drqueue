@@ -33,6 +33,8 @@ extern "C" {
   struct blendersgi {  /* Blender Script Generator Info */
     char scene[BUFFERLEN];
     char scriptdir[BUFFERLEN];
+    int  blender;    // 1 if we should render animations
+    				 // 2 if we should distribute one single image
   };
 
 #pragma pack(pop)
