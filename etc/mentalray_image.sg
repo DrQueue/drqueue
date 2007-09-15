@@ -73,7 +73,8 @@ endif
 set scene_height = `grep resolution $DRQUEUE_SCENE | awk '{print $3}'`
 set scene_width = `grep resolution $DRQUEUE_SCENE | awk '{print $2}'`
 
-set part_height = 100
+#set part_height = 100 
+@ part_height = scene_height / $DRQUEUE_ENDFRAME
 
 @ height_high = $scene_height - ( $DRQUEUE_FRAME * $part_height )
 @ height_low = $height_high - $part_height
