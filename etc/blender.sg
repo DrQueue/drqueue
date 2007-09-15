@@ -54,7 +54,7 @@ else
     # chown_block $RF_OWNER $RD/$IMAGE $DRQUEUE_FRAME $BLOCK 
   #endif
   
-  chown drqueueonrails:drqueueonrails *
+  chown drqueueonrails:drqueueonrails $SCENE:h/*
   
 endif
 
