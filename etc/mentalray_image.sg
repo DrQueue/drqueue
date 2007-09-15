@@ -79,9 +79,10 @@ set scene_width = `grep resolution $DRQUEUE_SCENE | awk '{print $2}'`
 @ height_low = $height_high - $part_height
 
 # generate frame filename
-set outputname=`grep output $DRQUEUE_SCENE | awk '{print $4}' | grep "\." | sed 's/\"//g'`
-set extension=$outputname:e
-set framename=$outputname:r"_"`printf "%04d" $DRQUEUE_FRAME`.$extension
+set outputname = `grep output $DRQUEUE_SCENE | awk '{print $4}' | grep "\." | sed 's/\"//g'`
+set extension = $outputname:e
+set namestart = $outputname:r
+set framename = $namestart"_"`printf "%04d" $DRQUEUE_FRAME`.$extension
 
 echo ray -window 0 $height_low $scene_width $height_high $DRQUEUE_SCENE -file_name $framename
 
