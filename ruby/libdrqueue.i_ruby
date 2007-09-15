@@ -32,8 +32,9 @@ slaves. Also provides access to all data structures of DrQueue."
 %module (docstring=DOCSTRING) libdrqueue
 %{
 #include "libdrqueue.h"
-
 %}
+
+/* Tell SWIG to keep track of mappings between C/C++ structs/classes. */%trackobjects;
 
 %include "typemaps.i"
 
