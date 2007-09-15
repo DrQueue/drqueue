@@ -79,9 +79,9 @@ set part_height = 100
 @ height_low = $height_high - $part_height
 
 # generate frame filename
-set outputname=`grep output $SCENE | awk '{print $4}' | grep "\." | sed 's/\"//g'`
+set outputname=`grep output $DRQUEUE_SCENE | awk '{print $4}' | grep "\." | sed 's/\"//g'`
 set extension=outputname:e
-set scenename=$SCENE:r
+set scenename=$DRQUEUE_SCENE:r
 set framename=$scenename"_"`printf "%04d" $DRQUEUE_FRAME`.$extension
 
 echo ray -window 0 $height_low $scene_width $height_high $DRQUEUE_SCENE -file_name $framename
