@@ -58,6 +58,9 @@ else
     # We don't know the output image name. If we knew we could set this correctly
     # chown_block $RF_OWNER $RD/$IMAGE $DRQUEUE_FRAME $BLOCK 
   #endif
+  
+  chown drqueueonrails:drqueueonrails $SCENE*$DRQUEUE_FRAME*
+  
 endif
 
 #
