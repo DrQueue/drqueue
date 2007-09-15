@@ -1,5 +1,6 @@
 // 
 // Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
+// Copyright (C) 2007 Andreas Schroeder
 //
 // This file is part of DrQueue
 // 
@@ -18,11 +19,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
 // 
-// $Id: /drqueue/remote/trunk/jobfinfo.c 2334 2005-07-05T03:50:01.502018Z jorge  $
-//
-// This program returns the number of times a frame has been requeued.
-// Useful for avoiding endless loops
-//
+// 
+
 
 %define DOCSTRING
 "The drqueue module allows the access to the libdrqueue library responsible
@@ -35,17 +33,14 @@ slaves. Also provides access to all data structures of DrQueue."
 %}
 
 
-//%apply SWIGTYPE *DISOWN { Job* job };
 
-/* Tell SWIG to keep track of mappings between C/C++ structs/classes. */
-//%trackobjects;
 
-// this mehtod generates new objects
-//%newobject Libdrqueue::request_job_list;
+// Tell SWIG to keep track of mappings between C/C++ structs/classes
+%trackobjects;
 
-/* Specify the mark function */
-//%freefunc Array "free_list";
-
+// this method generates new objects
+%newobject Libdrqueue::request_job_list;
+%newobject Libdrqueue::request_computer_list;
 
 
 
@@ -70,7 +65,8 @@ slaves. Also provides access to all data structures of DrQueue."
 		struct computer *tc = c;
 		memcpy (c,*$1,sizeof(struct computer)*result);
 		for (i=0; i<result; i++) {
-			VALUE o = SWIG_NewPointerObj((void*)(tc), SWIGTYPE_p_computer, 0);
+			//VALUE o = SWIG_NewPointerObj((void*)(tc), SWIGTYPE_p_computer, 0);
+			VALUE o = SWIG_NewPointerObj((void*)(tc), SWIGTYPE_p_computer, 1);
 			rb_ary_push(l,o);
 			tc++;
 		}
@@ -78,6 +74,7 @@ slaves. Also provides access to all data structures of DrQueue."
 		$result = l;
 	}
 }
+
 
 %typemap(in,numinputs=0) struct job **job (struct job *job) {
 	$1 = &job;
@@ -97,7 +94,8 @@ slaves. Also provides access to all data structures of DrQueue."
 		struct job *tj = j;
 		memcpy (j,*$1,sizeof(struct job)*result);
 		for (i=0; i<result; i++) {
-			VALUE o = SWIG_NewPointerObj((void*)(tj), SWIGTYPE_p_job, 0);
+			VALUE o = SWIG_NewPointerObj((void*)(tj), SWIGTYPE_p_job, 1);
+			//VALUE o = SWIG_NewPointerObj((void*)(tj), SWIGTYPE_p_job, 0);
 			rb_ary_push(l,o);
 			tj++;
 		}
@@ -105,6 +103,41 @@ slaves. Also provides access to all data structures of DrQueue."
 		$result = l;
 	}
 }
+
+/*
+// Ruby -> C
+%typemap(in) struct joblist **joblist (struct joblist *joblist) {
+	$1 = &joblist;
+}
+
+
+// C -> Ruby
+%typemap(out) struct joblist **joblist {
+	VALUE arr = rb_ary_new2($1->size());
+	int i;
+	int end = $->end();
+	for (i = 0; i < end; i++) {
+		rb_ary_push(arr, Data_Wrap_Struct($1, 0, 0, *i));
+	}
+	$result = arr;
+}
+
+
+%typemap(argout) struct joblist **joblist {
+	
+	VALUE arr = rb_ary_new2($1->size());
+	int i;
+	int end = result;
+	for (i = 0; i < end; i++) {
+		VALUE o = SWIG_NewPointerObj((void)arr, SWIGTYPE_p_p_job, 0);
+		rb_ary_push(l,o);
+	}
+	$result = arr;
+	
+}
+*/
+	
+	
 
 %include "pointer.h"
 %include "libdrqueue.h"
@@ -132,6 +165,77 @@ typedef unsigned char uint8_t;
 
 
 
+
+%inline %{
+
+struct joblist {
+	struct job **jobs;
+	int count;
+};
+	
+%}
+	
+
+// JOBLIST
+%extend joblist {
+	joblist ()
+	{
+		struct joblist *jl;
+		int found = 0;
+		int i;
+		int count;
+		
+		jl = (struct joblist *)malloc (sizeof(struct joblist));
+		
+		jl->count = request_job_list (jl->jobs, CLIENT);
+		
+		printf("%d", jl->count);
+		
+  		return jl;
+	}
+
+	~joblist ()
+	{
+		int i;
+		//int count;
+		
+		//count = sizeof(self->jobs) / sizeof(struct job *);
+		
+		printf("%d", self->count);
+		
+		for (i = 0; i < self->count; i++) {
+		 	free(self->jobs[i]);
+		}
+		
+		free (self);
+	}	
+
+	struct job *search (int job_id) {
+		int found = 0;
+		int i;
+		
+		printf("%d", self->count);
+		
+		for (i = 0; i < self->count; i++) {
+			 // job was found
+			 
+			 printf("%s", self->jobs[i]->name);
+			 
+			 if (self->jobs[i]->id == job_id) {
+			 	found = 1;
+			 	return self->jobs[i];
+			 }
+		}
+		
+		// job was not found
+	  	if (found == 0) {
+	  		return (struct job *)NULL;
+	  	}
+	}
+
+}
+
+
 // JOB
 %extend job {
 	job ()
@@ -150,7 +254,7 @@ typedef unsigned char uint8_t;
 	{
 		job_init(self);
 		free (self);
-	}
+	}	
 
 	int environment_variable_add (char *name, char *value)
 	{
