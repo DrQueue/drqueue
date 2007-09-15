@@ -39,8 +39,8 @@ slaves. Also provides access to all data structures of DrQueue."
 %trackobjects;
 
 // this method generates new objects
-%newobject Libdrqueue::request_job_list;
-%newobject Libdrqueue::request_computer_list;
+//%newobject Libdrqueue::request_job_list;
+//%newobject Libdrqueue::request_computer_list;
 
 
 
@@ -65,8 +65,8 @@ slaves. Also provides access to all data structures of DrQueue."
 		struct computer *tc = c;
 		memcpy (c,*$1,sizeof(struct computer)*result);
 		for (i=0; i<result; i++) {
-			//VALUE o = SWIG_NewPointerObj((void*)(tc), SWIGTYPE_p_computer, 0);
-			VALUE o = SWIG_NewPointerObj((void*)(tc), SWIGTYPE_p_computer, 1);
+			//VALUE o = SWIG_NewPointerObj((void*)(tc), SWIGTYPE_p_computer, 1);
+			VALUE o = SWIG_NewPointerObj((void*)(tc), SWIGTYPE_p_computer, 0);
 			rb_ary_push(l,o);
 			tc++;
 		}
@@ -94,8 +94,8 @@ slaves. Also provides access to all data structures of DrQueue."
 		struct job *tj = j;
 		memcpy (j,*$1,sizeof(struct job)*result);
 		for (i=0; i<result; i++) {
-			VALUE o = SWIG_NewPointerObj((void*)(tj), SWIGTYPE_p_job, 1);
-			//VALUE o = SWIG_NewPointerObj((void*)(tj), SWIGTYPE_p_job, 0);
+			//VALUE o = SWIG_NewPointerObj((void*)(tj), SWIGTYPE_p_job, 1);
+			VALUE o = SWIG_NewPointerObj((void*)(tj), SWIGTYPE_p_job, 0);
 			rb_ary_push(l,o);
 			tj++;
 		}
@@ -252,8 +252,8 @@ struct joblist {
 
 	~job ()
 	{
-		//job_init(self);
-		//free (self);
+		job_init(self);
+		free (self);
 	}	
 
 	int environment_variable_add (char *name, char *value)
