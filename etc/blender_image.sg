@@ -59,7 +59,8 @@ else
     # chown_block $RF_OWNER $RD/$IMAGE $DRQUEUE_FRAME $BLOCK 
   #endif
   
-  chown drqueueonrails:drqueueonrails $SCENE*$DRQUEUE_FRAME*
+  # change userid and groupid
+  chown 1002:1004 $SCENE*$DRQUEUE_FRAME*
   
 endif
 
