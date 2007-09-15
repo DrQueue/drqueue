@@ -70,7 +70,7 @@ slaves. Also provides access to all data structures of DrQueue."
 			rb_ary_push(l,o);
 			tc++;
 		}
-		free (*$1);
+		//free (*$1);
 		$result = l;
 	}
 }
@@ -99,7 +99,7 @@ slaves. Also provides access to all data structures of DrQueue."
 			rb_ary_push(l,o);
 			tj++;
 		}
-		free(*$1);
+		//free(*$1);
 		$result = l;
 	}
 }
@@ -280,7 +280,6 @@ struct joblist {
 		return variable->value;
 	}
 
-	%newobject request_frame_list;
 	VALUE request_frame_list (int who)
 	{
 		VALUE l = rb_ary_new();
