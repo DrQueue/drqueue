@@ -43,7 +43,7 @@ endif
 
 # we run this in bash as it supports inline env variables
 
-set command = "curpart=$DRQUEUE_FRAME maxparts=$DRQUEUE_ENDFRAME $BLENDER_PATH -b $SCENE -P $DRQUEUE_TMP/single_frame.py"
+set command = "curpart=$DRQUEUE_FRAME maxparts=$DRQUEUE_ENDFRAME $BLENDER_PATH -b $SCENE -P /usr/share/drqueue/single_frame.py"
 echo /bin/bash -c "$command"
 
 /bin/bash -c "$command"
