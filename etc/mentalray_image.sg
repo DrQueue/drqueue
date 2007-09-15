@@ -81,8 +81,8 @@ set part_height = 100
 # generate frame filename
 set outputname=`grep output $DRQUEUE_SCENE | awk '{print $4}' | grep "\." | sed 's/\"//g'`
 set extension=$outputname:e
-set scenename=$DRQUEUE_SCENE:r
-set framename=$outputname"_"`printf "%04d" $DRQUEUE_FRAME`.$extension
+#set scenename=$DRQUEUE_SCENE:r
+set framename=$outputname:r"_"`printf "%04d" $DRQUEUE_FRAME`.$extension
 
 echo ray -window 0 $height_low $scene_width $height_high $DRQUEUE_SCENE -file_name $framename
 
