@@ -72,11 +72,8 @@ endif
 # calculate parts to render
 set scene_height = `grep resolution $DRQUEUE_SCENE | awk '{print $3}'`
 set scene_width = `grep resolution $DRQUEUE_SCENE | awk '{print $2}'`
-
-#set part_height = 100 
+ 
 @ part_height = $scene_height / ( $DRQUEUE_ENDFRAME + 1 )
-
-echo $part_height
 
 @ height_high = $scene_height - ( $DRQUEUE_FRAME * $part_height )
 @ height_low = $height_high - $part_height
@@ -84,7 +81,6 @@ echo $part_height
 # generate frame filename
 set outputname=`grep output $DRQUEUE_SCENE | awk '{print $4}' | grep "\." | sed 's/\"//g'`
 set extension=$outputname:e
-#set scenename=$DRQUEUE_SCENE:r
 set framename=$outputname:r"_"`printf "%04d" $DRQUEUE_FRAME`.$extension
 
 echo ray -window 0 $height_low $scene_width $height_high $DRQUEUE_SCENE -file_name $framename
