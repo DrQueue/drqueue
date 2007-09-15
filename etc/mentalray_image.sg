@@ -106,7 +106,7 @@ else
 	  
 	  # You may or may not want to comment out the 'exit 0' belown depending on how important
 	  # you consider changing the files ownership is.
-	  exit 0
+	  #exit 0
 	endif
 endif
 
