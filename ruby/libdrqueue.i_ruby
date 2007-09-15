@@ -34,7 +34,21 @@ slaves. Also provides access to all data structures of DrQueue."
 #include "libdrqueue.h"
 %}
 
-/* Tell SWIG to keep track of mappings between C/C++ structs/classes. */%trackobjects;
+
+//%apply SWIGTYPE *DISOWN { Job* job };
+
+/* Tell SWIG to keep track of mappings between C/C++ structs/classes. */
+//%trackobjects;
+
+// this mehtod generates new objects
+//%newobject Libdrqueue::request_job_list;
+
+/* Specify the mark function */
+//%freefunc Array "free_list";
+
+
+
+
 
 %include "typemaps.i"
 
@@ -115,6 +129,9 @@ typedef unsigned short int uint16_t;
 typedef unsigned long int uint32_t;
 typedef unsigned char uint8_t;
 
+
+
+
 // JOB
 %extend job {
 	job ()
@@ -159,6 +176,7 @@ typedef unsigned char uint8_t;
 		return variable->value;
 	}
 
+	%newobject request_frame_list;
 	VALUE request_frame_list (int who)
 	{
 		VALUE l = rb_ary_new();
