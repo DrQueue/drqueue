@@ -89,6 +89,9 @@ else
 	  # you consider changing the files ownership is.
 	  exit 0
 	endif
+	
+	chown drqueueonrails:drqueueonrails *
+	
 endif
 
 #
