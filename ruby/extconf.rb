@@ -16,8 +16,8 @@ end
 
 # create swig wrapper
 puts 'generating swig interface file'
-puts 'swig -ruby -I../ -I../libdrqueue -D'+rb_os+' libdrqueue.i_ruby'
-xsystem('swig -ruby -I../ -I../libdrqueue -D'+rb_os+' libdrqueue.i_ruby')
+puts 'swig -ruby -I../ -I../libdrqueue -D'+rb_os+' libdrqueue_ruby.i'
+xsystem('swig -ruby -I../ -I../libdrqueue -D'+rb_os+' libdrqueue_ruby.i')
 puts 'look for output in mkmf.log'
 
 # build for os
