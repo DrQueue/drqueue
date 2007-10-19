@@ -37,24 +37,10 @@ scenefile = sys.argv[2]
 print 'scenefile: ' + scenefile
 
 # calculate region
-
 width = context.imageSizeX()
 height = context.imageSizeY()
 print 'width: ' + str(width)
 print 'height: ' + str(height)
-
-#pixel_add = (5.0 / (height / 100.0)) / 100.0
-#print 'pixel_add: ' + str(pixel_add)
-
-#left = 0.0
-#bottom = 1.0 - (float(curpart) * 1.0 / float(maxparts))
-#right = 1.0
-#top = 1.0 - ((float(curpart) - 1.0) * 1.0 / float(maxparts))
-
-#if top < 1.0:
-#	top = top + pixel_add
-#if bottom > 0.0:
-#	bottom = bottom - pixel_add
 
 part_height = float(height) / float(maxparts)
 print 'part_height: ' + str(part_height)
@@ -71,9 +57,9 @@ print 'bottom_px: ' + str(bottom_px)
 print 'top_px: ' + str(top_px)
 
 left = 0.0
-bottom = round( bottom_px / float(height) , 2)
+bottom = bottom_px / float(height)
 right = 1.0
-top = round( top_px / float(height) , 2)
+top = top_px / float(height)
 
 print 'left: ' + str(left)
 print 'bottom: ' + str(bottom)
