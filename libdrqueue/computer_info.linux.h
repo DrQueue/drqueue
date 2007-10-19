@@ -125,7 +125,17 @@ get_proctype (void) {
     } else if ((strstr(buf,"cpu") != NULL) && (strstr(buf,"UltraSparc") != NULL)) {
       proctype = PROCTYPE_ULTRASPARC;
       found = 1;
+    } else if ((strstr(buf,"cpu model") != NULL) && (strstr(buf,"R5000") != NULL)) {
+      proctype = PROCTYPE_MIPSR5000;
+      found = 1;
+    } else if ((strstr(buf,"cpu model") != NULL) && (strstr(buf,"R10000") != NULL)) {
+      proctype = PROCTYPE_MIPSR10000;
+      found = 1;
+    } else if ((strstr(buf,"cpu model") != NULL) && (strstr(buf,"R12000") != NULL)) {
+      proctype = PROCTYPE_MIPSR12000;
+      found = 1;
     }
+    
   }
 
   if (!found) {
@@ -180,6 +190,13 @@ get_procspeed (void) {
         index++;
       clockspeed = strtoll (&buf[index],NULL,16);
       procspeed = (uint32_t)(clockspeed / 1e6);
+      found = 1;
+    } else if (strstr(buf,"BogoMIPS") != NULL) {
+      // on SGI MIPS procspeed is equal to BogoMIPS
+      while (!isdigit(buf[index]))
+        index++;
+      sscanf (&buf[index],"%fMHz\n",&st);
+      procspeed = (int) st;
       found = 1;
     }
   }
@@ -241,7 +258,12 @@ get_architecture (void) {
       // UltraSparc issue
       architecture = ARCH_SPARC;
       break;
-    } 
+    }
+    if ((strstr(buf,"system type") != NULL) && (strstr(buf,"SGI") != NULL)) {
+      // SGI MIPS issue
+      architecture = ARCH_MIPS;
+      break;
+    }
   }
 
   fclose (cpuinfo);
