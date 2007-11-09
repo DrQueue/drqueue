@@ -42,8 +42,13 @@ if ($DRQUEUE_OS == "OSX") then
 endif
 
 if ($DRQUEUE_OS == "LINUX") then
-	# we use wine on linux
-	set CINEMA4D_PATH="wine C:\\Programme\\MAXON\\CINEMA\ 4D\ R10\\CINEMA\ 4D.exe"
+	# we use wine on linux (this is a hack, but works)
+	# there is tightvnc server running on display :1
+	# see wine bug #8069
+	
+	set DISPLAY = :1
+	cd ~/.wine/drive_c/Program\ Files/MAXON/CINEMA\ 4D\ R10
+	set CINEMA4D_PATH="wine C:\\Program\ Files\\MAXON\\CINEMA\ 4D\ R10\\CINEMA\ 4D.exe"
 	
 	set outpath = $SCENE:r
 	set outpath = `echo $outpath | sed 's/\//\\\\/g'`
@@ -53,9 +58,9 @@ if ($DRQUEUE_OS == "LINUX") then
 endif
 
 
-echo $CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -treads 0
+echo $CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -treads 0
 
-$CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -treads 0
+$CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -treads 0
 
 
 # This should requeue the frame if failed
@@ -70,7 +75,7 @@ else
   #endif
   
   # change userid and groupid
-  #chown 1002:1004 $SCENE*$DRQUEUE_FRAME*
+  chown $RF_OWNER $SCENE:h/*$DRQUEUE_FRAME*
   
 endif
 
