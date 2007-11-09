@@ -37,7 +37,7 @@ extern "C" {
     char camera[BUFFERLEN];
     int  res_x,res_y;  /* Resolution of the frame */
     char format[BUFFERLEN];
-    int  mentalray;  // 1 if we should render animations
+ uint8_t kind;       // 1 if we should render animations
     				 // 2 if we should distribute one single image
   };
 
