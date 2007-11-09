@@ -83,6 +83,7 @@ char *cinema4dsg_create (struct cinema4dsgi *info) {
   /* So now we have the file open and so we must write to it */
   fprintf(f,"#!/bin/tcsh\n\n");
   fprintf(f,"set SCENE=\"%s\"\n",info->scene);
+  fprintf(f,"set RF_OWNER=%s\n",info->file_owner);
  
   // 2 means we want to distribute one single image
   if (info->kind == 2) {
