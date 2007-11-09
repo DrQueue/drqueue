@@ -266,7 +266,7 @@ typedef unsigned char uint8_t;
 	
 	
 	/* Blender script file generation */
-	char *blendersg (char *scene, char *scriptdir, int blender)
+	char *blendersg (char *scene, char *scriptdir, uint8_t kind)
 	{	
 		struct blendersgi *blend = (struct blendersgi *)malloc (sizeof(struct blendersgi));
     	if (!blend) {
@@ -284,7 +284,7 @@ typedef unsigned char uint8_t;
 		
 		strncpy(blend->scene, scene, BUFFERLEN-1);
 		strncpy(blend->scriptdir, scriptdir, BUFFERLEN-1);
-		blend->blender = blender;
+		blend->kind = kind;
 		
   		outfile = blendersg_create(blend);
   		
@@ -298,7 +298,7 @@ typedef unsigned char uint8_t;
 	
 	
 	/* MentalRay script file generation */
-	char *mentalraysg (char *scene, char *scriptdir, char *renderdir, char *image, char *file_owner, char *camera, int res_x, int res_y, char *format, int mentalray)
+	char *mentalraysg (char *scene, char *scriptdir, char *renderdir, char *image, char *file_owner, char *camera, int res_x, int res_y, char *format, uint8_t kind)
 	{	
 		struct mentalraysgi *ment = (struct mentalraysgi *)malloc (sizeof(struct mentalraysgi));
     	if (!ment) {
@@ -323,9 +323,41 @@ typedef unsigned char uint8_t;
 		ment->res_x = res_x;
 		ment->res_y = res_y;
 		strncpy(ment->format, format, BUFFERLEN-1);
-		ment->mentalray = mentalray;
+		ment->kind = kind;
 		
   		outfile = mentalraysg_create(ment);
+  		
+		if (!outfile) {
+			rb_raise(rb_eException,"Problem creating script file");
+      		return NULL;
+		}
+		
+		return outfile;
+	}
+
+
+	/* Cinema4D script file generation */
+	char *cinema4dsg (char *scene, char *scriptdir, uint8_t kind)
+	{	
+		struct cinema4dsgi *blend = (struct cinema4dsgi *)malloc (sizeof(struct cinema4dsgi));
+    	if (!cine) {
+ 	     	rb_raise(rb_eNoMemError,"out of memory");
+    	 	return NULL;
+   		}	
+		
+		char *outfile = (char *)malloc(sizeof(char *));
+		if (!outfile) {
+ 	     	rb_raise(rb_eNoMemError,"out of memory");
+    	 	return NULL;
+   		}
+		
+		memset (cine,0,sizeof(struct cinema4dsgi));
+		
+		strncpy(cine->scene, scene, BUFFERLEN-1);
+		strncpy(cine->scriptdir, scriptdir, BUFFERLEN-1);
+		cine->kind = kind;
+		
+  		outfile = cinema4dsg_create(cine);
   		
 		if (!outfile) {
 			rb_raise(rb_eException,"Problem creating script file");
