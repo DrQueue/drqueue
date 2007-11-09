@@ -338,7 +338,7 @@ typedef unsigned char uint8_t;
 
 
 	/* Cinema4D script file generation */
-	char *cinema4dsg (char *scene, char *scriptdir, uint8_t kind)
+	char *cinema4dsg (char *scene, char *scriptdir, char *file_owner, uint8_t kind)
 	{	
 		struct cinema4dsgi *cine = (struct cinema4dsgi *)malloc (sizeof(struct cinema4dsgi));
     	if (!cine) {
@@ -356,6 +356,7 @@ typedef unsigned char uint8_t;
 		
 		strncpy(cine->scene, scene, BUFFERLEN-1);
 		strncpy(cine->scriptdir, scriptdir, BUFFERLEN-1);
+		strncpy(cine->file_owner, file_owner, BUFFERLEN-1);
 		cine->kind = kind;
 		
   		outfile = cinema4dsg_create(cine);
