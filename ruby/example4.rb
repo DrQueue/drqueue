@@ -1,13 +1,13 @@
 #!/usr/bin/ruby
 
 
-require 'libdrqueue'
+require 'drqueue'
 
 
 puts "Master: #{ENV["DRQUEUE_MASTER"]}\n"
 
 # First we receive the list of slaves
-computer_list = Libdrqueue::request_computer_list(Libdrqueue::CLIENT)
+computer_list = Drqueue::request_computer_list(Drqueue::CLIENT)
 puts "Computers connected to the master:"
 computer_list.each do |c|
 	# We can check if the computer is enabled looking into computer.limits.enabled (0 if disabled)
@@ -15,12 +15,12 @@ computer_list.each do |c|
 	if "#{c.limits.enabled}" == "1"
 		print "Yes"
 		# If the computer is enabled we disable it
-		c.request_disable(Libdrqueue::CLIENT)
+		c.request_disable(Drqueue::CLIENT)
 		print "\tDisabled !\n"
 	else
 		print "No"
 		# If the computer is disabled we enable it
-		c.request_enable(Libdrqueue::CLIENT)
+		c.request_enable(Drqueue::CLIENT)
 		print "\tEnabled !\n"
 	end
 end
