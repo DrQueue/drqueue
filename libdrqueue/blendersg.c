@@ -84,12 +84,12 @@ char *blendersg_create (struct blendersgi *info) {
   fprintf(f,"#!/bin/tcsh\n\n");
   fprintf(f,"set SCENE=\"%s\"\n",info->scene);
  
-  // TODO: add support for second generator script that distributes single images !!!
+  
   // 2 means we want to distribute one single image
-  if (info->blender == 2) {
+  if (info->kind == 2) {
   	snprintf(fn_etc_blender_sg,BUFFERLEN-1,"%s/blender_image.sg",getenv("DRQUEUE_ETC"));
   // 1 means we want to render an animation
-  } else if (info->blender == 1) {
+  } else if (info->kind == 1) {
   	snprintf(fn_etc_blender_sg,BUFFERLEN-1,"%s/blender.sg",getenv("DRQUEUE_ETC"));
   } else {
   	drerrno = DRE_NOTCOMPLETE;
