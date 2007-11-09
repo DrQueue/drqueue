@@ -111,6 +111,7 @@ slaves. Also provides access to all data structures of DrQueue."
 // for jobscript generators
 %include "blendersg.h"
 %include "mentalraysg.h"
+%include "cinema4dsg.h"
 
 // type mapppings
 typedef unsigned int time_t;
@@ -339,7 +340,7 @@ typedef unsigned char uint8_t;
 	/* Cinema4D script file generation */
 	char *cinema4dsg (char *scene, char *scriptdir, uint8_t kind)
 	{	
-		struct cinema4dsgi *blend = (struct cinema4dsgi *)malloc (sizeof(struct cinema4dsgi));
+		struct cinema4dsgi *cine = (struct cinema4dsgi *)malloc (sizeof(struct cinema4dsgi));
     	if (!cine) {
  	     	rb_raise(rb_eNoMemError,"out of memory");
     	 	return NULL;
