@@ -23,6 +23,7 @@
 #define _CINEMA4DSG_H_
 
 #include "constants.h"
+#include "inttypes.h"
 
 #ifdef __CPLUSPLUS
 extern "C" {
