@@ -36,4 +36,4 @@ else
 end
 
 # create the makefile
-create_makefile('libdrqueue')
+create_makefile('drqueue')
