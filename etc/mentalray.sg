@@ -91,7 +91,7 @@ else
 	endif
 	
 	# change userid and groupid
-	chown 1002:1004 $DRQUEUE_RD/*
+	chown $RF_OWNER $DRQUEUE_RD/*
 	
 endif
 
