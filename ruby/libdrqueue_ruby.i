@@ -27,7 +27,7 @@
 of all major operations that can be applied remotely to drqueue master and
 slaves. Also provides access to all data structures of DrQueue."
 %enddef
-%module (docstring=DOCSTRING) libdrqueue
+%module (docstring=DOCSTRING) drqueue
 %{
 #include "libdrqueue.h"
 %}
