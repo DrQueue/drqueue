@@ -18,31 +18,23 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	 02111-1307
 // USA
-//  
+// 
+// 
 
 
 %define DOCSTRING
-"The libdrqueue module allows the access to the libdrqueue library responsible
+"The drqueue module allows the access to the libdrqueue library responsible
 of all major operations that can be applied remotely to drqueue master and
 slaves. Also provides access to all data structures of DrQueue."
 %enddef
 %module (docstring=DOCSTRING) drqueue
-
 %{
 #include "libdrqueue.h"
 %}
 
 
 // Tell SWIG to keep track of mappings between C/C++ structs/classes
-%trackobjects;
-
-// Specify the mark functions
-%markfunc computer "Computer_markfunc";
-%markfunc job "Job_markfunc";
-
-// Specify the free functions
-%freefunc computer "Computer_freefunc";
-%freefunc job "Job_freefunc";
+//%trackobjects;
 
 
 %include "typemaps.i"
@@ -50,55 +42,57 @@ slaves. Also provides access to all data structures of DrQueue."
 %typemap(in,numinputs=0) struct computer **computer (struct computer *computer) {
 	$1 = &computer;
 }
-
-// the typemap suggested from Gonzalo Garramuño:
-%typemap(argout) struct computer** computer {
-	if (result < 0) {    	rb_raise( rb_eIOError, drerrno_str() );
-    	$result = Qnil;  	} else {    	int i;		/* Create a new ruby array to hold the result */		VALUE l = rb_ary_new();	    /* auxiliary variable to iterate through original array */	    struct computer** c = $1;	    for ( i=0; i < result; ++i, ++c) {			/* copy a single computer struct.  this assumes all members	        inside computer are copyable and not temporary pointers.	        with pointers you may need to use %tracking and do additional	        work - check Zoo/Animal tutorial in ruby manual of swig */
-	         
-	        struct computer* src = *c;			struct computer* dst = malloc(sizeof(struct computer));	      	memcpy(dst, src, sizeof(struct computer));	      	/* making the pointer owned, means that it will remain around	        until ruby holds no more references to it.  Ruby then         	will eventually call its freefunc to free the memory */      		
-      		VALUE o = SWIG_NewPointerObj((void*)(dst), SWIGTYPE_p_computer, SWIG_POINTER_OWN);      		rb_ary_push(l,o);    	}		
-		/* free orig. array of computers that drqueue returned        check drqueue api to see if they indeed need to be freed. */
-                       	free(*$1);      	/* give array back to ruby as result of typemap */    	$result = l;  	}} 
+%typemap(argout) struct computer **computer {
+	if (result < 0) {
+		rb_raise(rb_eIOError,drerrno_str());
+		$result = (VALUE)NULL;
+	} else {
+		int i;
+		VALUE l = rb_ary_new();
+		struct computer *c = malloc (sizeof(struct computer)*result);
+		if (!c) {
+			rb_raise(rb_eNoMemError,"out of memory");
+			return (VALUE)NULL;
+		}
+		struct computer *tc = c;
+		memcpy (c,*$1,sizeof(struct computer)*result);
+		for (i=0; i<result; i++) {
+			VALUE o = SWIG_NewPointerObj((void*)(tc), SWIGTYPE_p_computer, 0);
+			rb_ary_push(l,o);
+			tc++;
+		}
+		free (*$1);
+		$result = l;
+	}
+}
 
 
 %typemap(in,numinputs=0) struct job **job (struct job *job) {
 	$1 = &job;
 }
-
-// simular to computer typemap:
 %typemap(argout) struct job **job {
-	if(result < 0) {    	rb_raise(rb_eIOError, drerrno_str());
-    	$result = Qnil;  	} else {    	int i;		VALUE l = rb_ary_new();	    struct job ** j = $1;	    for(i=0; i < result; ++i, ++j) {
-	    		         
-	        struct job * src = *j;			struct job * dst = malloc(sizeof(struct job));	      	memcpy(dst, src, sizeof(struct job));      		
-      		VALUE o = SWIG_NewPointerObj((void*)(dst), SWIGTYPE_p_job, SWIG_POINTER_OWN);      		rb_ary_push(l,o);    	}
-                       	free(*$1);      	$result = l;  	}} 
-
-
-%typemap(in,numinputs=0) struct frame_info **frame_info (struct frame_info *frame_info) {
-	$1 = &frame_info;
+	if (result < 0) {
+		rb_raise(rb_eIOError,drerrno_str());
+		$result = (VALUE)NULL;
+	} else {
+		int i;
+		VALUE l = rb_ary_new();
+		struct job *j = malloc (sizeof(struct job)*result);
+		if (!j) {
+			rb_raise(rb_eNoMemError,"out of memory");
+			return (VALUE)NULL;
+		}
+		struct job *tj = j;
+		memcpy (j,*$1,sizeof(struct job)*result);
+		for (i=0; i<result; i++) {
+			VALUE o = SWIG_NewPointerObj((void*)(tj), SWIGTYPE_p_job, 0);
+			rb_ary_push(l,o);
+			tj++;
+		}
+		free(*$1);
+		$result = l;
+	}
 }
-
-%typemap(argout) struct frame_info **frame_info {
-	if(result < 0) {    	rb_raise(rb_eIOError, drerrno_str());
-    	$result = Qnil;  	} else {    	int i;		VALUE l = rb_ary_new();	    struct frame_info ** fi = $1;	    for(i=0; i < result; ++i, ++fi) {
-	    		         
-	        struct frame_info * src = *fi;			struct frame_info * dst = malloc(sizeof(struct frame_info));	      	memcpy(dst, src, sizeof(struct frame_info));      		
-      		VALUE o = SWIG_NewPointerObj((void*)(dst), SWIGTYPE_p_frame_info, SWIG_POINTER_OWN);      		rb_ary_push(l,o);    	}
-                       	free(*$1);      	$result = l;  	}}
-
-%typemap(in,numinputs=0) struct pool **pool (struct pool *pool) {
-	$1 = &pool;
-}
-
-%typemap(argout) struct pool **pool {
-	if(result < 0) {    	rb_raise(rb_eIOError, drerrno_str());
-    	$result = Qnil;  	} else {    	int i;		VALUE l = rb_ary_new();	    struct pool ** p = $1;	    for(i=0; i < result; ++i, ++p) {
-	    		         
-	        struct pool * src = *p;			struct pool * dst = malloc(sizeof(struct pool));	      	memcpy(dst, src, sizeof(struct pool));      		
-      		VALUE o = SWIG_NewPointerObj((void*)(dst), SWIGTYPE_p_pool, SWIG_POINTER_OWN);      		rb_ary_push(l,o);    	}
-                       	free(*$1);      	$result = l;  	}}
 
 
 %include "pointer.h"
@@ -125,234 +119,9 @@ typedef unsigned long int uint32_t;
 typedef unsigned char uint8_t;
 
 
-%newobject *::computer_pool_attach_shared_memory;
-%newobject *::attach_frame_shared_memory;
-%newobject *::attach_blocked_host_shared_memory;
-
-%delobject *::computer_pool_detach_shared_memory;
-%delobject *::detach_frame_shared_memory;
-%delobject *::detach_blocked_host_shared_memory;%header %{
-
-static void Computer_markfunc(void* ptr) {
- 	
- fprintf (stderr,"DEBUG: Computer_markfunc()\n");
- fflush(stderr);
-  struct computer * computer = (struct computer *) ptr;
- 
- void *cstatus = (void *) &computer->status;
- VALUE status_object = SWIG_RubyInstanceFor(cstatus);
- rb_gc_mark(status_object);
- 
- void *chwinfo = (void *) &computer->hwinfo;
- VALUE hwinfo_object = SWIG_RubyInstanceFor(chwinfo);
- rb_gc_mark(hwinfo_object);
- 
- void *climits = (void *) &computer->limits;
- VALUE limits_object = SWIG_RubyInstanceFor(climits);
- rb_gc_mark(limits_object);
- 
- void *cpool = (void *) &computer->limits.pool.ptr;
- VALUE pool_object = SWIG_RubyInstanceFor(cpool);
- rb_gc_mark(pool_object);
- 
- void *clocal_pool = (void *) &computer->limits.local_pool.ptr;
- VALUE local_pool_object = SWIG_RubyInstanceFor(clocal_pool);
- rb_gc_mark(local_pool_object);
- 
- void *cautoenable = (void *) &computer->limits.autoenable;
- VALUE autoenable_object = SWIG_RubyInstanceFor(cautoenable);
- rb_gc_mark(autoenable_object);
- }
-
-static void Job_markfunc(void* ptr) {
- 	
- fprintf (stderr,"DEBUG: Job_markfunc()\n");
- fflush(stderr);
-  struct job * job = (struct job *) ptr;
- 
- void *jframe_info = (void *) &job->frame_info.ptr;
- VALUE frame_info_object = SWIG_RubyInstanceFor(jframe_info);
- rb_gc_mark(frame_info_object);
- 
- void *jblocked_host = (void *) &job->blocked_host.ptr;
- VALUE blocked_host_object = SWIG_RubyInstanceFor(jblocked_host);
- rb_gc_mark(blocked_host_object);
- 
- void *jlimits = (void *) &job->limits;
- VALUE limits_object = SWIG_RubyInstanceFor(jlimits);
- rb_gc_mark(limits_object);
- 
- void *jkoji_general = (void *) &job->koji.general;
- VALUE koji_general_object = SWIG_RubyInstanceFor(jkoji_general);
- rb_gc_mark(koji_general_object);
- 
- void *jkoji_maya = (void *) &job->koji.maya;
- VALUE koji_maya_object = SWIG_RubyInstanceFor(jkoji_maya);
- rb_gc_mark(koji_maya_object);
- 
- void *jkoji_mentalray = (void *) &job->koji.mentalray;
- VALUE koji_mentalray_object = SWIG_RubyInstanceFor(jkoji_mentalray);
- rb_gc_mark(koji_mentalray_object);
- 
- void *jkoji_blender = (void *) &job->koji.blender;
- VALUE koji_blender_object = SWIG_RubyInstanceFor(jkoji_blender);
- rb_gc_mark(koji_blender_object);
- 
- void *jkoji_bmrt = (void *) &job->koji.bmrt;
- VALUE koji_bmrt_object = SWIG_RubyInstanceFor(jkoji_bmrt);
- rb_gc_mark(koji_bmrt_object);
- 
- void *jkoji_pixie = (void *) &job->koji.pixie;
- VALUE koji_pixie_object = SWIG_RubyInstanceFor(jkoji_pixie);
- rb_gc_mark(koji_pixie_object);
- 
- void *jkoji_threedelight = (void *) &job->koji.threedelight;
- VALUE koji_threedelight_object = SWIG_RubyInstanceFor(jkoji_threedelight);
- rb_gc_mark(koji_threedelight_object);
- 
- void *jkoji_lightwave = (void *) &job->koji.lightwave;
- VALUE koji_lightwave_object = SWIG_RubyInstanceFor(jkoji_lightwave);
- rb_gc_mark(koji_lightwave_object);
- 
- void *jkoji_nuke = (void *) &job->koji.nuke;
- VALUE koji_nuke_object = SWIG_RubyInstanceFor(jkoji_nuke);
- rb_gc_mark(koji_nuke_object);
- 
- void *jkoji_terragen = (void *) &job->koji.terragen;
- VALUE koji_terragen_object = SWIG_RubyInstanceFor(jkoji_terragen);
- rb_gc_mark(koji_terragen_object);
- 
- void *jkoji_aqsis = (void *) &job->koji.aqsis;
- VALUE koji_aqsis_object = SWIG_RubyInstanceFor(jkoji_aqsis);
- rb_gc_mark(koji_aqsis_object);
- 
- void *jkoji_mantra = (void *) &job->koji.mantra;
- VALUE koji_mantra_object = SWIG_RubyInstanceFor(jkoji_mantra);
- rb_gc_mark(koji_mantra_object);
- 
- void *jkoji_aftereffects = (void *) &job->koji.aftereffects;
- VALUE koji_aftereffects_object = SWIG_RubyInstanceFor(jkoji_aftereffects);
- rb_gc_mark(koji_aftereffects_object);
- 
- void *jkoji_shake = (void *) &job->koji.shake;
- VALUE koji_shake_object = SWIG_RubyInstanceFor(jkoji_shake);
- rb_gc_mark(koji_shake_object);
- 
- void *jkoji_turtle = (void *) &job->koji.turtle;
- VALUE koji_turtle_object = SWIG_RubyInstanceFor(jkoji_turtle);
- rb_gc_mark(koji_turtle_object);
- 
- void *jkoji_xsi = (void *) &job->koji.xsi;
- VALUE koji_xsi_object = SWIG_RubyInstanceFor(jkoji_xsi);
- rb_gc_mark(koji_xsi_object);
- 
- void *jenvvars = (void *) &job->envvars;
- VALUE envvars_object = SWIG_RubyInstanceFor(jenvvars);
- rb_gc_mark(envvars_object);
- }
-
-static void Computer_freefunc(void* ptr) {
- 
- fprintf (stderr,"DEBUG: Computer_freefunc()\n");	
- fflush(stderr);
-  struct computer * computer = (struct computer *) ptr;
- 
- void *cstatus = (void *) &computer->status; SWIG_RubyUnlinkObjects(cstatus); SWIG_RubyRemoveTracking(cstatus);
- 
- void *chwinfo = (void *) &computer->hwinfo; SWIG_RubyUnlinkObjects(chwinfo); SWIG_RubyRemoveTracking(chwinfo);
- 
- void *climits = (void *) &computer->limits; SWIG_RubyUnlinkObjects(climits); SWIG_RubyRemoveTracking(climits);
- 
- void *cpool = (void *) &computer->limits.pool.ptr; SWIG_RubyUnlinkObjects(cpool); SWIG_RubyRemoveTracking(cpool);
- 
- void *clocal_pool = (void *) &computer->limits.local_pool.ptr; SWIG_RubyUnlinkObjects(clocal_pool); SWIG_RubyRemoveTracking(clocal_pool);
- 
- void *cautoenable = (void *) &computer->limits.autoenable; SWIG_RubyUnlinkObjects(cautoenable); SWIG_RubyRemoveTracking(cautoenable);
- 
- SWIG_RubyRemoveTracking(ptr);
- 
- fprintf (stderr,"DEBUG: computer_detach(computer)\n");	
- fflush(stderr);
- 
- computer_detach(computer);
- 
- fprintf (stderr,"DEBUG: free(computer)\n");	
- fflush(stderr);
-   // Now free the computer object free(computer);
- }
-
-static void Job_freefunc(void* ptr) {
- 
- fprintf (stderr,"DEBUG: Job_freefunc()\n");	
- fflush(stderr);
- 
- struct job * job = (struct job *) ptr;
- 
- void *jframe_info = (void *) &job->frame_info.ptr;
- SWIG_RubyUnlinkObjects(jframe_info); SWIG_RubyRemoveTracking(jframe_info);
- 
- void *jblocked_host = (void *) &job->blocked_host.ptr;
- SWIG_RubyUnlinkObjects(jblocked_host); SWIG_RubyRemoveTracking(jblocked_host);
- 
- void *jlimits = (void *) &job->limits;
- SWIG_RubyUnlinkObjects(jlimits); SWIG_RubyRemoveTracking(jlimits);
- 
- void *jkoji_general = (void *) &job->koji.general;
- SWIG_RubyUnlinkObjects(jkoji_general); SWIG_RubyRemoveTracking(jkoji_general);
- 
- void *jkoji_maya = (void *) &job->koji.maya;
- SWIG_RubyUnlinkObjects(jkoji_maya); SWIG_RubyRemoveTracking(jkoji_maya);
- 
- void *jkoji_mentalray = (void *) &job->koji.mentalray;
- SWIG_RubyUnlinkObjects(jkoji_mentalray); SWIG_RubyRemoveTracking(jkoji_mentalray);
- 
- void *jkoji_blender = (void *) &job->koji.blender;
- SWIG_RubyUnlinkObjects(jkoji_blender); SWIG_RubyRemoveTracking(jkoji_blender);
- 
- void *jkoji_bmrt = (void *) &job->koji.bmrt;
- SWIG_RubyUnlinkObjects(jkoji_bmrt); SWIG_RubyRemoveTracking(jkoji_bmrt);
- 
- void *jkoji_pixie = (void *) &job->koji.pixie;
- SWIG_RubyUnlinkObjects(jkoji_pixie); SWIG_RubyRemoveTracking(jkoji_pixie);
- 
- void *jkoji_threedelight = (void *) &job->koji.threedelight;
- SWIG_RubyUnlinkObjects(jkoji_threedelight); SWIG_RubyRemoveTracking(jkoji_threedelight);
- 
- void *jkoji_lightwave = (void *) &job->koji.lightwave;
- SWIG_RubyUnlinkObjects(jkoji_lightwave); SWIG_RubyRemoveTracking(jkoji_lightwave);
- 
- void *jkoji_nuke = (void *) &job->koji.nuke;
- SWIG_RubyUnlinkObjects(jkoji_nuke); SWIG_RubyRemoveTracking(jkoji_nuke);
- 
- void *jkoji_terragen = (void *) &job->koji.terragen;
- SWIG_RubyUnlinkObjects(jkoji_terragen); SWIG_RubyRemoveTracking(jkoji_terragen);
- 
- void *jkoji_aqsis = (void *) &job->koji.aqsis;
- SWIG_RubyUnlinkObjects(jkoji_aqsis); SWIG_RubyRemoveTracking(jkoji_aqsis);
- 
- void *jkoji_mantra = (void *) &job->koji.mantra;
- SWIG_RubyUnlinkObjects(jkoji_mantra); SWIG_RubyRemoveTracking(jkoji_mantra);
- 
- void *jkoji_aftereffects = (void *) &job->koji.aftereffects;
- SWIG_RubyUnlinkObjects(jkoji_aftereffects); SWIG_RubyRemoveTracking(jkoji_aftereffects);
- 
- void *jkoji_shake = (void *) &job->koji.shake;
- SWIG_RubyUnlinkObjects(jkoji_shake); SWIG_RubyRemoveTracking(jkoji_shake);
- 
- void *jkoji_turtle = (void *) &job->koji.turtle;
- SWIG_RubyUnlinkObjects(jkoji_turtle); SWIG_RubyRemoveTracking(jkoji_turtle);
- 
- void *jkoji_xsi = (void *) &job->koji.xsi;
- SWIG_RubyUnlinkObjects(jkoji_xsi); SWIG_RubyRemoveTracking(jkoji_xsi);
- 
- void *jenvvars = (void *) &job->envvars;
- SWIG_RubyUnlinkObjects(jenvvars); SWIG_RubyRemoveTracking(jenvvars);
-  
- SWIG_RubyRemoveTracking(ptr);
-   // Now free the job object free(job);
- }
-
-%}
+// these methods generate new objects
+%newobject *::request_job_list;
+%newobject *::request_computer_list;
 
 
 // JOB
@@ -415,8 +184,7 @@ static void Job_freefunc(void* ptr) {
 				return (VALUE)NULL;
 			}
 			for (i=0; i<nframes; i++) {
-				//VALUE o = SWIG_NewPointerObj((void*)(&fi[i]), SWIGTYPE_p_frame_info, 0);
-				VALUE o = SWIG_NewPointerObj((void*)(&fi[i]), SWIGTYPE_p_frame_info, SWIG_POINTER_OWN);
+				VALUE o = SWIG_NewPointerObj((void*)(&fi[i]), SWIGTYPE_p_frame_info, 0);
 				rb_ary_push(l,o);
 			}
 		}
@@ -497,7 +265,7 @@ static void Job_freefunc(void* ptr) {
 	}
 	
 	
-	// Blender script file generation
+	/* Blender script file generation */
 	char *blendersg (char *scene, char *scriptdir, int blender)
 	{	
 		struct blendersgi *blend = (struct blendersgi *)malloc (sizeof(struct blendersgi));
@@ -529,7 +297,7 @@ static void Job_freefunc(void* ptr) {
 	}
 	
 	
-	// MentalRay script file generation
+	/* MentalRay script file generation */
 	char *mentalraysg (char *scene, char *scriptdir, char *renderdir, char *image, char *file_owner, char *camera, int res_x, int res_y, char *format, int mentalray)
 	{	
 		struct mentalraysgi *ment = (struct mentalraysgi *)malloc (sizeof(struct mentalraysgi));
@@ -571,7 +339,7 @@ static void Job_freefunc(void* ptr) {
 
 
 
-// COMPUTER LIMITS
+/* COMPUTER LIMITS */
 %extend computer_limits {
 	%exception get_pool {
 		$action
@@ -580,6 +348,7 @@ static void Job_freefunc(void* ptr) {
 			return (VALUE)NULL;
 		}
 	}
+	%newobject get_pool;
 	struct pool *get_pool (int n)
 	{
 		struct pool *pool;
@@ -628,7 +397,7 @@ static void Job_freefunc(void* ptr) {
   }
 }
 
-// COMPUTER STATUS 
+/* COMPUTER STATUS */
 %extend computer_status {
 	%exception get_loadavg {
 		$action
@@ -686,7 +455,6 @@ static void Job_freefunc(void* ptr) {
 
 // COMPUTER
 %extend computer {
-	
 	computer ()
 	{
 		struct computer *c;
@@ -722,8 +490,7 @@ static void Job_freefunc(void* ptr) {
 				return (VALUE)NULL;
 			}
       memcpy (pool_i,&self->limits.pool.ptr[i],sizeof(struct pool));
-      //VALUE o = SWIG_NewPointerObj((void*)(pool_i), SWIGTYPE_p_pool, 0);
-	  VALUE o = SWIG_NewPointerObj((void*)(pool_i), SWIGTYPE_p_pool, SWIG_POINTER_OWN);
+	  VALUE o = SWIG_NewPointerObj((void*)(pool_i), SWIGTYPE_p_pool, 0);
 	  rb_ary_push(l,o);
 	  }
 
@@ -746,16 +513,14 @@ static void Job_freefunc(void* ptr) {
     for (i=0;i<npools;i++) {
       VALUE pool_obj = rb_ary_entry(pool_list,i);
       struct pool *tpool = NULL;
-      //SWIG_ConvertPtr(pool_obj,(void **)&tpool, SWIGTYPE_p_pool, SWIG_POINTER_EXCEPTION | 0 );
-      SWIG_ConvertPtr(pool_obj,(void **)&tpool, SWIGTYPE_p_pool, SWIG_POINTER_EXCEPTION | SWIG_POINTER_OWN );
+      SWIG_ConvertPtr(pool_obj,(void **)&tpool, SWIGTYPE_p_pool, SWIG_POINTER_EXCEPTION | 0 );
       request_slave_limits_pool_add(self->hwinfo.name,tpool->name,CLIENT);
     }
     int onpools = RARRAY(old_list)->len;
     for (i=0;i<onpools;i++) {
       VALUE pool_obj = rb_ary_entry(old_list,i);
       struct pool *tpool = NULL;
-      //SWIG_ConvertPtr(pool_obj,(void **)&tpool, SWIGTYPE_p_pool, SWIG_POINTER_EXCEPTION | 0 );
-      SWIG_ConvertPtr(pool_obj,(void **)&tpool, SWIGTYPE_p_pool, SWIG_POINTER_EXCEPTION | SWIG_POINTER_OWN );
+      SWIG_ConvertPtr(pool_obj,(void **)&tpool, SWIGTYPE_p_pool, SWIG_POINTER_EXCEPTION | 0 );
       request_slave_limits_pool_remove(self->hwinfo.name,tpool->name,CLIENT);
     }
     VALUE last_list = computer_list_pools(self);
@@ -797,3 +562,4 @@ static void Job_freefunc(void* ptr) {
     }
   }
 }
+
