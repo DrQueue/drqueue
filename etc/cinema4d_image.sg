@@ -48,7 +48,7 @@ if ($DRQUEUE_OS == "LINUX") then
 	
 	set DISPLAY = :1
 	cd ~/.wine/drive_c/Program\ Files/MAXON/CINEMA\ 4D\ R10
-	set CINEMA4D_PATH="wine CINEMA\ 4D.exe"
+	set CINEMA4D_PATH="wine \"CINEMA 4D.exe\""
 	
 	set outpath = $SCENE:r
 	set outpath = `echo $outpath | sed 's/\//\\\\/g'`
