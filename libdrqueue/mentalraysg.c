@@ -92,12 +92,11 @@ char *mentalraysg_create (struct mentalraysgi *info) {
   }
 
 
-  // TODO: add support for second generator script that distributes single images !!!
   // 2 means we want to distribute one single image
-  if (info->mentalray == 2) {
+  if (info->kind == 2) {
   	snprintf(fn_etc_mentalray_sg,BUFFERLEN-1,"%s/mentalray_image.sg",getenv("DRQUEUE_ETC"));
   // 1 means we want to render an animation
-  } else if (info->mentalray == 1) {
+  } else if (info->kind == 1) {
   	snprintf(fn_etc_mentalray_sg,BUFFERLEN-1,"%s/mentalray.sg",getenv("DRQUEUE_ETC"));
   } else {
   	drerrno = DRE_NOTCOMPLETE;
