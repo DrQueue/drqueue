@@ -48,7 +48,7 @@ if ($DRQUEUE_OS == "LINUX") then
 	
 	set DISPLAY = :1
 	cd ~/.wine/drive_c/Program\ Files/MAXON/CINEMA\ 4D\ R10
-	set CINEMA4D_PATH="wine \"CINEMA 4D.exe\""
+	set CINEMA4D_PATH = "wine \"CINEMA 4D.exe\""
 	
 	set outpath = $SCENE:r
 	set outpath = `echo $outpath | sed 's/\//\\\\/g'`
@@ -58,9 +58,16 @@ if ($DRQUEUE_OS == "LINUX") then
 endif
 
 
-echo $CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -treads 0
+#echo $CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -treads 0
 
-$CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -treads 0
+#$CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -treads 0
+
+
+set command = "$CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -treads 0"
+
+echo /bin/bash -c "$command"
+
+/bin/bash -c "$command"
 
 
 # This should requeue the frame if failed
