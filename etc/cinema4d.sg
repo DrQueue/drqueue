@@ -46,6 +46,9 @@ if ($DRQUEUE_OS == "LINUX") then
 	# there is tightvnc server running on display :1
 	# see wine bug #8069
 	
+	
+	#set HOME = "/root"
+	setenv HOME /root
 	cd 
 	pwd
 	
@@ -53,7 +56,8 @@ if ($DRQUEUE_OS == "LINUX") then
 	
 	pwd
 	
-	set DISPLAY = ":1" 
+	#set DISPLAY = ":1" 
+	setenv DISPLAY :1
 	set CINEMA4D_PATH = "wine CINEMA\ 4D.exe"
 	
 	set outpath = $SCENE:r
