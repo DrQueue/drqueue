@@ -37,10 +37,13 @@ endif
 if ($DRQUEUE_OS == "OSX") then
     set outpath = $SCENE:r
     set scenepath = $SCENE
+    rm -f /Applications/MAXON/CINEMA\ 4D\ R10/CINEMA\ 4D.app/Contents/MacOS/CINEMA\ 4D/RENDERLOG.TXT
     
     echo /Applications/MAXON/CINEMA\ 4D\ R10/CINEMA\ 4D.app/Contents/MacOS/CINEMA\ 4D -nogui -render $scenepath -oimage $outpath -omultipass $outpath -threads 0
     
     /Applications/MAXON/CINEMA\ 4D\ R10/CINEMA\ 4D.app/Contents/MacOS/CINEMA\ 4D -nogui -render $scenepath -oimage $outpath -omultipass $outpath -threads 0
+    
+    cat /Applications/MAXON/CINEMA\ 4D\ R10/CINEMA\ 4D.app/Contents/MacOS/CINEMA\ 4D/RENDERLOG.TXT
     
 endif
 
