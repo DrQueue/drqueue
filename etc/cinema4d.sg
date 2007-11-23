@@ -67,7 +67,7 @@ if ($DRQUEUE_OS == "LINUX") then
 	set scenepath = `echo $SCENE | sed 's/\//\\\\/g'`
 	set scenepath = "Z:"$scenepath
 	
-	set CINEMA4D_PATH = "wine CINEMA\ 4D.exe -nogui -render "$scenepath" -oimage "$outpath" -frame "$DRQUEUE_FRAME" -threads 0"
+	set CINEMA4D_PATH = "CINEMA\ 4D.exe -nogui -render "$scenepath" -oimage "$outpath" -frame "$DRQUEUE_FRAME" -threads 0"
 	
 	echo $CINEMA4D_PATH | xargs wine
 endif
