@@ -49,10 +49,9 @@ if ($DRQUEUE_OS == "LINUX") then
 	# there is a tightvnc server running on display :1
 	# see wine bug #8069
 	
-	echo $SCENE:h
+	echo working with $SCENE:h
 	
 	setenv HOME /root
-	echo cd ~/.wine/drive_c/Program\ Files/MAXON/CINEMA\ 4D\ R10
 	cd ~/.wine/drive_c/Program\ Files/MAXON/CINEMA\ 4D\ R10
 	setenv DISPLAY :1
 	
@@ -62,10 +61,9 @@ if ($DRQUEUE_OS == "LINUX") then
 	set scenepath = `echo $SCENE | sed 's/\//\\\\/g'`
 	set scenepath = "Z:"$scenepath
 	
-		
-	echo wine CINEMA\ 4D.exe -nogui -render $scenepath -oimage $outpath -frame $DRQUEUE_FRAME -threads 0
+	echo running wine CINEMA\ 4D.exe -nogui -render $scenepath -oimage $outpath -omultipass $outpath -frame $DRQUEUE_FRAME -threads 0
 	echo
-	wine CINEMA\ 4D.exe -nogui -render $scenepath -oimage $outpath -frame $DRQUEUE_FRAME -threads 0
+	wine CINEMA\ 4D.exe -nogui -render $scenepath -oimage $outpath -frame $DRQUEUE_FRAME -omultipass $outpath -threads 0
 	
 endif
 
