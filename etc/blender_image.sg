@@ -60,7 +60,7 @@ else
   #endif
   
   # change userid and groupid
-  chown 1002:1004 $SCENE*$DRQUEUE_FRAME*
+  chown 1002:1004 $SCENE:h/*
   
 endif
 
