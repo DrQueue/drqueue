@@ -38,9 +38,9 @@ if ($DRQUEUE_OS == "OSX") then
     set outpath = $SCENE:r
     set scenepath = $SCENE
     
-    echo /Applications/MAXON/CINEMA\ 4D\ R10/CINEMA\ 4D.app/Contents/MacOS/CINEMA\ 4D -nogui -render $scenepath -oimage $outpath -frame $DRQUEUE_FRAME -threads 0
+    echo /Applications/MAXON/CINEMA\ 4D\ R10/CINEMA\ 4D.app/Contents/MacOS/CINEMA\ 4D -nogui -render $scenepath -oimage $outpath -frame $DRQUEUE_FRAME -omultipass $outpath -threads 0
     
-    /Applications/MAXON/CINEMA\ 4D\ R10/CINEMA\ 4D.app/Contents/MacOS/CINEMA\ 4D -nogui -render $scenepath -oimage $outpath -frame $DRQUEUE_FRAME -threads 0
+    /Applications/MAXON/CINEMA\ 4D\ R10/CINEMA\ 4D.app/Contents/MacOS/CINEMA\ 4D -nogui -render $scenepath -oimage $outpath -frame $DRQUEUE_FRAME -omultipass $outpath -threads 0
     
 endif
 
@@ -70,6 +70,7 @@ endif
 
 # command
 echo
+
 
 # This should requeue the frame if failed
 if ( $? != 0 ) then
