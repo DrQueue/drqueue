@@ -46,6 +46,7 @@ if ($DRQUEUE_OS == "LINUX") then
 	# there is tightvnc server running on display :1
 	# see wine bug #8069
 	
+	cd 
 	pwd
 	
 	cd /root/.wine/drive_c/Program\ Files/MAXON/CINEMA\ 4D\ R10
@@ -53,7 +54,7 @@ if ($DRQUEUE_OS == "LINUX") then
 	pwd
 	
 	set DISPLAY = ":1" 
-	set CINEMA4D_PATH = "wine \"CINEMA 4D.exe"
+	set CINEMA4D_PATH = "wine CINEMA\ 4D.exe"
 	
 	set outpath = $SCENE:r
 	set outpath = `echo $outpath | sed 's/\//\\\\/g'`
@@ -62,11 +63,18 @@ if ($DRQUEUE_OS == "LINUX") then
 	set scenepath = "Z:"$scenepath
 endif
 
-set command = "$CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -frame $DRQUEUE_FRAME -threads 0\""
 
-echo $command
+echo $CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -frame $DRQUEUE_FRAME -threads 0
 
-$command
+$CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -frame $DRQUEUE_FRAME -threads 0
+
+
+
+#set command = "$CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -frame $DRQUEUE_FRAME -threads 0"
+
+#echo $command
+
+#$command
 
 
 #echo $CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -frame $DRQUEUE_FRAME -threads 0
