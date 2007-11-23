@@ -48,7 +48,10 @@ if ($DRQUEUE_OS == "LINUX") then
 	# there is tightvnc server running on display :1
 	# see wine bug #8069
 	
+	echo $SCENE:h
+	
 	setenv HOME /root
+	echo cd ~/.wine/drive_c/Program\ Files/MAXON/CINEMA\ 4D\ R10
 	cd ~/.wine/drive_c/Program\ Files/MAXON/CINEMA\ 4D\ R10
 	setenv DISPLAY :1
 	
@@ -60,6 +63,7 @@ if ($DRQUEUE_OS == "LINUX") then
 	
 	set CINEMA4D_PATH = "CINEMA\ 4D.exe -nogui -render "$scenepath" -oimage "$outpath" -frame "$DRQUEUE_FRAME" -threads 0"
 	
+	echo $CINEMA4D_PATH
 	echo $CINEMA4D_PATH | xargs wine
 endif
 
@@ -90,7 +94,7 @@ else
   #endif
   
   # change userid and groupid
-  chown $RF_OWNER $SCENE:h/*$DRQUEUE_FRAME*
+  chown $RF_OWNER $SCENE:h/*
   
 endif
 
