@@ -58,21 +58,26 @@ if ($DRQUEUE_OS == "LINUX") then
 	
 	#set DISPLAY = ":1" 
 	setenv DISPLAY :1
-	set CINEMA4D_PATH = "wine CINEMA\ 4D.exe"
+	
+	
 	
 	set outpath = $SCENE:r
 	set outpath = `echo $outpath | sed 's/\//\\\\/g'`
 	set outpath = "Z:"$outpath
 	set scenepath = `echo $SCENE | sed 's/\//\\\\/g'`
 	set scenepath = "Z:"$scenepath
+	
+	set CINEMA4D_PATH = "wine CINEMA\ 4D.exe -nogui -render "$scenepath" -oimage "$outpath" -frame "$DRQUEUE_FRAME" -threads 0"
 endif
 
 
-echo $CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -frame $DRQUEUE_FRAME -threads 0
+#echo $CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -frame $DRQUEUE_FRAME -threads 0
 
-$CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -frame $DRQUEUE_FRAME -threads 0
+#$CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -frame $DRQUEUE_FRAME -threads 0
 
+echo $CINEMA4D_PATH
 
+$CINEMA4D_PATH
 
 #set command = "$CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -frame $DRQUEUE_FRAME -threads 0"
 
