@@ -68,6 +68,8 @@ if ($DRQUEUE_OS == "LINUX") then
 	set scenepath = "Z:"$scenepath
 	
 	set CINEMA4D_PATH = "wine CINEMA\ 4D.exe -nogui -render "$scenepath" -oimage "$outpath" -frame "$DRQUEUE_FRAME" -threads 0"
+	
+	echo $CINEMA4D_PATH | xargs wine
 endif
 
 
@@ -75,9 +77,9 @@ endif
 
 #$CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -frame $DRQUEUE_FRAME -threads 0
 
-echo $CINEMA4D_PATH
+#echo $CINEMA4D_PATH
 
-$CINEMA4D_PATH
+#$CINEMA4D_PATH
 
 #set command = "$CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -frame $DRQUEUE_FRAME -threads 0"
 
