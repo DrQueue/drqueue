@@ -91,7 +91,7 @@ else
 	  #exit 0
 	
 	  # change userid and groupid
-  	  chown $RF_OWNER $SCENE:h/*
+  	  chown $RF_OWNER $DRQUEUE_SCENE:h/*
 	
 	endif	
 endif

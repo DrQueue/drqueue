@@ -90,6 +90,7 @@ else
   #endif
   
   # change userid and groupid
+  echo chown $RF_OWNER $SCENE:h/*
   chown $RF_OWNER $SCENE:h/*
   
 endif
