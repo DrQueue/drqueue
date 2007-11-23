@@ -45,7 +45,7 @@ endif
 
 if ($DRQUEUE_OS == "LINUX") then
 	# we use wine on linux (this is a hack, but works)
-	# there is tightvnc server running on display :1
+	# there is a tightvnc server running on display :1
 	# see wine bug #8069
 	
 	echo $SCENE:h
@@ -64,7 +64,9 @@ if ($DRQUEUE_OS == "LINUX") then
 	set CINEMA4D_PATH = "CINEMA\ 4D.exe -nogui -render "$scenepath" -oimage "$outpath" -frame "$DRQUEUE_FRAME" -threads 0"
 	
 	echo $CINEMA4D_PATH
-	echo $CINEMA4D_PATH | xargs wine
+	
+	wine CINEMA\ 4D.exe -nogui -render $scenepath -oimage $outpath -frame $DRQUEUE_FRAME -threads 0
+	
 endif
 
 
