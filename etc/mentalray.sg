@@ -85,14 +85,15 @@ else
 	if ($DRQUEUE_OS != "WINDOWS") then
 	  # The frame was rendered properly
 	  #${DRQUEUE_ROOT}/bin/chown_block $RF_OWNER $DRQUEUE_RD/$DRQUEUE_IMAGE $DRQUEUE_FRAME $BLOCK
+	  
 	  # You may or may not want to comment out the 'exit 0' belown depending on how important
 	  # you consider changing the files ownership is.
 	  #exit 0
-	endif
 	
-	# change userid and groupid
-	chown $RF_OWNER $DRQUEUE_RD/*
+	  # change userid and groupid
+  	  chown $RF_OWNER $SCENE:h/*
 	
+	endif	
 endif
 
 #
