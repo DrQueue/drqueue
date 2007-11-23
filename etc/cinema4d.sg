@@ -48,7 +48,7 @@ if ($DRQUEUE_OS == "LINUX") then
 	
 	pwd
 	
-	cd ~/.wine/drive_c/Program\ Files/MAXON/CINEMA\ 4D\ R10
+	cd /root/.wine/drive_c/Program\ Files/MAXON/CINEMA\ 4D\ R10
 	
 	pwd
 	
