@@ -53,6 +53,7 @@ if ($DRQUEUE_OS == "LINUX") then
 	
 	setenv HOME /root
 	cd ~/.wine/drive_c/Program\ Files/MAXON/CINEMA\ 4D\ R10
+	rm -f RENDERLOG.TXT
 	setenv DISPLAY :1
 	
 	set outpath = $SCENE:r
@@ -64,6 +65,8 @@ if ($DRQUEUE_OS == "LINUX") then
 	echo running wine CINEMA\ 4D.exe -nogui -render $scenepath -oimage $outpath -omultipass $outpath -threads 0
 	echo
 	wine CINEMA\ 4D.exe -nogui -render $scenepath -oimage $outpath -omultipass $outpath -threads 0
+	
+	cat RENDERLOG.TXT
 	
 endif
 
