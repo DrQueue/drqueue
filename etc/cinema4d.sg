@@ -35,10 +35,12 @@ if ($BLOCK > $DRQUEUE_ENDFRAME) then
 endif
 
 if ($DRQUEUE_OS == "OSX") then
-    set CINEMA4D_PATH="/Applications/MAXON/CINEMA\ 4D\ R10/CINEMA\ 4D.app/Contents/MacOS/CINEMA\ 4D"
-    
     set outpath = $SCENE:r
     set scenepath = $SCENE
+    
+    set CINEMA4D_PATH="/Applications/MAXON/CINEMA\ 4D\ R10/CINEMA\ 4D.app/Contents/MacOS/CINEMA\ 4D -nogui -render "$scenepath" -oimage "$outpath" -frame "$DRQUEUE_FRAME" -threads 0"
+    
+    $CINEMA4D_PATH
 endif
 
 if ($DRQUEUE_OS == "LINUX") then
@@ -46,20 +48,9 @@ if ($DRQUEUE_OS == "LINUX") then
 	# there is tightvnc server running on display :1
 	# see wine bug #8069
 	
-	
-	#set HOME = "/root"
 	setenv HOME /root
-	cd 
-	pwd
-	
-	cd /root/.wine/drive_c/Program\ Files/MAXON/CINEMA\ 4D\ R10
-	
-	pwd
-	
-	#set DISPLAY = ":1" 
+	cd ~/.wine/drive_c/Program\ Files/MAXON/CINEMA\ 4D\ R10
 	setenv DISPLAY :1
-	
-	
 	
 	set outpath = $SCENE:r
 	set outpath = `echo $outpath | sed 's/\//\\\\/g'`
@@ -73,19 +64,9 @@ if ($DRQUEUE_OS == "LINUX") then
 endif
 
 
-#echo $CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -frame $DRQUEUE_FRAME -threads 0
-
-#$CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -frame $DRQUEUE_FRAME -threads 0
-
 #echo $CINEMA4D_PATH
 
 #$CINEMA4D_PATH
-
-#set command = "$CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -frame $DRQUEUE_FRAME -threads 0"
-
-#echo $command
-
-#$command
 
 
 #echo $CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -frame $DRQUEUE_FRAME -threads 0
