@@ -35,7 +35,7 @@ if ($BLOCK > $DRQUEUE_ENDFRAME) then
 endif
 
 if ($DRQUEUE_OS == "OSX") then
-    set CINEMA4D_PATH="/Applications/MAXON/CINEMA 4D R10/CINEMA 4D.app/Contents/MacOS/CINEMA 4D"
+    set CINEMA4D_PATH="/Applications/MAXON/CINEMA\ 4D\ R10/CINEMA\ 4D.app/Contents/MacOS/CINEMA\ 4D"
     
     set outpath = $SCENE:r
     set scenepath = $SCENE
@@ -56,17 +56,21 @@ if ($DRQUEUE_OS == "LINUX") then
 	set scenepath = "Z:"$scenepath
 endif
 
+set command = "$CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -frame $DRQUEUE_FRAME -treads 0"
 
 #echo $CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -frame $DRQUEUE_FRAME -treads 0
 
 #$CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -frame $DRQUEUE_FRAME -treads 0
 
 
-set command = "$CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -frame $DRQUEUE_FRAME -treads 0"
+echo $command
 
-echo /bin/bash -c "$command"
+$command
 
-/bin/bash -c "$command"
+
+#echo /bin/bash -c "$command"
+
+#/bin/bash -c "$command"
 
 
 # This should requeue the frame if failed
