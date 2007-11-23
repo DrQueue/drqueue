@@ -38,9 +38,10 @@ if ($DRQUEUE_OS == "OSX") then
     set outpath = $SCENE:r
     set scenepath = $SCENE
     
-    set CINEMA4D_PATH="/Applications/MAXON/CINEMA\ 4D\ R10/CINEMA\ 4D.app/Contents/MacOS/CINEMA\ 4D -nogui -render "$scenepath" -oimage "$outpath" -frame "$DRQUEUE_FRAME" -threads 0"
+    echo /Applications/MAXON/CINEMA\ 4D\ R10/CINEMA\ 4D.app/Contents/MacOS/CINEMA\ 4D -nogui -render $scenepath -oimage $outpath -frame $DRQUEUE_FRAME -threads 0
     
-    $CINEMA4D_PATH
+    /Applications/MAXON/CINEMA\ 4D\ R10/CINEMA\ 4D.app/Contents/MacOS/CINEMA\ 4D -nogui -render $scenepath -oimage $outpath -frame $DRQUEUE_FRAME -threads 0
+    
 endif
 
 if ($DRQUEUE_OS == "LINUX") then
@@ -61,28 +62,16 @@ if ($DRQUEUE_OS == "LINUX") then
 	set scenepath = `echo $SCENE | sed 's/\//\\\\/g'`
 	set scenepath = "Z:"$scenepath
 	
-	set CINEMA4D_PATH = "CINEMA\ 4D.exe -nogui -render "$scenepath" -oimage "$outpath" -frame "$DRQUEUE_FRAME" -threads 0"
-	
-	echo $CINEMA4D_PATH
-	
+		
+	echo wine CINEMA\ 4D.exe -nogui -render $scenepath -oimage $outpath -frame $DRQUEUE_FRAME -threads 0
+	echo
 	wine CINEMA\ 4D.exe -nogui -render $scenepath -oimage $outpath -frame $DRQUEUE_FRAME -threads 0
 	
 endif
 
 
-#echo $CINEMA4D_PATH
-
-#$CINEMA4D_PATH
-
-
-#echo $CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -frame $DRQUEUE_FRAME -threads 0
-
-#$CINEMA4D_PATH -nogui -render $scenepath -oimage $outpath -omultipass $outpath -frame $DRQUEUE_FRAME -threads 0
-
-#echo /bin/bash -c "$command"
-
-#/bin/bash -c "$command"
-
+# command
+echo
 
 # This should requeue the frame if failed
 if ( $? != 0 ) then
