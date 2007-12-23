@@ -1,0 +1,24 @@
+<%= error_messages_for 'profile' %>
+
+<!--[form:profile]-->
+<p><label for="profile_name">Name</label><br/>
+<%= text_field 'profile', 'name', :disabled => 'disabled'  %></p>
+
+<p><label for="profile_email">Email</label><br/>
+<%= text_field 'profile', 'email'  %></p>
+
+<!--
+<p><label for="profile_avatar">Avatar</label><br/>
+<%= text_field 'profile', 'avatar'  %></p>
+-->
+
+<p><label for="profile_ldap_account">Ldap account</label><br/>
+<%= text_field 'profile', 'ldap_account', :disabled => 'disabled'  %></p>
+
+<p><label for="profile_status">Status</label><br/>
+<%= select('profile', 'status', [ ["Student", "student"], ["Advanced", "advanced"], ["Admin", "admin"] ]) %></p>
+
+<p><label for="profile_accepted">Accepted</label><br/>
+<%= text_field 'profile', 'accepted', :disabled => 'disabled' %></p>
+<!--[eoform:profile]-->
+

@@ -1,0 +1,100 @@
+
+On this page you can read some small tutorials for the supported combinations of modeling and render programs.
+<br /><br />
+
+<a href="#blender">Blender</a> <a href="#3dsmax">3D Studio Max</a> <a href="#maya">Maya</a> <a href="#cinema4d">Cinema4D</a> 
+
+<br /><br /><br /><br />
+
+<b>Links for more information</b>
+<br /><br />
+
+Blender:<br />
+- <a target="_blank" href="http://www.blender.org">www.blender.org</a><br />
+- <a target="_blank" href="http://www.yafray.org">www.yafray.org</a><br />
+- <a target="_blank" href="http://www.blenderartists.org">www.blenderartists.org</a><br />
+- <a target="_blank" href="http://www.blendpolis.de">www.blendpolis.de</a><br />
+- <a target="_blank" href="http://de.wikibooks.org/wiki/Blender_Dokumentation">de.wikibooks.org/wiki/Blender_Dokumentation</a><br />
+- <a target="_blank" href="http://www.blendernation.com">www.blendernation.com</a><br /><br />
+
+Mental Ray:<br />
+- <a target="_blank" href="http://www.mentalimages.com">www.mentalimages.com</a><br />
+- <a target="_blank" href="http://www.mymentalray.com">www.mymentalray.com</a><br />
+- <a target="_blank" href="http://mentalraytips.blogspot.com">mentalraytips.blogspot.com</a><br />
+- <a target="_blank" href="http://www.lamrug.org">www.lamrug.org</a><br />
+- <a target="_blank" href="http://www.german-mentalray-wiki.info">www.german-mentalray-wiki.info</a><br />
+
+<br /><br /><br />
+
+<b>General tips</b>
+<br /><br />
+- avoid filenames with special characters or spaces in it<br />
+- use always only one camera for rendering<br />
+- when rendering single images, the image height has to be a multiple of 4 (low), 8 (medium) or 16 (high resolution)<br />
+- manage your files in a project (a project directory with all files belonging to it)<br />
+- when working with additional files like textures, always choose the path out of your project directory (relative instead of absolute)<br /> 
+- pack the scene file and all other needed files into one archive without any subdirectories<br />
+- you can use the following archive types: rar, zip, tgz, tbz2 (DO NOT use tar.gz or tar.bz2)<br />
+- upload the archive file in the form<br />
+
+<br /><br /><br />
+
+<a name="blender"></a>
+<b>Rendering with Blender / Yafray</b>
+<br /><br />
+<img src="/images/tutorials/blender_render_dialog.jpg" /><br />
+- choose 'Blender Internal' or 'YafRay' in the render dialog<br /><br />
+<img src="/images/tutorials/blender_format_dialog.jpg" /><br />
+- set resolution ('SizeX', 'SizeY') and image output settings in the format dialog<br /><br />
+- you don't have to export anything, just put the blend file into an archive<br />
+
+<br /><br /><br />
+
+<b>Rendering with Mental Ray</b>
+<br /><br />
+
+<a name="3dsmax"></a>
+Exporting from 3DStudioMax:<br />
+- DO NOT use any hair functions (we don't have support for it yet)<br />
+- you can use the tool 'Resource Collector' from 'Utilities' -> 'More...' to save all files into one directory (enable 'Include MAX File' and 'Copy')<br />
+- when using Final Gather, render the scene once, then enable 'Read Only (FG Freeze)' in 'Indirect Illumination' -> 'Final Gather Map' and save that .fgm file also into the archive<br />
+- select 'mental ray Renderer' in 'Rendering' -> 'Render...' -> 'Common' -> 'Assign Renderer'<br />
+- at 'Common' -> 'Render Output' choose format and name of the output image file<br />
+- at 'Processing' -> 'Export to .mi File' choose the name of the mi file<br />
+- activate 'Export on Render', 'Un-compressed' and 'Incremental (Single File)'<br />
+- click the 'Render' button to save the mi file<br /><br /><br />
+
+<a name="maya"></a>
+Exporting from Maya:<br /><br />
+<img src="/images/tutorials/maya_export_all.jpg" /><br />
+- click on 'File' -> 'Export All'<br /><br />
+<img src="/images/tutorials/maya_export_format.jpg" /><br />
+- at 'Write As:' select 'mentalRay'<br /><br />
+<img src="/images/tutorials/maya_export_options.jpg" /><br />
+- at 'Options' -> 'Options...' activate 'ASCII' file format and set 'Compression' to 'Off'<br /><br />
+- disable 'Output file per frame' and enable 'Output file per layer'<br />
+<img src="/images/tutorials/maya_export_options2.jpg" /><br />
+- enable 'Export file paths' and set all selection fields to 'Relative to project'<br />
+- set 'Export selection output' to 'Renderable scene'<br /><br />
+<img src="/images/tutorials/maya_export_options3.jpg" /><br />
+- click 'Export All'<br /><br />
+- select a path and specify a mi filename<br />
+- click 'Export All' again<br />
+
+<br /><br /><br />
+
+<a name="cinema4d"></a>
+<b>Rendering with Cinema4D</b>
+<br /><br />
+
+- DO NOT use any advanced rendering functions like Global Illumination, Caustics, Ambient Occlusion, Effects (we don't have support for it yet)<br />
+- open your scene<br />
+- at 'Render Settings' -> 'Save' enable 'Save Image' and add a name with no path into the textbox<br />
+- do not use a video format when rendering animations because it's far better to have all frames as single images (create a video out of them later)<br />
+- at 'Options' enable 'Log File' to be able to see some more output in the logfiles<br />
+- to get all material paths right, save your scene into a new directory via 'File' -> 'Save Project...'<br />
+- pack the contents of that directory and upload the archive<br /><br />
+
+
+
+ 
