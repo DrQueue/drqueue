@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head>
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>DrQueueOnRails - a webfrontend for DrQueue</title>
+<link rel="shortcut icon" href="/drqueue.ico" type="image/x-icon" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+
+<link href="/stylesheets/drqueueonrails.css" media="screen" rel="Stylesheet" type="text/css" />
+
+<!--REFRESH-->
+<% if @refresh_content != nil %>
+	<meta http-equiv="refresh" content="<%= @refresh_content %>">
+<% end %>
+
+<!--AJAX & MAC-HEADER-CHECK-->
+<%= javascript_include_tag :defaults %>
+
+</head>
+<body>
+
+
+<div id="nonFooter">
+
+<div id="Header">
+
+<div id="Logo">
+<br />
+<a href="/"><img src="/images/weasel_small.png" style="margin-left:20px; text-align:center;" border="0" alt="drqueue logo" /></a>
+</div>
+
+<div id="DrQueueOnRails">
+<br /><br />
+DrQueueOnRails<br />
+a webfrontend for DrQueue
+</div>
+
+<!--MAC-HEADER-CHECK-->
+<%
+if request.env['HTTP_USER_AGENT'] =~ /mac/i
+%>
+	<div id="HeaderSpacer2"></div>
+<%
+else
+%>
+	<div id="HeaderSpacer"></div>
+<%
+end
+%>
+
+<ul>
+
+<% if session[:profile] != nil %>
+	<% if session[:profile].accepted == 1 %>
+		<li <% if (params[:controller] == 'main') && (params[:action] == 'index') %> class="TabOn"<% end %>><a href="/">start</a></li><li <% if (params[:controller] == 'main') && (params[:action] == 'tutorials') %> class="TabOn"<% end %>><a href="/main/tutorials">tutorials</a></li><li <% if( ((params[:controller] == 'jobs') && (params[:action] == 'list') && (params[:id] == nil)) || ((params[:controller] == 'jobs') && (session[:return_path] != url_for(:controller => 'jobs', :action => 'list', :id => 'all', :only_path => false))) ) %> class="TabOn"<% end %>><a href="/jobs/list">my jobs</a></li><li <% if ( ((params[:controller] == 'profiles') && (params[:action] == 'show') && (params[:id] == session[:profile].id.to_s)) || ((params[:controller] == 'profiles') && (session[:return_path] == url_for(:controller => 'profiles', :action => 'show', :id => session[:profile].id.to_s, :only_path => false))) ) %> class="TabOn"<% end %>><a href="/profiles/show/<%= session[:profile].id %>">my profile</a></li><li <% if ((params[:controller] == 'main') && (params[:action] == 'computers')) %> class="TabOn"<% end %>><a href="/main/computers">computers</a></li>
+		<% if session[:profile].status == "admin" %><li <% if( ((params[:controller] == 'jobs') && (params[:action] == 'list') && (params[:id] == 'all')) || ((params[:controller] == 'jobs') && (session[:return_path] == url_for(:controller => 'jobs', :action => 'list', :id => 'all', :only_path => false))) ) %> class="TabOn"<% end %>><a href="/jobs/list/all">all jobs</a></li><li <% if ( ((params[:controller] == 'profiles') && (params[:action] == 'list')) || ((params[:controller] == 'profiles') && (params[:id] != session[:profile].id.to_s)) ) %> class="TabOn"<% end %>><a href="/profiles/list">all profiles</a></li><% end %><% if (session[:profile].status == "admin") || (session[:profile].status == "advanced") %><li <% if (params[:controller] == 'main') && (params[:action] == 'filecache') %> class="TabOn"<% end %>><a href="/main/filecache">filecache</a></li><% end %>
+	<% end %>
+	<li><a href="/main/logout">logout</a></li>
+<% end %>
+
+</ul>
+</div>
+
+
+<div id="Content">
+<br /><br />
+
+<%= yield %>
+
+</div>
+
+</div>
+
+
+<div id="Footer">
+DrQueueOnRails Version 0.1 (<%= APP_VERSION.gsub(':','').rstrip %>)&nbsp;&ndash;&nbsp;2007 Andreas Schr&ouml;der<br />
+powered by <a href="http://www.drqueue.org" target="_blank">DrQueue</a> and <a href="http://www.rubyonrails.org" target="_blank">Ruby On Rails</a>
+<br /><br />
+</div>
+
+</body>
+</html>
