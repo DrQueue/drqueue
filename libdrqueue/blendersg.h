@@ -24,7 +24,7 @@
 #define _BLENDERSG_H_
 
 #include "constants.h"
-#include "inttypes.h"
+#include "stdint.h"
 
 #ifdef __CPLUSPLUS
 extern "C" {
@@ -35,8 +35,8 @@ extern "C" {
   struct blendersgi {  /* Blender Script Generator Info */
     char scene[BUFFERLEN];
     char scriptdir[BUFFERLEN];
-    uint8_t  blender;    // 1 if we should render animations
-    	    			 // 2 if we should distribute one single image
+    uint8_t  kind;       // 1 if we should render animations
+    	    	         // 2 if we should distribute one single image
   };
 
 #pragma pack(pop)
