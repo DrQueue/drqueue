@@ -47,6 +47,7 @@
 #include "task.h"
 #include "computer_pool.h"
 #include "computer.h"
+#include "common.h"
 
 #ifdef LIBWRAP
 #include <tcpd.h>
