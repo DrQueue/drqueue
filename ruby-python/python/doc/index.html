@@ -1,0 +1,356 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>Ruby/Python Documentation</title>
+</head>
+
+<body bgcolor="#ffffff">
+<h1>Ruby/Python Documentation</h1>
+
+<h2>Table of Contents</h2>
+<ul>
+  <li><a href="#intro">Introduction</a>
+      <ul>
+	<li><a href="#whats">What is Ruby/Python?</a>
+	<li><a href="#simple">Simple Example</a>
+	<!--<li><a href="#term">Terminology</a>-->
+      </ul>
+  <li><a href="#from_ruby">Manipulate Python Objects from Ruby</a>
+      <ul>
+	<li><a href="#require">Load Ruby/Python</a>
+	<li><a href="#eval"><code>eval</code> and <code>exec</code></a>
+	<li><a href="#method">Method Invocation</a>
+	<li><a href="#module">Modules</a>
+	<li><a href="#class">Classes and Types</a>
+	<li><a href="#convert">Object Conversion</a>
+      </ul>
+  <li><a href="#ref">API Reference</a>
+</ul>
+
+<hr><a name="intro">
+<h2>Introduction</h2></a>
+
+<a name="whats">
+<h3>What is Ruby/Python?</h3></a>
+
+<p>Ruby/Python is a Ruby extension library to embed Python interpreter
+in Ruby.  With this library, you can use modules written for
+Python from your Ruby scripts.
+
+<p>Ruby/Python is designed to integrate the two languages as
+transparently as possible.  Thus you need neither bothersome coding nor
+special consideration to use Python modules.  It is much the same as
+using library written for Ruby.
+
+<a name="simple">
+<h3>Simple Example</h3></a>
+
+<p>First of all, let's look at tiny Ruby scripts to access a FTP server
+with ftplib.  The native versions of ftplib are bundled with both Ruby
+and Python.  Though using ftplib via Ruby/Python has no practical
+meaning, it is a good example.
+
+<p>First, a script using ftplib written in Ruby for Ruby.
+
+<blockquote><pre>
+require 'ftplib'
+
+ftp = FTP.open('ftp.netlab.co.jp')
+ftp.login
+ftp.chdir('pub/lang/ruby')
+puts ftp.dir
+ftp.quit
+</pre></blockquote>
+
+Very simple.  Second, a script using ftplib written in Python for Python
+via Ruby/Python.
+
+<blockquote><pre>
+require 'python'
+require 'python/ftplib'
+
+ftp = Py::Ftplib::FTP.new('ftp.netlab.co.jp')
+ftp.login
+ftp.cwd('pub/lang/ruby')
+ftp.dir
+ftp.quit
+</pre></blockquote>
+
+<p>Compare the two scripts.  There are not so many differences between
+them.  But the latter script uses a library written for Python!
+
+<p>The big difference is the <code>require</code> expressions at the
+beginning and the naming of class <code>FTP</code>.  And there are a few
+different method names.  If you are an experienced Ruby user, you may
+roughly understand how to use Ruby/Python.  As you see, Ruby/Python is a
+extension library which enables Ruby users to utilize the modules
+written for Python as if they were written for Ruby.
+
+<hr><a name="from_ruby">
+<h2>Manipulate Python Objects from Ruby</h2></a>
+
+This section describes how to manipulate Python modules and objects with
+Ruby/Python.
+
+<a name="require">
+<h3>Load Ruby/Python</h3></a>
+
+<blockquote><pre>
+require 'python'
+</pre></blockquote>
+
+<p>To use Ruby/Python, You need to load Ruby/Python library.
+Ruby/Python library itself is a library named 'python'.
+
+When Ruby/Python is loaded, a module named <code>Py</code> is defined
+(under <code>Object</code>).  The functionalities of Ruby/Python is
+provided as modules, classes and module functions under <code>Py</code>
+module.
+
+
+<a name="eval">
+<h3><code>eval</code> and <code>exec</code></h3></a>
+
+<blockquote><pre>
+Py.eval(<var>PythonExpression</var>)
+Py.exec(<var>PythonStatement</var>)
+</pre></blockquote>
+
+<p>The most simple way to use Python functionalities is to call module
+functions <code>eval</code> and <code>exec</code> in <code>Py</code>
+module.  These module functions are equivalent of Python's
+<code>eval</code> builtin function and <code>exec</code>
+statement. <code>Py.eval</code> evaluates a Python expression and
+returns the value of the expression.  <code>Py.exec</code> executes
+Python statements.
+
+<p>Example:
+<blockquote><pre>
+list = Py.eval('[1, 2, 3]')     # returns a Python list object
+Py.exec('print "hello world"')  # print "hello world" to stdout
+</pre></blockquote>
+
+<a name="method">
+<h3>Method Invocation</h3></a>
+
+<a name="method_si">
+<h4>Simple Invocation</h4></a>
+
+<blockquote><pre>
+obj.<var>method</var>(...)
+obj.<var>method?</var>(...)  # returns true or false
+</pre></blockquote>
+
+<p>You can invoke methods of Python objects.  If the method name is
+suffixed by '?', the value Python method returned is tested as Boolean
+value and returns <code>true</code> or <code>false</code>.  This
+notation is needed because there are no simple mapping between Python
+boolean values and Ruby boolean values.  If you expect boolean value,
+you must append '?'.  (Python provides no special objects representing
+boolean value. In Python <code>None</code>, <code>0</code>, empty list,
+etc. represent false, and the other objects represent true.  Usually
+Python API uses <code>0</code> to represent false.  But <code>0</code>
+is true in Ruby.)
+
+<p>Example:
+<blockquote><pre>
+dict = Py.eval('{"One": 1, "Two": 2}') # Python dictionary (hash) object
+dict.keys                              # ["One", "Two"]
+dict["Two"]                            # 2
+dict.has_key("Three")                  # 0 (true in Ruby)
+dict.has_key?("Three")                 # false
+</pre></blockquote>
+
+<a name="method_kw">
+<h4>Keyword Arguments</h4></a>
+
+<blockquote><pre>
+obj.<var>method</var>([...,] Py::AS_KEYWORD, <var>key1</var> => <var>val1</var>, <var>key2</var> => <var>val2</var>, ...)
+obj.<var>method</var>([...,] Py::KW, <var>key1</var> => <var>val1</var>, <var>key2</var> => <var>val2</var>, ...)
+</pre></blockquote>
+
+<p>Python methods can receive keyword arguments.  But Ruby currently
+doesn't support keyword arguments.  So Ruby/Python do it in it's own
+fashion as shown above.  A special constant <code>Py::AS_KEYWORD</code>
+is introduced.  (<code>Py::KW</code> is shorthand.)  If
+<code>Py::AS_KEYWORD</code> is found in the argument list, the remaining
+part of the arguments is interpreted as a hash including keyword
+arguments. Each keyword name must be a string or a symbol id.
+
+<p>Example:
+<blockquote><pre>
+ftp = Py::Ftplib::FTP.new
+ftp.connect(Py::AS_KEYWORD, 'host' => 'ftp.netlab.co.jp', 'port' => 21) # string keyword
+ftp.login(Py::KW, :user => 'anonymous', :passwd => 'mail address')      # id keyword
+</pre></blockquote>
+
+<a name="method_bl">
+<h4>Method Invocation with Block</h4></a>
+
+<blockquote><pre>
+obj.<var>method</var>(...) {|arg| ...}
+</pre></blockquote>
+
+When a block is given to Python method invocation, a <code>Proc</code>
+object is created and passed as the last argument.  <code>Proc</code>
+objects looks <em>callable objects</em> from Python.  So the above
+expression is equivalent to the following one:
+
+<blockquote><pre>
+obj.<var>method</var>(..., Proc.new{|arg| ...})
+</pre></blockquote>
+
+<a name="module">
+<h3>Modules</h3></a>
+
+<a name="module_imp">
+<h4>Import Python Modules</h4></a>
+
+<blockquote><pre>
+require 'python/<var>module</var>'
+</pre></blockquote>
+
+<p>Ruby/Python replaces builtin function <code>require</code>.  The new
+<code>require</code> interprets library names prefixed with
+<code>'python/'</code> specially.  When Library names prefixed with
+<code>'python/'</code> is passed, the specified Python module is
+imported.  This is the same as following Python statement.
+
+<blockquote><pre>
+import <var>module</var>
+</pre></blockquote>
+
+<p>Imported Python modules look as if they are Ruby modules defined
+under <code>Py</code> module.  When the name of a Python module begins
+with lower case letters, corresponding Ruby module is defined with
+capitalized name.  Python modules are also refered by attribute
+reference to the <code>Py</code> module.
+
+<p>Example: Access to Python sys module.
+<blockquote><pre>
+require 'python'      # Py module is defined
+require 'python/sys'  # Py::Sys module is defined
+Py::Sys               # Reference by constant.
+Py.sys                # Attribute reference to Py module. Same as Py::Sys
+</pre></blockquote>
+
+<a name="module_use">
+<h4>Use Python Modules</h4></a>
+
+<p>Functions and attributes defined in Python modules are provided as
+modules functions.
+
+<p>Example:
+<blockquote><pre>
+require 'python/math'  # Py::Math is defined
+Py::Math.sqrt(2)       # 1.41421
+Py::Math.pi            # 3.14159
+</pre></blockquote>
+
+<a name="class">
+<h3>Classes and Types</h3></a>
+
+<h4>Mapping to Ruby Class</h4>
+
+<p>Python classes and types are mapped to Ruby classes.  These classes
+are defined as subclasses of <code>Py::Object</code>.  Thus all Python
+objects are instance of <code>Py::Object</code>.
+
+<p>Example:
+<blockquote><pre>
+list = Py.eval('[1, 2, 3]')  # Python list type object
+list.type                    # Py::Types::ListType class
+list.is_a?(Py::Object)       # true
+</pre></blockquote>
+
+<h4>Creating Class Instances</h4>
+
+<p>Invocation of class method <code>new</code> defined in each Ruby
+class correspond to Python class creates a class instance.  The
+arguments passed to <code>new</code> is used as arguments in Python
+instance creation.
+
+<p>Example:
+<blockquote><pre>
+require 'python/ftplib'
+ftp = Py::Ftplib::FTP.new('ftp.netlab.co.jp')
+# Equivalent to following Python expression.
+# ftplib.FTP('ftp.netlab.co.jp')
+</pre></blockquote>
+
+<a name="convert">
+<h3>Object Conversion</h3></a>
+
+<p>Objects go across the boundary between Ruby and Python when they are
+passed as argument to method invocation.  Such objects are automatically
+converted to the destination language's objects.  And when objects are
+returned as a result of method invocation, opposite conversion is
+performed.
+
+<h4>Objects Passed by Value</h4>
+
+<p>Following objects are converted to the destination language's native
+objects, that is to say, passed by value.
+
+<center>
+<table border>
+<tr><th>Ruby object</th><th>Python object</th><th>Note</th>
+<tr><td><code>nil</code></td><td><code>None</code></td>
+<tr><td><code>true</code></td><td><code>1</code></td><td>(1)</td>
+<tr><td><code>false</code></td><td><code>0</code></td><td>(1)</td>
+<tr><td><code>String</code> instance</td><td>string</td>
+<tr><td><code>Integer</code> instance</td>
+    <td>Plain Integer or Long Integer</td>
+<tr><td><code>Float</code> instance</td>
+    <td>Floating Point Number</td>
+</table>
+</center>
+Note:<dl compact>
+<dt>(1)
+<dd>These conversions are only performed from Ruby to Python.
+    When converting from Python to Ruby, 0 and 1 are simply converted to
+    <code>Integer</code> instance.  If you want <code>0/1</code> to
+    <code>false/true</code> conversion, <a href="#method_si">suffix
+    method name with '?'</a>.
+</dl>
+
+<h4>Python Modules, Classes and Types</h4>
+
+<p>Ruby <code>Module</code> or <code>Class</code> is defined for each
+Python module, class and type.  Thus these objects are converted to each
+other.
+
+<h4>Objects Passed by Reference</h4>
+
+<p>Objects not mentioned above is passed by reference.
+
+<p>When a Python object is passed by reference to Ruby, the object is
+converted to an instance of a <code>Py::Object</code>'s subclass.  This
+object holds the reference to the Python object, and behaves as a
+<em>proxy</em> to the Python object.  When a message is sent to the
+proxy object, the message is forwarded to the Python object.
+
+<p>When a Ruby object is passed by reference to Python, the object looks
+as if it is a extension type object from Python.  This object also holds
+the reference to the Ruby object, and forward messages.
+
+<hr><a name="ref">
+<h2>API Reference</h2></a>
+
+Modules
+<ul>
+  <li><a href="Py.html">Py</a><br>
+  <li><a href="Sequence.html">Py::Sequence</a><br>
+  <li><a href="Mapping.html">Py::Mapping</a><br>
+</ul>
+
+Classes
+<ul>
+  <li><a href="Object.html">Py::Object</a>
+</ul>
+
+<hr>
+<address>fukusima@goto.info.waseda.ac.jp</address>
+<!-- hhmts start -->
+Last modified: Mon Nov  1 23:41:45 JST 1999
+<!-- hhmts end -->
+</body> </html>

@@ -1,5 +1,7 @@
 class JobsController < ApplicationController
 
+	require 'rubygems'
+
 	# for drqueue
 	require 'drqueue'
 	

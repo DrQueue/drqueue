@@ -1,0 +1,86 @@
+<HTML>
+<!-- THIS FILE IS GENERATED FROM ANOTHER SOURCE FILE -->
+<HEAD>
+<TITLE>Py::Sequence</TITLE>
+</HEAD>
+<BODY BGCOLOR="ffffff">
+<DL>
+<DT><H1>Py::Sequence</H1></DT>
+<DD>
+
+      Python上でsequenceとみなされるクラス、タイプ (例えば組み込
+      みのlistタイプやtupleタイプ) には自動的にこのモジュールがイ
+      ンクルードされます。
+    </DD>
+<DT><H2>インクルードしているモジュール:</H2></DT>
+<DL>
+<DT><A HREF="http://www.ruby-lang.org/ja/man-1.4/Enum.html"><CODE>Enumerable</CODE></A></DT>
+</DL>
+<DT><H2>メソッド:</H2></DT>
+<DL COMPACT>
+<DT>
+<A NAME="[]"><CODE>self[<var>nth</var>]</CODE></A>
+<DD>
+<p>
+
+          <VAR>nth</VAR>番目の要素を返します。インデックスが負の
+          場合、末尾からのインデックスとみなします。最後の要素の
+          インデックスは-1です。
+          <VAR>nth</VAR>番目の要素が存在しない時は<CODE>nil</CODE>を返
+          します。
+        </p>
+<DT>
+<A NAME="[]"><CODE>self[<var>start</var>..<var>end</var>]</CODE></A>
+<DD>
+<p>
+
+          <VAR>start</VAR>番目の要素から<VAR>end</VAR>番目の要素
+          までの 部分配列を返します。
+        </p>
+<DT>
+<A NAME="[]"><CODE>self[<var>start</var>, <var>length</var>]</CODE></A>
+<DD>
+<p>
+
+          <VAR>start</VAR>番目から<VAR>length</VAR>個の要素を含
+          む部分配列を返します。
+        </p>
+<DT>
+<A NAME="[]"><CODE>self[<var>nth</var>] = <var>val</var></CODE></A>
+<DD>
+<p>
+
+          <VAR>nth</VAR>番目の要素を<VAR>val</VAR>に設定します。
+        </p>
+<DT>
+<A NAME="each"><CODE>each {|<var>item</var>|...}</CODE></A>
+<DD>
+<p>
+
+          各要素について繰り返します。
+        </p>
+<DT>
+<A NAME="include?"><CODE>include?(<var>val</var>)</CODE></A>
+<DD>
+<p>
+
+          <VAR>val</VAR>を含む時、真を返します。
+        </p>
+<DT>
+<A NAME="length"><CODE>length</CODE></A>
+<DD>
+<DT>
+<A NAME="size"><CODE>size</CODE></A>
+<DD>
+<p>
+
+          要素数を返します。
+        </p>
+</DL>
+</DL>
+<HR>
+<P ALIGN="RIGHT">
+<A HREF="mailto:fukusima@goto.info.waseda.ac.jp">fukusima@goto.info.waseda.ac.jp</A><BR>
+</P>
+</BODY>
+</HTML>

@@ -1,5 +1,7 @@
 class ProfilesController < ApplicationController
   
+  require 'rubygems'
+  
   # for drqueue
   require 'drqueue'
 
