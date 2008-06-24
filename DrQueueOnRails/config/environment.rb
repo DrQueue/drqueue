@@ -4,13 +4,13 @@
 # you don't control web/app server and can't set it the proper way
 # ENV['RAILS_ENV'] ||= 'production'
 
-ENV['DRQUEUE_MASTER'] ||= '10.8.0.1'
+ENV['DRQUEUE_MASTER'] ||= 'MASTER'
 ENV['DRQUEUE_TMP'] ||= '/usr/local/drqueue/tmp'
 ENV['DRQUEUE_ETC'] ||= '/usr/local/drqueue/etc'
 ENV['DRQUEUE_LOGS'] ||= '/usr/local/drqueue/logs'
 
-ENV['LDAP_TREEBASE'] ||= "dc=hs-wismar, dc=de"
-ENV['LDAP_HOST'] ||= "193.175.118.239"
+ENV['LDAP_TREEBASE'] ||= "dc=mydomain, dc=de"
+ENV['LDAP_HOST'] ||= "SERVER"
 ENV['LDAP_PORT'] ||= "389"
 ENV['LDAP_FILTER'] ||= "uid"
 ENV['LDAP_ATTRS'] ||= "mail,cn"
@@ -21,13 +21,17 @@ ENV['LOG_SHOW_PW'] ||= "Passwort"
 APP_VERSION = IO.popen("svn info").readlines[4]
 
 # Specifies gem version of Rails to use when vendor/rails is not present
-RAILS_GEM_VERSION = '1.2.5' unless defined? RAILS_GEM_VERSION
+RAILS_GEM_VERSION = '2.0.2' unless defined? RAILS_GEM_VERSION
 
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
 
+
+
 Rails::Initializer.run do |config|
   # Settings in config/environments/* take precedence over those specified here
+  
+  config.action_controller.session = { :session_key => "_dqor_session", :secret => "gfcgfkhjt56gfcdesxdtrr54w3fdxfhgffge55454565" } 
   
   # Skip frameworks you're not going to use (only works if using vendor/rails)
   # config.frameworks -= [ :action_web_service, :action_mailer ]

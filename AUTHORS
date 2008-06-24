@@ -22,6 +22,7 @@ Shawn Parr <parrs@ipfw.edu> The most famous Mac OS X documentation online and be
 Theodore Schundler <tschundler@scu.edu> developer: FreeBSD support, tcpwrappers... and lot more.
 Tobias Sauerwein <cgTobi@gmail.com> developer: Aqsis support.
 Vincent Dedun (aka kraken) <kraken+spam@smousseland.com> developer: Windows Cygwin port.
+Andreas Schroeder <andreas@drqueue.org> developer: DrQueueOnRails webfrontend
 
 DRQUEUE LOGO
 ------------

@@ -1,6 +1,8 @@
 class MainController < ApplicationController
 
-	include ActionView::Helpers::TextHelper 
+	include ActionView::Helpers::SanitizeHelper 
+
+	require 'rubygems'
 
 	# for drqueue
 	require 'drqueue'

@@ -37,6 +37,8 @@ extern "C" {
     char scriptdir[BUFFERLEN];
     uint8_t  kind;       // 1 if we should render animations
     	    	         // 2 if we should distribute one single image
+    uint8_t  kind;    // 1 if we should render animations
+    	    	      // 2 if we should distribute one single image
   };
 
 #pragma pack(pop)

@@ -1,0 +1,5 @@
+This directory contains some example scripts of Ruby/Python.
+
+Each script tests a particular python module in Python-1.5.1/Lib.
+These test routines are retrieved from each python module file
+and ported to Ruby/Python.

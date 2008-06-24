@@ -1,0 +1,97 @@
+<HTML>
+<!-- THIS FILE IS GENERATED FROM ANOTHER SOURCE FILE -->
+<HEAD>
+<TITLE>Py::Object</TITLE>
+</HEAD>
+<BODY BGCOLOR="ffffff">
+<DL>
+<DT><H1>Py::Object</H1></DT>
+<DD>
+
+      Super class of all the Python classes and types.
+    </DD>
+<DT><H2>Super Class:</H2></DT>
+<DD><DL><DT><A HREF="http://www.ruby-lang.org/en/man-1.4/Object.html"><CODE>Object</CODE></A></DT></DL></DD>
+<DT><H2>Included Modules:</H2></DT>
+<DL>
+<DT><A HREF="http://www.ruby-lang.org/en/man-1.4/Compar.html"><CODE>Comparable</CODE></A></DT>
+</DL>
+<DT><H2>Methods:</H2></DT>
+<DL COMPACT>
+<DT>
+<A NAME="=="><CODE>self == <var>other</var></CODE></A>
+<DD>
+<DT>
+<A NAME="==="><CODE>self === <var>other</var></CODE></A>
+<DD>
+<DT>
+<A NAME="eql?"><CODE>eql?(<var>other</var>)</CODE></A>
+<DD>
+<p>
+
+          Return true if the two objects are equal. Equivalent of
+        Python expression <CODE>'self == other'</CODE>.
+        </p>
+<DT>
+<A NAME="&lt;=&gt;"><CODE>self &lt;=&gt; <var>other</var></CODE></A>
+<DD>
+<p>
+
+          Compare objects.
+        </p>
+<DT>
+<A NAME="hash"><CODE>hash</CODE></A>
+<DD>
+<p>
+
+          Return the hash value of the object.  Equivalent of
+        Python expression <CODE>'hash(self)'</CODE>.
+        </p>
+<DT>
+<A NAME="inspect"><CODE>inspect</CODE></A>
+<DD>
+<p>
+
+          Return the string representation of the object.  Equivalent
+          of Python expression <CODE>'repr(self)'</CODE>.
+        </p>
+<DT>
+<A NAME="method_missing"><CODE>method_missing(<var>msg_id</var>, ...)</CODE></A>
+<DD>
+<p>
+
+          <P>
+
+            Forward the message to the Python object.  Retrieve
+            the attribute specified by <VAR>msg_id</VAR>.  If the
+            attribute value is a method object, invoke the method
+            and return the resulting value.  If the attribute
+            value is not method object, return the attribute
+            value.
+          </P>
+
+          <P>
+
+            If the name specified by <VAR>msg_id</VAR> is
+            suffixed by <CODE>'?'</CODE>, use the name without
+            <CODE>'?'</CODE>, test the result as Python truth
+            value and return a boolean value.
+          </P>
+
+        </p>
+<DT>
+<A NAME="to_s"><CODE>to_s</CODE></A>
+<DD>
+<p>
+
+          Return the string representation of the object.  Equivalent
+          of Python expression <CODE>'str(self)'</CODE>.
+        </p>
+</DL>
+</DL>
+<HR>
+<P ALIGN="RIGHT">
+<A HREF="mailto:fukusima@goto.info.waseda.ac.jp">fukusima@goto.info.waseda.ac.jp</A><BR>
+</P>
+</BODY>
+</HTML>

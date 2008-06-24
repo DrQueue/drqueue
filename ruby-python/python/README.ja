@@ -1,0 +1,41 @@
+Ruby/Python は Ruby スクリプトから Python 用のモジュールを使うた
+めの拡張ライブラリです。
+
+* インストール
+
+必要なもの:
+
+  - ruby-1.4.x か ruby-1.6.x
+  - python-1.5.x
+
+コンパイル:
+
+  ruby extconf.rb [options]
+  make
+  make install
+
+「ruby extconf.rb」には以下のオプションを指定できます。
+
+`--with-python-dir=PREFIX'
+    Pythonのインストールされているprefixを指定します。このオプションを
+    指定しなかった場合は、コマンド `python' を実行してprefixを取得しま
+    す。それにも失敗した場合は /usr/local, /usr を順に探します。
+
+* 使い方
+
+doc-ja ディレクトリの下にあるドキュメントを見てください。examples
+ディレクトリには幾つかのサンプルスクリプトがあります。
+
+* 作者
+
+福嶋正機 <fukusima@goto.info.waseda.ac.jp>
+
+Ruby/Python は福嶋正機が著作権を保持する free software です。
+
+このsoftwareはGPL(GNU GENERAL PUBLIC LICENSE)に従って再配布または
+変更することができます。GPLについてはCOPYINGファイルを参照してく
+ださい。
+
+このsoftwareは無保証です。作者はこのsoftwareのバグなどから発生す
+るいかなる損害に対しても責任を持ちません。詳細については GPL を参
+照してください。

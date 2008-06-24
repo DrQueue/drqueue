@@ -193,6 +193,7 @@ static void dnj_koj_frame_blender_scene_set (GtkWidget *button, struct drqmj_koj
 
 static void dnj_koj_frame_blender_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info) {
   struct blendersgi blendersgi; /* Blender script generator info */
+  blendersgi.kind = 1; /* we render animations */
   char *file;
 
   strncpy (blendersgi.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_blender.escene)),BUFFERLEN-1);

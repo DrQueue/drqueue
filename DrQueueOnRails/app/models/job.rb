@@ -4,6 +4,8 @@ class Job < ActiveRecord::Base
 	
 	validates_presence_of :renderer, :sort, :queue_id
 	
+	require 'rubygems'
+	
 	# for drqueue
 	require 'drqueue'
 
