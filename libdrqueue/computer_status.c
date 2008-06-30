@@ -160,7 +160,7 @@ void get_loadavg (uint16_t *loadavg) {
   char *fd;   /* first digit */
   float f1,f2,f3;
 
-  if ((uptime = popen ("/usr/bin/uptime","r")) == NULL) {
+  if ((uptime = popen ("LANG=C /usr/bin/uptime","r")) == NULL) {
     fprintf (stderr,"Warning: Problems executing '/usr/bin/uptime'\n");
     f1 = f2 = f3 = 0;
   }
