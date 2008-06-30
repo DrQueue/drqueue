@@ -1,0 +1,19 @@
+About DrQueue shell environment variables
+-----------------------------------------
+
+DrQueue uses the following shell variables.
+
+
+required:
+
+DRQUEUE_ROOT : DrQueue installation directory, usally /usr/local/drqueue
+DRQUEUE_MASTER : IP address of master node
+
+
+optional:
+
+DRQUEUE_BIN : directory for binary files, usally /usr/local/drqueue/bin
+DRQUEUE_DB : directory for databasse files, usally /usr/local/drqueue/db
+DRQUEUE_ETC : directory for configuration files, usally /usr/local/drqueue/etc or /etc/drqueue
+DRQUEUE_LOGS : directory for logfiles, usally /usr/local/drqueue/logs
+DRQUEUE_TMP : directory for temporary files, usally /usr/local/drqueue/tmp
