@@ -40,8 +40,8 @@
 
 struct load_balancing {
   struct tpol pol[MAXJOBS]; // Priority ordered list of jobs
-  uint64_t next_i;          // Variables used for load balancing
-  uint64_t last_priority;   //
+  uint32_t next_i;          // Variables used for load balancing
+  uint32_t last_priority;   //
 };
 
 struct database {
