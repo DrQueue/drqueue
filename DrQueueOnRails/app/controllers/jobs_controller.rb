@@ -14,6 +14,7 @@ class JobsController < ApplicationController
 	
 	# for text sanitizing
 	include ActionView::Helpers::TextHelper
+	include ActionView::Helpers::SanitizeHelper
 
 	# template
 	layout "main_layout", :except => 'feed'
@@ -231,7 +232,7 @@ class JobsController < ApplicationController
 	File.makedirs(jobdir)
 	
 	# get only the filename (not the whole path) and use only alphanumeric chars
-	just_filename = File.basename(params[:file].full_original_filename).downcase.gsub(/^.*(\\|\/)/, '').gsub(/[^\w\.\-]/,'') 
+	just_filename = File.basename(params[:file].original_filename).downcase.gsub(/^.*(\\|\/)/, '').gsub(/[^\w\.\-]/,'') 
 	
 	# extract ending of file
 	ending = just_filename[(just_filename.rindex('.')+1)..(just_filename.length)]
