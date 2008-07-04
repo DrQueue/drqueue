@@ -42,7 +42,7 @@ endif
 
 # we run this in bash as it supports inline env variables
 
-set command = "curframe=$DRQUEUE_FRAME $BLENDER_PATH -b $SCENE -P /usr/share/drqueue/tmp/blender_same_directory.py"
+set command = "curframe=$DRQUEUE_FRAME $BLENDER_PATH -b $SCENE -P /usr/local/drqueue/tmp/blender_same_directory.py"
 echo /bin/bash -c "$command"
 
 /bin/bash -c "$command"
