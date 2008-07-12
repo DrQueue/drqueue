@@ -39,17 +39,17 @@ class JobsController < ApplicationController
   		@jobs_only_master = Job.no_db_jobs()
   		
   		# set return path to list action
-  		session[:return_path] = url_for(:controller => 'jobs', :action => 'list', :id => 'all', :protocol => "https://")
+  		session[:return_path] = url_for(:controller => 'jobs', :action => 'list', :id => 'all', :protocol => ENV['WEB_PROTO']+"://")
   	else
   		# get only owners jobs from db
   		@jobs_db = Job.find_all_by_profile_id(session[:profile].id)
   		
   		# set return path to list action
-  		session[:return_path] = url_for(:controller => 'jobs', :action => 'list', :protocol => "https://")
+  		session[:return_path] = url_for(:controller => 'jobs', :action => 'list', :protocol => ENV['WEB_PROTO']+"://")
   	end
   	
   	# refresh timer
-    link = url_for(:controller => 'jobs', :action => 'list', :id => params[:id], :protocol => "https://")
+    link = url_for(:controller => 'jobs', :action => 'list', :id => params[:id], :protocol => ENV['WEB_PROTO']+"://")
     if params[:refresh] != nil
     	if params[:refresh] == ""
     		@refresh_content = nil
@@ -94,7 +94,7 @@ class JobsController < ApplicationController
     	params[:refresh] != nil
     else
     	# destination of refresh
-	    link = url_for(:controller => 'jobs', :action => 'show', :id => params[:id], :protocol => "https://")
+	    link = url_for(:controller => 'jobs', :action => 'show', :id => params[:id], :protocol => ENV['WEB_PROTO']+"://")
 	    # timer was newly set
 	    if params[:refresh] != nil
 	    	if params[:refresh] == ""
@@ -1016,7 +1016,7 @@ class JobsController < ApplicationController
   	@logfile = logdir + '/' + `ls "#{logdir}"`.split("\n")[nr]
   	
   	# refresh timer
-    link = url_for(:controller => 'jobs', :action => 'view_log', :id => params[:id], :nr => params[:nr], :protocol => "https://")
+    link = url_for(:controller => 'jobs', :action => 'view_log', :id => params[:id], :nr => params[:nr], :protocol => ENV['WEB_PROTO']+"://")
     if params[:refresh] != nil
     	if params[:refresh] == ""
     		@refresh_content = nil

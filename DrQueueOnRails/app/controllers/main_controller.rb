@@ -81,7 +81,7 @@ class MainController < ApplicationController
 		end
 		
 		# refresh timer
-	    link = url_for(:controller => 'main', :action => 'computers', :id => params[:id], :protocol => "https://")
+	    link = url_for(:controller => 'main', :action => 'computers', :id => params[:id], :protocol => ENV['WEB_PROTO']+"://")
 	    if params[:refresh] != nil
 	    	if params[:refresh] == ""
 	    		@refresh_content = nil
@@ -242,7 +242,7 @@ class MainController < ApplicationController
     			end
     		end
     		
-    		redirect_to :action => 'filecache', :protocol => "https://"
+    		redirect_to :action => 'filecache', :protocol => ENV['WEB_PROTO']+"://"
     	end
 	
 	end

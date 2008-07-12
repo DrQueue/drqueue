@@ -12,7 +12,9 @@ class ApplicationController < ActionController::Base
   before_filter :basic_auth_required, :only => [:feed]
 
   # force ssl
-  before_filter :redirect_to_ssl
+  if ENV['WEB_PROTO'] == "https" 
+   before_filter :redirect_to_ssl
+  end
   
   # maintenance page
   before_filter :check_for_maintenance
@@ -22,7 +24,7 @@ class ApplicationController < ActionController::Base
   private
   def authenticate
     unless session[:profile]
-      redirect_to :controller => 'main', :action => 'login_form', :protocol => "https://" 
+      redirect_to :controller => 'main', :action => 'login_form', :protocol => ENV['WEB_PROTO']+"://" 
         return false
     end
   end

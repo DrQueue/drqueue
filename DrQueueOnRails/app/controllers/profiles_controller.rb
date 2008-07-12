@@ -23,7 +23,7 @@ class ProfilesController < ApplicationController
     	redirect_to '/' and return
     else
     	@profile_pages, @profiles = paginate :profiles, :per_page => 10
-    	session[:return_path] = url_for(:controller => 'profiles', :action => 'list', :protocol => "https://")
+    	session[:return_path] = url_for(:controller => 'profiles', :action => 'list', :protocol => ENV['WEB_PROTO']+"://")
     end
   end
 
@@ -74,7 +74,7 @@ class ProfilesController < ApplicationController
 	    	@usage = 0
 	    end
 	    
-	    session[:return_path] = url_for(:controller => 'profiles', :action => 'show', :id => params[:id], :protocol => "https://")
+	    session[:return_path] = url_for(:controller => 'profiles', :action => 'show', :id => params[:id], :protocol => ENV['WEB_PROTO']+"://")
     end
   end
 
