@@ -57,7 +57,7 @@ slaves. Also provides access to all data structures of DrQueue."
 		struct computer *tc = c;
 		memcpy (c,*$1,sizeof(struct computer)*result);
 		for (i=0; i<result; i++) {
-			VALUE o = SWIG_NewPointerObj((void*)(tc), SWIGTYPE_p_computer, 0);
+			VALUE o = SWIG_NewPointerObj((void*)(tc), SWIGTYPE_p_computer, 1);
 			rb_ary_push(l,o);
 			tc++;
 		}
@@ -85,7 +85,7 @@ slaves. Also provides access to all data structures of DrQueue."
 		struct job *tj = j;
 		memcpy (j,*$1,sizeof(struct job)*result);
 		for (i=0; i<result; i++) {
-			VALUE o = SWIG_NewPointerObj((void*)(tj), SWIGTYPE_p_job, 0);
+			VALUE o = SWIG_NewPointerObj((void*)(tj), SWIGTYPE_p_job, 1);
 			rb_ary_push(l,o);
 			tj++;
 		}
@@ -142,7 +142,9 @@ typedef unsigned char uint8_t;
 	~job ()
 	{
 		job_init(self);
-		free (self);
+		//free (self);
+		job_frame_info_free (self);
+		job_delete (self);
 	}	
 
 	int environment_variable_add (char *name, char *value)
@@ -482,7 +484,8 @@ typedef unsigned char uint8_t;
 
   ~pool ()
   {
-    free (self);
+    //free (self);
+    computer_pool_free (self);
   }
 }
 
@@ -503,7 +506,8 @@ typedef unsigned char uint8_t;
 
 	~computer ()
 	{
-		free (self);
+		//free (self);
+		computer_free (self);
 	}
 
   VALUE list_pools (void)
