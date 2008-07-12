@@ -55,8 +55,9 @@ slaves. Also provides access to all data structures of DrQueue."
         memcpy (c,*$1,sizeof(struct computer)*result);
         for (i=0; i<result; i++) {
             PyObject *o = SWIG_NewPointerObj((void*)(tc), SWIGTYPE_p_computer, 1);
-            Py_INCREF(o);
+            //Py_INCREF(o);
             PyList_Append(l,o);
+            Py_DECREF(o);
             tc++;
         }
         //free (c);
@@ -83,9 +84,10 @@ slaves. Also provides access to all data structures of DrQueue."
             if (!j)
                 return PyErr_NoMemory();  
             memcpy(j,($1[i]),sizeof(struct job));
-            PyObject *o = SWIG_NewPointerObj((void*)(j), SWIGTYPE_p_job, 0);
-            Py_INCREF(o);
+            PyObject *o = SWIG_NewPointerObj((void*)(j), SWIGTYPE_p_job, 1);
+            //Py_INCREF(o);
             PyList_Append(l,o);
+            Py_DECREF(o);
             tj++;
         }
         free(*$1);
@@ -112,6 +114,11 @@ typedef unsigned long int uint32_t;
 typedef unsigned char uint8_t;
 
 
+// these methods generate new objects
+%newobject *::request_job_list;
+%newobject *::request_computer_list;
+
+
 // JOB
 %extend job {
     %newobject job;
@@ -129,7 +136,9 @@ typedef unsigned char uint8_t;
     ~job ()
     {
         job_init(self);
-        free(self);
+        //free(self);
+        job_frame_info_free (self);
+		job_delete (self);
     }
     
     int environment_variable_add (char *name, char *value)
@@ -370,7 +379,8 @@ typedef unsigned char uint8_t;
     %delobject ~pool;
     ~pool ()
     {
-        free (self);
+        //free (self);
+        computer_pool_free (self);
     }
 }
 
@@ -391,7 +401,8 @@ typedef unsigned char uint8_t;
     %delobject computer;
     ~computer ()
     {
-        free (self);
+        //free (self);
+        computer_free (self);
     }
     
     %newobject list_pools;
