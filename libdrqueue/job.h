@@ -191,6 +191,11 @@ union koj_info {  /* Kind of job information */
     char viewcmd[BUFFERLEN]; /* something like "$DRQUEUE_BIN/viewcmd/imf_batch" */
   }
   xsi;
+  struct koji_luxrender {
+    char script[BUFFERLEN];
+    char viewcmd[BUFFERLEN];
+  }
+  luxrender;
 };
 
 /* Koj types */
