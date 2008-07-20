@@ -35,7 +35,7 @@ endif
 
 
 # try to find out the path of luxconsole
-$LUXCONSOLE_PATH=´which luxconsole´
+set LUXCONSOLE_PATH=`which luxconsole`
 
 if [ "$LUXCONSOLE_PATH" -eq "" ] then;
 	echo "cannot find luxconsole executable!"
@@ -43,14 +43,14 @@ fi
 
 
 # number of threads to use
-setenv THREADS 2
+set THREADS 2
 
 # do a litle bit magic to get the path without frame numbers
-setenv DUMMY `echo $SCENE | rev | sed -e 's/-/./' | rev`
-setenv DUMMY2 `echo $DUMMY:r:r`
+set DUMMY=`echo $SCENE | rev | sed -e 's/-/./' | rev`
+set DUMMY2=`echo $DUMMY:r:r`
 
 # create new path for current frame
-setenv SCENE_NEW $DUMMY2-`printf "%05d" $FRAME`.lxs
+set SCENE_NEW $DUMMY2-`printf "%05d" $FRAME`.lxs
 
 
 echo $LUXCONSOLE_PATH -t $THREADS $SCENE_NEW
