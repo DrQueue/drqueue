@@ -43,14 +43,14 @@ fi
 
 
 # number of threads to use
-set THREADS 2
+set THREADS=2
 
 # do a litle bit magic to get the path without frame numbers
 set DUMMY=`echo $SCENE | rev | sed -e 's/-/./' | rev`
 set DUMMY2=`echo $DUMMY:r:r`
 
 # create new path for current frame
-set SCENE_NEW $DUMMY2-`printf "%05d" $FRAME`.lxs
+set SCENE_NEW=$DUMMY2-`printf "%05d" $FRAME`.lxs
 
 
 echo $LUXCONSOLE_PATH -t $THREADS $SCENE_NEW
