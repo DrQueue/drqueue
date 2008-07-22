@@ -1,23 +1,23 @@
 class JobsController < ApplicationController
 
-	require 'rubygems'
+  require 'rubygems'
 
-	# for drqueue
-	require 'drqueue'
+  # for drqueue
+  require 'drqueue'
 	
-	# for generating job scripts
-	require_dependency 'jobscript_generators'
+  # for generating job scripts
+  require_dependency 'jobscript_generators'
 	
-	# for working with files 
-	require 'ftools'
-	require 'fileutils'
+  # for working with files 
+  require 'ftools'
+  require 'fileutils'
 	
-	# for text sanitizing
-	include ActionView::Helpers::TextHelper
-	include ActionView::Helpers::SanitizeHelper
+  # for text sanitizing
+  include ActionView::Helpers::TextHelper
+  include ActionView::Helpers::SanitizeHelper
 
-	# template
-	layout "main_layout", :except => 'feed'
+  # template
+  layout "main_layout", :except => 'feed'
 
 
   def index
@@ -28,36 +28,38 @@ class JobsController < ApplicationController
  
   def list
   	
-  	# update list of all computers
-  	Job.global_computer_list(1)
+    # update list of all computers
+    Job.global_computer_list(1)
   	
-  	if (params[:id] == 'all') && (session[:profile].status == 'admin')
-  		# get all jobs from db
-  		@jobs_db = Job.find(:all, :order => 'id')
+    if (params[:id] == 'all') && (session[:profile].status == 'admin')
+      # get all jobs from db
+      @jobs_db = Job.find(:all, :order => 'id')
   		
-  		# get all jobs from master which are not in db
-  		@jobs_only_master = Job.no_db_jobs()
+      # get all jobs from master which are not in db
+      @jobs_only_master = Job.no_db_jobs()
   		
-  		# set return path to list action
-  		session[:return_path] = url_for(:controller => 'jobs', :action => 'list', :id => 'all', :protocol => ENV['WEB_PROTO']+"://")
-  	else
-  		# get only owners jobs from db
-  		@jobs_db = Job.find_all_by_profile_id(session[:profile].id)
+      # set return path to list action
+      session[:return_path] = url_for(:controller => 'jobs', :action => 'list', :id => 'all', :protocol => 
+ENV['WEB_PROTO']+"://")
+    else
+      # get only owners jobs from db
+      @jobs_db = Job.find_all_by_profile_id(session[:profile].id)
   		
-  		# set return path to list action
-  		session[:return_path] = url_for(:controller => 'jobs', :action => 'list', :protocol => ENV['WEB_PROTO']+"://")
-  	end
+      # set return path to list action
+      session[:return_path] = url_for(:controller => 'jobs', :action => 'list', :protocol => 
+ENV['WEB_PROTO']+"://")
+    end
   	
-  	# refresh timer
+    # refresh timer
     link = url_for(:controller => 'jobs', :action => 'list', :id => params[:id], :protocol => ENV['WEB_PROTO']+"://")
     if params[:refresh] != nil
-    	if params[:refresh] == ""
-    		@refresh_content = nil
-    		session[:last_refresh] = nil
-    	else
-    		@refresh_content = params[:refresh]+'; URL='+link
-    		session[:last_refresh] = params[:refresh]
-    	end
+      if params[:refresh] == ""
+        @refresh_content = nil
+    	session[:last_refresh] = nil
+      else
+       @refresh_content = params[:refresh]+'; URL='+link
+       session[:last_refresh] = params[:refresh]
+      end
     elsif session[:last_refresh] != nil
     	@refresh_content = session[:last_refresh]+'; URL='+link
     else
@@ -66,22 +68,23 @@ class JobsController < ApplicationController
   	
   end
 
+
   def show
   	
-  	# seek for job info in db
+    # seek for job info in db
     @job = Job.find_by_queue_id(params[:id].to_i)
   	
-  	# get job info from master
+    # get job info from master
     @job_data = Job.job_data_from_master(params[:id].to_i)
     if @job_data == nil
-    	flash[:notice] = 'Wrong job id.'
-	   	redirect_to :action => 'list' and return
-	end
+      flash[:notice] = 'Wrong job id.'
+      redirect_to :action => 'list' and return
+    end
     
-  	# only owner and admin are allowed (only for drqueuonrails-jobs, not from drqman)
-  	if (@job != nil) && (@job.profile_id != session[:profile].id) && (session[:profile].status != 'admin')
-  		redirect_to :action => 'list' and return
-  	end
+    # only owner and admin are allowed (only for drqueuonrails-jobs, not from drqman)
+    if (@job != nil) && (@job.profile_id != session[:profile].id) && (session[:profile].status != 'admin')
+      redirect_to :action => 'list' and return
+    end
   	
     # get list of all computers (without update)
     @computer_list = Job.global_computer_list(0)
@@ -93,28 +96,30 @@ class JobsController < ApplicationController
     	@refresh_content = nil
     	params[:refresh] != nil
     else
-    	# destination of refresh
-	    link = url_for(:controller => 'jobs', :action => 'show', :id => params[:id], :protocol => ENV['WEB_PROTO']+"://")
-	    # timer was newly set
-	    if params[:refresh] != nil
-	    	if params[:refresh] == ""
-	    		@refresh_content = nil
-	    		session[:last_refresh] = nil
-	    	else
-	    		@refresh_content = params[:refresh]+'; URL='+link
-	    		session[:last_refresh] = params[:refresh]
-	    	end
-	    end
-	    # timer was set before
-	    if session[:last_refresh] != nil
-	    	@refresh_content = session[:last_refresh]+'; URL='+link
-	    end
-	    #else
-	    #	@refresh_content = '300; URL='+link
-	    #end
+      # destination of refresh
+      link = url_for(:controller => 'jobs', :action => 'show', :id => params[:id], :protocol => 
+ENV['WEB_PROTO']+"://")
+      # timer was newly set
+      if params[:refresh] != nil
+        if params[:refresh] == ""
+	  @refresh_content = nil
+	  session[:last_refresh] = nil
+	else
+	  @refresh_content = params[:refresh]+'; URL='+link
+	  session[:last_refresh] = params[:refresh]
 	end
+      end
+      # timer was set before
+      if session[:last_refresh] != nil
+        @refresh_content = session[:last_refresh]+'; URL='+link
+      end
+      #else
+        # @refresh_content = '300; URL='+link
+      #end
+    end
     
   end
+
 
   def new
     @job = Job.new

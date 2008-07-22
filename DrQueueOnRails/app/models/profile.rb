@@ -1,10 +1,12 @@
 class Profile < ActiveRecord::Base
 
-	require 'rubygems'
-	require 'net/ldap'
+  require 'rubygems'
+  require 'net/ldap'
 	
-	has_many :jobs
+  has_many :jobs
 	
+  @@per_page = 10
+
 	
 	# email validation
  	validates_format_of :email,
