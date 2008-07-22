@@ -90,7 +90,7 @@ char *luxrendersg_create (struct luxrendersgi *info) {
 
   if ((etc_luxrender_sg = fopen (fn_etc_luxrender_sg,"r")) == NULL) {
     fprintf(f,"\necho -------------------------------------------------\n");
-    fprintf(f,"echo ATTENTION ! There was a problem opening: %s\n",fn_etc_blender_sg);
+    fprintf(f,"echo ATTENTION ! There was a problem opening: %s\n",fn_etc_luxrender_sg);
     fprintf(f,"echo So the default configuration will be used\n");
     fprintf(f,"echo -------------------------------------------------\n");
     fprintf(f,"\n\n");
