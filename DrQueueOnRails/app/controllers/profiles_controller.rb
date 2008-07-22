@@ -22,7 +22,8 @@ class ProfilesController < ApplicationController
     if session[:profile].status != 'admin'
     	redirect_to '/' and return
     else
-    	@profile_pages, @profiles = paginate :profiles, :per_page => 10
+      @profile = Profile.paginate, :page => params[:page], :order => 'id DESC'
+      # @profile_pages, @profiles = paginate :profiles, :per_page => 10
     	session[:return_path] = url_for(:controller => 'profiles', :action => 'list', :protocol => ENV['WEB_PROTO']+"://")
     end
   end
