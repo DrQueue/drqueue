@@ -65,8 +65,6 @@ Rails::Initializer.run do |config|
   
   # See Rails::Configuration for more options
 
-  ActiveRecord::Base.verification_timeout = 14400
-
 end
 
 # Add new inflection rules using the following format 
@@ -83,6 +81,8 @@ end
 # Mime::Type.register "application/x-mobile", :mobile
 
 # Include your application configuration below
+
+ActiveRecord::Base.verification_timeout = 14400
 
 require 'will_paginate'
 
