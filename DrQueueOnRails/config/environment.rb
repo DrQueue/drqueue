@@ -64,6 +64,13 @@ Rails::Initializer.run do |config|
   # config.active_record.default_timezone = :utc
   
   # See Rails::Configuration for more options
+
+
+  ActiveRecord::Base.verification_timeout = 14400
+
+  gem 'mislav-will_paginate', '~> 2.2'
+  require 'will_paginate'
+
 end
 
 # Add new inflection rules using the following format 
@@ -80,10 +87,5 @@ end
 # Mime::Type.register "application/x-mobile", :mobile
 
 # Include your application configuration below
-
-ActiveRecord::Base.verification_timeout = 14400
-
-gem 'mislav-will_paginate', '~> 2.2'
-require 'will_paginate'
 
 
