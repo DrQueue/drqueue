@@ -974,11 +974,14 @@ ENV['WEB_PROTO']+"://")
   	archive = renderpath + '/rendered_files_' + id_string + '.tbz2'
   	
   	if File.exist? archive
-  		# too slow for big files
-  		#send_file archive
-  		
-  		# use mod_xsendfile which is much faster
-  		x_send_file archive
+  		# find out which web server we are using
+  		if request.env["SERVER_SOFTWARE"].index("Apache") == nil
+  		  # too slow for big files, only used without apache
+  		  send_file archive
+  		else
+  		  # use mod_xsendfile which is much faster
+  		  x_send_file archive
+  		end
   	else
   		# animation and cinema4d are always only packed
   		if (job_db.sort == "animation") || (job_db.renderer == "cinema4d")
@@ -991,11 +994,15 @@ ENV['WEB_PROTO']+"://")
   			#	redirect_to :action => 'new' and return
   			#end
   		end
-  		# too slow for big files
-  		#send_file archive
   		
-  		# use mod_xsendfile which is much faster
-  		x_send_file archive
+  		# find out which web server we are using
+  		if request.env["SERVER_SOFTWARE"].index("Apache") == nil
+  		  # too slow for big files, only used without apache
+  		  send_file archive
+  		else
+  		  # use mod_xsendfile which is much faster
+  		  x_send_file archive
+  		end
   	end
   end
   
