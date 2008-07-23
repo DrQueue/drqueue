@@ -68,7 +68,7 @@ Rails::Initializer.run do |config|
 
   ActiveRecord::Base.verification_timeout = 14400
 
-  gem 'mislav-will_paginate', '~> 2.2'
+  gem 'mislav-will_paginate', '~> 2.2', :lib => 'will_paginate'
   require 'will_paginate'
 
 end
