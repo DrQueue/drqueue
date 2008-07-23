@@ -65,14 +65,14 @@ Rails::Initializer.run do |config|
   
   # See Rails::Configuration for more options
 
+  config.gem 'mislav-will_paginate', :version => '~> 2.3.2', :lib => 'will_paginate',
+:source => 'http://gems.github.com'
+
 
   ActiveRecord::Base.verification_timeout = 14400
 
   #config.gem 'mislav-will_paginate', '~> 2.2', :lib => 'will_paginate'
   #require 'will_paginate'
-
-  config.gem 'mislav-will_paginate', :version => '~> 2.3.2', :lib => 'will_paginate',
-:source => 'http://gems.github.com'
 
 end
 
