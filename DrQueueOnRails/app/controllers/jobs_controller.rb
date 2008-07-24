@@ -800,7 +800,7 @@ ENV['WEB_PROTO']+"://")
 	elsif params[:job][:renderer] == "luxrender"
 		
 	   	# find scene file in jobdir
-	   	scenefile = Job.find_scenefile("lxs")
+	   	scenefile = Job.find_first_scenefile("lxs")
 	   	
 	   	# possible errors
 	   	if scenefile == -1
