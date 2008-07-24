@@ -797,7 +797,7 @@ ENV['WEB_PROTO']+"://")
 		end
 	
 	# experimental luxrender support
-	if params[:job][:renderer] == "luxrender"
+	elsif params[:job][:renderer] == "luxrender"
 		
 	   	# find scene file in jobdir
 	   	scenefile = Job.find_scenefile("lxs")
@@ -834,7 +834,7 @@ ENV['WEB_PROTO']+"://")
 			flash[:notice] = 'The job script could not be generated.'
 	   		redirect_to :action => 'new' and return
 		end
-	
+	  
 	
 	else
 		# delete jobdir
