@@ -37,11 +37,6 @@ endif
 # try to find out the path of luxconsole
 set LUXCONSOLE_PATH=`which luxconsole`
 
-if [ "$LUXCONSOLE_PATH" -eq "" ] then;
-	echo "cannot find luxconsole executable!"
-fi
-
-
 # number of threads to use
 set THREADS=2
 
