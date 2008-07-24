@@ -375,8 +375,8 @@ typedef unsigned char uint8_t;
 	/* LuxRender script file generation */
 	char *luxrendersg (char *scene, char *scriptdir)
 	{	
-		struct luxrendersgi *lux = (struct luxrendersgi *)malloc (sizeof(struct luxrendersgi));
-    	if (!lux) {
+		struct luxrendersgi *luxren = (struct luxrendersgi *)malloc (sizeof(struct luxrendersgi));
+    	if (!luxren) {
  	     	rb_raise(rb_eNoMemError,"out of memory");
     	 	return NULL;
    		}	
@@ -387,12 +387,12 @@ typedef unsigned char uint8_t;
     	 	return NULL;
    		}
 		
-		memset (lux,0,sizeof(struct luxrendersgi));
+		memset (luxren,0,sizeof(struct luxrendersgi));
 		
-		strncpy(lux->scene, scene, BUFFERLEN-1);
-		strncpy(lux->scriptdir, scriptdir, BUFFERLEN-1);
+		strncpy(luxren->scene, scene, BUFFERLEN-1);
+		strncpy(luxren->scriptdir, scriptdir, BUFFERLEN-1);
 		
-  		outfile = luxrendersg_create(lux);
+  		outfile = luxrendersg_create(luxren);
   		
 		if (!outfile) {
 			rb_raise(rb_eException,"Problem creating script file");
