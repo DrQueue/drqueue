@@ -184,6 +184,24 @@ class Job < ActiveRecord::Base
 	end
 	
 	
+	# find first scenefile in current dir (jobdir)
+    def self.find_first_scenefile(render_ending)
+    
+		count = `find . -type f -maxdepth 1 ! -name '.*' | grep -i .#{render_ending}$ | wc -l`.to_i
+		if count < 1
+			return -1
+		end
+		
+		scenefile = `find . -type f -maxdepth 1 ! -name '.*' | grep -i .#{render_ending}$ | head -n 1`.gsub("\n","").gsub("./","")
+		if $?.exitstatus != 0
+			return -1
+	   	end
+	   	
+	   	return scenefile
+	   	
+	end
+	
+	
 	# combine parts of rendered image
 	def self.combine_parts(db_job)
 	

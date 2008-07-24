@@ -48,6 +48,10 @@ module Drqueue
       	file_owner = `id -u drqueueonrails`.to_i.to_s + ":" + `id -g drqueueonrails`.to_i.to_s
       	kind = 2
       	output_path = self.cinema_4dsg(scene, scriptdir, file_owner, kind)
+      # luxrender animation
+      elsif (renderer == "luxrender") && (args.size == 2)
+      	scene, scriptdir = args
+      	output_path = self.luxrendersg(scene, scriptdir)
       else
       	raise ArgumentError, "Wrong renderer and/or unsufficient number of arguments."
       end

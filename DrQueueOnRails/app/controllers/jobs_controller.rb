@@ -796,9 +796,48 @@ ENV['WEB_PROTO']+"://")
 	   		redirect_to :action => 'new' and return
 		end
 	
+	# experimental luxrender support
+	if params[:job][:renderer] == "luxrender"
+		
+	   	# find scene file in jobdir
+	   	scenefile = Job.find_scenefile("lxs")
+	   	
+	   	# possible errors
+	   	if scenefile == -1
+			# delete jobdir
+  			FileUtils.cd(userdir)
+  			FileUtils.remove_dir(jobdir, true)
+			flash[:notice] = 'No scene file was found. Please check your archive file.'
+	   		redirect_to :action => 'new' and return
+	   	end
+	   	
+	   	### TODO: do we really have to do this?
+	   	### how can we automate the script file generation?
+		
+		# add job to specific pool
+		@jobm.limits.pool="luxrender" 
+		
+		# create job script
+		if params[:job][:sort] == "animation"
+			# each computer renders one frame of an animation
+			puts @jobm.cmd = @jobm.generate_jobscript("luxrender", jobdir+"/"+scenefile, jobdir)
+		else
+			# delete jobdir
+  			#system("rm -rf "+jobdir)
+  			FileUtils.cd(userdir)
+  			FileUtils.remove_dir(jobdir, true)
+			flash[:notice] = 'Wrong scene sort specified.'
+	   		redirect_to :action => 'new' and return
+		end
+		
+		if (@jobm.cmd == nil)
+			flash[:notice] = 'The job script could not be generated.'
+	   		redirect_to :action => 'new' and return
+		end
+	
+	
 	else
 		# delete jobdir
-  		#system("rm -rf "+jobdir)
   		FileUtils.cd(userdir)
   		FileUtils.remove_dir(jobdir, true)
 		flash[:notice] = 'No correct renderer specified.'
