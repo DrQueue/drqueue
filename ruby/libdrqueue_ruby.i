@@ -371,6 +371,36 @@ typedef unsigned char uint8_t;
 		return outfile;
 	}
 	
+	/* LuxRender script file generation */
+	char *luxrendersg (char *scene, char *scriptdir)
+	{	
+		struct luxrendersgi *lux = (struct luxrendersgi *)malloc (sizeof(struct luxrendersgi));
+    	if (!lux) {
+ 	     	rb_raise(rb_eNoMemError,"out of memory");
+    	 	return NULL;
+   		}	
+		
+		char *outfile = (char *)malloc(sizeof(char *));
+		if (!outfile) {
+ 	     	rb_raise(rb_eNoMemError,"out of memory");
+    	 	return NULL;
+   		}
+		
+		memset (lux,0,sizeof(struct luxrendersgi));
+		
+		strncpy(lux->scene, scene, BUFFERLEN-1);
+		strncpy(lux->scriptdir, scriptdir, BUFFERLEN-1);
+		
+  		outfile = luxrendersg_create(lux);
+  		
+		if (!outfile) {
+			rb_raise(rb_eException,"Problem creating script file");
+      		return NULL;
+		}
+		
+		return outfile;
+	}
+	
 }
 
 
