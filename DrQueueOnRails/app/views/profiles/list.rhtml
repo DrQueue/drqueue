@@ -14,15 +14,29 @@
    <th> </th>
   </tr>
   
-<%= render :partial => 'profile', :collection => @profiles %>
-
-<%= will_paginate @profiles %>  
-
+<% for profile in @profiles %>
+  <tr>
+   <td><%=h profile.name %></td>
+   <td><%=h profile.email %></td>
+   <td><%=h profile.ldap_account %></td>
+   <td><%=h profile.status %></td>
+   <% if profile.accepted  == 1 %>
+   	<td style="text-align:center;">yes</td>
+   <% else %>
+    <td style="text-align:center;">no</td>
+   <% end %>
+   <td><%= link_to 'Show', :action => 'show', :id => profile %></td>
+   <td><%= link_to 'Edit', :action => 'edit', :id => profile %></td>
+   <td><%= link_to 'Delete', { :action => 'destroy', :id => profile }, :confirm => 'Are you sure?', :method => :post %></td>
+  </tr>
+<% end %>
 </table>
 
 <br /><br />
 
 
+
+<%= will_paginate @profiles %>
 
  
 <!--
