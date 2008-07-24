@@ -112,6 +112,7 @@ slaves. Also provides access to all data structures of DrQueue."
 %include "blendersg.h"
 %include "mentalraysg.h"
 %include "cinema4dsg.h"
+%include "luxrendersg.h"
 
 // type mapppings
 typedef unsigned int time_t;
