@@ -14,7 +14,7 @@
    <th> </th>
   </tr>
   
-<% for profile in @profiles %>
+<% for profile in @profiles -%>
   <tr>
    <td><%=h profile.name %></td>
    <td><%=h profile.email %></td>
@@ -29,7 +29,7 @@
    <td><%= link_to 'Edit', :action => 'edit', :id => profile %></td>
    <td><%= link_to 'Delete', { :action => 'destroy', :id => profile }, :confirm => 'Are you sure?', :method => :post %></td>
   </tr>
-<% end %>
+<% end -%>
 </table>
 
 <br /><br />
