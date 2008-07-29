@@ -55,8 +55,8 @@ module Drqueue
       	renderdir = scriptdir
       	projectdir = scriptdir
       	image = camera = format = nil
-      	# user and group
-      	file_owner = ENV['DQOR_USER'] + ":" + ENV['DQOR_GROUP']
+      	# user (group is found out by bin/chown_block)
+      	file_owner = ENV['DQOR_USER']
       	res_x = res_y = -1
         output_path = self.mayasg(scene, projectdir, scriptdir, renderdir, image.to_s, file_owner.to_s, camera.to_s, res_x, res_y, format.to_s, mentalray)
       else
