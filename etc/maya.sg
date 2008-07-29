@@ -106,8 +106,20 @@ endif
 
 if ($?MENTALRAY) then
 	set MENTALRAY = "-r mr"
+	
+	## number of processors/cores to use
+	#set NUM_PROCS="-rt 2"
+
+	## use Maya's automatic detection
+	set NUM_PROCS="-art"
 else
 	set MENTALRAY = ""
+	
+	## number of processors/cores to use
+	#set NUM_PROCS="-n 2"
+
+	## use Maya's automatic detection
+	set NUM_PROCS="-n 0"
 endif
 
 
@@ -131,12 +143,6 @@ endif
 
 #####
 
-
-## number of processors/cores to use
-#set NUM_PROCS="-rt 2"
-
-## use Maya's automatic detection
-set NUM_PROCS="-art"
 
 
 ## This echoes the used render parameters and starts the rendering
