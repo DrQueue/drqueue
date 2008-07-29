@@ -772,16 +772,6 @@ ENV['WEB_PROTO']+"://")
 		if params[:job][:sort] == "animation"
 			# each computer renders one frame of an animation
 			puts @jobm.cmd = @jobm.generate_jobscript("cinema4d", jobdir+"/"+scenefile, jobdir)
-		elsif params[:job][:sort] == "image"
-			# each computer renders one part of an image
-			puts @jobm.cmd = @jobm.generate_jobscript("cinema4d_image", jobdir+"/"+scenefile, jobdir)
-			
-			# set number of parts
-			@jobm.frame_start = 1
-			
-			# we have no support for splitting up renderings yet
-			@jobm.frame_end = 1
-			
 		else
 			# delete jobdir
   			#system("rm -rf "+jobdir)
@@ -834,7 +824,94 @@ ENV['WEB_PROTO']+"://")
 			flash[:notice] = 'The job script could not be generated.'
 	   		redirect_to :action => 'new' and return
 		end
-	  
+
+	# maya support (uses maya software renderer)
+	elsif params[:job][:renderer] == "maya"
+		
+	   	# find scene file in jobdir (first try with maya ascii format)
+	   	scenefile = Job.find_scenefile("ma")
+	   	
+	   	# possible errors
+	   	if scenefile == -1
+			flash[:notice] = 'More than one scene file was found. Please only upload one per job.'
+	   		redirect_to :action => 'new' and return
+		elsif scenefile == -2
+			# find scene file in jobdir (second try with maya binary format)
+			scenefile = Job.find_scenefile("mb")
+			# possible errors
+	   		if scenefile == -1
+				flash[:notice] = 'More than one scene file was found. Please only upload one per job.'
+	   			redirect_to :action => 'new' and return
+			elsif scenefile == -2
+				flash[:notice] = 'No scene file was found. Please check your archive file.'
+	   			redirect_to :action => 'new' and return
+	   		end
+	   	end
+		
+		# add job to specific pool
+		@jobm.limits.pool="maya" 
+		
+		# create job script
+		if params[:job][:sort] == "animation"
+			# each computer renders one frame of an animation
+			puts @jobm.cmd = @jobm.generate_jobscript("maya", jobdir+"/"+scenefile, jobdir, 0)
+		else
+			# delete jobdir
+  			#system("rm -rf "+jobdir)
+  			FileUtils.cd(userdir)
+  			FileUtils.remove_dir(jobdir, true)
+			flash[:notice] = 'Wrong scene sort specified.'
+	   		redirect_to :action => 'new' and return
+		end
+		
+		if (@jobm.cmd == nil)
+			flash[:notice] = 'The job script could not be generated.'
+	   		redirect_to :action => 'new' and return
+		end	
+		
+	# maya support (uses mentalray as renderer)
+	elsif params[:job][:renderer] == "mayamr"
+		
+	   	# find scene file in jobdir (first try with maya ascii format)
+	   	scenefile = Job.find_scenefile("ma")
+	   	
+	   	# possible errors
+	   	if scenefile == -1
+			flash[:notice] = 'More than one scene file was found. Please only upload one per job.'
+	   		redirect_to :action => 'new' and return
+		elsif scenefile == -2
+			# find scene file in jobdir (second try with maya binary format)
+			scenefile = Job.find_scenefile("mb")
+			# possible errors
+	   		if scenefile == -1
+				flash[:notice] = 'More than one scene file was found. Please only upload one per job.'
+	   			redirect_to :action => 'new' and return
+			elsif scenefile == -2
+				flash[:notice] = 'No scene file was found. Please check your archive file.'
+	   			redirect_to :action => 'new' and return
+	   		end
+	   	end
+		
+		# add job to specific pool
+		@jobm.limits.pool="maya" 
+		
+		# create job script
+		if params[:job][:sort] == "animation"
+			# each computer renders one frame of an animation
+			puts @jobm.cmd = @jobm.generate_jobscript("maya", jobdir+"/"+scenefile, jobdir, 1)
+		else
+			# delete jobdir
+  			#system("rm -rf "+jobdir)
+  			FileUtils.cd(userdir)
+  			FileUtils.remove_dir(jobdir, true)
+			flash[:notice] = 'Wrong scene sort specified.'
+	   		redirect_to :action => 'new' and return
+		end
+		
+		if (@jobm.cmd == nil)
+			flash[:notice] = 'The job script could not be generated.'
+	   		redirect_to :action => 'new' and return
+		end  
 	
 	else
 		# delete jobdir
