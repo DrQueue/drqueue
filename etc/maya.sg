@@ -131,24 +131,23 @@ endif
 
 #####
 
-## This echoes the what would be the render parameters
-#
-#echo render -n 0 -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT -rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" $MENTALRAY $CIMAGE $CAMERA "$DRQUEUE_SCENE"
-echo render $DRQUEUE_PRE $DRQUEUE_POST -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT -rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" $MENTALRAY $CIMAGE $CAMERA "$DRQUEUE_SCENE"
 
-## The following paths need to be checked so they fit yours
+## number of processors/cores to use (0 means all available)
+set NUM_PROCS=0
+
+
+## This echoes the used render parameters and starts the rendering
 if ($DRQUEUE_OS == "WINDOWS") then
-  render $DRQUEUE_PRE $DRQUEUE_POST -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT \
-						-rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" $MENTALRAY $CIMAGE $CAMERA "$DRQUEUE_SCENE"
+  echo render $DRQUEUE_PRE $DRQUEUE_POST -n $NUM_PROCS -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT \
+  		-rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" $MENTALRAY $CIMAGE $CAMERA "$DRQUEUE_SCENE"
+  render $DRQUEUE_PRE $DRQUEUE_POST -n $NUM_PROCS -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT \
+		-rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" $MENTALRAY $CIMAGE $CAMERA "$DRQUEUE_SCENE"
 else
-  /usr/aw/maya/bin/Render $DRQUEUE_PRE $DRQUEUE_POST -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT \
-			-rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" $MENTALRAY $CIMAGE $CAMERA "$DRQUEUE_SCENE"
-
-## Another way to call the Maya renderer
-#
-#  /usr/aw/maya/bin/Render -n 0 -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT \
-#			-rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" $MENTALRAY $CIMAGE $CAMERA "$DRQUEUE_SCENE"
-#
+  set MAYA_RENDER_BIN=`which Render`
+  echo render $DRQUEUE_PRE $DRQUEUE_POST -n $NUM_PROCS -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT \
+  		-rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" $MENTALRAY $CIMAGE $CAMERA "$DRQUEUE_SCENE"
+  $MAYA_RENDER_BIN $DRQUEUE_PRE $DRQUEUE_POST -n $NUM_PROCS -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT \
+		-rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" $MENTALRAY $CIMAGE $CAMERA "$DRQUEUE_SCENE"
 
 endif
 
@@ -161,7 +160,10 @@ else
   # The frame was rendered properly (exit code == 0)
   if ($DRQUEUE_OS != "WINDOWS") then
     # so we change the owner of the resulting images to the owner of the job
-    $DRQUEUE_BIN/chown_block $RF_OWNER "$DRQUEUE_RD/$DRQUEUE_IMAGE" $DRQUEUE_FRAME $BLOCK 
+    #$DRQUEUE_BIN/chown_block $RF_OWNER "$DRQUEUE_RD/$DRQUEUE_IMAGE" $DRQUEUE_FRAME $BLOCK 
+    
+    echo chown $RF_OWNER $DRQUEUE_RD/*
+    #chown $RF_OWNER $DRQUEUE_RD/* 
   endif
 endif
 
