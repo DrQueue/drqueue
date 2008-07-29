@@ -20,6 +20,9 @@ ENV['WEB_PROTO'] ||= "https"
 ENV['LOG_SHOW_USER'] ||= "RZ-Login"
 ENV['LOG_SHOW_PW'] ||= "Passwort"
 
+ENV['DQOR_USER'] ||= "drqueueonrails"
+ENV['DQOR_GROUP'] ||= "drqueueonrails"
+
 APP_VERSION = IO.popen("svn info").readlines[4]
 
 # Specifies gem version of Rails to use when vendor/rails is not present
