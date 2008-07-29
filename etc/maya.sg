@@ -169,9 +169,10 @@ else
   # The frame was rendered properly (exit code == 0)
   if ($DRQUEUE_OS != "WINDOWS") then
     # so we change the owner of the resulting images to the owner of the job
-    #$DRQUEUE_BIN/chown_block $RF_OWNER "$DRQUEUE_RD/$DRQUEUE_IMAGE" $DRQUEUE_FRAME $BLOCK 
+    echo $DRQUEUE_BIN/chown_block $RF_OWNER "$DRQUEUE_RD/$DRQUEUE_IMAGE" $DRQUEUE_FRAME $BLOCK
+    $DRQUEUE_BIN/chown_block $RF_OWNER "$DRQUEUE_RD/$DRQUEUE_IMAGE" $DRQUEUE_FRAME $BLOCK 
     
-    echo chown $RF_OWNER $DRQUEUE_RD/*
+    #echo chown $RF_OWNER $DRQUEUE_RD/*
     #chown $RF_OWNER $DRQUEUE_RD/* 
   endif
 endif
