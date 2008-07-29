@@ -113,6 +113,7 @@ slaves. Also provides access to all data structures of DrQueue."
 %include "mentalraysg.h"
 %include "cinema4dsg.h"
 %include "luxrendersg.h"
+%include "mayasg.h"
 
 // type mapppings
 typedef unsigned int time_t;
@@ -339,7 +340,6 @@ typedef unsigned char uint8_t;
 		return outfile;
 	}
 
-
 	/* Cinema4D script file generation */
 	char *cinema4dsg (char *scene, char *scriptdir, char *file_owner, uint8_t kind)
 	{	
@@ -401,7 +401,47 @@ typedef unsigned char uint8_t;
 		
 		return outfile;
 	}
-	
+
+	/* Maya script file generation */
+	char *mayasg (char *scene, char *projectdir, char *scriptdir, char *renderdir, char *image, char *file_owner, char *camera, int res_x, int res_y, char *format, uint8_t mentalray)
+	{	
+		struct mayasgi *mayast = (struct mayasgi *)malloc (sizeof(struct mayasgi));
+    	if (!mayast) {
+ 	     	rb_raise(rb_eNoMemError,"out of memory");
+    	 	return NULL;
+   		}	
+		
+		char *outfile = (char *)malloc(sizeof(char *));
+		if (!outfile) {
+ 	     	rb_raise(rb_eNoMemError,"out of memory");
+    	 	return NULL;
+   		}
+		
+		memset (mayast,0,sizeof(struct mayasgi));
+		
+		
+		strncpy(mayast->scene, scene, BUFFERLEN-1);
+		strncpy(mayast->projectdir, projectdir, BUFFERLEN-1);
+		strncpy(mayast->scriptdir, scriptdir, BUFFERLEN-1);
+		strncpy(mayast->renderdir, renderdir, BUFFERLEN-1);
+		strncpy(mayast->image, image, BUFFERLEN-1);
+		strncpy(mayast->file_owner, file_owner, BUFFERLEN-1);
+		strncpy(mayast->camera, camera, BUFFERLEN-1);
+		mayast->res_x = res_x;
+		mayast->res_y = res_y;
+		strncpy(mayast->format, format, BUFFERLEN-1);
+		mayast->mentalray = mentalray;
+		
+  		outfile = mayaysg_create(mayast);
+  		
+		if (!outfile) {
+			rb_raise(rb_eException,"Problem creating script file");
+      		return NULL;
+		}
+		
+		return outfile;
+	}
+		
 }
 
 
