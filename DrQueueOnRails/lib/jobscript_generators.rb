@@ -50,7 +50,7 @@ module Drqueue
       	scene, scriptdir = args
       	output_path = self.luxrendersg(scene, scriptdir)
       # maya animation
-      elsif (renderer == "maya") && (args.size == 4)
+      elsif (renderer == "maya") && (args.size == 3)
       	scene, scriptdir, mentalray = args
       	renderdir = scriptdir
       	projectdir = scriptdir
