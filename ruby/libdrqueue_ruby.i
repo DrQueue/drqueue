@@ -432,7 +432,7 @@ typedef unsigned char uint8_t;
 		strncpy(mayast->format, format, BUFFERLEN-1);
 		mayast->mentalray = mentalray;
 		
-  		outfile = mayaysg_create(mayast);
+  		outfile = mayasg_create(mayast);
   		
 		if (!outfile) {
 			rb_raise(rb_eException,"Problem creating script file");
