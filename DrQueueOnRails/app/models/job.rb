@@ -171,7 +171,7 @@ class Job < ActiveRecord::Base
 		if count > 1
 			return -1
 		elsif count == 0
-			return -1
+			return -2
 		end
 		
 		scenefile = `find . -type f -maxdepth 1 ! -name '.*' | grep -i .#{render_ending}$`.gsub("\n","").gsub("./","")
