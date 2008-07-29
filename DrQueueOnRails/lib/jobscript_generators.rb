@@ -7,11 +7,15 @@ module Drqueue
       # blender animation
       if (renderer == "blender") && (args.size == 2)
       	scene, scriptdir = args
+      	# user and group
+      	file_owner = ENV['DQOR_USER'] + ":" + ENV['DQOR_GROUP']
       	kind = 1
       	output_path = self.blendersg(scene, scriptdir, kind)
       # blender single image
       elsif (renderer == "blender_image") && (args.size == 2)
       	scene, scriptdir = args
+      	# user and group
+      	file_owner = ENV['DQOR_USER'] + ":" + ENV['DQOR_GROUP']
       	kind = 2
       	output_path = self.blendersg(scene, scriptdir, kind)
       # mentalray animation
@@ -19,8 +23,8 @@ module Drqueue
       	scene, scriptdir = args
       	renderdir = scriptdir
       	image = camera = format = nil
-      	# userid and groupid
-      	file_owner = `id -u drqueueonrails`.to_i.to_s + ":" + `id -g drqueueonrails`.to_i.to_s
+      	# user and group
+      	file_owner = ENV['DQOR_USER'] + ":" + ENV['DQOR_GROUP']
       	res_x = res_y = -1
       	kind = 1
         output_path = self.mentalraysg(scene, scriptdir, renderdir, image.to_s, file_owner.to_s, camera.to_s, res_x, res_y, format.to_s, kind)
@@ -29,31 +33,34 @@ module Drqueue
       	scene, scriptdir = args
       	renderdir = scriptdir
       	image = camera = format = nil
-      	# userid and groupid
-      	file_owner = `id -u drqueueonrails`.to_i.to_s + ":" + `id -g drqueueonrails`.to_i.to_s
+      	# user and group
+		file_owner = ENV['DQOR_USER'] + ":" + ENV['DQOR_GROUP']
       	res_x = res_y = -1
       	kind = 2
         output_path = self.mentalraysg(scene, scriptdir, renderdir, image.to_s, file_owner.to_s, camera.to_s, res_x, res_y, format.to_s, kind)
       # cinema4d animation
       elsif (renderer == "cinema4d") && (args.size == 2)
       	scene, scriptdir = args
-      	# userid and groupid
-      	file_owner = `id -u drqueueonrails`.to_i.to_s + ":" + `id -g drqueueonrails`.to_i.to_s
+      	# user and group
+      	file_owner = ENV['DQOR_USER'] + ":" + ENV['DQOR_GROUP']
       	kind = 1
-      	output_path = self.cinema_4dsg(scene, scriptdir, file_owner, kind)
-      # cinema4d single image
-      elsif (renderer == "cinema4d_image") && (args.size == 2)
-      	scene, scriptdir = args
-      	# userid and groupid
-      	file_owner = `id -u drqueueonrails`.to_i.to_s + ":" + `id -g drqueueonrails`.to_i.to_s
-      	kind = 2
       	output_path = self.cinema_4dsg(scene, scriptdir, file_owner, kind)
       # luxrender animation
       elsif (renderer == "luxrender") && (args.size == 2)
       	scene, scriptdir = args
       	output_path = self.luxrendersg(scene, scriptdir)
+      # maya animation
+      elsif (renderer == "maya") && (args.size == 4)
+      	scene, scriptdir, mentalray = args
+      	renderdir = scriptdir
+      	projectdir = scriptdir
+      	image = camera = format = nil
+      	# user and group
+      	file_owner = ENV['DQOR_USER'] + ":" + ENV['DQOR_GROUP']
+      	res_x = res_y = -1
+        output_path = self.mayasg(scene, projectdir, scriptdir, renderdir, image.to_s, file_owner.to_s, camera.to_s, res_x, res_y, format.to_s, mentalray)
       else
-      	raise ArgumentError, "Wrong renderer and/or unsufficient number of arguments."
+      	raise ArgumentError, "Wrong renderer and/or insufficient number of arguments."
       end
       
       return output_path
