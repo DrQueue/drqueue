@@ -128,7 +128,7 @@ ENV['WEB_PROTO']+"://")
     # check if more than 500 MB free space avaiable    ### TOFIX: ugly way to determine disk space
     puts df_output = `df -m #{ ENV['DRQUEUE_TMP'] }`.split("\n")
     # check if second char of mountpoint is a "/" (47), a network mountpoint
-    puts df_free = 0    if df_output[1].split[0][1] == 47
+    puts df_free = 0    if df_output[1].split[0][1].to_i == 47
     	puts df_free = df_output[2].split[2].to_i
     else
     	puts df_free = df_output[1].split[3].to_i
