@@ -134,9 +134,8 @@ ENV['WEB_PROTO']+"://")
     second_char = df_output[1].split[0][1].to_i
     if second_char == 47
      df_free = df_output[2].split[2].to_i
-    end
-    
-    if second_char != 47
+    else
+    #if second_char != 47
      df_free = df_output[1].split[3].to_i
     end
     
