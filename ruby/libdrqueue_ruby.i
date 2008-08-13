@@ -114,6 +114,7 @@ slaves. Also provides access to all data structures of DrQueue."
 %include "cinema4dsg.h"
 %include "luxrendersg.h"
 %include "mayasg.h"
+%include "vraysg.h"
 
 // type mapppings
 typedef unsigned int time_t;
@@ -433,6 +434,36 @@ typedef unsigned char uint8_t;
 		mayast->mentalray = mentalray;
 		
   		outfile = mayasg_create(mayast);
+  		
+		if (!outfile) {
+			rb_raise(rb_eException,"Problem creating script file");
+      		return NULL;
+		}
+		
+		return outfile;
+	}
+	
+	/* V-Ray script file generation */
+	char *vraysg (char *scene, char *scriptdir)
+	{	
+		struct vraysgi *vray = (struct vraysgi *)malloc (sizeof(struct vraysgi));
+    	if (!vray) {
+ 	     	rb_raise(rb_eNoMemError,"out of memory");
+    	 	return NULL;
+   		}	
+		
+		char *outfile = (char *)malloc(sizeof(char *));
+		if (!outfile) {
+ 	     	rb_raise(rb_eNoMemError,"out of memory");
+    	 	return NULL;
+   		}
+		
+		memset (vray,0,sizeof(struct vraysgi));
+		
+		strncpy(vray->scene, scene, BUFFERLEN-1);
+		strncpy(vray->scriptdir, scriptdir, BUFFERLEN-1);
+		
+  		outfile = vraysg_create(vray);
   		
 		if (!outfile) {
 			rb_raise(rb_eException,"Problem creating script file");
