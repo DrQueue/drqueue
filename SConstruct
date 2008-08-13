@@ -41,7 +41,7 @@ def get_architecture(env,escape=False,underscore=True):
     return machine
 
 def wrapper_complete_command (env,cmdlist):
-    kernel = os.uname()[0]
+    kernel = platform.system()[0]
     arch = get_architecture(env)
     rlist = []
     for cmd in cmdlist:
