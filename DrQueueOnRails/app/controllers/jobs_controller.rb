@@ -130,11 +130,11 @@ ENV['WEB_PROTO']+"://")
     # check if second char of mountpoint is a "/" (47), a network mountpoint
     puts df_free = 0
     
-    second_char = df_output[1].split[0][1].to_i    if second_char == 47
+    @second_char = df_output[1].split[0][1].to_i    if @second_char == 47
      df_free = df_output[2].split[2].to_i rescue 0
     end
     
-    if second_char != 47
+    if @second_char != 47
      df_free = df_output[1].split[3].to_i rescue 0
     end
     
