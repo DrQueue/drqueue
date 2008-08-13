@@ -200,7 +200,7 @@ union koj_info {  /* Kind of job information */
     char script[BUFFERLEN];
     char viewcmd[BUFFERLEN];
   }
-  luxrender;
+  vray;
 };
 
 /* Koj types */
