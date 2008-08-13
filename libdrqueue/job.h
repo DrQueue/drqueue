@@ -196,6 +196,11 @@ union koj_info {  /* Kind of job information */
     char viewcmd[BUFFERLEN];
   }
   luxrender;
+  struct koji_vray {
+    char script[BUFFERLEN];
+    char viewcmd[BUFFERLEN];
+  }
+  luxrender;
 };
 
 /* Koj types */
