@@ -126,15 +126,15 @@ ENV['WEB_PROTO']+"://")
     @jobm = Drqueue::Job.new()
     
     # check if more than 500 MB free space avaiable    ### TOFIX: ugly way to determine disk space
-    puts df_output = `df -m #{ ENV['DRQUEUE_TMP'] }`.split("\n")
+    df_output = `df -m #{ ENV['DRQUEUE_TMP'] }`.split("\n")
     # check if second char of mountpoint is a "/" (47), a network mountpoint    if df_output[1].split[0][1] == 47
-    	puts df_free = df_output[2].split[2].to_i
+    	df_free = df_output[2].split[2].to_i
     else
-    	puts df_free = df_output[1].split[3].to_i
+    	df_free = df_output[1].split[3].to_i
     end
     
     if df_free < 500
-    #if `df -m #{ ENV['DRQUEUE_TMP'] }`.split("\n")[1].split[1].to_i < 500    	flash[:notice] = 'There is less than 500 MB of free disk space avaiable. No new jobs at this time. Please contact the system administrator.'	   	redirect_to :action => 'list' and return	end
+    #if `df -m #{ ENV['DRQUEUE_TMP'] }`.split("\n")[1].split[1].to_i < 500    	flash[:notice] = 'There is less than 500 MB of free disk space avaiable. No new jobs at this time. Please contact the system administrator.' + df_free.to_s	   	redirect_to :action => 'list' and return	end
 	
 	
 	# check disk usage of user
