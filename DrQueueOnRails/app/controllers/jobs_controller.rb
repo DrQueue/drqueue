@@ -137,7 +137,7 @@ ENV['WEB_PROTO']+"://")
     end
     
     if second_char != 47
-     df_free = df_output[1].split[3].to_i rescue 0
+     df_free = df_output[1].split[3].to_i
     end
     
     puts df_free
