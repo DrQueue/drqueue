@@ -125,23 +125,28 @@ ENV['WEB_PROTO']+"://")
     @job = Job.new
     @jobm = Drqueue::Job.new()
     
-    # check if more than 500 MB free space avaiable    ### TOFIX: ugly way to determine disk space
+    # check if more than 500 MB free space avaiable
+    ### TOFIX: ugly way to determine disk space
     puts df_output = `df -m #{ ENV['DRQUEUE_TMP'] }`.split("\n")
     # check if second char of mountpoint is a "/" (47), a network mountpoint
     puts df_free = 0
     
-    @second_char = df_output[1].split[0][1].to_i    if @second_char == 47
-     df_free = df_output[2].split[2].to_i rescue 0
+    second_char = df_output[1].split[0][1].to_i
+    if second_char == 47
+     df_free = df_output[2].split[2].to_i
     end
     
-    if @second_char != 47
+    if second_char != 47
      df_free = df_output[1].split[3].to_i rescue 0
     end
     
     puts df_free
     
     if df_free < 500
-    #if `df -m #{ ENV['DRQUEUE_TMP'] }`.split("\n")[1].split[1].to_i < 500    	flash[:notice] = 'There is less than 500 MB of free disk space avaiable. No new jobs at this time. Please contact the system administrator.' + df_free.to_s	   	redirect_to :action => 'list' and return	end
+    #if `df -m #{ ENV['DRQUEUE_TMP'] }`.split("\n")[1].split[1].to_i < 500
+    	flash[:notice] = 'There is less than 500 MB of free disk space avaiable. No new jobs at this time. Please contact the system administrator.' + df_free.to_s
+	   	redirect_to :action => 'list' and return
+	end
 	
 	
 	# check disk usage of user
@@ -1177,7 +1182,8 @@ ENV['WEB_PROTO']+"://")
   # newsfeed for jobs
   def feed
   
-  	@headers["Content-Type"] = "application/xml"     
+  	@headers["Content-Type"] = "application/xml" 
+    
     @title = "My render jobs at renderfarm MMZ Hochschule Wismar"
     @description = "This is a list of your jobs which finished recently."
 	@link = "https://renderfarm.rz.hs-wismar.de"
