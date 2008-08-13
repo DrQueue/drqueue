@@ -129,10 +129,12 @@ ENV['WEB_PROTO']+"://")
     puts df_output = `df -m #{ ENV['DRQUEUE_TMP'] }`.split("\n")
     # check if second char of mountpoint is a "/" (47), a network mountpoint
     puts df_free = 0    if df_output[1].split[0][1].to_i == 47
-    	puts df_free = df_output[2].split[2].to_i
+    	df_free = df_output[2].split[2].to_i
     else
-    	puts df_free = df_output[1].split[3].to_i
+    	df_free = df_output[1].split[3].to_i
     end
+    
+    puts df_free
     
     if df_free < 500
     #if `df -m #{ ENV['DRQUEUE_TMP'] }`.split("\n")[1].split[1].to_i < 500    	flash[:notice] = 'There is less than 500 MB of free disk space avaiable. No new jobs at this time. Please contact the system administrator.' + df_free.to_s	   	redirect_to :action => 'list' and return	end
