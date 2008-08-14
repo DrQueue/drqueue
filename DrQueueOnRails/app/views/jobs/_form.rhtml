@@ -11,7 +11,7 @@
 <input type="file" name="file"></p>
 
 <p><label for="job_renderer">Renderer</label><br/>
-<%= select("job", "renderer", [ ["Blender", "blender"],  ["Cinema 4D", "cinema4d"], ["LuxRender", "luxrender"], ["Maya (software renderer)", "maya"], ["Maya (MentalRay renderer)", "mayamr"], ["Mental Ray Standalone", "mentalray"], ], {}, {"onChange" => "if(this.value == 'luxrender') {document.getElementById('job_sort').value='animation';)}"}) %></p>
+<%= select("job", "renderer", [ ["Blender", "blender"],  ["Cinema 4D", "cinema4d"], ["LuxRender", "luxrender"], ["Maya (software renderer)", "maya"], ["Maya (MentalRay renderer)", "mayamr"], ["Mental Ray Standalone", "mentalray"], ["V-Ray Standalone", "vray"] ], {}, {"onChange" => "if(this.value == 'luxrender') {document.getElementById('job_sort').value='animation';)}"}) %></p>
 
 <p><label for="job_sort">Sort</label><br/>
 <%= select("job", "sort", [ ["Single image", "image"], ["Animation", "animation"] ], {}, {"onChange" => "if(this.value == 'animation') {document.getElementById('frame_div').style.visibility='visible'; document.getElementById('res_div').style.visibility='hidden';} else {document.getElementById('frame_div').style.visibility='hidden'; document.getElementById('res_div').style.visibility='visible';}"}) %></p>
