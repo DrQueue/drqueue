@@ -125,6 +125,9 @@ ENV['WEB_PROTO']+"://")
     @job = Job.new
     @jobm = Drqueue::Job.new()
     
+    # default is animation
+    @job.sort = "animation"
+    
     # check if more than 500 MB free space avaiable
     ### TOFIX: ugly way to determine disk space
     df_output = `df -m #{ ENV['DRQUEUE_TMP'] }`.split("\n")

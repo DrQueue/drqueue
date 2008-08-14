@@ -14,15 +14,7 @@
 <%= select("job", "renderer", [ ["Blender", "blender"],  ["Cinema 4D", "cinema4d"], ["LuxRender", "luxrender"], ["Maya (software renderer)", "maya"], ["Maya (MentalRay renderer)", "mayamr"], ["Mental Ray Standalone", "mentalray"], ["V-Ray Standalone", "vray"] ], {}, {"onChange" => "if(this.value == 'luxrender') {document.getElementById('job_sort').value='animation';)}"}) %></p>
 
 <p><label for="job_sort">Sort</label><br/>
-<%= select("job", "sort", [ ["Single image", "image"], ["Animation", "animation"] ], {}, {"onChange" => "if(this.value == 'animation') {document.getElementById('frame_div').style.visibility='visible'; document.getElementById('res_div').style.visibility='hidden';} else {document.getElementById('frame_div').style.visibility='hidden'; document.getElementById('res_div').style.visibility='visible';}"}) %></p>
-
-
-<div id="res_div" style="visibility:visible">
-
-<p><label for="res_height">Image height in pixel</label><br/>
-<%= select_tag "res_height", "<option>0 .. 1000 (low)</option> <option> > 1000 (medium)</option> <option> > 2000 (high)</option>" %>
-
-</div>
+<%= select("job", "sort", [ ["Animation", "animation"], ["Single image", "image"] ], {}, {"onChange" => "if(this.value == 'image') {document.getElementById('frame_div').style.visibility='hidden'; document.getElementById('res_div').style.visibility='visible';} else {document.getElementById('frame_div').style.visibility='visible'; document.getElementById('res_div').style.visibility='hidden';}"}) %></p>
 
 
 <div id="frame_div" 
@@ -39,6 +31,22 @@
 <%= text_field 'jobm', 'frame_end'  %></p>
 
 </div>
+
+
+<div id="res_div"
+<% if @job.sort == "image" %>
+  style="visibility:visible">
+<% else %>
+  style="visibility:hidden">
+<% end %>
+
+<p><label for="res_height">Image height in pixel</label><br/>
+<%= select_tag "res_height", "<option>0 .. 1000 (low)</option> <option> > 1000 (medium)</option> <option> > 2000 (high)</option>" %>
+
+</div>
+
+
+
 
 <!--[eoform:job]-->
 
