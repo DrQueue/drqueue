@@ -41,9 +41,9 @@ set VRAY_PATH=`which vray`
 set THREADS=0
 
 
-echo $VRAY_PATH -numThreads=$THREADS -scenefile=$SCENE -autoClose=1 -frame=$DRQUEUE_FRAME -display=0
+echo $VRAY_PATH -numThreads=$THREADS -scenefile=$SCENE -autoClose=1 -frames=$DRQUEUE_FRAME -display=0
 
-$VRAY_PATH -numThreads=$THREADS -scenefile=$SCENE -autoClose=1 -frame=$DRQUEUE_FRAME -display=0
+$VRAY_PATH -numThreads=$THREADS -scenefile=$SCENE -autoClose=1 -frames=$DRQUEUE_FRAME -display=0
 
 
 # This should requeue the frame if failed
