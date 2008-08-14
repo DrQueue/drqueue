@@ -923,6 +923,57 @@ ENV['WEB_PROTO']+"://")
 			flash[:notice] = 'The job script could not be generated.'
 	   		redirect_to :action => 'new' and return
 		end  
+		
+	# experimental vray support
+	elsif params[:job][:renderer] == "vray"
+		
+	   	# find scene file in jobdir
+	   	scenefile = Job.find_scenefile("vscene")
+	   	
+	   	# possible errors
+	   	if scenefile == -1
+	   	  # delete jobdir
+  		  FileUtils.cd(userdir)
+  		  FileUtils.remove_dir(jobdir, true)
+		  flash[:notice] = 'More than one scene file was found. Please only upload one per job.'
+	   	  redirect_to :action => 'new' and return
+		elsif scenefile == -2
+		  # delete jobdir
+  		  FileUtils.cd(userdir)
+  		  FileUtils.remove_dir(jobdir, true)
+		  flash[:notice] = 'No scene file was found. Please check your archive file.'
+	   	  redirect_to :action => 'new' and return
+	   	end
+	   	
+	   	### TODO: do we really have to do this?
+	   	### how can we automate the script file generation?
+		
+		# add job to specific pool
+		@jobm.limits.pool="vray" 
+		
+		# force same directory as image output path
+		# sed 's!img_dir=.*!img_dir=\".";!' test.vscene >test2.vscene
+		FileUtils.cd(jobdir)
+		`sed 's!img_dir=.*!img_dir=\".";!' #{ scenefile } >dummy.vscene`
+		`mv dummy.vscene #{ scenefile }`
+		FileUtils.cd(userdir)
+		
+		# create job script
+		if params[:job][:sort] == "animation"
+			# each computer renders one frame of an animation
+			puts @jobm.cmd = @jobm.generate_jobscript("vray", jobdir+"/"+scenefile, jobdir)
+		else
+			# delete jobdir
+  			FileUtils.cd(userdir)
+  			FileUtils.remove_dir(jobdir, true)
+			flash[:notice] = 'Wrong scene sort specified.'
+	   		redirect_to :action => 'new' and return
+		end
+		
+		if (@jobm.cmd == nil)
+			flash[:notice] = 'The job script could not be generated.'
+	   		redirect_to :action => 'new' and return
+		end
 	
 	else
 		# delete jobdir
