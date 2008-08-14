@@ -954,7 +954,7 @@ ENV['WEB_PROTO']+"://")
 		# force same directory as image output path
 		# sed 's!img_dir=.*!img_dir=\".";!' test.vscene >test2.vscene
 		FileUtils.cd(jobdir)
-		`sed 's!img_dir=.*!img_dir=\".";!' #{ scenefile } >dummy.vscene`
+		`sed 's!img_dir=.*!img_dir=\"#{ jobdir }/";!' #{ scenefile } >dummy.vscene`
 		`mv dummy.vscene #{ scenefile }`
 		FileUtils.cd(userdir)
 		
