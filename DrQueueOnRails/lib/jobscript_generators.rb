@@ -59,6 +59,10 @@ module Drqueue
       	file_owner = ENV['DQOR_USER']
       	res_x = res_y = -1
         output_path = self.mayasg(scene, projectdir, scriptdir, renderdir, image.to_s, file_owner.to_s, camera.to_s, res_x, res_y, format.to_s, mentalray)
+        # vray animation
+      elsif (renderer == "vray") && (args.size == 2)
+      	scene, scriptdir = args
+      	output_path = self.vraysg(scene, scriptdir)
       else
       	raise ArgumentError, "Wrong renderer and/or insufficient number of arguments."
       end
