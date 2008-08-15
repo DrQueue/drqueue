@@ -4,26 +4,53 @@
 # you don't control web/app server and can't set it the proper way
 # ENV['RAILS_ENV'] ||= 'production'
 
+
+
+######## BEGIN DQOR CONFIG
+
+
+# DrQueue variables
 ENV['DRQUEUE_MASTER'] ||= 'MASTER'
 ENV['DRQUEUE_TMP'] ||= '/usr/local/drqueue/tmp'
 ENV['DRQUEUE_ETC'] ||= '/usr/local/drqueue/etc'
 ENV['DRQUEUE_LOGS'] ||= '/usr/local/drqueue/logs'
 
+# LDAP variables
 ENV['LDAP_TREEBASE'] ||= "dc=mydomain, dc=de"
 ENV['LDAP_HOST'] ||= "SERVER"
 ENV['LDAP_PORT'] ||= "389"
 ENV['LDAP_FILTER'] ||= "uid"
 ENV['LDAP_ATTRS'] ||= "mail,cn"
 
+# protocol for webserver (HTTP, HTTPS)
 ENV['WEB_PROTO'] ||= "https"
 
+# text for login dialog
 ENV['LOG_SHOW_USER'] ||= "RZ-Login"
 ENV['LOG_SHOW_PW'] ||= "Passwort"
 
+# owner and group of DrQueueOnRails instance
 ENV['DQOR_USER'] ||= "drqueueonrails"
 ENV['DQOR_GROUP'] ||= "drqueueonrails"
 
+# available renderers on DrQueue slaves
+# possible values:
+# Blender: "blender"
+# Cinema 4D: "cinema4d"
+# LuxRender: "luxrender"
+# Maya (software renderer): "maya"
+# Maya (MentalRay renderer): "mayamr"
+# Mental Ray Standalone: "mentalray"
+# V-Ray Standalone: "vray" 
+ENV['AVAIL_RENDERERS'] ||= ["blender", "cinema4d", "luxrender", "maya", "mayamr", "mentalray", "vray"]
+
+# revision version number
 APP_VERSION = IO.popen("svn info").readlines[4]
+
+
+######## END DQOR CONFIG
+
+
 
 # Specifies gem version of Rails to use when vendor/rails is not present
 RAILS_GEM_VERSION = '2.1.0' unless defined? RAILS_GEM_VERSION
