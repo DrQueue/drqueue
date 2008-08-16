@@ -175,6 +175,27 @@ ENV['WEB_PROTO']+"://")
 	   		redirect_to :action => 'list' and return
 	   	end
 	end
+	
+	# show only available renderers
+	@renderers = []
+	ENV['AVAIL_RENDERERS'].each do |ren|
+	  case ren
+	    when "blender"
+	      ["Blender", "blender"] >> @renderers
+	    when "cinema4d"
+	      ["Cinema 4D", "cinema4d"] >> @renderers
+	    when "luxrender"
+	      ["LuxRender", "luxrender"] >> @renderers
+	    when "maya"
+	      ["Maya (software renderer)", "maya"] >> @renderers
+	    when "mayamr"
+	      ["Maya (MentalRay renderer)", "mayamr"] >> @renderers
+	    when "mentalray"
+	      ["Mental Ray Standalone", "mentalray"] >> @renderers
+	    when "vray"
+	      ["V-Ray Standalone", "vray"] >> @renderers
+	  end
+	end 
 
   end
 
