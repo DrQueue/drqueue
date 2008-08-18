@@ -186,7 +186,7 @@ ENV['WEB_PROTO']+"://")
 	    when "cinema4d"
 	      @renderers << ["Cinema 4D", "cinema4d"]
 	    when "luxrender"
-	      @renderers << ["LuxRender", "luxrender"]
+	      @renderers << ["LuxRender Standalone", "luxrender"]
 	    when "maya"
 	      @renderers << ["Maya (internal renderer)", "maya"]
 	    when "mayamr"
