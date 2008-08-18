@@ -11,7 +11,7 @@
 <input type="file" name="file"></p>
 
 <p><label for="job_renderer">Renderer</label><br/>
-<%= select("job", "renderer", [ @renderers ], {}, {}) %></p>
+<%= select("job", "renderer", @renderers, {}, {}) %></p>
 
 <p><label for="job_sort">Sort</label><br/>
 <%= select("job", "sort", [ ["Animation", "animation"], ["Single image", "image"] ], {}, {"onChange" => "if(this.value == 'image') {document.getElementById('frame_div').style.visibility='hidden'; document.getElementById('res_div').style.visibility='visible';} else {document.getElementById('frame_div').style.visibility='visible'; document.getElementById('res_div').style.visibility='hidden';}"}) %></p>
