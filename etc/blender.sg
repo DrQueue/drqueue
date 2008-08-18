@@ -40,9 +40,9 @@ else
 endif
 
 
-# we run this in bash as it supports inline env variables
+# we run this in BASH as it supports inline env variables
+set command = "curframe=$DRQUEUE_FRAME $BLENDER_PATH -b $SCENE -P $DRQUEUE_ETC/blender_same_directory.py"
 
-set command = "curframe=$DRQUEUE_FRAME $BLENDER_PATH -b $SCENE -P /usr/local/drqueue/etc/blender_same_directory.py"
 echo /bin/bash -c "$command"
 
 /bin/bash -c "$command"
@@ -59,7 +59,7 @@ else
   #endif
   
   # change userid and groupid
-  chown 1002:1004 $SCENE:h/*
+  #chown 1002:1004 $SCENE:h/*
   
 endif
 
