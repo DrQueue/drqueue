@@ -180,17 +180,19 @@ ENV['WEB_PROTO']+"://")
 	rend_array.each do |ren|
 	  case ren
 	    when "blender"
-	      @renderers << ["Blender", "blender"]
+	      @renderers << ["Blender (internal renderer)", "blender"]
+	    when "blenderlux"
+	      @renderers << ["Blender (LuxRender renderer)", "blenderlux"]
 	    when "cinema4d"
 	      @renderers << ["Cinema 4D", "cinema4d"]
 	    when "luxrender"
 	      @renderers << ["LuxRender", "luxrender"]
 	    when "maya"
-	      @renderers << ["Maya (software renderer)", "maya"]
+	      @renderers << ["Maya (internal renderer)", "maya"]
 	    when "mayamr"
 	      @renderers << ["Maya (MentalRay renderer)", "mayamr"]
 	    when "mentalray"
-	      @renderers << ["Mental Ray Standalone", "mentalray"]
+	      @renderers << ["MentalRay Standalone", "mentalray"]
 	    when "vray"
 	      @renderers << ["V-Ray Standalone", "vray"]
 	  end

@@ -35,14 +35,15 @@ ENV['DQOR_GROUP'] ||= "drqueueonrails"
 
 # available renderers on DrQueue slaves
 # possible values:
-# Blender: "blender"
+# Blender (internal renderer): "blender"
+# Blender (LuxRender renderer): "blenderlux"
 # Cinema 4D: "cinema4d"
-# LuxRender: "luxrender"
-# Maya (software renderer): "maya"
+# LuxRender Standalone: "luxrender"
+# Maya (internal renderer): "maya"
 # Maya (MentalRay renderer): "mayamr"
-# Mental Ray Standalone: "mentalray"
+# MentalRay Standalone: "mentalray"
 # V-Ray Standalone: "vray" 
-ENV['AVAIL_RENDERERS'] ||= "blender,cinema4d,luxrender,maya,mayamr,mentalray,vray"
+ENV['AVAIL_RENDERERS'] ||= "blender,blenderlux,cinema4d,luxrender,maya,mayamr,mentalray,vray"
 
 # revision version number
 APP_VERSION = IO.popen("svn info").readlines[4]
