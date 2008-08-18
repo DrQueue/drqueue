@@ -42,7 +42,7 @@ ENV['DQOR_GROUP'] ||= "drqueueonrails"
 # Maya (MentalRay renderer): "mayamr"
 # Mental Ray Standalone: "mentalray"
 # V-Ray Standalone: "vray" 
-ENV['AVAIL_RENDERERS'] ||= ["blender", "cinema4d", "luxrender", "maya", "mayamr", "mentalray", "vray"]
+ENV['AVAIL_RENDERERS'] ||= "blender,cinema4d,luxrender,maya,mayamr,mentalray,vray"
 
 # revision version number
 APP_VERSION = IO.popen("svn info").readlines[4]
