@@ -33,12 +33,13 @@ if ($BLOCK > $DRQUEUE_ENDFRAME) then
 	BLOCK = $DRQUEUE_ENDFRAME;
 endif
 
-if ($DRQUEUE_OS == "OSX") then
-    set BLENDER_PATH="/Applications/Blender.app/Contents/MacOS/blender"
-else
-    set BLENDER_PATH="blender"
-endif
+#if ($DRQUEUE_OS == "OSX") then
+#    set BLENDER_PATH="/Applications/Blender.app/Contents/MacOS/blender"
+#else
+#    set BLENDER_PATH="blender"
+#endif
 
+set BLENDER_PATH=`which blender`
 
 # we run this in BASH as it supports inline env variables
 set command = "curframe=$DRQUEUE_FRAME $BLENDER_PATH -b $SCENE -P $DRQUEUE_ETC/blender_same_directory.py"
