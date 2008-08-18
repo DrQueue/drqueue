@@ -198,8 +198,6 @@ ENV['WEB_PROTO']+"://")
 	  end
 	end 
 
-    puts rend_array
-
   end
 
 
