@@ -178,22 +178,23 @@ ENV['WEB_PROTO']+"://")
 	
 	# show only available renderers
 	@renderers = []
-	ENV['AVAIL_RENDERERS'].each do |ren|
+	rend_array = ENV['AVAIL_RENDERERS'].split(",")
+	rend_array.each do |ren|
 	  case ren
 	    when "blender"
-	      ["Blender", "blender"] >> @renderers
+	      @renderers << ["Blender", "blender"]
 	    when "cinema4d"
-	      ["Cinema 4D", "cinema4d"] >> @renderers
+	      @renderers << ["Cinema 4D", "cinema4d"]
 	    when "luxrender"
-	      ["LuxRender", "luxrender"] >> @renderers
+	      @renderers << ["LuxRender", "luxrender"]
 	    when "maya"
-	      ["Maya (software renderer)", "maya"] >> @renderers
+	      @renderers << ["Maya (software renderer)", "maya"]
 	    when "mayamr"
-	      ["Maya (MentalRay renderer)", "mayamr"] >> @renderers
+	      @renderers << ["Maya (MentalRay renderer)", "mayamr"]
 	    when "mentalray"
-	      ["Mental Ray Standalone", "mentalray"] >> @renderers
+	      @renderers << ["Mental Ray Standalone", "mentalray"]
 	    when "vray"
-	      ["V-Ray Standalone", "vray"] >> @renderers
+	      @renderers << ["V-Ray Standalone", "vray"]
 	  end
 	end 
 
