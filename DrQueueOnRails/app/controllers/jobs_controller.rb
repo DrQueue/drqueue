@@ -319,7 +319,7 @@ ENV['WEB_PROTO']+"://")
 	end	
         	
     	
-	# use specific renderer
+	# Blender internal renderer
 	if params[:job][:renderer] == "blender"
 		
 	   	# find scene file in jobdir
@@ -383,7 +383,56 @@ ENV['WEB_PROTO']+"://")
 			flash[:notice] = 'The job script could not be generated.'
 	   		redirect_to :action => 'new' and return
 		end
+	
+	# LuxRender renderer through Blender
+	elsif params[:job][:renderer] == "blenderlux"
 		
+	   	# find scene file in jobdir
+	   	scenefile = Job.find_scenefile("blend")
+	   	
+	   	# possible errors
+	   	if scenefile == -1
+	   		# delete jobdir
+  			FileUtils.cd(userdir)
+  			FileUtils.remove_dir(jobdir, true)
+			flash[:notice] = 'More than one scene file was found. Please only upload one per job.'
+	   		redirect_to :action => 'new' and return
+		elsif scenefile == -2
+			# delete jobdir
+  			FileUtils.cd(userdir)
+  			FileUtils.remove_dir(jobdir, true)
+			flash[:notice] = 'No scene file was found. Please check your archive file.'
+	   		redirect_to :action => 'new' and return
+	   	end
+	   	
+	   	### TODO: do we really have to do this?
+	   	### how can we automate the script file generation?
+		#@jobm.koj = 2
+		#@jobm.koji.blender.scene = jobdir+"/"+scenefile
+		#@jobm.koji.blender.viewcmd = "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi"
+		#@jobm.koji.general.scriptdir = jobdir
+		
+		# add job to specific pool
+		@jobm.limits.pool="blenderlux" 
+		
+		# create job script
+		if params[:job][:sort] == "animation"
+			# each computer renders one frame of an animation
+			puts @jobm.cmd = @jobm.generate_jobscript("blenderlux", jobdir+"/"+scenefile, jobdir)
+		else
+			# delete jobdir
+  			FileUtils.cd(userdir)
+  			FileUtils.remove_dir(jobdir, true)
+			flash[:notice] = 'Wrong scene sort specified.'
+	   		redirect_to :action => 'new' and return
+		end
+		
+		if (@jobm.cmd == nil)
+			flash[:notice] = 'The job script could not be generated.'
+	   		redirect_to :action => 'new' and return
+		end
+	
+	# MentalRay Standalone renderer	
 	elsif params[:job][:renderer] == "mentalray"
 		
 	   	# find scene file in jobdir
