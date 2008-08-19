@@ -45,6 +45,7 @@ echo $VRAY_PATH -numThreads=$THREADS -scenefile=$SCENE -autoClose=1 -frames=$DRQ
 
 $VRAY_PATH -numThreads=$THREADS -scenefile=$SCENE -autoClose=1 -frames=$DRQUEUE_FRAME -display=0
 
+echo $?
 
 # This should requeue the frame if failed
 if ( $? != 0 ) then
