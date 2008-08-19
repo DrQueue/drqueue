@@ -18,7 +18,7 @@ if File.exist? @logfile
 		buffer = file.read
 		buffer.gsub!(/\n/,'<br />')
 		%>
-		<%= buffer %>
+		<%= buffer.to_s %>
 		<%
 	end
 else
