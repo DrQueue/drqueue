@@ -49,6 +49,10 @@ module Drqueue
       elsif (renderer == "luxrender") && (args.size == 2)
       	scene, scriptdir = args
       	output_path = self.luxrendersg(scene, scriptdir)
+      # luxrender through blender animation
+      elsif (renderer == "blenderlux") && (args.size == 2)
+      	scene, scriptdir = args
+      	output_path = self.blenderluxsg(scene, scriptdir)
       # maya animation
       elsif (renderer == "maya") && (args.size == 3)
       	scene, scriptdir, mentalray = args
