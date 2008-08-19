@@ -46,9 +46,9 @@ set RENDER_DIR=$SCENE:h
 set LOCAL_TEMP_DIR="/tmp"
 
 # we run this in BASH as it supports inline env variables
-set command='"$BLENDER_PATH" -b "$SCENE" -P "$LUXRENDER_PY" -- --batch -s $DRQUEUE_FRAME -e $DRQUEUE_FRAME -l "$LUXCONSOLE_PATH" -o "$RENDER_DIR" -t "$LOCAL_TEMP_DIR"'
+set command="$BLENDER_PATH" -b "$SCENE" -P "$LUXRENDER_PY" -- --batch -s $DRQUEUE_FRAME -e $DRQUEUE_FRAME -l "$LUXCONSOLE_PATH" -o "$RENDER_DIR" -t "$LOCAL_TEMP_DIR"
 
-echo "$command"
+echo $command
 
 $command
 
