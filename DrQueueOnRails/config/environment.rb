@@ -34,6 +34,7 @@ ENV['DQOR_USER'] ||= "drqueueonrails"
 ENV['DQOR_GROUP'] ||= "drqueueonrails"
 
 # available renderers on DrQueue slaves
+# HINT: Your slaves must be a member of these pools.
 # possible values:
 # Blender (internal renderer): "blender"
 # Blender (LuxRender renderer): "blenderlux"
