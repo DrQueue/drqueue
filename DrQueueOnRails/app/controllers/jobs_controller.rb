@@ -14,10 +14,7 @@ class JobsController < ApplicationController
 	
   # for text sanitizing
   include ActionView::Helpers::TextHelper
-  include ActionView::Helpers::SanitizeHelper
-  
-  # for UTF8 conversion
-  require 'iconv' 
+  include ActionView::Helpers::SanitizeHelper 
 
   # template
   layout "main_layout", :except => 'feed'
