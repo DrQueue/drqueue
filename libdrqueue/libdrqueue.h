@@ -96,7 +96,7 @@ extern int drerrno;
 #include "cinema4dsg.h"
 #include "luxrendersg.h"
 #include "vraysg.h"
-#include "blenderlux.h"
+#include "blenderluxsg.h"
 
 extern int phantom[2];         /* FIXME: This should be local to the
 				  slave */
