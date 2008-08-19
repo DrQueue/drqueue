@@ -302,6 +302,35 @@ typedef unsigned char uint8_t;
 		return outfile;
 	}
 	
+	/* blenderlux script file generation */
+	char *blenderluxsg (char *scene, char *scriptdir)
+	{	
+		struct blenderluxsgi *luxren = (struct blenderluxsgi *)malloc (sizeof(struct blenderluxsgi));
+    	if (!luxren) {
+ 	     	rb_raise(rb_eNoMemError,"out of memory");
+    	 	return NULL;
+   		}	
+		
+		char *outfile = (char *)malloc(sizeof(char *));
+		if (!outfile) {
+ 	     	rb_raise(rb_eNoMemError,"out of memory");
+    	 	return NULL;
+   		}
+		
+		memset (luxren,0,sizeof(struct blenderluxsgi));
+		
+		strncpy(luxren->scene, scene, BUFFERLEN-1);
+		strncpy(luxren->scriptdir, scriptdir, BUFFERLEN-1);
+		
+  		outfile = blenderluxsg_create(luxren);
+  		
+		if (!outfile) {
+			rb_raise(rb_eException,"Problem creating script file");
+      		return NULL;
+		}
+		
+		return outfile;
+	}
 	
 	/* MentalRay script file generation */
 	char *mentalraysg (char *scene, char *scriptdir, char *renderdir, char *image, char *file_owner, char *camera, int res_x, int res_y, char *format, uint8_t kind)
