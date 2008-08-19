@@ -17,8 +17,9 @@ if File.exist? @logfile
 	File.open("#{@logfile}",'r') do |file|
 		buffer = file.read
 		buffer.gsub!(/\n/,'<br />')
+		utf8_buffer = Iconv.iconv("ISO-8859-1", "UTF-8", buffer)
 		%>
-		<%= buffer.to_s %>
+		<%= utf8_buffer %>
 		<%
 	end
 else
