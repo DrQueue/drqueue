@@ -151,19 +151,7 @@ ENV['WEB_PROTO']+"://")
     
     if File.directory?(userdir)	
 	    # calculate quota usage (in GB)
-	   	#case profile.status
-	   	#	when "admin"
-	   	#		quota = 35
-	   	#	when "advanced"
-	   	#		quota = 15
-	   	#	when "student"
-	   	#		quota = 5
-	   	#	when "demo"
-	   	#		quota = 0.5
-	   	#	else
-	   	#		quota = 0
-	   	#end
-   		
+	    
    		# use user and quota settings from environment.rb
    		status_arr = ENV['USER_STATUS'].split(",")
    		quota_arr = ENV['USER_QUOTA'].split(",")
@@ -258,16 +246,6 @@ ENV['WEB_PROTO']+"://")
 	@jobm.owner = session[:profile].name
 	
 	# set priority depending on user status
-	#case session[:profile].status
-   	#	when "admin"
-   	#		@jobm.priority = 1000
-   	#	when "advanced"
-   	#		@jobm.priority = 750
-   	#	when "student"
-   	#		@jobm.priority = 500
-   	#	else
-   	#		@jobm.priority = 100
-    #end 
 	
 	# use user and priorities settings from environment.rb
 	status_arr = ENV['USER_STATUS'].split(",")

@@ -39,18 +39,39 @@ class ProfilesController < ApplicationController
     	userdir = ENV["DRQUEUE_TMP"]+"/"+@profile.id.to_s
     	
     	# calculate quota usage (in GB)
-    	case @profile.status
-    		when "admin"
-    			@quota = 35
-    		when "advanced"
-    			@quota = 15
-    		when "student"
-    			@quota = 5
-    		when "demo"
-    			@quota = 0.5
-    		else
-    			@quota = 0
-    	end
+    	
+    	# use user and quota settings from environment.rb
+	    status_arr = ENV['USER_STATUS'].split(",")
+	    quota_arr = ENV['USER_QUOTA'].split(",")
+		
+	    # check if every array member has a partner
+	    if status_arr.count != quota_arr.count
+	      flash[:notice] = 'The user/quota/priorities settings seem to be wrong. Please contact the system administrator.'
+ 	      redirect_to '/' and return
+ 	    end
+		
+	    i = 0
+	    @quota = 0
+	    status_arr.each do |stat|
+          if @profile.status == stat
+            @quota = quota_arr[i].to_i
+          end
+          i += 1
+	    end
+    	
+    	# calculate quota usage (in GB)
+    	#case @profile.status
+    	#	when "admin"
+    	#		@quota = 35
+    	#	when "advanced"
+    	#		@quota = 15
+    	#	when "student"
+    	#		@quota = 5
+    	#	when "demo"
+    	#		@quota = 0.5
+    	#	else
+    	#		@quota = 0
+    	#end
     	
     	if File.directory?(userdir)
     		# userdir size in KB
