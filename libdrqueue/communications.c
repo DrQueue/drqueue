@@ -183,7 +183,8 @@ int connect_to_master (void) {
   addr.sin_family = AF_INET;
   addr.sin_port = htons(MASTERPORT);  /* Whatever */
   hostinfo = gethostbyname (master);
-  if (hostinfo == NULL) {
+  /* check if ip address of host could be resolved */
+  if ( (hostinfo == NULL) || (hostinfo->h_addr == NULL) ) {
     drerrno_system = errno;
     drerrno = DRE_NOTRESOLVE;
     return -1;
