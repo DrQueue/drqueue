@@ -25,9 +25,10 @@ ENV['LDAP_ATTRS'] ||= "mail,cn"
 # protocol for webserver (HTTP, HTTPS)
 ENV['WEB_PROTO'] ||= "https"
 
-# user priviledges & quota (disk space in GB) 
+# user status, quota (disk space in GB), job priorities 
 ENV['USER_STATUS'] ||= "demo,student,advanced,admin"
 ENV['USER_QUOTA'] ||= "0.5,5,15,35"
+ENV['USER_PRIO'] ||= "100,500,750,1000"
 
 # text for login dialog
 ENV['LOG_SHOW_USER'] ||= "account name"

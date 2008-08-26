@@ -170,17 +170,15 @@ ENV['WEB_PROTO']+"://")
    		
    		# check if every array member has a partner
    		if status_arr.count != quota_arr.count
-   		  flash[:notice] = 'The user and quota settings seem to be wrong. Please contact the system administrator.'
+   		  flash[:notice] = 'The user/quota/priorities settings seem to be wrong. Please contact the system administrator.'
 	   	  redirect_to :action => 'list' and return
 	   	end
    		
    		i = 0
    		quota = 0
    		status_arr.each do |stat|
-   		  puts stat
    		  if profile.status == stat
    		    quota = quota_arr[i].to_i
-   		    puts quota
    		  end
    		  i += 1
    		end 
@@ -260,16 +258,35 @@ ENV['WEB_PROTO']+"://")
 	@jobm.owner = session[:profile].name
 	
 	# set priority depending on user status
-	case session[:profile].status
-   		when "admin"
-   			@jobm.priority = 1000
-   		when "advanced"
-   			@jobm.priority = 750
-   		when "student"
-   			@jobm.priority = 500
-   		else
-   			@jobm.priority = 100
-    end 
+	#case session[:profile].status
+   	#	when "admin"
+   	#		@jobm.priority = 1000
+   	#	when "advanced"
+   	#		@jobm.priority = 750
+   	#	when "student"
+   	#		@jobm.priority = 500
+   	#	else
+   	#		@jobm.priority = 100
+    #end 
+	
+	# use user and priorities settings from environment.rb
+	status_arr = ENV['USER_STATUS'].split(",")
+	prio_arr = ENV['USER_PRIO'].split(",")
+		
+	# check if every array member has a partner
+	if status_arr.count != prio_arr.count
+	  flash[:notice] = 'The user/quota/priorities settings seem to be wrong. Please contact the system administrator.'
+ 	  redirect_to :action => 'list' and return
+ 	end
+		
+	i = 0
+	@jobm.priority = 10
+	status_arr.each do |stat|
+      if session[:profile].status == stat
+        @jobm.priority = prio_arr[i].to_i
+      end
+      i += 1
+	end 
 	
 	# set blocksize
 	@jobm.block_size = 1
