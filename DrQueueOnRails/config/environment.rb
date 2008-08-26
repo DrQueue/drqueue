@@ -25,9 +25,13 @@ ENV['LDAP_ATTRS'] ||= "mail,cn"
 # protocol for webserver (HTTP, HTTPS)
 ENV['WEB_PROTO'] ||= "https"
 
+# user priviledges & quota (disk space in GB) 
+ENV['USER_STATUS'] ||= "demo,student,advanced,admin"
+ENV['USER_QUOTA'] ||= "0.5,5,15,35"
+
 # text for login dialog
-ENV['LOG_SHOW_USER'] ||= "RZ-Login"
-ENV['LOG_SHOW_PW'] ||= "Passwort"
+ENV['LOG_SHOW_USER'] ||= "account name"
+ENV['LOG_SHOW_PW'] ||= "password"
 
 # owner and group of DrQueueOnRails instance
 ENV['DQOR_USER'] ||= "drqueueonrails"
