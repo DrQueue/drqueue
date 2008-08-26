@@ -175,6 +175,7 @@ ENV['WEB_PROTO']+"://")
 	   	end
    		
    		i = 0
+   		quota = 0
    		status_arr.each do |stat|
    		  if profile.status == stat
    		    quota = quota_arr[i]
