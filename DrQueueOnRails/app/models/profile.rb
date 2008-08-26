@@ -80,7 +80,9 @@ class Profile < ActiveRecord::Base
 	 	 		ldap.search( :base => ENV['LDAP_TREEBASE'], :filter => filter, :attributes => attrs, :return_result => false ) do |entry|
 	   				# save user info in db
 					myprofile.name = entry.cn.to_s.chars
-					myprofile.email = entry.mail.to_s.chars
+					if ENV['LDAP_ATTRS'].include? 'mail'
+					  myprofile.email = entry.mail.to_s.chars
+					end
 	   			end
 				
 				# save profile
