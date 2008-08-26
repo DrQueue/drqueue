@@ -177,8 +177,10 @@ ENV['WEB_PROTO']+"://")
    		i = 0
    		quota = 0
    		status_arr.each do |stat|
+   		  puts stat
    		  if profile.status == stat
-   		    quota = quota_arr[i]
+   		    quota = quota_arr[i].to_i
+   		    puts quota
    		  end
    		  i += 1
    		end 
