@@ -151,18 +151,36 @@ ENV['WEB_PROTO']+"://")
     
     if File.directory?(userdir)	
 	    # calculate quota usage (in GB)
-	   	case profile.status
-	   		when "admin"
-	   			quota = 35
-	   		when "advanced"
-	   			quota = 15
-	   		when "student"
-	   			quota = 5
-	   		when "demo"
-	   			quota = 0.5
-	   		else
-	   			quota = 0
+	   	#case profile.status
+	   	#	when "admin"
+	   	#		quota = 35
+	   	#	when "advanced"
+	   	#		quota = 15
+	   	#	when "student"
+	   	#		quota = 5
+	   	#	when "demo"
+	   	#		quota = 0.5
+	   	#	else
+	   	#		quota = 0
+	   	#end
+   		
+   		# use user and quota settings from environment.rb
+   		status_arr = ENV['USER_STATUS'].split(",")
+   		quota_arr = ENV['USER_QUOTA'].split(",")
+   		
+   		# check if every array member has a partner
+   		if status_arr.count != quota_arr.count
+   		  flash[:notice] = 'The user and quota settings seem to be wrong. Please contact the system administrator.'
+	   	  redirect_to :action => 'list' and return
 	   	end
+   		
+   		i = 0
+   		status_arr.each do |stat|
+   		  if profile.status == stat
+   		    quota = quota_arr[i]
+   		  end
+   		  i += 1
+   		end 
    		
    		# userdir size in KB
     	du = `du -s #{userdir} | awk '{print $1}'`.to_i	
