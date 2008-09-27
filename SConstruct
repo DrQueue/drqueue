@@ -129,7 +129,7 @@ else:
   exit (1)
 
 # Base construction environment that links with the library
-env = env_lib.Clone()
+env = env_lib.Copy()
 env.Append (LIBS = ['drqueue'],LIBPATH = ['libdrqueue'])
 
 #
@@ -147,7 +147,7 @@ def build_drqman():
     if env_lib['build_drqman']:
         print "Building drqman"
         drqman_c = glob.glob (os.path.join('drqman','*.c'))
-        env_gtkstuff = env.Copy ()
+        env_gtkstuff = env.Clone ()
         env_gtkstuff.ParseConfig ('pkg-config --cflags --libs gtk+-2.0')
         drqman = env_gtkstuff.Program (os.path.join('drqman','drqman'),drqman_c)
         result.append(os.path.join('drqman','drqman'))
@@ -208,7 +208,7 @@ env.Clean(perm_db,idir_db)
 #env.Depends (install_base,perm_db)
 env.Alias('install-wrapped-bin',wrapped_bin_copies)
 env.Alias('install-bin',idir_bin)
-os.mkdir(idir_bin_viewcmd)
+#os.mkdir(idir_bin_viewcmd)
 env.Alias('install-bin_viewcmd',idir_bin_viewcmd)
 env.Alias('install-etc',idir_etc)
 env.Alias('install-tmp',perm_tmp)
