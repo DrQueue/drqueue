@@ -89,7 +89,7 @@ Help(opts.GenerateHelpText(env_lib))
 # Installation paths
 idir_prefix = os.path.normpath(os.path.join('${DESTDIR}','${PREFIX}','drqueue'))
 idir_bin    = os.path.join(idir_prefix,'bin')
-idir_bin_viewcmd = os.path.join(idir_bin,'_viewcmd')
+idir_bin_viewcmd = os.path.join(idir_bin,'viewcmd')
 idir_etc    = os.path.join(idir_prefix,'etc')
 idir_db     = os.path.join(idir_prefix,'db')
 idir_logs   = os.path.join(idir_prefix,'logs')
