@@ -1,0 +1,56 @@
+diff -urN drqueue-0.64.3/libdrqueue/computer_info.linux.h drqueue-0.64.3.patched/libdrqueue/computer_info.linux.h 
+--- drqueue-0.64.3/libdrqueue/computer_info.linux.h	2007-05-22 14:14:26 +0200
++++ drqueue-0.64.3.patched/libdrqueue/computer_info.linux.h	2007-05-22 15:09:50 +0200
+@@ -38,7 +38,7 @@
+     kill(0,SIGINT);
+   }
+   // FIXME: Linux has more architectures last time I checked.
+-  hwinfo->arch = ARCH_INTEL;
++  //hwinfo->arch = ARCH_INTEL;
+   hwinfo->os = OS_LINUX;
+   hwinfo->proctype = get_proctype();
+   hwinfo->procspeed = get_procspeed();
+@@ -46,6 +46,14 @@
+   hwinfo->speedindex = get_speedindex (hwinfo);
+   hwinfo->memory = get_memory ();
+   hwinfo->nnbits = computer_info_nnbits();
++  
++  // support for linux/mips
++  if (hwinfo->proctype == PROCTYPE_MIPSR10000) {
++    hwinfo->arch = ARCH_MIPS;
++  } else {
++    hwinfo->arch = ARCH_INTEL;
++  }
++
+ }
+ 
+ uint32_t
+@@ -118,6 +126,13 @@
+       proctype = PROCTYPE_INTELIA64;
+       found = 1;
+     }
++
++    // support for linux/mips
++    else if ((strstr(buf,"cpu model") != NULL) && (strstr(buf,"R10000") != NULL)) {
++    proctype = PROCTYPE_MIPSR10000;
++    found = 1;
++   }
++
+   }
+ 
+   if (!found) {
+@@ -152,7 +167,14 @@
+       sscanf (&buf[index],"%f\n",&st);
+       procspeed = (int) st;
+       found = 1;
++
++    // support for linux/mips
++    } else if ((strstr(buf,"system type") != NULL) && (strstr(buf,"SGI") != NULL)) {
++      // no speed on mips ;)
++      procspeed = 0;
++      found = 1;
+     }
++
+   }
+ 
+   if (!found) {
