@@ -1,0 +1,22 @@
+# /etc/conf.d/drqmd config file for /etc/init.d/drqmd
+
+# enter your master hostname here
+DRQUEUE_MASTER=""
+
+# this is the drqueue root dir, do not change below here unless you know what you're doing
+DRQUEUE_ROOT="/usr"
+DRQUEUE_DB="/usr/share/drqueue/db"
+DRQUEUE_LOGS="/usr/share/drqueue/logs"
+DRQUEUE_ETC="/etc/drqueue"
+
+# set the environmental variables for drqueue
+ENV="env DRQUEUE_ROOT=${DRQUEUE_ROOT} DRQUEUE_MASTER=${DRQUEUE_MASTER} DRQUEUE_DB=${DRQUEUE_DB} DRQUEUE_LOGS=${DRQUEUE_LOGS} DRQUEUE_ETC=${DRQUEUE_ETC}"
+
+# this is the drqueue master executable
+DRQUEUEMASTER_EXEC="/usr/bin/master"
+
+# this is where drqueue master will store its pid file
+DRQUEUEMASTER_PIDFILE="/var/run/drqueue/drqmd.pid"
+
+
+
