@@ -1,6 +1,6 @@
 // 
 // Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
-// Copyright (C) 2007 Andreas Schroeder
+// Copyright (C) 2007,2008 Andreas Schroeder
 //
 // This file is part of DrQueue
 // 
