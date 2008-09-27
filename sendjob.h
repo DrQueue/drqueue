@@ -40,7 +40,8 @@
 #define TOJ_TURTLE               13 // Turtle koj
 #define TOJ_MANTRA               14 // Mantra koj
 #define TOJ_XSI                  15 // XSI koj
-#define TOJ_GENERAL              16 // General koj
+#define TOJ_LUXRENDER            16 // Luxrender koj
+#define TOJ_GENERAL              17 // General koj
 
 void presentation (void);
 
@@ -60,6 +61,7 @@ int RegisterTerragenJobFromFile (std::ifstream &infile);
 int RegisterNukeJobFromFile (std::ifstream &infile);
 int RegisterTurtleJobFromFile (std::ifstream &infile);
 int RegisterXSIJobFromFile (std::ifstream &infile);
+int RegisterLuxrenderJobFromFile (std::ifstream &infile);
 
 int str2toj (char *str);
 

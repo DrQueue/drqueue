@@ -174,6 +174,11 @@ int main (int argc,char *argv[]) {
       std::cerr << "Error registering XSI job from file: " << argv[argc-1] << std::endl;
       exit (1);
     }
+  case TOJ_LUXRENDER:
+    if (RegisterLuxrenderJobFromFile (infile)) {
+      std::cerr << "Error registering LUXRENDER job from file: " << argv[argc-1] << std::endl;
+      exit (1);
+    }
   }
 
   std::cerr << "Job sent successfuly to the queue\n";
@@ -195,7 +200,7 @@ void usage (void) {
   << "\t-v version information\n"
   << "\t-h prints this help\n"
   << "\t-f [frameStart[:frameEnd[:stepFrame]]]\n"
-  << "\t-t [general|maya|blender|mentalray|bmrt|aqsis|3delight|pixie|lightwave|terragen|nuke|aftereffects|shake|xsi] type of job\n";
+  << "\t-t [general|maya|blender|mentalray|bmrt|aqsis|3delight|pixie|lightwave|terragen|nuke|aftereffects|shake|xsi§luxrender] type of job\n";
 }
 
 
@@ -1218,6 +1223,63 @@ int RegisterXSIJobFromFile (std::ifstream &infile) {
   return 0;
 }
 
+int RegisterLuxrenderJobFromFile (std::ifstream &infile) {
+  // Job variables for the script generator
+  struct job job;
+  struct luxrendersgi luxrenderSgi;
+
+  std::string jobName;
+  int frameStart,frameEnd,frameStep;
+  std::string scenePath;
+  char *pathToScript;
+
+  job_init(&job);
+
+  getline(infile,jobName);
+  infile >> frameStart;
+  infile >> frameEnd;
+  infile >> frameStep;
+  getline(infile,scenePath); //
+  getline(infile,scenePath); // Get two times because '>>' leaves the pointer before \n
+
+  strncpy(luxrenderSgi.scene,scenePath.c_str(),BUFFERLEN-1);
+  snprintf(luxrenderSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
+
+  job.autoRequeue = 1;
+
+  if (!(pathToScript = luxrendersg_create(&luxrenderSgi))) {
+    std::cerr << "Error creating script file\n";
+    return 1;
+  }
+
+  strncpy (job.name,jobName.c_str(),MAXNAMELEN-1);
+  strncpy (job.cmd,pathToScript,MAXCMDLEN-1);
+  strncpy (job.owner,getenv("USER"),MAXNAMELEN-1);
+  strncpy (job.email,getenv("USER"),MAXNAMELEN-1);
+  job.frame_start = frameStart;
+  job.frame_end = frameEnd;
+  job.frame_step = frameStep;
+  job.block_size = frameStep;
+  job.priority = 500;
+
+  job.koj = KOJ_LUXRENDER;
+  strncpy (job.koji.luxrender.scene,scenePath.c_str(),BUFFERLEN-1);
+  strncpy (job.koji.luxrender.viewcmd,"",BUFFERLEN-1);
+
+  job.limits.os_flags = OSF_ALL;
+  job.limits.nmaxcpus = (uint16_t)-1;
+  job.limits.nmaxcpuscomputer = (uint16_t)-1;
+  job.limits.memory = 0;
+  strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
+
+  if (!register_job(&job)) {
+    std::cerr << "Error sending job to the queue\n";
+    return 1;
+  }
+
+  return 0;
+}
+
 int str2toj (char *str) {
   int toj = TOJ_NONE;
 
@@ -1251,6 +1313,8 @@ int str2toj (char *str) {
     toj = TOJ_TERRAGEN;
   } else if (strstr(str,"xsi") != NULL) {
     toj = TOJ_XSI;
+  } else if (strstr(str,"luxrender") != NULL) {
+    toj = TOJ_LUXRENDER;
   }
 
   return toj;

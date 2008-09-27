@@ -54,6 +54,7 @@
 #include "drqm_jobs_nuke.h"
 #include "drqm_jobs_turtle.h"
 #include "drqm_jobs_xsi.h"
+#include "drqm_jobs_luxrender.h"
 
 // Icon includes
 #include "job_icon.h"
@@ -657,6 +658,11 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info) {
     gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_xsi.eimageExt), info->jobs[info->row].koji.xsi.imageExt);
     gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_xsi.eviewcmd), info->jobs[info->row].koji.xsi.viewcmd);
     break;
+  case KOJ_LUXRENDER:
+    gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(info->dnj.ckoj)->entry), "Luxrender");
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_luxrender.escene), info->jobs[info->row].koji.luxrender.scene);
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_luxrender.eviewcmd), info->jobs[info->row].koji.luxrender.viewcmd);
+    break;
   }
 }
 
@@ -1165,6 +1171,10 @@ static int dnj_submit (struct drqmj_dnji *info) {
     strncpy(job.koji.xsi.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.eviewcmd)),BUFFERLEN-1);
     job.autoRequeue=0;
     break;
+  case KOJ_LUXRENDER:
+    strncpy(job.koji.luxrender.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_luxrender.escene)),BUFFERLEN-1);
+    strncpy(job.koji.luxrender.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_luxrender.eviewcmd)),BUFFERLEN-1);
+    break;
   }
 
   /* Limits */
@@ -1449,6 +1459,7 @@ static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info) {
   items = g_list_append (items,(char*)"Nuke");
   items = g_list_append (items,(char*)"Turtle");
   items = g_list_append (items,(char*)"XSI");
+  items = g_list_append (items,(char*)"Luxrender");
   combo = gtk_combo_new();
   gtk_tooltips_set_tip(tooltips,GTK_COMBO(combo)->entry,"Selector for the kind of job",NULL);
   gtk_combo_set_popdown_strings (GTK_COMBO(combo),items);
@@ -1499,6 +1510,8 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
     new_koj = KOJ_TURTLE;
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"XSI") == 0) {
     new_koj = KOJ_XSI;
+  } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Luxrender") == 0) {
+    new_koj = KOJ_LUXRENDER;
   } else {
     /*   fprintf (stderr,"dnj_koj_combo_changed: koj not listed!\n"); */
     /*  fprintf (stderr,"entry: %s\n",gtk_entry_get_text(GTK_ENTRY(entry))); */
@@ -1574,6 +1587,10 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
       break;
     case KOJ_XSI:
       info->dnj.fkoj = dnj_koj_frame_xsi (info);
+      gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
+      break;
+    case KOJ_LUXRENDER:
+      info->dnj.fkoj = dnj_koj_frame_luxrender (info);
       gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
       break;
     }
