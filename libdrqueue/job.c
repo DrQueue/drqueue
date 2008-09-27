@@ -1000,6 +1000,10 @@ void job_environment_set (struct job *job, uint32_t iframe) {
     snprintf (imageExt,BUFFERLEN-1,"DRQUEUE_IMAGEEXT=%s",job->koji.xsi.imageExt);
     putenv (imageExt);
     break;
+  case KOJ_LUXRENDER:
+    snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.luxrender.scene);
+    putenv (scene);
+    break;
   }
 }
 
@@ -1040,6 +1044,7 @@ job_bswap_from_network (struct job *orig, struct job *dest) {
   case KOJ_NUKE:
   case KOJ_AFTEREFFECTS:
   case KOJ_SHAKE:
+  case KOJ_LUXRENDER:
     break;
   case KOJ_BMRT:
     dest->koji.bmrt.xmin = ntohl (orig->koji.bmrt.xmin);
@@ -1103,6 +1108,7 @@ job_bswap_to_network (struct job *orig, struct job *dest) {
   case KOJ_NUKE:
   case KOJ_AFTEREFFECTS:
   case KOJ_SHAKE:
+  case KOJ_LUXRENDER:
     break;
   case KOJ_BMRT:
     dest->koji.bmrt.xmin = htonl (orig->koji.bmrt.xmin);
@@ -1290,6 +1296,9 @@ char *job_koj_string (struct job *job) {
     break;
   case KOJ_XSI:
     msg = "XSI";
+    break;
+  case KOJ_LUXRENDER:
+    msg = "Luxrender";
     break;
   default:
     msg = "DEFAULT (ERROR)";

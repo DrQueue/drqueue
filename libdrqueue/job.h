@@ -192,6 +192,7 @@ union koj_info {  /* Kind of job information */
   }
   xsi;
   struct koji_luxrender {
+    char scene[BUFFERLEN];
     char script[BUFFERLEN];
     char viewcmd[BUFFERLEN];
   }
@@ -220,6 +221,7 @@ union koj_info {  /* Kind of job information */
 #define KOJ_TURTLE        13 // Turtle koj
 #define KOJ_MANTRA        14 // Mantra koj
 #define KOJ_XSI           15 // XSI koj
+#define KOJ_LUXRENDER     16 // LUXRENDER koj
 
 /* JOB SECTION */
 typedef enum {

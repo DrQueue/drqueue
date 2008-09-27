@@ -33,6 +33,7 @@ extern "C" {
   struct luxrendersgi {  /* Luxrender Script Generator Info */
     char scene[BUFFERLEN];
     char scriptdir[BUFFERLEN];
+    char kind[BUFFERLEN];
   };
 
 #pragma pack(pop)

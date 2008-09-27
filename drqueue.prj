@@ -128,6 +128,8 @@ module.include.files=\
 	nukesg.h\
 	xsisg.h\
 	drqman/drqm_jobs_xsi.h
+	luxrendersg.h\
+	drqman/drqm_jobs_luxrender.h\
 
 module.source.name=.
 module.source.type=
@@ -197,6 +199,8 @@ module.source.files=\
 	computer_info.freebsd.c\
 	xsisg.c\
 	drqman/drqm_jobs_xsi.c\
+	luxrendersg.c\
+	drqman/drqm_jobs_luxrender.c\
 	ctask.c
 
 module.pixmap.name=.

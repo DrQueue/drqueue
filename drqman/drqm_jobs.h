@@ -47,6 +47,7 @@
 #include "drqm_jobs_nuke.h"
 #include "drqm_jobs_turtle.h"
 #include "drqm_jobs_xsi.h"
+#include "drqm_jobs_luxrender.h"
 
 #include <string.h>
 
@@ -113,6 +114,7 @@ struct drqmj_dnji {       /* dialog new job info */
   struct drqmj_koji_terragen koji_terragen;
   struct drqmj_koji_turtle koji_turtle;
   struct drqmj_koji_xsi koji_xsi;
+  struct drqmj_koji_luxrender koji_luxrender;
 
   struct drqmj_limits limits;   /* limits info */
   struct drqmj_flags flags;     /* flags info */
