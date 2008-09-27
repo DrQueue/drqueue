@@ -129,7 +129,7 @@ else:
   exit (1)
 
 # Base construction environment that links with the library
-env = env_lib.Copy()
+env = env_lib.Clone()
 env.Append (LIBS = ['drqueue'],LIBPATH = ['libdrqueue'])
 
 #
@@ -195,6 +195,10 @@ bin_files = glob.glob(os.path.join('bin','*'))
 # remove viewcmd directory
 bin_files.remove('bin/viewcmd')
 copy_with_clean(bin_files,bin_files,idir_prefix,env)
+
+# install viewcmd files
+bin_viewcmd_files = glob.glob(os.path.join('bin/viewcmd','*'))
+copy_with_clean(bin_viewcmd_files,bin_viewcmd_files,idir_prefix,env)
 
 perm_logs = env.Command (idir_logs,[],[Mkdir("$TARGET"),Chmod("$TARGET",0777)])
 env.Clean(perm_logs,idir_logs)
