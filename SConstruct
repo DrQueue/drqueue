@@ -41,7 +41,7 @@ def get_architecture(env,escape=False,underscore=True):
     return machine
 
 def wrapper_complete_command (env,cmdlist):
-    kernel = platform.system()[0]
+    kernel = platform.system()
     arch = get_architecture(env)
     rlist = []
     for cmd in cmdlist:
@@ -191,6 +191,7 @@ wrapped_bin_copies = copy_with_clean(bin_list,wrapped_bin_list,idir_bin,env)
 
 etc_files = glob.glob(os.path.join('etc','*'))
 copy_with_clean(etc_files,etc_files,idir_prefix,env)
+
 bin_files = glob.glob(os.path.join('bin','*'))
 # remove viewcmd directory
 bin_files.remove('bin/viewcmd')
@@ -212,7 +213,6 @@ env.Clean(perm_db,idir_db)
 #env.Depends (install_base,perm_db)
 env.Alias('install-wrapped-bin',wrapped_bin_copies)
 env.Alias('install-bin',idir_bin)
-#os.mkdir(idir_bin_viewcmd)
 env.Alias('install-bin_viewcmd',idir_bin_viewcmd)
 env.Alias('install-etc',idir_etc)
 env.Alias('install-tmp',perm_tmp)
