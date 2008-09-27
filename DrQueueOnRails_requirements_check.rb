@@ -1,3 +1,7 @@
+#!/usr/bin/env ruby
+
+# kaazoo@drqueue.org, 2008
+
 print "\nChecking DrQueueOnRails requirements:\n\n"
 
 begin
