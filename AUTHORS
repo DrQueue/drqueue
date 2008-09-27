@@ -9,8 +9,8 @@ Jorge Daza Garcia-Blanes <jorge@drqueue.org>
 
 + Only posible thanks to the contribution of:
 
-Andreas Schroeder <andreas@drqueue.org> developer: DrQueueOnRails webfrontend
-Carlos Oliva <carlos.oliva@igloo.cl> developer: Turtle renderder support, MacOS X Installer
+Andreas Schroeder <andreas@drqueue.org> developer: DrQueueOnRails webfrontend, Ruby bindings
+Carlos Oliva <carlos@drqueue.org> developer: Turtle renderder support, MacOS X Installer
 Brendan Orr <baorr@myrealbox.com> scripting-hacker: bmrt.sg, 3delight.sg and pixie.sg
 Christian Boustany (Noor Entertainment <noorentertainment@yahoo.com>) developer: Mental Ray standalone support
 Goran Kocov <gkocov@yahoo.com> developer/blender: Blender support on sendjob and the python script to send jobs directly from blender
@@ -23,6 +23,7 @@ Shawn Parr <parrs@ipfw.edu> The most famous Mac OS X documentation online and be
 Theodore Schundler <tschundler@scu.edu> developer: FreeBSD support, tcpwrappers... and lot more.
 Tobias Sauerwein <cgTobi@gmail.com> developer: Aqsis support.
 Vincent Dedun (aka kraken) <kraken+spam@smousseland.com> developer: Windows Cygwin port.
+Gaute Neslein Korsnes <gaute@blender3d.no> developer: Luxrender integration in Drqman
 
 DRQUEUE LOGO
 ------------
