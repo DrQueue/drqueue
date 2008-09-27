@@ -192,13 +192,17 @@ wrapped_bin_copies = copy_with_clean(bin_list,wrapped_bin_list,idir_bin,env)
 etc_files = glob.glob(os.path.join('etc','*'))
 copy_with_clean(etc_files,etc_files,idir_prefix,env)
 bin_files = glob.glob(os.path.join('bin','*'))
+# remove viewcmd directory
+bin_files.remove('bin/viewcmd')
 copy_with_clean(bin_files,bin_files,idir_prefix,env)
+
 perm_logs = env.Command (idir_logs,[],[Mkdir("$TARGET"),Chmod("$TARGET",0777)])
 env.Clean(perm_logs,idir_logs)
 perm_tmp = env.Command (idir_tmp,[],[Mkdir("$TARGET"),Chmod("$TARGET",0777)])
 env.Clean(perm_tmp,idir_tmp)
 perm_db = env.Command (idir_db,[],[Mkdir("$TARGET"),Chmod("$TARGET",0777)])
 env.Clean(perm_db,idir_db)
+
 #env.Depends (install_base,perm_logs)
 #env.Depends (install_base,perm_tmp)
 #env.Depends (install_base,perm_db)
