@@ -54,7 +54,7 @@ class ProfilesController < ApplicationController
 	    @quota = 0
 	    status_arr.each do |stat|
           if @profile.status == stat
-            @quota = quota_arr[i].to_i
+            @quota = quota_arr[i].to_f
           end
           i += 1
 	    end
@@ -75,7 +75,7 @@ class ProfilesController < ApplicationController
     	
     	if File.directory?(userdir)
     		# userdir size in KB
-	    	du = `du -s #{userdir} | awk '{print $1}'`.to_i		
+	    	du = `du -s #{userdir} | awk '{print $1}'`.to_f		
 	    	@usage = (100 - ((@quota - (du / 1048576.0)) * 100 / @quota)).round
 	    	@used = number_to_human_size(du * 1024)
 	    	

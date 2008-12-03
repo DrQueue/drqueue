@@ -166,13 +166,13 @@ ENV['WEB_PROTO']+"://")
    		quota = 0
    		status_arr.each do |stat|
    		  if profile.status == stat
-   		    quota = quota_arr[i].to_i
+   		    quota = quota_arr[i].to_f
    		  end
    		  i += 1
    		end 
    		
    		# userdir size in KB
-    	du = `du -s #{userdir} | awk '{print $1}'`.to_i	
+    	du = `du -s #{userdir} | awk '{print $1}'`.to_f	
     	used = du / 1048576.0
     	
     	if used > quota
