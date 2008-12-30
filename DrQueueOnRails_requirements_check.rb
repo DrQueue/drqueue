@@ -5,6 +5,14 @@
 print "\nChecking DrQueueOnRails requirements:\n\n"
 
 begin
+  require 'rubygems'
+rescue LoadError
+  print "RubyGems: not installed\n"
+else
+  print "RubyGems: installed\n"
+end
+
+begin
   require 'drqueue'
 rescue LoadError
   print "DrQueue bindings: not installed\n"
@@ -18,14 +26,6 @@ rescue LoadError
   print "Extra tools for the File class: not installed\n"
 else
   print "Extra tools for the File class: installed\n"
-end
-
-begin
-  require 'rubygems'
-rescue LoadError
-  print "RubyGems: not installed\n"
-else
-  print "RubyGems: installed\n"
 end
 
 begin
