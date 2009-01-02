@@ -90,6 +90,7 @@ class Profile < ActiveRecord::Base
      # authentication failed
      return false
     end
+   end
 		 	 
   end
 end
