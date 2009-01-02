@@ -162,8 +162,8 @@ class MainController < ApplicationController
 		highest = Profile.find(:first, :order => "id desc").id rescue 0
 	
 		@infos = []
-		account = params[:infos][:account].dump.strip
-		password = params[:infos][:password].dump.strip
+		account = params[:infos][:account].strip
+		password = params[:infos][:password].strip
 	
 		# successful login
 		if (auth_result = Profile.authenticate_me(account,password)) != false
