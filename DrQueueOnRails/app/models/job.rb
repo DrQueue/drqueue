@@ -62,16 +62,21 @@ class Job < ActiveRecord::Base
 		id_string = sprintf("%03d", job_id)
 		
 		# create archive depending on uploaded file by user
-		if `find . -maxdepth 1 -type f -name *.zip`.length > 0
+		if `find . -type f -maxdepth 1 -name *.zip`.length > 0
 		  puts `zip rendered_files_#{id_string}.zip #{created_files.join(' ')}`
-		elseif `find . -maxdepth 1 -type f -name *.tgz`.length > 0
+		#  return "rendered_files_#{id_string}.zip"
+		elseif `find . -type f -maxdepth 1 -name *.tgz`.length > 0
 		  puts `tar -cvf - #{created_files.join(' ')} | gzip -1 >rendered_files_#{id_string}.tgz`
-		elseif `find . -maxdepth 1 -type f -name *.tbz2`.length > 0
+		#  return "rendered_files_#{id_string}.tgz"
+		elseif `find . -type f -maxdepth 1 -name *.tbz2`.length > 0
 		  puts `tar -cvf - #{created_files.join(' ')} | bzip2 -1 >rendered_files_#{id_string}.tbz2`
-		elseif `find . -maxdepth 1 -type f -name *.rar`.length > 0
-		  puts `rar a rendered_files_#{id_string}.zip #{created_files.join(' ')}`
+		#  return "rendered_files_#{id_string}.tbz2"
+		elseif `find . -type f -maxdepth 1 -name *.rar`.length > 0
+		  puts `rar a rendered_files_#{id_string}.rar #{created_files.join(' ')}`
+		#  return "rendered_files_#{id_string}.rar"
 		else
 		  puts `zip rendered_files_#{id_string}.zip #{created_files.join(' ')}`
+		#  return "rendered_files_#{id_string}.zip"
 		end
 		# we now use a pipe and 2 processes (verbose for now)
 		#puts `tar -cvf - #{created_files.join(' ')} | bzip2 -1 >rendered_files_#{id_string}.tbz2`
@@ -379,14 +384,30 @@ class Job < ActiveRecord::Base
 		puts created_files
 		
 		# create archive
-		###
-		### TODO: type of archive should depend on user preferences
-		###
 		
+		# create archive depending on uploaded file by user
+                if `find . -type f -maxdepth 1 -name *.zip`.length > 0
+                  puts `zip rendered_files_#{id_string}.zip #{created_files.join(' ')}`
+                #  return "rendered_files_#{id_string}.zip"
+                elseif `find . -type f -maxdepth 1 -name *.tgz`.length > 0
+                  puts `tar -cvf - #{created_files.join(' ')} | gzip -1 >rendered_files_#{id_string}.tgz`
+                #  return "rendered_files_#{id_string}.tgz"
+                elseif `find . -type f -maxdepth 1 -name *.tbz2`.length > 0
+                  puts `tar -cvf - #{created_files.join(' ')} | bzip2 -1 >rendered_files_#{id_string}.tbz2`
+                #  return "rendered_files_#{id_string}.tbz2"
+                elseif `find . -type f -maxdepth 1 -name *.rar`.length > 0
+                  puts `rar a rendered_files_#{id_string}.rar #{created_files.join(' ')}`
+                #  return "rendered_files_#{id_string}.rar"
+                else
+                  puts `zip rendered_files_#{id_string}.zip #{created_files.join(' ')}`
+                #  return "rendered_files_#{id_string}.zip"
+                end
+		
+
 		#puts `tar -cvjf rendered_files_#{id_string}.tbz2 #{created_files.join(' ')}`
 		
 		# we now use a pipe and 2 processes (verbose for now)
-		puts `tar -cvf - #{created_files.join(' ')} | bzip2 -1 >rendered_files_#{id_string}.tbz2`
+		#puts `tar -cvf - #{created_files.join(' ')} | bzip2 -1 >rendered_files_#{id_string}.tbz2`
 			
 		
 	end
