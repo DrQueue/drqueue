@@ -1,7 +1,5 @@
 class MainController < ApplicationController
 
-	include ActionView::Helpers::SanitizeHelper 
-
 	require 'rubygems'
 
 	# for drqueue
@@ -164,8 +162,8 @@ class MainController < ApplicationController
 		highest = Profile.find(:first, :order => "id desc").id rescue 0
 	
 		@infos = []
-		account = sanitize(strip_tags(params[:infos][:account].strip))
-		password = sanitize(strip_tags(params[:infos][:password].strip))
+		account = params[:infos][:account].dump.strip
+		password = params[:infos][:password].dump.strip
 	
 		# successful login
 		if (auth_result = Profile.authenticate_me(account,password)) != false
