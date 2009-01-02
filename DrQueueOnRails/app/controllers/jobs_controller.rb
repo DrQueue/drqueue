@@ -1239,13 +1239,13 @@ ENV['WEB_PROTO']+"://")
   	
   	id_string = sprintf("%03d", params[:id].to_i)
 
-	if `find . -type f -maxdepth 1 -name *.zip`.length > 0
+	if `find . -maxdepth 1 -type f -name *.zip`.length > 0
           archive = renderpath + "/rendered_files_#{id_string}.zip"
-        elsif `find . -type f -maxdepth 1 -name *.tgz`.length > 0
+        elsif `find . -maxdepth 1 -type f -name *.tgz`.length > 0
           archive = renderpath + "/rendered_files_#{id_string}.tgz"
-        elsif `find . -type f -maxdepth 1 -name *.tbz2`.length > 0
+        elsif `find . -maxdepth 1 -type f -name *.tbz2`.length > 0
           archive = renderpath + "/rendered_files_#{id_string}.tbz2"
-        elsif `find . -type f -maxdepth 1 -name *.rar`.length > 0
+        elsif `find . -maxdepth 1 -type f -name *.rar`.length > 0
           archive = renderpath + "/rendered_files_#{id_string}.rar"
         else
           archive = renderpath + "/rendered_files_#{id_string}.zip"
