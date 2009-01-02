@@ -45,7 +45,7 @@ class ProfilesController < ApplicationController
 	    quota_arr = ENV['USER_QUOTA'].split(",")
 		
 	    # check if every array member has a partner
-	    if status_arr.count != quota_arr.count
+	    if status_arr.length != quota_arr.length
 	      flash[:notice] = 'The user/quota/priorities settings seem to be wrong. Please contact the system administrator.'
  	      redirect_to '/' and return
  	    end
