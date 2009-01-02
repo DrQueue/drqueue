@@ -14,7 +14,6 @@ class JobsController < ApplicationController
 	
   # for text sanitizing
   include ActionView::Helpers::TextHelper
-  include ActionView::Helpers::SanitizeHelper 
 
   # template
   layout "main_layout", :except => 'feed'
@@ -157,7 +156,7 @@ ENV['WEB_PROTO']+"://")
    		quota_arr = ENV['USER_QUOTA'].split(",")
    		
    		# check if every array member has a partner
-   		if status_arr.count != quota_arr.count
+   		if status_arr.length != quota_arr.length
    		  flash[:notice] = 'The user/quota/priorities settings seem to be wrong. Please contact the system administrator.'
 	   	  redirect_to :action => 'list' and return
 	   	end
@@ -240,10 +239,10 @@ ENV['WEB_PROTO']+"://")
 	end
     
     # sanitize and fill in user input
-	@jobm.name = sanitize(strip_tags(params[:jobm][:name].strip))
-	@jobm.frame_start = sanitize(strip_tags(params[:jobm][:frame_start].strip)).to_i
-	@jobm.frame_end = sanitize(strip_tags(params[:jobm][:frame_end].strip)).to_i
-	@jobm.owner = session[:profile].name
+    @jobm.name = params[:jobm][:name].strip
+    @jobm.frame_start = params[:jobm][:frame_start].strip.to_i
+    @jobm.frame_end = params[:jobm][:frame_end].strip.to_i
+    @jobm.owner = session[:profile].name
 	
 	# set priority depending on user status
 	
@@ -252,7 +251,7 @@ ENV['WEB_PROTO']+"://")
 	prio_arr = ENV['USER_PRIO'].split(",")
 		
 	# check if every array member has a partner
-	if status_arr.count != prio_arr.count
+	if status_arr.length != prio_arr.length
 	  flash[:notice] = 'The user/quota/priorities settings seem to be wrong. Please contact the system administrator.'
  	  redirect_to :action => 'list' and return
  	end
@@ -1018,7 +1017,7 @@ ENV['WEB_PROTO']+"://")
 	elsif params[:job][:renderer] == "vray"
 		
 	   	# find scene file in jobdir
-	   	scenefile = Job.find_scenefile("vscene")
+	   	scenefile = Job.find_scenefile("vrscene")
 	   	
 	   	# possible errors
 	   	if scenefile == -1
