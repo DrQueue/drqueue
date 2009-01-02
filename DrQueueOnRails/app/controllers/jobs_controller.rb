@@ -1241,11 +1241,11 @@ ENV['WEB_PROTO']+"://")
 
 	if `find . -type f -maxdepth 1 -name *.zip`.length > 0
           archive = renderpath + "/rendered_files_#{id_string}.zip"
-        else if `find . -type f -maxdepth 1 -name *.tgz`.length > 0
+        elsif `find . -type f -maxdepth 1 -name *.tgz`.length > 0
           archive = renderpath + "/rendered_files_#{id_string}.tgz"
-        else if `find . -type f -maxdepth 1 -name *.tbz2`.length > 0
+        elsif `find . -type f -maxdepth 1 -name *.tbz2`.length > 0
           archive = renderpath + "/rendered_files_#{id_string}.tbz2"
-        else if `find . -type f -maxdepth 1 -name *.rar`.length > 0
+        elsif `find . -type f -maxdepth 1 -name *.rar`.length > 0
           archive = renderpath + "/rendered_files_#{id_string}.rar"
         else
           archive = renderpath + "/rendered_files_#{id_string}.zip"
