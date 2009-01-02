@@ -303,8 +303,8 @@ ENV['WEB_PROTO']+"://")
 	   	redirect_to :action => 'new' and return
 	else
 	    # save uploaded archive file to jobdir
-	    # copy is used when filesize > 10 KB (class StringIO)
-	    if params[:file].class == StringIO
+	    # copy is used when filesize > 10 KB (class ActionController::UploadedStringIO)
+	    if params[:file].class == ActionController::UploadedStringIO
 	    	File.open(jobdir+"/"+just_filename,'wb') do |file|
 			 	file.write params[:file].read
 			end
