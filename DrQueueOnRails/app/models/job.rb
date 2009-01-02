@@ -65,13 +65,13 @@ class Job < ActiveRecord::Base
 		if `find . -type f -maxdepth 1 -name *.zip`.length > 0
 		  puts `zip rendered_files_#{id_string}.zip #{created_files.join(' ')}`
 		#  return "rendered_files_#{id_string}.zip"
-		elseif `find . -type f -maxdepth 1 -name *.tgz`.length > 0
+		else if `find . -type f -maxdepth 1 -name *.tgz`.length > 0
 		  puts `tar -cvf - #{created_files.join(' ')} | gzip -1 >rendered_files_#{id_string}.tgz`
 		#  return "rendered_files_#{id_string}.tgz"
-		elseif `find . -type f -maxdepth 1 -name *.tbz2`.length > 0
+		else if `find . -type f -maxdepth 1 -name *.tbz2`.length > 0
 		  puts `tar -cvf - #{created_files.join(' ')} | bzip2 -1 >rendered_files_#{id_string}.tbz2`
 		#  return "rendered_files_#{id_string}.tbz2"
-		elseif `find . -type f -maxdepth 1 -name *.rar`.length > 0
+		else if `find . -type f -maxdepth 1 -name *.rar`.length > 0
 		  puts `rar a rendered_files_#{id_string}.rar #{created_files.join(' ')}`
 		#  return "rendered_files_#{id_string}.rar"
 		else
@@ -389,13 +389,13 @@ class Job < ActiveRecord::Base
                 if `find . -type f -maxdepth 1 -name *.zip`.length > 0
                   puts `zip rendered_files_#{id_string}.zip #{created_files.join(' ')}`
                 #  return "rendered_files_#{id_string}.zip"
-                elseif `find . -type f -maxdepth 1 -name *.tgz`.length > 0
+                else if `find . -type f -maxdepth 1 -name *.tgz`.length > 0
                   puts `tar -cvf - #{created_files.join(' ')} | gzip -1 >rendered_files_#{id_string}.tgz`
                 #  return "rendered_files_#{id_string}.tgz"
-                elseif `find . -type f -maxdepth 1 -name *.tbz2`.length > 0
+                else if `find . -type f -maxdepth 1 -name *.tbz2`.length > 0
                   puts `tar -cvf - #{created_files.join(' ')} | bzip2 -1 >rendered_files_#{id_string}.tbz2`
                 #  return "rendered_files_#{id_string}.tbz2"
-                elseif `find . -type f -maxdepth 1 -name *.rar`.length > 0
+                else if `find . -type f -maxdepth 1 -name *.rar`.length > 0
                   puts `rar a rendered_files_#{id_string}.rar #{created_files.join(' ')}`
                 #  return "rendered_files_#{id_string}.rar"
                 else
