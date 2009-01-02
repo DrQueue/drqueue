@@ -61,11 +61,20 @@ class Job < ActiveRecord::Base
 		
 		id_string = sprintf("%03d", job_id)
 		
-		# create archive
-		#puts `tar -cvjf rendered_files_#{id_string}.tbz2 #{ created_files.join(' ') }`
-		
+		# create archive depending on uploaded file by user
+		if `find . -maxdepth 1 -type f -name *.zip`.length > 0
+		  puts `zip rendered_files_#{id_string}.zip #{created_files.join(' ')}`
+		elseif `find . -maxdepth 1 -type f -name *.tgz`.length > 0
+		  puts `tar -cvf - #{created_files.join(' ')} | gzip -1 >rendered_files_#{id_string}.tgz`
+		elseif `find . -maxdepth 1 -type f -name *.tbz2`.length > 0
+		  puts `tar -cvf - #{created_files.join(' ')} | bzip2 -1 >rendered_files_#{id_string}.tbz2`
+		elseif `find . -maxdepth 1 -type f -name *.rar`.length > 0
+		  puts `rar a rendered_files_#{id_string}.zip #{created_files.join(' ')}`
+		else
+		  puts `zip rendered_files_#{id_string}.zip #{created_files.join(' ')}`
+		end
 		# we now use a pipe and 2 processes (verbose for now)
-		puts `tar -cvf - #{created_files.join(' ')} | bzip2 -1 >rendered_files_#{id_string}.tbz2`
+		#puts `tar -cvf - #{created_files.join(' ')} | bzip2 -1 >rendered_files_#{id_string}.tbz2`
 		
 	end
 	
