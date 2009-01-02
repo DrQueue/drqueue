@@ -45,7 +45,7 @@ class Job < ActiveRecord::Base
 		
 		job_mtime = File.mtime(job.cmd).to_i
 		#files = `ls -1 *`.split("\n")
-		files = `find . -type f -maxdepth 1 ! -name '.*'`.split("\n")
+		files = `find . -maxdepth 1 -type f ! -name '.*'`.split("\n")
 		#`find . -type f -maxdepth 1 ! -name '.*'
 		
 		# save all newly created files into archive
@@ -62,21 +62,16 @@ class Job < ActiveRecord::Base
 		id_string = sprintf("%03d", job_id)
 		
 		# create archive depending on uploaded file by user
-		if `find . -type f -maxdepth 1 -name *.zip`.length > 0
+		if `find . -maxdepth 1 -type f -name *.zip`.length > 0
 		  puts `zip rendered_files_#{id_string}.zip #{created_files.join(' ')}`
-		#  return "rendered_files_#{id_string}.zip"
-		elsif `find . -type f -maxdepth 1 -name *.tgz`.length > 0
+		elsif `find . -maxdepth 1 -type f -name *.tgz`.length > 0
 		  puts `tar -cvf - #{created_files.join(' ')} | gzip -1 >rendered_files_#{id_string}.tgz`
-		#  return "rendered_files_#{id_string}.tgz"
-		elsif `find . -type f -maxdepth 1 -name *.tbz2`.length > 0
+		elsif `find . -maxdepth 1 -type f -name *.tbz2`.length > 0
 		  puts `tar -cvf - #{created_files.join(' ')} | bzip2 -1 >rendered_files_#{id_string}.tbz2`
-		#  return "rendered_files_#{id_string}.tbz2"
-		elsif `find . -type f -maxdepth 1 -name *.rar`.length > 0
+		elsif `find . -maxdepth 1 -type f -name *.rar`.length > 0
 		  puts `rar a rendered_files_#{id_string}.rar #{created_files.join(' ')}`
-		#  return "rendered_files_#{id_string}.rar"
 		else
 		  puts `zip rendered_files_#{id_string}.zip #{created_files.join(' ')}`
-		#  return "rendered_files_#{id_string}.zip"
 		end
 		# we now use a pipe and 2 processes (verbose for now)
 		#puts `tar -cvf - #{created_files.join(' ')} | bzip2 -1 >rendered_files_#{id_string}.tbz2`
@@ -386,21 +381,16 @@ class Job < ActiveRecord::Base
 		# create archive
 		
 		# create archive depending on uploaded file by user
-                if `find . -type f -maxdepth 1 -name *.zip`.length > 0
+                if `find . -maxdepth 1 -type f -name *.zip`.length > 0
                   puts `zip rendered_files_#{id_string}.zip #{created_files.join(' ')}`
-                #  return "rendered_files_#{id_string}.zip"
-                elsif `find . -type f -maxdepth 1 -name *.tgz`.length > 0
+                elsif `find . -maxdepth 1 -type f -name *.tgz`.length > 0
                   puts `tar -cvf - #{created_files.join(' ')} | gzip -1 >rendered_files_#{id_string}.tgz`
-                #  return "rendered_files_#{id_string}.tgz"
-                elsif `find . -type f -maxdepth 1 -name *.tbz2`.length > 0
+                elsif `find . -maxdepth 1 -type f -name *.tbz2`.length > 0
                   puts `tar -cvf - #{created_files.join(' ')} | bzip2 -1 >rendered_files_#{id_string}.tbz2`
-                #  return "rendered_files_#{id_string}.tbz2"
-                elsif `find . -type f -maxdepth 1 -name *.rar`.length > 0
+                elsif `find . -maxdepth 1 -type f -name *.rar`.length > 0
                   puts `rar a rendered_files_#{id_string}.rar #{created_files.join(' ')}`
-                #  return "rendered_files_#{id_string}.rar"
                 else
                   puts `zip rendered_files_#{id_string}.zip #{created_files.join(' ')}`
-                #  return "rendered_files_#{id_string}.zip"
                 end
 		
 
