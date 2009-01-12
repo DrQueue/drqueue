@@ -92,9 +92,10 @@ idir_bin    = os.path.join(idir_prefix,'bin')
 idir_bin_viewcmd = os.path.join(idir_bin,'viewcmd')
 idir_etc    = os.path.join(idir_prefix,'etc')
 idir_db     = os.path.join(idir_prefix,'db')
+idir_doc    = os.path.join(idir_prefix,'doc')
 idir_logs   = os.path.join(idir_prefix,'logs')
 idir_tmp    = os.path.join(idir_prefix,'tmp')
-Export('env_lib idir_prefix idir_bin idir_bin_viewcmd idir_etc idir_db idir_logs idir_tmp')
+Export('env_lib idir_prefix idir_bin idir_bin_viewcmd idir_etc idir_db idir_doc idir_logs idir_tmp')
 
 if sys.platform == 'win32':
     print "-> Win32 using Cygwin mode"
@@ -189,17 +190,25 @@ wrapped_bin_list = wrapper_complete_command (env,bin_list)
 #wrapped_bin_copies = copy_with_clean(bin_list,wrapped_bin_list,'bin',env)
 wrapped_bin_copies = copy_with_clean(bin_list,wrapped_bin_list,idir_bin,env)
 
+# install etc files
 etc_files = glob.glob(os.path.join('etc','*'))
 copy_with_clean(etc_files,etc_files,idir_prefix,env)
 
+# install bin files
 bin_files = glob.glob(os.path.join('bin','*'))
-# remove viewcmd directory
+# remove viewcmd because it's a directory, not a file
 bin_files.remove('bin/viewcmd')
 copy_with_clean(bin_files,bin_files,idir_prefix,env)
 
 # install viewcmd files
 bin_viewcmd_files = glob.glob(os.path.join('bin/viewcmd','*'))
 copy_with_clean(bin_viewcmd_files,bin_viewcmd_files,idir_prefix,env)
+
+# install documentation files
+doc_files = [ 'AUTHORS', 'COPYING', 'ChangeLog', 'INSTALL', 'NEWS', 'README', 'README.darwin', 'README.mentalray', 'README.python', 'README.shell_variables', 'README.windows', 'setenv' ]
+n = len(doc_files)
+for i in range(0, n):
+	env.Install(idir_doc, doc_files[i])
 
 perm_logs = env.Command (idir_logs,[],[Mkdir("$TARGET"),Chmod("$TARGET",0777)])
 env.Clean(perm_logs,idir_logs)
@@ -217,5 +226,6 @@ env.Alias('install-bin_viewcmd',idir_bin_viewcmd)
 env.Alias('install-etc',idir_etc)
 env.Alias('install-tmp',perm_tmp)
 env.Alias('install-db',perm_db)
+env.Alias('install-doc',idir_doc)
 env.Alias('install-logs',perm_logs)
-env.Alias('install',['install-wrapped-bin','install-bin_viewcmd','install-bin','install-etc','install-db','install-logs','install-tmp'])
+env.Alias('install',['install-wrapped-bin','install-bin_viewcmd','install-bin','install-etc','install-db','install-doc','install-logs','install-tmp'])
