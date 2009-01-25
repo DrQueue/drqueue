@@ -151,7 +151,10 @@ def build_drqman():
         env_gtkstuff = env.Clone ()
         env_gtkstuff.ParseConfig ('pkg-config --cflags --libs gtk+-2.0')
         drqman = env_gtkstuff.Program (os.path.join('drqman','drqman'),drqman_c)
-        result.append(os.path.join('drqman','drqman'))
+        if sys.platform == 'cygwin':
+        	result.append(os.path.join('drqman','drqman.exe'))
+        else:
+        	result.append(os.path.join('drqman','drqman'))
         Default (drqman)
     else:
         print "Not building drqman"
@@ -162,7 +165,10 @@ def build_drqman():
 #
 master = env.Program ('master.c')
 slave = env.Program ('slave.c')
-main_list = [ 'master', 'slave' ] + build_drqman()
+if sys.platform == 'cygwin':
+	main_list = [ 'master', 'slave.exe' ] + build_drqman()
+else:
+	main_list = [ 'master', 'slave' ] + build_drqman()
 Default (master)
 Default (slave)
 
@@ -173,9 +179,14 @@ Default (slave)
 #
 # Tools
 #
-cmdline_tools = [ 'jobfinfo','jobinfo','compinfo','requeue','cfgreader',
+if sys.platform == 'cygwin':
+	cmdline_tools = [ 'jobfinfo.exe','jobinfo.exe','compinfo.exe','requeue.exe','cfgreader.exe',
+                  'cjob.exe','blockhost.exe','sendjob.exe' ]
+	cpp_tools = [ 'sendjob.exe' ]
+else:
+	cmdline_tools = [ 'jobfinfo','jobinfo','compinfo','requeue','cfgreader',
                   'cjob','blockhost','sendjob' ]
-cpp_tools = [ 'sendjob' ]
+	cpp_tools = [ 'sendjob' ]
 ctools = {}
 for tool in cmdline_tools:
     if tool not in cpp_tools:
