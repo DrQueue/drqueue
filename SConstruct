@@ -179,14 +179,15 @@ Default (slave)
 #
 # Tools
 #
-if sys.platform == 'cygwin':
-	cmdline_tools = [ 'jobfinfo.exe','jobinfo.exe','compinfo.exe','requeue.exe','cfgreader.exe',
-                  'cjob.exe','blockhost.exe','sendjob.exe' ]
-	cpp_tools = [ 'sendjob.exe' ]
-else:
-	cmdline_tools = [ 'jobfinfo','jobinfo','compinfo','requeue','cfgreader',
-                  'cjob','blockhost','sendjob' ]
-	cpp_tools = [ 'sendjob' ]
+#if sys.platform == 'cygwin':
+#	cmdline_tools = [ 'jobfinfo.exe','jobinfo.exe','compinfo.exe','requeue.exe','cfgreader.exe',
+#                  'cjob.exe','blockhost.exe','sendjob.exe' ]
+#	cpp_tools = [ 'sendjob.exe' ]
+#else:
+cmdline_tools = [ 'jobfinfo','jobinfo','compinfo','requeue','cfgreader',
+				'cjob','blockhost','sendjob' ]
+cpp_tools = [ 'sendjob' ]
+
 ctools = {}
 for tool in cmdline_tools:
     if tool not in cpp_tools:
@@ -196,6 +197,13 @@ for tool in cmdline_tools:
     Default(ctools[tool])
 
 install_base = idir_prefix
+
+if sys.platform == 'cygwin':
+	cmdline_tools_tmp = {}
+	for tool in cmdline_tools:
+		cmdline_tools_tmp[tool] = env.Program (tool+'.exe')
+	cmdline_tools = cmdline_tools_tmp
+
 bin_list = main_list + cmdline_tools
 wrapped_bin_list = wrapper_complete_command (env,bin_list)
 #wrapped_bin_copies = copy_with_clean(bin_list,wrapped_bin_list,'bin',env)
