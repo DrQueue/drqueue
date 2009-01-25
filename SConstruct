@@ -166,7 +166,7 @@ def build_drqman():
 master = env.Program ('master.c')
 slave = env.Program ('slave.c')
 if sys.platform == 'cygwin':
-	main_list = [ 'master', 'slave.exe' ] + build_drqman()
+	main_list = [ 'master.exe', 'slave.exe' ] + build_drqman()
 else:
 	main_list = [ 'master', 'slave' ] + build_drqman()
 Default (master)
@@ -199,9 +199,9 @@ for tool in cmdline_tools:
 install_base = idir_prefix
 
 if sys.platform == 'cygwin':
-	cmdline_tools_tmp = {}
+	cmdline_tools_tmp = []
 	for tool in cmdline_tools:
-		cmdline_tools_tmp[tool] = env.Program (tool+'.exe')
+		cmdline_tools_tmp.append(tool + '.exe')
 	cmdline_tools = cmdline_tools_tmp
 
 bin_list = main_list + cmdline_tools
