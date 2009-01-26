@@ -33,7 +33,7 @@ extern "C" {
   struct threedsmaxsgi {  /* 3dsmax Script Generator Info */
     char scene[BUFFERLEN];
     char scriptdir[BUFFERLEN];
-    char outputfile[BUFFERLEN];
+    char image[BUFFERLEN];
   };
 
 #pragma pack(pop)

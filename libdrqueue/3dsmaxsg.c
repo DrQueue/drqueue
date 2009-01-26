@@ -48,7 +48,7 @@ char *threedsmaxsg_create (struct threedsmaxsgi *info) {
   /* char *p;  */ /* Scene filename without path */
   
   char scene[MAXCMDLEN];
-  char outputfile[MAXCMDLEN];
+  char image[MAXCMDLEN];
 
   /* Check the parameters */
   if (!strlen(info->scene)) {
@@ -58,10 +58,10 @@ char *threedsmaxsg_create (struct threedsmaxsgi *info) {
 
 #ifdef __CYGWIN
   cygwin_conv_to_posix_path(info->scene, scene);
-  cygwin_conv_to_posix_path(info->outputfile, outputfile);
+  cygwin_conv_to_posix_path(info->image, image);
 #else
   strncpy(scene,info->scene,MAXCMDLEN-1);
-  strncpy(outputfile,info->outputfile,MAXCMDLEN-1);
+  strncpy(image,info->image,MAXCMDLEN-1);
 #endif
 
   p = strrchr(scene,'/');
@@ -73,7 +73,7 @@ char *threedsmaxsg_create (struct threedsmaxsgi *info) {
 
   jobscript_write_heading (ji);
   jobscript_set_variable (ji,"DRQUEUE_SCENE",info->scene);
-  jobscript_set_variable (ji,"OUTPUT_FILE",info->outputfile);
+  jobscript_set_variable (ji,"DRQUEUE_IMAGE",info->image);
   
   jobscript_template_write (ji,"3dsmax.sg");
   jobscript_close (ji);
