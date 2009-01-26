@@ -202,13 +202,13 @@ union koj_info {  /* Kind of job information */
     char viewcmd[BUFFERLEN];
   }
   vray;
-  struct koji_3dsmax {
+  struct koji_threedsmax {
     char scene[BUFFERLEN];
     char script[BUFFERLEN];
     char outoutfile[BUFFERLEN];
     char viewcmd[BUFFERLEN];
   }
-  3dsmax;
+  threedsmax;
 
 };
 

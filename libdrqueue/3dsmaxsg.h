@@ -30,7 +30,7 @@ extern "C" {
 
 #pragma pack(push,1)
 
-  struct 3dsmaxsgi {  /* 3dsmax Script Generator Info */
+  struct threedsmaxsgi {  /* 3dsmax Script Generator Info */
     char scene[BUFFERLEN];
     char scriptdir[BUFFERLEN];
     char outputfile[BUFFERLEN];
@@ -38,8 +38,8 @@ extern "C" {
 
 #pragma pack(pop)
 
-  char *3dsmaxsg_create (struct 3dsmaxsgi *info);
-  char *3dsmaxsg_default_script_path (void);
+  char *threedsmaxsg_create (struct 3dsmaxsgi *info);
+  char *threedsmaxsg_default_script_path (void);
 
 #ifdef __CPLUSPLUS
 }
