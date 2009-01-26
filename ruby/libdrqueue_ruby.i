@@ -115,6 +115,7 @@ slaves. Also provides access to all data structures of DrQueue."
 %include "luxrendersg.h"
 %include "mayasg.h"
 %include "vraysg.h"
+%include "3dsmaxsg.h"
 
 // type mapppings
 typedef unsigned int time_t;
@@ -493,6 +494,37 @@ typedef unsigned char uint8_t;
 		strncpy(vray->scriptdir, scriptdir, BUFFERLEN-1);
 		
   		outfile = vraysg_create(vray);
+  		
+		if (!outfile) {
+			rb_raise(rb_eException,"Problem creating script file");
+      		return NULL;
+		}
+		
+		return outfile;
+	}
+	
+	/* 3DSMax script file generation */
+	char *threedsmaxsg (char *scene, char *scriptdir, char *outputfile)
+	{	
+		struct threedsmaxsgi *vray = (struct threedsmaxsgi *)malloc (sizeof(struct threedsmaxsgi));
+    	if (!vray) {
+ 	     	rb_raise(rb_eNoMemError,"out of memory");
+    	 	return NULL;
+   		}	
+		
+		char *outfile = (char *)malloc(sizeof(char *));
+		if (!outfile) {
+ 	     	rb_raise(rb_eNoMemError,"out of memory");
+    	 	return NULL;
+   		}
+		
+		memset (vray,0,sizeof(struct threedsmaxgi));
+		
+		strncpy(vray->scene, scene, BUFFERLEN-1);
+		strncpy(vray->scriptdir, scriptdir, BUFFERLEN-1);
+		strncpy(vray->scriptdir, outputfile, BUFFERLEN-1);
+		
+  		outfile = threedsmaxsg_create(vray);
   		
 		if (!outfile) {
 			rb_raise(rb_eException,"Problem creating script file");
