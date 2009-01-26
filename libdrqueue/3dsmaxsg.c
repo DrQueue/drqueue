@@ -34,14 +34,19 @@ char *threedsmaxsg_create (struct threedsmaxsgi *info) {
   /* This function creates the luxrender render script based on the information given */
   /* Returns a pointer to a string containing the path of the just created file */
   /* Returns NULL on failure and sets drerrno */
-  FILE *f;
-  FILE *etc_3dsmax_sg;   /* The 3dsmax script generator configuration file */
-  int fd_etc_3dsmax_sg,fd_f;
   static char filename[BUFFERLEN];
-  char fn_etc_3dsmax_sg[BUFFERLEN]; /* File name pointing to DRQUEUE_ETC/3dsmax.sg */
-  char buf[BUFFERLEN];
-  int size;
   char *p;   /* Scene filename without path */
+
+  
+  /* FILE *f;
+  /* FILE *etc_3dsmax_sg;  */  /* The 3dsmax script generator configuration file */
+  /* int fd_etc_3dsmax_sg,fd_f; */
+  /* static char filename[BUFFERLEN]; */
+  /* char fn_etc_3dsmax_sg[BUFFERLEN]; */ /* File name pointing to DRQUEUE_ETC/3dsmax.sg */
+  /* char buf[BUFFERLEN]; */
+  /* int size; */
+  /* char *p;  */ /* Scene filename without path */
+  
   char scene[MAXCMDLEN];
   char outputfile[MAXCMDLEN];
 
