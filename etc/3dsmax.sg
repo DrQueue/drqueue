@@ -34,16 +34,16 @@ if ($BLOCK > $DRQUEUE_ENDFRAME) then
 endif
 
 
-if ($?OUTPUT_FILE) then
-  set COUTFILE = "-o $OUTPUT_FILE"
+if ($?DRQUEUE_IMAGE) then
+  set CIMAGE = "-o $DRQUEUE_IMAGE"
 else
-  set COUTFILE = ""
+  set CIMAGE = ""
 endif
 
 
-echo 3dsmaxcmd.exe -rfw:0 -frames:$DRQUEUE_FRAME $COUTFILE $SCENE
+echo 3dsmaxcmd.exe -rfw:0 -frames:$DRQUEUE_FRAME $CIMAGE $SCENE
 
-3dsmaxcmd.exe -rfw:0 -frames:$DRQUEUE_FRAME $COUTFILE $SCENE
+3dsmaxcmd.exe -rfw:0 -frames:$DRQUEUE_FRAME $CIMAGE $SCENE
 
 
 # This should requeue the frame if failed

@@ -205,7 +205,7 @@ union koj_info {  /* Kind of job information */
   struct koji_threedsmax {
     char scene[BUFFERLEN];
     char script[BUFFERLEN];
-    char outoutfile[BUFFERLEN];
+    char image[BUFFERLEN];
     char viewcmd[BUFFERLEN];
   }
   threedsmax;

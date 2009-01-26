@@ -504,7 +504,7 @@ typedef unsigned char uint8_t;
 	}
 	
 	/* 3DSMax script file generation */
-	char *threedsmaxsg (char *scene, char *scriptdir, char *outputfile)
+	char *threedsmaxsg (char *scene, char *scriptdir, char *image)
 	{	
 		struct threedsmaxsgi *vray = (struct threedsmaxsgi *)malloc (sizeof(struct threedsmaxsgi));
     	if (!vray) {
@@ -522,7 +522,7 @@ typedef unsigned char uint8_t;
 		
 		strncpy(vray->scene, scene, BUFFERLEN-1);
 		strncpy(vray->scriptdir, scriptdir, BUFFERLEN-1);
-		strncpy(vray->scriptdir, outputfile, BUFFERLEN-1);
+		strncpy(vray->scriptdir, image, BUFFERLEN-1);
 		
   		outfile = threedsmaxsg_create(vray);
   		
