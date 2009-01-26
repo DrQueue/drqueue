@@ -518,7 +518,7 @@ typedef unsigned char uint8_t;
     	 	return NULL;
    		}
 		
-		memset (vray,0,sizeof(struct threedsmaxgi));
+		memset (vray,0,sizeof(struct threedsmaxsgi));
 		
 		strncpy(vray->scene, scene, BUFFERLEN-1);
 		strncpy(vray->scriptdir, scriptdir, BUFFERLEN-1);
