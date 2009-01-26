@@ -30,7 +30,7 @@
 #include "3dsmaxsg.h"
 #include "libdrqueue.h"
 
-char *3dsmaxsg_create (struct 3dsmaxsgi *info) {
+char *threedsmaxsg_create (struct threedsmaxsgi *info) {
   /* This function creates the luxrender render script based on the information given */
   /* Returns a pointer to a string containing the path of the just created file */
   /* Returns NULL on failure and sets drerrno */
@@ -77,7 +77,7 @@ char *3dsmaxsg_create (struct 3dsmaxsgi *info) {
 }
 
 
-char *3dsmaxsg_default_script_path (void) {
+char *threedsmaxsg_default_script_path (void) {
   static char buf[BUFFERLEN];
   char *p;
 
