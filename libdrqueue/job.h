@@ -202,6 +202,14 @@ union koj_info {  /* Kind of job information */
     char viewcmd[BUFFERLEN];
   }
   vray;
+  struct koji_3dsmax {
+    char scene[BUFFERLEN];
+    char script[BUFFERLEN];
+    char outoutfile[BUFFERLEN];
+    char viewcmd[BUFFERLEN];
+  }
+  3dsmax;
+
 };
 
 /* Koj types */
@@ -222,6 +230,8 @@ union koj_info {  /* Kind of job information */
 #define KOJ_MANTRA        14 // Mantra koj
 #define KOJ_XSI           15 // XSI koj
 #define KOJ_LUXRENDER     16 // LUXRENDER koj
+#define KOJ_VRAY		  17 // VRAY koj
+#define KOJ_3DSMAX        18 // 3DSMAX koj
 
 /* JOB SECTION */
 typedef enum {
