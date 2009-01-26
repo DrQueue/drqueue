@@ -38,7 +38,7 @@ extern "C" {
 
 #pragma pack(pop)
 
-  char *threedsmaxsg_create (struct 3dsmaxsgi *info);
+  char *threedsmaxsg_create (struct threedsmaxsgi *info);
   char *threedsmaxsg_default_script_path (void);
 
 #ifdef __CPLUSPLUS
