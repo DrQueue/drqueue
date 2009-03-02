@@ -35,6 +35,9 @@ extern FILE *file_null;
 
 #define TOOLTIPS_DELAY 1000
 
+#define DRQ_COMPILED_FOR ""
+#define DRQ_TITLE "DrQueue Manager"
+
 GtkWidget *ConfirmDialog (char *text, GList *callbacks);
 GtkTooltips *TooltipsNew (void);
 
