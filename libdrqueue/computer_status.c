@@ -151,38 +151,7 @@ void get_loadavg (uint16_t *loadavg) {
   loadavg[1] = (uint16_t) (tla[1]/10);
   loadavg[2] = (uint16_t) (tla[2]/10);
 
-
-
-#elif defined(__OSX)
-
-  FILE *uptime;
-  char buf[BUFFERLEN];
-  char *fd;   /* first digit */
-  float f1,f2,f3;
-
-  if ((uptime = popen ("LANG=C /usr/bin/uptime","r")) == NULL) {
-    fprintf (stderr,"Warning: Problems executing '/usr/bin/uptime'\n");
-    f1 = f2 = f3 = 0;
-  }
-
-  while (fgets (buf,BUFFERLEN,uptime) != NULL) {
-    if ((fd = strstr(buf,"averages:")) != NULL) {
-      while (!isdigit((int)*fd))
-        fd++;
-      if (sscanf (fd,"%f %f %f",&f1,&f2,&f3) != 3) {
-        log_auto (L_WARNING,"Problems on get_loadavg\n");
-        f1 = f2 = f3 = 0;
-      }
-    }
-  }
-
-  loadavg[0] = f1 * 100;
-  loadavg[1] = f2 * 100;
-  loadavg[2] = f3 * 100;
-
-  pclose (uptime);
-
-#elif defined(__FREEBSD)
+#elif defined(__OSX) || defined(__FREEBSD)
 
   double fls[3];
   if (getloadavg(fls,3)<3) {
