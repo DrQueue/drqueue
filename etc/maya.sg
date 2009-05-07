@@ -129,16 +129,20 @@ endif
 #
 ###
 
-if ($?DRQUEUE_PRE && $DRQUEUE_PRE != "")  then
-	set DRQUEUE_PRE = "-preRender '${DRQUEUE_PRE}'"
+if ($?DRQUEUE_PRE)  then
+        if (${DRQUEUE_PRE} != "")  then
+                set DRQUEUE_PRE = "-preRender '${DRQUEUE_PRE}'"
+        endif
 else
-	set DRQUEUE_PRE = ""
+        set DRQUEUE_PRE = ""
 endif
 
-if ($?DRQUEUE_POST && $DRQUEUE_POST != "") then
-	set DRQUEUE_POST = "-postRender '${DRQUEUE_POST}'"
+if ($?DRQUEUE_POST) then
+        if (${DRQUEUE_PRE} != "")  then
+                set DRQUEUE_POST = "-postRender '${DRQUEUE_POST}'"
+        endif
 else
-	set DRQUEUE_POST = ""
+        set DRQUEUE_POST = ""
 endif
 
 #####
