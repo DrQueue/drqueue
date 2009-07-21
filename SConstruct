@@ -1,5 +1,6 @@
 #
 # Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
+# Copyright (C) 2009 Andreas Schroeder
 #
 # This file is part of DrQueue
 #
@@ -115,7 +116,7 @@ elif sys.platform == "darwin":
   env_lib.Append (CPPDEFINES = Split ('-D__OSX'))
   if env_lib.get('universal_binary'):
     print "Building as an MacOS X Universal Binary"
-    env_lib.Append (CCFLAGS = Split('-isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch ppc -arch i386'))
+    env_lib.Append (CCFLAGS = Split('-isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch ppc -arch i386 -mmacosx-version-min=10.4'))
     env_lib.Append (LINKFLAGS = Split('-isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch ppc -arch i386 -mmacosx-version-min=10.4'))
 elif sys.platform == "irix6":
   env_lib.Append (CPPDEFINES = Split ('-D__IRIX'))
@@ -149,7 +150,7 @@ def build_drqman():
         print "Building drqman"
         drqman_c = glob.glob (os.path.join('drqman','*.c'))
         env_gtkstuff = env.Clone ()
-        env_gtkstuff.ParseConfig ('pkg-config --cflags --libs gtk+-2.0')
+        env_gtkstuff.ParseConfig ('pkg-config --cflags --libs gtk+-2.0', None, 0)
         drqman = env_gtkstuff.Program (os.path.join('drqman','drqman'),drqman_c)
         if sys.platform == 'cygwin':
         	result.append(os.path.join('drqman','drqman.exe'))
