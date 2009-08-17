@@ -24,16 +24,16 @@ setup_slave () {
 setup_shm_sys () {
  # set kernel variables for shared memory for every startup
  echo " * Setting up kernel variables for next boot in /etc/sysctl.conf."
- echo sudo su root -c "echo kern.sysv.shmmax=536870912 \
-kern.sysv.shmmin=1 \
-kern.sysv.shmmni=128 \
-kern.sysv.shmseg=32 \
-kern.sysv.shmall=131072 >>/etc/sysctl.conf"
- sudo su root -c "echo kern.sysv.shmmax=536870912 \
-kern.sysv.shmmin=1 \
-kern.sysv.shmmni=128 \
-kern.sysv.shmseg=32 \
-kern.sysv.shmall=131072 >>/etc/sysctl.conf"
+ echo sudo su root -c "echo kern.sysv.shmmax=536870912 >>/etc/sysctl.conf"
+ sudo su root -c "echo kern.sysv.shmmax=536870912 >>/etc/sysctl.conf"
+ echo sudo su root -c "echo kern.sysv.shmmin=1 >>/etc/sysctl.conf"
+ sudo su root -c "echo kern.sysv.shmmin=1 >>/etc/sysctl.conf"
+ echo sudo su root -c "echo kern.sysv.shmmni=128 >>/etc/sysctl.conf"
+ sudo su root -c "echo kern.sysv.shmmni=128 >>/etc/sysctl.conf"
+ echo sudo su root -c "echo kern.sysv.shmseg=32 >>/etc/sysctl.conf"
+ sudo su root -c "echo kern.sysv.shmseg=32 >>/etc/sysctl.conf"
+ echo sudo su root -c "echo kern.sysv.shmall=131072 >>/etc/sysctl.conf"
+ sudo su root -c "echo kern.sysv.shmall=131072 >>/etc/sysctl.conf"
  echo " "
 }
 
