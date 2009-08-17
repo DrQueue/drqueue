@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Launchd installer for OSX
+# Andreas Schroeder, 2009
+
 echo "\nThis will prepare your system for automatic startup of DrQueue daemons.\n\
 You need admin priviledges for this. Please type in your password if asked.\n\
 This has only been tested on Mac OSX 10.5 Leopard so far.\n"
