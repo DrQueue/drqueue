@@ -48,8 +48,11 @@ if BLOCK > DRQUEUE_ENDFRAME:
 
 BLENDER_PATH="blender"
 
-
-command = "curframe="+DRQUEUE_FRAME+" "+BLENDER_PATH+" -b "+SCENE+" -P "+DRQUEUE_ETC+"/blender_same_directory.py"
+if RENDER_TYPE == "animation":
+	command = "curframe="+DRQUEUE_FRAME+" "+BLENDER_PATH+" -b "+SCENE+" -P "+DRQUEUE_ETC+"/blender_same_directory.py"
+else:
+	command = "curpart="+DRQUEUE_FRAME+" maxparts="+DRQUEUE_ENDFRAME+" "+BLENDER_PATH+" -b "+SCENE+" -P "+DRQUEUE_ETC+"/blender_region_rendering.py"
+	#set command = "curpart=$DRQUEUE_FRAME maxparts=$DRQUEUE_ENDFRAME $BLENDER_PATH -b $SCENE -P /usr/local/drqueue/etc/blender_region_rendering.py"
 
 print command
 
