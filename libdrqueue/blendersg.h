@@ -17,7 +17,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
+// $Id: blendersg.h 2808 2008-06-30 15:30:15Z kaazoo $
 //
 
 #ifndef _BLENDERSG_H_
