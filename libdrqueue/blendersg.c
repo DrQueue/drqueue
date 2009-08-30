@@ -85,10 +85,10 @@ char *blendersg_create (struct blendersgi *info) {
   fprintf(f,"SCENE=\"%s\"\n",info->scene);
  
   /* 2 means we want to distribute one single image */
-  if (info->kind == 2) {
+  if (info->render_type == 2) {
   	fprintf(f,"RENDER_TYPE=\"single\"\n");
   /* 1 means we want to render an animation */
-  } else if (info->kind == 1) {
+  } else if (info->render_type == 1) {
   	fprintf(f,"RENDER_TYPE=\"animation\"\n");
   /* information missing */
   } else {
