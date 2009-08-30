@@ -16,7 +16,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
+// $Id: blendersg.c 2688 2007-11-09 20:36:55Z jorge $
 //
 
 #include <stdio.h>
@@ -54,7 +54,6 @@ char *blendersg_create (struct blendersgi *info) {
 #ifdef __CYGWIN
   cygwin_conv_to_posix_path(info->scene, scene);
 #else
-
   strncpy(scene,info->scene,MAXCMDLEN-1);
 #endif
 
@@ -78,33 +77,41 @@ char *blendersg_create (struct blendersgi *info) {
     }
   }
 
+  /* set permissions */
   fchmod (fileno(f),0777);
 
   /* So now we have the file open and so we must write to it */
-  fprintf(f,"#!/bin/tcsh\n\n");
-  fprintf(f,"set SCENE=\"%s\"\n",info->scene);
+  fprintf(f,"#!/usr/bin/env python\n\n");
+  fprintf(f,"SCENE=\"%s\"\n",info->scene);
  
-  
-  // 2 means we want to distribute one single image
+  /* 2 means we want to distribute one single image */
   if (info->kind == 2) {
-  	snprintf(fn_etc_blender_sg,BUFFERLEN-1,"%s/blender_image.sg",getenv("DRQUEUE_ETC"));
-  // 1 means we want to render an animation
+  	fprintf(f,"RENDER_TYPE=\"single\"\n");
+  /* 1 means we want to render an animation */
   } else if (info->kind == 1) {
-  	snprintf(fn_etc_blender_sg,BUFFERLEN-1,"%s/blender.sg",getenv("DRQUEUE_ETC"));
+  	fprintf(f,"RENDER_TYPE=\"animation\"\n");
+  /* information missing */
   } else {
   	drerrno = DRE_NOTCOMPLETE;
     return NULL;
   }
 
+  /* save file so far */
   fflush (f);
-
+  
+  /* script generator template */
+  snprintf(fn_etc_blender_sg,BUFFERLEN-1,"%s/blender_sg.py",getenv("DRQUEUE_ETC"));
+  
+  /* fill render script with some default values if template cannot be found */
   if ((etc_blender_sg = fopen (fn_etc_blender_sg,"r")) == NULL) {
-    fprintf(f,"\necho -------------------------------------------------\n");
-    fprintf(f,"echo ATTENTION ! There was a problem opening: %s\n",fn_etc_blender_sg);
-    fprintf(f,"echo So the default configuration will be used\n");
-    fprintf(f,"echo -------------------------------------------------\n");
+    fprintf(f,"\nprint \"-------------------------------------------------\"\n");
+    fprintf(f,"print \"ATTENTION ! There was a problem opening: %s\"\n",fn_etc_blender_sg);
+    fprintf(f,"print \"So the default configuration will be used\"\n");
+    fprintf(f,"print \"-------------------------------------------------\"\n");
     fprintf(f,"\n\n");
-    fprintf(f,"blender -b $SCENE -f $FRAME\n\n");
+    fprintf(f,"import os\n");
+    fprintf(f,"os.system(\"blender -b SCENE -f FRAME\")\n\n");
+  /* append template to script file */
   } else {
     fd_etc_blender_sg = fileno (etc_blender_sg);
     fd_f = fileno (f);
