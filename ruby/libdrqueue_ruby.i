@@ -273,7 +273,7 @@ typedef unsigned char uint8_t;
 	
 	
 	/* Blender script file generation */
-	char *blendersg (char *scene, char *scriptdir, uint8_t kind)
+	char *blendersg (char *scene, char *scriptdir, uint8_t render_type)
 	{	
 		struct blendersgi *blend = (struct blendersgi *)malloc (sizeof(struct blendersgi));
     	if (!blend) {
@@ -291,7 +291,7 @@ typedef unsigned char uint8_t;
 		
 		strncpy(blend->scene, scene, BUFFERLEN-1);
 		strncpy(blend->scriptdir, scriptdir, BUFFERLEN-1);
-		blend->kind = kind;
+		blend->render_type = render_type;
 		
   		outfile = blendersg_create(blend);
   		
