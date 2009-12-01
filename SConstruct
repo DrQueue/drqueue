@@ -37,8 +37,11 @@ def get_architecture(env,escape=False,underscore=True):
         machine = re.escape(machine)
     if not machine:
         machine = 'unknown'
-    elif os.uname()[0] == 'Darwin' and env.get('universal_binary'):
-        machine = Universal_Binaries_Short_Name
+    elif os.uname()[0] == 'Darwin':
+    	if env.get('universal_binary'):
+        	machine = Universal_Binaries_Short_Name
+        elif platform.architecture()[0] == '64bit':
+        	machine = 'x86_64'
     return machine
 
 def wrapper_complete_command (env,cmdlist):
