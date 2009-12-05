@@ -32,7 +32,8 @@ struct drqmj_koji_blender {
   GtkWidget *fsscene;      /* File selector for the scene */
   GtkWidget *eviewcmd;
   GtkWidget *escript;      /* Entry script location */
-  GtkWidget *fsscript;  /* File selectot for the script directory */
+  GtkWidget *fsscript;  /* File selector for the script directory */
+  uint8_t render_type; /* Render type */
 };
 
 struct drqm_jobs_info;
