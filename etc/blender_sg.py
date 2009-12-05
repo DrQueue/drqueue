@@ -23,7 +23,7 @@
 #    # Some error messages
 #
 
-import os,subprocess
+import os,signal,subprocess,sys
 
 
 os.umask(0)
@@ -52,17 +52,18 @@ if RENDER_TYPE == "animation":
 	command = "curframe="+DRQUEUE_FRAME+" "+BLENDER_PATH+" -b "+SCENE+" -P "+DRQUEUE_ETC+"/blender_same_directory.py"
 else:
 	command = "curpart="+DRQUEUE_FRAME+" maxparts="+DRQUEUE_ENDFRAME+" "+BLENDER_PATH+" -b "+SCENE+" -P "+DRQUEUE_ETC+"/blender_region_rendering.py"
-	#set command = "curpart=$DRQUEUE_FRAME maxparts=$DRQUEUE_ENDFRAME $BLENDER_PATH -b $SCENE -P /usr/local/drqueue/etc/blender_region_rendering.py"
+
 
 print command
+sys.stdout.flush()
 
 p = subprocess.Popen(command, shell=True)
 sts = os.waitpid(p.pid, 0)
 
 # This should requeue the frame if failed
-if sts != 0:
+if sts[1] != 0:
 	print "Requeueing frame..."
-	os.kill(os.getppid(), "INT")
+	os.kill(os.getppid(), signal.SIGINT)
 else:
 	#if DRQUEUE_OS != "WINDOWS" then:
 	# The frame was rendered properly
