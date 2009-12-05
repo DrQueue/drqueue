@@ -35,7 +35,7 @@ extern "C" {
   struct blendersgi {  /* Blender Script Generator Info */
     char scene[BUFFERLEN];
     char scriptdir[BUFFERLEN];
-    uint8_t  render_type;       // 1 if we should render animations
+    uint8_t render_type;       // 1 if we should render animations
     	    	         // 2 if we should distribute one single image
   };
 
