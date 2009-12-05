@@ -1,0 +1,15 @@
+*.o
+*.a
+.sconsign.dblite
+blockhost
+cfgreader
+cjob
+compinfo
+drqman/drqman
+jobfinfo
+jobinfo
+master
+requeue
+sendjob
+slave
+
