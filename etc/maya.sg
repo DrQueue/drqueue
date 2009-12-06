@@ -104,24 +104,19 @@ else
   set FFORMAT = ""
 endif
 
-if ($?MENTALRAY) then
-	set MENTALRAY = "-r mr"
-	
+if ($RENDERER == "mr") then
 	## number of processors/cores to use
 	#set NUM_PROCS="-rt 2"
 
 	## use Maya's automatic detection
 	set NUM_PROCS="-art"
 else
-	set MENTALRAY = ""
-	
 	## number of processors/cores to use
 	#set NUM_PROCS="-n 2"
 
 	## use Maya's automatic detection
 	set NUM_PROCS="-n 0"
 endif
-
 
 ######
 #
@@ -152,15 +147,15 @@ endif
 ## This echoes the used render parameters and starts the rendering
 if ($DRQUEUE_OS == "WINDOWS") then
   echo render $DRQUEUE_PRE $DRQUEUE_POST $NUM_PROCS -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT \
-  		-rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" $MENTALRAY $CIMAGE $CAMERA "$DRQUEUE_SCENE"
+  		-rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" -r $RENDERER $CIMAGE $CAMERA "$DRQUEUE_SCENE"
   render $DRQUEUE_PRE $DRQUEUE_POST $NUM_PROCS -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT \
-		-rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" $MENTALRAY $CIMAGE $CAMERA "$DRQUEUE_SCENE"
+		-rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" -r $RENDERER $CIMAGE $CAMERA "$DRQUEUE_SCENE"
 else
   set MAYA_RENDER_BIN=`which Render`
   echo $MAYA_RENDER_BIN $DRQUEUE_PRE $DRQUEUE_POST $NUM_PROCS -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT \
-  		-rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" $MENTALRAY $CIMAGE $CAMERA "$DRQUEUE_SCENE"
+  		-rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" -r $RENDERER $CIMAGE $CAMERA "$DRQUEUE_SCENE"
   $MAYA_RENDER_BIN $DRQUEUE_PRE $DRQUEUE_POST $NUM_PROCS -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT \
-		-rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" $MENTALRAY $CIMAGE $CAMERA "$DRQUEUE_SCENE"
+		-rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" -r $RENDERER $CIMAGE $CAMERA "$DRQUEUE_SCENE"
 
 endif
 

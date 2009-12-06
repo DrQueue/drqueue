@@ -46,7 +46,10 @@ extern "C" {
     char camera[BUFFERLEN];
     uint32_t res_x,res_y;  /* Resolution of the frame */
     char format[BUFFERLEN];
-    char mentalray;  // 1 if we should render with mr
+    uint8_t renderer;  // 0 if we should render with Maya software
+    	    	       // 1 if we should render with Mental Ray
+    	    	       // 2 if we should render with RenderMan
+    	    	       // 3 if we should render with the renderer specified in the scene file
     char precommand[BUFFERLEN]; // allows a prerender command (mel script) to be executed before the render
     char postcommand[BUFFERLEN]; // allows a postrender command (mel script to be executed after the render
   };

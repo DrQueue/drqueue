@@ -41,9 +41,9 @@ struct drqmj_koji_maya {
   GtkWidget *eimage;
   GtkWidget *eviewcmd;
   GtkWidget *escript;  /* Entry script location */
-  GtkWidget *fsscript;  /* File selectot for the script directory */
+  GtkWidget *fsscript;  /* File selector for the script directory */
   GtkWidget *efile_owner; /* Owner of the rendered files */
-  GtkWidget *cbmentalray;
+  guint renderer_id; /* id of renderer to use */
 };
 
 struct drqm_jobs_info;

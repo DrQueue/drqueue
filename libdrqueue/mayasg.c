@@ -99,10 +99,18 @@ char *mayasg_create (struct mayasgi *info) {
   if (strlen(info->image)) {
     jobscript_set_variable (ji,"DRQUEUE_IMAGE",info->image);
   }
-  if (info->mentalray) {
-    jobscript_set_variable (ji,"MENTALRAY","1");
+  if (info->renderer == 0) {
+    jobscript_set_variable (ji,"RENDERER", "sw");
   }
-
+  if (info->renderer == 1) {
+    jobscript_set_variable (ji,"RENDERER", "mr");
+  }
+  if (info->renderer == 2) {
+    jobscript_set_variable (ji,"RENDERER", "rman");
+  }
+  if (info->renderer == 3) {
+    jobscript_set_variable (ji,"RENDERER", "file");
+  }
   if (strlen(info->postcommand)) {
     jobscript_set_variable (ji,"DRQUEUE_POST",info->postcommand);
   }
