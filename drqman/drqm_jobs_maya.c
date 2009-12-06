@@ -46,6 +46,7 @@ static void dnj_koj_frame_maya_script_set (GtkWidget *button, struct drqmj_koji_
 static void dnj_koj_frame_maya_scene_search (GtkWidget *button, struct drqmj_koji_maya *info);
 static void dnj_koj_frame_maya_scene_set (GtkWidget *button, struct drqmj_koji_maya *info);
 static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info);
+static void dnj_koj_frame_maya_toggle_button(GtkWidget *button, struct drqmj_koji_maya *info);
 
 GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info) {
   GtkWidget *frame;
@@ -55,7 +56,10 @@ GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info) {
   GtkWidget *entry;
   GtkWidget *button;
   GtkWidget *bbox;
-  GtkWidget *cbutton;
+  GtkWidget *cbutton1;
+  GtkWidget *cbutton2;
+  GtkWidget *cbutton3;
+  GtkWidget *cbutton4;
   GtkTooltips *tooltips;
   struct passwd *pw;
 
@@ -68,14 +72,32 @@ GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info) {
   vbox = gtk_vbox_new (FALSE,2);
   gtk_container_add (GTK_CONTAINER(frame),vbox);
 
-  // Mental Ray ?
+  /* force specific renderer */
   hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
-  cbutton = gtk_check_button_new_with_label("Mental Ray");
-  gtk_box_pack_start (GTK_BOX(hbox),cbutton,FALSE,FALSE,2);
-  gtk_tooltips_set_tip(tooltips,cbutton,"Should we render with mental ray ?",NULL);
-  info->dnj.koji_maya.cbmentalray = cbutton;
-
+  label = gtk_label_new ("Force renderer:");
+  gtk_box_pack_start (GTK_BOX(hbox),label,TRUE,TRUE,2);
+  cbutton1 = gtk_radio_button_new_with_label(NULL, "Maya software");
+  gtk_box_pack_start (GTK_BOX(hbox),cbutton1,FALSE,FALSE,2);
+  gtk_tooltips_set_tip(tooltips,cbutton1,"Should we render with Maya software?",NULL);
+  g_signal_connect (G_OBJECT(cbutton1),"toggled",
+                    G_CALLBACK(dnj_koj_frame_maya_toggle_button),&info->dnj.koji_maya);
+  cbutton2 = gtk_radio_button_new_with_label(gtk_radio_button_group(GTK_RADIO_BUTTON(cbutton1)), "Mental Ray");
+  gtk_box_pack_start (GTK_BOX(hbox),cbutton2,FALSE,FALSE,2);
+  gtk_tooltips_set_tip(tooltips,cbutton2,"Should we render with Mental Ray?",NULL);
+  g_signal_connect (G_OBJECT(cbutton2),"toggled",
+                    G_CALLBACK(dnj_koj_frame_maya_toggle_button),&info->dnj.koji_maya);
+  cbutton3 = gtk_radio_button_new_with_label(gtk_radio_button_group(GTK_RADIO_BUTTON(cbutton2)), "RenderMan");
+  gtk_box_pack_start (GTK_BOX(hbox),cbutton3,FALSE,FALSE,2);
+  gtk_tooltips_set_tip(tooltips,cbutton3,"Should we render with RenderMan?",NULL);
+  g_signal_connect (G_OBJECT(cbutton3),"toggled",
+                    G_CALLBACK(dnj_koj_frame_maya_toggle_button),&info->dnj.koji_maya);
+  cbutton4 = gtk_radio_button_new_with_label(gtk_radio_button_group(GTK_RADIO_BUTTON(cbutton3)), "From scene file");
+  gtk_box_pack_start (GTK_BOX(hbox),cbutton4,FALSE,FALSE,2);
+  gtk_tooltips_set_tip(tooltips,cbutton4,"Should we render with the renderer specified in the scene file?",NULL);
+  g_signal_connect (G_OBJECT(cbutton4),"toggled",
+                    G_CALLBACK(dnj_koj_frame_maya_toggle_button),&info->dnj.koji_maya);
+  
   /* Scene file */
   hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
@@ -395,7 +417,7 @@ static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_
   char *file;
 
   memset (&mayasgi,0,sizeof(mayasgi));
-  mayasgi.mentalray = GTK_TOGGLE_BUTTON(info->koji_maya.cbmentalray)->active;
+  mayasgi.renderer = info->koji_maya.renderer_id ;
   strncpy (mayasgi.renderdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.erenderdir)),BUFFERLEN-1);
   strncpy (mayasgi.projectdir,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.eprojectdir)),BUFFERLEN-1);
   strncpy (mayasgi.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_maya.escene)),BUFFERLEN-1);
@@ -444,3 +466,23 @@ static void dnj_koj_frame_maya_script_set (GtkWidget *button, struct drqmj_koji_
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscript)),BUFFERLEN-1);
   gtk_entry_set_text (GTK_ENTRY(info->escript),buf);
 }
+
+/* callback function for radio buttons */
+static void dnj_koj_frame_maya_toggle_button(GtkWidget *button, struct drqmj_koji_maya *info) {
+	if( GTK_TOGGLE_BUTTON(button)->active) {
+		GtkWidget *button_label = gtk_bin_get_child(GTK_BIN(button));
+		if (g_str_has_prefix(gtk_label_get_text(GTK_LABEL(button_label)), "Maya") == TRUE) {
+	 		info->renderer_id  = 0;
+	 	} else if (g_str_has_prefix(gtk_label_get_text(GTK_LABEL(button_label)), "Mental") == TRUE) {
+	 		info->renderer_id  = 1;
+	 	} else if (g_str_has_prefix(gtk_label_get_text(GTK_LABEL(button_label)), "RenderMan") == TRUE) {
+	 		info->renderer_id  = 2;
+	 	} else if (g_str_has_prefix(gtk_label_get_text(GTK_LABEL(button_label)), "From") == TRUE) {
+	 		info->renderer_id = 3;
+		} else {
+	 		printf("renderer has unknown value: %s", gtk_label_get_text(GTK_LABEL(button_label)) );
+	 	}	
+	}
+}
+ 	
+ 	
