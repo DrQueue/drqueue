@@ -312,7 +312,7 @@ int RegisterMayaJobFromFile (std::ifstream &infile) {
   std::string owner;
   std::string jobName;
   std::string camera;
-  int frameStart,frameEnd,frameStep, mentalRay;
+  int frameStart,frameEnd,frameStep, renderer;
   int resX,resY;
   std::string scenePath;
   std::string renderDir;
@@ -326,7 +326,7 @@ int RegisterMayaJobFromFile (std::ifstream &infile) {
   getline(infile,owner);
   getline(infile,jobName);
   getline(infile,camera);
-  infile >> mentalRay;
+  infile >> renderer;
   infile >> frameStart;
   infile >> frameEnd;
   infile >> frameStep;
@@ -339,7 +339,7 @@ int RegisterMayaJobFromFile (std::ifstream &infile) {
   getline(infile,fileFormat);
   getline(infile,image);
 
-  mayaSgi.mentalray = mentalRay;
+  mayaSgi.renderer = renderer;
   strncpy(mayaSgi.renderdir,renderDir.c_str(),BUFFERLEN-1);
   strncpy(mayaSgi.projectdir,projectDir.c_str(),BUFFERLEN-1);
   strncpy(mayaSgi.scene,scenePath.c_str(),BUFFERLEN-1);
