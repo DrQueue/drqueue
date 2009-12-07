@@ -61,10 +61,10 @@
 
 
 if ($DRQUEUE_OS == "WINDOWS") then
-  set BLOCK=`"$DRQUEUE_BIN/expr.exe" $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
-  set DRQUEUE_SCENE=`"$DRQUEUE_BIN/cygpath.exe" -w "$DRQUEUE_SCENE"`
-  set DRQUEUE_RD=`"$DRQUEUE_BIN/cygpath.exe" -w "$DRQUEUE_RD"`
-  set DRQUEUE_PD=`"$DRQUEUE_BIN/cygpath.exe" -w "$DRQUEUE_PD"`
+  set BLOCK=`expr.exe $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
+  set DRQUEUE_SCENE=`cygpath.exe -w "$DRQUEUE_SCENE"`
+  set DRQUEUE_RD=`cygpath.exe -w "$DRQUEUE_RD"`
+  set DRQUEUE_PD=`cygpath.exe -w "$DRQUEUE_PD"`
 else
   set BLOCK=`expr $DRQUEUE_FRAME + $DRQUEUE_BLOCKSIZE - 1`
 endif
@@ -146,9 +146,9 @@ endif
 
 ## This echoes the used render parameters and starts the rendering
 if ($DRQUEUE_OS == "WINDOWS") then
-  echo render $DRQUEUE_PRE $DRQUEUE_POST $NUM_PROCS -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT \
+  echo Render $DRQUEUE_PRE $DRQUEUE_POST $NUM_PROCS -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT \
   		-rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" -r $RENDERER $CIMAGE $CAMERA "$DRQUEUE_SCENE"
-  render $DRQUEUE_PRE $DRQUEUE_POST $NUM_PROCS -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT \
+  Render $DRQUEUE_PRE $DRQUEUE_POST $NUM_PROCS -s $DRQUEUE_FRAME -e $BLOCK $RESX $RESY $FFORMAT \
 		-rd "$DRQUEUE_RD" -proj "$DRQUEUE_PD" -r $RENDERER $CIMAGE $CAMERA "$DRQUEUE_SCENE"
 else
   set MAYA_RENDER_BIN=`which Render`
