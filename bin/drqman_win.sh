@@ -1,3 +1,9 @@
+export DRQUEUE_ROOT=/usr/local/drqueue
+export DRQUEUE_MASTER=127.0.0.1
+export CYGWIN=server
+export PATH=$PATH:$DRQUEUE_ROOT/bin
+
 startxwin.bat &
 sleep 5
-DISPLAY=:0 /usr/local/drqueue/bin/drqman.exe.CYGWIN_NT-5.1.i686
+export DISPLAY=:0
+drqman.exe.CYGWIN_NT-5.1.i686 -o
