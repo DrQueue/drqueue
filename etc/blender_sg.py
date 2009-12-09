@@ -38,8 +38,8 @@ DRQUEUE_BLOCKSIZE = os.getenv("DRQUEUE_BLOCKSIZE")
 
 
 if DRQUEUE_OS == "WINDOWS":
-	BLOCK = subprocess.Popen([DRQUEUE_BIN+"/expr.exe", DRQUEUE_FRAME+" + "+DRQUEUE_BLOCKSIZE+" - 1"], stdout=subprocess.PIPE).communicate()[0]
-	SCENE = subprocess.Popen([DRQUEUE_BIN+"/cygpath.exe", "-w "+SCENE], stdout=subprocess.PIPE).communicate()[0]
+	BLOCK = subprocess.Popen(["expr.exe", DRQUEUE_FRAME+" + "+DRQUEUE_BLOCKSIZE+" - 1"], stdout=subprocess.PIPE).communicate()[0]
+	SCENE = subprocess.Popen(["cygpath.exe", "-w "+SCENE], stdout=subprocess.PIPE).communicate()[0]
 else:
 	BLOCK = subprocess.Popen(["expr", DRQUEUE_FRAME+" + "+DRQUEUE_BLOCKSIZE+" - 1"], stdout=subprocess.PIPE).communicate()[0]
 
