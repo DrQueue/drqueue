@@ -121,6 +121,8 @@ elif sys.platform == "darwin":
     print "Building as an MacOS X Universal Binary"
     env_lib.Append (CCFLAGS = Split('-isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch ppc -arch i386 -mmacosx-version-min=10.4'))
     env_lib.Append (LINKFLAGS = Split('-isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch ppc -arch i386 -mmacosx-version-min=10.4'))
+    env_lib['CC'] = '/usr/bin/gcc-4.0'
+    env_lib['CXX'] = '/usr/bin/g++-4.0'
 elif sys.platform == "irix6":
   env_lib.Append (CPPDEFINES = Split ('-D__IRIX'))
   env_lib['CC'] = 'c99'
