@@ -134,10 +134,14 @@ void print_computers (struct computer *computer, int ncomputers) {
 
 void print_computer (struct computer *computer) {
   printf ("ID: %i Name: %s\n",computer->hwinfo.id,computer->hwinfo.name);
+  // tidy up shared memory piece of computer
+  computer_free(computer);
 }
 
 void print_computer_details (struct computer *computer) {
   printf ("ID: %i Name: %s\n",computer->hwinfo.id,computer->hwinfo.name);
+  // tidy up shared memory piece of computer
+  computer_free(computer);
 }
 
 void usage (void) {
