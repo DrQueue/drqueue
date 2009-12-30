@@ -262,9 +262,8 @@ void drqm_update_computerlist (struct drqm_computers_info *info) {
     gtk_clist_append(GTK_CLIST(info->clist),buff);
     gtk_clist_set_row_data (GTK_CLIST(info->clist),i,(gpointer)info->computers[i].hwinfo.name);
 
-    // We don't need the pool any more
-    // ----TESTING----
-    //computer_pool_free(&info->computers[i].limits);
+    // tidy up shared memory piece of computer
+    computer_pool_free(&info->computers[i].limits);
   }
   gtk_clist_thaw(GTK_CLIST(info->clist));
 
@@ -559,7 +558,7 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info) {
   }
 
   gtk_widget_show_all(window);
-
+  
   return window;
 }
 
@@ -733,6 +732,9 @@ cdd_update (GtkWidget *w, struct drqm_computers_info *info) {
   for(i=0;i<ncols;i++)
     free (buff[i]);
   free(buff);
+
+  // tidy up shared memory piece of computer
+  computer_pool_free(&info->computers[info->row].limits);
 
   return 1;
 }
