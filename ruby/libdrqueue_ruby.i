@@ -434,7 +434,7 @@ typedef unsigned char uint8_t;
 	}
 
 	/* Maya script file generation */
-	char *mayasg (char *scene, char *projectdir, char *scriptdir, char *renderdir, char *image, char *file_owner, char *camera, int res_x, int res_y, char *format, uint8_t mentalray)
+	char *mayasg (char *scene, char *projectdir, char *scriptdir, char *renderdir, char *image, char *file_owner, char *camera, int res_x, int res_y, char *format, uint8_t renderer)
 	{	
 		struct mayasgi *mayast = (struct mayasgi *)malloc (sizeof(struct mayasgi));
     	if (!mayast) {
@@ -461,7 +461,7 @@ typedef unsigned char uint8_t;
 		mayast->res_x = res_x;
 		mayast->res_y = res_y;
 		strncpy(mayast->format, format, BUFFERLEN-1);
-		mayast->mentalray = mentalray;
+		mayast->renderer = renderer;
 		
   		outfile = mayasg_create(mayast);
   		
