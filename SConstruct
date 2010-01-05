@@ -108,9 +108,10 @@ if sys.platform == 'win32':
 env_lib.Append (CPPPATH=['.','libdrqueue'],CCFLAGS=Split('-fPIC'))
 env_lib.Append (CPPDEFINES = Split ('-DCOMM_REPORT -D_GNU_SOURCE ' \
                 + '-D_NO_COMPUTER_POOL_SEMAPHORES -D_NO_COMPUTER_SEMAPHORES'),
-                CPPFLAGS = Split ('-g -O0'),
+                CFLAGS = Split(os.environ.get('CFLAGS', '')),
                 CXXFLAGS = ['-D__CPLUSPLUS',Split(env_lib.subst('$CCFLAGS')),
-                            Split(env_lib.subst('$CPPDEFINES'))])
+                            Split(env_lib.subst('$CPPDEFINES')),
+                            Split(os.environ.get('CXXFLAGS', ''))])
 
 print "Platform is: ",sys.platform
 if sys.platform == "linux2":
