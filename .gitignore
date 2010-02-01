@@ -1,5 +1,6 @@
 *.o
 *.a
+*.patch
 .sconsign.dblite
 blockhost
 cfgreader
@@ -13,3 +14,14 @@ requeue
 sendjob
 slave
 scons.conf
+python/build/
+python/dist/
+python/ez_setup.pyc
+python/src/drqueue.egg-info/
+python/src/drqueue/base/libdrqueue.py
+python/src/drqueue/base/libdrqueue_wrap.c
+ruby/Makefile
+ruby/drqueue.bundle
+ruby/libdrqueue_ruby_wrap.c
+ruby/mkmf.log
+
