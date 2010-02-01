@@ -51,6 +51,9 @@ ENV['DQOR_GROUP'] ||= "drqueueonrails"
 # V-Ray Standalone: "vray" 
 ENV['AVAIL_RENDERERS'] ||= "blender,blenderlux,cinema4d,luxrender,maya,mayamr,mentalray,vray"
 
+# enable / disable features
+ENV['DQOR_TUTORIALS'] ||= "true"
+
 # revision version number
 APP_VERSION = IO.popen("svn info").readlines[4]
 
