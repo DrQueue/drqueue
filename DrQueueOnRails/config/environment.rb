@@ -54,6 +54,9 @@ ENV['AVAIL_RENDERERS'] ||= "blender,blenderlux,cinema4d,luxrender,maya,mayamr,me
 # enable / disable features
 ENV['DQOR_TUTORIALS'] ||= "true"
 
+# various options
+ENV['DQOR_SLAVES_CACHE_TIME'] ||= "600"
+
 # revision version number
 APP_VERSION = IO.popen("svn info").readlines[4]
 

@@ -93,8 +93,8 @@ class Job < ActiveRecord::Base
 			$gcl_time = Time.now.to_i
 		end
 		
-		# update only every 10 minutes
-		if ($gcl_time != nil) && (Time.now.to_i > ($gcl_time + 600)) && (update == 1)
+		# update only every DQOR_SLAVES_CACHE_TIME seconds
+		if ($gcl_time != nil) && (Time.now.to_i > ($gcl_time + ENV['DQOR_SLAVES_CACHE_TIME'].to_i )) && (update == 1)
 			update = 1
 			# update timer
 			$gcl_time = Time.now.to_i
