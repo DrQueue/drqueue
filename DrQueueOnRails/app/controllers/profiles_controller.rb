@@ -20,7 +20,7 @@ class ProfilesController < ApplicationController
 
   def list
     if session[:profile].status != 'admin'
-    	redirect_to '/' and return
+    	redirect_to :controller => 'main' and return
     else
       @profiles = Profile.paginate :page => params[:page]
       # @profile_pages, @profiles = paginate :profiles, :per_page => 10
@@ -32,7 +32,7 @@ class ProfilesController < ApplicationController
   def show
   	# only id owner and admins are allowed to view profile
     if (session[:profile].id != params[:id].to_i) && (session[:profile].status != 'admin')
-    	redirect_to '/' and return
+    	redirect_to :controller => 'main' and return
     else
     	@profile = Profile.find(params[:id])
     	
@@ -47,7 +47,7 @@ class ProfilesController < ApplicationController
 	    # check if every array member has a partner
 	    if status_arr.length != quota_arr.length
 	      flash[:notice] = 'The user/quota/priorities settings seem to be wrong. Please contact the system administrator.'
- 	      redirect_to '/' and return
+ 	      redirect_to :controller => 'main' and return
  	    end
 		
 	    i = 0
@@ -123,7 +123,7 @@ class ProfilesController < ApplicationController
   
   	# only admin are allowed
   	if session[:profile].status != 'admin'
-		redirect_to :action => '/' and return
+		redirect_to :controller => 'main' and return
 	end
   	
   	# search for all jobs of profile
