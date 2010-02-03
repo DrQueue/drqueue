@@ -152,7 +152,7 @@ class MainController < ApplicationController
 	# logout page
 	def logout
 		session[:profile] = nil
-		redirect_to '/'		
+		redirect_to :action => 'index'		
   	end
   
   
@@ -172,15 +172,15 @@ class MainController < ApplicationController
 			# first login
 			if session[:profile].id > highest
 				session[:firstlogin] = true 
-				redirect_to '/'
+				redirect_to :action => 'index'
 			else
-				redirect_to '/'
+				redirect_to :action => 'index'
 			end
 	
 		# login failed	
 		else
 			session[:profile] = nil
-			redirect_to '/'
+			redirect_to :action => 'index'
 		end
 
   	end
@@ -192,7 +192,7 @@ class MainController < ApplicationController
 	
 		# only advanced users and admins are allowed to manage filecache
     	if (session[:profile].status != 'advanced') && (session[:profile].status != 'admin')
-    		redirect_to '/' and return
+    		redirect_to :action => 'index' and return
     	else
     		# check if a new file was uploaded
     		if (params[:file] != nil) && (params[:file] != "")
@@ -227,7 +227,7 @@ class MainController < ApplicationController
 	def filecache_delete
 		# only advanced users and admins are allowed to manage filecache
     	if (session[:profile].status != 'advanced') && (session[:profile].status != 'admin')
-    		redirect_to '/' and return
+    		redirect_to :action => 'index' and return
     	else
     		# check if a new file was uploaded (avoid directory traversal)
     		if (params[:delete_file] != nil) && (params[:delete_file] != "") && (!params[:delete_file].include? "..")
