@@ -201,7 +201,6 @@ config_parse (char *cfg) {
         if (putenv (penv) != 0) {
           fprintf (stderr,"ERROR setting the environment: '%s'\n",penv);
         }
-        free(penv);
       } else {
         fprintf (stderr,"Warning parsing config file. No value for db. Using default.\n");
       }
@@ -218,7 +217,6 @@ config_parse (char *cfg) {
         if (putenv (penv) != 0) {
           fprintf (stderr,"ERROR setting the environment: '%s'\n",penv);
         }
-        free(penv);
       } else {
         fprintf (stderr,"Warning parsing config file. No value for pool. Using default.\n");
       }
