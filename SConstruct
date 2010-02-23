@@ -76,11 +76,11 @@ def copy_with_clean(src_files,dest_files,dest_path,env):
 env_lib = Environment (ENV=os.environ)
 
 # Configuration options
-opts = Options('scons.conf')
-opts.AddOptions(PathOption('DESTDIR','Alternate root directory','',[]),
-                PathOption('PREFIX','Directory to install under','/usr/local'),
-                BoolOption('universal_binary', 'Whether to build as an Universal Binary (MacOS X >= 10.3.9 only)', 0),
-                BoolOption('build_drqman','Build drqman',1))
+opts = Variables('scons.conf')
+opts.AddVariables(PathVariable('DESTDIR','Alternate root directory','',[]),
+                  PathVariable('PREFIX','Directory to install under','/usr/local'),
+                  BoolVariable('universal_binary', 'Whether to build as an Universal Binary (MacOS X >= 10.3.9 only)', 0),
+                  BoolVariable('build_drqman','Build drqman',1))
 opts.Update(env_lib)
 opts.Save('scons.conf',env_lib)
 
