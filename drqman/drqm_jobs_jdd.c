@@ -1111,12 +1111,14 @@ static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info) {
   char buf[BUFFERLEN];
   struct task task;
   struct idle_info *iinfo;
+  struct row_data *rdata;
 
   /* log_dumptask_open only uses the jobname and frame fields of the task */
   /* so I fill a task with only those two valid fields and so can use that */
   /* function */
   strncpy (task.jobname,info->jdd.job.name,MAXNAMELEN-1);
-  task.frame = job_frame_index_to_number (&info->jdd.job,info->jdd.row);
+  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), info->jdd.row);
+  task.frame = rdata->frame;
   task.ijob = info->jdd.job.id;
   
   // Allocate memory for idle info
