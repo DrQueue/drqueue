@@ -67,17 +67,21 @@ int main (int argc,char *argv[]) {
   pid_t listener_pid;
 
   slave_get_options(&argc,&argv,&force,&sdb);
-  
+
   logtool = DRQ_LOG_TOOL_SLAVE;
 
   // Set some standard defaults based on DRQUEUE_ROOT (must be already set!)
-  set_default_env(); 
-  
-  // Config files overrides environment CHANGE (?)
+  set_default_env();
+
+  // Config files overrides environment
   // Read the config file after reading the arguments, as those may change
   // the path to the config file
-  config_parse_tool("slave");
-  
+  if (sdb.conf[0]) {
+    config_parse(sdb.conf);
+  } else {
+    config_parse_tool("slave");
+  }
+
   if (!common_environment_check()) {
     log_auto (L_ERROR,"Error checking the environment: %s",drerrno_str());
     exit (1);
