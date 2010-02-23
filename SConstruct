@@ -1,6 +1,6 @@
 #
 # Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
-# Copyright (C) 2009 Andreas Schroeder
+# Copyright (C) 2009,2010 Andreas Schroeder
 #
 # This file is part of DrQueue
 #
@@ -224,6 +224,10 @@ copy_with_clean(etc_files,etc_files,idir_prefix,env)
 bin_files = glob.glob(os.path.join('bin','*'))
 # remove viewcmd because it's a directory, not a file
 bin_files.remove('bin/viewcmd')
+# remove drqman wrapper if drqman wasn't built
+if not env_lib['build_drqman']:
+	bin_files.remove('bin/drqman')
+	bin_files.remove('bin/drqman_win.sh')
 copy_with_clean(bin_files,bin_files,idir_prefix,env)
 
 # install viewcmd files
