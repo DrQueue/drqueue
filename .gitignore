@@ -2,6 +2,7 @@
 *.a
 *.patch
 .sconsign.dblite
+DrQueueOnRails/db/schema.rb
 blockhost
 cfgreader
 cjob
