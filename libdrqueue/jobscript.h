@@ -36,7 +36,8 @@ extern "C" {
 #pragma pack(push,1)
 
 typedef enum {
-  JOBSCRIPT_TCSH
+  JOBSCRIPT_TCSH,
+  JOBSCRIPT_PYTHON
 } jobscript_type;
 
 struct jobscript_info {
@@ -62,6 +63,10 @@ int jobscript_close (struct jobscript_info *ji);
 int jobscript_tcsh_check_pointer (struct jobscript_info *ji);
 int jobscript_tcsh_write_heading (struct jobscript_info *ji);
 int jobscript_tcsh_set_variable (struct jobscript_info *ji,char *name,char *value);
+
+int jobscript_python_check_pointer (struct jobscript_info *ji);
+int jobscript_python_write_heading (struct jobscript_info *ji);
+int jobscript_python_set_variable (struct jobscript_info *ji,char *name,char *value);
 
 #ifdef __CPLUSPLUS
 }
