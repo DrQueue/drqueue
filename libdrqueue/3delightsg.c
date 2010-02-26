@@ -79,13 +79,13 @@ char *threedelightsg_create (struct threedelightsgi *info) {
   fchmod (fileno(f),0777);
 
   /* So now we have the file open and so we must write to it */
-  fprintf(f,"#!/bin/tcsh\n\n");
-  fprintf(f,"set DRQUEUE_SCENE=%s\n",info->scene);
-  fprintf(f,"set RF_OWNER=%s\n",info->file_owner);
+  fprintf(f,"#!/usr/bin/env python\n\n");
+  fprintf(f,"SCENE=%s\n",info->scene);
+  fprintf(f,"RF_OWNER=%s\n",info->file_owner);
 
   fflush (f);
 
-  snprintf(fn_etc_3delight_sg,BUFFERLEN-1,"%s/3delight.sg",getenv("DRQUEUE_ETC"));
+  snprintf(fn_etc_3delight_sg,BUFFERLEN-1,"%s/3delight_sg.py",getenv("DRQUEUE_ETC"));
   if ((etc_3delight_sg = fopen (fn_etc_3delight_sg,"r")) == NULL) {
     fprintf(f,"\necho -------------------------------------------------\n");
     fprintf(f,"echo ATTENTION ! There was a problem opening: %s\n",fn_etc_3delight_sg);
