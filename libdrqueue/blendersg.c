@@ -57,7 +57,7 @@ char *blendersg_create (struct blendersgi *info) {
   snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
   // TODO: Unified path handling
-  struct jobscript_info *ji = jobscript_new (JOBSCRIPT_PYTHON,filename);
+  struct jobscript_info *ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
 
   jobscript_write_heading (ji);
   jobscript_set_variable (ji,"SCENE",info->scene);
