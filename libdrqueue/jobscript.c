@@ -33,7 +33,7 @@
 struct jobscript_info *jobscript_new (jobscript_type type,char *filename) {
   FILE *f = NULL;
 
-  if ( type != JOBSCRIPT_TCSH  || type != JOBSCRIPT_TCSH ) {
+  if ( (type != JOBSCRIPT_TCSH) && (type != JOBSCRIPT_PYTHON) ) {
     fprintf (stderr,"ERROR: Job type requested unknown (%i)\n",type);
     fprintf (stderr,"ERROR: %s\n",drerrno_str());
     return NULL;
@@ -185,7 +185,7 @@ int jobscript_python_set_variable (struct jobscript_info *ji,char *name,char *va
   }
   // TODO: correct name of variable
   fprintf (ji->file,"\n## python variable set by jobscript tools\n");
-  fprintf (ji->file,"set %s=\"%s\"\n",name,value);
+  fprintf (ji->file,"%s=\"%s\"\n",name,value);
   return 1;
 }
 
