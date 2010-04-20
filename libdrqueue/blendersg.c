@@ -61,7 +61,7 @@ char *blendersg_create (struct blendersgi *info) {
   struct jobscript_info *ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
 
   jobscript_write_heading (ji);
-  jobscript_set_variable (ji,"SCENE",info->scene);
+  jobscript_set_variable (ji,"SCENE",scene);
 
   /* 2 means we want to distribute one single image */
   if (info->render_type == 2) {

@@ -61,7 +61,7 @@ char *threedelightsg_create (struct threedelightsgi *info) {
   struct jobscript_info *ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
 
   jobscript_write_heading (ji);
-  jobscript_set_variable (ji,"SCENE",info->scene);
+  jobscript_set_variable (ji,"SCENE",scene);
   jobscript_set_variable (ji,"RF_OWNER",info->file_owner);
   jobscript_template_write (ji,"3delight_sg.py");
   jobscript_close (ji);
