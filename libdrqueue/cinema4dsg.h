@@ -1,5 +1,7 @@
 //
-// Copyright (C) 2007 Andreas Schroeder
+// Copyright (C) 2007,2010 Andreas Schroeder
+//
+// This file is part of DrQueue
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,8 +17,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
-//
-// $Id: cinema4dsg.h 2089 2007-08-22 22:08:12Z kaazoo $
 //
 
 #ifndef _CINEMA4DSG_H_
