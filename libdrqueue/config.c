@@ -135,7 +135,7 @@ config_parse (char *cfg) {
         }
         strncpy(penv,renv,strlen(renv)+1);
         if (putenv (penv) != 0) {
-          fprintf (stderr,"ERROR seting the environment: '%s'\n",penv);
+          fprintf (stderr,"ERROR setting the environment: '%s'\n",penv);
         }
       } else {
         fprintf (stderr,"Warning parsing config file. No value for logs. Using default.\n");
@@ -151,7 +151,7 @@ config_parse (char *cfg) {
         }
         strncpy(penv,renv,strlen(renv)+1);
         if (putenv (penv) != 0) {
-          fprintf (stderr,"ERROR seting the environment: '%s'\n",penv);
+          fprintf (stderr,"ERROR setting the environment: '%s'\n",penv);
         }
       } else {
         fprintf (stderr,"Warning parsing config file. No value for tmp. Using default.\n");
@@ -167,7 +167,7 @@ config_parse (char *cfg) {
         }
         strncpy(penv,renv,strlen(renv)+1);
         if (putenv (penv) != 0) {
-          fprintf (stderr,"ERROR seting the environment: '%s'\n",penv);
+          fprintf (stderr,"ERROR setting the environment: '%s'\n",penv);
         }
       } else {
         fprintf (stderr,"Warning parsing config file. No value for bin. Using default.\n");
@@ -183,7 +183,7 @@ config_parse (char *cfg) {
         }
         strncpy(penv,renv,strlen(renv)+1);
         if (putenv (penv) != 0) {
-          fprintf (stderr,"ERROR seting the environment: '%s'\n",penv);
+          fprintf (stderr,"ERROR setting the environment: '%s'\n",penv);
         }
       } else {
         fprintf (stderr,"Warning parsing config file. No value for etc. Using default.\n");
@@ -199,9 +199,8 @@ config_parse (char *cfg) {
         }
         strncpy(penv,renv,strlen(renv)+1);
         if (putenv (penv) != 0) {
-          fprintf (stderr,"ERROR seting the environment: '%s'\n",penv);
+          fprintf (stderr,"ERROR setting the environment: '%s'\n",penv);
         }
-        free(penv);
       } else {
         fprintf (stderr,"Warning parsing config file. No value for db. Using default.\n");
       }
@@ -216,9 +215,8 @@ config_parse (char *cfg) {
         }
         strncpy(penv,renv,strlen(renv)+1);
         if (putenv (penv) != 0) {
-          fprintf (stderr,"ERROR seting the environment: '%s'\n",penv);
+          fprintf (stderr,"ERROR setting the environment: '%s'\n",penv);
         }
-        free(penv);
       } else {
         fprintf (stderr,"Warning parsing config file. No value for pool. Using default.\n");
       }

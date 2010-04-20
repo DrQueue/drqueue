@@ -69,13 +69,13 @@ char *threedsmaxsg_create (struct threedsmaxsgi *info) {
   snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
   // TODO: Unified path handling
-  struct jobscript_info *ji = jobscript_new (JOBSCRIPT_TCSH,filename);
+  struct jobscript_info *ji = jobscript_new (JOBSCRIPT_PYTHON,filename);
 
   jobscript_write_heading (ji);
-  jobscript_set_variable (ji,"DRQUEUE_SCENE",info->scene);
+  jobscript_set_variable (ji,"SCENE",info->scene);
   jobscript_set_variable (ji,"DRQUEUE_IMAGE",info->image);
   
-  jobscript_template_write (ji,"3dsmax.sg");
+  jobscript_template_write (ji,"3dsmax_sg.py");
   jobscript_close (ji);
 
   return filename;

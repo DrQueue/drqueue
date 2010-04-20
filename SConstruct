@@ -1,6 +1,6 @@
 #
 # Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
-# Copyright (C) 2009 Andreas Schroeder
+# Copyright (C) 2009,2010 Andreas Schroeder
 #
 # This file is part of DrQueue
 #
@@ -76,11 +76,11 @@ def copy_with_clean(src_files,dest_files,dest_path,env):
 env_lib = Environment (ENV=os.environ)
 
 # Configuration options
-opts = Options('scons.conf')
-opts.AddOptions(PathOption('DESTDIR','Alternate root directory','',[]),
-                PathOption('PREFIX','Directory to install under','/usr/local'),
-                BoolOption('universal_binary', 'Whether to build as an Universal Binary (MacOS X >= 10.3.9 only)', 0),
-                BoolOption('build_drqman','Build drqman',1))
+opts = Variables('scons.conf')
+opts.AddVariables(PathVariable('DESTDIR','Alternate root directory','',[]),
+                  PathVariable('PREFIX','Directory to install under','/usr/local'),
+                  BoolVariable('universal_binary', 'Whether to build as an Universal Binary (MacOS X >= 10.3.9 only)', 0),
+                  BoolVariable('build_drqman','Build drqman',1))
 opts.Update(env_lib)
 opts.Save('scons.conf',env_lib)
 
@@ -224,6 +224,10 @@ copy_with_clean(etc_files,etc_files,idir_prefix,env)
 bin_files = glob.glob(os.path.join('bin','*'))
 # remove viewcmd because it's a directory, not a file
 bin_files.remove('bin/viewcmd')
+# remove drqman wrapper if drqman wasn't built
+if not env_lib['build_drqman']:
+	bin_files.remove('bin/drqman')
+	bin_files.remove('bin/drqman_win.sh')
 copy_with_clean(bin_files,bin_files,idir_prefix,env)
 
 # install viewcmd files
