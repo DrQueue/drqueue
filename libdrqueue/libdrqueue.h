@@ -96,7 +96,6 @@ extern int drerrno;
 #include "cinema4dsg.h"
 #include "luxrendersg.h"
 #include "vraysg.h"
-#include "blenderluxsg.h"
 #include "3dsmaxsg.h"
 
 extern int phantom[2];         /* FIXME: This should be local to the
