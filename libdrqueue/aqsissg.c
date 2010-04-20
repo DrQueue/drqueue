@@ -66,10 +66,10 @@ char *aqsissg_create (struct aqsissgi *info) {
 
   if (info->custom_crop) {
     jobscript_set_variable (ji,"CUSTOM_CROP","yes");
-    jobscript_set_variable (ji,"CROP_XMIN",info->xmin);
-    jobscript_set_variable (ji,"CROP_XMAX",info->xmax);
-    jobscript_set_variable (ji,"CROP_YMIN",info->ymin);
-    jobscript_set_variable (ji,"CROP_YMAX",info->ymax);
+    jobscript_set_variable_int (ji,"CROP_XMIN",info->xmin);
+    jobscript_set_variable_int (ji,"CROP_XMAX",info->xmax);
+    jobscript_set_variable_int (ji,"CROP_YMIN",info->ymin);
+    jobscript_set_variable_int (ji,"CROP_YMAX",info->ymax);
   }
 
   jobscript_template_write (ji,"aqsis_sg.py");
