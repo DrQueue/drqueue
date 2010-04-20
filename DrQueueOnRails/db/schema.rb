@@ -12,10 +12,10 @@
 ActiveRecord::Schema.define(:version => 5) do
 
   create_table "jobs", :force => true do |t|
-    t.integer "queue_id",   :limit => 11
+    t.integer "queue_id"
     t.string  "renderer"
     t.string  "sort"
-    t.integer "profile_id", :limit => 11
+    t.integer "profile_id"
   end
 
   create_table "profiles", :force => true do |t|
@@ -24,7 +24,7 @@ ActiveRecord::Schema.define(:version => 5) do
     t.string  "avatar"
     t.string  "ldap_account"
     t.string  "status"
-    t.integer "accepted",     :limit => 11, :default => 0
+    t.integer "accepted",     :default => 0
   end
 
   create_table "sessions", :force => true do |t|
