@@ -3,6 +3,8 @@
 *.patch
 .sconsign.dblite
 DrQueueOnRails/db/schema.rb
+DrQueueOnRails/db/*.db
+DrQueueOnRails/config/environment.rb
 blockhost
 cfgreader
 cjob
