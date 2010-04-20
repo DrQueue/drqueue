@@ -58,8 +58,8 @@ char *aftereffectssg_create (struct aftereffectssgi *info) {
   strncpy(project,info->project,MAXCMDLEN-1);
 #endif
 
-  p = strrchr(scene,'/');
-  p = ( p ) ? p+1 : scene;
+  p = strrchr(project,'/');
+  p = ( p ) ? p+1 : project;
   snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
   // TODO: Unified path handling
