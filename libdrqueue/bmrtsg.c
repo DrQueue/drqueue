@@ -1,5 +1,8 @@
 //
 // Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2010 Andreas Schroeder
+//
+// This file is part of DrQueue
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,8 +19,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
 
 #include <stdio.h>
 #include <time.h>
@@ -32,17 +33,13 @@
 #include "libdrqueue.h"
 
 char *bmrtsg_create (struct bmrtsgi *info) {
-  /* This function creates the bmrt render script based on the information given */
+  /* This function creates the BMRT render script based on the information given */
   /* Returns a pointer to a string containing the path of the just created file */
   /* Returns NULL on failure and sets drerrno */
-  FILE *f;
-  FILE *etc_bmrt_sg;  /* The bmrt script generator configuration file */
-  int fd_etc_bmrt_sg,fd_f;
+
   static char filename[BUFFERLEN];
-  char fn_etc_bmrt_sg[BUFFERLEN]; /* File name pointing to DRQUEUE_ETC/bmrt.sg */
-  char buf[BUFFERLEN];
-  int size;
   char *p;   /* Scene filename without path */
+  char scene[MAXCMDLEN];
 
   /* Check the parameters */
   if (!strlen(info->scene)) {
@@ -50,82 +47,54 @@ char *bmrtsg_create (struct bmrtsgi *info) {
     return NULL;
   }
 
-  p = strrchr(info->scene,'/');
-  p = ( p ) ? p+1 : info->scene;
+#ifdef __CYGWIN
+  cygwin_conv_to_posix_path(info->scene, scene);
+#else
+  strncpy(scene,info->scene,MAXCMDLEN-1);
+#endif
+
+  p = strrchr(scene,'/');
+  p = ( p ) ? p+1 : scene;
   snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
-  if ((f = fopen (filename, "a")) == NULL) {
-    if (errno == ENOENT) {
-      /* If its because the directory does not exist we try creating it first */
-      if (mkdir (info->scriptdir,0775) == -1) {
-        drerrno = DRE_COULDNOTCREATE;
-        return NULL;
-      } else if ((f = fopen (filename, "a")) == NULL) {
-        drerrno = DRE_COULDNOTCREATE;
-        return NULL;
-      }
-    } else {
-      drerrno = DRE_COULDNOTCREATE;
-      return NULL;
-    }
-  }
+  // TODO: Unified path handling
+  struct jobscript_info *ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
 
-  fchmod (fileno(f),0777);
+  jobscript_write_heading (ji);
+  jobscript_set_variable (ji,"SCENE",scene);
+  jobscript_set_variable (ji,"DISP_STATS",&info->disp_stats);
+  jobscript_set_variable (ji,"VERBOSE",&info->verbose);
+  jobscript_set_variable (ji,"CUSTOM_BEEP",&info->custom_beep);
 
-  /* So now we have the file open and so we must write to it */
-  fprintf(f,"#!/bin/tcsh\n\n");
-  fprintf(f,"set SCENE=%s\n",info->scene);
-  fprintf(f,"set CUSTOM_CROP=%u\n",info->custom_crop);
   if (info->custom_crop) {
-    fprintf(f,"set CROP_XMIN=%u\n",info->xmin);
-    fprintf(f,"set CROP_XMAX=%u\n",info->xmax);
-    fprintf(f,"set CROP_YMIN=%u\n",info->ymin);
-    fprintf(f,"set CROP_YMAX=%u\n",info->ymax);
+    jobscript_set_variable (ji,"CUSTOM_CROP","yes");
+    jobscript_set_variable_int (ji,"CROP_XMIN",info->xmin);
+    jobscript_set_variable_int (ji,"CROP_XMAX",info->xmax);
+    jobscript_set_variable_int (ji,"CROP_YMIN",info->ymin);
+    jobscript_set_variable_int (ji,"CROP_YMAX",info->ymax);
   }
-  fprintf(f,"set CUSTOM_SAMPLES=%u\n",info->custom_samples);
+  
   if (info->custom_samples) {
-    fprintf(f,"set XSAMPLES=%u\n",info->xsamples);
-    fprintf(f,"set YSAMPLES=%u\n",info->ysamples);
+  	jobscript_set_variable (ji,"CUSTOM_SAMPLES","yes");
+  	jobscript_set_variable_int (ji,"XSAMPLES",info->xsamples);
+  	jobscript_set_variable_int (ji,"YSAMPLES",info->ysamples);
   }
-  fprintf(f,"set DISP_STATS=%u\n",info->disp_stats);
-  fprintf(f,"set VERBOSE=%u\n",info->verbose);
-  fprintf(f,"set CUSTOM_BEEP=%u\n",info->custom_beep);
-  fprintf(f,"set CUSTOM_RADIOSITY=%u\n",info->custom_radiosity);
+  
   if (info->custom_radiosity) {
-    fprintf(f,"set RADIOSITY_SAMPLES=%u\n",info->radiosity_samples);
+  	jobscript_set_variable (ji,"CUSTOM_RADIOSITY","yes");
+  	jobscript_set_variable_int (ji,"RADIOSITY_SAMPLES",info->radiosity_samples);
   }
-  fprintf(f,"set CUSTOM_RAYSAMPLES=%u\n",info->custom_raysamples);
+  
   if (info->custom_raysamples) {
-    fprintf(f,"set RAYSAMPLES=%u\n",info->raysamples);
+  	jobscript_set_variable (ji,"CUSTOM_RAYSAMPLES","yes");
+  	jobscript_set_variable_int (ji,"RAYSAMPLES",info->raysamples);
   }
 
-
-
-  snprintf(fn_etc_bmrt_sg,BUFFERLEN-1,"%s/bmrt.sg",getenv("DRQUEUE_ETC"));
-
-  fflush (f);
-
-  if ((etc_bmrt_sg = fopen (fn_etc_bmrt_sg,"r")) == NULL) {
-    fprintf(f,"\necho -------------------------------------------------\n");
-    fprintf(f,"echo ATTENTION ! There was a problem opening: %s\n",fn_etc_bmrt_sg);
-    fprintf(f,"echo So the default configuration will be used\n");
-    fprintf(f,"echo -------------------------------------------------\n");
-    fprintf(f,"\n\n");
-    fprintf(f,"echo rendrib -frames $DRQUEUE_FRAME $BLOCK\n\n");
-  } else {
-    fd_etc_bmrt_sg = fileno (etc_bmrt_sg);
-    fd_f = fileno (f);
-    while ((size = read (fd_etc_bmrt_sg,buf,BUFFERLEN)) != 0) {
-      write (fd_f,buf,size);
-    }
-    fclose(etc_bmrt_sg);
-  }
-
-  fclose(f);
+  jobscript_template_write (ji,"bmrt_sg.py");
+  jobscript_close (ji);
 
   return filename;
 }
-
 
 char *bmrtsg_default_script_path (void) {
   static char buf[BUFFERLEN];
