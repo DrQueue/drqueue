@@ -41,6 +41,23 @@ class Profile < ActiveRecord::Base
         myprofile.save
         return myprofile
       end
+    elsif (account == "admin") && (password == ENV['USER_ADMIN_PW'])
+      # search user in db
+      if myprofile = Profile.find_by_ldap_account(account)
+        return myprofile
+      # user is logged in but not in db
+      else
+        # add user in db
+        myprofile = Profile.new
+        myprofile.ldap_account = account
+        # give user the lowest status
+        myprofile.status = "admin"
+        myprofile.name = "Admin Account"
+        myprofile.email = "admin@"+ENV['DRQUEUE_MASTER']
+        # save profile
+        myprofile.save
+        return myprofile
+      end
     else
 	
     # LDAP lookup
