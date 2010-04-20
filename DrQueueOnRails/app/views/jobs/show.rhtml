@@ -74,6 +74,9 @@ Task list:<br /><br />
  <td>Start time</td>
  <td>Finish time</td>
  <td>Log</td>
+ <% if (ENV['DQOR_SHOW_FRAME_IMG'] == "true") && (@job != nil)%>
+ <td>Output Image</td>
+ <% end %>
 </tr> 
 <%
 index = 0
@@ -107,6 +110,13 @@ index = 0
 	  <td><%= link_to 'View log', :action => 'view_log', :id => @job_data.id, :nr => index %></td>
 	 <% else %>
 	  <td>Not started</td>
+	 <% end %>
+	 <% if @job != nil %>
+	  <% if (computer_status == "Finished") %>
+	   <td><%= link_to 'View Output Image', :action => 'view_image', :id => @job_data.id, :nr => index %></td>
+	  <% else %>
+	   <td>Not finished yet</td>
+	  <% end %>
 	 <% end %>
 	</tr>
 	<%

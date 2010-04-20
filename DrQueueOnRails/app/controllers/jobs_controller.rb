@@ -16,7 +16,7 @@ class JobsController < ApplicationController
   include ActionView::Helpers::TextHelper
 
   # template
-  layout "main_layout", :except => 'feed'
+  layout "main_layout", :except => [:feed, :load_image]
 
 
   def index
@@ -1338,6 +1338,76 @@ ENV['WEB_PROTO']+"://")
 
   end
   
+ 
+  def view_image
+  
+  	# seek for job info in db
+    job_db = Job.find_by_queue_id(params[:id].to_i)
+  	
+  	# only owner and admin are allowed
+  	if (job_db.profile_id != session[:profile].id) && (session[:profile].status != 'admin')
+  		redirect_to :action => 'list' and return
+  	end
+    
+  	@job = Job.job_data_from_master(params[:id].to_i)
+	@nr = params[:nr].to_i
+	@job_id = params[:id]
+	  	
+	if @nr >= @job.frame_end
+	  redirect_to :action => 'list' and return
+	end
+	  	
+  	# refresh timer
+    link = url_for(:controller => 'jobs', :action => 'view_image', :id => params[:id], :nr => params[:nr], :protocol => ENV['WEB_PROTO']+"://")
+    if params[:refresh] != nil
+    	if params[:refresh] == ""
+    		@refresh_content = nil
+    		session[:last_refresh] = nil
+    	else
+    		@refresh_content = params[:refresh]+'; URL='+link
+    		session[:last_refresh] = params[:refresh]
+    	end
+    elsif session[:last_refresh] != nil
+    	@refresh_content = session[:last_refresh]+'; URL='+link
+    else
+    	@refresh_content = '300; URL='+link
+    end
+
+  end
+ 
+ 
+  def load_image
+  
+    job_db = Job.find_by_queue_id(params[:id].to_i)
+    job_master = Job.job_data_from_master(params[:id].to_i)
+	jobdir = File.dirname(job_master.cmd)
+	#oldpwd = Dir.pwd
+	#Dir.chdir jobdir
+	#imagefile = Dir.glob("*"+params[:nr]+"*.{jpg,jpeg,png,gif}")[0]
+	#puts imagepath = jobdir+"/"+imagefile
+	#Dir.chdir oldpwd
+	
+	# get all image files which are newer than the job script file
+	oldest_ctime = File.ctime(job_master.cmd).to_i
+	found_files = []
+	dir = Dir.open(jobdir)
+	dir.each do |entry|
+	  entrypath = jobdir+"/"+entry
+	  if (File.file? entrypath) && (File.ctime(entrypath).to_i > oldest_ctime) && ( (File.extname(entrypath) == ".jpeg") || (File.extname(entrypath) == ".jpg") || (File.extname(entrypath) == ".png") || (File.extname(entrypath) == ".gif") )
+	    found_files << entry
+	  end
+	end
+	dir.close
+	
+	found_files.sort!
+	imagefile = found_files[params[:nr].to_i]
+	if imagefile == nil
+	  render :text => "<br /><br />Image file was not found.<br /><br />" and return false
+	else
+	  imagepath = jobdir+"/"+imagefile
+	  send_file imagepath, :filename => imagefile, :type => 'image/jpeg', :disposition => 'inline'
+	end
+  end
   
   
   # newsfeed for jobs
