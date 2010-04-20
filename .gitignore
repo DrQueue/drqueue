@@ -5,6 +5,7 @@
 DrQueueOnRails/db/schema.rb
 DrQueueOnRails/db/*.db
 DrQueueOnRails/config/environment.rb
+DrQueueOnRails/log/*
 blockhost
 cfgreader
 cjob
