@@ -5,8 +5,8 @@
 # or use the pure-Ruby bindings on Windows:
 #   gem install postgres-pr
 development:
-  adapter: postgresql
-  database: DrQueueOnRails
+  adapter: sqlite3
+  database: db/DrQueueOnRails.db
   username: DrQueueOnRails
   password:
 
