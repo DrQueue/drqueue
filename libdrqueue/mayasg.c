@@ -1,14 +1,15 @@
 //
 // Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
+// Copyright (C) 2010 Andreas Schroeder
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -17,8 +18,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
-//
-// $Id$
 //
 
 #include <stdio.h>
@@ -64,7 +63,6 @@ char *mayasg_create (struct mayasgi *info) {
   cygwin_conv_to_posix_path(info->precommand, precommand);
   cygwin_conv_to_posix_path(info->postcommand, postcommand);
 #else
-
   strncpy(scene,info->scene,MAXCMDLEN-1);
   strncpy(renderdir,info->renderdir,MAXCMDLEN-1);
   strncpy(projectdir,info->projectdir,MAXCMDLEN-1);
@@ -80,9 +78,9 @@ char *mayasg_create (struct mayasgi *info) {
   struct jobscript_info *ji = jobscript_new (JOBSCRIPT_TCSH,filename);
 
   jobscript_write_heading (ji);
-  jobscript_set_variable (ji,"DRQUEUE_RD",info->renderdir);
-  jobscript_set_variable (ji,"DRQUEUE_PD",info->projectdir);
-  jobscript_set_variable (ji,"DRQUEUE_SCENE",info->scene);
+  jobscript_set_variable (ji,"DRQUEUE_RD",renderdir);
+  jobscript_set_variable (ji,"DRQUEUE_PD",projectdir);
+  jobscript_set_variable (ji,"DRQUEUE_SCENE",scene);
   jobscript_set_variable (ji,"RF_OWNER",info->file_owner);
   if (strlen(info->format)) {
     jobscript_set_variable (ji,"FFORMAT",info->format);
@@ -112,10 +110,10 @@ char *mayasg_create (struct mayasgi *info) {
     jobscript_set_variable (ji,"RENDERER", "file");
   }
   if (strlen(info->postcommand)) {
-    jobscript_set_variable (ji,"DRQUEUE_POST",info->postcommand);
+    jobscript_set_variable (ji,"DRQUEUE_POST",postcommand);
   }
   if (strlen(info->precommand)) {
-    jobscript_set_variable (ji,"DRQUEUE_PRE",info->precommand);
+    jobscript_set_variable (ji,"DRQUEUE_PRE",precommand);
   }
 
   jobscript_template_write (ji,"maya.sg");
