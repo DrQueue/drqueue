@@ -71,7 +71,6 @@ char *threedsmaxsg_create (struct threedsmaxsgi *info) {
   return filename;
 }
 
-
 char *threedsmaxsg_default_script_path (void) {
   static char buf[BUFFERLEN];
   char *p;
