@@ -4,16 +4,15 @@
 # Default configuration for 3Delight script generator
 # 
 # Python variables
-# SCENE, BLOCK, RF_OWNER
+# SCENE, RF_OWNER
 # 
 # shell variables
-# DRQUEUE_BIN, DRQUEUE_ETC, DRQUEUE_FRAME, DRQUEUE_BLOCKSIZE, DRQUEUE_ENDFRAME
+# DRQUEUE_BIN, DRQUEUE_ETC, DRQUEUE_OS, DRQUEUE_FRAME, DRQUEUE_ENDFRAME, DRQUEUE_BLOCKSIZE
 #
 
 #
 # For platform dependend environment setting a form like this
 # can be used :
-#
 #
 # if DRQUEUE_OS == "LINUX":
 #    # Environment for Linux
@@ -34,28 +33,12 @@ DRQUEUE_OS = os.getenv("DRQUEUE_OS")
 DRQUEUE_FRAME = os.getenv("DRQUEUE_FRAME")
 DRQUEUE_ENDFRAME = os.getenv("DRQUEUE_ENDFRAME")
 DRQUEUE_BLOCKSIZE = os.getenv("DRQUEUE_BLOCKSIZE")
-CUSTOM_CROP = os.getenv("CUSTOM_CROP")
-CUSTOM_PROGRESS = os.getenv("CUSTOM_PROGRESS")
-DISP_STATS = os.getenv("CUSTOM_PROGRESS")
-CUSTOM_BEEP = os.getenv("CUSTOM_PROGRESS")
-
-# Begin Script
-#if CUSTOM_CROP != "":
-#	crop_args="-crop $CROP_XMIN $CROP_XMAX $CROP_YMIN $CROP_YMAX"
-
-#if CUSTOM_PROGRESS != "":
-#	progress_args="-progress"
-
-#if DISP_STATS != "":
-#	stats_args="-stats"
-
-#if CUSTOM_BEEP != "":
-#	beep_args="-beeps"
 
 
 if DRQUEUE_OS == "WINDOWS":
 	BLOCK = subprocess.Popen(["expr.exe", DRQUEUE_FRAME+" + "+DRQUEUE_BLOCKSIZE+" - 1"], stdout=subprocess.PIPE).communicate()[0]
-	SCENE = subprocess.Popen(["cygpath.exe", "-w "+SCENE], stdout=subprocess.PIPE).communicate()[0]
+	# should be already done in script generator
+	#SCENE = subprocess.Popen(["cygpath.exe", "-w "+SCENE], stdout=subprocess.PIPE).communicate()[0]
 else:
 	BLOCK = subprocess.Popen(["expr", DRQUEUE_FRAME+" + "+DRQUEUE_BLOCKSIZE+" - 1"], stdout=subprocess.PIPE).communicate()[0]
 
