@@ -284,7 +284,7 @@ static void dnj_koj_frame_mentalray_scene_set (GtkWidget *button, struct drqmj_k
 
 static void dnj_koj_frame_mentalray_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info) {
   struct mentalraysgi mentalraysgi; /* Mental Ray script generator info */
-  mentalraysgi.kind = 1; /* we render animations */
+  mentalraysgi.render_type = 1; /* we render animations */
   char *file;
 
   strncpy (mentalraysgi.renderdir,gtk_entry_get_text(GTK_ENTRY(info->koji_mentalray.erenderdir)),BUFFERLEN-1);
