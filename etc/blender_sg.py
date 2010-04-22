@@ -4,16 +4,15 @@
 # Default configuration for Blender script generator
 # 
 # Python variables
-# DRQUEUE_FRAME, DRQUEUE_BLOCKSIZE, SCENE, BLOCK, DRQUEUE_ENDFRAME, BLENDER_PATH, RENDER_TYPE
+# SCENE, RENDER_TYPE
 # 
 # shell variables
-# $DRQUEUE_BIN, $DRQUEUE_ETC
+# DRQUEUE_BIN, DRQUEUE_ETC, DRQUEUE_OS, DRQUEUE_FRAME, DRQUEUE_ENDFRAME, DRQUEUE_BLOCKSIZE
 #
 
 #
 # For platform dependend environment setting a form like this
 # can be used :
-#
 #
 # if DRQUEUE_OS == "LINUX":
 #    # Environment for Linux
@@ -24,7 +23,6 @@
 #
 
 import os,signal,subprocess,sys
-
 
 os.umask(0)
 
@@ -39,19 +37,20 @@ DRQUEUE_BLOCKSIZE = os.getenv("DRQUEUE_BLOCKSIZE")
 
 if DRQUEUE_OS == "WINDOWS":
 	BLOCK = subprocess.Popen(["expr.exe", DRQUEUE_FRAME+" + "+DRQUEUE_BLOCKSIZE+" - 1"], stdout=subprocess.PIPE).communicate()[0]
-	SCENE = subprocess.Popen(["cygpath.exe", "-w "+SCENE], stdout=subprocess.PIPE).communicate()[0]
+	# should be already done in script generator
+	#SCENE = subprocess.Popen(["cygpath.exe", "-w "+SCENE], stdout=subprocess.PIPE).communicate()[0]
 else:
 	BLOCK = subprocess.Popen(["expr", DRQUEUE_FRAME+" + "+DRQUEUE_BLOCKSIZE+" - 1"], stdout=subprocess.PIPE).communicate()[0]
 
 if BLOCK > DRQUEUE_ENDFRAME:
 	BLOCK = DRQUEUE_ENDFRAME
 
-BLENDER_PATH="blender"
+ENGINE_PATH="blender"
 
 if RENDER_TYPE == "animation":
-	command = "curframe="+DRQUEUE_FRAME+" "+BLENDER_PATH+" -b "+SCENE+" -P "+DRQUEUE_ETC+"/blender_same_directory.py"
+	command = "curframe="+DRQUEUE_FRAME+" "+ENGINE_PATH+" -b "+SCENE+" -P "+DRQUEUE_ETC+"/blender_same_directory.py"
 else:
-	command = "curpart="+DRQUEUE_FRAME+" maxparts="+DRQUEUE_ENDFRAME+" "+BLENDER_PATH+" -b "+SCENE+" -P "+DRQUEUE_ETC+"/blender_region_rendering.py"
+	command = "curpart="+DRQUEUE_FRAME+" maxparts="+DRQUEUE_ENDFRAME+" "+ENGINE_PATH+" -b "+SCENE+" -P "+DRQUEUE_ETC+"/blender_region_rendering.py"
 
 
 print command
