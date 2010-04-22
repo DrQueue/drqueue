@@ -39,22 +39,18 @@ char *generalsg_create (struct generalsgi *info) {
 
   static char filename[BUFFERLEN];
   char *p;   /* Scene filename without path */
-  char scriptdir[MAXCMDLEN];
+  char script[MAXCMDLEN];
 
   /* Check the parameters */
   if (!strlen(info->script)) {
     drerrno = DRE_NOTCOMPLETE;
     return NULL;
   }
-  if (!strlen(info->scriptdir)) {
-    drerrno = DRE_NOTCOMPLETE;
-    return NULL;
-  }
 
 #ifdef __CYGWIN
-  cygwin_conv_to_posix_path(info->scriptdir, scriptdir);
+  cygwin_conv_to_posix_path(info->script, script);
 #else
-  strncpy(scriptdir,info->scriptdir,MAXCMDLEN-1);
+  strncpy(script,info->script,MAXCMDLEN-1);
 #endif
 
   p = strrchr(info->script,'/');
@@ -65,9 +61,9 @@ char *generalsg_create (struct generalsgi *info) {
   struct jobscript_info *ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
 
   jobscript_write_heading (ji);
-  jobscript_set_variable (ji,"DRQUEUE_SCRIPT",info->script);
-  jobscript_set_variable_int (ji,"DRQUEUE_OWNER_UID",info->uid_owner);
-  jobscript_set_variable_int (ji,"DRQUEUE_OWNER_GID",info->gid_owner);
+  jobscript_set_variable (ji,"GENSCRIPT",info->script);
+  jobscript_set_variable_int (ji,"OWNER_UID",info->uid_owner);
+  jobscript_set_variable_int (ji,"OWNER_GID",info->gid_owner);
   jobscript_template_write (ji,"general_sg.py");
   jobscript_close (ji);
 
