@@ -69,7 +69,7 @@ char *mantrasg_create (struct mantrasgi *info) {
 
   jobscript_write_heading (ji);
   jobscript_set_variable (ji,"SCENE",scene);
-  jobscript_set_variable (ji,"DRQUEUE_RD",renderdir);
+  jobscript_set_variable (ji,"RENDERDIR",renderdir);
   jobscript_set_variable (ji,"RF_OWNER",info->file_owner);
   jobscript_set_variable_int (ji,"RAYTRACE",info->raytrace);
   jobscript_set_variable_int (ji,"ANTIALIAS",info->aaoff);
@@ -129,7 +129,7 @@ char *mantrasg_create (struct mantrasgi *info) {
   }
   if (info->custom_Type) {
   	jobscript_set_variable (ji,"CUSTOM_TYPE","yes");
-  	jobscript_set_variable (ji,"TYPE",info->Type);
+  	jobscript_set_variable (ji,"CTYPE",info->Type);
   }
     
   jobscript_template_write (ji,"3delight_sg.py");
