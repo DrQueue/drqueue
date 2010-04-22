@@ -7,13 +7,12 @@
 # SCENE, DRQUEUE_IMAGE
 # 
 # shell variables
-# DRQUEUE_BIN, DRQUEUE_ETC, DRQUEUE_FRAME, DRQUEUE_BLOCKSIZE, DRQUEUE_ENDFRAME
+# DRQUEUE_BIN, DRQUEUE_ETC, DRQUEUE_OS, DRQUEUE_FRAME, DRQUEUE_ENDFRAME, DRQUEUE_BLOCKSIZE
 #
 
 #
 # For platform dependend environment setting a form like this
 # can be used :
-#
 #
 # if DRQUEUE_OS == "LINUX":
 #    # Environment for Linux
@@ -38,7 +37,8 @@ DRQUEUE_BLOCKSIZE = os.getenv("DRQUEUE_BLOCKSIZE")
 
 if DRQUEUE_OS == "WINDOWS":
 	BLOCK = subprocess.Popen(["expr.exe", DRQUEUE_FRAME+" + "+DRQUEUE_BLOCKSIZE+" - 1"], stdout=subprocess.PIPE).communicate()[0]
-	SCENE = subprocess.Popen(["cygpath.exe", "-w "+SCENE], stdout=subprocess.PIPE).communicate()[0]
+	# should be already done in script generator
+	#SCENE = subprocess.Popen(["cygpath.exe", "-w "+SCENE], stdout=subprocess.PIPE).communicate()[0]
 else:
 	BLOCK = subprocess.Popen(["expr", DRQUEUE_FRAME+" + "+DRQUEUE_BLOCKSIZE+" - 1"], stdout=subprocess.PIPE).communicate()[0]
 
@@ -49,7 +49,6 @@ if DRQUEUE_IMAGE != "":
 	CIMAGE = "-o "+DRQUEUE_IMAGE
 else:
 	CIMAGE = ""
-
 
 ENGINE_PATH="3dsmaxcmd.exe"
 
