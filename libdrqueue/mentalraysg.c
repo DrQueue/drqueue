@@ -69,7 +69,7 @@ char *mentalraysg_create (struct mentalraysgi *info) {
 
   jobscript_write_heading (ji);
   jobscript_set_variable (ji,"SCENE",scene);
-  jobscript_set_variable (ji,"DRQUEUE_RD",renderdir);
+  jobscript_set_variable (ji,"RENDERDIR",renderdir);
   jobscript_set_variable (ji,"RF_OWNER",info->file_owner);
   
   if (strlen(info->format)) {
@@ -88,17 +88,19 @@ char *mentalraysg_create (struct mentalraysgi *info) {
   	jobscript_set_variable (ji,"DRQUEUE_IMAGE",info->image);
   }
 
-  // 2 means we want to distribute one single image
-  if (info->kind == 2) {
-  	jobscript_template_write (ji,"mentalray_image_sg.py");
-  // 1 means we want to render an animation
-  } else if (info->kind == 1) {
-  	jobscript_template_write (ji,"mentalray_sg.py");
+  /* 2 means we want to distribute one single image */
+  if (info->render_type == 2) {
+	jobscript_set_variable (ji, "RENDER_TYPE", "single image");
+  /* 1 means we want to render an animation */
+  } else if (info->render_type == 1) {
+	jobscript_set_variable (ji, "RENDER_TYPE", "animation");
+  /* information missing */
   } else {
-  	drerrno = DRE_NOTCOMPLETE;
+        drerrno = DRE_NOTCOMPLETE;
     return NULL;
   }
 
+  jobscript_template_write (ji,"mentalray_sg.py");
   jobscript_close (ji);
 
   return filename;
