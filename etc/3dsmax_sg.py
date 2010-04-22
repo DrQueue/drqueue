@@ -36,11 +36,10 @@ DRQUEUE_BLOCKSIZE = os.getenv("DRQUEUE_BLOCKSIZE")
 
 
 if DRQUEUE_OS == "WINDOWS":
-	BLOCK = subprocess.Popen(["expr.exe", DRQUEUE_FRAME+" + "+DRQUEUE_BLOCKSIZE+" - 1"], stdout=subprocess.PIPE).communicate()[0]
-	# should be already done in script generator
-	#SCENE = subprocess.Popen(["cygpath.exe", "-w "+SCENE], stdout=subprocess.PIPE).communicate()[0]
-else:
-	BLOCK = subprocess.Popen(["expr", DRQUEUE_FRAME+" + "+DRQUEUE_BLOCKSIZE+" - 1"], stdout=subprocess.PIPE).communicate()[0]
+	# convert to windows path with drive letter
+	SCENE = subprocess.Popen(["cygpath.exe", "-w "+SCENE], stdout=subprocess.PIPE).communicate()[0]
+
+BLOCK = DRQUEUE_FRAME + DRQUEUE_BLOCKSIZE - 1
 
 if BLOCK > DRQUEUE_ENDFRAME:
 	BLOCK = DRQUEUE_ENDFRAME
@@ -64,6 +63,7 @@ sts = os.waitpid(p.pid, 0)
 if sts[1] != 0:
 	print "Requeueing frame..."
 	os.kill(os.getppid(), signal.SIGINT)
+	exit(1)
 else:
 	#if DRQUEUE_OS != "WINDOWS" then:
 	# The frame was rendered properly
