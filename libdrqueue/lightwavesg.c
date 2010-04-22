@@ -72,9 +72,9 @@ char *lightwavesg_create (struct lightwavesgi *info) {
 
   jobscript_write_heading (ji);
   jobscript_set_variable (ji,"SCENE",scene);
+  jobscript_set_variable (ji,"PROJECTDIR",projectdir);
+  jobscript_set_variable (ji,"CONFIGDIR",configdir);
   jobscript_set_variable (ji,"RF_OWNER",info->file_owner);
-  jobscript_set_variable (ji,"DRQUEUE_PD",projectdir);
-  jobscript_set_variable (ji,"DRQUEUE_CD",configdir);
   
   if (strlen(info->format)) {
   	jobscript_set_variable (ji,"FFORMAT",info->format);
