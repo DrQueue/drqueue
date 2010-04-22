@@ -39,17 +39,24 @@ char *cinema4dsg_create (struct cinema4dsgi *info) {
   static char filename[BUFFERLEN];
   char *p;   /* Scene filename without path */
   char scene[MAXCMDLEN];
+  char renderdir[MAXCMDLEN];
 
   /* Check the parameters */
   if (!strlen(info->scene)) {
     drerrno = DRE_NOTCOMPLETE;
     return NULL;
   }
+  if (!strlen(info->renderdir)) {
+    drerrno = DRE_NOTCOMPLETE;
+    return NULL;
+  }
 
 #ifdef __CYGWIN
   cygwin_conv_to_posix_path(info->scene, scene);
+  cygwin_conv_to_posix_path(info->renderdir, renderdir);
 #else
   strncpy(scene,info->scene,MAXCMDLEN-1);
+  strncpy(renderdir,info->renderdir,MAXCMDLEN-1);
 #endif
 
   p = strrchr(scene,'/');
@@ -61,6 +68,7 @@ char *cinema4dsg_create (struct cinema4dsgi *info) {
 
   jobscript_write_heading (ji);
   jobscript_set_variable (ji,"SCENE",scene);
+  jobscript_set_variable (ji,"RENDERDIR",renderdir);
   jobscript_set_variable (ji,"RF_OWNER",info->file_owner);
   jobscript_template_write (ji,"cinema4d_sg.py");
   jobscript_close (ji);
