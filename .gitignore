@@ -4,6 +4,7 @@
 .sconsign.dblite
 DrQueueOnRails/db/schema.rb
 DrQueueOnRails/db/*.db
+DrQueueOnRails/db/*.sqlite3
 DrQueueOnRails/config/environment.rb
 DrQueueOnRails/log/*
 blockhost
