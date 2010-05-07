@@ -80,8 +80,8 @@ char *turtlesg_create (struct turtlesgi *info) {
 
   jobscript_write_heading (ji);
   jobscript_set_variable (ji,"SCENE",scene);
-  jobscript_set_variable (ji,"DRQUEUE_RD",renderdir);
-  jobscript_set_variable (ji,"DRQUEUE_PD",projectdir);
+  jobscript_set_variable (ji,"RENDERDIR",renderdir);
+  jobscript_set_variable (ji,"PROJECTDIR",projectdir);
   jobscript_set_variable (ji,"RF_OWNER",info->file_owner);
   
   if (strlen(info->format)) {
