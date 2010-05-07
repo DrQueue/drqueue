@@ -89,7 +89,7 @@ char *terragensg_create (struct terragensgi *info) {
     jobscript_set_variable (ji,"CAMERA",info->camera);
   }
     
-  jobscript_template_write (ji,"3delight_sg.py");
+  jobscript_template_write (ji,"terragen_sg.py");
   jobscript_close (ji);
 
   return filename;
