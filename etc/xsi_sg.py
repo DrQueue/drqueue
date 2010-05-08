@@ -1,7 +1,7 @@
 #
 # THIS IS A PYTHON SCRIPT FILE
 # 
-# Default configuration for 3Delight script generator
+# Default configuration for XSI script generator
 # 
 # Python variables
 # SCENE, RENDERDIR, XSI_DIR, RF_OWNER, DRQUEUE_PASS, DRQUEUE_RUNSCRIPT, RESX, RESY,

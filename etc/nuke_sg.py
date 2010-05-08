@@ -1,7 +1,7 @@
 #
 # THIS IS A PYTHON SCRIPT FILE
 # 
-# Default configuration for 3Delight script generator
+# Default configuration for Nuke script generator
 # 
 # Python variables
 # SCENE, RF_OWNER, FFORMAT, RESX, RESY, CAMERA

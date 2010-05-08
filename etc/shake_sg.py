@@ -1,7 +1,7 @@
 #
 # THIS IS A PYTHON SCRIPT FILE
 # 
-# Default configuration for 3Delight script generator
+# Default configuration for Shake script generator
 # 
 # Python variables
 # DRQUEUE_SCRIPT

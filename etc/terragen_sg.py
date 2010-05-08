@@ -1,7 +1,7 @@
 #
 # THIS IS A PYTHON SCRIPT FILE
 # 
-# Default configuration for 3Delight script generator
+# Default configuration for Terragen script generator
 # 
 # Python variables
 # SCENE, WORLDFILE, TERRAINFILE, RF_OWNER, FFORMAT, RESX, RESY, CAMERA
