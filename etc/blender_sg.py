@@ -7,7 +7,9 @@
 # SCENE, RENDER_TYPE
 # 
 # shell variables
-# DRQUEUE_BIN, DRQUEUE_ETC, DRQUEUE_OS, DRQUEUE_FRAME, DRQUEUE_ENDFRAME, DRQUEUE_BLOCKSIZE
+# DRQUEUE_BLOCKSIZE, DRQUEUE_COMPID, DRQUEUE_ENDFRAME, DRQUEUE_ETC, DRQUEUE_FRAME,
+# DRQUEUE_JOBID, DRQUEUE_JOBNAME, DRQUEUE_OS, DRQUEUE_OWNER, DRQUEUE_PADFRAME, 
+# DRQUEUE_PADFRAMES, DRQUEUE_STARTFRAME, DRQUEUE_STEPFRAME
 #
 
 #
@@ -27,12 +29,19 @@ import os,signal,subprocess,sys
 os.umask(0)
 
 # fetch DrQueue environment
+DRQUEUE_BLOCKSIZE = int(os.getenv("DRQUEUE_BLOCKSIZE"))
+DRQUEUE_COMPID = int(os.getenv("DRQUEUE_COMPID"))
+DRQUEUE_ENDFRAME = int(os.getenv("DRQUEUE_ENDFRAME"))
 DRQUEUE_ETC = os.getenv("DRQUEUE_ETC")
-DRQUEUE_BIN = os.getenv("DRQUEUE_BIN")
+DRQUEUE_FRAME = int(os.getenv("DRQUEUE_FRAME"))
+DRQUEUE_JOBID = int(os.getenv("DRQUEUE_JOBID"))
+DRQUEUE_JOBNAME = os.getenv("DRQUEUE_JOBNAME")
 DRQUEUE_OS = os.getenv("DRQUEUE_OS")
-DRQUEUE_FRAME = os.getenv("DRQUEUE_FRAME")
-DRQUEUE_ENDFRAME = os.getenv("DRQUEUE_ENDFRAME")
-DRQUEUE_BLOCKSIZE = os.getenv("DRQUEUE_BLOCKSIZE")
+DRQUEUE_OWNER = os.getenv("DRQUEUE_OWNER")
+DRQUEUE_PADFRAME = int(os.getenv("DRQUEUE_PADFRAME"))
+DRQUEUE_PADFRAMES = int(os.getenv("DRQUEUE_PADFRAMES"))
+DRQUEUE_STARTFRAME = int(os.getenv("DRQUEUE_STARTFRAME"))
+DRQUEUE_STEPFRAME = int(os.getenv("DRQUEUE_STEPFRAME"))
 
 
 if DRQUEUE_OS == "WINDOWS":
@@ -47,9 +56,9 @@ if BLOCK > DRQUEUE_ENDFRAME:
 ENGINE_PATH="blender"
 
 if RENDER_TYPE == "animation":
-	command = "curframe="+DRQUEUE_FRAME+" "+ENGINE_PATH+" -b "+SCENE+" -P "+DRQUEUE_ETC+"/blender_same_directory.py"
+	command = "curframe="+str(DRQUEUE_FRAME)+" "+ENGINE_PATH+" -b "+SCENE+" -P "+DRQUEUE_ETC+"/blender_same_directory.py"
 else:
-	command = "curpart="+DRQUEUE_FRAME+" maxparts="+DRQUEUE_ENDFRAME+" "+ENGINE_PATH+" -b "+SCENE+" -P "+DRQUEUE_ETC+"/blender_region_rendering.py"
+	command = "curpart="+str(DRQUEUE_FRAME)+" maxparts="+str(DRQUEUE_ENDFRAME)+" "+ENGINE_PATH+" -b "+SCENE+" -P "+DRQUEUE_ETC+"/blender_region_rendering.py"
 
 
 print command

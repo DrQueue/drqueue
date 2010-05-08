@@ -8,7 +8,9 @@
 # DRQUEUE_IMAGE, DRQUEUE_IMAGEEXT, DRQUEUE_SKIPFRAMES, DRQUEUE_SKIPFRAMES, DRQUEUE_SCRIPTRUN
 # 
 # shell variables
-# DRQUEUE_BIN, DRQUEUE_ETC, DRQUEUE_OS, DRQUEUE_FRAME, DRQUEUE_ENDFRAME, DRQUEUE_BLOCKSIZE
+# DRQUEUE_BLOCKSIZE, DRQUEUE_COMPID, DRQUEUE_ENDFRAME, DRQUEUE_ETC, DRQUEUE_FRAME,
+# DRQUEUE_JOBID, DRQUEUE_JOBNAME, DRQUEUE_OS, DRQUEUE_OWNER, DRQUEUE_PADFRAME, 
+# DRQUEUE_PADFRAMES, DRQUEUE_STARTFRAME, DRQUEUE_STEPFRAME
 #
 
 #
@@ -28,12 +30,19 @@ import os,signal,subprocess,sys
 os.umask(0)
 
 # fetch DrQueue environment
+DRQUEUE_BLOCKSIZE = int(os.getenv("DRQUEUE_BLOCKSIZE"))
+DRQUEUE_COMPID = int(os.getenv("DRQUEUE_COMPID"))
+DRQUEUE_ENDFRAME = int(os.getenv("DRQUEUE_ENDFRAME"))
 DRQUEUE_ETC = os.getenv("DRQUEUE_ETC")
-DRQUEUE_BIN = os.getenv("DRQUEUE_BIN")
+DRQUEUE_FRAME = int(os.getenv("DRQUEUE_FRAME"))
+DRQUEUE_JOBID = int(os.getenv("DRQUEUE_JOBID"))
+DRQUEUE_JOBNAME = os.getenv("DRQUEUE_JOBNAME")
 DRQUEUE_OS = os.getenv("DRQUEUE_OS")
-DRQUEUE_FRAME = os.getenv("DRQUEUE_FRAME")
-DRQUEUE_ENDFRAME = os.getenv("DRQUEUE_ENDFRAME")
-DRQUEUE_BLOCKSIZE = os.getenv("DRQUEUE_BLOCKSIZE")
+DRQUEUE_OWNER = os.getenv("DRQUEUE_OWNER")
+DRQUEUE_PADFRAME = int(os.getenv("DRQUEUE_PADFRAME"))
+DRQUEUE_PADFRAMES = int(os.getenv("DRQUEUE_PADFRAMES"))
+DRQUEUE_STARTFRAME = int(os.getenv("DRQUEUE_STARTFRAME"))
+DRQUEUE_STEPFRAME = int(os.getenv("DRQUEUE_STEPFRAME"))
 
 
 if DRQUEUE_OS == "WINDOWS":
@@ -49,12 +58,12 @@ if BLOCK > DRQUEUE_ENDFRAME:
 	BLOCK = DRQUEUE_ENDFRAME
 
 
-if (RESX != -1) and (RESY != -1):
+if ("RESX" in locals()) and ("RESX" in locals()) and (int(RESX) > 0) and (int(RESY) > 0):
 	res_args="-resolutionX "+RESX+" -resolutionY "+RESY
 else:
 	res_args=""
 
-if DRQUEUE_PASS != "":
+if ("DRQUEUE_PASS" in locals()) and (DRQUEUE_PASS != ""):
 	pass_args="-pass "+DRQUEUE_PASS
 else:
 	pass_args=""
@@ -65,7 +74,7 @@ ENGINE_PATH=XSI_PATH+"xsibatch"
 os.chdir(RENDERDIR)
 
 
-command = ENGINE_PATH+" -r -scene "+SCENE+" -verbose prog -startframe "+DRQUEUE_FRAME+" -endframe "+BLOCK+" "+pass_args+" "+res_args+" -skip "+DRQUEUE_SKIPFRAMES
+command = ENGINE_PATH+" -r -scene "+SCENE+" -verbose prog -startframe "+str(DRQUEUE_FRAME)+" -endframe "+str(BLOCK)+" "+pass_args+" "+res_args+" -skip "+str(DRQUEUE_SKIPFRAMES)
 
 
 print command

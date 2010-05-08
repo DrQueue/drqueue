@@ -1,7 +1,7 @@
 #
 # THIS IS A PYTHON SCRIPT FILE
 # 
-# Default configuration for Blender script generator
+# Default configuration for Mantra script generator
 # 
 # Python variables
 # SCENE, RENDERDIR, RF_OWNER, RAYTRACE, ANTIALIAS, CUSTOM_BUCKET, BUCKETSIZE, 
@@ -11,7 +11,9 @@
 # MCACHE, CUSTOM_SMPOLYGON, SMPOLYGON, CUSTOM_WH, HEIGHT, WIDTH, CUSTOM_TYPE, CTYPE
 # 
 # shell variables
-# DRQUEUE_BIN, DRQUEUE_ETC, DRQUEUE_OS, DRQUEUE_FRAME, DRQUEUE_ENDFRAME, DRQUEUE_BLOCKSIZE
+# DRQUEUE_BLOCKSIZE, DRQUEUE_COMPID, DRQUEUE_ENDFRAME, DRQUEUE_ETC, DRQUEUE_FRAME,
+# DRQUEUE_JOBID, DRQUEUE_JOBNAME, DRQUEUE_OS, DRQUEUE_OWNER, DRQUEUE_PADFRAME, 
+# DRQUEUE_PADFRAMES, DRQUEUE_STARTFRAME, DRQUEUE_STEPFRAME
 #
 
 #
@@ -31,12 +33,19 @@ import os,signal,subprocess,sys
 os.umask(0)
 
 # fetch DrQueue environment
+DRQUEUE_BLOCKSIZE = int(os.getenv("DRQUEUE_BLOCKSIZE"))
+DRQUEUE_COMPID = int(os.getenv("DRQUEUE_COMPID"))
+DRQUEUE_ENDFRAME = int(os.getenv("DRQUEUE_ENDFRAME"))
 DRQUEUE_ETC = os.getenv("DRQUEUE_ETC")
-DRQUEUE_BIN = os.getenv("DRQUEUE_BIN")
+DRQUEUE_FRAME = int(os.getenv("DRQUEUE_FRAME"))
+DRQUEUE_JOBID = int(os.getenv("DRQUEUE_JOBID"))
+DRQUEUE_JOBNAME = os.getenv("DRQUEUE_JOBNAME")
 DRQUEUE_OS = os.getenv("DRQUEUE_OS")
-DRQUEUE_FRAME = os.getenv("DRQUEUE_FRAME")
-DRQUEUE_ENDFRAME = os.getenv("DRQUEUE_ENDFRAME")
-DRQUEUE_BLOCKSIZE = os.getenv("DRQUEUE_BLOCKSIZE")
+DRQUEUE_OWNER = os.getenv("DRQUEUE_OWNER")
+DRQUEUE_PADFRAME = int(os.getenv("DRQUEUE_PADFRAME"))
+DRQUEUE_PADFRAMES = int(os.getenv("DRQUEUE_PADFRAMES"))
+DRQUEUE_STARTFRAME = int(os.getenv("DRQUEUE_STARTFRAME"))
+DRQUEUE_STEPFRAME = int(os.getenv("DRQUEUE_STEPFRAME"))
 
 
 if DRQUEUE_OS == "WINDOWS":
@@ -49,87 +58,87 @@ BLOCK = DRQUEUE_FRAME + DRQUEUE_BLOCKSIZE - 1
 if BLOCK > DRQUEUE_ENDFRAME:
 	BLOCK = DRQUEUE_ENDFRAME
 
-if CUSTOM_BUCKET == "yes":
+if ("CUSTOM_BUCKET" in locals()) and (CUSTOM_BUCKET == "yes"):
 	bucket_args="-B "+BUCKETSIZE
 else:
 	bucket_args=""
-	
-if CUSTOM_LOD == "yes":
+
+if ("CUSTOM_LOD" in locals()) and (CUSTOM_LOD == "yes"):	
 	lod_args="-L "+LOD
 else:
 	lod_args=""
 
-if CUSTOM_VARYAA == "yes":
+if ("CUSTOM_VARYAA" in locals()) and (CUSTOM_VARYAA == "yes"):
 	varyaa_args="-v "+VARYAA
 else:
 	varyaa_args=""
 
-if RAYTRACE == "yes":
+if ("RAYTRACE" in locals()) and (RAYTRACE == "yes"):
 	raytrace_args="-r"
 else:
 	raytrace_args=""
 
-if ANTIALIAS == "yes":
+if ("ANTIALIAS" in locals()) and (ANTIALIAS == "yes"):
 	antialias_args="-A"
 else:
 	antialias_args=""
 
-if CUSTOM_BDEPTH == "yes":
+if ("CUSTOM_BDEPTH" in locals()) and (CUSTOM_BDEPTH == "yes"):
 	bdepth_args="-b "+BDEPTH
 else:
 	bdepth_args=""
-	
-if CUSTOM_ZDEPTH == "yes":
+
+if ("CUSTOM_ZDEPTH" in locals()) and (CUSTOM_ZDEPTH == "yes"):	
 	if ZDEPTH == "average":
 		zdepth_args="-z"
 	else:
 		zdepth_args="-Z"
 else:
 	zdepth_args=""
-	
-if CUSTOM_CRACKS == "yes":
+
+if ("CUSTOM_CRACKS" in locals()) and (CUSTOM_CRACKS == "yes"):	
 	cracks_args="-c "+CRACKS
 else:
 	cracks_args=""
 
-if CUSTOM_QUALITY == "yes":
+if ("CUSTOM_QUALITY" in locals()) and (CUSTOM_QUALITY == "yes"):
 	quality_args="-q "+QUALITY
 else:
 	quality_args=""
-	
-if CUSTOM_QFINER == "yes":
+
+if ("CUSTOM_QFINER" in locals()) and (CUSTOM_QFINER == "yes"):	
 	qfiner_args="-Q "+QFINER
 else:
 	qfiner_args=""
-	
-if CUSTOM_SMULTIPLIER == "yes":
+
+if ("CUSTOM_SMULTIPLIER" in locals()) and (CUSTOM_SMULTIPLIER == "yes"):	
 	smultiplier_args="-s "+SMULTIPLIER
 else:
 	smultiplier_args=""
-	
-if CUSTOM_MPCACHE == "yes":
+
+if ("CUSTOM_MPCACHE" in locals()) and (CUSTOM_MPCACHE == "yes"):	
 	mpcache_args="-G "+MPCACHE
 else:
 	mpcache_args=""
-	
-if CUSTOM_MCACHE == "yes":
+
+if ("CUSTOM_MCACHE" in locals()) and (CUSTOM_MCACHE == "yes"):	
 	mcache_args="-G "+MCACHE
 else:
 	mcache_args=""
-	
-if CUSTOM_SMPOLYGON == "yes":
+
+if ("CUSTOM_SMPOLYGON" in locals()) and (CUSTOM_SMPOLYGON == "yes"):	
 	smpolygon_args="-S "+SMPOLYGON
 else:
 	smpolygon_args=""
-	
-if CUSTOM_WH == "yes":
+
+if ("CUSTOM_WH" in locals()) and (CUSTOM_WH == "yes"):	
 	width_args="-w "+WIDTH
 	height_args="-w "+HEIGHT
 else:
 	width_args=""
 	height_args=""
-	
-if CUSTOM_TYPE == "yes":
+
+if ("CUSTOM_TYPE" in locals()) and (CUSTOM_TYPE == "yes"):	
 	type_args="."+CTYPE
 else:
 	type_args=""
@@ -137,7 +146,7 @@ else:
 
 ENGINE_PATH="mantra"
 
-command = ENGINE_PATH+" -f "+SCENE+DRQUEUE_PADFRAME+".ifd "+antialias_args+" "+raytrace_args+" "+bucket_args+" "+lod_args+"  "+varyaa_args+" "+bdepth_args+" "+zdepth_args+" "+cracks_args+" "+quality_args+"  "+qfiner_args+" "+smultiplier_args+" "+mpcache_args+" "+mcache_args+" "+smpolygon_args+" "+width_args+" "+height_args+" "+RENDERDIR+DRQUEUE_PADFRAME+type_args
+command = ENGINE_PATH+" -f "+str(SCENE+DRQUEUE_PADFRAME)+".ifd "+antialias_args+" "+raytrace_args+" "+bucket_args+" "+lod_args+"  "+varyaa_args+" "+bdepth_args+" "+zdepth_args+" "+cracks_args+" "+quality_args+"  "+qfiner_args+" "+smultiplier_args+" "+mpcache_args+" "+mcache_args+" "+smpolygon_args+" "+width_args+" "+height_args+" "+RENDERDIR+str(DRQUEUE_PADFRAME)+type_args
 
 
 print command

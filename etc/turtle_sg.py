@@ -8,7 +8,9 @@
 # USEMAYA70
 # 
 # shell variables
-# DRQUEUE_BIN, DRQUEUE_ETC, DRQUEUE_OS, DRQUEUE_FRAME, DRQUEUE_ENDFRAME, DRQUEUE_BLOCKSIZE
+# DRQUEUE_BLOCKSIZE, DRQUEUE_COMPID, DRQUEUE_ENDFRAME, DRQUEUE_ETC, DRQUEUE_FRAME,
+# DRQUEUE_JOBID, DRQUEUE_JOBNAME, DRQUEUE_OS, DRQUEUE_OWNER, DRQUEUE_PADFRAME, 
+# DRQUEUE_PADFRAMES, DRQUEUE_STARTFRAME, DRQUEUE_STEPFRAME
 #
 
 #
@@ -28,12 +30,19 @@ import os,signal,subprocess,sys
 os.umask(0)
 
 # fetch DrQueue environment
+DRQUEUE_BLOCKSIZE = int(os.getenv("DRQUEUE_BLOCKSIZE"))
+DRQUEUE_COMPID = int(os.getenv("DRQUEUE_COMPID"))
+DRQUEUE_ENDFRAME = int(os.getenv("DRQUEUE_ENDFRAME"))
 DRQUEUE_ETC = os.getenv("DRQUEUE_ETC")
-DRQUEUE_BIN = os.getenv("DRQUEUE_BIN")
+DRQUEUE_FRAME = int(os.getenv("DRQUEUE_FRAME"))
+DRQUEUE_JOBID = int(os.getenv("DRQUEUE_JOBID"))
+DRQUEUE_JOBNAME = os.getenv("DRQUEUE_JOBNAME")
 DRQUEUE_OS = os.getenv("DRQUEUE_OS")
-DRQUEUE_FRAME = os.getenv("DRQUEUE_FRAME")
-DRQUEUE_ENDFRAME = os.getenv("DRQUEUE_ENDFRAME")
-DRQUEUE_BLOCKSIZE = os.getenv("DRQUEUE_BLOCKSIZE")
+DRQUEUE_OWNER = os.getenv("DRQUEUE_OWNER")
+DRQUEUE_PADFRAME = int(os.getenv("DRQUEUE_PADFRAME"))
+DRQUEUE_PADFRAMES = int(os.getenv("DRQUEUE_PADFRAMES"))
+DRQUEUE_STARTFRAME = int(os.getenv("DRQUEUE_STARTFRAME"))
+DRQUEUE_STEPFRAME = int(os.getenv("DRQUEUE_STEPFRAME"))
 
 
 if DRQUEUE_OS == "WINDOWS":
@@ -49,33 +58,33 @@ if BLOCK > DRQUEUE_ENDFRAME:
 	BLOCK = DRQUEUE_ENDFRAME
 
 
-if DRQUEUE_IMAGE != "":
+if ("DRQUEUE_IMAGE" in locals()) and (DRQUEUE_IMAGE != ""):
 	image_args="-imageName "+DRQUEUE_IMAGE
 else:
 	image_args=""
 
-if CAMERA != "":
+if ("CAMERA" in locals()) and (CAMERA != ""):
 	camera_args="-camera "+CAMERA
 else:
 	camera_args=""
 
-if (RESX != -1) and (RESY != -1):
+if ("RESX" in locals()) and ("RESX" in locals()) and (int(RESX) > 0) and (int(RESY) > 0):
 	res_args="-resolution "+RESX+" "+RESY
 else:
 	res_args=""
 
-if FFORMAT != "":
+if ("FFORMAT" in locals()) and (FFORMAT != ""):
 	format_args="-of "+FFORMAT
 else:
 	format_args=""
 
-if USEMAYA70 != "":
-	ENGINE_PATH="/usr/local/bin/Turtle70"
+if ("USEMAYA70" in locals()) and (USEMAYA70 != ""):
+	ENGINE_PATH="Turtle70"
 else:
-	ENGINE_PATH="/usr/local/bin/Turtle70"
+	ENGINE_PATH="Turtle65"
 
 
-command = ENGINE_PATH+" -geometry "+SCENE+ " -imageOutputPath "+RENDERDIR+" -projectPath "+PROJECTDIR+" -renderThreads 2 -display off -startframe "+DRQUEUE_FRAME+" -endframe "+BLOCK+" "+image_args+" "+camera_args+" "+res_args+" 
+command = ENGINE_PATH+" -geometry "+SCENE+ " -imageOutputPath "+RENDERDIR+" -projectPath "+PROJECTDIR+" -renderThreads 2 -display off -startframe "+str(DRQUEUE_FRAME)+" -endframe "+str(BLOCK)+" "+image_args+" "+camera_args+" "+res_args
 
 
 print command

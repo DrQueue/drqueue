@@ -7,7 +7,9 @@
 # SCENE, RENDERDIR, RF_OWNER, FFORMAT, RESX, RESY, CAMERA, DRQUEUE_IMAGE, RENDER_TYPE
 # 
 # shell variables
-# DRQUEUE_BIN, DRQUEUE_ETC, DRQUEUE_OS, DRQUEUE_FRAME, DRQUEUE_ENDFRAME, DRQUEUE_BLOCKSIZE
+# DRQUEUE_BLOCKSIZE, DRQUEUE_COMPID, DRQUEUE_ENDFRAME, DRQUEUE_ETC, DRQUEUE_FRAME,
+# DRQUEUE_JOBID, DRQUEUE_JOBNAME, DRQUEUE_OS, DRQUEUE_OWNER, DRQUEUE_PADFRAME, 
+# DRQUEUE_PADFRAMES, DRQUEUE_STARTFRAME, DRQUEUE_STEPFRAME
 #
 
 #
@@ -27,12 +29,19 @@ import os,signal,subprocess,sys
 os.umask(0)
 
 # fetch DrQueue environment
+DRQUEUE_BLOCKSIZE = int(os.getenv("DRQUEUE_BLOCKSIZE"))
+DRQUEUE_COMPID = int(os.getenv("DRQUEUE_COMPID"))
+DRQUEUE_ENDFRAME = int(os.getenv("DRQUEUE_ENDFRAME"))
 DRQUEUE_ETC = os.getenv("DRQUEUE_ETC")
-DRQUEUE_BIN = os.getenv("DRQUEUE_BIN")
+DRQUEUE_FRAME = int(os.getenv("DRQUEUE_FRAME"))
+DRQUEUE_JOBID = int(os.getenv("DRQUEUE_JOBID"))
+DRQUEUE_JOBNAME = os.getenv("DRQUEUE_JOBNAME")
 DRQUEUE_OS = os.getenv("DRQUEUE_OS")
-DRQUEUE_FRAME = os.getenv("DRQUEUE_FRAME")
-DRQUEUE_ENDFRAME = os.getenv("DRQUEUE_ENDFRAME")
-DRQUEUE_BLOCKSIZE = os.getenv("DRQUEUE_BLOCKSIZE")
+DRQUEUE_OWNER = os.getenv("DRQUEUE_OWNER")
+DRQUEUE_PADFRAME = int(os.getenv("DRQUEUE_PADFRAME"))
+DRQUEUE_PADFRAMES = int(os.getenv("DRQUEUE_PADFRAMES"))
+DRQUEUE_STARTFRAME = int(os.getenv("DRQUEUE_STARTFRAME"))
+DRQUEUE_STEPFRAME = int(os.getenv("DRQUEUE_STEPFRAME"))
 
 
 if DRQUEUE_OS == "WINDOWS":
@@ -47,27 +56,27 @@ if BLOCK > DRQUEUE_ENDFRAME:
 	BLOCK = DRQUEUE_ENDFRAME
 
 
-if DRQUEUE_IMAGE != "":
+if ("DRQUEUE_IMAGE" in locals()) and (DRQUEUE_IMAGE != ""):
 	image_args="-im "+DRQUEUE_IMAGE
 else:
 	image_args=""
 
-if CAMERA != "":
+if ("CAMERA" in locals()) and (CAMERA != ""):
 	camera_args="-cam "+CAMERA
 else:
 	camera_args=""
 
-if (RESX != -1) and (RESY != -1):
+if ("RESX" in locals()) and ("RESX" in locals()) and (int(RESX) > 0) and (int(RESY) > 0):
 	res_args="-x "+RESX+" -y "+RESY
 else:
 	res_args=""
 
-if FFORMAT != "":
+if ("FFORMAT" in locals()) and (FFORMAT != ""):
 	format_args="-of "+FFORMAT
 else:
 	format_args=""
 
-if RENDERDIR != "":
+if ("RENDERDIR" in locals()) and (RENDERDIR != ""):
 	os.chdir(RENDERDIR)
 
 
@@ -80,7 +89,7 @@ if RENDER_TYPE == "single image":
 	for line in open(SCENE):
 		if "resolution" in line:
 			res_arr = line.split()
-			if res_arr[0] == "resolution"
+			if res_arr[0] == "resolution":
 				scene_height = res_arr[2]
 				scene_width = res_arr[1]
 	
@@ -100,10 +109,10 @@ if RENDER_TYPE == "single image":
 	basename, extension = os.path.splitext(outputname)
 	framename = basename+"_"+string.zfill(DRQUEUE_FRAME, 4)+"."+extension
 	
-	command = ENGINE_PATH+" -window 0 "+height_low+" "+scene_width+" "+height_high+" "+SCENE+" -file_name "+framename
+	command = ENGINE_PATH+" -window 0 "+str(height_low)+" "+str(scene_width)+" "+str(height_high)+" "+SCENE+" -file_name "+framename
 
 else:
-	command = ENGINE_PATH+" "+SCENE+" -render "+DRQUEUE_FRAME+" "+BLOCK
+	command = ENGINE_PATH+" "+SCENE+" -render "+str(DRQUEUE_FRAME)+" "+str(BLOCK)
 
 
 print command

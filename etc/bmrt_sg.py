@@ -1,7 +1,7 @@
 #
 # THIS IS A PYTHON SCRIPT FILE
 # 
-# Default configuration for Blender script generator
+# Default configuration for BMRT script generator
 # 
 # Python variables
 # SCENE, DISP_STATS, VERBOSE, CUSTOM_BEEP, CUSTOM_CROP, CROP_XMIN, CROP_XMAX, CROP_YMIN, 
@@ -9,7 +9,9 @@
 # CUSTOM_RAYSAMPLES, RAYSAMPLES
 # 
 # shell variables
-# DRQUEUE_BIN, DRQUEUE_ETC, DRQUEUE_OS, DRQUEUE_FRAME, DRQUEUE_ENDFRAME, DRQUEUE_BLOCKSIZE
+# DRQUEUE_BLOCKSIZE, DRQUEUE_COMPID, DRQUEUE_ENDFRAME, DRQUEUE_ETC, DRQUEUE_FRAME,
+# DRQUEUE_JOBID, DRQUEUE_JOBNAME, DRQUEUE_OS, DRQUEUE_OWNER, DRQUEUE_PADFRAME, 
+# DRQUEUE_PADFRAMES, DRQUEUE_STARTFRAME, DRQUEUE_STEPFRAME
 #
 
 #
@@ -29,12 +31,19 @@ import os,signal,subprocess,sys
 os.umask(0)
 
 # fetch DrQueue environment
+DRQUEUE_BLOCKSIZE = int(os.getenv("DRQUEUE_BLOCKSIZE"))
+DRQUEUE_COMPID = int(os.getenv("DRQUEUE_COMPID"))
+DRQUEUE_ENDFRAME = int(os.getenv("DRQUEUE_ENDFRAME"))
 DRQUEUE_ETC = os.getenv("DRQUEUE_ETC")
-DRQUEUE_BIN = os.getenv("DRQUEUE_BIN")
+DRQUEUE_FRAME = int(os.getenv("DRQUEUE_FRAME"))
+DRQUEUE_JOBID = int(os.getenv("DRQUEUE_JOBID"))
+DRQUEUE_JOBNAME = os.getenv("DRQUEUE_JOBNAME")
 DRQUEUE_OS = os.getenv("DRQUEUE_OS")
-DRQUEUE_FRAME = os.getenv("DRQUEUE_FRAME")
-DRQUEUE_ENDFRAME = os.getenv("DRQUEUE_ENDFRAME")
-DRQUEUE_BLOCKSIZE = os.getenv("DRQUEUE_BLOCKSIZE")
+DRQUEUE_OWNER = os.getenv("DRQUEUE_OWNER")
+DRQUEUE_PADFRAME = int(os.getenv("DRQUEUE_PADFRAME"))
+DRQUEUE_PADFRAMES = int(os.getenv("DRQUEUE_PADFRAMES"))
+DRQUEUE_STARTFRAME = int(os.getenv("DRQUEUE_STARTFRAME"))
+DRQUEUE_STEPFRAME = int(os.getenv("DRQUEUE_STEPFRAME"))
 
 
 if DRQUEUE_OS == "WINDOWS":
@@ -46,37 +55,37 @@ BLOCK = DRQUEUE_FRAME + DRQUEUE_BLOCKSIZE - 1
 if BLOCK > DRQUEUE_ENDFRAME:
 	BLOCK = DRQUEUE_ENDFRAME
 
-if CUSTOM_CROP == "yes":
+if ("CUSTOM_CROP" in locals()) and (CUSTOM_CROP == "yes"):
 	crop_args="-crop "+CROP_XMIN+" "+CROP_XMAX+" "+CROP_YMIN+" "+CROP_YMAX
 else:
 	crop_args=""
 	
-if CUSTOM_SAMPLES == "yes":
-	sample_args="-samples "+XSAMPLES"+" "+YSAMPLES
+if ("CUSTOM_SAMPLES" in locals()) and (CUSTOM_SAMPLES == "yes"):
+	sample_args="-samples "+XSAMPLES+" "+YSAMPLES
 else:
 	sample_args=""
 
-if DISP_STATS == "yes":
+if ("DISP_STATS" in locals()) and (DISP_STATS == "yes"):
 	stats_args="-stats"
 else:
 	stats_args=""
 
-if VERBOSE == "yes":
+if ("VERBOSE" in locals()) and (VERBOSE == "yes"):
 	verbose_args="-v"
 else:
 	verbose_args=""
 
-if CUSTOM_RADIOSITY == "yes":
+if ("CUSTOM_RADIOSITY" in locals()) and (CUSTOM_RADIOSITY == "yes"):
 	radiosity_args="-radio "+RADIOSITY_SAMPLES
 else:
 	radiosity_args=""
 
-if CUSTOM_RAYSAMPLES == "yes":
+if ("CUSTOM_RAYSAMPLES" in locals()) and (CUSTOM_RAYSAMPLES == "yes"):
 	rsamples_args="-rsamples "+RAYSAMPLES
 else:
 	rsamples_args=""
 	
-if CUSTOM_BEEP == "yes":
+if ("CUSTOM_BEEP" in locals()) and (CUSTOM_BEEP == "yes"):
 	beep_args="-beep"
 else:
 	beep_args=""
@@ -84,7 +93,7 @@ else:
 
 ENGINE_PATH="rendrib"
 
-command = ENGINE_PATH+" -frames "+DRQUEUE_FRAME+" "+BLOCK+" "+crop_args+" "+stats_args+" "+verbose_args+" "+radiosity_args+" "+rsamples_args+" "+beep_args+" "+SCENE
+command = ENGINE_PATH+" -frames "+str(DRQUEUE_FRAME)+" "+str(BLOCK)+" "+crop_args+" "+stats_args+" "+verbose_args+" "+radiosity_args+" "+rsamples_args+" "+beep_args+" "+SCENE
 
 
 print command
