@@ -59,7 +59,7 @@ if CAMERA != "":
 else:
 	camera_args=""
 
-if (RESX != -1) && (RESY != -1):
+if (RESX != -1) and (RESY != -1):
 	res_args="-resolution "+RESX+" "+RESY
 else:
 	res_args=""

@@ -49,7 +49,7 @@ if BLOCK > DRQUEUE_ENDFRAME:
 	BLOCK = DRQUEUE_ENDFRAME
 
 
-if (RESX != -1) && (RESY != -1):
+if (RESX != -1) and (RESY != -1):
 	res_args="-resolutionX "+RESX+" -resolutionY "+RESY
 else:
 	res_args=""
