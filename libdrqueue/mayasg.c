@@ -75,7 +75,7 @@ char *mayasg_create (struct mayasgi *info) {
   snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
   // TODO: Unified path handling
-  struct jobscript_info *ji = jobscript_new (JOBSCRIPT_TCSH,filename);
+  struct jobscript_info *ji = jobscript_new (JOBSCRIPT_PYTHON,filename);
 
   jobscript_write_heading (ji);
   jobscript_set_variable (ji,"SCENE",scene);
@@ -117,7 +117,7 @@ char *mayasg_create (struct mayasgi *info) {
     jobscript_set_variable (ji,"DRQUEUE_PRE",precommand);
   }
 
-  jobscript_template_write (ji,"maya.sg");
+  jobscript_template_write (ji,"maya_sg.py");
   jobscript_close (ji);
 
   return filename;
