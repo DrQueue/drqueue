@@ -76,7 +76,7 @@ char *xsisg_create (struct xsisgi *info) {
 
   jobscript_write_heading (ji);
   jobscript_set_variable (ji,"SCENE",scene);
-  jobscript_set_variable (ji,"DRQUEUE_RD",renderdir);
+  jobscript_set_variable (ji,"RENDERDIR",renderdir);
   jobscript_set_variable (ji,"XSI_DIR",xsidir);
   jobscript_set_variable (ji,"RF_OWNER",info->file_owner);
   jobscript_set_variable (ji,"DRQUEUE_PASS",info->xsipass);
