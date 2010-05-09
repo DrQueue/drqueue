@@ -1,5 +1,7 @@
 //
-// Copyright (C) 2008 Andreas Schroeder
+// Copyright (C) 2008,2010 Andreas Schroeder
+//
+// This file is part of DrQueue
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,7 +19,6 @@
 // USA
 //
 
-
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
@@ -31,22 +32,12 @@
 #include "libdrqueue.h"
 
 char *threedsmaxsg_create (struct threedsmaxsgi *info) {
-  /* This function creates the luxrender render script based on the information given */
+  /* This function creates the 3dsmax render script based on the information given */
   /* Returns a pointer to a string containing the path of the just created file */
   /* Returns NULL on failure and sets drerrno */
+  
   static char filename[BUFFERLEN];
-  char *p;   /* Scene filename without path */
-
-  
-  /* FILE *f;
-  /* FILE *etc_3dsmax_sg;  */  /* The 3dsmax script generator configuration file */
-  /* int fd_etc_3dsmax_sg,fd_f; */
-  /* static char filename[BUFFERLEN]; */
-  /* char fn_etc_3dsmax_sg[BUFFERLEN]; */ /* File name pointing to DRQUEUE_ETC/3dsmax.sg */
-  /* char buf[BUFFERLEN]; */
-  /* int size; */
-  /* char *p;  */ /* Scene filename without path */
-  
+  char *p;   /* Scene filename without path */  
   char scene[MAXCMDLEN];
   char image[MAXCMDLEN];
 
@@ -72,15 +63,13 @@ char *threedsmaxsg_create (struct threedsmaxsgi *info) {
   struct jobscript_info *ji = jobscript_new (JOBSCRIPT_PYTHON,filename);
 
   jobscript_write_heading (ji);
-  jobscript_set_variable (ji,"SCENE",info->scene);
-  jobscript_set_variable (ji,"DRQUEUE_IMAGE",info->image);
-  
+  jobscript_set_variable (ji,"SCENE",scene);
+  jobscript_set_variable (ji,"DRQUEUE_IMAGE",image);
   jobscript_template_write (ji,"3dsmax_sg.py");
   jobscript_close (ji);
 
   return filename;
 }
-
 
 char *threedsmaxsg_default_script_path (void) {
   static char buf[BUFFERLEN];

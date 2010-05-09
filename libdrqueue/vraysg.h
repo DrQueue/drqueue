@@ -1,5 +1,7 @@
 //
-// Copyright (C) 2008 Andreas Schroeder
+// Copyright (C) 2008,2010 Andreas Schroeder
+//
+// This file is part of DrQueue
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by

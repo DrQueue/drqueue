@@ -1,6 +1,8 @@
 //
 // Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
-// Copyright (C) 2007 Andreas Schroeder
+// Copyright (C) 2007,2010 Andreas Schroeder
+//
+// This file is part of DrQueue
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,8 +18,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
-//
-// $Id: blendersg.h 2808 2008-06-30 15:30:15Z kaazoo $
 //
 
 #ifndef _BLENDERSG_H_

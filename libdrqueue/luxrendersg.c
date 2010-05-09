@@ -1,5 +1,7 @@
 //
-// Copyright (C) 2008 Andreas Schroeder
+// Copyright (C) 2008,2010 Andreas Schroeder
+//
+// This file is part of DrQueue
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,7 +19,6 @@
 // USA
 //
 
-
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
@@ -31,16 +32,11 @@
 #include "libdrqueue.h"
 
 char *luxrendersg_create (struct luxrendersgi *info) {
-  /* This function creates the luxrender render script based on the information given */
+  /* This function creates the Luxrender render script based on the information given */
   /* Returns a pointer to a string containing the path of the just created file */
   /* Returns NULL on failure and sets drerrno */
-  FILE *f;
-  FILE *etc_luxrender_sg;   /* The luxrender script generator configuration file */
-  int fd_etc_luxrender_sg,fd_f;
+
   static char filename[BUFFERLEN];
-  char fn_etc_luxrender_sg[BUFFERLEN]; /* File name pointing to DRQUEUE_ETC/luxrender.sg */
-  char buf[BUFFERLEN];
-  int size;
   char *p;   /* Scene filename without path */
   char scene[MAXCMDLEN];
 
@@ -53,7 +49,6 @@ char *luxrendersg_create (struct luxrendersgi *info) {
 #ifdef __CYGWIN
   cygwin_conv_to_posix_path(info->scene, scene);
 #else
-
   strncpy(scene,info->scene,MAXCMDLEN-1);
 #endif
 
@@ -61,54 +56,16 @@ char *luxrendersg_create (struct luxrendersgi *info) {
   p = ( p ) ? p+1 : scene;
   snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
-  if ((f = fopen (filename, "a")) == NULL) {
-    if (errno == ENOENT) {
-      /* If its because the directory does not exist we try creating it first */
-      if (mkdir (info->scriptdir,0775) == -1) {
-        drerrno = DRE_COULDNOTCREATE;
-        return NULL;
-      } else if ((f = fopen (filename, "a")) == NULL) {
-        drerrno = DRE_COULDNOTCREATE;
-        return NULL;
-      }
-    } else {
-      drerrno = DRE_COULDNOTCREATE;
-      return NULL;
-    }
-  }
+  // TODO: Unified path handling
+  struct jobscript_info *ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
 
-  fchmod (fileno(f),0777);
-
-  /* So now we have the file open and so we must write to it */
-  fprintf(f,"#!/bin/tcsh\n\n");
-  fprintf(f,"set SCENE=\"%s\"\n",info->scene);
-  
-  // prepare script file
-  snprintf(fn_etc_luxrender_sg,BUFFERLEN-1,"%s/luxrender.sg",getenv("DRQUEUE_ETC"));
-
-  fflush (f);
-
-  if ((etc_luxrender_sg = fopen (fn_etc_luxrender_sg,"r")) == NULL) {
-    fprintf(f,"\necho -------------------------------------------------\n");
-    fprintf(f,"echo ATTENTION ! There was a problem opening: %s\n",fn_etc_luxrender_sg);
-    fprintf(f,"echo So the default configuration will be used\n");
-    fprintf(f,"echo -------------------------------------------------\n");
-    fprintf(f,"\n\n");
-    fprintf(f,"luxconsole $SCENE \n\n");
-  } else {
-    fd_etc_luxrender_sg = fileno (etc_luxrender_sg);
-    fd_f = fileno (f);
-    while ((size = read (fd_etc_luxrender_sg,buf,BUFFERLEN)) != 0) {
-      write (fd_f,buf,size);
-    }
-    fclose(etc_luxrender_sg);
-  }
-
-  fclose(f);
+  jobscript_write_heading (ji);
+  jobscript_set_variable (ji,"SCENE",scene);
+  jobscript_template_write (ji,"luxrender_sg.py");
+  jobscript_close (ji);
 
   return filename;
 }
-
 
 char *luxrendersg_default_script_path (void) {
   static char buf[BUFFERLEN];

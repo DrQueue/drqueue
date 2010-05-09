@@ -1,6 +1,8 @@
 //
 // Copyright (C) 2006 Jorge Daza Garcia-Blanes
 //
+// This file is part of DrQueue
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -16,9 +18,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id: computer.c 1595 2006-10-07 07:12:47Z jorge $
-//
-
 
 #ifndef _COMPUTER_POOL_H_
 #define _COMPUTER_POOL_H_

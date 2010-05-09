@@ -406,8 +406,10 @@ static void dnj_koj_frame_turtle_bcreate_pressed (GtkWidget *button, struct drqm
   strncpy (turtlesgi.image,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.eimage)),BUFFERLEN-1);
   strncpy (turtlesgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.escript)),BUFFERLEN-1);
   strncpy (turtlesgi.file_owner,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.efile_owner)),BUFFERLEN-1);
-  strncpy (turtlesgi.resx,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.eresx)),BUFFERLEN-1);
-  strncpy (turtlesgi.resy,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.eresy)),BUFFERLEN-1);
+  //strncpy (turtlesgi.res_x,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.eresx)),BUFFERLEN-1);
+  //strncpy (turtlesgi.res_y,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.eresy)),BUFFERLEN-1);
+  turtlesgi.res_x = atoi(gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.eresx)));
+  turtlesgi.res_y = atoi(gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.eresy)));
   // turtlesgi.resx = turtlesgi.resy = -1; /* ojo aca !! */
   strncpy (turtlesgi.format,"",BUFFERLEN-1);
 

@@ -228,15 +228,15 @@ int RegisterGeneralJob (char* infile, int frameStart, int frameEnd, int frameSte
   getcwd(scriptdir, BUFFERLEN);
   strncpy(generalSgi.script,infile,BUFFERLEN-1);
   // strncpy(generalSgi.scriptDir,scriptDir.c_str(),BUFFERLEN-1);
-  generalSgi.scriptdir = (char *)scriptdir;
+  //generalSgi.scriptdir = (char *)scriptdir;
   generalSgi.uid_owner = uid;
   generalSgi.gid_owner = gid;
 
   // Set where the tmp files will get stored
   if ((tmpPath = getenv("DRQUEUE_TMP"))) {
-    snprintf(generalSgi.drqueue_scriptdir,BUFFERLEN,"%s",tmpPath);
+    snprintf(generalSgi.scriptdir,BUFFERLEN,"%s",tmpPath);
   } else {
-    snprintf(generalSgi.drqueue_scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
+    snprintf(generalSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
   }
 
   // make the temporary executable file which drqueue will ultimately run.

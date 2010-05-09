@@ -1,5 +1,7 @@
 //
-// Copyright (C) 2007 Andreas Schroeder
+// Copyright (C) 2007,2010 Andreas Schroeder
+//
+// This file is part of DrQueue
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,8 +18,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id: cinema4dsg.h 2089 2007-08-22 22:08:12Z kaazoo $
-//
 
 #ifndef _CINEMA4DSG_H_
 #define _CINEMA4DSG_H_
@@ -33,10 +33,9 @@ extern "C" {
 
   struct cinema4dsgi {  /* Cinema4d Script Generator Info */
     char scene[BUFFERLEN];
+    char renderdir[BUFFERLEN];
     char scriptdir[BUFFERLEN];
     char file_owner[BUFFERLEN];
- uint8_t kind;       // 1 if we should render animations
-    				 // 2 if we should distribute one single image
   };
 
 #pragma pack(pop)
