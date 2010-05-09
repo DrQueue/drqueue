@@ -69,7 +69,7 @@ else:
 	pass_args=""
 
 
-ENGINE_PATH=XSI_PATH+"xsibatch"
+ENGINE_PATH=XSI_DIR+"xsibatch"
 
 os.chdir(RENDERDIR)
 

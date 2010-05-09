@@ -59,7 +59,7 @@ if ("CUSTOM_CROP" in locals()) and (CUSTOM_CROP == "yes"):
 
 ENGINE_PATH="aqsis"
 
-command = ENGINE_PATH+" -frames "+str(DRQUEUE_FRAME)+" "+str(BLOCK)+" "+crop_args+" "+DRQUEUE_SCENE
+command = ENGINE_PATH+" -frames "+str(DRQUEUE_FRAME)+" "+str(BLOCK)+" "+crop_args+" "+SCENE
 
 print command
 sys.stdout.flush()
