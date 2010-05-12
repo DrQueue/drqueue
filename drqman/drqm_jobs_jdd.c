@@ -1154,8 +1154,8 @@ static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info) {
     iinfo->fd = fd;
     iinfo->text = text;
     sourceid = g_timeout_add (100,show_log,iinfo);
-    g_signal_connect_swapped (G_OBJECT(window),"destroy",G_CALLBACK(close),(gpointer)fd);
-    g_signal_connect_swapped (G_OBJECT(window),"destroy",G_CALLBACK(g_source_remove),(gpointer)sourceid);
+    g_signal_connect_swapped (G_OBJECT(window),"destroy",G_CALLBACK(close),&fd);
+    g_signal_connect_swapped (G_OBJECT(window),"destroy",G_CALLBACK(g_source_remove),&sourceid);
   }
   g_signal_connect_swapped (G_OBJECT(window),"destroy",G_CALLBACK(gtk_widget_destroy),(GtkObject*)window);
 
