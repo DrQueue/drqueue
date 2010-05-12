@@ -235,7 +235,7 @@ void drqm_update_computerlist (struct drqm_computers_info *info) {
     }
     snprintf (buff[2],BUFFERLEN,"%i",info->computers[i].status.ntasks);
     strncpy(buff[3],info->computers[i].hwinfo.name,BUFFERLEN);
-    snprintf (buff[4],BUFFERLEN,osstring((t_os)info->computers[i].hwinfo.os));
+    snprintf (buff[4],BUFFERLEN,"%s",osstring((t_os)info->computers[i].hwinfo.os));
     snprintf (buff[5],BUFFERLEN,"%i",info->computers[i].hwinfo.ncpus);
     snprintf (buff[6],BUFFERLEN,"%i,%i,%i",
               info->computers[i].status.loadavg[0],
