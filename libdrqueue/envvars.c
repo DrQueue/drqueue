@@ -126,7 +126,7 @@ envvars_dump_info (struct envvars *envvars) {
   fprintf (stderr,"envvars_dump_info() Starting...\n");
   fprintf (stderr,"variables=%p\n",(void*)envvars->variables.ptr);
   fprintf (stderr,"nvariables=%i\n",envvars->nvariables);
-  fprintf (stderr,"evshmid=%ji\n",envvars->evshmid);
+  fprintf (stderr,"evshmid=%lld\n",envvars->evshmid);
 
   if (envvars->evshmid != -1) {
     // There's a possible valid value on evshmid. Let's check
