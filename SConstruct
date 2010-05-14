@@ -121,11 +121,11 @@ elif sys.platform == "darwin":
   if env_lib.get('universal_binary'):
     print "Building as an MacOS X Universal Binary"
     if platform.architecture()[0] == '64bit':
-    	univesal_archs = "-arch ppc -arch i386 -arch x86_64"
+    	universal_archs = "-arch ppc -arch i386 -arch x86_64"
     else:
-    	univesal_archs = "-arch ppc -arch i386"
-    env_lib.Append (CCFLAGS = Split('-isysroot /Developer/SDKs/MacOSX10.4u.sdk '+univesal_archs+' -mmacosx-version-min=10.4'))
-    env_lib.Append (LINKFLAGS = Split('-isysroot /Developer/SDKs/MacOSX10.4u.sdk '+univesal_archs+' -mmacosx-version-min=10.4'))
+    	universal_archs = "-arch ppc -arch i386"
+    env_lib.Append (CCFLAGS = Split('-isysroot /Developer/SDKs/MacOSX10.4u.sdk '+universal_archs+' -mmacosx-version-min=10.4'))
+    env_lib.Append (LINKFLAGS = Split('-isysroot /Developer/SDKs/MacOSX10.4u.sdk '+universal_archs+' -mmacosx-version-min=10.4'))
     env_lib['CC'] = '/usr/bin/gcc-4.0'
     env_lib['CXX'] = '/usr/bin/g++-4.0'
 elif sys.platform == "irix6":
