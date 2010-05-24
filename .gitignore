@@ -2,6 +2,7 @@
 *.a
 *.patch
 .sconsign.dblite
+libdrqueue/git_rev.h
 DrQueueOnRails/db/schema.rb
 DrQueueOnRails/db/*.db
 DrQueueOnRails/db/*.sqlite3

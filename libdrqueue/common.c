@@ -309,33 +309,13 @@ void set_default_env(void) {
   
 }
 
-char *
-get_revision_string () {
-  char *duprev = strdup("$Rev$");
-  char *number = duprev;
-  char *p = duprev;
-  char *e = p + strlen(duprev);
-
-  while ((p!=e) && !isdigit(*p)) {
-    p++;
-  }
-  if (p!=e) {
-    char *t = e;
-    number = p;
-    e=p;
-    while ((e!=t) && isdigit(*e)) {
-      e++;
-    }
-    if (e!=t) {
-      *e = 0 ;
-    }
-  }
-
-  return number;
+char *get_revision_string () {
+  static char buf[BUFFERLEN];
+  strncpy(buf, REVISION, BUFFERLEN-1);
+  return buf;
 }
 
-char *
-get_version_prepost () {
+char *get_version_prepost () {
   static char buf[BUFFERLEN];
   if (VERSION_PRE > 0) {
     snprintf(buf,BUFFERLEN,"c%u",VERSION_PRE);
@@ -347,16 +327,14 @@ get_version_prepost () {
   return buf;
 }
 
-char *
-get_version_complete () {
+char *get_version_complete () {
   static char buffer[BUFFERLEN];
-  snprintf (buffer,BUFFERLEN,"%i.%02i.%i%s-r%s",VERSION_MAJOR,VERSION_MINOR,VERSION_PATCH,
+  snprintf (buffer,BUFFERLEN,"%i.%02i.%i%s (%s)",VERSION_MAJOR,VERSION_MINOR,VERSION_PATCH,
 	    get_version_prepost(),get_revision_string());
   return buffer;
 }
 
-uint64_t
-swap64 (uint64_t source) {
+uint64_t swap64 (uint64_t source) {
   uint64_t result;
   char *s = (char*)&source;
   char *r = (char*)&result;
@@ -372,8 +350,7 @@ swap64 (uint64_t source) {
   return result;
 }
 
-uint64_t
-dr_hton64 (uint64_t source) {
+uint64_t dr_hton64 (uint64_t source) {
 #if defined (BIG_ENDIAN) && ! defined (LITTLE_ENDIAN)
   return source;
 #else
@@ -381,8 +358,7 @@ dr_hton64 (uint64_t source) {
 #endif
 }
 
-uint64_t
-dr_ntoh64 (uint64_t source) {
+uint64_t dr_ntoh64 (uint64_t source) {
 #if defined (BIG_ENDIAN) && ! defined (LITTLE_ENDIAN)
   return source;
 #else

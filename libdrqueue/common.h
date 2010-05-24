@@ -29,13 +29,13 @@ extern "C" {
 #include "libdrqueue.h"
 #include "pointer.h"
 #include "job.h"
+#include "git_rev.h"
 
-#define REVISION "$Rev$"
 #define VERSION_MAJOR  0
 #define VERSION_MINOR  64
-#define VERSION_PATCH  3
+#define VERSION_PATCH  4
 #define VERSION_POST   0
-#define VERSION_PRE    0
+#define VERSION_PRE    3
 
 
 int common_environment_check (void);

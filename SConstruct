@@ -24,6 +24,7 @@ import sys
 import glob
 import os
 import platform,re
+import subprocess
 
 Universal_Binaries_Short_Name = 'fat'
 
@@ -71,6 +72,24 @@ def copy_with_clean(src_files,dest_files,dest_path,env):
         rlist.append(t)
     return rlist
 
+def get_git_commit():
+	try:
+		gitlog = subprocess.Popen(["git", "show", "--abbrev-commit"], stdout=subprocess.PIPE)
+	except OSError:
+		print("Not a Git repository. Can't fetch commit id.")
+		commit_string = ""
+	else:
+		commit_string = gitlog.communicate()[0].split("\n")[0].split(" ")[1]
+		print("Current Git commit id is: "+commit_string)
+	return commit_string
+
+def write_git_rev(commit_id):
+	os.chdir("libdrqueue")
+	rev_file = open("git_rev.h", "w")
+	rev_file.write("#define REVISION \""+commit_id+"\"\n")
+	os.chdir("..")
+	rev_file.close()
+
 env_lib = Environment (ENV=os.environ)
 
 # Configuration options
@@ -84,6 +103,9 @@ opts.Update(env_lib)
 opts.Save('scons.conf',env_lib)
 
 Help(opts.GenerateHelpText(env_lib))
+
+# fetch Git commit id and write into git_rev.h
+write_git_rev(get_git_commit())
 
 #conf = Configure(env_lib)
 # TODO: write configure tests
