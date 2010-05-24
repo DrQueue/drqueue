@@ -75,10 +75,10 @@ char *mentalraysg_create (struct mentalraysgi *info) {
   if (strlen(info->format)) {
   	jobscript_set_variable (ji,"FFORMAT",info->format);
   }
-  if (info->res_x != -1) {
+  if (info->res_x > 0) {
     jobscript_set_variable_int (ji,"RESX",info->res_x);
   }
-  if (info->res_y != -1) {
+  if (info->res_y > 0) {
   	jobscript_set_variable_int (ji,"RESY",info->res_y);
   }
   if (strlen(info->camera)) {
