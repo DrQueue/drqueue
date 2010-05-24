@@ -44,7 +44,6 @@ char *nukesg_create (struct nukesgi *info) {
   static char filename[BUFFERLEN];
   char *p;   /* Scene filename without path */
   char scene[MAXCMDLEN];
-  char renderdir[MAXCMDLEN];
 
   /* Check the parameters */
   if (!strlen(info->scene)) {
