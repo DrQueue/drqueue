@@ -97,7 +97,7 @@ if RENDER_TYPE == "single image":
 	height_high = scene_height - (DRQUEUE_FRAME * part_height)
 	height_low = height_high - part_height
 
-	print "rendering dimensions: 0 "+height_low+" "+scene_width+" "+height_high
+	print("rendering dimensions: 0 "+height_low+" "+scene_width+" "+height_high)
 
 	# generate frame filename
 	for line in open(SCENE):
@@ -115,7 +115,7 @@ else:
 	command = ENGINE_PATH+" "+SCENE+" -render "+str(DRQUEUE_FRAME)+" "+str(BLOCK)
 
 
-print command
+print(command)
 sys.stdout.flush()
 
 p = subprocess.Popen(command, shell=True)
@@ -123,7 +123,7 @@ sts = os.waitpid(p.pid, 0)
 
 # This should requeue the frame if failed
 if sts[1] != 0:
-	print "Requeueing frame..."
+	print("Requeueing frame...")
 	os.kill(os.getppid(), signal.SIGINT)
 	exit(1)
 else:
@@ -134,7 +134,7 @@ else:
 
 	# change userid and groupid
 	#chown 1002:1004 $SCENE:h/*
-	print "Finished."
+	print("Finished.")
 #
 # Notice that the exit code of the last command is received by DrQueue
 #

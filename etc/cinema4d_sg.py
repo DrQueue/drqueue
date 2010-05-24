@@ -89,7 +89,7 @@ os.remove(LOGFILE)
 command = ENGINE_PATH+"-nogui -render "+SCENE+" -oimage "+RENDERDIR+" -frame "+str(DRQUEUE_FRAME)+" -omultipass "+RENDERDIR+" -threads 0"
 
 
-print command
+print(command)
 sys.stdout.flush()
 
 p = subprocess.Popen(command, shell=True)
@@ -101,11 +101,11 @@ while 1:
     line = file.readline()
     if not line:
         break
-    print line
+    print(line)
 
 # This should requeue the frame if failed
 if sts[1] != 0:
-	print "Requeueing frame..."
+	print("Requeueing frame...")
 	os.kill(os.getppid(), signal.SIGINT)
 	exit(1)
 else:
@@ -116,7 +116,7 @@ else:
 
 	# change userid and groupid
 	#chown 1002:1004 $SCENE:h/*
-	print "Finished."
+	print("Finished.")
 #
 # Notice that the exit code of the last command is received by DrQueue
 #

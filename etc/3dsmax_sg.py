@@ -62,7 +62,7 @@ ENGINE_PATH="3dsmaxcmd.exe"
 
 command = ENGINE_PATH+" -rfw:0 -frames:"+str(DRQUEUE_FRAME)+" "+CIMAGE+" "+SCENE
 
-print command
+print(command)
 sys.stdout.flush()
 
 p = subprocess.Popen(command, shell=True)
@@ -70,7 +70,7 @@ sts = os.waitpid(p.pid, 0)
 
 # This should requeue the frame if failed
 if sts[1] != 0:
-	print "Requeueing frame..."
+	print("Requeueing frame...")
 	os.kill(os.getppid(), signal.SIGINT)
 	exit(1)
 else:
@@ -81,7 +81,7 @@ else:
 
 	# change userid and groupid
 	#chown 1002:1004 $SCENE:h/*
-	print "Finished."
+	print("Finished.")
 #
 # Notice that the exit code of the last command is received by DrQueue
 #

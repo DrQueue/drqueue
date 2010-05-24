@@ -149,7 +149,7 @@ ENGINE_PATH="mantra"
 command = ENGINE_PATH+" -f "+str(SCENE+DRQUEUE_PADFRAME)+".ifd "+antialias_args+" "+raytrace_args+" "+bucket_args+" "+lod_args+"  "+varyaa_args+" "+bdepth_args+" "+zdepth_args+" "+cracks_args+" "+quality_args+"  "+qfiner_args+" "+smultiplier_args+" "+mpcache_args+" "+mcache_args+" "+smpolygon_args+" "+width_args+" "+height_args+" "+RENDERDIR+str(DRQUEUE_PADFRAME)+type_args
 
 
-print command
+print(command)
 sys.stdout.flush()
 
 p = subprocess.Popen(command, shell=True)
@@ -157,7 +157,7 @@ sts = os.waitpid(p.pid, 0)
 
 # This should requeue the frame if failed
 if sts[1] != 0:
-	print "Requeueing frame..."
+	print("Requeueing frame...")
 	os.kill(os.getppid(), signal.SIGINT)
 	exit(1)
 else:
@@ -168,7 +168,7 @@ else:
 
 	# change userid and groupid
 	#chown 1002:1004 $SCENE:h/*
-	print "Finished."
+	print("Finished.")
 #
 # Notice that the exit code of the last command is received by DrQueue
 #
