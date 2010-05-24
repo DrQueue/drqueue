@@ -19,8 +19,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 # USA
 #
-# $Id$
-#
 
 import sys
 import glob
@@ -80,7 +78,8 @@ opts = Variables('scons.conf')
 opts.AddVariables(PathVariable('DESTDIR','Alternate root directory','',[]),
                   PathVariable('PREFIX','Directory to install under','/usr/local'),
                   BoolVariable('universal_binary', 'Whether to build as an Universal Binary (MacOS X >= 10.3.9 only)', 0),
-                  BoolVariable('build_drqman','Build drqman',1))
+                  BoolVariable('build_drqman','Build drqman',1),
+                  BoolVariable('enable_warnings','Enable warnings for compiling',0))
 opts.Update(env_lib)
 opts.Save('scons.conf',env_lib)
 
@@ -139,6 +138,11 @@ elif sys.platform == "win32":
 else:
   print "Unknown platform: %s"%(sys.platform,)
   exit (1)
+
+# add additional warnings if requested
+if env_lib.get('enable_warnings'):
+  env_lib.Append (CCFLAGS = Split('-Wall -Wextra'))
+  env_lib.Append (LINKFLAGS = Split('-Wall -Wextra'))
 
 # Base construction environment that links with the library
 env = env_lib.Clone()
