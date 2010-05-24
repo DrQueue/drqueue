@@ -42,7 +42,6 @@
 #include "drqm_jobs_maya.h"
 #include "drqm_jobs_mentalray.h"
 #include "drqm_jobs_blender.h"
-#include "drqm_jobs_bmrt.h"
 #include "drqm_jobs_mantra.h"
 #include "drqm_jobs_aqsis.h"
 #include "drqm_jobs_pixie.h"
@@ -508,49 +507,6 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info) {
                        info->jobs[info->row].koji.blender.scene);
     gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_blender.eviewcmd),
                        info->jobs[info->row].koji.blender.viewcmd);
-    break;
-  case KOJ_BMRT:
-    gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(info->dnj.ckoj)->entry),
-                       "Bmrt");
-    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_bmrt.escene),
-                       info->jobs[info->row].koji.bmrt.scene);
-    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_bmrt.eviewcmd),
-                       info->jobs[info->row].koji.bmrt.viewcmd);
-    /* Custom crop */
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(info->dnj.koji_bmrt.cbcrop),
-                                 info->jobs[info->row].koji.bmrt.custom_crop);
-    snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].koji.bmrt.xmin);
-    gtk_entry_set_text (GTK_ENTRY(info->dnj.koji_bmrt.ecropxmin),buf);
-    snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].koji.bmrt.xmax);
-    gtk_entry_set_text (GTK_ENTRY(info->dnj.koji_bmrt.ecropxmax),buf);
-    snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].koji.bmrt.ymin);
-    gtk_entry_set_text (GTK_ENTRY(info->dnj.koji_bmrt.ecropymin),buf);
-    snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].koji.bmrt.ymax);
-    gtk_entry_set_text (GTK_ENTRY(info->dnj.koji_bmrt.ecropymax),buf);
-    /* Custom samples */
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(info->dnj.koji_bmrt.cbsamples),
-                                 info->jobs[info->row].koji.bmrt.custom_samples);
-    snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].koji.bmrt.xsamples);
-    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_bmrt.exsamples),buf);
-    snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].koji.bmrt.ysamples);
-    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_bmrt.eysamples),buf);
-    /* Stats, verbose, beep */
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(info->dnj.koji_bmrt.cbstats),
-                                 info->jobs[info->row].koji.bmrt.disp_stats);
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(info->dnj.koji_bmrt.cbverbose),
-                                 info->jobs[info->row].koji.bmrt.verbose);
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(info->dnj.koji_bmrt.cbbeep),
-                                 info->jobs[info->row].koji.bmrt.custom_beep);
-    /* Radiosity samples */
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(info->dnj.koji_bmrt.cbradiositysamples),
-                                 info->jobs[info->row].koji.bmrt.custom_radiosity);
-    snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].koji.bmrt.radiosity_samples);
-    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_bmrt.eradiositysamples),buf);
-    /* Custom raysamples */
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(info->dnj.koji_bmrt.cbraysamples),
-                                 info->jobs[info->row].koji.bmrt.custom_raysamples);
-    snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].koji.bmrt.raysamples);
-    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_bmrt.eraysamples),buf);
     break;
   case KOJ_PIXIE:
     gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(info->dnj.ckoj)->entry),
@@ -1061,62 +1017,6 @@ static int dnj_submit (struct drqmj_dnji *info) {
     strncpy(job.koji.blender.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_blender.escene)),BUFFERLEN-1);
     strncpy(job.koji.blender.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_blender.eviewcmd)),BUFFERLEN-1);
     break;
-  case KOJ_BMRT:
-    strncpy(job.koji.bmrt.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.escene)),BUFFERLEN-1);
-    strncpy(job.koji.bmrt.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eviewcmd)),BUFFERLEN-1);
-    /* Custom crop */
-    job.koji.bmrt.custom_crop = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbcrop)->active;
-    if (job.koji.bmrt.custom_crop) {
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropxmin)),"%u",&job.koji.bmrt.xmin) != 1) {
-        fprintf (stderr,"x min could not be read\n");
-        return 0;
-      }
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropxmax)),"%u",&job.koji.bmrt.xmax) != 1) {
-        fprintf (stderr,"x max could not be read\n");
-        return 0;
-      }
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropymin)),"%u",&job.koji.bmrt.ymin) != 1) {
-        fprintf (stderr,"y min could not be read\n");
-        return 0;
-      }
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropymax)),"%u",&job.koji.bmrt.ymax) != 1) {
-        fprintf (stderr,"y max could not be read\n");
-        return 0;
-      }
-    }
-    /* Custom samples */
-    job.koji.bmrt.custom_samples = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbsamples)->active;
-    if (job.koji.bmrt.custom_samples) {
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.exsamples)),"%u",&job.koji.bmrt.xsamples) != 1) {
-        fprintf (stderr,"x samples could not be read\n");
-        return 0;
-      }
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eysamples)),"%u",&job.koji.bmrt.ysamples) != 1) {
-        fprintf (stderr,"y samples could not be read\n");
-        return 0;
-      }
-    }
-    /* Stats, verbose, beep */
-    job.koji.bmrt.disp_stats = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbstats)->active;
-    job.koji.bmrt.verbose = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbverbose)->active;
-    job.koji.bmrt.custom_beep = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbbeep)->active;
-    /* Custom radiosity */
-    job.koji.bmrt.custom_radiosity = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbradiositysamples)->active;
-    if (job.koji.bmrt.custom_radiosity) {
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eradiositysamples)),"%u",&job.koji.bmrt.radiosity_samples) != 1) {
-        fprintf (stderr,"radiosity_samples could not be read\n");
-        return 0;
-      }
-    }
-    /* Custom ray samples */
-    job.koji.bmrt.custom_raysamples = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbraysamples)->active;
-    if (job.koji.bmrt.custom_raysamples) {
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eraysamples)),"%u",&job.koji.bmrt.raysamples) != 1) {
-        fprintf (stderr,"ray samples could not be read\n");
-        return 0;
-      }
-    }
-    break;
   case KOJ_PIXIE:
     strncpy(job.koji.pixie.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_pixie.escene)),BUFFERLEN-1);
     strncpy(job.koji.pixie.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_pixie.eviewcmd)),BUFFERLEN-1);
@@ -1445,7 +1345,6 @@ static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info) {
   items = g_list_append (items,(char*)"Maya");
   items = g_list_append (items,(char*)"Mental Ray");
   items = g_list_append (items,(char*)"Blender");
-  items = g_list_append (items,(char*)"Bmrt");
   items = g_list_append (items,(char*)"Mantra");
   items = g_list_append (items,(char*)"Aqsis");
   items = g_list_append (items,(char*)"Pixie");
@@ -1484,8 +1383,6 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
     new_koj = KOJ_MENTALRAY;
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Blender") == 0) {
     new_koj = KOJ_BLENDER;
-  } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Bmrt") == 0) {
-    new_koj = KOJ_BMRT;
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Mantra") == 0) {
     new_koj = KOJ_MANTRA;
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Aqsis") == 0) {
@@ -1537,10 +1434,6 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
       break;
     case KOJ_BLENDER:
       info->dnj.fkoj = dnj_koj_frame_blender (info);
-      gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
-      break;
-    case KOJ_BMRT:
-      info->dnj.fkoj = dnj_koj_frame_bmrt (info);
       gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
       break;
     case KOJ_MANTRA:

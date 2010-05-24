@@ -23,7 +23,7 @@ variables. Those job scripts can be customized to do any other task.
 
 Currently it has 'script generators' (pieces of code that create those scripts
 using a base file [etc/*.sg]) for the following software: Blender, Cinema 4D, Maya,
-Lightwave, Mental Ray, BMRT, 3Delight, Pixie, Aqsis, After Effects, Shake, Nuke and Terragen.
+Lightwave, Mental Ray, 3Delight, Pixie, Aqsis, After Effects, Shake, Nuke and Terragen.
 
 It has a "general" (in the sense of generic) kind of job, that you could
 use to submit any other script for your tool of choice if not listed, or even if

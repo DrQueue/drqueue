@@ -35,7 +35,6 @@
 #include "drqm_jobs_maya.h"
 #include "drqm_jobs_mentalray.h"
 #include "drqm_jobs_blender.h"
-#include "drqm_jobs_bmrt.h"
 #include "drqm_jobs_mantra.h"
 #include "drqm_jobs_aqsis.h"
 #include "drqm_jobs_pixie.h"

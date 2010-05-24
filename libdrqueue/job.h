@@ -197,7 +197,6 @@ union koj_info {  /* Kind of job information */
 #define KOJ_GENERAL       0  // Not specific koj
 #define KOJ_MAYA          1  // Maya koj
 #define KOJ_BLENDER       2  // Blender koj
-#define KOJ_BMRT          3  // BMRT koj
 #define KOJ_3DELIGHT      4  // 3delight koj
 #define KOJ_PIXIE         5  // Pixie koj
 #define KOJ_MENTALRAY     6  // Mental Ray koj
