@@ -36,7 +36,8 @@ typedef enum {
   ARCH_INTEL,
   ARCH_MIPS,
   ARCH_PPC,
-  ARCH_SPARC
+  ARCH_SPARC,
+  ARCH_POWER
 } t_arch;
 
 typedef enum {
@@ -66,7 +67,8 @@ typedef enum {
   PROCTYPE_MIPSR12000,
   PROCTYPE_PPC,
   PROCTYPE_INTEL_CORE2,
-  PROCTYPE_ULTRASPARC
+  PROCTYPE_ULTRASPARC,
+  PROCTYPE_CELLBE
 } t_proctype;
 
 struct computer_hwinfo {

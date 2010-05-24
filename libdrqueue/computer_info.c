@@ -166,6 +166,9 @@ char *archstring (t_arch arch) {
   case ARCH_SPARC:
     msg = "Sparc";
     break;
+  case ARCH_POWER:
+    msg = "Power";
+    break;
   default:
     msg = "DEFAULT (ERROR)";
     fprintf (stderr,"arch == DEFAULT\n");
@@ -225,6 +228,9 @@ char *proctypestring (t_proctype proctype) {
     break;
   case PROCTYPE_ULTRASPARC:
     msg = "Ultrasparc";
+    break;
+  case PROCTYPE_CELLBE:
+    msg = "Cell Broadband Engine";
     break;
   default:
     msg = "DEFAULT (ERROR)";

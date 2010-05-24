@@ -37,7 +37,6 @@ get_hwinfo (struct computer_hwinfo *hwinfo) {
     perror ("get_hwinfo: gethostname");
     kill(0,SIGINT);
   }
-  // FIXME: Linux supports more architectures than those considered here.
   hwinfo->arch = get_architecture();
   hwinfo->os = OS_LINUX;
   hwinfo->proctype = get_proctype();
@@ -122,6 +121,9 @@ get_proctype (void) {
       found = 1;
     } else if ((strstr(buf,"cpu") != NULL) && (strstr(buf,"UltraSparc") != NULL)) {
       proctype = PROCTYPE_ULTRASPARC;
+      found = 1;
+    } else if ((strstr(buf,"cpu") != NULL) && (strstr(buf,"Cell Broadband Engine") != NULL)) {
+      proctype = PROCTYPE_CELLBE;
       found = 1;
     } else if ((strstr(buf,"cpu model") != NULL) && (strstr(buf,"R5000") != NULL)) {
       proctype = PROCTYPE_MIPSR5000;
@@ -229,9 +231,9 @@ get_numproc (void) {
         index++;
       sscanf (&buf[index],"%i\n",&numproc);
       break;
-    } else if (strcasestr(buf,"BogoMIPS") != NULL) {
+    } else if (strcasestr(buf,"processor") != NULL) {
       numproc++;
-    }
+    }    
   }
 
   fclose (cpuinfo);
@@ -260,6 +262,11 @@ get_architecture (void) {
     if ((strstr(buf,"system type") != NULL) && (strstr(buf,"SGI") != NULL)) {
       // SGI MIPS issue
       architecture = ARCH_MIPS;
+      break;
+    }
+    if ((strstr(buf,"model") != NULL) && (strstr(buf,"SonyPS3") != NULL)) {
+      // Sony PS3 issue
+      architecture = ARCH_POWER;
       break;
     }
   }
