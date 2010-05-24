@@ -32,11 +32,11 @@ p2 = subprocess.Popen(["grep", username], stdin=p1.stdout, stdout=subprocess.PIP
 p3 = subprocess.Popen(["wc", "-l"], stdin=p2.stdout, stdout=subprocess.PIPE)
 shmnew = int(p3.communicate()[0])
 
-print "TEST 1: request_computer_list()\nOld number of SHM segments: "+str(numshm)+"\nNew number of SHM segments: "+str(shmnew)+"\n"
+print("TEST 1: request_computer_list()\nOld number of SHM segments: "+str(numshm)+"\nNew number of SHM segments: "+str(shmnew)+"\n")
 
 # test if memory was leaked
 if shmnew > numshm:
-	print "Shared memory leaked!"
+	print("Shared memory leaked!")
 	exit(1)
 	
 	
@@ -62,11 +62,11 @@ p2 = subprocess.Popen(["grep", username], stdin=p1.stdout, stdout=subprocess.PIP
 p3 = subprocess.Popen(["wc", "-l"], stdin=p2.stdout, stdout=subprocess.PIPE)
 shmnew = int(p3.communicate()[0])
 
-print "TEST 2: request_job_list()\nOld number of SHM segments: "+str(numshm)+"\nNew number of SHM segments: "+str(shmnew)+"\n"
+print("TEST 2: request_job_list()\nOld number of SHM segments: "+str(numshm)+"\nNew number of SHM segments: "+str(shmnew)+"\n")
 
 # test if memory was leaked
 if shmnew > numshm:
-	print "Shared memory leaked!"
+	print("Shared memory leaked!")
 	exit(1)
 
 ## TEST 3: request_frame_list()	
@@ -95,11 +95,11 @@ p2 = subprocess.Popen(["grep", username], stdin=p1.stdout, stdout=subprocess.PIP
 p3 = subprocess.Popen(["wc", "-l"], stdin=p2.stdout, stdout=subprocess.PIPE)
 shmnew = int(p3.communicate()[0])
 
-print "TEST 3: request_frame_list()\nOld number of SHM segments: "+str(numshm)+"\nNew number of SHM segments: "+str(shmnew)+"\n"
+print("TEST 3: request_frame_list()\nOld number of SHM segments: "+str(numshm)+"\nNew number of SHM segments: "+str(shmnew)+"\n")
 
 # test if memory was leaked
 if shmnew > numshm:
-	print "Shared memory leaked!"
+	print("Shared memory leaked!")
 	exit(1)
 
 

@@ -22,8 +22,7 @@
 # $Id$
 #
 
-import ez_setup
-ez_setup.use_setuptools()
+from setuptools import setup
 
 import os
 import glob
@@ -50,7 +49,7 @@ def get_wordsize_flags():
     bitsFlag = []
   else:
     if sys.platform == 'cygwin' or sys.platform == 'win32':
-      print "Win32 Environment: %s"%(sys.platform,)
+      print("Win32 Environment: %s"%(sys.platform,))
       #bitsFlag = [ flagPrefix + '-mdll',
       #             linkPrefix + '--no-undefined',
       #             linkPrefix + '--enable-runtime-pseudo-reloc' ]
@@ -58,7 +57,7 @@ def get_wordsize_flags():
 
 def get_define_macros():
   get_wordsize_flags()
-  print "Platform is: ",sys.platform
+  print("Platform is: ",sys.platform)
   l_define_macros=[('COMM_REPORT',None),('_GNU_SOURCE',None),
                    ('_NO_COMPUTER_POOL_SEMAPHORES',None),
                    ('_NO_COMPUTER_SEMAPHORES',None)]
