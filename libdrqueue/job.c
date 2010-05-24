@@ -1326,7 +1326,7 @@ int job_available_no_icomp (struct database *wdb,uint32_t ijob, uint32_t *iframe
     return 0;
   }
 
-  if ((*iframe = job_first_frame_available_no_icomp (wdb,ijob)) == -1) {
+  if ((*iframe = job_first_frame_available_no_icomp (wdb,ijob)) == (uint32_t)-1) {
     semaphore_release(wdb->semid);
     return 0;
   }

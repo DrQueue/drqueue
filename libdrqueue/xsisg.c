@@ -82,10 +82,10 @@ char *xsisg_create (struct xsisgi *info) {
   jobscript_set_variable (ji,"DRQUEUE_PASS",info->xsipass);
   jobscript_set_variable_int (ji,"DRQUEUE_RUNSCRIPT",info->runScript);
   
-  if (info->res_x != -1) {
+  if (info->res_x > 0) {
     jobscript_set_variable_int (ji,"RESX",info->res_x);
   }
-  if (info->res_y != -1) {
+  if (info->res_y > 0) {
     jobscript_set_variable_int (ji,"RESY",info->res_y);
   }
   if (strlen(info->image)) {

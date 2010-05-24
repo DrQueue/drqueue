@@ -1,5 +1,8 @@
 //
 // Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2010 Andreas Schroeder
+//
+// This file is part of DrQueue
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,8 +18,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
-//
-// $Id$
 //
 
 #include <stdio.h>
@@ -34,8 +35,8 @@ void usage (void);
 
 int main (int argc,char *argv[]) {
   int opt;
-  uint32_t frame = -1;
-  uint32_t ijob = -1;
+  int frame = -1;
+  int ijob = -1;
 
   while ((opt = getopt (argc,argv,"j:f:vh")) != -1) {
     switch (opt) {
@@ -67,7 +68,7 @@ int main (int argc,char *argv[]) {
     exit (1);
   }
 
-  if (! request_job_frame_waiting (ijob,frame,CLIENT)) {
+  if (! request_job_frame_waiting ((uint32_t)ijob,(uint32_t)frame,CLIENT)) {
     fprintf (stderr,"ERROR: While trying to requeue: %s\n",drerrno_str());
     exit (1);
   }

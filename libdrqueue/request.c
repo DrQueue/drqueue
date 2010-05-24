@@ -1,5 +1,6 @@
 //
 // Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
+// Copyright (C) 2010 Andreas Schroeder
 //
 // This file is part of DrQueue
 //
@@ -3224,7 +3225,7 @@ void handle_r_r_slavexit (int sfd,struct database *wdb,int icomp,struct request 
     semaphore_release (wdb->semid);
     return;
   }
-  if (wdb->computer[icomp2].hwinfo.id == icomp) {
+  if (wdb->computer[icomp2].hwinfo.id == (uint32_t)icomp) {
     log_auto (L_INFO,"Slave quitting: %s (%i)", wdb->computer[icomp2].hwinfo.name, icomp2);
     computer_free (&wdb->computer[icomp2]);
   }

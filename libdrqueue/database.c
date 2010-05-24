@@ -333,7 +333,7 @@ int
 database_job_load_frames (int sfd,struct job *job) {
   uint32_t nframes = job_nframes (job);
   struct frame_info *fi;
-  int d;
+  uint32_t d;
 
   if (nframes) {
     if ((job->fishmid = get_frame_shared_memory (nframes)) == (int64_t)-1) {

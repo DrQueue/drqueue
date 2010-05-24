@@ -1,14 +1,15 @@
 //
 // Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
+// Copyright (C) 2010 Andreas Schroeder
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -17,9 +18,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
-//
-//
-// $Id$
 //
 
 #include <stdlib.h>
@@ -372,7 +370,7 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info) {
 }
 
 static int jdd_update_blocked_hosts (GtkWidget *w, struct drqm_jobs_info *info) {
-  int ncols = 2;
+  uint32_t ncols = 2;
   uint32_t i;
   char **buff;
 
@@ -1210,7 +1208,7 @@ static void jdd_delete_blocked_host (GtkWidget *w, struct drqm_jobs_info *info) 
   }
 
   for (;sel;sel = sel->next) {
-    ipos = (uint32_t) gtk_clist_get_row_data (GTK_CLIST(info->jdd.clist_bh),GPOINTER_TO_INT(sel->data));
+    ipos = (uint32_t) GPOINTER_TO_INT(gtk_clist_get_row_data (GTK_CLIST(info->jdd.clist_bh),GPOINTER_TO_INT(sel->data)));
     request_job_delete_blocked_host (info->jdd.job.id,ipos,CLIENT);
   }
 }

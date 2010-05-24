@@ -1,5 +1,8 @@
 //
 // Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2009,2010 Andreas Schroeder
+//
+// This file is part of DrQueue
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,7 +19,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
 //
 // This program returns the number of times a frame has been requeued.
 // Useful for avoiding endless loops
@@ -43,8 +45,8 @@ enum operation {
 
 int main (int argc,char *argv[]) {
   int opt;
-  uint32_t frame = -1;
-  uint32_t ijob = -1;
+  int frame = -1;
+  int ijob = -1;
   struct frame_info fi;
   enum operation op = OP_NONE;
 
@@ -84,7 +86,7 @@ int main (int argc,char *argv[]) {
     exit (1);
   }
 
-  if (!request_job_frame_info (ijob,frame,&fi,CLIENT)) {
+  if (!request_job_frame_info ((uint32_t)ijob,(uint32_t)frame,&fi,CLIENT)) {
     fprintf (stderr,"ERROR: While trying to request the frame info: %s\n",drerrno_str());
     exit (1);
   }

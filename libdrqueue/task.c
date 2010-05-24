@@ -1,5 +1,6 @@
 //
 // Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2010 Andreas Schroeder
 //
 // This file is part of DrQueue
 //
@@ -154,8 +155,8 @@ task_environment_set (struct task *task) {
   putenv (padframe);
 
   //create a variable with a space delimited padded frames list
-  int i;
-  int block_end = task->frame+task->block_size;
+  uint32_t i;
+  uint32_t block_end = task->frame+task->block_size;
   if (block_end > task->frame_end + 1) {
     block_end = task->frame_end + 1;
   }

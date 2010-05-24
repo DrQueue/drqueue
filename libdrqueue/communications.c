@@ -1150,7 +1150,7 @@ int
 send_blocked_host_list (int sfd, struct blocked_host *bh, uint32_t size, int do_checksize) {
   uint32_t datasize,bssize;
   struct blocked_host *tbh = bh;
-  int i;
+  uint32_t i;
 
   datasize = sizeof (size);
   if (do_checksize && !check_send_datasize(sfd,datasize)) {
@@ -1177,7 +1177,7 @@ int
 recv_blocked_host_list (int sfd, struct blocked_host **bh, uint32_t *size, int do_checksize) {
   uint32_t datasize;
   struct blocked_host *tbh;
-  int i;
+  uint32_t i;
 
   datasize = sizeof (*size);
   if (do_checksize && !check_recv_datasize(sfd,datasize)) {

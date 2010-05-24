@@ -1,5 +1,8 @@
 //
 // Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2010 Andreas Schroeder
+//
+// This file is part of DrQueue
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,8 +18,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
-//
-// $Id$
 //
 
 #include <stdio.h>
@@ -41,7 +42,7 @@ void usage (void);
 
 int main (int argc,char *argv[]) {
   int opt;
-  uint32_t ijob = -1;
+  int ijob = -1;
   int action = ACTION_NONE;
   struct job job;
 
@@ -90,22 +91,22 @@ int main (int argc,char *argv[]) {
   switch (action) {
   case ACTION_STOP:
     printf ("Stopping job: %i\n",ijob);
-    request_job_stop(ijob,CLIENT);
+    request_job_stop((uint32_t)ijob,CLIENT);
     break;
   case ACTION_HSTOP:
     printf ("Hard stopping job: %i\n",ijob);
-    request_job_hstop(ijob,CLIENT);
+    request_job_hstop((uint32_t)ijob,CLIENT);
     break;
   case ACTION_DEL:
     printf ("Deleting job: %i\n",ijob);
-    request_job_delete(ijob,CLIENT);
+    request_job_delete((uint32_t)ijob,CLIENT);
     break;
   case ACTION_CONT:
     printf ("Continue job: %i\n",ijob);
-    request_job_continue(ijob,CLIENT);
+    request_job_continue((uint32_t)ijob,CLIENT);
     break;
   case ACTION_STATUS:
-    request_job_xfer(ijob,&job,CLIENT);
+    request_job_xfer((uint32_t)ijob,&job,CLIENT);
     printf ("%s\n",job_status_string(job.status));
     break;
   }

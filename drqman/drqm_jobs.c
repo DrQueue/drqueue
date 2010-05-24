@@ -1,14 +1,15 @@
 //
 // Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
+// Copyright (C) 2010 Andreas Schroeder
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -17,9 +18,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
-//
-//
-// $Id$
 //
 
 #include <string.h>
@@ -112,7 +110,7 @@ static void job_rerun_cb (GtkWidget *button, struct drqm_jobs_info *info);
 void
 free_job_list(GtkWidget *joblist,void *userdata) {
   struct drqm_jobs_info *info = (struct drqm_jobs_info *) userdata;
-  int i;
+  uint32_t i;
   if (!info) {
     return;
   }
@@ -250,9 +248,9 @@ static void PressedButtonRefresh (GtkWidget *b, struct drqm_jobs_info *info) {
 }
 
 void drqm_update_joblist (struct drqm_jobs_info *info) {
-  int i;
+  uint32_t i;
   char **buff;
-  int ncols = 11;
+  uint32_t ncols = 11;
 
   buff = (char**) malloc((ncols + 1) * sizeof(char*));
   for (i=0;i<ncols;i++)
@@ -288,7 +286,7 @@ void drqm_update_joblist (struct drqm_jobs_info *info) {
 }
 
 static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *info) {
-  int i;
+  uint32_t i;
   char *buf;
 
   if (event->type == GDK_BUTTON_PRESS) {
@@ -305,7 +303,7 @@ static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *
 
       info->row = -1;
       for (i=0;i<info->njobs;i++) {
-        if (info->jobs[i].id == info->ijob) {
+        if (info->jobs[i].id == (uint32_t)info->ijob) {
           info->row = i; // Points from this point on, to index of the job in info.
         }
       }
@@ -2018,7 +2016,7 @@ void dnj_envvars_list (GtkWidget *bclicked, struct drqmj_envvars *info) {
 void dnj_flags_jdepend_refresh_job_list (GtkWidget *bclicked, struct drqm_jobs_info *info) {
   GtkListStore *store = info->dnj.flags.store;
   GtkTreeIter iter;
-  int i;
+  uint32_t i;
 
   gtk_list_store_clear (GTK_LIST_STORE(store));
   update_joblist(bclicked,info);
