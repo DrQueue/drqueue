@@ -27,7 +27,6 @@
 #define TOJ_NONE                 0
 #define TOJ_MAYA                 1
 #define TOJ_BLENDER              2 // Blender koj
-#define TOJ_BMRT                 3 // BMRT koj
 #define TOJ_THREEDELIGHT         4 // 3delight koj
 #define TOJ_PIXIE                5 // Pixie koj
 #define TOJ_MENTALRAY            6 // Mental ray
@@ -49,7 +48,6 @@ int RegisterGeneralJob (char* infile, int frameStart, int frameEnd, int frameSte
 int RegisterMayaJobFromFile (std::ifstream &infile);
 int RegisterMentalrayJobFromFile (std::ifstream &infile);
 int RegisterBlenderJobFromFile (std::ifstream &infile);
-int RegisterBmrtJobFromFile (std::ifstream &infile);
 int RegisterThreedelightJobFromFile (std::ifstream &infile);
 int RegisterPixieJobFromFile (std::ifstream &infile);
 int RegisterLightwaveJobFromFile (std::ifstream &infile);

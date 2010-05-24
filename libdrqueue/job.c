@@ -924,10 +924,6 @@ void job_environment_set (struct job *job, uint32_t iframe) {
     snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.blender.scene);
     putenv (scene);
     break;
-  case KOJ_BMRT:
-    snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.bmrt.scene);
-    putenv (scene);
-    break;
   case KOJ_PIXIE:
     snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.pixie.scene);
     putenv (scene);
@@ -1044,16 +1040,6 @@ job_bswap_from_network (struct job *orig, struct job *dest) {
   case KOJ_SHAKE:
   case KOJ_LUXRENDER:
     break;
-  case KOJ_BMRT:
-    dest->koji.bmrt.xmin = ntohl (orig->koji.bmrt.xmin);
-    dest->koji.bmrt.xmax = ntohl (orig->koji.bmrt.xmax);
-    dest->koji.bmrt.ymin = ntohl (orig->koji.bmrt.ymin);
-    dest->koji.bmrt.ymax = ntohl (orig->koji.bmrt.ymax);
-    dest->koji.bmrt.xsamples = ntohl (orig->koji.bmrt.xsamples);
-    dest->koji.bmrt.ysamples = ntohl (orig->koji.bmrt.ysamples);
-    dest->koji.bmrt.radiosity_samples = ntohl (orig->koji.bmrt.radiosity_samples);
-    dest->koji.bmrt.raysamples = ntohl (orig->koji.bmrt.raysamples);
-    break;
   case KOJ_3DELIGHT:
   case KOJ_PIXIE:
   case KOJ_XSI:
@@ -1107,16 +1093,6 @@ job_bswap_to_network (struct job *orig, struct job *dest) {
   case KOJ_AFTEREFFECTS:
   case KOJ_SHAKE:
   case KOJ_LUXRENDER:
-    break;
-  case KOJ_BMRT:
-    dest->koji.bmrt.xmin = htonl (orig->koji.bmrt.xmin);
-    dest->koji.bmrt.xmax = htonl (orig->koji.bmrt.xmax);
-    dest->koji.bmrt.ymin = htonl (orig->koji.bmrt.ymin);
-    dest->koji.bmrt.ymax = htonl (orig->koji.bmrt.ymax);
-    dest->koji.bmrt.xsamples = htonl (orig->koji.bmrt.xsamples);
-    dest->koji.bmrt.ysamples = htonl (orig->koji.bmrt.ysamples);
-    dest->koji.bmrt.radiosity_samples = htonl (orig->koji.bmrt.radiosity_samples);
-    dest->koji.bmrt.raysamples = htonl (orig->koji.bmrt.raysamples);
     break;
   case KOJ_3DELIGHT:
   case KOJ_PIXIE:
@@ -1261,9 +1237,6 @@ char *job_koj_string (struct job *job) {
     break;
   case KOJ_BLENDER:
     msg = "Blender";
-    break;
-  case KOJ_BMRT:
-    msg = "Bmrt";
     break;
   case KOJ_PIXIE:
     msg = "Pixie";

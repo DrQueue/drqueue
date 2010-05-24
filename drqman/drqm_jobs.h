@@ -102,7 +102,6 @@ struct drqmj_dnji {       /* dialog new job info */
   struct drqmj_koji_maya koji_maya; /* koj info for maya */
   struct drqmj_koji_mentalray koji_mentalray; /* koj info for mentalray */
   struct drqmj_koji_blender koji_blender; /* koj info for blender */
-  struct drqmj_koji_bmrt koji_bmrt; /* koj info for bmrt */
   struct drqmj_koji_aqsis koji_aqsis; /* koj info for aqsis */
   struct drqmj_koji_mantra koji_mantra; /* koj info for aqsis */
   struct drqmj_koji_pixie koji_pixie; /* koj info for pixie */

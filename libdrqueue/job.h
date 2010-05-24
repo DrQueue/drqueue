@@ -102,22 +102,6 @@ union koj_info {  /* Kind of job information */
     char viewcmd[BUFFERLEN]; /* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
   }
   blender;
-  struct koji_bmrt {
-    char scene[BUFFERLEN];
-    char viewcmd[BUFFERLEN];
-    char custom_crop;
-    uint32_t xmin,xmax,ymin,ymax;
-    char custom_samples;
-    uint32_t xsamples,ysamples;
-    char disp_stats;
-    char verbose;
-    char custom_beep;
-    char custom_radiosity;
-    uint32_t radiosity_samples;
-    char custom_raysamples;
-    uint32_t raysamples;
-  }
-  bmrt;
   struct koji_pixie {
     char scene[BUFFERLEN];
     char viewcmd[BUFFERLEN]; /* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */

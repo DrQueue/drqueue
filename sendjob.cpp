@@ -109,12 +109,6 @@ int main (int argc,char *argv[]) {
       exit (1);
     }
     break;
-  case TOJ_BMRT:
-    if (RegisterBmrtJobFromFile (infile)) {
-      std::cerr << "Error registering BMRT job from file: " << argv[argc-1] << std::endl;
-      exit (1);
-    }
-    break;
   case TOJ_THREEDELIGHT:
     if (RegisterThreedelightJobFromFile (infile)) {
       std::cerr << "Error registering 3Delight job from file: " << argv[argc-1] << std::endl;
@@ -200,7 +194,7 @@ void usage (void) {
   << "\t-v version information\n"
   << "\t-h prints this help\n"
   << "\t-f [frameStart[:frameEnd[:stepFrame]]]\n"
-  << "\t-t [general|maya|blender|mentalray|bmrt|aqsis|3delight|pixie|lightwave|terragen|nuke|aftereffects|shake|xsi§luxrender] type of job\n";
+  << "\t-t [general|maya|blender|mentalray|aqsis|3delight|pixie|lightwave|terragen|nuke|aftereffects|shake|xsi§luxrender] type of job\n";
 }
 
 
@@ -1064,65 +1058,6 @@ int RegisterMantraJobFromFile (std::ifstream &infile) {
   return 0;
 }
 
-int RegisterBmrtJobFromFile (std::ifstream &infile) {
-  // Job variables for the script generator
-  struct job job;
-  struct bmrtsgi bmrtSgi;
-
-  std::string owner;
-  std::string jobName;
-  int frameStart,frameEnd,frameStep;
-  std::string scenePath;
-  char *pathToScript;
-
-  job_init(&job);
-
-  getline(infile,owner);
-  getline(infile,jobName);
-  infile >> frameStart;
-  infile >> frameEnd;
-  infile >> frameStep;
-  getline(infile,scenePath); //
-  getline(infile,scenePath); // Get two times because '>>' leaves the pointer before \n
-
-  //  strncpy(bmrtSgi.file_owner,owner.c_str(),BUFFERLEN-1);
-  strncpy(bmrtSgi.scene,scenePath.c_str(),BUFFERLEN-1);
-  snprintf(bmrtSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
-
-  job.autoRequeue = 1;
-
-  if (!(pathToScript = bmrtsg_create(&bmrtSgi))) {
-    std::cerr << "Error creating script file\n";
-    return 1;
-  }
-
-  strncpy (job.name,jobName.c_str(),MAXNAMELEN-1);
-  strncpy (job.cmd,pathToScript,MAXCMDLEN-1);
-  strncpy (job.owner,owner.c_str(),MAXNAMELEN-1);
-  strncpy (job.email,owner.c_str(),MAXNAMELEN-1);
-  job.frame_start = frameStart;
-  job.frame_end = frameEnd;
-  job.frame_step = frameStep;
-  job.priority = 500;
-
-  job.koj = KOJ_BMRT;
-  strncpy (job.koji.bmrt.scene,scenePath.c_str(),BUFFERLEN-1);
-  strncpy (job.koji.bmrt.viewcmd,"",BUFFERLEN-1);
-
-  job.limits.os_flags = OSF_ALL;
-  job.limits.nmaxcpus = (uint16_t)-1;
-  job.limits.nmaxcpuscomputer = (uint16_t)-1;
-  job.limits.memory = 0;
-  strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
-
-  if (!register_job(&job)) {
-    std::cerr << "Error sending job to the queue\n";
-    return 1;
-  }
-
-  return 0;
-}
-
 int RegisterXSIJobFromFile (std::ifstream &infile) {
   // Job variables for the script generator
   struct job job;
@@ -1291,8 +1226,6 @@ int str2toj (char *str) {
     toj = TOJ_MENTALRAY;
   } else if (strstr(str,"blender") != NULL) {
     toj = TOJ_BLENDER;
-  } else if (strstr(str,"bmrt") != NULL) {
-    toj = TOJ_BMRT;
   } else if (strstr(str,"3delight") != NULL) {
     toj = TOJ_THREEDELIGHT;
   } else if (strstr(str,"aqsis") != NULL) {

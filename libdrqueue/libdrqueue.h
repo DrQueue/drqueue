@@ -79,7 +79,6 @@ extern int drerrno;
 #include "mayasg.h"
 #include "mentalraysg.h"
 #include "blendersg.h"
-#include "bmrtsg.h"
 #include "pixiesg.h"
 #include "3delightsg.h"
 #include "lightwavesg.h"
