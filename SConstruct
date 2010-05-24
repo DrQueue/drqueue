@@ -135,6 +135,8 @@ elif sys.platform == "cygwin":
   os.environ['PKG_CONFIG_PATH'] = 'C:\GTK\lib\pkgconfig'
 elif sys.platform == "win32":
   env_lib.Append (CPPDEFINES = Split ('-D__CYGWIN'))
+elif (sys.platform == "freebsd7") or (sys.platform == "freebsd8"):
+  env_lib.Append (CPPDEFINES = Split ('-D__FREEBSD'))
 else:
   print "Unknown platform: %s"%(sys.platform,)
   exit (1)
