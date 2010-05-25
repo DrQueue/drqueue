@@ -13,7 +13,7 @@ development headers (to build the GUI drqman).
 * scons (depends on python)
 * gtk2 development headers
 * pkgconfig (usually related to gtk2-dev)
-* Mac OS X: needs macports/darwinports to install many of the previously
+* Mac OS X: needs Macports to install many of the previously
   mentioned as well as XCode (providing the compilers) and X11 to run
   drqman. X11 you'll be able to find on your installation CD/DVD. XCode
   is best to be downloaded from Apple's developers site.
@@ -21,10 +21,10 @@ development headers (to build the GUI drqman).
 Depending on your platform you there would be different ways to obtain
 the packages:
 
-* Mac OS X: XCode, Macports (scons,gtk2,pkgconfig), X11, Macpython
+* Mac OS X: XCode, Macports (scons,gtk2,pkgconfig), X11
 * Linux: with different names in the various distributions all the
   packages are already available
-* Windos: cygwin for most of the tools, the native gtk-glade
+* Windos: Cygwin for most of the tools, the native gtk-glade
   development package for windows, python for windows standard and the
   pywin32 extensions (later on).
 
@@ -126,7 +126,7 @@ other much more complex setup you might require.
 Python (brief)
 ==============
 
-The python module uses setuptools and swig to be built and installed
+The python module uses Setuptools and SWIG to be built and installed
 into the system (again check your documentation on how to obtain those
 packages for your system).
 
@@ -136,11 +136,11 @@ build the bindings and install them woulbe:
 $ cd python
 $ sudo python setup.py install
 
-(You need sudo because the python module usually gets installed into
-your standard python site-packages directory which will probably need
+(You need sudo because the Python module usually gets installed into
+your standard Python site-packages directory which will probably need
 super-user privileges to install files on it)
 
-Check setuptools documentation on how to make a local user module
+Check Setuptools documentation on how to make a local user module
 installation.
 
 Windows notes

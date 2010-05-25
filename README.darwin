@@ -1,4 +1,3 @@
-#!/bin/sh
 #
 # The following sysctl lines should be added to /etc/rc on Mac OS X to solve shared memory problems
 # As explained at: http://drqueue.org/project/wiki/DrQueueMacOSX
