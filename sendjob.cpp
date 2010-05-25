@@ -459,7 +459,7 @@ int RegisterBlenderJobFromFile (std::ifstream &infile) {
   struct blendersgi blenderSgi;
 
   std::string jobName;
-  int frameStart,frameEnd,frameStep;
+  int frameStart,frameEnd,frameStep,render_type;
   std::string scenePath;
   char *pathToScript;
 
@@ -469,12 +469,13 @@ int RegisterBlenderJobFromFile (std::ifstream &infile) {
   infile >> frameStart;
   infile >> frameEnd;
   infile >> frameStep;
+  infile >> render_type;
   getline(infile,scenePath); //
   getline(infile,scenePath); // Get two times because '>>' leaves the pointer before \n
 
   strncpy(blenderSgi.scene,scenePath.c_str(),BUFFERLEN-1);
   snprintf(blenderSgi.scriptdir,BUFFERLEN,"%s/tmp/",getenv("DRQUEUE_ROOT"));
-
+  blenderSgi.render_type = render_type;	
   job.autoRequeue = 1;
 
   if (!(pathToScript = blendersg_create(&blenderSgi))) {
