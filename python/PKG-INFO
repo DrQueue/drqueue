@@ -1,0 +1,7 @@
+Metadata-Version: 1.0
+Name: PyDrQueue 
+Version: 0.64.x
+Summary: DrQueue Python bindings 
+Home-page: http://packages.python.org/PyDrQueue
+Author: Jorge Daza
+Author-email: jorge@drqueue.org
