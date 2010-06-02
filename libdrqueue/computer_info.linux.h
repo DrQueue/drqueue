@@ -231,7 +231,7 @@ get_numproc (void) {
         index++;
       sscanf (&buf[index],"%i\n",&numproc);
       break;
-    } else if (strcasestr(buf,"processor") != NULL) {
+    } else if (strstr(buf,"processor") != NULL) {
       numproc++;
     }    
   }
