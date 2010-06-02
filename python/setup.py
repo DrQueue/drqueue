@@ -82,7 +82,8 @@ def get_abspath_glob(path):
   
 def get_swig_flags():
     swigflags = ['-I'+get_abspath('..'),
-                 '-I'+get_abspath(os.path.join('..','libdrqueue'))]
+                 #'-I'+get_abspath(os.path.join('..','libdrqueue')),
+                 '-I'+get_abspath(os.path.join('libdrqueue'))]
     if sys.platform == "linux2":
       swigflags = swigflags + ['-D__LINUX']
     elif sys.platform == "darwin":
@@ -113,9 +114,9 @@ def custom_library_paths():
     return paths
 
 setup(
-    name = "drqueue",
+    name = "PyDrQueue",
     # TODO: get version from C header
-    version = "0.64.3",
+    version = "0.64.4",
     # metadata for upload to PyPI
     # could also include long_description, download_url, classifiers, etc.
     author = "Jorge Daza",
@@ -124,19 +125,21 @@ setup(
     license = "GPL General Public License version 2",
     url = "http://drqueue.org/",
 
-    #packages = find_packages(exclude='ez_setup.py'),
-    package_dir = { '' : 'src' },
-    packages = [ 'drqueue', 'drqueue.base' ],
     ext_modules=[Extension('drqueue.base._libdrqueue', 
                  ['src/drqueue/base/libdrqueue.i'] \
-                 + get_abspath_glob(os.path.join('..','libdrqueue','*.c')),
-                 #libraries = [ 'python'+distutils.sysconfig.get_python_version() ],
-                 #library_dirs= [ distutils.sysconfig.get_python_lib() ] + custom_library_paths(),
+                 #+ get_abspath_glob(os.path.join('..','libdrqueue','*.c')) \
+                 + get_abspath_glob(os.path.join('libdrqueue','*.c')),
+                 libraries = [ 'python'+distutils.sysconfig.get_python_version() ],
+                 library_dirs= [ distutils.sysconfig.get_python_lib() ] + custom_library_paths(),
                  define_macros=get_define_macros(),
                  include_dirs=[get_abspath('..'),
-                               get_abspath(os.path.join('..','libdrqueue'))] + 
+                               #get_abspath(os.path.join('..','libdrqueue')),  
+                               get_abspath('libdrqueue')] +
                                custom_include_paths(),
                  swig_opts=get_swig_flags()),],
+    #packages = find_packages(exclude='ez_setup.py'),
+    packages = [ 'drqueue', 'drqueue.base' ],
+    package_dir = { '' : 'src' },
     #eager_resources = [ 'base','_base' ],
     #zip_safe = False,
 )

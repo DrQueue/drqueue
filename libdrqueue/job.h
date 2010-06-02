@@ -324,6 +324,7 @@ void job_update_assigned (struct database *wdb,uint32_t ijob, uint32_t iframe, u
 void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job);
 void job_init (struct job *job);
 void job_frame_info_init (struct frame_info *fi);
+int job_frame_info_free (struct job *job);
 void job_delete (struct job *job);
 uint32_t job_njobs_masterdb (struct database *wdb);
 void job_update_info (struct database *wdb,uint32_t ijob);
