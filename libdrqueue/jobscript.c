@@ -30,7 +30,8 @@
 #include "jobscript.h"
 
 /* create a new script file */
-struct jobscript_info *jobscript_new (jobscript_type type,char *filename) {
+struct jobscript_info *
+jobscript_new (jobscript_type type, char *filename) {
   FILE *f = NULL;
 
   if ( (type != JOBSCRIPT_TCSH) && (type != JOBSCRIPT_PYTHON) ) {
@@ -57,7 +58,8 @@ struct jobscript_info *jobscript_new (jobscript_type type,char *filename) {
 }
 
 /* check for null pointer */
-int jobscript_check_pointer (struct jobscript_info *ji) {
+int
+jobscript_check_pointer (struct jobscript_info *ji) {
   if ( ji == NULL ) {
     fprintf (stderr,"ERROR: jobscript: invalid NULL pointer\n");
     return 0;
@@ -67,7 +69,8 @@ int jobscript_check_pointer (struct jobscript_info *ji) {
 }
 
 /* write shebang line into script file */
-int jobscript_write_heading (struct jobscript_info *ji) {
+int
+jobscript_write_heading (struct jobscript_info *ji) {
   int rv;
   if ( (rv = jobscript_check_pointer (ji)) == 0 ) {
     return rv;
@@ -87,14 +90,16 @@ int jobscript_write_heading (struct jobscript_info *ji) {
 }
 
 /* set an integer variable */
-int jobscript_set_variable_int (struct jobscript_info *ji,char *name,int64_t value) {
+int
+jobscript_set_variable_int (struct jobscript_info *ji, char *name,int64_t value) {
   char str_value[JS_MAX_VAR_VALUE];
   snprintf (str_value,JS_MAX_VAR_VALUE,"%ji",(intmax_t)value);
   return jobscript_set_variable (ji,name,str_value);
 }
 
 /* set a general variable */
-int jobscript_set_variable (struct jobscript_info *ji,char *name,char *value) {
+int
+jobscript_set_variable (struct jobscript_info *ji, char *name, char *value) {
   int rv;
   if ((rv = jobscript_check_pointer (ji)) == 0 ) {
     return rv;
@@ -114,7 +119,8 @@ int jobscript_set_variable (struct jobscript_info *ji,char *name,char *value) {
 }
 
 /* check for valid TCSH script file */
-int jobscript_tcsh_check_pointer (struct jobscript_info *ji) {
+int
+jobscript_tcsh_check_pointer (struct jobscript_info *ji) {
   if ( ji == NULL ) {
     fprintf (stderr,"ERROR: tcsh jobscript: invalid NULL pointer\n");
     return 0;
@@ -127,7 +133,8 @@ int jobscript_tcsh_check_pointer (struct jobscript_info *ji) {
 }
 
 /* check for valid Python script file */
-int jobscript_python_check_pointer (struct jobscript_info *ji) {
+int
+jobscript_python_check_pointer (struct jobscript_info *ji) {
   if ( ji == NULL ) {
     fprintf (stderr,"ERROR: tcsh jobscript: invalid NULL pointer\n");
     return 0;
@@ -140,7 +147,8 @@ int jobscript_python_check_pointer (struct jobscript_info *ji) {
 }
 
 /* write TCSH shebang line into script file */
-int jobscript_tcsh_write_heading (struct jobscript_info *ji) {
+int
+jobscript_tcsh_write_heading (struct jobscript_info *ji) {
   int rv;
   if ( (rv = jobscript_tcsh_check_pointer (ji)) == 0 ) {
     return rv;
@@ -153,7 +161,8 @@ int jobscript_tcsh_write_heading (struct jobscript_info *ji) {
 }
 
 /* write Python shebang line into script file */
-int jobscript_python_write_heading (struct jobscript_info *ji) {
+int
+jobscript_python_write_heading (struct jobscript_info *ji) {
   int rv;
   if ( (rv = jobscript_python_check_pointer (ji)) == 0 ) {
     return rv;
@@ -166,7 +175,8 @@ int jobscript_python_write_heading (struct jobscript_info *ji) {
 }
 
 /* set a variable in TCSH style */
-int jobscript_tcsh_set_variable (struct jobscript_info *ji,char *name,char *value) {
+int
+jobscript_tcsh_set_variable (struct jobscript_info *ji, char *name,char *value) {
   int rv;
   if ( (rv = jobscript_tcsh_check_pointer (ji)) == 0 ) {
     return rv;
@@ -178,7 +188,8 @@ int jobscript_tcsh_set_variable (struct jobscript_info *ji,char *name,char *valu
 }
 
 /* set a variable in Python style */
-int jobscript_python_set_variable (struct jobscript_info *ji,char *name,char *value) {
+int
+jobscript_python_set_variable (struct jobscript_info *ji, char *name,char *value) {
   int rv;
   if ( (rv = jobscript_python_check_pointer (ji)) == 0 ) {
     return rv;
@@ -190,7 +201,8 @@ int jobscript_python_set_variable (struct jobscript_info *ji,char *name,char *va
 }
 
 /* use template to create script file */
-int jobscript_template_write (struct jobscript_info *ji,char *template_file_name)
+int
+jobscript_template_write (struct jobscript_info *ji, char *template_file_name)
 {
   int rv;
   char template_file_path[PATH_MAX];
@@ -240,6 +252,7 @@ int jobscript_template_write (struct jobscript_info *ji,char *template_file_name
 }
 
 /* close script file */
-int jobscript_close (struct jobscript_info *ji) {
+int
+jobscript_close (struct jobscript_info *ji) {
   return fclose (ji->file);
 }

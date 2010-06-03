@@ -41,7 +41,7 @@ void computer_pool_init (struct computer_limits *cl);
 int computer_pool_add (struct computer_limits *cl, char *pool);
 int computer_pool_remove (struct computer_limits *cl, char *pool);
 void computer_pool_list (struct computer_limits *cl);
-int computer_pool_exists (struct computer_limits *cl,char *pool);
+int computer_pool_exists (struct computer_limits *cl, char *pool);
 int computer_pool_free (struct computer_limits *cl);
 void computer_pool_set_from_environment (struct computer_limits *cl);
 void computer_pool_copy (struct computer_limits *cl_src, struct computer_limits *cl_dst);

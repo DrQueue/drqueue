@@ -72,8 +72,8 @@ int database_load (struct database *wdb);
 int database_backup (struct database *wdb);
 uint32_t database_version_id (void);
 
-int database_job_load_frames (int sfd,struct job *job);
-int database_job_save_frames (int sfd,struct job *job);
+int database_job_load_frames (int sfd, struct job *job);
+int database_job_save_frames (int sfd, struct job *job);
 int database_job_load_blocked_hosts (int sfd, struct job *job);
 int database_job_save_blocked_hosts (int sfd, struct job *job);
 int database_job_load_envvars (int sfd, struct job *job);

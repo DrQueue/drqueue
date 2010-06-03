@@ -55,14 +55,6 @@ struct computer *logger_computer = NULL;
 /* One important detail about the logger functions is that all of them */
 /* add the trailing newline (\n). So the message shouldn't have it. */
 
-FILE *log_slave_open_task (int level, struct task *task);
-FILE *log_slave_open_computer (int level, char *name);
-FILE *log_master_open (int level);
-
-int log_level_dest (int level);
-int log_on_screen (void);
-int log_job_path_get (uint32_t jobid,char *path,int pathlen);
-int log_task_filename_get (struct task *task, char *path, int pathlen);
 
 void
 log_slave_task (struct task *task,int level,char *fmt,...) {
@@ -85,7 +77,8 @@ log_on_screen (void) {
   return 0;
 }
 
-FILE *log_slave_open_task (int level, struct task *task) {
+FILE *
+log_slave_open_task (int level, struct task *task) {
   FILE *f;
   char filename[PATH_MAX];
 
@@ -106,7 +99,8 @@ FILE *log_slave_open_task (int level, struct task *task) {
   return f;
 }
 
-void log_slave_computer (int level, char *fmt, ...) {
+void
+log_slave_computer (int level, char *fmt, ...) {
   char name2[MAXNAMELEN];
   char *name = NULL;  /* To only make a call to gethostname */
   va_list ap;
@@ -127,7 +121,8 @@ void log_slave_computer (int level, char *fmt, ...) {
   va_end (ap);
 }
 
-FILE *log_slave_open_computer (int level, char *name) {
+FILE *
+log_slave_open_computer (int level, char *name) {
   FILE *f;
   char filename[BUFFERLEN];
   char *basedir;
@@ -154,7 +149,8 @@ FILE *log_slave_open_computer (int level, char *name) {
   return f;
 }
 
-void log_master_job (struct job *job, int level, char *fmt, ...) {
+void 
+og_master_job (struct job *job, int level, char *fmt, ...) {
   va_list ap;
 
   if (!log_level_dest (level))
@@ -192,7 +188,8 @@ log_level_dest (int level) {
   return 1;
 }
 
-FILE *log_master_open (int level) {
+FILE *
+log_master_open (int level) {
   FILE *f;
   char filename[BUFFERLEN];
   char *basedir;
@@ -240,7 +237,8 @@ log_level_out_set (int outlevel) {
   loglevel |= outlevel & L_OUTMASK;
 }
 
-char *log_level_str (int level) {
+char *
+log_level_str (int level) {
   char *msg;
 
   switch (level & L_LEVELMASK) {
@@ -269,7 +267,8 @@ char *log_level_str (int level) {
   return msg;
 }
 
-int log_job_path_get (uint32_t jobid, char *path, int pathlen) {
+int
+log_job_path_get (uint32_t jobid, char *path, int pathlen) {
   char *log_basedir;
   char *jobname;
   int nwritten; // number of bytes written
@@ -302,7 +301,8 @@ int log_job_path_get (uint32_t jobid, char *path, int pathlen) {
   return nwritten;
 }
 
-int log_task_filename_get (struct task *task, char *path, int pathlen) {
+int
+log_task_filename_get (struct task *task, char *path, int pathlen) {
   // Returns len of the written string or -1 on failure
   char job_path[PATH_MAX];
   int nwritten;
@@ -355,7 +355,8 @@ log_path_create (char *path) {
   return 1;
 }
 
-int log_dumptask_open (struct task *t) {
+int
+log_dumptask_open (struct task *t) {
   int lfd;
   char task_filename[PATH_MAX];
   char job_path[PATH_MAX];
@@ -411,7 +412,8 @@ int log_dumptask_open (struct task *t) {
   return lfd;
 }
 
-int log_dumptask_open_ro (struct task *t) {
+int
+log_dumptask_open_ro (struct task *t) {
   /* Open in read only for clients */
   int lfd;
   char task_filename[PATH_MAX];
@@ -443,7 +445,8 @@ int log_dumptask_open_ro (struct task *t) {
   return lfd;
 }
 
-void log_get_time_str (char *timebuf,int buflen) {
+void
+log_get_time_str (char *timebuf, int buflen) {
   time_t now;
   size_t len = 0;
   char tbuf[MAXLOGLINELEN];
@@ -459,7 +462,7 @@ void log_get_time_str (char *timebuf,int buflen) {
 }
 
 void
-log_get_job_str (char *buffer,int buflen) {
+log_get_job_str (char *buffer, int buflen) {
   if (!buffer) {
     return;
   }
@@ -498,7 +501,8 @@ log_get_task_str (char *buffer, int buflen) {
 	    logger_task->jobname,logger_task->frame,logger_task->itask,logger_task->icomp);
 }
 
-void log_auto (int level, char *fmt, ...) {
+void
+log_auto (int level, char *fmt, ...) {
   // this will be the way to send log messages when no one is known
   // for sure.
   FILE *f_log = stderr;

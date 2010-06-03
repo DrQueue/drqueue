@@ -63,8 +63,8 @@ get_speedindex (struct computer_hwinfo *hwinfo) {
   return speedindex;
 }
 
-
-void report_hwinfo (struct computer_hwinfo *hwinfo) {
+void
+report_hwinfo (struct computer_hwinfo *hwinfo) {
   printf ("HWINFO Report\n");
   printf ("Name:\t\t\t%s\n",hwinfo->name);
   printf ("Architecture:\t\t%s\n",archstring((t_arch)hwinfo->arch));
@@ -77,7 +77,8 @@ void report_hwinfo (struct computer_hwinfo *hwinfo) {
   printf ("Memory:\t\t\t%i Mbytes\n",hwinfo->memory);
 }
 
-char *osstring (t_os os) {
+char *
+osstring (t_os os) {
   char *msg;
 
   switch (os) {
@@ -147,7 +148,8 @@ bitsstring (uint8_t nnbits) {
   return msg;
 }
 
-char *archstring (t_arch arch) {
+char *
+archstring (t_arch arch) {
   char *msg;
 
   switch (arch) {
@@ -177,7 +179,8 @@ char *archstring (t_arch arch) {
   return msg;
 }
 
-char *proctypestring (t_proctype proctype) {
+char *
+proctypestring (t_proctype proctype) {
   char *msg;
 
   switch (proctype) {

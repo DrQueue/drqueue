@@ -69,7 +69,8 @@ envvars_free (struct envvars *envvars) {
   return rv;
 }
 
-int envvars_attach (struct envvars *envvars) {
+int
+envvars_attach (struct envvars *envvars) {
   // This function just tries to attach the segment identified by
   // evshmid to the data structure
   
@@ -276,7 +277,8 @@ envvars_get_shared_memory (int size) {
   return shmid;
 }
 
-int envvars_variable_add (struct envvars *envvars, char *name, char *value) {
+int
+envvars_variable_add (struct envvars *envvars, char *name, char *value) {
 
 #ifdef __DEBUG_ENVVARS
   fprintf (stderr,"envvars_variable_add() Starting...\n");
@@ -352,7 +354,8 @@ int envvars_variable_add (struct envvars *envvars, char *name, char *value) {
   return 1;
 }
 
-int envvars_variable_delete (struct envvars *envvars, char *name) {
+int
+envvars_variable_delete (struct envvars *envvars, char *name) {
   struct envvar *var = envvars_variable_find (envvars,name);
 
   if (!var) {

@@ -302,7 +302,7 @@ database_save (struct database *wdb) {
 }
 
 int
-database_job_save_frames (int sfd,struct job *job) {
+database_job_save_frames (int sfd, struct job *job) {
   int nframes = job_nframes (job);
   struct frame_info *fi;
   int i;
@@ -330,7 +330,7 @@ database_job_save_frames (int sfd,struct job *job) {
 }
 
 int
-database_job_load_frames (int sfd,struct job *job) {
+database_job_load_frames (int sfd, struct job *job) {
   uint32_t nframes = job_nframes (job);
   struct frame_info *fi;
   uint32_t d;

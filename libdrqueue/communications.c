@@ -66,7 +66,8 @@ long int brecv;   /* Bytes received */
 // * anydata_init_received
 // * anydata_init_sending
 
-int get_socket (uint16_t port) {
+int
+get_socket (uint16_t port) {
   int sfd;
   struct sockaddr_in addr;
   int opt = 1;
@@ -99,7 +100,7 @@ int get_socket (uint16_t port) {
 
 // FIXME: should be named accept_socket_master
 int
-accept_socket (int sfd,struct database *wdb,struct sockaddr_in *addr) {
+accept_socket (int sfd, struct database *wdb, struct sockaddr_in *addr) {
   int fd;
   socklen_t len = sizeof (struct sockaddr_in);
 
@@ -161,7 +162,8 @@ accept_socket_slave (int sfd) {
 }
 
 
-int connect_to_master (void) {
+int 
+connect_to_master (void) {
   /* To be used by a slave ! */
   /* Connects to the master and returns the socket fd */
   /* or -1 in case of error */
@@ -205,7 +207,8 @@ int connect_to_master (void) {
   return sfd;
 }
 
-int connect_to_slave (char *slave) {
+int 
+connect_to_slave (char *slave) {
   /* Connects to the slave and returns the socket fd */
   int sfd;
   struct sockaddr_in addr;
@@ -293,7 +296,8 @@ check_send_datasize (int sfd, uint32_t datasize) {
   return 1;
 }
 
-int recv_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo) {
+int 
+recv_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo) {
   void *buf;
   uint32_t datasize;
   
@@ -321,7 +325,8 @@ int recv_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo) {
   return 1;
 }
 
-int send_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo) {
+int 
+send_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo) {
   struct computer_hwinfo bswapped;
   void *buf = &bswapped;
   uint32_t datasize;
@@ -349,7 +354,8 @@ int send_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo) {
   return 1;
 }
 
-int recv_request (int sfd, struct request *request) {
+int 
+recv_request (int sfd, struct request *request) {
   /* Returns 0 on failure */
   void *buf = request;
 
@@ -363,7 +369,7 @@ int recv_request (int sfd, struct request *request) {
   return 1;
 }
 
-int send_request (int sfd, struct request *request,uint8_t who) {
+int send_request (int sfd, struct request *request, uint8_t who) {
   void *buf = request;
 
   request->data = htonl (request->data);
@@ -377,7 +383,8 @@ int send_request (int sfd, struct request *request,uint8_t who) {
   return 1;
 }
 
-int send_computer_status (int sfd, struct computer_status *status) {
+int 
+send_computer_status (int sfd, struct computer_status *status) {
   uint16_t i;
   uint16_t ntasks;
   uint16_t nrunning;
@@ -416,7 +423,8 @@ int send_computer_status (int sfd, struct computer_status *status) {
   return 1;
 }
 
-int send_computer_loadavg (int sfd, struct computer_status *status) {
+int 
+send_computer_loadavg (int sfd, struct computer_status *status) {
   uint16_t nbo_loadavg[3]; // network byte ordered
   
   nbo_loadavg[0] = htons(status->loadavg[0]);
@@ -440,7 +448,8 @@ int recv_computer_loadavg (int sfd, struct computer_status *status) {
   return 1;
 }
 
-int recv_computer_ntasks (int sfd, struct computer_status *status) {
+int 
+recv_computer_ntasks (int sfd, struct computer_status *status) {
   uint16_t ntasks;
   uint16_t nrunning;
   if (!dr_read(sfd,(char*)&ntasks,sizeof(uint16_t))) {
@@ -455,7 +464,8 @@ int recv_computer_ntasks (int sfd, struct computer_status *status) {
   return 1;
 }
 
-int send_computer_ntasks (int sfd, struct computer_status *status) {
+int 
+send_computer_ntasks (int sfd, struct computer_status *status) {
   uint16_t nbo_ntasks;   // network byte ordered
   uint16_t nbo_nrunning; // network byte ordered
   
@@ -471,7 +481,8 @@ int send_computer_ntasks (int sfd, struct computer_status *status) {
 }
 
 
-int recv_computer_status (int sfd, struct computer_status *status) {
+int 
+recv_computer_status (int sfd, struct computer_status *status) {
   void *buf;
   int i;
   struct task task;
@@ -745,7 +756,8 @@ send_task (int sfd, struct task *task) {
   return 1;
 }
 
-int send_computer (int sfd, struct computer *computer, uint8_t use_local_pools) {
+int
+send_computer (int sfd, struct computer *computer, uint8_t use_local_pools) {
   if (!send_computer_status (sfd,&computer->status)) {
     printf ("error send_computer_status\n");
     return 0;
@@ -762,7 +774,8 @@ int send_computer (int sfd, struct computer *computer, uint8_t use_local_pools) 
   return 1;
 }
 
-int recv_computer (int sfd, struct computer *computer) {
+int
+recv_computer (int sfd, struct computer *computer) {
   if (!recv_computer_status (sfd,&computer->status)) {
     printf ("error recv_computer_status\n");
     return 0;
@@ -779,7 +792,8 @@ int recv_computer (int sfd, struct computer *computer) {
   return 1;
 }
 
-int recv_frame_info (int sfd, struct frame_info *fi) {
+int
+recv_frame_info (int sfd, struct frame_info *fi) {
   void *buf;
 
   buf = fi;
@@ -818,7 +832,8 @@ int send_frame_info (int sfd, struct frame_info *fi) {
   return 1;
 }
 
-int send_string (int sfd, char *str) {
+int
+send_string (int sfd, char *str) {
   uint16_t len,lensw;
   uint32_t datasize;
 
@@ -842,7 +857,8 @@ int send_string (int sfd, char *str) {
   return 1;
 }
 
-int recv_string (int sfd, char **str) {
+int
+recv_string (int sfd, char **str) {
   uint16_t len;
   uint32_t datasize;
 
@@ -867,7 +883,8 @@ int recv_string (int sfd, char **str) {
   return 1;
 }
 
-int send_computer_pools (int sfd, struct computer_limits *cl, uint8_t use_local_pools) {
+int
+send_computer_pools (int sfd, struct computer_limits *cl, uint8_t use_local_pools) {
   uint16_t i;
   uint16_t npools;
   struct pool *pool;
@@ -932,7 +949,8 @@ int send_computer_pools (int sfd, struct computer_limits *cl, uint8_t use_local_
   return 1;
 }
 
-int recv_computer_pools (int sfd, struct computer_limits *cl) {
+int
+recv_computer_pools (int sfd, struct computer_limits *cl) {
   uint16_t i;
   uint16_t npools;
   struct pool pool;
@@ -985,7 +1003,8 @@ int recv_computer_pools (int sfd, struct computer_limits *cl) {
   return 1;
 }
 
-int recv_computer_limits (int sfd, struct computer_limits *cl) {
+int
+recv_computer_limits (int sfd, struct computer_limits *cl) {
   struct computer_limits limits;
   void *buf=&limits;
   uint32_t datasize;
@@ -1066,7 +1085,8 @@ send_computer_limits (int sfd, struct computer_limits *cl, uint8_t use_local_poo
   return 1;
 }
 
-int write_32b (int sfd, void *data) {
+int
+write_32b (int sfd, void *data) {
   uint32_t bswapped;
   void *buf = &bswapped;
 
@@ -1078,7 +1098,8 @@ int write_32b (int sfd, void *data) {
   return 1;
 }
 
-int write_16b (int sfd, void *data) {
+int
+write_16b (int sfd, void *data) {
   uint16_t bswapped;
   void *buf = &bswapped;
 
@@ -1090,7 +1111,8 @@ int write_16b (int sfd, void *data) {
   return 1;
 }
 
-int read_32b (int sfd, void *data) {
+int
+read_32b (int sfd, void *data) {
   void *buf;
 
   buf = data;
@@ -1103,7 +1125,8 @@ int read_32b (int sfd, void *data) {
   return 1;
 }
 
-int read_16b (int sfd, void *data) {
+int
+read_16b (int sfd, void *data) {
   void *buf;
 
   buf = data;
@@ -1116,7 +1139,8 @@ int read_16b (int sfd, void *data) {
   return 1;
 }
 
-int send_autoenable (int sfd, struct autoenable *ae) {
+int
+send_autoenable (int sfd, struct autoenable *ae) {
   struct autoenable bswapped;
   void *buf = &bswapped;
 
@@ -1132,7 +1156,8 @@ int send_autoenable (int sfd, struct autoenable *ae) {
   return 1;
 }
 
-int recv_autoenable (int sfd, struct autoenable *ae) {
+int
+recv_autoenable (int sfd, struct autoenable *ae) {
 
   // FIXME: check size
   if (!dr_read(sfd,(char*)ae,sizeof(struct autoenable))) {
@@ -1227,7 +1252,8 @@ send_blocked_host (int sfd, struct blocked_host *bh, int do_checksize) {
   return 1;
 }
 
-int recv_blocked_host (int sfd, struct blocked_host *bh, int do_checksize) {
+int
+recv_blocked_host (int sfd, struct blocked_host *bh, int do_checksize) {
   uint32_t datasize;
   datasize = sizeof (*bh);
 
@@ -1243,7 +1269,8 @@ int recv_blocked_host (int sfd, struct blocked_host *bh, int do_checksize) {
   return 1;
 }
 
-int dr_read (int fd, char *buf, uint32_t len) {
+int
+dr_read (int fd, char *buf, uint32_t len) {
   int r;
   int bleft;
   int total = 0;
@@ -1271,7 +1298,8 @@ int dr_read (int fd, char *buf, uint32_t len) {
   return len;
 }
 
-int dr_write (int fd, char *buf, uint32_t len) {
+int
+dr_write (int fd, char *buf, uint32_t len) {
   int w;
   int bleft;
 

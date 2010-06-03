@@ -69,13 +69,13 @@ struct computer {
 
 #pragma pack(pop)
 
-int computer_index_addr (void *pwdb,struct in_addr addr); /* I use pointers to void instead to struct database */
-int computer_index_name (void *pwdb,char *name);     /* because if I did I would have to create a dependency loop */
+int computer_index_addr (void *pwdb, struct in_addr addr); /* I use pointers to void instead to struct database */
+int computer_index_name (void *pwdb, char *name);     /* because if I did I would have to create a dependency loop */
 int computer_index_free (void *pwdb);
 int computer_available (struct computer *computer);
 uint16_t computer_ntasks (struct computer *comp);
 uint16_t computer_nrunning (struct computer *comp);
-uint16_t computer_nrunning_job (struct computer *comp,uint32_t ijob);
+uint16_t computer_nrunning_job (struct computer *comp, uint32_t ijob);
 void computer_update_assigned (struct database *wdb, uint32_t ijob, uint32_t iframe, uint32_t icomp, uint16_t itask);
 void computer_init (struct computer *computer);
 int computer_free (struct computer *computer);

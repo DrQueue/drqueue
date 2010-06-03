@@ -33,7 +33,7 @@ extern long int brecv;  /* Bytes received */
 #endif
 
 int get_socket (uint16_t port);
-int accept_socket (int sfd,struct database *wdb,struct sockaddr_in *addr);
+int accept_socket (int sfd, struct database *wdb, struct sockaddr_in *addr);
 int accept_socket_slave (int sfd);
 int connect_to_master (void);
 int connect_to_slave (char *slave);
@@ -42,8 +42,8 @@ int check_send_datasize (int sfd, uint32_t datasize);
 int check_recv_datasize (int sfd, uint32_t datasize);
 
 int recv_request (int sfd, struct request *request);
-int send_request (int sfd, struct request *request,uint8_t who);
-int send_computer (int sfd, struct computer *computer,uint8_t use_local_pools);
+int send_request (int sfd, struct request *request, uint8_t who);
+int send_computer (int sfd, struct computer *computer, uint8_t use_local_pools);
 int recv_computer (int sfd, struct computer *computer);
 int recv_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo);
 int send_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo);
@@ -54,7 +54,7 @@ int send_computer_loadavg (int sfd, struct computer_status *status);
 int recv_computer_ntasks (int sfd, struct computer_status *status);
 int send_computer_ntasks (int sfd, struct computer_status *status);
 int recv_computer_limits (int sfd, struct computer_limits *cl);
-int send_computer_limits (int sfd, struct computer_limits *cl,uint8_t use_local_pools);
+int send_computer_limits (int sfd, struct computer_limits *cl, uint8_t use_local_pools);
 int recv_job (int sfd, struct job *job);
 int send_job (int sfd, struct job *job);
 int recv_task (int sfd, struct task *task);
@@ -65,7 +65,7 @@ int recv_autoenable (int sfd, struct autoenable *ae);
 int send_autoenable (int sfd, struct autoenable *ae);
 int send_blocked_host (int sdf, struct blocked_host *bh, int do_checksize);
 int recv_blocked_host (int sdf, struct blocked_host *bh, int do_checksize);
-int send_computer_pools (int sfd, struct computer_limits *cl,uint8_t use_local_pools);
+int send_computer_pools (int sfd, struct computer_limits *cl, uint8_t use_local_pools);
 int recv_computer_pools (int sfd, struct computer_limits *cl);
 int send_envvars (int sfd, struct envvars *envvars, int do_checksize);
 int recv_envvars (int sfd, struct envvars *envvars, int do_checksize);

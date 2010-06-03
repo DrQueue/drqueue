@@ -42,7 +42,7 @@ get_hwinfo (struct computer_hwinfo *hwinfo) {
 #if defined(__i386__)
   hwinfo->arch = ARCH_INTEL;
   bl=128;
-  sysctlbyname("hw.model", &buffer,&bl,NULL,0);
+  sysctlbyname("hw.model",&buffer,&bl,NULL,0);
 
   if (strstr(buffer,"Opteron(tm)") != NULL) {
     hwinfo->proctype = PROCTYPE_OPTERON;

@@ -32,7 +32,7 @@ void config_close (FILE *f_cfg);
 char *config_eol_remove (char *buffer, int len);
 char *config_read_line (char *buffer, int buflen, FILE *f_conf);
 
-void config_get_default_file (char *dst,char *tool,int dstlen) {
+void config_get_default_file (char *dst, char *tool, int dstlen) {
   snprintf (dst,dstlen,"%s/%s.%s",BASE_CONF_PATH,tool,BASE_CONF_EXT);
 }
 
@@ -255,7 +255,8 @@ config_line_ends_node (struct config_node *base, char *line) {
   return 0;
 }
 
-int config_end_node (struct config_node *base, FILE *file) {
+int
+config_end_node (struct config_node *base, FILE *file) {
   char line[BUFFERLEN];
   char *res;
   long pos = ftell (file);
@@ -271,7 +272,8 @@ int config_end_node (struct config_node *base, FILE *file) {
   return 0;
 }
 
-struct config_item *config_item_new (struct config_node *base, char *line) {
+struct config_item *
+config_item_new (struct config_node *base, char *line) {
   char *name;
   char *value;
   char *sep;
@@ -287,7 +289,8 @@ struct config_item *config_item_new (struct config_node *base, char *line) {
   return NULL;
 }
 
-void config_read_item (struct config_node *base, FILE *file) {
+void
+config_read_item (struct config_node *base, FILE *file) {
   char line[BUFFERLEN];
   char *res;
   res = fgets (line,BUFFERLEN,file);
@@ -295,13 +298,15 @@ void config_read_item (struct config_node *base, FILE *file) {
     config_item_new (base,res);
 }
 
-void config_add_node_items (struct config_node *base, FILE *file) {
+void
+config_add_node_items (struct config_node *base, FILE *file) {
   while ( ! config_end_node (base,file) ) {
     config_read_item (base,file);
   }
 }
 
-void config_add_node (struct config_node *base, FILE *file, char *line) {
+void
+config_add_node (struct config_node *base, FILE *file, char *line) {
   struct config_node *node = config_node_new (base,"Temp Name","No description",file);
   int len = (strlen(line)-3 > CFG_ITEM_NAME_LEN) ? CFG_ITEM_NAME_LEN : strlen(line)-3; 
   strncpy (node->name,&line[1],len);
@@ -310,7 +315,8 @@ void config_add_node (struct config_node *base, FILE *file, char *line) {
   //config_add_node_children (node,file);
 }
 
-int config_find_nodes (struct config_node *base,FILE *file) {
+int
+config_find_nodes (struct config_node *base, FILE *file) {
   char line[BUFFERLEN];
   char *res;
   while ((res = config_read_line (line,BUFFERLEN,file)) != NULL) {
@@ -347,7 +353,7 @@ config_node_new (struct config_node *parent, char *name, char *desc, FILE *file)
 }
 
 struct config_node *
-config_read (char *filename,char *tool) {
+config_read (char *filename, char *tool) {
 
   // Fuction to be called for parsing "filename" config related to "tool"
   FILE *cfg_file = config_open (filename);

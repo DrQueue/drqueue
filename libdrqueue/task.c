@@ -28,13 +28,15 @@
 #include "libdrqueue.h"
 
 
-void task_init_all (struct task *task) {
+void
+task_init_all (struct task *task) {
   int i;
   for (i=0;i < MAXTASKS; i++)
     task_init (&task[i]);
 }
 
-void task_init (struct task *task) {
+void
+task_init (struct task *task) {
   if (!task) {
     return;
   }
@@ -76,7 +78,8 @@ task_available (struct slave_database *sdb) {
   return r;
 }
 
-void task_report (struct task *task) {
+void
+task_report (struct task *task) {
   printf ("Job name:\t%s\n",task->jobname);
   printf ("Job index:\t%i\n",task->ijob);
   printf ("Job command:\t%s\n",task->jobcmd);
@@ -86,7 +89,8 @@ void task_report (struct task *task) {
   printf ("Task status:\t%s\n",task_status_string(task->status));
 }
 
-char *task_status_string (unsigned char status) {
+char *
+task_status_string (unsigned char status) {
   char *st_string;
   switch (status) {
   case TASKSTATUS_LOADING:

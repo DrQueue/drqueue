@@ -247,7 +247,8 @@ computer_pool_detach_shared_memory (struct computer_limits *cl) {
   return rv;
 }
 
-int computer_pool_add (struct computer_limits *cl, char *poolname) {
+int
+computer_pool_add (struct computer_limits *cl, char *poolname) {
   struct pool *opool = (struct pool *)-1;
   struct pool *npool = (struct pool *)-1;
   int64_t npoolshmid;
@@ -419,7 +420,8 @@ computer_pool_list (struct computer_limits *cl) {
 }
 
 
-int computer_pool_exists (struct computer_limits *cl,char *poolname) {
+int
+computer_pool_exists (struct computer_limits *cl, char *poolname) {
   int i;
   struct pool *npool;
   int found = 0;
