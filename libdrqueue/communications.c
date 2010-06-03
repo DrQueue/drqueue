@@ -78,7 +78,11 @@ int get_socket (uint16_t port) {
     return sfd;
     //kill (0,SIGINT);
   } else {
-    if (setsockopt(sfd,SOL_SOCKET,SO_REUSEADDR,(int *)&opt,sizeof(opt)) == -1) {
+#ifdef _WIN32      
+    if (setsockopt(sfd,SOL_SOCKET,SO_REUSEADDR,(char *)&opt,sizeof(opt)) == -1) {
+#else
+    if (setsockopt(sfd,SOL_SOCKET,SO_REUSEADDR,(void *)&opt,sizeof(opt)) == -1) {
+#endif
       drerrno_system = errno;
       log_auto (L_ERROR,"get_socket(): call to setsockopt() failed. Msg: %s",strerror(drerrno_system));
     }
