@@ -1442,9 +1442,9 @@ void handle_r_r_jobenvvars (int sfd,struct database *wdb,int icomp,struct reques
   /* The master handles this type of packages */
   /* This function is called unlocked */
   /* This function is called by the master */
-  log_auto (L_DEBUG,"Entering handle_r_r_jobenvvars");
-
   uint32_t ijob;
+
+  log_auto (L_DEBUG,"Entering handle_r_r_jobenvvars");  
 
   ijob = req->data;
 

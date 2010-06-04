@@ -32,6 +32,7 @@
 /* create a new script file */
 struct jobscript_info *jobscript_new (jobscript_type type,char *filename) {
   FILE *f = NULL;
+  struct jobscript_info *jsi;
 
   if ( (type != JOBSCRIPT_TCSH) && (type != JOBSCRIPT_PYTHON) ) {
     fprintf (stderr,"ERROR: Job type requested unknown (%i)\n",type);
@@ -48,10 +49,12 @@ struct jobscript_info *jobscript_new (jobscript_type type,char *filename) {
 
   fchmod (fileno(f),0777);
 
-  struct jobscript_info *jsi = (struct jobscript_info*) malloc (sizeof (struct jobscript_info));
-  jsi->type = type;
-  jsi->file = f;
-  strncpy(jsi->filename,filename,PATH_MAX);
+  jsi = (struct jobscript_info*) malloc (sizeof (struct jobscript_info));
+  if(jsi) {
+    jsi->type = type;
+    jsi->file = f;
+    strncpy(jsi->filename,filename,PATH_MAX);
+  }
 
   return jsi;
 }

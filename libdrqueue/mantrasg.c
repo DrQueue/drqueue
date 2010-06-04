@@ -41,6 +41,7 @@ char *mantrasg_create (struct mantrasgi *info) {
   char *p;   /* Scene filename without path */
   char scene[MAXCMDLEN];
   char renderdir[MAXCMDLEN];
+  struct jobscript_info *ji;
 
   /* Check the parameters */
   if (!strlen(info->scene)) {
@@ -65,75 +66,79 @@ char *mantrasg_create (struct mantrasgi *info) {
   snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
   // TODO: Unified path handling
-  struct jobscript_info *ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
-
-  jobscript_write_heading (ji);
-  jobscript_set_variable (ji,"SCENE",scene);
-  jobscript_set_variable (ji,"RENDERDIR",renderdir);
-  jobscript_set_variable (ji,"RF_OWNER",info->file_owner);
-  jobscript_set_variable_int (ji,"RAYTRACE",info->raytrace);
-  jobscript_set_variable_int (ji,"ANTIALIAS",info->aaoff);
-  
-  if (info->custom_bucket) {
-  	jobscript_set_variable (ji,"CUSTOM_BUCKET","yes");
-  	jobscript_set_variable_int (ji,"BUCKETSIZE",info->bucketSize);
-  }
-  if (info->custom_lod) {
-  	jobscript_set_variable (ji,"CUSTOM_LOD","yes");
-  	jobscript_set_variable_int (ji,"LOD",info->LOD);
-  }
-  if (info->custom_varyaa) {
-  	jobscript_set_variable (ji,"CUSTOM_VARYAA","yes");
-  	jobscript_set_variable_int (ji,"VARYAA",info->varyAA);
-  }
-  if (info->custom_bDepth) {
-  	jobscript_set_variable (ji,"CUSTOM_BDEPTH","yes");
-  	jobscript_set_variable_int (ji,"BDEPTH",info->bDepth);
-  }
-  if (info->custom_zDepth) {
-  	jobscript_set_variable (ji,"CUSTOM_ZDEPTH","yes");
-  	jobscript_set_variable (ji,"ZDEPTH",info->zDepth);
-  }
-  if (info->custom_Cracks) {
-  	jobscript_set_variable (ji,"CUSTOM_CRACKS","yes");
-  	jobscript_set_variable_int (ji,"CRACKS",info->Cracks);
-  }
-  if (info->custom_Quality) {
-  	jobscript_set_variable (ji,"CUSTOM_QUALITY","yes");
-  	jobscript_set_variable_int (ji,"QUALITY",info->Quality);
-  }
-  if (info->custom_QFiner) {
-  	jobscript_set_variable (ji,"CUSTOM_QFINER","yes");
-  	jobscript_set_variable (ji,"QFINER",info->QFiner);
-  }
-  if (info->custom_SMultiplier) {
-  	jobscript_set_variable (ji,"CUSTOM_SMULTIPLIER","yes");
-  	jobscript_set_variable_int (ji,"SMULTIPLIER",info->SMultiplier);
-  }
-  if (info->custom_MPCache) {
-  	jobscript_set_variable (ji,"CUSTOM_MPCACHE","yes");
-  	jobscript_set_variable_int (ji,"MPCACHE",info->MPCache);
-  }
-  if (info->custom_MCache) {
-  	jobscript_set_variable (ji,"CUSTOM_MCACHE","yes");
-  	jobscript_set_variable_int (ji,"MCACHE",info->MCache);
-  }
-  if (info->custom_SMPolygon) {
-  	jobscript_set_variable (ji,"CUSTOM_SMPOLYGON","yes");
-  	jobscript_set_variable_int (ji,"SMPOLYGON",info->SMPolygon);
-  }  
-  if (info->custom_WH) {
-  	jobscript_set_variable (ji,"CUSTOM_WH","yes");
-  	jobscript_set_variable_int (ji,"WIDTH",info->Width);
-  	jobscript_set_variable_int (ji,"HEIGHT",info->Height);
-  }
-  if (info->custom_Type) {
-  	jobscript_set_variable (ji,"CUSTOM_TYPE","yes");
-  	jobscript_set_variable (ji,"CTYPE",info->Type);
-  }
+  ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
+  if(ji) {
+    jobscript_write_heading (ji);
+    jobscript_set_variable (ji,"SCENE",scene);
+    jobscript_set_variable (ji,"RENDERDIR",renderdir);
+    jobscript_set_variable (ji,"RF_OWNER",info->file_owner);
+    jobscript_set_variable_int (ji,"RAYTRACE",info->raytrace);
+    jobscript_set_variable_int (ji,"ANTIALIAS",info->aaoff);
     
-  jobscript_template_write (ji,"3delight_sg.py");
-  jobscript_close (ji);
+    if (info->custom_bucket) {
+      jobscript_set_variable (ji,"CUSTOM_BUCKET","yes");
+      jobscript_set_variable_int (ji,"BUCKETSIZE",info->bucketSize);
+    }
+    if (info->custom_lod) {
+      jobscript_set_variable (ji,"CUSTOM_LOD","yes");
+      jobscript_set_variable_int (ji,"LOD",info->LOD);
+    }
+    if (info->custom_varyaa) {
+      jobscript_set_variable (ji,"CUSTOM_VARYAA","yes");
+      jobscript_set_variable_int (ji,"VARYAA",info->varyAA);
+    }
+    if (info->custom_bDepth) {
+      jobscript_set_variable (ji,"CUSTOM_BDEPTH","yes");
+      jobscript_set_variable_int (ji,"BDEPTH",info->bDepth);
+    }
+    if (info->custom_zDepth) {
+      jobscript_set_variable (ji,"CUSTOM_ZDEPTH","yes");
+      jobscript_set_variable (ji,"ZDEPTH",info->zDepth);
+    }
+    if (info->custom_Cracks) {
+      jobscript_set_variable (ji,"CUSTOM_CRACKS","yes");
+      jobscript_set_variable_int (ji,"CRACKS",info->Cracks);
+    }
+    if (info->custom_Quality) {
+      jobscript_set_variable (ji,"CUSTOM_QUALITY","yes");
+      jobscript_set_variable_int (ji,"QUALITY",info->Quality);
+    }
+    if (info->custom_QFiner) {
+      jobscript_set_variable (ji,"CUSTOM_QFINER","yes");
+      jobscript_set_variable (ji,"QFINER",info->QFiner);
+    }
+    if (info->custom_SMultiplier) {
+      jobscript_set_variable (ji,"CUSTOM_SMULTIPLIER","yes");
+      jobscript_set_variable_int (ji,"SMULTIPLIER",info->SMultiplier);
+    }
+    if (info->custom_MPCache) {
+      jobscript_set_variable (ji,"CUSTOM_MPCACHE","yes");
+      jobscript_set_variable_int (ji,"MPCACHE",info->MPCache);
+    }
+    if (info->custom_MCache) {
+      jobscript_set_variable (ji,"CUSTOM_MCACHE","yes");
+      jobscript_set_variable_int (ji,"MCACHE",info->MCache);
+    }
+    if (info->custom_SMPolygon) {
+      jobscript_set_variable (ji,"CUSTOM_SMPOLYGON","yes");
+      jobscript_set_variable_int (ji,"SMPOLYGON",info->SMPolygon);
+    }  
+    if (info->custom_WH) {
+      jobscript_set_variable (ji,"CUSTOM_WH","yes");
+      jobscript_set_variable_int (ji,"WIDTH",info->Width);
+      jobscript_set_variable_int (ji,"HEIGHT",info->Height);
+    }
+    if (info->custom_Type) {
+      jobscript_set_variable (ji,"CUSTOM_TYPE","yes");
+      jobscript_set_variable (ji,"CTYPE",info->Type);
+    }
+      
+    jobscript_template_write (ji,"3delight_sg.py");
+    jobscript_close (ji);
+  } else {
+    drerrno = DRE_NOTCOMPLETE;
+    return NULL;
+  }
 
   return filename;
 }

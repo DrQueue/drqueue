@@ -373,6 +373,7 @@ void job_update_assigned (struct database *wdb, uint32_t ijob, uint32_t iframe, 
   /* Here we should set all the information inside the task structure (slave) */
   /* about the assigned job (master) into the remote computer */
   /* This function is called by the master, locked */
+  time_t ttime;
 
   if (!job_index_correct_master (wdb,ijob)) {
     /* Somebody could have deleted the job meanwhile */
@@ -398,7 +399,6 @@ void job_update_assigned (struct database *wdb, uint32_t ijob, uint32_t iframe, 
   wdb->job[ijob].frame_info.ptr[iframe].itask = itask;
 
   /* Time stuff */
-  time_t ttime;
   time (&ttime);
   wdb->job[ijob].frame_info.ptr[iframe].start_time = (uint64_t) ttime;
   wdb->job[ijob].frame_info.ptr[iframe].end_time = wdb->job[ijob].frame_info.ptr[iframe].start_time
