@@ -154,7 +154,7 @@ task_environment_set (struct task *task) {
   static char jobname[BUFFERLEN];
 
   /* Padded frame number */
-  /* TODO: make padding length user defined */
+  /* FIXME: make padding length user defined */
   snprintf (padframe,BUFFERLEN,"DRQUEUE_PADFRAME=%0*i",task->frame_pad,task->frame);
   putenv (padframe);
 

@@ -85,7 +85,7 @@ jobscript_write_heading (struct jobscript_info *ji) {
     break;
   }
   
-  // TODO: ERROR bla bla
+  // FIXME: ERROR bla bla
   return 0;
 }
 
@@ -114,7 +114,7 @@ jobscript_set_variable (struct jobscript_info *ji, char *name, char *value) {
     break;
   }
 
-  // TODO: ERROR bla bla
+  // FIXME: ERROR bla bla
   return 0;
 }
 
@@ -181,7 +181,7 @@ jobscript_tcsh_set_variable (struct jobscript_info *ji, char *name,char *value) 
   if ( (rv = jobscript_tcsh_check_pointer (ji)) == 0 ) {
     return rv;
   }
-  // TODO: correct name of variable
+  // FIXME: correct name of variable
   fprintf (ji->file,"\n## tcsh variable set by jobscript tools\n");
   fprintf (ji->file,"set %s=\"%s\"\n",name,value);
   return 1;
@@ -194,7 +194,7 @@ jobscript_python_set_variable (struct jobscript_info *ji, char *name,char *value
   if ( (rv = jobscript_python_check_pointer (ji)) == 0 ) {
     return rv;
   }
-  // TODO: correct name of variable
+  // FIXME: correct name of variable
   fprintf (ji->file,"\n## python variable set by jobscript tools\n");
   fprintf (ji->file,"%s=\"%s\"\n",name,value);
   return 1;
@@ -212,7 +212,7 @@ jobscript_template_write (struct jobscript_info *ji, char *template_file_name)
   int size;
   char buf[BUFFERLEN];
 
-  // TODO: Check template type (bash,tcsh,...), detect and report errors
+  // FIXME: Check template type (bash,tcsh,...), detect and report errors
 
   if ( (rv = jobscript_check_pointer (ji)) == 0 ) {
     return rv;

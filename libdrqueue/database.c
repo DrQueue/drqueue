@@ -161,7 +161,7 @@ database_load (struct database *wdb) {
   int fd;
   int c;           /* counters */
 
-  // TODO: no filename guessing.
+  // FIXME: no filename guessing.
   if ((basedir = getenv ("DRQUEUE_DB")) == NULL) {
     /* This should never happen because we check it at the beginning of the program */
     drerrno = DRE_NOENVROOT;
@@ -211,6 +211,12 @@ database_load (struct database *wdb) {
 int
 database_backup (struct database *wdb) {
   // FIXME: to be written !!
+  
+  // fix compiler warning
+  (void)wdb;
+  
+  // FIXME: use wdb variable
+  
   return 1;
 }
 
@@ -226,7 +232,7 @@ database_save (struct database *wdb) {
   int fd;
   uint32_t c;
 
-  // TODO: this all filename guessing should be inside a function
+  // FIXME: this all filename guessing should be inside a function
   if ((basedir = getenv ("DRQUEUE_DB")) == NULL) {
     /* This should never happen because we check it at the beginning of the program */
     log_auto (L_ERROR,"database_save() : DRQUEUE_DB environment variable could not be found. Master db cannot be saved.");
@@ -241,12 +247,12 @@ database_save (struct database *wdb) {
   semaphore_lock(wdb->semid);
 
   if (database_backup(wdb) == 0) {
-    // TODO: filename should be a value returned by a function
+    // FIXME: filename should be a value returned by a function
     log_auto (L_ERROR,"database_save() : there was an error while backing up old database. NOT SAVING current one. (file: %s)",
               filename);
   }
 
-  // TODO:
+  // FIXME:
   // dbfd = database_file_open(filename)
   log_auto (L_INFO,"Storing DB into: '%s'",filename);
 
@@ -275,7 +281,7 @@ database_save (struct database *wdb) {
     }
   }
 
-  // TODO: database_header_save()
+  // FIXME: database_header_save()
   hdr.magic = DB_MAGIC;
   hdr.version = database_version_id();
   hdr.job_size = MAXJOBS;
@@ -286,7 +292,7 @@ database_save (struct database *wdb) {
   for (c = 0; c < hdr.job_size; c++) {
     logger_job = &wdb->job[c];
     if (!database_job_save (fd, &wdb->job[c])) {
-      // TODO: report
+      // FIXME: report
       log_auto (L_ERROR,"database_save(): error saving job number %i. (%s)",c,strerror(drerrno_system));
       return 0;
     }
@@ -309,7 +315,7 @@ database_job_save_frames (int sfd, struct job *job) {
 
   if ((fi = attach_frame_shared_memory (job->fishmid)) == (void *) -1) {
     // Store empty frames in an attemp to save other jobs
-    // TODO: Warning CORRUPT
+    // FIXME: Warning CORRUPT
     struct frame_info fi2;
     job_frame_info_init (&fi2);
     for (i = 0; i < nframes; i++) {

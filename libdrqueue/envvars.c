@@ -158,7 +158,7 @@ envvars_dump_info (struct envvars *envvars) {
         fprintf (stderr,"Value='%s'\n",temp[i].value);
       }
       
-      // TODO: detach tests -> (shmdt (envvars->variables) != -1))
+      // FIXME: detach tests -> (shmdt (envvars->variables) != -1))
       
       if (shmdt(temp) == -1) {
         fprintf (stderr,"envvars_dump_info() failed at shmdt(temp)\n");
@@ -379,7 +379,7 @@ envvars_variable_delete (struct envvars *envvars, char *name) {
   // New shared memory id
   int64_t nshmid = envvars_get_shared_memory (new_size);
   if (nshmid == (int64_t)-1) {
-    // TODO: Report
+    // FIXME: Report
     return 0;
   }
   struct envvars new_envvars;
@@ -387,7 +387,7 @@ envvars_variable_delete (struct envvars *envvars, char *name) {
   new_envvars.nvariables = new_size;
   new_envvars.evshmid = nshmid;
   if (!envvars_attach(&new_envvars)) {
-    // TODO: Report
+    // FIXME: Report
     return 0;
   }
 

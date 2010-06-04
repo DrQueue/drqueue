@@ -399,6 +399,11 @@ computer_autoenable_check (struct slave_database *sdb) {
 int
 computer_lock_check (struct computer *computer) {
 #if defined (_NO_COMPUTER_SEMAPHORES)
+  // fix compiler warning
+  (void)computer;
+  
+  // FIXME: use computer variable
+  
   return 1;
 #else
   if (!semaphore_valid(computer->semid)) {
@@ -417,6 +422,11 @@ computer_lock_check (struct computer *computer) {
 int
 computer_lock (struct computer *computer) {
 #if defined (_NO_COMPUTER_SEMAPHORES)
+  // fix compiler warning
+  (void)computer;
+  
+  // FIXME: use computer variable
+  
   return 1;
 #else
   computer_lock_check (computer);
@@ -433,6 +443,11 @@ computer_lock (struct computer *computer) {
 int
 computer_release (struct computer *computer) {
 #if defined (_NO_COMPUTER_SEMAPHORES)
+  // fix compiler warning
+  (void)computer;
+  
+  // FIXME: use computer variable
+  
   return 1;
 #else
   computer_lock_check (computer);

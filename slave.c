@@ -665,7 +665,7 @@ void launch_task (struct slave_database *sdb, uint16_t itask) {
       sdb->comp->status.ntasks = computer_ntasks (sdb->comp);
       sdb->comp->status.nrunning = computer_nrunning (sdb->comp);
       semaphore_release(sdb->semid);
-      // TODO: notify the master ?
+      // FIXME: notify the master ?
     } else {
       // waitpid returned successfully
       /* We have to clean the task and send the info to the master */

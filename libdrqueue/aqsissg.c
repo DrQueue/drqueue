@@ -57,7 +57,7 @@ char *aqsissg_create (struct aqsissgi *info) {
   p = ( p ) ? p+1 : scene;
   snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
-  // TODO: Unified path handling
+  // FIXME: Unified path handling
   struct jobscript_info *ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
 
   jobscript_write_heading (ji);

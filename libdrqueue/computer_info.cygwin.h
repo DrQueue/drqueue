@@ -169,7 +169,7 @@ get_numproc (void) {
   char buf[BUFFERLEN];
 
   if ((cpuinfo = fopen("/proc/cpuinfo","r")) == NULL) {
-    // TODO: log_auto
+    // FIXME: log_auto
     perror ("get_numproc: fopen");
     kill (0,SIGINT);
   }

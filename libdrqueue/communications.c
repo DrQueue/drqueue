@@ -101,6 +101,11 @@ get_socket (uint16_t port) {
 // FIXME: should be named accept_socket_master
 int
 accept_socket (int sfd, struct database *wdb, struct sockaddr_in *addr) {
+  // fix compiler warning
+  (void)wdb;
+  
+  // FIXME: use wdb variable
+  
   int fd;
   socklen_t len = sizeof (struct sockaddr_in);
 
@@ -521,7 +526,7 @@ recv_envvar (int sfd, struct envvar *var, int do_checksize) {
 
   datasize = sizeof (struct envvar);
   if (do_checksize && !check_recv_datasize(sfd, datasize)) {
-    // TODO: log it
+    // FIXME: log it
     return 0;
   }
 
@@ -541,12 +546,12 @@ send_envvar (int sfd, struct envvar *var, int do_checksize) {
 
   datasize = sizeof (struct envvar);
   if (do_checksize && !check_send_datasize(sfd,datasize)) {
-    // TODO: log it
+    // FIXME: log it
     return 0;
   }
 
   if (!dr_write (sfd,(char *)var, datasize)) {
-    // TODO: log it
+    // FIXME: log it
     return 0;
   }
 
@@ -665,7 +670,7 @@ send_job (int sfd, struct job *job) {
 
   datasize = sizeof(struct job);
   if (!check_send_datasize(sfd,datasize)) {
-    // TODO: log it
+    // FIXME: log it
     fprintf (stderr,"datasize: %i",datasize);
     return 0;
   }
@@ -696,7 +701,7 @@ recv_task (int sfd, struct task *task) {
 		   job */
   datasize = sizeof (*task);
   if (!check_recv_datasize(sfd,datasize)) {
-    // TODO
+    // FIXME
     return 0;
   }
 
@@ -729,7 +734,7 @@ send_task (int sfd, struct task *task) {
   uint32_t datasize = sizeof (*task);
 
   if (!check_send_datasize(sfd,datasize)) {
-    // TODO
+    // FIXME
     return 0;
   }
 
@@ -1241,7 +1246,7 @@ send_blocked_host (int sfd, struct blocked_host *bh, int do_checksize) {
   datasize = sizeof (*bh);
 
   if (do_checksize && !check_send_datasize(sfd,datasize)) {
-    // TODO: log
+    // FIXME: log
     return 0;
   }
 
@@ -1258,7 +1263,7 @@ recv_blocked_host (int sfd, struct blocked_host *bh, int do_checksize) {
   datasize = sizeof (*bh);
 
   if (do_checksize && !check_recv_datasize(sfd,datasize)) {
-    // TODO: log
+    // FIXME: log
     return 0;
   }
 

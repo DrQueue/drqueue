@@ -108,7 +108,7 @@ Help(opts.GenerateHelpText(env_lib))
 write_git_rev(get_git_commit())
 
 #conf = Configure(env_lib)
-# TODO: write configure tests
+# FIXME: write configure tests
 #env_lib = conf.Finish()
 
 # Installation paths

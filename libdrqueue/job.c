@@ -226,7 +226,7 @@ job_delete (struct job *job) {
   // Deallocates all memory reserved for the job and initializes it.
   //
   if (!job) {
-    // TODO: log it
+    // FIXME: log it
     return;
   }
   job_frame_info_free (job);
@@ -715,7 +715,7 @@ job_check_frame_status (struct database *wdb, uint32_t ijob, uint32_t iframe, st
       }
     } else { // itask == -1
       /* The task is being loaded, so it hasn't yet a itask assigned */
-      // TODO: check for timeout
+      // FIXME: check for timeout
       log_auto(L_WARNING,"job_check_frame_status(): task is being loaded (?). itask == -1.");
       running = 1;
     }
@@ -1372,7 +1372,7 @@ job_block_host_add_by_name (struct job *job, char *name) {
       return 0;
     }
 
-    // TODO: block_host_exists
+    // FIXME: block_host_exists
     // Search for coincidence
     for (i = 0; i < job->nblocked; i++) {
       if (strcmp (obh[i].name,name) == 0) {
@@ -1395,7 +1395,7 @@ job_block_host_add_by_name (struct job *job, char *name) {
     // Once copied we can remove the previous list
     detach_blocked_host_shared_memory (obh);
     if (shmctl ((int)job->bhshmid,IPC_RMID,NULL) == -1) {
-      // TODO: log error
+      // FIXME: log error
       // ...
     }
   }
@@ -1431,7 +1431,7 @@ job_block_host_exists_by_name (struct job *job, char *name) {
   }
 
   if ((obh = attach_blocked_host_shared_memory (job->bhshmid)) == (void *)-1) {
-    // TODO
+    // FIXME
     return exists;
   }
   
@@ -1460,11 +1460,11 @@ job_block_host_remove_by_name (struct job *job, char *name) {
 
   if (job->nblocked) {
     if ((obh = attach_blocked_host_shared_memory (job->bhshmid)) == (void *)-1) {
-      // TODO
+      // FIXME
       return 0;
     }
     if ((nbhshmid = get_blocked_host_shared_memory (sizeof(struct blocked_host)*(job->nblocked-1))) == (int64_t)-1) {
-      // TODO
+      // FIXME
       detach_blocked_host_shared_memory(obh);
       return 0;
     }

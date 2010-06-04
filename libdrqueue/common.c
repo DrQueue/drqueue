@@ -148,6 +148,11 @@ common_environment_check (void) {
 
 void
 show_version (char **argv) {
+  // fix compiler warning
+  (void)argv;
+  
+  // FIXME: use argv variable
+  
   printf ("DrQueue (Version: %s)\n",get_version_complete());
 }
 

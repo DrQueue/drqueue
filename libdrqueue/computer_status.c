@@ -90,7 +90,7 @@ check_tasks (struct computer_status *cstatus, int64_t semid) {
           cstatus->task[i].used = 0;
         }
       } else {
-        // TODO: LOADING or FINISHED ?
+        // FIXME: LOADING or FINISHED ?
         cstatus->ntasks++;
       }
     }

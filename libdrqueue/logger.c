@@ -79,6 +79,11 @@ log_on_screen (void) {
 
 FILE *
 log_slave_open_task (int level, struct task *task) {
+  // fix compiler warning
+  (void)level;
+  
+  // FIXME: use level variable
+  
   FILE *f;
   char filename[PATH_MAX];
 
@@ -101,6 +106,11 @@ log_slave_open_task (int level, struct task *task) {
 
 void
 log_slave_computer (int level, char *fmt, ...) {
+  // fix compiler warning
+  (void)level;
+  
+  // FIXME: use level variable
+  
   char name2[MAXNAMELEN];
   char *name = NULL;  /* To only make a call to gethostname */
   va_list ap;
@@ -123,6 +133,11 @@ log_slave_computer (int level, char *fmt, ...) {
 
 FILE *
 log_slave_open_computer (int level, char *name) {
+  // fix compiler warning
+  (void)level;
+  
+  // FIXME: use level variable
+  
   FILE *f;
   char filename[BUFFERLEN];
   char *basedir;
@@ -190,6 +205,11 @@ log_level_dest (int level) {
 
 FILE *
 log_master_open (int level) {
+  // fix compiler warning
+  (void)level;
+  
+  // FIXME: use level variable
+  
   FILE *f;
   char filename[BUFFERLEN];
   char *basedir;
@@ -279,7 +299,7 @@ log_job_path_get (uint32_t jobid, char *path, int pathlen) {
   }
 
   if (!path) {
-    // TODO: Show error
+    // FIXME: Show error
     //fprintf (stderr,"Non valid values for path or pathlen.\n");
     return -1;
   }
@@ -294,7 +314,7 @@ log_job_path_get (uint32_t jobid, char *path, int pathlen) {
   // we do not need the job anymore
 
   if (nwritten >= pathlen) {
-    // TODO: Show error
+    // FIXME: Show error
     return -1;
   }
   
@@ -309,13 +329,13 @@ log_task_filename_get (struct task *task, char *path, int pathlen) {
   struct task *ttask = NULL;
 
   if (!path) {
-    // TODO: Show error
+    // FIXME: Show error
     //fprintf (stderr,"Non valid values for path or pathlen.\n");
     return -1;
   }
 
   if ((nwritten = log_job_path_get(task->ijob,job_path,PATH_MAX)) == -1) {
-    // TODO: Show error
+    // FIXME: Show error
     fprintf (stderr,"log_task_filename_get(): could not obtain job logs path. (%s)",strerror(drerrno_system));
     logger_task = ttask;
     return -1;
@@ -323,7 +343,7 @@ log_task_filename_get (struct task *task, char *path, int pathlen) {
   
   nwritten = snprintf(path,pathlen,"%s/%s.%04u",job_path,task->jobname,task->frame);
   if (nwritten >= pathlen) {
-    // TODO: Show error
+    // FIXME: Show error
     return -1;
   }
 
@@ -366,7 +386,7 @@ log_dumptask_open (struct task *t) {
 
 
   if (log_job_path_get(t->ijob,job_path,PATH_MAX) == -1) {
-    // TODO: looking more like...
+    // FIXME: looking more like...
 /*     char config_logs_path[PATH_MAX]; */
 /*     if (!config_get_logs_path(config_logs_path,PATH_MAX)) { */
 /*     } */
@@ -376,7 +396,7 @@ log_dumptask_open (struct task *t) {
       //log_auto (L_WARNING,"log_dumptask_open(): environment variable DRQUEUE_LOGS not set.");
       return -1;
     }
-    // TODO: path
+    // FIXME: path
     snprintf(job_path,PATH_MAX,"%s/%03u.%s.DEFAULT",basedir,t->ijob,t->jobname);
   }
 
@@ -391,14 +411,14 @@ log_dumptask_open (struct task *t) {
 
   if (log_task_filename_get(t,task_filename,PATH_MAX) == -1) {
     // Backup code
-    // TODO: path
+    // FIXME: path
     snprintf(task_filename,PATH_MAX,"%s/%s.%04i.DEFAULT",job_path,t->jobname,t->frame);
   }
 
   //log_auto(L_DEBUG,"log_dumptask_open(): logs for this task go to path '%s'",task_filename);
 
 
-  // TODO: Check for directory and creation on another function.
+  // FIXME: Check for directory and creation on another function.
   if ((lfd = open (task_filename, O_CREAT|O_APPEND|O_RDWR, 0664)) == -1) {
     drerrno_system = errno;
     //log_auto (L_ERROR,"log_dumptask_open(): error on open. (%s)",strerror(drerrno_system));
@@ -428,10 +448,10 @@ log_dumptask_open_ro (struct task *t) {
         //log_auto (L_ERROR,"log_dumptask_open_ro(): environment variable DRQUEUE_LOGS not set.");
         return -1;
       }
-      // TODO: path
+      // FIXME: path
       snprintf(job_path,PATH_MAX,"%s/%03u.%s.DEFAULT",basedir,t->ijob,t->jobname);
     }
-    // TODO: path
+    // FIXME: path
     snprintf(task_filename,PATH_MAX,"%s/%s.%04i.DEFAULT",job_path,t->jobname,t->frame);
   }
   

@@ -62,7 +62,11 @@ config_eol_remove (char *buffer, int buflen) {
     return NULL;
   }
 
-  // TODO: Check return pointers in lenght range
+  // fix compiler warning
+  (void)buflen;
+  
+  // FIXME: Check return pointers in lenght range
+    
   // Check windows
   beol = strchr(buffer,'\r');
   if (beol) {
@@ -274,6 +278,11 @@ config_end_node (struct config_node *base, FILE *file) {
 
 struct config_item *
 config_item_new (struct config_node *base, char *line) {
+  // fix compiler warning
+  (void)base;	
+  
+  // FIXME: use base variable
+	
   char *name;
   char *value;
   char *sep;
