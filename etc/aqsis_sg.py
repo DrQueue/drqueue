@@ -55,7 +55,8 @@ if BLOCK > DRQUEUE_ENDFRAME:
 
 if ("CUSTOM_CROP" in locals()) and (CUSTOM_CROP == "yes"):
 	crop_args="-crop "+CROP_XMIN+" "+CROP_XMAX+" "+CROP_YMIN+" "+CROP_YMAX
-
+else:
+	crop_args=""
 
 ENGINE_PATH="aqsis"
 
