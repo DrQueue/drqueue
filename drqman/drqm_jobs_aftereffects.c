@@ -71,7 +71,7 @@ GtkWidget *dnj_koj_frame_aftereffects (struct drqm_jobs_info *info) {
   g_signal_connect (G_OBJECT(button),"clicked",
                     G_CALLBACK(dnj_koj_frame_aftereffects_project_search),&info->dnj.koji_aftereffects);
 
-  // Comp thigy, WTF means "comp" ?
+  /* Name of composition */
   hbox = gtk_hbox_new (TRUE,2);
   gtk_box_pack_start (GTK_BOX(vbox),hbox,FALSE,FALSE,2);
   label = gtk_label_new ("Comp:");

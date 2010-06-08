@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # 
-# Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
+# Copyright (C) 2001,2002,2003,2004,2005,2006,2007,2008,2009,2010 Jorge Daza Garcia-Blanes
 #
 # This file is part of DrQueue
 # 
@@ -22,11 +22,15 @@
 # $Id$
 #
 
-import sys,os
-import drqueue_base_tools
-
-import ez_setup
-ez_setup.use_setuptools()
+#<<<<<<< HEAD
+#import sys,os
+#import drqueue_base_tools
+#
+#import ez_setup
+#ez_setup.use_setuptools()
+#=======
+from setuptools import setup
+#>>>>>>> 0.64.x
 
 import glob
 from setuptools import setup, find_packages, Extension
@@ -51,7 +55,7 @@ def get_wordsize_flags():
     bitsFlag = []
   else:
     if sys.platform == 'cygwin' or sys.platform == 'win32':
-      print "Win32 Environment: %s"%(sys.platform,)
+      print("Win32 Environment: %s"%(sys.platform,))
       #bitsFlag = [ flagPrefix + '-mdll',
       #             linkPrefix + '--no-undefined',
       #             linkPrefix + '--enable-runtime-pseudo-reloc' ]
@@ -59,7 +63,7 @@ def get_wordsize_flags():
 
 def get_define_macros():
   get_wordsize_flags()
-  print "Platform is: ",sys.platform
+  print("Platform is: ",sys.platform)
   l_define_macros=[('COMM_REPORT',None),('_GNU_SOURCE',None),
                    ('_NO_COMPUTER_POOL_SEMAPHORES',None),
                    ('_NO_COMPUTER_SEMAPHORES',None)]
@@ -84,7 +88,8 @@ def get_abspath_glob(path):
   
 def get_swig_flags():
     swigflags = ['-I'+get_abspath('..'),
-                 '-I'+get_abspath(os.path.join('..','libdrqueue'))]
+                 #'-I'+get_abspath(os.path.join('..','libdrqueue')),
+                 '-I'+get_abspath(os.path.join('libdrqueue'))]
     if sys.platform == "linux2":
       swigflags = swigflags + ['-D__LINUX']
     elif sys.platform == "darwin":
@@ -115,9 +120,13 @@ def custom_library_paths():
     return paths
 
 setup(
-    name = "drqueue",
+    name = "PyDrQueue",
     # TODO: get version from C header
+<<<<<<< HEAD
     version = "%s"%(drqueue_base_tools.version()),
+=======
+    version = "0.64.4",
+>>>>>>> 0.64.x
     # metadata for upload to PyPI
     # could also include long_description, download_url, classifiers, etc.
     author = "Jorge Daza",
@@ -126,19 +135,21 @@ setup(
     license = "GPL General Public License version 2",
     url = "http://drqueue.org/",
 
-    #packages = find_packages(exclude='ez_setup.py'),
-    package_dir = { '' : 'src' },
-    packages = [ 'drqueue', 'drqueue.base' ],
     ext_modules=[Extension('drqueue.base._libdrqueue', 
                  ['src/drqueue/base/libdrqueue.i'] \
-                 + get_abspath_glob(os.path.join('..','libdrqueue','*.c')),
-                 #libraries = [ 'python'+distutils.sysconfig.get_python_version() ],
-                 #library_dirs= [ distutils.sysconfig.get_python_lib() ] + custom_library_paths(),
+                 #+ get_abspath_glob(os.path.join('..','libdrqueue','*.c')) \
+                 + get_abspath_glob(os.path.join('libdrqueue','*.c')),
+                 libraries = [ 'python'+distutils.sysconfig.get_python_version() ],
+                 library_dirs= [ distutils.sysconfig.get_python_lib() ] + custom_library_paths(),
                  define_macros=get_define_macros(),
                  include_dirs=[get_abspath('..'),
-                               get_abspath(os.path.join('..','libdrqueue'))] + 
+                               #get_abspath(os.path.join('..','libdrqueue')),  
+                               get_abspath('libdrqueue')] +
                                custom_include_paths(),
                  swig_opts=get_swig_flags()),],
+    #packages = find_packages(exclude='ez_setup.py'),
+    packages = [ 'drqueue', 'drqueue.base' ],
+    package_dir = { '' : 'src' },
     #eager_resources = [ 'base','_base' ],
     #zip_safe = False,
 )

@@ -3,12 +3,12 @@
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -17,8 +17,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
-//
-// $Id$
 //
 
 #include <sys/types.h>
@@ -926,10 +924,6 @@ void job_environment_set (struct job *job, uint32_t iframe) {
     snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.blender.scene);
     putenv (scene);
     break;
-  case KOJ_BMRT:
-    snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.bmrt.scene);
-    putenv (scene);
-    break;
   case KOJ_PIXIE:
     snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.pixie.scene);
     putenv (scene);
@@ -1000,6 +994,10 @@ void job_environment_set (struct job *job, uint32_t iframe) {
     snprintf (imageExt,BUFFERLEN-1,"DRQUEUE_IMAGEEXT=%s",job->koji.xsi.imageExt);
     putenv (imageExt);
     break;
+  case KOJ_LUXRENDER:
+    snprintf (scene,BUFFERLEN-1,"DRQUEUE_SCENE=%s",job->koji.luxrender.scene);
+    putenv (scene);
+    break;
   }
 }
 
@@ -1040,16 +1038,7 @@ job_bswap_from_network (struct job *orig, struct job *dest) {
   case KOJ_NUKE:
   case KOJ_AFTEREFFECTS:
   case KOJ_SHAKE:
-    break;
-  case KOJ_BMRT:
-    dest->koji.bmrt.xmin = ntohl (orig->koji.bmrt.xmin);
-    dest->koji.bmrt.xmax = ntohl (orig->koji.bmrt.xmax);
-    dest->koji.bmrt.ymin = ntohl (orig->koji.bmrt.ymin);
-    dest->koji.bmrt.ymax = ntohl (orig->koji.bmrt.ymax);
-    dest->koji.bmrt.xsamples = ntohl (orig->koji.bmrt.xsamples);
-    dest->koji.bmrt.ysamples = ntohl (orig->koji.bmrt.ysamples);
-    dest->koji.bmrt.radiosity_samples = ntohl (orig->koji.bmrt.radiosity_samples);
-    dest->koji.bmrt.raysamples = ntohl (orig->koji.bmrt.raysamples);
+  case KOJ_LUXRENDER:
     break;
   case KOJ_3DELIGHT:
   case KOJ_PIXIE:
@@ -1103,16 +1092,7 @@ job_bswap_to_network (struct job *orig, struct job *dest) {
   case KOJ_NUKE:
   case KOJ_AFTEREFFECTS:
   case KOJ_SHAKE:
-    break;
-  case KOJ_BMRT:
-    dest->koji.bmrt.xmin = htonl (orig->koji.bmrt.xmin);
-    dest->koji.bmrt.xmax = htonl (orig->koji.bmrt.xmax);
-    dest->koji.bmrt.ymin = htonl (orig->koji.bmrt.ymin);
-    dest->koji.bmrt.ymax = htonl (orig->koji.bmrt.ymax);
-    dest->koji.bmrt.xsamples = htonl (orig->koji.bmrt.xsamples);
-    dest->koji.bmrt.ysamples = htonl (orig->koji.bmrt.ysamples);
-    dest->koji.bmrt.radiosity_samples = htonl (orig->koji.bmrt.radiosity_samples);
-    dest->koji.bmrt.raysamples = htonl (orig->koji.bmrt.raysamples);
+  case KOJ_LUXRENDER:
     break;
   case KOJ_3DELIGHT:
   case KOJ_PIXIE:
@@ -1258,9 +1238,6 @@ char *job_koj_string (struct job *job) {
   case KOJ_BLENDER:
     msg = "Blender";
     break;
-  case KOJ_BMRT:
-    msg = "Bmrt";
-    break;
   case KOJ_PIXIE:
     msg = "Pixie";
     break;
@@ -1291,6 +1268,9 @@ char *job_koj_string (struct job *job) {
   case KOJ_XSI:
     msg = "XSI";
     break;
+  case KOJ_LUXRENDER:
+    msg = "Luxrender";
+    break;
   default:
     msg = "DEFAULT (ERROR)";
   }
@@ -1319,7 +1299,7 @@ int job_available_no_icomp (struct database *wdb,uint32_t ijob, uint32_t *iframe
     return 0;
   }
 
-  if ((*iframe = job_first_frame_available_no_icomp (wdb,ijob)) == -1) {
+  if ((*iframe = job_first_frame_available_no_icomp (wdb,ijob)) == (uint32_t)-1) {
     semaphore_release(wdb->semid);
     return 0;
   }

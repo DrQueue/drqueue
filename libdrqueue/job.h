@@ -3,12 +3,12 @@
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -18,9 +18,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
-
 
 #ifndef _JOB_H_
 #define _JOB_H_
@@ -105,22 +102,6 @@ union koj_info {  /* Kind of job information */
     char viewcmd[BUFFERLEN]; /* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
   }
   blender;
-  struct koji_bmrt {
-    char scene[BUFFERLEN];
-    char viewcmd[BUFFERLEN];
-    char custom_crop;
-    uint32_t xmin,xmax,ymin,ymax;
-    char custom_samples;
-    uint32_t xsamples,ysamples;
-    char disp_stats;
-    char verbose;
-    char custom_beep;
-    char custom_radiosity;
-    uint32_t radiosity_samples;
-    char custom_raysamples;
-    uint32_t raysamples;
-  }
-  bmrt;
   struct koji_pixie {
     char scene[BUFFERLEN];
     char viewcmd[BUFFERLEN]; /* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
@@ -191,13 +172,31 @@ union koj_info {  /* Kind of job information */
     char viewcmd[BUFFERLEN]; /* something like "$DRQUEUE_BIN/viewcmd/imf_batch" */
   }
   xsi;
+  struct koji_luxrender {
+    char scene[BUFFERLEN];
+    char script[BUFFERLEN];
+    char viewcmd[BUFFERLEN];
+  }
+  luxrender;
+  struct koji_vray {
+    char script[BUFFERLEN];
+    char viewcmd[BUFFERLEN];
+  }
+  vray;
+  struct koji_threedsmax {
+    char scene[BUFFERLEN];
+    char script[BUFFERLEN];
+    char image[BUFFERLEN];
+    char viewcmd[BUFFERLEN];
+  }
+  threedsmax;
+
 };
 
 /* Koj types */
 #define KOJ_GENERAL       0  // Not specific koj
 #define KOJ_MAYA          1  // Maya koj
 #define KOJ_BLENDER       2  // Blender koj
-#define KOJ_BMRT          3  // BMRT koj
 #define KOJ_3DELIGHT      4  // 3delight koj
 #define KOJ_PIXIE         5  // Pixie koj
 #define KOJ_MENTALRAY     6  // Mental Ray koj
@@ -210,6 +209,9 @@ union koj_info {  /* Kind of job information */
 #define KOJ_TURTLE        13 // Turtle koj
 #define KOJ_MANTRA        14 // Mantra koj
 #define KOJ_XSI           15 // XSI koj
+#define KOJ_LUXRENDER     16 // LUXRENDER koj
+#define KOJ_VRAY		  17 // VRAY koj
+#define KOJ_3DSMAX        18 // 3DSMAX koj
 
 /* JOB SECTION */
 typedef enum {
@@ -322,6 +324,7 @@ void job_update_assigned (struct database *wdb,uint32_t ijob, uint32_t iframe, u
 void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job);
 void job_init (struct job *job);
 void job_frame_info_init (struct frame_info *fi);
+int job_frame_info_free (struct job *job);
 void job_delete (struct job *job);
 uint32_t job_njobs_masterdb (struct database *wdb);
 void job_update_info (struct database *wdb,uint32_t ijob);

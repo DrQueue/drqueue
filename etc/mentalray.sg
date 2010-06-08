@@ -28,9 +28,9 @@ if ($DRQUEUE_OS == "WINDOWS") then
 	#setenv SI_LINKTAB_LOCATION "/mnt/nfs/shared/mi33"
 	setenv SPM_HOST "localhost"
 else
-	setenv PATH "${PATH}:/usr/local/mi33/bin"
-	setenv SI_LINKTAB_LOCATION "/mnt/nfs/shared/mi33"
-	setenv SPM_HOST "license_server"
+	setenv PATH "${PATH}:/opt/mi/bin"
+	#setenv SI_LINKTAB_LOCATION "${DRQUEUE_RD}"
+	#setenv SPM_HOST "license_server"
 endif
 
 if ($DRQUEUE_OS == "WINDOWS") then
@@ -63,16 +63,19 @@ endif
 # Note: If the mentalrayrender script is not part of your mental ray package, you should be able to
 # use the 'ray' command instead.
 # example:
-#	if ( ! $?MI_ROOT ) then
-#		setenv MI_ROOT /usr/local/mi33
-#	endif
-#	echo ${MI_ROOT}/bin/ray -L ${MI_ROOT}/lib -I ${MI_ROOT}/include $DRQUEUE_SCENE -render $DRQUEUE_FRAME $BLOCK
-#	${MI_ROOT}/bin/ray -L ${MI_ROOT}/lib -I ${MI_ROOT}/include $DRQUEUE_SCENE -render $DRQUEUE_FRAME $BLOCK
-#
 
-echo mentalrayrender $DRQUEUE_SCENE -render $DRQUEUE_FRAME $BLOCK
+if ( ! $?MI_ROOT ) then
+		setenv MI_ROOT /opt/mi
+endif
 
-mentalrayrender "$DRQUEUE_SCENE" -render $DRQUEUE_FRAME $BLOCK
+echo ray $DRQUEUE_SCENE -render $DRQUEUE_FRAME $BLOCK
+
+ray $DRQUEUE_SCENE -render $DRQUEUE_FRAME $BLOCK
+
+
+#echo mentalrayrender $DRQUEUE_SCENE -render $DRQUEUE_FRAME $BLOCK
+
+#mentalrayrender "$DRQUEUE_SCENE" -render $DRQUEUE_FRAME $BLOCK
 
 # This should requeue the frame if failed
 if ( $? != 0 ) then
@@ -81,11 +84,16 @@ if ( $? != 0 ) then
 else
 	if ($DRQUEUE_OS != "WINDOWS") then
 	  # The frame was rendered properly
-	  ${DRQUEUE_ROOT}/bin/chown_block $RF_OWNER $DRQUEUE_RD/$DRQUEUE_IMAGE $DRQUEUE_FRAME $BLOCK
+	  #${DRQUEUE_ROOT}/bin/chown_block $RF_OWNER $DRQUEUE_RD/$DRQUEUE_IMAGE $DRQUEUE_FRAME $BLOCK
+	  
 	  # You may or may not want to comment out the 'exit 0' belown depending on how important
 	  # you consider changing the files ownership is.
-	  exit 0
-	endif
+	  #exit 0
+	
+	  # change userid and groupid
+  	  chown $RF_OWNER $DRQUEUE_SCENE:h/*
+	
+	endif	
 endif
 
 #

@@ -1,0 +1,23 @@
+xml.instruct! :xml, :version=>"1.0" 
+xml.rss(:version=>"2.0") {
+  xml.channel {
+  	xml.title(@title)
+    xml.link(@link)
+    xml.description(@description)
+    xml.language("en")
+    
+    @jobs_db.each do |job|
+		job_data = Job.job_data_from_master(job.queue_id)
+	    if job_data.status == Drqueue::JOBSTATUS_FINISHED
+	      	xml.item do
+	        	xml.title(job_data.name)
+	        	xml.description("Submit time: "+Time.at(job_data.submit_time).asctime+"<br />Finish time: "+Time.at(job_data.est_finish_time).asctime+"<br />Average frame time: "+Drqueue::time_str(job_data.avg_frame_time)+"<br />Frames: "+job_data.fdone.to_s+"<br /><br />"+link_to("Download renderings", {:controller => 'jobs', :action => 'download', :id => job_data.id, :protocol => "https://", :only_path => false})+"<br /><br />")
+	        	# rfc822
+	        	xml.pubDate(Time.at(job_data.est_finish_time).rfc2822)
+	      		xml.link(url_for(:controller => 'jobs', :action => 'show', :id => job_data.id, :protocol => "https://", :only_path => false))
+	      		xml.guid(url_for(:controller => 'jobs', :action => 'show', :id => job_data.id, :protocol => "https://", :only_path => false))
+	      	end
+	    end
+    end
+  }
+}

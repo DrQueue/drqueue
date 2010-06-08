@@ -1,14 +1,15 @@
 //
 // Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
+// Copyright (C) 2010 Andreas Schroeder
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -17,8 +18,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
-//
-// $Id$
 //
 
 #include <unistd.h>
@@ -535,8 +534,8 @@ int register_job (struct job *job) {
     switch (req.data) {
     case RERR_NOERROR:
       if (!send_job (sfd,job)) {
-        close (sfd);
         fprintf (stderr,"ERROR: Job couldn't be sent: %s\n",drerrno_str());
+        close (sfd);
         return 0;
       }
       break;
@@ -555,6 +554,7 @@ int register_job (struct job *job) {
     }
   } else {
     fprintf (stderr,"ERROR: Not appropiate answer to request R_R_REGISJOB\n");
+    close (sfd);
     return 0;
   }
 
@@ -1353,6 +1353,7 @@ int request_slave_killtask (char *slave,uint16_t itask,uint16_t who) {
     return 0;
   }
 
+  close (sfd);
   return 1;
 }
 
@@ -2046,6 +2047,7 @@ int request_job_frame_info (uint32_t ijob, uint32_t frame, struct frame_info *fi
     return 0;
   }
 
+  close (sfd);
   return 1;
 }
 
@@ -2074,7 +2076,8 @@ int request_job_delete_blocked_host (uint32_t ijob, uint32_t icomp, uint16_t who
     close (sfd);
     return 0;
   }
-
+  
+  close (sfd);
   return 1;
 }
 
@@ -2102,6 +2105,7 @@ request_job_block_host_by_name (uint32_t ijob, char *name, uint16_t who) {
     return 0;
   }
   
+  close (sfd);
   return 1;
 }
 
@@ -2130,6 +2134,7 @@ request_job_unblock_host_by_name (uint32_t ijob, char *name, uint16_t who) {
     return 0;
   }
 
+  close (sfd);
   return 1;
 }
 
@@ -2159,6 +2164,7 @@ request_job_add_blocked_host (uint32_t ijob, uint32_t icomp, uint16_t who) {
     return 0;
   }
 
+  close (sfd);
   return 1;
 }
 
@@ -2612,7 +2618,8 @@ request_job_list_blocked_host (uint32_t ijob, struct blocked_host **bh, uint16_t
     recv_blocked_host(sfd,tbh,1);
     tbh++;
   }
-
+  
+  close (sfd);
   return 1;
 }
 
@@ -2888,6 +2895,7 @@ int request_slave_limits_nmaxcpus_set (char *slave, uint32_t nmaxcpus, uint16_t 
     return 0;
   }
 
+  close (sfd);
   return 1;
 }
 
@@ -2907,7 +2915,8 @@ int request_slave_limits_enabled_set (char *slave, uint8_t enabled, uint16_t who
     drerrno = DRE_ERRORWRITING;
     return 0;
   }
-
+  
+  close (sfd);
   return 1;
 }
 
@@ -2944,6 +2953,7 @@ int request_slave_limits_autoenable_set (char *slave, uint32_t h, uint32_t m, un
     return 0;
   }
 
+  close (sfd);
   return 1;
 }
 
@@ -3087,6 +3097,7 @@ update_computer_limits (struct computer_limits *limits) {
     drerrno = DRE_ANSWERNOTRIGHT;
     return 0;
   }
+  
   close (sfd);
   return 1;
 }
@@ -3169,6 +3180,7 @@ int request_slave_limits_maxfreeloadcpu_set (char *slave, uint32_t maxfreeloadcp
     return 0;
   }
 
+  close (sfd);
   return 1;
 }
 
@@ -3213,7 +3225,7 @@ void handle_r_r_slavexit (int sfd,struct database *wdb,int icomp,struct request 
     semaphore_release (wdb->semid);
     return;
   }
-  if (wdb->computer[icomp2].hwinfo.id == icomp) {
+  if (wdb->computer[icomp2].hwinfo.id == (uint32_t)icomp) {
     log_auto (L_INFO,"Slave quitting: %s (%i)", wdb->computer[icomp2].hwinfo.name, icomp2);
     computer_free (&wdb->computer[icomp2]);
   }
@@ -3796,6 +3808,7 @@ int request_slave_job_available (char *slave, uint16_t who) {
     return 0;
   }
 
+  close (sfd);
   return 1;
 }
 
@@ -3817,6 +3830,7 @@ int request_slave_limits_pool_add (char *slave, char *pool, uint16_t who) {
     return 0;
   }
 
+  close (sfd);
   return 1;
 }
 
@@ -3838,6 +3852,7 @@ int request_slave_limits_pool_remove (char *slave, char *pool, uint16_t who) {
     return 0;
   }
 
+  close (sfd);
   return 1;
 }
 
@@ -4109,7 +4124,6 @@ request_job_name (uint32_t ijob, char **jobname, uint16_t who) {
   }
 
   close (sfd);
-
   return 1;
 }
 

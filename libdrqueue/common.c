@@ -3,12 +3,12 @@
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -17,8 +17,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
-//
-// $Id$
 //
 
 #include "common.h"
@@ -311,33 +309,13 @@ void set_default_env(void) {
   
 }
 
-char *
-get_revision_string () {
-  char *duprev = strdup("$Rev$");
-  char *number = duprev;
-  char *p = duprev;
-  char *e = p + strlen(duprev);
-
-  while ((p!=e) && !isdigit(*p)) {
-    p++;
-  }
-  if (p!=e) {
-    char *t = e;
-    number = p;
-    e=p;
-    while ((e!=t) && isdigit(*e)) {
-      e++;
-    }
-    if (e!=t) {
-      *e = 0 ;
-    }
-  }
-
-  return number;
+char *get_revision_string () {
+  static char buf[BUFFERLEN];
+  strncpy(buf, REVISION, BUFFERLEN-1);
+  return buf;
 }
 
-char *
-get_version_prepost () {
+char *get_version_prepost () {
   static char buf[BUFFERLEN];
   if (VERSION_PRE > 0) {
     snprintf(buf,BUFFERLEN,"c%u",VERSION_PRE);
@@ -349,16 +327,14 @@ get_version_prepost () {
   return buf;
 }
 
-char *
-get_version_complete () {
+char *get_version_complete () {
   static char buffer[BUFFERLEN];
-  snprintf (buffer,BUFFERLEN,"%i.%02i.%i%s-r%s",VERSION_MAJOR,VERSION_MINOR,VERSION_PATCH,
+  snprintf (buffer,BUFFERLEN,"%i.%02i.%i%s (%s)",VERSION_MAJOR,VERSION_MINOR,VERSION_PATCH,
 	    get_version_prepost(),get_revision_string());
   return buffer;
 }
 
-uint64_t
-swap64 (uint64_t source) {
+uint64_t swap64 (uint64_t source) {
   uint64_t result;
   char *s = (char*)&source;
   char *r = (char*)&result;
@@ -374,8 +350,7 @@ swap64 (uint64_t source) {
   return result;
 }
 
-uint64_t
-dr_hton64 (uint64_t source) {
+uint64_t dr_hton64 (uint64_t source) {
 #if defined (BIG_ENDIAN) && ! defined (LITTLE_ENDIAN)
   return source;
 #else
@@ -383,8 +358,7 @@ dr_hton64 (uint64_t source) {
 #endif
 }
 
-uint64_t
-dr_ntoh64 (uint64_t source) {
+uint64_t dr_ntoh64 (uint64_t source) {
 #if defined (BIG_ENDIAN) && ! defined (LITTLE_ENDIAN)
   return source;
 #else

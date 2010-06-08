@@ -3,12 +3,12 @@
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -17,8 +17,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
-//
-// $Id$
 //
 
 #include "logger.h"
@@ -39,7 +37,6 @@ get_hwinfo (struct computer_hwinfo *hwinfo) {
     perror ("get_hwinfo: gethostname");
     kill(0,SIGINT);
   }
-  // FIXME: Linux supports more architectures than those considered here.
   hwinfo->arch = get_architecture();
   hwinfo->os = OS_LINUX;
   hwinfo->proctype = get_proctype();
@@ -129,7 +126,20 @@ get_proctype (void) {
     } else if ((strstr(buf,"cpu") != NULL) && (strstr(buf,"UltraSparc") != NULL)) {
       proctype = PROCTYPE_ULTRASPARC;
       found = 1;
+    } else if ((strstr(buf,"cpu") != NULL) && (strstr(buf,"Cell Broadband Engine") != NULL)) {
+      proctype = PROCTYPE_CELLBE;
+      found = 1;
+    } else if ((strstr(buf,"cpu model") != NULL) && (strstr(buf,"R5000") != NULL)) {
+      proctype = PROCTYPE_MIPSR5000;
+      found = 1;
+    } else if ((strstr(buf,"cpu model") != NULL) && (strstr(buf,"R10000") != NULL)) {
+      proctype = PROCTYPE_MIPSR10000;
+      found = 1;
+    } else if ((strstr(buf,"cpu model") != NULL) && (strstr(buf,"R12000") != NULL)) {
+      proctype = PROCTYPE_MIPSR12000;
+      found = 1;
     }
+    
   }
 
   if (!found) {
@@ -185,6 +195,13 @@ get_procspeed (void) {
       clockspeed = strtoll (&buf[index],NULL,16);
       procspeed = (uint32_t)(clockspeed / 1e6);
       found = 1;
+    } else if (strstr(buf,"BogoMIPS") != NULL) {
+      // on SGI MIPS procspeed is equal to BogoMIPS
+      while (!isdigit(buf[index]))
+        index++;
+      sscanf (&buf[index],"%fMHz\n",&st);
+      procspeed = (int) st;
+      found = 1;
     }
   }
 
@@ -218,9 +235,9 @@ get_numproc (void) {
         index++;
       sscanf (&buf[index],"%i\n",&numproc);
       break;
-    } else if (strcasestr(buf,"BogoMIPS") != NULL) {
+    } else if (strcasestr(buf,"processor") != NULL) {
       numproc++;
-    }
+    }    
   }
 
   fclose (cpuinfo);
@@ -245,7 +262,17 @@ get_architecture (void) {
       // UltraSparc issue
       architecture = ARCH_SPARC;
       break;
-    } 
+    }
+    if ((strstr(buf,"system type") != NULL) && (strstr(buf,"SGI") != NULL)) {
+      // SGI MIPS issue
+      architecture = ARCH_MIPS;
+      break;
+    }
+    if ((strstr(buf,"model") != NULL) && (strstr(buf,"SonyPS3") != NULL)) {
+      // Sony PS3 issue
+      architecture = ARCH_POWER;
+      break;
+    }
   }
 
   fclose (cpuinfo);

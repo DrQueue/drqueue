@@ -35,6 +35,7 @@
 #include <ctype.h>
 
 #include "drqman.h"
+#include "drqm_common.h"
 #include "notebook.h"
 #include "libdrqueue.h"
 
@@ -77,7 +78,7 @@ int main (int argc, char *argv[]) {
   gtk_hbutton_box_set_layout_default (GTK_BUTTONBOX_SPREAD);
 
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title(GTK_WINDOW(window),"DrQueue Manager");
+  gtk_window_set_title(GTK_WINDOW(window),DRQ_TITLE);
   gtk_window_set_default_size(GTK_WINDOW(window),700,400);
   gtk_container_border_width(GTK_CONTAINER(window), 0);
   g_signal_connect(GTK_OBJECT(window),"delete_event",

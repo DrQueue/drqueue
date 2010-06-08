@@ -1,0 +1,213 @@
+html {
+	height: 100%;
+}
+
+body {
+	margin:0px;
+	padding:0px;
+	background-color: #fff;
+	color: #333;
+	height: 100%;
+}
+
+body, div, table, td {
+	font-family: 'Trebuchet MS', 'Verdana', 'Tahoma', 'Arial', sans-serif;
+	font-size: 13px;
+	color: #062971;
+	}
+a {
+	color: #3354AA;
+	text-decoration: underline;
+	cursor: pointer;
+	}
+a:hover {
+	color: #4B6DB7;
+	text-decoration: none;
+	}
+	
+#Logo {
+	float:left;
+	height:150px;
+	width:200px;
+}
+
+#DrQueueOnRails {
+	float:left;
+	height:150px;
+	text-align:left;
+	font-size:18px;
+}
+
+/*
+body, p, ol, ul, td {
+  font-family: verdana, arial, helvetica, sans-serif;
+  font-size:   13px;
+  line-height: 18px;
+}
+
+pre {
+  background-color: #eee;
+  padding: 10px;
+  font-size: 11px;
+}
+
+a { color: #000; }
+a:visited { color: #666; }
+a:hover { color: #fff; background-color:#000; }
+*/
+
+.fieldWithErrors {
+  padding: 2px;
+  background-color: red;
+  display: table;
+}
+
+#errorExplanation {
+  width: 400px;
+  border: 2px solid red;
+  padding: 7px;
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+  background-color: #f0f0f0;
+}
+
+#errorExplanation h2 {
+  text-align: left;
+  font-weight: bold;
+  padding: 5px 5px 5px 15px;
+  font-size: 12px;
+  margin: -7px;
+  background-color: #c00;
+  color: #fff;
+}
+
+#errorExplanation p {
+  color: #333;
+  margin-bottom: 0;
+  padding: 5px;
+}
+
+#errorExplanation ul li {
+  font-size: 12px;
+  list-style: square;
+}
+
+div.uploadStatus {
+  margin: 5px;
+}
+
+div.progressBar {
+  margin: 5px;
+}
+
+div.progressBar div.border {
+  background-color: #fff;
+  border: 1px solid grey;
+  width: 100%;
+}
+
+div.progressBar div.background {
+  background-color: #333;
+  height: 18px;
+  width: 0%;
+}
+
+#Header {
+	background: url('../images/bi-linear-ly-light.png') repeat-x;
+	border-top:1px solid #acbedf;
+	border-bottom:1px solid #acbedf;
+	min-height: 135px;
+	}
+#Header * {
+	margin:0px;
+	padding:0px;
+	}
+#Header h1 {
+	text-align:center;
+	color:#000;
+	font-size:22px;
+	margin:10px 0px;
+	}
+#Header h1 strong {
+	color:#ffa500;
+	}
+#Header ul {
+	text-align:right;
+	}
+#Header ul li {
+	display:inline;
+	margin:0px 1px;
+	border-bottom:1px solid #acbedf;
+	}
+#Header ul li.TabOn {
+	background-color:#fff;
+	border:1px solid #acbedf;
+	border-bottom:1px solid #fff;
+	font-weight:bold;
+	}
+#Header ul li a {
+	padding:1px 5px;
+	font-size:11px;
+	text-decoration:none;
+	background-color:#5d709f;
+	color:#fff;
+	}
+#Header ul li a:hover {
+	background-color:#919ebe;
+	}
+#Header ul li.TabOn a,
+#Header ul li.TabOn a:hover {
+	background-color:#fff;
+	color:#000000;
+	}
+#Header ul li a em {
+	font-style:normal;
+	text-decoration:underline;
+	}
+	
+#Content {
+	margin:0px 10px 0px 10px;
+	padding-bottom: 7em;
+	}
+
+#nonFooter {
+	position: relative;
+	min-height: 100%;
+}
+
+* html #nonFooter {
+	height: 100%;
+}
+
+#Footer {
+	position: relative;
+	text-align: center;
+	font-size: 11px;
+	display: block;
+	margin-top: -3.5em;
+	width: 100%;
+}
+
+#HeaderSpacer {
+	width: 50px;
+	height: 119px;
+}
+
+#HeaderSpacer2 {
+	width: 50px;
+	height: 120px;
+}
+
+#Logfile {
+	font-size: 12px;
+	font-family: monospace;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #3354AA;
+	padding: 3px;
+}	
+
+#ButtonDiv {
+	float:left;
+	margin-right:3px;
+}

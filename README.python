@@ -16,17 +16,6 @@ So the package tree would be:
        \-> libdrqueue
   
 
-Temporary workaround
---------------------
-
-Until everything settles down, old scripts will keep on working using the import command:
-
-________________python___________________
-import drqueue.base.libdrqueue as drqueue
-_________________________________________
-
-That will make all previous scripts access the old information using the same syntax.
-
 
 INSTALLATION NOTES
 ------------------
@@ -47,6 +36,6 @@ bash# python setup.py install
 Setuptools / Distutils
 ----------------------
 Please refer to the documentation of these project for more details and options regarding installation and setup.
--> http://peak.telecommunity.com/DevCenter/setuptools
+-> http://docs.python.org/distutils
 -> http://www.python.org/community/sigs/current/distutils-sig/doc/
 

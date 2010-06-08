@@ -1,14 +1,15 @@
 //
 // Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
+// Copyright (C) 2010 Andreas Schroeder
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -17,9 +18,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
-//
-//
-// $Id$
 //
 
 #include <string.h>
@@ -44,7 +42,6 @@
 #include "drqm_jobs_maya.h"
 #include "drqm_jobs_mentalray.h"
 #include "drqm_jobs_blender.h"
-#include "drqm_jobs_bmrt.h"
 #include "drqm_jobs_mantra.h"
 #include "drqm_jobs_aqsis.h"
 #include "drqm_jobs_pixie.h"
@@ -54,6 +51,7 @@
 #include "drqm_jobs_nuke.h"
 #include "drqm_jobs_turtle.h"
 #include "drqm_jobs_xsi.h"
+#include "drqm_jobs_luxrender.h"
 
 // Icon includes
 #include "job_icon.h"
@@ -111,7 +109,7 @@ static void job_rerun_cb (GtkWidget *button, struct drqm_jobs_info *info);
 void
 free_job_list(GtkWidget *joblist,void *userdata) {
   struct drqm_jobs_info *info = (struct drqm_jobs_info *) userdata;
-  int i;
+  uint32_t i;
   if (!info) {
     return;
   }
@@ -249,9 +247,9 @@ static void PressedButtonRefresh (GtkWidget *b, struct drqm_jobs_info *info) {
 }
 
 void drqm_update_joblist (struct drqm_jobs_info *info) {
-  int i;
+  uint32_t i;
   char **buff;
-  int ncols = 11;
+  uint32_t ncols = 11;
 
   buff = (char**) malloc((ncols + 1) * sizeof(char*));
   for (i=0;i<ncols;i++)
@@ -287,7 +285,7 @@ void drqm_update_joblist (struct drqm_jobs_info *info) {
 }
 
 static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *info) {
-  int i;
+  uint32_t i;
   char *buf;
 
   if (event->type == GDK_BUTTON_PRESS) {
@@ -304,7 +302,7 @@ static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *
 
       info->row = -1;
       for (i=0;i<info->njobs;i++) {
-        if (info->jobs[i].id == info->ijob) {
+        if (info->jobs[i].id == (uint32_t)info->ijob) {
           info->row = i; // Points from this point on, to index of the job in info.
         }
       }
@@ -429,7 +427,7 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info) {
   snprintf(buf,BUFFERLEN-1,"%i",info->jobs[info->row].frame_step);
   gtk_entry_set_text(GTK_ENTRY(info->dnj.estf),buf);
   snprintf(buf,BUFFERLEN-1,"%hhu",info->jobs[info->row].frame_pad);
-  gtk_entry_set_text(GTK_ENTRY(info->dnj.estf),buf);
+  gtk_entry_set_text(GTK_ENTRY(info->dnj.efp),buf);
 
   /* Priority */
   if (info->jobs[info->row].priority == 1000) {
@@ -509,49 +507,6 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info) {
                        info->jobs[info->row].koji.blender.scene);
     gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_blender.eviewcmd),
                        info->jobs[info->row].koji.blender.viewcmd);
-    break;
-  case KOJ_BMRT:
-    gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(info->dnj.ckoj)->entry),
-                       "Bmrt");
-    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_bmrt.escene),
-                       info->jobs[info->row].koji.bmrt.scene);
-    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_bmrt.eviewcmd),
-                       info->jobs[info->row].koji.bmrt.viewcmd);
-    /* Custom crop */
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(info->dnj.koji_bmrt.cbcrop),
-                                 info->jobs[info->row].koji.bmrt.custom_crop);
-    snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].koji.bmrt.xmin);
-    gtk_entry_set_text (GTK_ENTRY(info->dnj.koji_bmrt.ecropxmin),buf);
-    snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].koji.bmrt.xmax);
-    gtk_entry_set_text (GTK_ENTRY(info->dnj.koji_bmrt.ecropxmax),buf);
-    snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].koji.bmrt.ymin);
-    gtk_entry_set_text (GTK_ENTRY(info->dnj.koji_bmrt.ecropymin),buf);
-    snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].koji.bmrt.ymax);
-    gtk_entry_set_text (GTK_ENTRY(info->dnj.koji_bmrt.ecropymax),buf);
-    /* Custom samples */
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(info->dnj.koji_bmrt.cbsamples),
-                                 info->jobs[info->row].koji.bmrt.custom_samples);
-    snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].koji.bmrt.xsamples);
-    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_bmrt.exsamples),buf);
-    snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].koji.bmrt.ysamples);
-    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_bmrt.eysamples),buf);
-    /* Stats, verbose, beep */
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(info->dnj.koji_bmrt.cbstats),
-                                 info->jobs[info->row].koji.bmrt.disp_stats);
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(info->dnj.koji_bmrt.cbverbose),
-                                 info->jobs[info->row].koji.bmrt.verbose);
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(info->dnj.koji_bmrt.cbbeep),
-                                 info->jobs[info->row].koji.bmrt.custom_beep);
-    /* Radiosity samples */
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(info->dnj.koji_bmrt.cbradiositysamples),
-                                 info->jobs[info->row].koji.bmrt.custom_radiosity);
-    snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].koji.bmrt.radiosity_samples);
-    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_bmrt.eradiositysamples),buf);
-    /* Custom raysamples */
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(info->dnj.koji_bmrt.cbraysamples),
-                                 info->jobs[info->row].koji.bmrt.custom_raysamples);
-    snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].koji.bmrt.raysamples);
-    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_bmrt.eraysamples),buf);
     break;
   case KOJ_PIXIE:
     gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(info->dnj.ckoj)->entry),
@@ -656,6 +611,11 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info) {
     gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_xsi.eimage), info->jobs[info->row].koji.xsi.image);
     gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_xsi.eimageExt), info->jobs[info->row].koji.xsi.imageExt);
     gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_xsi.eviewcmd), info->jobs[info->row].koji.xsi.viewcmd);
+    break;
+  case KOJ_LUXRENDER:
+    gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(info->dnj.ckoj)->entry), "Luxrender");
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_luxrender.escene), info->jobs[info->row].koji.luxrender.scene);
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_luxrender.eviewcmd), info->jobs[info->row].koji.luxrender.viewcmd);
     break;
   }
 }
@@ -1057,62 +1017,6 @@ static int dnj_submit (struct drqmj_dnji *info) {
     strncpy(job.koji.blender.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_blender.escene)),BUFFERLEN-1);
     strncpy(job.koji.blender.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_blender.eviewcmd)),BUFFERLEN-1);
     break;
-  case KOJ_BMRT:
-    strncpy(job.koji.bmrt.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.escene)),BUFFERLEN-1);
-    strncpy(job.koji.bmrt.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eviewcmd)),BUFFERLEN-1);
-    /* Custom crop */
-    job.koji.bmrt.custom_crop = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbcrop)->active;
-    if (job.koji.bmrt.custom_crop) {
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropxmin)),"%u",&job.koji.bmrt.xmin) != 1) {
-        fprintf (stderr,"x min could not be read\n");
-        return 0;
-      }
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropxmax)),"%u",&job.koji.bmrt.xmax) != 1) {
-        fprintf (stderr,"x max could not be read\n");
-        return 0;
-      }
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropymin)),"%u",&job.koji.bmrt.ymin) != 1) {
-        fprintf (stderr,"y min could not be read\n");
-        return 0;
-      }
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropymax)),"%u",&job.koji.bmrt.ymax) != 1) {
-        fprintf (stderr,"y max could not be read\n");
-        return 0;
-      }
-    }
-    /* Custom samples */
-    job.koji.bmrt.custom_samples = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbsamples)->active;
-    if (job.koji.bmrt.custom_samples) {
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.exsamples)),"%u",&job.koji.bmrt.xsamples) != 1) {
-        fprintf (stderr,"x samples could not be read\n");
-        return 0;
-      }
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eysamples)),"%u",&job.koji.bmrt.ysamples) != 1) {
-        fprintf (stderr,"y samples could not be read\n");
-        return 0;
-      }
-    }
-    /* Stats, verbose, beep */
-    job.koji.bmrt.disp_stats = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbstats)->active;
-    job.koji.bmrt.verbose = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbverbose)->active;
-    job.koji.bmrt.custom_beep = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbbeep)->active;
-    /* Custom radiosity */
-    job.koji.bmrt.custom_radiosity = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbradiositysamples)->active;
-    if (job.koji.bmrt.custom_radiosity) {
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eradiositysamples)),"%u",&job.koji.bmrt.radiosity_samples) != 1) {
-        fprintf (stderr,"radiosity_samples could not be read\n");
-        return 0;
-      }
-    }
-    /* Custom ray samples */
-    job.koji.bmrt.custom_raysamples = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbraysamples)->active;
-    if (job.koji.bmrt.custom_raysamples) {
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eraysamples)),"%u",&job.koji.bmrt.raysamples) != 1) {
-        fprintf (stderr,"ray samples could not be read\n");
-        return 0;
-      }
-    }
-    break;
   case KOJ_PIXIE:
     strncpy(job.koji.pixie.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_pixie.escene)),BUFFERLEN-1);
     strncpy(job.koji.pixie.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_pixie.eviewcmd)),BUFFERLEN-1);
@@ -1164,6 +1068,10 @@ static int dnj_submit (struct drqmj_dnji *info) {
     strncpy(job.koji.xsi.imageExt,gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.eimageExt)),BUFFERLEN-1);
     strncpy(job.koji.xsi.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.eviewcmd)),BUFFERLEN-1);
     job.autoRequeue=0;
+    break;
+  case KOJ_LUXRENDER:
+    strncpy(job.koji.luxrender.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_luxrender.escene)),BUFFERLEN-1);
+    strncpy(job.koji.luxrender.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_luxrender.eviewcmd)),BUFFERLEN-1);
     break;
   }
 
@@ -1437,7 +1345,6 @@ static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info) {
   items = g_list_append (items,(char*)"Maya");
   items = g_list_append (items,(char*)"Mental Ray");
   items = g_list_append (items,(char*)"Blender");
-  items = g_list_append (items,(char*)"Bmrt");
   items = g_list_append (items,(char*)"Mantra");
   items = g_list_append (items,(char*)"Aqsis");
   items = g_list_append (items,(char*)"Pixie");
@@ -1449,6 +1356,7 @@ static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info) {
   items = g_list_append (items,(char*)"Nuke");
   items = g_list_append (items,(char*)"Turtle");
   items = g_list_append (items,(char*)"XSI");
+  items = g_list_append (items,(char*)"Luxrender");
   combo = gtk_combo_new();
   gtk_tooltips_set_tip(tooltips,GTK_COMBO(combo)->entry,"Selector for the kind of job",NULL);
   gtk_combo_set_popdown_strings (GTK_COMBO(combo),items);
@@ -1475,8 +1383,6 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
     new_koj = KOJ_MENTALRAY;
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Blender") == 0) {
     new_koj = KOJ_BLENDER;
-  } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Bmrt") == 0) {
-    new_koj = KOJ_BMRT;
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Mantra") == 0) {
     new_koj = KOJ_MANTRA;
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Aqsis") == 0) {
@@ -1499,6 +1405,8 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
     new_koj = KOJ_TURTLE;
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"XSI") == 0) {
     new_koj = KOJ_XSI;
+  } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Luxrender") == 0) {
+    new_koj = KOJ_LUXRENDER;
   } else {
     /*   fprintf (stderr,"dnj_koj_combo_changed: koj not listed!\n"); */
     /*  fprintf (stderr,"entry: %s\n",gtk_entry_get_text(GTK_ENTRY(entry))); */
@@ -1526,10 +1434,6 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
       break;
     case KOJ_BLENDER:
       info->dnj.fkoj = dnj_koj_frame_blender (info);
-      gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
-      break;
-    case KOJ_BMRT:
-      info->dnj.fkoj = dnj_koj_frame_bmrt (info);
       gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
       break;
     case KOJ_MANTRA:
@@ -1574,6 +1478,10 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
       break;
     case KOJ_XSI:
       info->dnj.fkoj = dnj_koj_frame_xsi (info);
+      gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
+      break;
+    case KOJ_LUXRENDER:
+      info->dnj.fkoj = dnj_koj_frame_luxrender (info);
       gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
       break;
     }
@@ -2001,7 +1909,7 @@ void dnj_envvars_list (GtkWidget *bclicked, struct drqmj_envvars *info) {
 void dnj_flags_jdepend_refresh_job_list (GtkWidget *bclicked, struct drqm_jobs_info *info) {
   GtkListStore *store = info->dnj.flags.store;
   GtkTreeIter iter;
-  int i;
+  uint32_t i;
 
   gtk_list_store_clear (GTK_LIST_STORE(store));
   update_joblist(bclicked,info);

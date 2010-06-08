@@ -1,14 +1,15 @@
 //
 // Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
+// Copyright (C) 2010 Andreas Schroeder
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -17,9 +18,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
-//
-//
-// $Id$
 //
 
 #include <stdlib.h>
@@ -215,9 +213,9 @@ static GtkWidget *CreateButtonRefresh (struct drqm_computers_info *info) {
 }
 
 void drqm_update_computerlist (struct drqm_computers_info *info) {
-  int i, j;
+  uint32_t i, j;
   char **buff;
-  int ncols = 8;
+  uint32_t ncols = 8;
 
   buff = (char**) malloc((ncols+1) * sizeof(char*));
   for (i=0;i<ncols;i++)
@@ -235,7 +233,7 @@ void drqm_update_computerlist (struct drqm_computers_info *info) {
     }
     snprintf (buff[2],BUFFERLEN,"%i",info->computers[i].status.ntasks);
     strncpy(buff[3],info->computers[i].hwinfo.name,BUFFERLEN);
-    snprintf (buff[4],BUFFERLEN,osstring((t_os)info->computers[i].hwinfo.os));
+    snprintf (buff[4],BUFFERLEN,"%s",osstring((t_os)info->computers[i].hwinfo.os));
     snprintf (buff[5],BUFFERLEN,"%i",info->computers[i].hwinfo.ncpus);
     snprintf (buff[6],BUFFERLEN,"%i,%i,%i",
               info->computers[i].status.loadavg[0],
@@ -262,9 +260,8 @@ void drqm_update_computerlist (struct drqm_computers_info *info) {
     gtk_clist_append(GTK_CLIST(info->clist),buff);
     gtk_clist_set_row_data (GTK_CLIST(info->clist),i,(gpointer)info->computers[i].hwinfo.name);
 
-    // We don't need the pool any more
-    // ----TESTING----
-    //computer_pool_free(&info->computers[i].limits);
+    // tidy up shared memory piece of computer
+    computer_pool_free(&info->computers[i].limits);
   }
   gtk_clist_thaw(GTK_CLIST(info->clist));
 
@@ -559,7 +556,7 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info) {
   }
 
   gtk_widget_show_all(window);
-
+  
   return window;
 }
 
@@ -733,6 +730,9 @@ cdd_update (GtkWidget *w, struct drqm_computers_info *info) {
   for(i=0;i<ncols;i++)
     free (buff[i]);
   free(buff);
+
+  // tidy up shared memory piece of computer
+  computer_pool_free(&info->computers[info->row].limits);
 
   return 1;
 }

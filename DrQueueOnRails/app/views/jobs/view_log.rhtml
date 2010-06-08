@@ -1,0 +1,36 @@
+
+<div style="text-align:right; width:100%">
+<% form_tag :action => 'view_log', :id =>params[:id], :nr => params[:nr] do %>
+Refresh: <%= select_tag("refresh",
+		options_for_select([ ["", ""], ["30 seconds", "30"], ["1 minute", "60"], ["3 minutes", "180"], ["5 minutes", "300"], ["10 minutes", "600"] ], session[:last_refresh]),
+		{"onChange" => "document.forms[0].submit();"}) %>
+<% end %>
+</div>
+
+<br />
+This is the logfile of frame #<%= (params[:nr].to_i + 1).to_s %> from job '<%= @job.name %>'. Scroll to the end, seek for error mesages and inform the administrator if you feel that something went wrong.
+<br /><br /><br />
+
+<div id="Logfile">
+<%
+if File.exist? @logfile
+	File.open("#{@logfile}",'r') do |file|
+		buffer = file.read
+		buffer.gsub!(/\n/,'<br />')
+		buffer.gsub!(/[^[:print:]]/, '')
+		%>
+		<%= buffer %>
+		<%
+	end
+else
+	%>
+	<br /><br />Logfile is empty.<br /><br />
+	<%
+end
+%>
+<br />
+</div>
+
+<br /><br /><br />
+
+<%= link_to 'Back', :action => 'show', :id => params[:id] %>

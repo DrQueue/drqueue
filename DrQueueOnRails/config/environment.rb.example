@@ -1,0 +1,132 @@
+# Be sure to restart your web server when you modify this file.
+
+# Uncomment below to force Rails into production mode when 
+# you don't control web/app server and can't set it the proper way
+# ENV['RAILS_ENV'] ||= 'production'
+
+
+
+######## BEGIN DQOR CONFIG
+
+
+# DrQueue variables
+ENV['DRQUEUE_MASTER'] ||= 'MASTER'
+ENV['DRQUEUE_TMP'] ||= '/usr/local/drqueue/tmp'
+ENV['DRQUEUE_ETC'] ||= '/usr/local/drqueue/etc'
+ENV['DRQUEUE_LOGS'] ||= '/usr/local/drqueue/logs'
+
+# LDAP variables
+ENV['LDAP_TREEBASE'] ||= "dc=drqueue, dc=org"
+ENV['LDAP_HOST'] ||= "SERVER"
+ENV['LDAP_PORT'] ||= "389"
+ENV['LDAP_FILTER'] ||= "uid"
+ENV['LDAP_ATTRS'] ||= "mail,cn"
+
+# protocol for webserver (HTTP, HTTPS)
+ENV['WEB_PROTO'] ||= "https"
+
+# user status, quota (disk space in GB), job priorities 
+ENV['USER_STATUS'] ||= "demo,student,advanced,admin"
+ENV['USER_QUOTA'] ||= "0.5,5,15,35"
+ENV['USER_PRIO'] ||= "100,500,750,1000"
+ENV['USER_ADMIN_PW'] ||= "changeme"
+
+# text for login dialog
+ENV['LOG_SHOW_USER'] ||= "account name"
+ENV['LOG_SHOW_PW'] ||= "password"
+
+# owner and group of DrQueueOnRails instance
+ENV['DQOR_USER'] ||= "drqueueonrails"
+ENV['DQOR_GROUP'] ||= "drqueueonrails"
+
+# available renderers on DrQueue slaves
+# HINT: Your slaves must be a member of these pools.
+# possible values:
+# Blender (internal renderer): "blender"
+# Blender (LuxRender renderer): "blenderlux"
+# Cinema 4D: "cinema4d"
+# LuxRender Standalone: "luxrender"
+# Maya (internal renderer): "maya"
+# Maya (MentalRay renderer): "mayamr"
+# MentalRay Standalone: "mentalray"
+# V-Ray Standalone: "vray" 
+ENV['AVAIL_RENDERERS'] ||= "blender,blenderlux,cinema4d,luxrender,maya,mayamr,mentalray,vray"
+
+# enable / disable features
+ENV['DQOR_TUTORIALS'] ||= "true"
+ENV['DQOR_SHOW_FRAME_IMG'] ||= "true"
+
+# various options
+ENV['DQOR_SLAVES_CACHE_TIME'] ||= "600"
+
+# revision version number
+APP_VERSION = IO.popen("git show --abbrev-commit | head -n 1").readline.split(" ")[1]
+
+######## END DQOR CONFIG
+
+
+
+# Specifies gem version of Rails to use when vendor/rails is not present
+RAILS_GEM_VERSION = '2.3.5' unless defined? RAILS_GEM_VERSION
+
+# Bootstrap the Rails environment, frameworks, and default configuration
+require File.join(File.dirname(__FILE__), 'boot')
+
+
+
+Rails::Initializer.run do |config|
+  # Settings in config/environments/* take precedence over those specified here
+  
+  config.action_controller.session = { :session_key => "_dqor_session", :secret => "gfcgfkhjt56gfcdesxdtrr54w3fdxfhgffge55454565" } 
+  
+  # Skip frameworks you're not going to use (only works if using vendor/rails)
+  # config.frameworks -= [ :action_web_service, :action_mailer ]
+
+  # Only load the plugins named here, by default all plugins in vendor/plugins are loaded
+  # config.plugins = %W( exception_notification ssl_requirement )
+
+  # Add additional load paths for your own custom dirs
+  # config.load_paths += %W( #{RAILS_ROOT}/extras )
+
+  # Force all environments to use the same logger level 
+  # (by default production uses :info, the others :debug)
+  # config.log_level = :debug
+
+  # Use the database for sessions instead of the file system
+  # (create the session table with 'rake db:sessions:create')
+  # config.action_controller.session_store = :active_record_store
+
+  # Use SQL instead of Active Record's schema dumper when creating the test database.
+  # This is necessary if your schema can't be completely dumped by the schema dumper, 
+  # like if you have constraints or database-specific column types
+  # config.active_record.schema_format = :sql
+
+  # Activate observers that should always be running
+  # config.active_record.observers = :cacher, :garbage_collector
+
+  # Make Active Record use UTC-base instead of local time
+  # config.active_record.default_timezone = :utc
+  
+  # See Rails::Configuration for more options
+
+end
+
+# Add new inflection rules using the following format 
+# (all these examples are active by default):
+# Inflector.inflections do |inflect|
+#   inflect.plural /^(ox)$/i, '\1en'
+#   inflect.singular /^(ox)en/i, '\1'
+#   inflect.irregular 'person', 'people'
+#   inflect.uncountable %w( fish sheep )
+# end
+
+# Add new mime types for use in respond_to blocks:
+# Mime::Type.register "text/richtext", :rtf
+# Mime::Type.register "application/x-mobile", :mobile
+
+# Include your application configuration below
+
+#ActiveRecord::Base.verification_timeout = 14400
+
+require 'will_paginate'
+

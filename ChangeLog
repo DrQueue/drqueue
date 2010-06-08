@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 2007-08-05  Jorge Daza  <jorge@nathan.vilan>
 
 	* bin/slave: Included fixes from Carlos Oliva
@@ -44,3 +45,52 @@
 
 	* Changelog: added to repo
 
+=======
+* Changes since 0.64.3:
+
+fixed bugs:
+#33: MIPS processor support in computer_info.linux.h
+#34: memory leaks in SWIG interface files
+#42: preview images in DrQueueOnRails
+#43: Shared memory leak in python bindings
+#51: opened file leak in request.c: request_job_frame_info
+#57: 'scon install' installs to /usr/local/usr/local/drqueue/
+#58: legacy pagination is not compatibe with Rails 2.x
+#59: Add drqman support for luxrender
+#61: Add a configuraton option to select which renderers are available on the renderfarm
+#62: Add support for V-Ray standalone renderer
+#63: bug in libdrqueue/communications.c
+#64: support RubyOnRails production mode
+#65: Support LDAP schemes with no mail attribute
+#67: scons fails to install whole directory structure
+#77: get_loadavg on macosx
+#79: strange handling of Maya stills / animations
+#82: A few updates on the python bindings please
+#83: 0.64.x Broken Build (and Solution)
+#84: compinfo leaks memory
+#85: Drqman leaks shared memory
+#86: DrQueue Ruby bindungs fail to compile because of internal changes
+#89: Fix SCons deprecation warnings in SConstruct
+#90: slave's pools are not set on startup
+#91: slave -c option does not work
+#92: Add option in DrQueueOnRails for slave information cache
+#93: "watch frame log" assumes rows are ordered by number
+#97: Set variable values in XSI script generator in the right way
+#98: Add support for platform freebsd8 in SConstruct file
+
+added features:
+#35: script generator functions: single image / animation rendering
+#50: Set a higher value of maximum number of jobs
+#73: Update DrQueueOnRails_requirements_check.rb
+#75: 'scons install' should create a documentation directory
+#76: Use Python for script generators instead of TCSH
+#95: Install Drqman wrapper only if Drqman was compiled
+#96: Port all existing script generators to use Jorge's jobscript API
+#102: stop support for BMRT
+#103: Use Git instead of Subversion for building Ruby and Python bindings
+#104: Remove Ruby bindings out of main DrQueue repository
+#105: Create new repository for Python bindings
+#106: Remove Python bindings out of main DrQueue repository
+#108 Port blender_same_directory.py to Python 3.x for compatibility to Blender 2.5
+#110: Add support for Linux on Playstation3 systems
+>>>>>>> 0.64.x

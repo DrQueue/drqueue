@@ -1,0 +1,110 @@
+
+<div style="text-align:right; width:100%">
+<% form_tag :action => 'computers' do %>
+Refresh: <%= select_tag("refresh",
+		options_for_select([ ["", ""], ["30 seconds", "30"], ["1 minute", "60"], ["3 minutes", "180"], ["5 minutes", "300"], ["10 minutes", "600"] ], session[:last_refresh]),
+		{"onChange" => "document.forms[0].submit();"}) %>
+<% end %>
+</div>
+
+
+<% if @computer_info != nil %>
+
+<h2>Details of <%= @computer_info.hwinfo.name %></h2>
+<br />
+
+<table border="1">
+<tr>
+ <td>Id</td>
+ <td><%= @computer_info.hwinfo.id %></td>
+</tr>
+<tr>
+ <td>Name</td>
+ <td><%= @computer_info.hwinfo.name %></td>
+</tr>
+<tr>
+ <td>Load Average</td>
+ <td><%= @computer_info.status.get_loadavg(0).to_s+','+@computer_info.status.get_loadavg(1).to_s+','+@computer_info.status.get_loadavg(2).to_s %></td>
+</tr>
+<tr>
+ <td>Tasks running</td>
+ <td><%= @computer_info.status.ntasks %></td>
+</tr>
+<tr>
+ <td>Operating System</td>
+ <td><%= computer_os(@computer_info) %></td>
+</tr>
+</table>
+
+<br /><br />
+Task list:<br /><br />
+
+<% if @computer_info.status.ntasks > 0 %>
+
+<table border="1">
+<tr>
+ <td>Task ID</td>
+ <td>Job name</td>
+ <td>Status</td>
+ <td>Frame</td>
+</tr> 
+
+<% computer_tasks(@computer_info).each do |t| %>
+
+<tr>
+ <td><%= t.id %></td>
+ <td><a href="/jobs/show/<%= t.ijob %>"><%= t.jobname %></a></td>
+ <td><%= Drqueue::task_status_string(t.status) %></td>
+ <td><%= t.frame %></td>
+</tr>
+ 
+<% end %>
+
+</table>
+
+<% else %>
+
+No tasks found.
+
+<% end %>
+
+
+<% elsif @computer_list != nil %>
+
+<h2>Computers</h2>
+<br />
+
+<table border="1">
+<tr>
+ <td>Id</td>
+ <td>Name</td>
+ <td>Enabled</td>
+ <td>Running</td>
+ <td>Load Average</td>
+ <td>Pools</td>
+</tr>
+
+<% @computer_list.each do |c| %>
+	<tr>
+	 <td><%= c.hwinfo.id %></td>
+	 <% if session[:profile].status == 'admin' %>
+	 	<td><a href="/main/computers/<%= c.hwinfo.id %>"><%= c.hwinfo.name %></a></td>
+	 <% else %>
+	 	<td><%= c.hwinfo.name %></td>
+	 <% end %>
+	 <% if c.limits.enabled == 1 %>
+	 	<td>Yes</td>
+	 <% else %>
+	 	<td>No</td>
+	 <% end %>
+	 <td><%= c.status.ntasks %></td>
+	 <td><%= c.status.get_loadavg(0).to_s+','+c.status.get_loadavg(1).to_s+','+c.status.get_loadavg(2).to_s %></td>
+	 <td><%= computer_pools(c) %></td>
+	</tr>
+<% end %>
+
+</table>
+
+<% else %>
+There was an error.
+<% end %>

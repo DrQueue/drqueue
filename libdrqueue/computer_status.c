@@ -1,6 +1,8 @@
 //
 // Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
+// This file is part of DrQueue
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -16,7 +18,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-/* $Id$ */
 
 #include <stdio.h>
 #include <signal.h>
@@ -151,38 +152,7 @@ void get_loadavg (uint16_t *loadavg) {
   loadavg[1] = (uint16_t) (tla[1]/10);
   loadavg[2] = (uint16_t) (tla[2]/10);
 
-
-
-#elif defined(__OSX)
-
-  FILE *uptime;
-  char buf[BUFFERLEN];
-  char *fd;   /* first digit */
-  float f1,f2,f3;
-
-  if ((uptime = popen ("/usr/bin/uptime","r")) == NULL) {
-    fprintf (stderr,"Warning: Problems executing '/usr/bin/uptime'\n");
-    f1 = f2 = f3 = 0;
-  }
-
-  while (fgets (buf,BUFFERLEN,uptime) != NULL) {
-    if ((fd = strstr(buf,"averages:")) != NULL) {
-      while (!isdigit((int)*fd))
-        fd++;
-      if (sscanf (fd,"%f %f %f",&f1,&f2,&f3) != 3) {
-        log_auto (L_WARNING,"Problems on get_loadavg\n");
-        f1 = f2 = f3 = 0;
-      }
-    }
-  }
-
-  loadavg[0] = f1 * 100;
-  loadavg[1] = f2 * 100;
-  loadavg[2] = f3 * 100;
-
-  pclose (uptime);
-
-#elif defined(__FREEBSD)
+#elif defined(__OSX) || defined(__FREEBSD)
 
   double fls[3];
   if (getloadavg(fls,3)<3) {

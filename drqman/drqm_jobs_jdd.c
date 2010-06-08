@@ -1,14 +1,15 @@
 //
 // Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
+// Copyright (C) 2010 Andreas Schroeder
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -17,9 +18,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
-//
-//
-// $Id$
 //
 
 #include <stdlib.h>
@@ -111,7 +109,6 @@ static GtkWidget *jdd_koj_widgets (struct drqm_jobs_info *info);
 static void jdd_maya_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 static void jdd_mentalray_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 static void jdd_blender_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
-static void jdd_bmrt_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 static void jdd_pixie_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 static void jdd_3delight_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 static void jdd_lightwave_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
@@ -123,6 +120,7 @@ static void jdd_terragen_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info 
 static void jdd_nuke_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 static void jdd_turtle_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 static void jdd_xsi_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
+static void jdd_luxrender_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info);
 
 struct row_data {
   uint32_t frame;
@@ -270,13 +268,6 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info) {
     gtk_menu_append(GTK_MENU(menu),menu_item);
     gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_blender_viewcmd_exec),info);
     break;
-  case KOJ_BMRT:
-    menu_item = gtk_menu_item_new ();
-    gtk_menu_append(GTK_MENU(menu),menu_item);
-    menu_item = gtk_menu_item_new_with_label("Watch image");
-    gtk_menu_append(GTK_MENU(menu),menu_item);
-    gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_bmrt_viewcmd_exec),info);
-    break;
   case KOJ_PIXIE:
     menu_item = gtk_menu_item_new ();
     gtk_menu_append(GTK_MENU(menu),menu_item);
@@ -354,6 +345,13 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info) {
     gtk_menu_append(GTK_MENU(menu),menu_item);
     gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_xsi_viewcmd_exec),info);
     break;
+  case KOJ_LUXRENDER:
+    menu_item = gtk_menu_item_new ();
+    gtk_menu_append(GTK_MENU(menu),menu_item);
+    menu_item = gtk_menu_item_new_with_label("Watch image");
+    gtk_menu_append(GTK_MENU(menu),menu_item);
+    gtk_signal_connect(GTK_OBJECT(menu_item),"activate",GTK_SIGNAL_FUNC(jdd_luxrender_viewcmd_exec),info);
+    break;
   }
 
   gtk_signal_connect(GTK_OBJECT((info->jdd.clist)),"event",GTK_SIGNAL_FUNC(PopupMenuFrames),info);
@@ -364,7 +362,7 @@ static GtkWidget *CreateMenuFrames (struct drqm_jobs_info *info) {
 }
 
 static int jdd_update_blocked_hosts (GtkWidget *w, struct drqm_jobs_info *info) {
-  int ncols = 2;
+  uint32_t ncols = 2;
   uint32_t i;
   char **buff;
 
@@ -1103,12 +1101,14 @@ static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info) {
   char buf[BUFFERLEN];
   struct task task;
   struct idle_info *iinfo;
+  struct row_data *rdata;
 
   /* log_dumptask_open only uses the jobname and frame fields of the task */
   /* so I fill a task with only those two valid fields and so can use that */
   /* function */
   strncpy (task.jobname,info->jdd.job.name,MAXNAMELEN-1);
-  task.frame = job_frame_index_to_number (&info->jdd.job,info->jdd.row);
+  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), info->jdd.row);
+  task.frame = rdata->frame;
   task.ijob = info->jdd.job.id;
   
   // Allocate memory for idle info
@@ -1144,8 +1144,8 @@ static GtkWidget *SeeFrameLogDialog (struct drqm_jobs_info *info) {
     iinfo->fd = fd;
     iinfo->text = text;
     sourceid = g_timeout_add (100,show_log,iinfo);
-    g_signal_connect_swapped (G_OBJECT(window),"destroy",G_CALLBACK(close),(gpointer)fd);
-    g_signal_connect_swapped (G_OBJECT(window),"destroy",G_CALLBACK(g_source_remove),(gpointer)sourceid);
+    g_signal_connect_swapped (G_OBJECT(window),"destroy",G_CALLBACK(close),&fd);
+    g_signal_connect_swapped (G_OBJECT(window),"destroy",G_CALLBACK(g_source_remove),&sourceid);
   }
   g_signal_connect_swapped (G_OBJECT(window),"destroy",G_CALLBACK(gtk_widget_destroy),(GtkObject*)window);
 
@@ -1200,7 +1200,7 @@ static void jdd_delete_blocked_host (GtkWidget *w, struct drqm_jobs_info *info) 
   }
 
   for (;sel;sel = sel->next) {
-    ipos = (uint32_t) gtk_clist_get_row_data (GTK_CLIST(info->jdd.clist_bh),GPOINTER_TO_INT(sel->data));
+    ipos = (uint32_t) GPOINTER_TO_INT(gtk_clist_get_row_data (GTK_CLIST(info->jdd.clist_bh),GPOINTER_TO_INT(sel->data)));
     request_job_delete_blocked_host (info->jdd.job.id,ipos,CLIENT);
   }
 }
@@ -1438,39 +1438,6 @@ static void jdd_blender_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *
   }
 }
 
-static void jdd_bmrt_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info) {
-  /* Sets the waiting frames as finished */
-  GList *sel;
-  uint32_t frame,iframe;
-  const char *new_argv[4];
-  extern char **environ;
-  struct row_data *rdata;
-  char *exec_path;
-
-  if (!(sel = GTK_CLIST(info->jdd.clist)->selection)) {
-    return;
-  }
-
-  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), GPOINTER_TO_INT(sel->data));
-  frame = rdata->frame;
-
-  iframe = job_frame_number_to_index (&info->jdd.job,frame);
-
-  if (fork() == 0) {
-    new_argv[0] = SHELL_NAME;
-    new_argv[1] = "-c";
-    new_argv[2] = info->jdd.job.koji.bmrt.viewcmd;
-    new_argv[3] = NULL;
-
-    job_environment_set(&info->jdd.job,iframe);
-
-    exec_path = SHELL_PATH;
-    execve(exec_path ,(char*const*)new_argv,environ);
-    perror("execve");
-    exit (1);
-  }
-}
-
 static void jdd_pixie_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info) {
   /* Sets the waiting frames as finished */
   GList *sel;
@@ -1592,6 +1559,39 @@ static void jdd_xsi_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info
     new_argv[0] = SHELL_NAME;
     new_argv[1] = "-c";
     new_argv[2] = info->jdd.job.koji.xsi.viewcmd;
+    new_argv[3] = NULL;
+
+    job_environment_set(&info->jdd.job,iframe);
+
+    exec_path = SHELL_PATH;
+    execve(exec_path ,(char*const*)new_argv,environ);
+    perror("execve");
+    exit (1);
+  }
+}
+
+static void jdd_luxrender_viewcmd_exec (GtkWidget *button, struct drqm_jobs_info *info) {
+  /* Sets the waiting frames as finished */
+  GList *sel;
+  uint32_t frame,iframe;
+  const char *new_argv[4];
+  extern char **environ;
+  struct row_data *rdata;
+  char *exec_path;
+
+  if (!(sel = GTK_CLIST(info->jdd.clist)->selection)) {
+    return;
+  }
+
+  rdata = (struct row_data *) gtk_clist_get_row_data(GTK_CLIST(info->jdd.clist), GPOINTER_TO_INT(sel->data));
+  frame = rdata->frame;
+
+  iframe = job_frame_number_to_index (&info->jdd.job,frame);
+
+  if (fork() == 0) {
+    new_argv[0] = SHELL_NAME;
+    new_argv[1] = "-c";
+    new_argv[2] = info->jdd.job.koji.luxrender.viewcmd;
     new_argv[3] = NULL;
 
     job_environment_set(&info->jdd.job,iframe);
@@ -2266,10 +2266,6 @@ GtkWidget *jdd_koj_widgets (struct drqm_jobs_info *info) {
     koj_vbox = jdd_koj_blender_widgets (info);
     gtk_box_pack_start (GTK_BOX(vbox),koj_vbox,FALSE,FALSE,2);
     break;
-  case KOJ_BMRT:
-    koj_vbox = jdd_koj_bmrt_widgets (info);
-    gtk_box_pack_start (GTK_BOX(vbox),koj_vbox,FALSE,FALSE,2);
-    break;
   case KOJ_PIXIE:
     koj_vbox = jdd_koj_pixie_widgets (info);
     gtk_box_pack_start (GTK_BOX(vbox),koj_vbox,FALSE,FALSE,2);
@@ -2312,6 +2308,10 @@ GtkWidget *jdd_koj_widgets (struct drqm_jobs_info *info) {
     break;
   case KOJ_XSI:
     koj_vbox = jdd_koj_xsi_widgets (info);
+    gtk_box_pack_start (GTK_BOX(vbox),koj_vbox,FALSE,FALSE,2);
+    break;
+  case KOJ_LUXRENDER:
+    koj_vbox = jdd_koj_luxrender_widgets (info);
     gtk_box_pack_start (GTK_BOX(vbox),koj_vbox,FALSE,FALSE,2);
     break;
   }

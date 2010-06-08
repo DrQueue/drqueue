@@ -1,0 +1,19 @@
+
+<div style="text-align:right; width:100%">
+<% form_tag :action => 'view_log', :id =>params[:id], :nr => params[:nr] do %>
+Refresh: <%= select_tag("refresh",
+		options_for_select([ ["", ""], ["30 seconds", "30"], ["1 minute", "60"], ["3 minutes", "180"], ["5 minutes", "300"], ["10 minutes", "600"] ], session[:last_refresh]),
+		{"onChange" => "document.forms[0].submit();"}) %>
+<% end %>
+</div>
+
+<br />
+This is frame #<%= (params[:nr].to_i + 1).to_s %> from job '<%= @job.name %>'.<br /><br /><br />
+
+<div id="image">
+<img src="<%= url_for :action => 'load_image', :nr => @nr, :id => @job_id %>" alt="Frame <%= (params[:nr].to_i + 1).to_s %>" /> 
+</div>
+
+<br /><br /><br />
+
+<%= link_to 'Back', :action => 'show', :id => params[:id] %>

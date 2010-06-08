@@ -380,7 +380,7 @@ static void dnj_koj_frame_xsi_bcreate_pressed (GtkWidget *button, struct drqmj_d
   strncpy (xsiSgi.scriptRun,gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.escriptRun)),BUFFERLEN-1);
   sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.eres_x)),"%u",&xsiSgi.res_x);
   sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.eres_y)),"%u",&xsiSgi.res_y);
-
+  
   if ((file = xsisg_create (&xsiSgi)) == NULL) {
     fprintf (stderr,"ERROR: %s\n",drerrno_str());
     return;

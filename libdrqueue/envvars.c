@@ -3,12 +3,12 @@
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -17,8 +17,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
-//
-// $Id$
 //
 
 #include "envvars.h"
@@ -128,7 +126,7 @@ envvars_dump_info (struct envvars *envvars) {
   fprintf (stderr,"envvars_dump_info() Starting...\n");
   fprintf (stderr,"variables=%p\n",(void*)envvars->variables.ptr);
   fprintf (stderr,"nvariables=%i\n",envvars->nvariables);
-  fprintf (stderr,"evshmid=%ji\n",envvars->evshmid);
+  fprintf (stderr,"evshmid=%ji\n",(intmax_t)envvars->evshmid);
 
   if (envvars->evshmid != -1) {
     // There's a possible valid value on evshmid. Let's check

@@ -3,12 +3,12 @@
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -17,8 +17,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
-//
-// $Id$
 //
 
 #include <sys/types.h>
@@ -47,6 +45,7 @@
 #include "task.h"
 #include "computer_pool.h"
 #include "computer.h"
+#include "common.h"
 
 #ifdef LIBWRAP
 #include <tcpd.h>
@@ -182,7 +181,8 @@ int connect_to_master (void) {
   addr.sin_family = AF_INET;
   addr.sin_port = htons(MASTERPORT);  /* Whatever */
   hostinfo = gethostbyname (master);
-  if (hostinfo == NULL) {
+  /* check if ip address of host could be resolved */
+  if ( (hostinfo == NULL) || (hostinfo->h_addr == NULL) ) {
     drerrno_system = errno;
     drerrno = DRE_NOTRESOLVE;
     return -1;
@@ -1150,7 +1150,7 @@ int
 send_blocked_host_list (int sfd, struct blocked_host *bh, uint32_t size, int do_checksize) {
   uint32_t datasize,bssize;
   struct blocked_host *tbh = bh;
-  int i;
+  uint32_t i;
 
   datasize = sizeof (size);
   if (do_checksize && !check_send_datasize(sfd,datasize)) {
@@ -1177,7 +1177,7 @@ int
 recv_blocked_host_list (int sfd, struct blocked_host **bh, uint32_t *size, int do_checksize) {
   uint32_t datasize;
   struct blocked_host *tbh;
-  int i;
+  uint32_t i;
 
   datasize = sizeof (*size);
   if (do_checksize && !check_recv_datasize(sfd,datasize)) {
