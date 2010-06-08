@@ -99,7 +99,7 @@ opts.AddVariables(PathVariable('DESTDIR','Alternate root directory','',[]),
                   BoolVariable('universal_binary', 'Whether to build as an Universal Binary (MacOS X >= 10.3.9 only)', 0),
                   BoolVariable('build_drqman','Build drqman',1),
                   BoolVariable('enable_warnings','Enable warnings for compiling',0),
-                  BoolVariable('enable_debug','Enable Debugging information for compiling',0))
+                  BoolVariable('enable_debug','Enable debugging information for compiling',0))
 opts.Update(env_lib)
 opts.Save('scons.conf',env_lib)
 
@@ -169,7 +169,7 @@ if env_lib.get('enable_warnings'):
   env_lib.Append (CCFLAGS = Split('-Wall -Wextra'))
   env_lib.Append (LINKFLAGS = Split('-Wall -Wextra'))
 
-# add additional warnings if requested
+# add additional debug output if requested
 if env_lib.get('enable_debug'):
   env_lib.Append (CCFLAGS = Split('-g'))
 
