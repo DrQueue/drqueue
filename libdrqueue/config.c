@@ -366,17 +366,19 @@ config_read (char *filename, char *tool) {
 
   // Fuction to be called for parsing "filename" config related to "tool"
   FILE *cfg_file = config_open (filename);
+  struct config_node *config;
 
   if ( cfg_file == NULL ) {
     fprintf (stderr,"ERROR: Could not open file: '%s'\n",filename);
     return NULL;
   }
 
-  struct config_node *config = config_node_new (NULL,tool,"Root config node",cfg_file);
+  config = config_node_new (NULL,tool,"Root config node",cfg_file);
+  if(config) {
+    config_find_nodes (config,cfg_file);
 
-  config_find_nodes (config,cfg_file);
-
-  fclose(cfg_file);
+    fclose(cfg_file);
+  }
 
   return config;
 }

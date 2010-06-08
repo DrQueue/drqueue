@@ -79,7 +79,11 @@ get_socket (uint16_t port) {
     return sfd;
     //kill (0,SIGINT);
   } else {
-    if (setsockopt(sfd,SOL_SOCKET,SO_REUSEADDR,(int *)&opt,sizeof(opt)) == -1) {
+#ifdef _WIN32      
+    if (setsockopt(sfd,SOL_SOCKET,SO_REUSEADDR,(char *)&opt,sizeof(opt)) == -1) {
+#else
+    if (setsockopt(sfd,SOL_SOCKET,SO_REUSEADDR,(void *)&opt,sizeof(opt)) == -1) {
+#endif
       drerrno_system = errno;
       log_auto (L_ERROR,"get_socket(): call to setsockopt() failed. Msg: %s",strerror(drerrno_system));
     }
@@ -272,10 +276,11 @@ check_recv_datasize (int sfd, uint32_t datasize) {
 }
 
 int
-check_send_datasize (int sfd, uint32_t datasize) {
-  drerrno = DRE_NOERROR;
+check_send_datasize (int sfd, uint32_t datasize) {  
   uint32_t remotesize = 0;
   uint32_t localsize;
+  
+  drerrno = DRE_NOERROR;
   
   log_auto(L_DEBUG3,"check_send_datasize():> Entering...");
 
@@ -572,8 +577,10 @@ send_envvars (int sfd, struct envvars *envvars, int do_checksize) {
   //fprintf (stderr,"DEBUG: send_envvars() and just informed the client about that\n");
 
   if (envvars->nvariables) {
-    envvars_attach (envvars);
     int i;
+
+    envvars_attach (envvars);
+
     for (i = 0; i < envvars->nvariables; i++) {
       if (!send_envvar (sfd,&(envvars->variables.ptr[i]),do_checksize)) {
         return 0;
@@ -591,6 +598,8 @@ int
 recv_envvars (int sfd, struct envvars *envvars, int do_checksize) {
   // This function leaves envvars DETACHED
   uint16_t nvariables;
+  int i;
+  struct envvar var;
 
   if (!envvars) {
     return 0;
@@ -606,9 +615,7 @@ recv_envvars (int sfd, struct envvars *envvars, int do_checksize) {
     return 0;
   }
   nvariables = ntohs (nvariables);
-  
-  int i;
-  struct envvar var;
+
   if (nvariables) {
     //fprintf (stderr,"DEBUG: recv_envvars() we'll receive %i variables\n",nvariables);
 

@@ -42,6 +42,7 @@ char *xsisg_create (struct xsisgi *info) {
   char scene[MAXCMDLEN];
   char renderdir[MAXCMDLEN];
   char xsidir[MAXCMDLEN];
+  struct jobscript_info *ji;
 
   /* Check the parameters */
   if (!strlen(info->scene)) {
@@ -72,39 +73,44 @@ char *xsisg_create (struct xsisgi *info) {
   snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
   // FIXME: Unified path handling
-  struct jobscript_info *ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
+  ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
+  if(ji) {
 
-  jobscript_write_heading (ji);
-  jobscript_set_variable (ji,"SCENE",scene);
-  jobscript_set_variable (ji,"RENDERDIR",renderdir);
-  jobscript_set_variable (ji,"XSI_DIR",xsidir);
-  jobscript_set_variable (ji,"RF_OWNER",info->file_owner);
-  jobscript_set_variable (ji,"DRQUEUE_PASS",info->xsipass);
-  jobscript_set_variable_int (ji,"DRQUEUE_RUNSCRIPT",info->runScript);
-  
-  if (info->res_x > 0) {
-    jobscript_set_variable_int (ji,"RESX",info->res_x);
-  }
-  if (info->res_y > 0) {
-    jobscript_set_variable_int (ji,"RESY",info->res_y);
-  }
-  if (strlen(info->image)) {
-  	jobscript_set_variable (ji,"DRQUEUE_IMAGE",info->image);
-  }
-  if (strlen(info->imageExt)) {
-  	jobscript_set_variable (ji,"DRQUEUE_IMAGEEXT",info->imageExt);
-  }
-  if (info->skipFrames) {
-  	jobscript_set_variable (ji,"DRQUEUE_SKIPFRAMES","on");
+    jobscript_write_heading (ji);
+    jobscript_set_variable (ji,"SCENE",scene);
+    jobscript_set_variable (ji,"RENDERDIR",renderdir);
+    jobscript_set_variable (ji,"XSI_DIR",xsidir);
+    jobscript_set_variable (ji,"RF_OWNER",info->file_owner);
+    jobscript_set_variable (ji,"DRQUEUE_PASS",info->xsipass);
+    jobscript_set_variable_int (ji,"DRQUEUE_RUNSCRIPT",info->runScript);
+    
+    if (info->res_x > 0) {
+      jobscript_set_variable_int (ji,"RESX",info->res_x);
+    }
+    if (info->res_y > 0) {
+      jobscript_set_variable_int (ji,"RESY",info->res_y);
+    }
+    if (strlen(info->image)) {
+      jobscript_set_variable (ji,"DRQUEUE_IMAGE",info->image);
+    }
+    if (strlen(info->imageExt)) {
+      jobscript_set_variable (ji,"DRQUEUE_IMAGEEXT",info->imageExt);
+    }
+    if (info->skipFrames) {
+      jobscript_set_variable (ji,"DRQUEUE_SKIPFRAMES","on");
+    } else {
+      jobscript_set_variable (ji,"DRQUEUE_SKIPFRAMES","off");
+    }
+    if (strlen(info->scriptRun)) {
+      jobscript_set_variable (ji,"DRQUEUE_SCRIPTRUN",info->scriptRun);
+    }
+    
+    jobscript_template_write (ji,"xsi_sg.py");
+    jobscript_close (ji);
   } else {
-  	jobscript_set_variable (ji,"DRQUEUE_SKIPFRAMES","off");
+    drerrno = DRE_NOTCOMPLETE;
+    return NULL;
   }
-  if (strlen(info->scriptRun)) {
-  	jobscript_set_variable (ji,"DRQUEUE_SCRIPTRUN",info->scriptRun);
-  }
-  
-  jobscript_template_write (ji,"xsi_sg.py");
-  jobscript_close (ji);
 
   return filename;
 }

@@ -44,6 +44,7 @@ char *shakesg_create (struct shakesgi *info) {
   static char filename[BUFFERLEN];
   char *p;   /* Scene filename without path */
   char script[MAXCMDLEN];
+  struct jobscript_info *ji;
 
   /* Check the parameters */
   if (!strlen(info->script)) {
@@ -62,12 +63,17 @@ char *shakesg_create (struct shakesgi *info) {
   snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
   // FIXME: Unified path handling
-  struct jobscript_info *ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
+  ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
+  if(ji) {
 
-  jobscript_write_heading (ji);
-  jobscript_set_variable (ji,"DRQUEUE_SCRIPT",script);
-  jobscript_template_write (ji,"shake_sg.py");
-  jobscript_close (ji);
+    jobscript_write_heading (ji);
+    jobscript_set_variable (ji,"DRQUEUE_SCRIPT",script);
+    jobscript_template_write (ji,"shake_sg.py");
+    jobscript_close (ji);
+  } else {
+    drerrno = DRE_NOTCOMPLETE;
+    return NULL;
+  }
 
   return filename;
 }
