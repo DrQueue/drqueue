@@ -18,22 +18,15 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <time.h>
 #include <stdio.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <netdb.h>
-#include <unistd.h>
-#include <stdint.h>
-#include <string.h>
-#include <errno.h>
+
+#ifndef _WIN32
+  #include <netdb.h>
+  #include <unistd.h>
+#else
+  #include <winsock2.h>
+  #define socklen_t int
+#endif
 
 #include "pointer.h"
 #include "communications.h"

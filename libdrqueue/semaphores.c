@@ -19,14 +19,11 @@
 // USA
 //
 
-#include <sys/types.h>
-#include <sys/sem.h>
-#include <sys/ipc.h>
-#include <signal.h>
 #include <stdio.h>
-#include <errno.h>
-#include <string.h>
-#include <unistd.h>
+
+#ifndef _WIN32
+    #include <sys/sem.h>
+#endif
 
 #include "drerrno.h"
 #include "logger.h"

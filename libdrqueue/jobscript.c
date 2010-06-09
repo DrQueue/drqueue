@@ -19,15 +19,14 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <stdlib.h>
-#include <string.h>
 #include <stdio.h>
-#include <unistd.h>
+#include <sys/stat.h>
+
+#ifndef _WIN32
+  #include <unistd.h>
+#endif
+
 #include "libdrqueue.h"
-#include "jobscript.h"
 
 /* create a new script file */
 struct jobscript_info *

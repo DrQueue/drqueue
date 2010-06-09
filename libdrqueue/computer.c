@@ -18,26 +18,21 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <netdb.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
 #include <signal.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <errno.h>
-#include <unistd.h>
+
+#if defined (_WIN32)
+  #include "winsock2.h"
+  #define socklen_t int
+#else
+  #include <sys/socket.h>
+  #include <netinet/in.h>
+  #include <arpa/inet.h>
+  #include <netdb.h>
+#endif
 
 #include "libdrqueue.h"
-#include "computer_pool.h"
-#include "computer.h"
-#include "semaphore.h"
+
 
 // ONGOING:
 // * --- GUESS DONE task_is_running (some parts belong here)

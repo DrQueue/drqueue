@@ -18,19 +18,13 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
+#include <stdio.h>
+#include <sys/stat.h>
 
 #include "common.h"
 #include "drerrno.h"
 #include "constants.h"
 #include "logger.h"
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <string.h>
-#include <ctype.h>
 
 int
 common_environment_check (void) {

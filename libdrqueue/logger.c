@@ -19,24 +19,17 @@
 // USA
 //
 
-#include <unistd.h>
 #include <stdio.h>
-#include <time.h>
-#include <string.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <signal.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <time.h>
 #include <stdarg.h>
-#include <limits.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 
-#include "logger.h"
-#include "task.h"
-#include "job.h"
-#include "computer.h"
+#ifndef _WIN32
+  #include <unistd.h>
+#else
+  #include <process.h>
+#endif
+
 #include "libdrqueue.h"
 
 int loglevel = L_INFO;

@@ -18,20 +18,15 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
+#include <stdio.h>
+
+#ifndef _WIN32
+  #include <sys/shm.h>
+#endif
 
 #include "envvars.h"
 #include "drerrno.h"
 #include "logger.h"
-
-#include <unistd.h>
-#include <stdio.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <string.h>
-#include <stdint.h>
-#include <errno.h>
-#include <sys/types.h>
-
 #include "pointer.h"
 
 int

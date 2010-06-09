@@ -20,21 +20,19 @@
 // USA
 //
 
-#include <unistd.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <netdb.h>
 #include <stdio.h>
 #include <signal.h>
-#include <time.h>
-#include <string.h>
-#include <sys/wait.h>
-#include <stdlib.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
 
-#include "request.h"
+#ifndef _WIN32
+  #include <netinet/in.h>
+  #include <arpa/inet.h>
+  #include <netdb.h>
+  #include <unistd.h>
+  #include <sys/shm.h>
+#else
+  #include <io.h>
+#endif
+
 #include "libdrqueue.h"
 
 // ONGOING:

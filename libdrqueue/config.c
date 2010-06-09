@@ -18,15 +18,10 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
+#include <stdio.h>
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <stdlib.h>
-#include <string.h>
 #include "libdrqueue.h"
-#include "config.h"
-#include "list.h"
-#include "constants.h"
+
 
 void config_close (FILE *f_cfg);
 char *config_eol_remove (char *buffer, int len);

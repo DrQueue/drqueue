@@ -19,23 +19,15 @@
 // USA
 //
 
-#include "libdrqueue.h"
-
 #include <stdio.h>
-#include <unistd.h>
 #include <signal.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <sys/sem.h>
-#include <errno.h>
-#include <sys/wait.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <string.h>
-#include <ctype.h>
-#include <unistd.h>
-#include <stdint.h>
 
+#ifndef _WIN32
+  #include <sys/ipc.h>
+  #include <sys/shm.h>
+#endif
+
+#include "libdrqueue.h"
 
 // FIXME: attach counter
 // FIXME: semaphore

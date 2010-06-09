@@ -19,14 +19,11 @@
 // USA
 //
 
-#include <sys/types.h>
-#include <stdint.h>
 #include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <errno.h>
+
+#ifndef _WIN32
+  #include <sys/shm.h>
+#endif
 
 #include "libdrqueue.h"
 
