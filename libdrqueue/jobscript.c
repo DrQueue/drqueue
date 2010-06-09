@@ -257,5 +257,14 @@ jobscript_template_write (struct jobscript_info *ji, char *template_file_name)
 /* close script file */
 int
 jobscript_close (struct jobscript_info *ji) {
-  return fclose (ji->file);
+  int rv = 0;
+  
+  if ( (rv = jobscript_tcsh_check_pointer (ji)) == 0 ) {
+    return rv;
+  }
+
+  rv = fclose (ji->file);
+  free(ji);
+
+  return rv;
 }
