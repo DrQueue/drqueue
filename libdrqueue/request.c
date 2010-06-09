@@ -1182,16 +1182,18 @@ handle_r_r_taskfini (int sfd, struct database *wdb, int icomp) {
 
 void
 handle_r_r_listjobs (int sfd, struct database *wdb, int icomp) {
-  // fix compiler warning
-  (void)icomp;
-  
-  // FIXME: use icomp variable
-  
   /* The master handles this type of packages */
   /* This function is called unlocked */
   /* This function is called by the master */
   struct request answer;
   int i;
+
+  // fix compiler warning
+  (void)icomp;
+  
+  // FIXME: use icomp variable
+  
+ 
 
   /* FIXME : This function does not use semaphores */
 
@@ -1220,10 +1222,6 @@ handle_r_r_listjobs (int sfd, struct database *wdb, int icomp) {
 
 void
 handle_r_r_listcomp (int sfd, struct database *wdb, int icomp) {
-  // fix compiler warning
-  (void)icomp;
-  
-  // FIXME: use icomp variable
   
   /* The master handles this type of packages */
   /* This function is called unlocked */
@@ -1231,6 +1229,12 @@ handle_r_r_listcomp (int sfd, struct database *wdb, int icomp) {
   struct request answer;
   struct computer *computer;
   int i;
+
+  // fix compiler warning
+  (void)icomp;
+  
+  // FIXME: use icomp variable
+  
 
   log_auto (L_DEBUG3,"Entering handle_r_r_listcomp");
 
@@ -1309,13 +1313,6 @@ request_job_delete (uint32_t ijob, uint16_t who) {
 
 void
 handle_r_r_deletjob (int sfd, struct database *wdb, int icomp, struct request *req) {
-  // fix compiler warning
-  (void)icomp;
-  (void)sfd;
-  
-  // FIXME: use icomp variable
-  // FIXME: use sfd variable
-  
   /* The master handles this type of packages */
   /* This function is called unlocked */
   /* This function is called by the master */
@@ -1324,6 +1321,13 @@ handle_r_r_deletjob (int sfd, struct database *wdb, int icomp, struct request *r
   struct frame_info *fi;
   struct job job;  /* Temporary job for log removal */
   int nframes;
+
+  // fix compiler warning
+  (void)icomp;
+  (void)sfd;
+  
+  // FIXME: use icomp variable
+  // FIXME: use sfd variable
 
   ijob = req->data;
 
@@ -1479,15 +1483,17 @@ request_job_envvars (uint32_t ijob, struct envvars *envvars, uint16_t who) {
 
 void
 handle_r_r_jobenvvars (int sfd, struct database *wdb, int icomp, struct request *req) {
+   /* The master handles this type of packages */
+  /* This function is called unlocked */
+  /* This function is called by the master */
+  uint32_t ijob;
+
   // fix compiler warning
   (void)icomp;
   
   // FIXME: use icomp variable
   
-  /* The master handles this type of packages */
-  /* This function is called unlocked */
-  /* This function is called by the master */
-  uint32_t ijob;
+ 
 
   log_auto (L_DEBUG,"Entering handle_r_r_jobenvvars");  
 
@@ -1518,17 +1524,17 @@ handle_r_r_jobenvvars (int sfd, struct database *wdb, int icomp, struct request 
 
 void
 handle_r_r_stopjob (int sfd, struct database *wdb, int icomp, struct request *req) {
+  /* The master handles this type of packages */
+  /* This function is called unlocked */
+  /* This function is called by the master */
+  uint32_t ijob;
+  
   // fix compiler warning
   (void)icomp;
   (void)sfd;
   
   // FIXME: use icomp variable
   // FIXME: use sfd variable
-  
-  /* The master handles this type of packages */
-  /* This function is called unlocked */
-  /* This function is called by the master */
-  uint32_t ijob;
 
   ijob = req->data;
 
@@ -1546,17 +1552,18 @@ handle_r_r_stopjob (int sfd, struct database *wdb, int icomp, struct request *re
 
 void
 handle_r_r_contjob (int sfd, struct database *wdb, int icomp, struct request *req) {
+   
+  /* The master handles this type of packages */
+  /* This function is called unlocked */
+  /* This function is called by the master */
+  uint32_t ijob;
+
   // fix compiler warning
   (void)icomp;
   (void)sfd;
   
   // FIXME: use icomp variable
-  // FIXME: use sfd variable
-  
-  /* The master handles this type of packages */
-  /* This function is called unlocked */
-  /* This function is called by the master */
-  uint32_t ijob;
+  // FIXME: use sfd variable 
 
   ijob = req->data;
 
@@ -1574,13 +1581,6 @@ handle_r_r_contjob (int sfd, struct database *wdb, int icomp, struct request *re
 
 void
 handle_r_r_hstopjob (int sfd, struct database *wdb, int icomp, struct request *req) {
-  // fix compiler warning
-  (void)icomp;
-  (void)sfd;
-  
-  // FIXME: use icomp variable
-  // FIXME: use sfd variable
-  
   /* The master handles this type of packages */
   /* This function is called unlocked */
   /* This function is called by the master */
@@ -1588,6 +1588,13 @@ handle_r_r_hstopjob (int sfd, struct database *wdb, int icomp, struct request *r
   uint32_t ijob;
   struct frame_info *fi;
   int nframes;
+
+  // fix compiler warning
+  (void)icomp;
+  (void)sfd;
+  
+  // FIXME: use icomp variable
+  // FIXME: use sfd variable
 
   ijob = req->data;
 
@@ -1671,13 +1678,6 @@ request_job_rerun (uint32_t ijob, uint16_t who) {
 
 void
 handle_r_r_rerunjob (int sfd, struct database *wdb, int icomp, struct request *req) {
-  // fix compiler warning
-  (void)icomp;
-  (void)sfd;
-  
-  // FIXME: use icomp variable
-  // FIXME: use sfd variable
-  
   /* The master handles this type of packages */
   /* This function is called unlocked */
   /* This function is called by the master */
@@ -1685,6 +1685,13 @@ handle_r_r_rerunjob (int sfd, struct database *wdb, int icomp, struct request *r
   uint32_t ijob;
   struct frame_info *fi;
   int nframes;
+
+  // fix compiler warning
+  (void)icomp;
+  (void)sfd;
+  
+  // FIXME: use icomp variable
+  // FIXME: use sfd variable
 
   ijob = req->data;
 
@@ -1778,16 +1785,18 @@ request_job_xfer (uint32_t ijob, struct job *job, uint16_t who) {
 
 void
 handle_r_r_jobxfer (int sfd, struct database *wdb, int icomp, struct request *req) {
-  // fix compiler warning
-  (void)icomp;
-  
-  // FIXME: use icomp variable
-  
   /* The master handles this type of packages */
   /* This function is called unlocked */
   /* This function is called by the master */
   uint32_t ijob;
   struct job job;
+
+  // fix compiler warning
+  (void)icomp;
+  
+  // FIXME: use icomp variable
+  
+  
 
   log_auto (L_DEBUG,"Entering handle_r_r_jobxfer");
 
@@ -1883,11 +1892,6 @@ request_job_xferfi (uint32_t ijob, struct frame_info *fi, int nframes, uint16_t 
 
 void
 handle_r_r_jobxferfi (int sfd, struct database *wdb, int icomp, struct request *req) {
-  // fix compiler warning
-  (void)icomp;
-  
-  // FIXME: use icomp variable
-  
   /* The master handles this type of packages */
   /* This function is called unlocked */
   /* This function is called by the master */
@@ -1895,6 +1899,13 @@ handle_r_r_jobxferfi (int sfd, struct database *wdb, int icomp, struct request *
   struct frame_info *fi,*fi_copy,*fi_start;
   int nframes;
   int i;
+
+  // fix compiler warning
+  (void)icomp;
+  
+  // FIXME: use icomp variable
+  
+ 
 
   log_auto (L_DEBUG,"Entering handle_r_r_jobxferfi");
 
@@ -1960,16 +1971,18 @@ handle_r_r_jobxferfi (int sfd, struct database *wdb, int icomp, struct request *
 
 void
 handle_r_r_jobfinfo (int sfd, struct database *wdb, int icomp, struct request *req) {
-  // fix compiler warning
-  (void)icomp;
-  
-  // FIXME: use icomp variable
-  
+ 
   /* This function is called unlocked */
   /* This function is called by the master */
   uint32_t ijob;
   struct frame_info fi_copy,*fi;
   uint32_t iframe, frame;
+
+  // fix compiler warning
+  (void)icomp;
+  
+  // FIXME: use icomp variable
+  
 
   log_auto (L_DEBUG,"Entering handle_r_r_jobfinfo");
 
@@ -2076,16 +2089,18 @@ request_comp_xfer (uint32_t icomp, struct computer *comp, uint16_t who) {
 
 void
 handle_r_r_compxfer (int sfd, struct database *wdb, int icomp, struct request *req) {
-  // fix compiler warning
-  (void)icomp;
-  
-  // FIXME: use icomp variable
-  
   /* The master handles this type of packages */
   /* This function is called unlocked */
   /* This function is called by the master */
   uint32_t icomp2;  /* The id of the computer asked to be transfered */
   struct computer comp;
+  
+  // fix compiler warning
+  (void)icomp;
+  
+  // FIXME: use icomp variable
+  
+ 
 
   log_auto (L_DEBUG,"Entering handle_r_r_compxfer");
 
@@ -2311,11 +2326,6 @@ request_job_frame_waiting (uint32_t ijob, uint32_t frame, uint16_t who) {
 
 void
 handle_r_r_jobfwait (int sfd, struct database *wdb, int icomp, struct request *req) {
-  // fix compiler warning
-  (void)icomp;
-  
-  // FIXME: use icomp variable
-  
   /* The master handles this type of packages */
   /* This function is called unlocked */
   /* This function is called by the master */
@@ -2324,6 +2334,11 @@ handle_r_r_jobfwait (int sfd, struct database *wdb, int icomp, struct request *r
   uint32_t iframe;
   uint32_t nframes;
   struct frame_info *fi;
+
+  // fix compiler warning
+  (void)icomp;
+  
+  // FIXME: use icomp variable
 
   log_auto(L_DEBUG,"Entering handle_r_r_jobfwait");
 
@@ -2419,11 +2434,6 @@ request_job_frame_kill (uint32_t ijob, uint32_t frame, uint16_t who) {
 
 void
 handle_r_r_jobfkill (int sfd, struct database *wdb, int icomp, struct request *req) {
-  // fix compiler warning
-  (void)icomp;
-  
-  // FIXME: use icomp variable
-  
   /* The master handles this type of packages */
   /* This function is called unlocked */
   /* This function is called by the master */
@@ -2432,6 +2442,13 @@ handle_r_r_jobfkill (int sfd, struct database *wdb, int icomp, struct request *r
   uint32_t iframe;
   uint32_t nframes;
   struct frame_info *fi;
+  
+  // fix compiler warning
+  (void)icomp;
+  
+  // FIXME: use icomp variable
+  
+ 
 
   log_auto(L_DEBUG,"Entering handle_r_r_jobfkill");
 
@@ -2559,11 +2576,6 @@ request_job_frame_reset_requeued (uint32_t ijob, uint32_t frame, uint16_t who) {
 
 void
 handle_r_r_jobffini (int sfd, struct database *wdb, int icomp, struct request *req) {
-  // fix compiler warning
-  (void)icomp;
-  
-  // FIXME: use icomp variable
-  
   /* The master handles this type of packages */
   /* This function is called unlocked */
   /* This function is called by the master */
@@ -2571,6 +2583,11 @@ handle_r_r_jobffini (int sfd, struct database *wdb, int icomp, struct request *r
   uint32_t frame;
   uint32_t iframe;
   struct frame_info *fi;
+
+  // fix compiler warning
+  (void)icomp;
+  
+  // FIXME: use icomp variable
 
   log_auto(L_DEBUG,"Entering handle_r_r_jobffini");
 
@@ -2630,16 +2647,18 @@ handle_r_r_jobffini (int sfd, struct database *wdb, int icomp, struct request *r
 
 void
 handle_r_r_jobdelblkhost (int sfd, struct database *wdb, int icomp, struct request *req) {
-  // fix compiler warning
-  (void)icomp;
-  
-  // FIXME: use icomp variable
-  
   uint32_t ijob;
   uint32_t ihost;
   struct blocked_host *nbh,*obh = NULL,*tnbh;
   int64_t nbhshmid;
   uint32_t i;
+
+  // fix compiler warning
+  (void)icomp;
+  
+  // FIXME: use icomp variable
+  
+  
 
   log_auto(L_DEBUG,"Entering handle_r_r_jobdelblkhost");
 
@@ -2761,14 +2780,14 @@ request_job_list_blocked_host (uint32_t ijob, struct blocked_host **bh, uint16_t
 
 void
 handle_r_r_joblstblkhost (int sfd, struct database *wdb, int icomp, struct request *req) {
+  uint32_t ijob;
+  struct blocked_host *nbh = NULL;
+  int i;
+  
   // fix compiler warning
   (void)icomp;
   
   // FIXME: use icomp variable
-  
-  uint32_t ijob;
-  struct blocked_host *nbh = NULL;
-  int i;
 
   log_auto(L_DEBUG,"Entering handle_r_r_joblstblkhost");
 
@@ -2799,16 +2818,18 @@ handle_r_r_joblstblkhost (int sfd, struct database *wdb, int icomp, struct reque
 
 void
 handle_r_r_jobblkhost (int sfd, struct database *wdb, int icomp, struct request *req) {
-  // fix compiler warning
-  (void)icomp;
-  
-  // FIXME: use icomp variable
-  
   uint32_t ijob;
   uint32_t ihost;
   struct blocked_host *nbh,*obh = NULL;
   int64_t nbhshmid;
   int i;
+
+  // fix compiler warning
+  (void)icomp;
+  
+  // FIXME: use icomp variable
+  
+ 
 
   log_auto(L_DEBUG,"Entering handle_r_r_jobblkhost");
 
@@ -2886,11 +2907,6 @@ handle_r_r_jobblkhost (int sfd, struct database *wdb, int icomp, struct request 
 
 void
 handle_r_r_jobfrstrqd (int sfd, struct database *wdb, int icomp, struct request *req) {
-  // fix compiler warning
-  (void)icomp;
-  
-  // FIXME: use icomp variable
-  
   /* The master handles this type of packages */
   /* This function is called unlocked */
   /* This function is called by the master */
@@ -2898,6 +2914,13 @@ handle_r_r_jobfrstrqd (int sfd, struct database *wdb, int icomp, struct request 
   uint32_t frame;
   uint32_t iframe;
   struct frame_info *fi;
+
+  // fix compiler warning
+  (void)icomp;
+  
+  // FIXME: use icomp variable
+  
+ 
 
   log_auto(L_DEBUG,"Entering handle_r_r_jobffini");
 
@@ -2975,11 +2998,6 @@ request_job_frame_kill_finish (uint32_t ijob, uint32_t frame, uint16_t who) {
 
 void
 handle_r_r_jobfkfin (int sfd, struct database *wdb, int icomp, struct request *req) {
-  // fix compiler warning
-  (void)icomp;
-  
-  // FIXME: use icomp variable
-  
   /* The master handles this type of packages */
   /* This function is called unlocked */
   /* This function is called by the master */
@@ -2988,6 +3006,13 @@ handle_r_r_jobfkfin (int sfd, struct database *wdb, int icomp, struct request *r
   uint32_t iframe;
   uint32_t nframes;
   struct frame_info *fi;
+  
+  // fix compiler warning
+  (void)icomp;
+  
+  // FIXME: use icomp variable
+  
+ 
 
   log_auto(L_DEBUG,"Entering handle_r_r_jobfkfin");
 
@@ -3123,12 +3148,14 @@ request_slave_limits_autoenable_set (char *slave, uint32_t h, uint32_t m, unsign
 
 void
 handle_rs_r_setnmaxcpus (int sfd, struct slave_database *sdb, struct request *req) {
+  struct computer_limits limits;
+
   // fix compiler warning
   (void)sfd;
   
   // FIXME: use sfd variable
   
-  struct computer_limits limits;
+  
 
   log_auto(L_DEBUG,"Entering handle_rs_r_setnmaxcpus");
   log_auto(L_DEBUG,"Received maximum cpus: %i",req->data);
@@ -3149,12 +3176,12 @@ handle_rs_r_setnmaxcpus (int sfd, struct slave_database *sdb, struct request *re
 
 void
 handle_rs_r_setenabled (int sfd, struct slave_database *sdb, struct request *req) {
+  struct computer_limits limits;
+
   // fix compiler warning
   (void)sfd;
   
   // FIXME: use sfd variable
-  
-  struct computer_limits limits;
 
   log_auto(L_DEBUG,"Entering handle_rs_r_setenabled");
   log_auto(L_DEBUG,"Received enabled: %i",req->data);
@@ -3324,12 +3351,13 @@ handle_r_r_uclimits (int sfd, struct database *wdb, int icomp, struct request *r
 
 void
 handle_rs_r_setmaxfreeloadcpu (int sfd, struct slave_database *sdb, struct request *req) {
+  struct computer_limits limits;
+
   // fix compiler warning
   (void)sfd;
   
   // FIXME: use sfd variable
-  
-  struct computer_limits limits;
+ 
 
   log_auto(L_DEBUG3,"handle_rs_r_setmaxfreeloadcpu(): >Entering...");
   log_auto(L_DEBUG2,"handle_rs_r_setmaxfreeloadcpu(): received maximum free load cpu: %u",req->data);
@@ -3395,15 +3423,17 @@ request_slavexit (uint32_t icomp, uint16_t who) {
 
 void
 handle_r_r_slavexit (int sfd, struct database *wdb, int icomp, struct request *req) {
-  // fix compiler warning
-  (void)sfd;
-  
-  // FIXME: use sfd variable
-  
+   
   /* The master handles this type of packages */
   /* This function is called unlocked */
   /* This function is called by the master */
   uint32_t icomp2;
+
+  // fix compiler warning
+  (void)sfd;
+  
+  // FIXME: use sfd variable
+ 
 
 
   log_auto (L_DEBUG,"Entering handle_r_r_slavexit");
@@ -3489,11 +3519,6 @@ request_job_sesupdate (uint32_t ijob, uint32_t frame_start,uint32_t frame_end,
 
 void
 handle_r_r_jobsesup (int sfd, struct database *wdb, int icomp, struct request *req) {
-  // fix compiler warning
-  (void)icomp;
-  
-  // FIXME: use icomp variable
-  
   /* The master handles this type of packages */
   /* This function is called unlocked */
   /* This function is called by the master */
@@ -3507,6 +3532,11 @@ handle_r_r_jobsesup (int sfd, struct database *wdb, int icomp, struct request *r
   int64_t nfishmid;   /* New identifier for new shared frame info struct */
   int64_t ofishmid;   /* Old identifier */
   char cname[MAXNAMELEN]; /* Computer name */
+
+  // fix compiler warning
+  (void)icomp;
+  
+  // FIXME: use icomp variable
 
   log_auto (L_DEBUG,"Entering handle_r_r_jobsesup");
 
@@ -3694,16 +3724,16 @@ request_job_limits_pool_set (uint32_t ijob, char *pool, uint16_t who) {
 
 void
 handle_r_r_joblms (int sfd, struct database *wdb, int icomp, struct request *req) {
-  // fix compiler warning
-  (void)icomp;
-  
-  // FIXME: use icomp variable
-  
   /* The master handles this type of packages */
   /* This function is called unlocked */
   /* This function is called by the master */
   uint32_t ijob;
   uint32_t memory;
+
+  // fix compiler warning
+  (void)icomp;
+  
+  // FIXME: use icomp variable
 
   log_auto(L_DEBUG,"Entering handle_r_r_joblms");
 
@@ -3732,16 +3762,16 @@ handle_r_r_joblms (int sfd, struct database *wdb, int icomp, struct request *req
 
 void
 handle_r_r_joblps (int sfd, struct database *wdb, int icomp, struct request *req) {
-  // fix compiler warning
-  (void)icomp;
-  
-  // FIXME: use icomp variable
-  
   /* The master handles this type of packages */
   /* This function is called unlocked */
   /* This function is called by the master */
   uint32_t ijob;
   char *pool;
+
+  // fix compiler warning
+  (void)icomp;
+  
+  // FIXME: use icomp variable
 
   log_auto(L_DEBUG,"Entering handle_r_r_joblps");
 
@@ -3803,16 +3833,16 @@ request_job_limits_nmaxcpus_set (uint32_t ijob, uint16_t nmaxcpus, uint16_t who)
 
 void
 handle_r_r_joblnmcs (int sfd, struct database *wdb, int icomp, struct request *req) {
-  // fix compiler warning
-  (void)icomp;
-  
-  // FIXME: use icomp variable
-  
   /* The master handles this type of packages */
   /* This function is called unlocked */
   /* This function is called by the master */
   uint32_t ijob;
   uint16_t nmaxcpus;
+
+  // fix compiler warning
+  (void)icomp;
+  
+  // FIXME: use icomp variable
 
   log_auto(L_DEBUG,"Entering handle_r_r_joblnmcs");
 
@@ -3875,16 +3905,17 @@ request_job_limits_nmaxcpuscomputer_set (uint32_t ijob, uint16_t nmaxcpuscompute
 
 void
 handle_r_r_joblnmccs (int sfd, struct database *wdb, int icomp, struct request *req) {
-  // fix compiler warning
-  (void)icomp;
-  
-  // FIXME: use icomp variable
-  
   /* joblnmccs = job_limits_number_max_computer_cpus_set */
   /* This function is called unlocked */
   /* This function is called by the master */
   uint32_t ijob;
   uint16_t nmaxcpuscomputer;
+  
+  // fix compiler warning
+  (void)icomp;
+  
+  // FIXME: use icomp variable
+ 
 
   log_auto(L_DEBUG,"Entering handle_r_r_joblnmccs");
 
@@ -3947,15 +3978,17 @@ request_job_priority_update (uint32_t ijob, uint32_t priority, uint16_t who) {
 
 void
 handle_r_r_jobpriup (int sfd, struct database *wdb, int icomp, struct request *req) {
-  // fix compiler warning
-  (void)icomp;
-  
-  // FIXME: use icomp variable
-  
+   
   /* The master handles this type of packages */
   /* This function is called unlocked */
   uint32_t ijob;
   uint32_t priority;
+  
+  // fix compiler warning
+  (void)icomp;
+  
+  // FIXME: use icomp variable
+ 
 
   log_auto(L_DEBUG,"Entering handle_r_r_jobpriup");
 
@@ -4095,13 +4128,14 @@ request_slave_limits_pool_remove (char *slave, char *pool, uint16_t who) {
 
 void
 handle_rs_r_limitspooladd (int sfd, struct slave_database *sdb, struct request *req) {
+  char *pool;
+
   // fix compiler warning
   (void)req;
   
   // FIXME: use req variable
   
-  char *pool;
-
+ 
   log_auto(L_DEBUG,"Entering handle_rs_r_limitspooladd");
 
   if (!recv_string(sfd,&pool)) {
@@ -4122,13 +4156,13 @@ handle_rs_r_limitspooladd (int sfd, struct slave_database *sdb, struct request *
 
 void
 handle_rs_r_limitspoolremove (int sfd, struct slave_database *sdb, struct request *req) {
+  char *pool;
+
   // fix compiler warning
   (void)req;
   
-  // FIXME: use req variable
-  
-  char *pool;
-
+  // FIXME: use req variable  
+ 
   log_auto(L_DEBUG,"Entering handle_rs_r_limitspoolremove");
 
   if (!recv_string(sfd,&pool)) {
@@ -4280,14 +4314,14 @@ request_computer_list (struct computer **computer, uint16_t who) {
 
 void
 handle_r_r_jobblkhostname (int sfd, struct database *wdb, int icomp, struct request *req) {
+  uint32_t ijob;
+  uint32_t ihost;
+  char *name;
+  
   // fix compiler warning
   (void)icomp;
   
   // FIXME: use icomp variable
-  
-  uint32_t ijob;
-  uint32_t ihost;
-  char *name;
 
   log_auto(L_DEBUG,"Entering handle_r_r_jobblkhostname");
 
@@ -4323,13 +4357,13 @@ handle_r_r_jobblkhostname (int sfd, struct database *wdb, int icomp, struct requ
 
 void
 handle_r_r_jobunblkhostname (int sfd, struct database *wdb, int icomp, struct request *req) {
+  uint32_t ijob;
+  char *name;
+
   // fix compiler warning
   (void)icomp;
   
   // FIXME: use icomp variable
-  
-  uint32_t ijob;
-  char *name;
 
   log_auto(L_DEBUG,"Entering handle_r_r_jobunblkhostname");
 
@@ -4389,12 +4423,12 @@ request_job_name (uint32_t ijob, char **jobname, uint16_t who) {
 
 void
 handle_r_r_jobname (int sfd, struct database *wdb, int icomp, struct request *req) {
+  uint32_t ijob;
+
   // fix compiler warning
   (void)icomp;
   
   // FIXME: use icomp variable
-  
-  uint32_t ijob;
 
   ijob = req->data;
 

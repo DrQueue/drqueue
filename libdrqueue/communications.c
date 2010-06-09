@@ -105,13 +105,15 @@ get_socket (uint16_t port) {
 // FIXME: should be named accept_socket_master
 int
 accept_socket (int sfd, struct database *wdb, struct sockaddr_in *addr) {
+  int fd;
+  socklen_t len;
+
   // fix compiler warning
   (void)wdb;
   
   // FIXME: use wdb variable
-  
-  int fd;
-  socklen_t len = sizeof (struct sockaddr_in);
+    
+  len = sizeof (struct sockaddr_in);
 
   if ((fd = accept (sfd,(struct sockaddr *)addr,&len)) == -1) {
     drerrno_system = errno;

@@ -40,6 +40,7 @@ char *threedelightsg_create (struct threedelightsgi *info) {
   static char filename[BUFFERLEN];
   char *p;   /* Scene filename without path */
   char scene[MAXCMDLEN];
+  struct jobscript_info *ji;
 
   /* Check the parameters */
   if (!strlen(info->scene)) {
@@ -58,13 +59,17 @@ char *threedelightsg_create (struct threedelightsgi *info) {
   snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
   // FIXME: Unified path handling
-  struct jobscript_info *ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
-
-  jobscript_write_heading (ji);
-  jobscript_set_variable (ji,"SCENE",scene);
-  jobscript_set_variable (ji,"RF_OWNER",info->file_owner);
-  jobscript_template_write (ji,"3delight_sg.py");
-  jobscript_close (ji);
+  ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
+  if(ji) {
+    jobscript_write_heading (ji);
+    jobscript_set_variable (ji,"SCENE",scene);
+    jobscript_set_variable (ji,"RF_OWNER",info->file_owner);
+    jobscript_template_write (ji,"3delight_sg.py");
+    jobscript_close (ji);
+  } else {
+    drerrno = DRE_NOTCOMPLETE;
+    return NULL;
+  }
 
   return filename;
 }

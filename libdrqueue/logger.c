@@ -79,13 +79,13 @@ log_on_screen (void) {
 
 FILE *
 log_slave_open_task (int level, struct task *task) {
+  FILE *f;
+  char filename[PATH_MAX];
+
   // fix compiler warning
   (void)level;
   
   // FIXME: use level variable
-  
-  FILE *f;
-  char filename[PATH_MAX];
 
   if (log_on_screen()) {
     return stderr;
@@ -106,14 +106,14 @@ log_slave_open_task (int level, struct task *task) {
 
 void
 log_slave_computer (int level, char *fmt, ...) {
+  char name2[MAXNAMELEN];
+  char *name = NULL;  /* To only make a call to gethostname */
+  va_list ap;
+
   // fix compiler warning
   (void)level;
   
   // FIXME: use level variable
-  
-  char name2[MAXNAMELEN];
-  char *name = NULL;  /* To only make a call to gethostname */
-  va_list ap;
 
   if (!log_level_dest(level)) {
     return;
@@ -133,14 +133,14 @@ log_slave_computer (int level, char *fmt, ...) {
 
 FILE *
 log_slave_open_computer (int level, char *name) {
+  FILE *f;
+  char filename[BUFFERLEN];
+  char *basedir;
+
   // fix compiler warning
   (void)level;
   
   // FIXME: use level variable
-  
-  FILE *f;
-  char filename[BUFFERLEN];
-  char *basedir;
 
   if (log_on_screen()) {
     return stderr;
@@ -205,15 +205,16 @@ log_level_dest (int level) {
 
 FILE *
 log_master_open (int level) {
-  // fix compiler warning
-  (void)level;
-  
-  // FIXME: use level variable
-  
   FILE *f;
   char filename[BUFFERLEN];
   char *basedir;
 
+  // fix compiler warning
+  (void)level;
+  
+  // FIXME: use level variable
+
+ 
   if (log_on_screen()) {
     return stderr;
   }

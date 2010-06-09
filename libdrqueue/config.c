@@ -278,14 +278,13 @@ config_end_node (struct config_node *base, FILE *file) {
 
 struct config_item *
 config_item_new (struct config_node *base, char *line) {
+  char *name;
+  char *value;
+  char *sep;
   // fix compiler warning
   (void)base;	
   
   // FIXME: use base variable
-	
-  char *name;
-  char *value;
-  char *sep;
 
   sep = strchr (line,'=');
   if ( !sep ) {
