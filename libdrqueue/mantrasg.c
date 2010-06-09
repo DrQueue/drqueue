@@ -133,7 +133,7 @@ char *mantrasg_create (struct mantrasgi *info) {
       jobscript_set_variable (ji,"CTYPE",info->Type);
     }
       
-    jobscript_template_write (ji,"3delight_sg.py");
+    jobscript_template_write (ji,"mantra_sg.py");
     jobscript_close (ji);
   } else {
     drerrno = DRE_NOTCOMPLETE;
