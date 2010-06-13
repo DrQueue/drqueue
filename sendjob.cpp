@@ -185,6 +185,9 @@ void presentation (void) {
 }
 
 void cleanup (int signum) {
+  // fix compiler warning
+  (void)signum;
+
   exit(0);
 }
 
