@@ -60,6 +60,6 @@ void *attach_shared_memory_slave (int64_t shmid);
 
 void zerocmd (char *cmd);
 
-void slave_exit (int rc);
+void slave_exit (int signal);
 
 #endif
