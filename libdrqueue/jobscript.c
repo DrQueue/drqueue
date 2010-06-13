@@ -138,7 +138,7 @@ jobscript_tcsh_check_pointer (struct jobscript_info *ji) {
 int
 jobscript_python_check_pointer (struct jobscript_info *ji) {
   if ( ji == NULL ) {
-    fprintf (stderr,"ERROR: tcsh jobscript: invalid NULL pointer\n");
+    fprintf (stderr,"ERROR: python jobscript: invalid NULL pointer\n");
     return 0;
   } else if ( ji->type != JOBSCRIPT_PYTHON ) {
     fprintf (stderr,"ERROR: python jobscript: pointer indicates not a python script file\n");
