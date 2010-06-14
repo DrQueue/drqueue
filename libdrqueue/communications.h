@@ -75,13 +75,6 @@ int recv_envvar (int sfd, struct envvar *var, int do_checksize);
 int send_string (int sfd, char *str);
 int recv_string (int sfd, char **str);
 
-int write_32b (int sfd, void *data);
-int write_16b (int sfd, void *data);
-int read_32b (int sfd, void *data);
-int read_16b (int sfd, void *data);
-
-int dr_read (int fd, char *buf, uint32_t len);
-int dr_write (int fd, char *buf, uint32_t len);
 
 int send_blocked_host_list (int sfd, struct blocked_host *bh, uint32_t size, int do_checksize);
 int recv_blocked_host_list (int sfd, struct blocked_host **bh, uint32_t *size, int do_checksize);
