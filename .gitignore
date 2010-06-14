@@ -2,6 +2,8 @@
 *.a
 *.patch
 .sconsign.dblite
+.sconf_temp
+config.log
 libdrqueue/git_rev.h
 DrQueueOnRails/db/schema.rb
 DrQueueOnRails/db/*.db
