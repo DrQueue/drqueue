@@ -24,10 +24,12 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
-#ifndef _WIN32
-  #include <unistd.h>
-#else
-  #include <process.h>
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
+#ifdef _WIN32
+#include <process.h>
 #endif
 
 #include "libdrqueue.h"

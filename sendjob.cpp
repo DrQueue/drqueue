@@ -26,7 +26,10 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 
 #if defined (__IRIX)
 #include <sys/types.h>

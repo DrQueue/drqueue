@@ -108,9 +108,11 @@ Help(opts.GenerateHelpText(env_lib))
 # fetch Git commit id and write into git_rev.h
 write_git_rev(get_git_commit())
 
-#conf = Configure(env_lib)
+conf = Configure(env_lib)
 # FIXME: write configure tests
-#env_lib = conf.Finish()
+if conf.CheckCHeader('unistd.h'):
+    conf.env.Append(CPPDEFINES = Split ('-DHAVE_UNISTD_H'))
+env_lib = conf.Finish()
 
 # Installation paths
 idir_prefix = os.path.normpath(os.path.join('${DESTDIR}','${PREFIX}','drqueue'))

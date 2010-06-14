@@ -22,8 +22,8 @@
 #include <stdio.h>
 #include <sys/stat.h>
 
-#ifndef _WIN32
-  #include <unistd.h>
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
 #endif
 
 #include "libdrqueue.h"

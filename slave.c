@@ -26,7 +26,11 @@
 #endif
 
 #include <stdio.h>
+
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+
 #include <signal.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>

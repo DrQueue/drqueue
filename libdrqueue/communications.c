@@ -20,9 +20,12 @@
 //
 #include <stdio.h>
 
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
 #ifndef _WIN32
   #include <netdb.h>
-  #include <unistd.h>
 #else
   #include <winsock2.h>
   #define socklen_t int

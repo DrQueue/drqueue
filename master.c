@@ -23,7 +23,11 @@
 
 #include <stdio.h>
 #include <sys/types.h>
+
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/sem.h>

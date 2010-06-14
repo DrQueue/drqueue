@@ -23,11 +23,14 @@
 #include <stdio.h>
 #include <signal.h>
 
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
 #ifndef _WIN32
   #include <netinet/in.h>
   #include <arpa/inet.h>
   #include <netdb.h>
-  #include <unistd.h>
   #include <sys/shm.h>
 #else
   #include <io.h>

@@ -20,10 +20,13 @@
 //
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <signal.h>
 #include <ctype.h>
+
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#include <stdlib.h>
+#endif
 
 #if defined(__LINUX)
 # include <stdint.h>
