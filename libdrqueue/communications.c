@@ -56,8 +56,8 @@ long int brecv;   /* Bytes received */
 #endif
 
 /* Forward Declares */
-static int dr_socket_write (int fd, char *buf, uint32_t len);
-static int dr_socket_read (int fd, char *buf, uint32_t len);
+static ssize_t dr_socket_write (int fd, char *buf, uint32_t len);
+static ssize_t dr_socket_read (int fd, char *buf, uint32_t len);
 
 
 // ONGOING:
@@ -1230,7 +1230,7 @@ recv_blocked_host (int sfd, struct blocked_host *bh, int do_checksize) {
   return 1;
 }
 
-static int
+static ssize_t
 dr_socket_read (int fd, char *buf, uint32_t len) {
   int r;
   int bleft;
