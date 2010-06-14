@@ -25,9 +25,6 @@
 
 #include "libdrqueue.h"
 
-#ifdef __CYGWIN
-void cygwin_conv_to_posix_path(const char *path, char *posix_path);
-#endif
 
 char *lightwavesg_create (struct lightwavesgi *info) {
   /* This function creates the Lightwave render script based on the information given */
@@ -47,15 +44,9 @@ char *lightwavesg_create (struct lightwavesgi *info) {
     return NULL;
   }
 
-#ifdef __CYGWIN
-  cygwin_conv_to_posix_path(info->scene, scene);
-  cygwin_conv_to_posix_path(info->projectdir, projectdir);
-  cygwin_conv_to_posix_path(info->configdir, configdir);
-#else
-  strncpy(scene,info->scene,MAXCMDLEN-1);
-  strncpy(projectdir,info->projectdir,MAXCMDLEN-1);
-  strncpy(configdir,info->configdir,MAXCMDLEN-1);
-#endif
+  dr_copy_path(scene, info->scene, MAXCMDLEN-1);
+  dr_copy_path(projectdir, info->projectdir, MAXCMDLEN-1);
+  dr_copy_path(configdir, info->configdir, MAXCMDLEN-1);
 
   p = strrchr(scene,'/');
   p = ( p ) ? p+1 : scene;

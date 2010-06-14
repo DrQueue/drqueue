@@ -39,11 +39,7 @@ char *luxrendersg_create (struct luxrendersgi *info) {
     return NULL;
   }
 
-#ifdef __CYGWIN
-  cygwin_conv_to_posix_path(info->scene, scene);
-#else
-  strncpy(scene,info->scene,MAXCMDLEN-1);
-#endif
+  dr_copy_path(scene, info->scene, MAXCMDLEN-1);
 
   p = strrchr(scene,'/');
   p = ( p ) ? p+1 : scene;

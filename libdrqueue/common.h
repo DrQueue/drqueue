@@ -57,6 +57,8 @@ char *get_version_complete (void);
 uint64_t dr_hton64(uint64_t);
 uint64_t dr_ntoh64(uint64_t);
 
+void dr_copy_path(char *pDest, const char *pSrc, int nLen);
+
 #ifdef __CPLUSPLUS
 }
 #endif

@@ -40,11 +40,7 @@ char *generalsg_create (struct generalsgi *info) {
     return NULL;
   }
 
-#ifdef __CYGWIN
-  cygwin_conv_to_posix_path(info->script, script);
-#else
-  strncpy(script,info->script,MAXCMDLEN-1);
-#endif
+  dr_copy_path(script, info->script, MAXCMDLEN-1);
 
   p = strrchr(info->script,'/');
   p = ( p ) ? p+1 : info->script;

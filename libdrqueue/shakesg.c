@@ -24,9 +24,6 @@
 
 #include "libdrqueue.h"
 
-#ifdef __CYGWIN
-void cygwin_conv_to_posix_path(const char *path, char *posix_path);
-#endif
 
 char *shakesg_create (struct shakesgi *info) {
   /* This function creates the Shake render script based on the information given */
@@ -44,11 +41,7 @@ char *shakesg_create (struct shakesgi *info) {
     return NULL;
   }
 
-#ifdef __CYGWIN
-  cygwin_conv_to_posix_path(info->script, script);
-#else
-  strncpy(script,info->script,MAXCMDLEN-1);
-#endif
+  dr_copy_path(script, info->script, MAXCMDLEN-1);
 
   p = strrchr(script,'/');
   p = ( p ) ? p+1 : script;

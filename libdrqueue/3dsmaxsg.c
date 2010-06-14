@@ -41,13 +41,8 @@ char *threedsmaxsg_create (struct threedsmaxsgi *info) {
     return NULL;
   }
 
-#ifdef __CYGWIN
-  cygwin_conv_to_posix_path(info->scene, scene);
-  cygwin_conv_to_posix_path(info->image, image);
-#else
-  strncpy(scene,info->scene,MAXCMDLEN-1);
-  strncpy(image,info->image,MAXCMDLEN-1);
-#endif
+  dr_copy_path(scene, info->scene, MAXCMDLEN-1);
+  dr_copy_path(image, info->image, MAXCMDLEN-1);
 
   p = strrchr(scene,'/');
   p = ( p ) ? p+1 : scene;

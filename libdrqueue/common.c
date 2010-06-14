@@ -378,3 +378,16 @@ dr_ntoh64 (uint64_t source) {
   return swap64(source);
 #endif
 }
+
+void
+dr_copy_path(char *pDest, const char *pSrc, int nLen)
+{
+#ifdef __CYGWIN
+  (void)nLen;
+
+  cygwin_conv_to_posix_path(pDest, pSrc);
+#else
+  strncpy(pDest,pSrc,nLen);
+#endif
+}
+

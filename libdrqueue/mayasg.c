@@ -24,10 +24,6 @@
 
 #include "libdrqueue.h"
 
-#ifdef __CYGWIN
-void cygwin_conv_to_posix_path(const char *path, char *posix_path);
-#endif
-
 
 char *mayasg_create (struct mayasgi *info) {
   /* This function creates the maya render script based on the information given */
@@ -49,19 +45,11 @@ char *mayasg_create (struct mayasgi *info) {
     return NULL;
   }
 
-#ifdef __CYGWIN
-  cygwin_conv_to_posix_path(info->scene, scene);
-  cygwin_conv_to_posix_path(info->renderdir, renderdir);
-  cygwin_conv_to_posix_path(info->projectdir, projectdir);
-  cygwin_conv_to_posix_path(info->precommand, precommand);
-  cygwin_conv_to_posix_path(info->postcommand, postcommand);
-#else
-  strncpy(scene,info->scene,MAXCMDLEN-1);
-  strncpy(renderdir,info->renderdir,MAXCMDLEN-1);
-  strncpy(projectdir,info->projectdir,MAXCMDLEN-1);
-  strncpy(precommand,info->precommand,MAXCMDLEN-1);
-  strncpy(postcommand,info->postcommand,MAXCMDLEN-1);
-#endif
+  dr_copy_path(scene, info->scene, MAXCMDLEN-1);
+  dr_copy_path(renderdir, info->renderdir, MAXCMDLEN-1);
+  dr_copy_path(projectdir, info->projectdir, MAXCMDLEN-1);
+  dr_copy_path(precommand, info->precommand, MAXCMDLEN-1);
+  dr_copy_path(postcommand, info->postcommand, MAXCMDLEN-1);
 
   p = strrchr(scene,'/');
   p = ( p ) ? p+1 : scene;

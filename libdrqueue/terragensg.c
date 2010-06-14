@@ -24,9 +24,6 @@
 
 #include "libdrqueue.h"
 
-#ifdef __CYGWIN
-void cygwin_conv_to_posix_path(const char *path, char *posix_path);
-#endif
 
 char *terragensg_create (struct terragensgi *info) {
   /* This function creates the 3delight render script based on the information given */
@@ -46,15 +43,9 @@ char *terragensg_create (struct terragensgi *info) {
     return NULL;
   }
 
-#ifdef __CYGWIN
-  cygwin_conv_to_posix_path(info->scriptfile, scriptfile);
-  cygwin_conv_to_posix_path(info->worldfile, worldfile);
-  cygwin_conv_to_posix_path(info->terrainfile, terrainfile);
-#else
-  strncpy(scriptfile,info->scriptfile,MAXCMDLEN-1);
-  strncpy(worldfile,info->worldfile,MAXCMDLEN-1);
-  strncpy(terrainfile,info->terrainfile,MAXCMDLEN-1);
-#endif
+  dr_copy_path(scriptfile, info->scriptfile, MAXCMDLEN-1);
+  dr_copy_path(worldfile, info->worldfile, MAXCMDLEN-1);
+  dr_copy_path(terrainfile, info->terrainfile, MAXCMDLEN-1);
 
   p = strrchr(scriptfile,'/');
   p = ( p ) ? p+1 : scriptfile;

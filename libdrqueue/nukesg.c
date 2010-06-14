@@ -24,9 +24,6 @@
 
 #include "libdrqueue.h"
 
-#ifdef __CYGWIN
-void cygwin_conv_to_posix_path(const char *path, char *posix_path);
-#endif
 
 char *nukesg_create (struct nukesgi *info) {
   /* This function creates the Nuke render script based on the information given */
@@ -44,11 +41,7 @@ char *nukesg_create (struct nukesgi *info) {
     return NULL;
   }
 
-#ifdef __CYGWIN
-  cygwin_conv_to_posix_path(info->scene, scene);
-#else
-  strncpy(scene,info->scene,MAXCMDLEN-1);
-#endif
+  dr_copy_path(scene, info->scene, MAXCMDLEN-1);
 
   p = strrchr(scene,'/');
   p = ( p ) ? p+1 : scene;
