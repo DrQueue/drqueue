@@ -22,7 +22,8 @@
 #include <stdlib.h>
 #include "list.h"
 
-struct list *list_new (void *data) {
+struct list *
+list_new (void *data) {
 
   struct list *new_list = (struct list *) malloc (sizeof (struct list));
 
@@ -37,7 +38,8 @@ struct list *list_new (void *data) {
   return list_add (new_list,data);
 }
 
-struct list *list_add (struct list *list, void *data) {
+struct list *
+list_add (struct list *list, void *data) {
   struct list_item *item = (struct list_item *) malloc (sizeof (struct list_item));
   struct list_item *old_first = list->first;
   item->data = data;
@@ -47,7 +49,8 @@ struct list *list_add (struct list *list, void *data) {
   return list;
 }
 
-int list_count (struct list *list) {
+int
+list_count (struct list *list) {
   int count = 0;
   struct list_item *current = list->first;
   while ( current != NULL ) {
@@ -57,18 +60,22 @@ int list_count (struct list *list) {
   return count;
 }
 
-void list_reset (struct list *list) {
+void
+list_reset (struct list *list) {
   list->current = list->first;
 }
 
-void *list_get_seq (struct list *list) {
+void *
+list_get_seq (struct list *list) {
+  void *data;
+  
   if ( !list )
     return NULL;
   if ( !list->current ) {
     list->current = list->first;
     return NULL;
   }
-  void *data = list->current->data;
+  data = list->current->data;
   list->current = list->current->next;
   return data;
 }

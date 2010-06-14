@@ -21,13 +21,6 @@
 //
 
 #include <stdio.h>
-#include <time.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <string.h>
-#include <unistd.h>
 
 #include "aqsissg.h"
 #include "libdrqueue.h"
@@ -40,6 +33,7 @@ char *aqsissg_create (struct aqsissgi *info) {
   static char filename[BUFFERLEN];
   char *p;   /* Scene filename without path */
   char scene[MAXCMDLEN];
+  struct jobscript_info *ji;
 
   /* Check the parameters */
   if (!strlen(info->scene)) {
@@ -57,23 +51,27 @@ char *aqsissg_create (struct aqsissgi *info) {
   p = ( p ) ? p+1 : scene;
   snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
-  // TODO: Unified path handling
-  struct jobscript_info *ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
+  // FIXME: Unified path handling
+  ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
+  if(ji) {
+    jobscript_write_heading (ji);
+    jobscript_set_variable (ji,"SCENE",scene);
+    jobscript_set_variable (ji,"RF_OWNER",info->file_owner);
 
-  jobscript_write_heading (ji);
-  jobscript_set_variable (ji,"SCENE",scene);
-  jobscript_set_variable (ji,"RF_OWNER",info->file_owner);
+    if (info->custom_crop) {
+      jobscript_set_variable (ji,"CUSTOM_CROP","yes");
+      jobscript_set_variable_int (ji,"CROP_XMIN",info->xmin);
+      jobscript_set_variable_int (ji,"CROP_XMAX",info->xmax);
+      jobscript_set_variable_int (ji,"CROP_YMIN",info->ymin);
+      jobscript_set_variable_int (ji,"CROP_YMAX",info->ymax);
+    }
 
-  if (info->custom_crop) {
-    jobscript_set_variable (ji,"CUSTOM_CROP","yes");
-    jobscript_set_variable_int (ji,"CROP_XMIN",info->xmin);
-    jobscript_set_variable_int (ji,"CROP_XMAX",info->xmax);
-    jobscript_set_variable_int (ji,"CROP_YMIN",info->ymin);
-    jobscript_set_variable_int (ji,"CROP_YMAX",info->ymax);
+    jobscript_template_write (ji,"aqsis_sg.py");
+    jobscript_close (ji);
+  } else {
+    drerrno = DRE_NOTCOMPLETE;
+    return NULL;
   }
-
-  jobscript_template_write (ji,"aqsis_sg.py");
-  jobscript_close (ji);
 
   return filename;
 }

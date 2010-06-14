@@ -129,7 +129,8 @@ opts.AddVariables(PathVariable('DESTDIR','Alternate root directory','',[]),
                   PathVariable('PREFIX','Directory to install under','/usr/local'),
                   BoolVariable('universal_binary', 'Whether to build as an Universal Binary (MacOS X >= 10.3.9 only)', 0),
                   BoolVariable('build_drqman','Build drqman',1),
-                  BoolVariable('enable_warnings','Enable warnings for compiling',0))
+                  BoolVariable('enable_warnings','Enable warnings for compiling',0),
+                  BoolVariable('enable_debug','Enable debugging information for compiling',0))
 opts.Update(env_lib)
 opts.Save('scons.conf',env_lib)
 
@@ -139,7 +140,7 @@ Help(opts.GenerateHelpText(env_lib))
 write_git_rev(get_git_commit())
 
 #conf = Configure(env_lib)
-# TODO: write configure tests
+# FIXME: write configure tests
 #env_lib = conf.Finish()
 
 # Installation paths
@@ -198,6 +199,10 @@ else:
 if env_lib.get('enable_warnings'):
   env_lib.Append (CCFLAGS = Split('-Wall -Wextra'))
   env_lib.Append (LINKFLAGS = Split('-Wall -Wextra'))
+
+# add additional debug output if requested
+if env_lib.get('enable_debug'):
+  env_lib.Append (CCFLAGS = Split('-g'))
 
 # Base construction environment that links with the library
 env = env_lib.Clone()

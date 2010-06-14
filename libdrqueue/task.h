@@ -35,7 +35,7 @@
 #define DR_WIFSIGNALED(stat) ((stat)&DR_SIGNALEDFLAG)
 #define DR_WTERMSIG(stat)   ((stat)&0xff)
 
-// TODO: limit time LOADING and FINISHED
+// FIXME: limit time LOADING and FINISHED
 typedef enum {
   TASKSTATUS_LOADING,  /* Assigned but not running yet */
   TASKSTATUS_RUNNING,

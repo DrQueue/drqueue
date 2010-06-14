@@ -21,15 +21,7 @@
 //
 
 #include <stdio.h>
-#include <time.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <string.h>
-#include <unistd.h>
 
-#include "shakesg.h"
 #include "libdrqueue.h"
 
 #ifdef __CYGWIN
@@ -44,6 +36,7 @@ char *shakesg_create (struct shakesgi *info) {
   static char filename[BUFFERLEN];
   char *p;   /* Scene filename without path */
   char script[MAXCMDLEN];
+  struct jobscript_info *ji;
 
   /* Check the parameters */
   if (!strlen(info->script)) {
@@ -61,13 +54,18 @@ char *shakesg_create (struct shakesgi *info) {
   p = ( p ) ? p+1 : script;
   snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
-  // TODO: Unified path handling
-  struct jobscript_info *ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
+  // FIXME: Unified path handling
+  ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
+  if(ji) {
 
-  jobscript_write_heading (ji);
-  jobscript_set_variable (ji,"DRQUEUE_SCRIPT",script);
-  jobscript_template_write (ji,"shake_sg.py");
-  jobscript_close (ji);
+    jobscript_write_heading (ji);
+    jobscript_set_variable (ji,"DRQUEUE_SCRIPT",script);
+    jobscript_template_write (ji,"shake_sg.py");
+    jobscript_close (ji);
+  } else {
+    drerrno = DRE_NOTCOMPLETE;
+    return NULL;
+  }
 
   return filename;
 }

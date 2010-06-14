@@ -50,22 +50,22 @@ struct jobscript_info {
 #define JS_MAX_VAR_NAME 48
 #define JS_MAX_VAR_VALUE 256
 
-struct jobscript_info *jobscript_new (jobscript_type type,char *filename);
+struct jobscript_info *jobscript_new (jobscript_type type, char *filename);
 
 int jobscript_check_pointer (struct jobscript_info *ji);
 int jobscript_write_heading (struct jobscript_info *ji);
-int jobscript_set_variable_int (struct jobscript_info *ji,char *name,int64_t value);
-int jobscript_set_variable (struct jobscript_info *ji,char *name,char *value);
-int jobscript_template_write (struct jobscript_info *ji,char *template_file_name);
+int jobscript_set_variable_int (struct jobscript_info *ji, char *name,int64_t value);
+int jobscript_set_variable (struct jobscript_info *ji, char *name, char *value);
+int jobscript_template_write (struct jobscript_info *ji, char *template_file_name);
 int jobscript_close (struct jobscript_info *ji);
 
 int jobscript_tcsh_check_pointer (struct jobscript_info *ji);
 int jobscript_tcsh_write_heading (struct jobscript_info *ji);
-int jobscript_tcsh_set_variable (struct jobscript_info *ji,char *name,char *value);
+int jobscript_tcsh_set_variable (struct jobscript_info *ji, char *name, char *value);
 
 int jobscript_python_check_pointer (struct jobscript_info *ji);
 int jobscript_python_write_heading (struct jobscript_info *ji);
-int jobscript_python_set_variable (struct jobscript_info *ji,char *name,char *value);
+int jobscript_python_set_variable (struct jobscript_info *ji, char *name, char *value);
 
 #ifdef __CPLUSPLUS
 }

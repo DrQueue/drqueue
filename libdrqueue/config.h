@@ -53,7 +53,7 @@ void config_parse (char *cfg);
 
 // New config tools
 struct config_node *config_node_new (struct config_node *parent, char *name, char *desc, FILE *file);
-struct config_node *config_read (char *filename,char *tool);
+struct config_node *config_read (char *filename, char *tool);
 struct config_item *config_item_new (struct config_node *base, char *line);
 void config_add_node (struct config_node *base, FILE *file, char *line);
 void config_read_item (struct config_node *base, FILE *file);

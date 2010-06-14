@@ -21,15 +21,7 @@
 //
 
 #include <stdio.h>
-#include <time.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <string.h>
-#include <unistd.h>
 
-#include "nukesg.h"
 #include "libdrqueue.h"
 
 #ifdef __CYGWIN
@@ -44,6 +36,7 @@ char *nukesg_create (struct nukesgi *info) {
   static char filename[BUFFERLEN];
   char *p;   /* Scene filename without path */
   char scene[MAXCMDLEN];
+  struct jobscript_info *ji;
 
   /* Check the parameters */
   if (!strlen(info->scene)) {
@@ -61,28 +54,32 @@ char *nukesg_create (struct nukesgi *info) {
   p = ( p ) ? p+1 : scene;
   snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
-  // TODO: Unified path handling
-  struct jobscript_info *ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
-
-  jobscript_write_heading (ji);
-  jobscript_set_variable (ji,"SCENE",scene);
-  jobscript_set_variable (ji,"RF_OWNER",info->file_owner);
-  
-  if (strlen(info->format)) {
-  	jobscript_set_variable (ji,"FFORMAT",info->format);
+  // FIXME: Unified path handling
+  ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
+  if(ji) {
+    jobscript_write_heading (ji);
+    jobscript_set_variable (ji,"SCENE",scene);
+    jobscript_set_variable (ji,"RF_OWNER",info->file_owner);
+    
+    if (strlen(info->format)) {
+      jobscript_set_variable (ji,"FFORMAT",info->format);
+    }
+    if (info->res_x > 0) {
+      jobscript_set_variable_int (ji,"RESX",info->res_x);
+    }
+    if (info->res_y > 0) {
+      jobscript_set_variable_int (ji,"RESY",info->res_y);
+    }
+    if (strlen(info->camera)) {
+      jobscript_set_variable (ji,"CAMERA",info->camera);
+    }
+    
+    jobscript_template_write (ji,"nuke_sg.py");
+    jobscript_close (ji);
+  } else {
+    drerrno = DRE_NOTCOMPLETE;
+    return NULL;
   }
-  if (info->res_x > 0) {
-    jobscript_set_variable_int (ji,"RESX",info->res_x);
-  }
-  if (info->res_y > 0) {
-  	jobscript_set_variable_int (ji,"RESY",info->res_y);
-  }
-  if (strlen(info->camera)) {
-  	jobscript_set_variable (ji,"CAMERA",info->camera);
-  }
-  
-  jobscript_template_write (ji,"nuke_sg.py");
-  jobscript_close (ji);
 
   return filename;
 }

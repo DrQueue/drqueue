@@ -19,24 +19,17 @@
 // USA
 //
 
-#include <unistd.h>
 #include <stdio.h>
-#include <time.h>
-#include <string.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <signal.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <time.h>
 #include <stdarg.h>
-#include <limits.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 
-#include "logger.h"
-#include "task.h"
-#include "job.h"
-#include "computer.h"
+#ifndef _WIN32
+  #include <unistd.h>
+#else
+  #include <process.h>
+#endif
+
 #include "libdrqueue.h"
 
 int loglevel = L_INFO;
@@ -55,14 +48,6 @@ struct computer *logger_computer = NULL;
 /* One important detail about the logger functions is that all of them */
 /* add the trailing newline (\n). So the message shouldn't have it. */
 
-FILE *log_slave_open_task (int level, struct task *task);
-FILE *log_slave_open_computer (int level, char *name);
-FILE *log_master_open (int level);
-
-int log_level_dest (int level);
-int log_on_screen (void);
-int log_job_path_get (uint32_t jobid,char *path,int pathlen);
-int log_task_filename_get (struct task *task, char *path, int pathlen);
 
 void
 log_slave_task (struct task *task,int level,char *fmt,...) {
@@ -85,9 +70,15 @@ log_on_screen (void) {
   return 0;
 }
 
-FILE *log_slave_open_task (int level, struct task *task) {
+FILE *
+log_slave_open_task (int level, struct task *task) {
   FILE *f;
   char filename[PATH_MAX];
+
+  // fix compiler warning
+  (void)level;
+  
+  // FIXME: use level variable
 
   if (log_on_screen()) {
     return stderr;
@@ -106,10 +97,16 @@ FILE *log_slave_open_task (int level, struct task *task) {
   return f;
 }
 
-void log_slave_computer (int level, char *fmt, ...) {
+void
+log_slave_computer (int level, char *fmt, ...) {
   char name2[MAXNAMELEN];
   char *name = NULL;  /* To only make a call to gethostname */
   va_list ap;
+
+  // fix compiler warning
+  (void)level;
+  
+  // FIXME: use level variable
 
   if (!log_level_dest(level)) {
     return;
@@ -127,10 +124,16 @@ void log_slave_computer (int level, char *fmt, ...) {
   va_end (ap);
 }
 
-FILE *log_slave_open_computer (int level, char *name) {
+FILE *
+log_slave_open_computer (int level, char *name) {
   FILE *f;
   char filename[BUFFERLEN];
   char *basedir;
+
+  // fix compiler warning
+  (void)level;
+  
+  // FIXME: use level variable
 
   if (log_on_screen()) {
     return stderr;
@@ -154,7 +157,8 @@ FILE *log_slave_open_computer (int level, char *name) {
   return f;
 }
 
-void log_master_job (struct job *job, int level, char *fmt, ...) {
+void 
+og_master_job (struct job *job, int level, char *fmt, ...) {
   va_list ap;
 
   if (!log_level_dest (level))
@@ -192,11 +196,18 @@ log_level_dest (int level) {
   return 1;
 }
 
-FILE *log_master_open (int level) {
+FILE *
+log_master_open (int level) {
   FILE *f;
   char filename[BUFFERLEN];
   char *basedir;
 
+  // fix compiler warning
+  (void)level;
+  
+  // FIXME: use level variable
+
+ 
   if (log_on_screen()) {
     return stderr;
   }
@@ -240,7 +251,8 @@ log_level_out_set (int outlevel) {
   loglevel |= outlevel & L_OUTMASK;
 }
 
-char *log_level_str (int level) {
+char *
+log_level_str (int level) {
   char *msg;
 
   switch (level & L_LEVELMASK) {
@@ -269,7 +281,8 @@ char *log_level_str (int level) {
   return msg;
 }
 
-int log_job_path_get (uint32_t jobid, char *path, int pathlen) {
+int
+log_job_path_get (uint32_t jobid, char *path, int pathlen) {
   char *log_basedir;
   char *jobname;
   int nwritten; // number of bytes written
@@ -280,7 +293,7 @@ int log_job_path_get (uint32_t jobid, char *path, int pathlen) {
   }
 
   if (!path) {
-    // TODO: Show error
+    // FIXME: Show error
     //fprintf (stderr,"Non valid values for path or pathlen.\n");
     return -1;
   }
@@ -295,27 +308,28 @@ int log_job_path_get (uint32_t jobid, char *path, int pathlen) {
   // we do not need the job anymore
 
   if (nwritten >= pathlen) {
-    // TODO: Show error
+    // FIXME: Show error
     return -1;
   }
   
   return nwritten;
 }
 
-int log_task_filename_get (struct task *task, char *path, int pathlen) {
+int
+log_task_filename_get (struct task *task, char *path, int pathlen) {
   // Returns len of the written string or -1 on failure
   char job_path[PATH_MAX];
   int nwritten;
   struct task *ttask = NULL;
 
   if (!path) {
-    // TODO: Show error
+    // FIXME: Show error
     //fprintf (stderr,"Non valid values for path or pathlen.\n");
     return -1;
   }
 
   if ((nwritten = log_job_path_get(task->ijob,job_path,PATH_MAX)) == -1) {
-    // TODO: Show error
+    // FIXME: Show error
     fprintf (stderr,"log_task_filename_get(): could not obtain job logs path. (%s)",strerror(drerrno_system));
     logger_task = ttask;
     return -1;
@@ -323,7 +337,7 @@ int log_task_filename_get (struct task *task, char *path, int pathlen) {
   
   nwritten = snprintf(path,pathlen,"%s/%s.%04u",job_path,task->jobname,task->frame);
   if (nwritten >= pathlen) {
-    // TODO: Show error
+    // FIXME: Show error
     return -1;
   }
 
@@ -355,7 +369,8 @@ log_path_create (char *path) {
   return 1;
 }
 
-int log_dumptask_open (struct task *t) {
+int
+log_dumptask_open (struct task *t) {
   int lfd;
   char task_filename[PATH_MAX];
   char job_path[PATH_MAX];
@@ -365,7 +380,7 @@ int log_dumptask_open (struct task *t) {
 
 
   if (log_job_path_get(t->ijob,job_path,PATH_MAX) == -1) {
-    // TODO: looking more like...
+    // FIXME: looking more like...
 /*     char config_logs_path[PATH_MAX]; */
 /*     if (!config_get_logs_path(config_logs_path,PATH_MAX)) { */
 /*     } */
@@ -375,7 +390,7 @@ int log_dumptask_open (struct task *t) {
       //log_auto (L_WARNING,"log_dumptask_open(): environment variable DRQUEUE_LOGS not set.");
       return -1;
     }
-    // TODO: path
+    // FIXME: path
     snprintf(job_path,PATH_MAX,"%s/%03u.%s.DEFAULT",basedir,t->ijob,t->jobname);
   }
 
@@ -390,14 +405,14 @@ int log_dumptask_open (struct task *t) {
 
   if (log_task_filename_get(t,task_filename,PATH_MAX) == -1) {
     // Backup code
-    // TODO: path
+    // FIXME: path
     snprintf(task_filename,PATH_MAX,"%s/%s.%04i.DEFAULT",job_path,t->jobname,t->frame);
   }
 
   //log_auto(L_DEBUG,"log_dumptask_open(): logs for this task go to path '%s'",task_filename);
 
 
-  // TODO: Check for directory and creation on another function.
+  // FIXME: Check for directory and creation on another function.
   if ((lfd = open (task_filename, O_CREAT|O_APPEND|O_RDWR, 0664)) == -1) {
     drerrno_system = errno;
     //log_auto (L_ERROR,"log_dumptask_open(): error on open. (%s)",strerror(drerrno_system));
@@ -411,7 +426,8 @@ int log_dumptask_open (struct task *t) {
   return lfd;
 }
 
-int log_dumptask_open_ro (struct task *t) {
+int
+log_dumptask_open_ro (struct task *t) {
   /* Open in read only for clients */
   int lfd;
   char task_filename[PATH_MAX];
@@ -426,10 +442,10 @@ int log_dumptask_open_ro (struct task *t) {
         //log_auto (L_ERROR,"log_dumptask_open_ro(): environment variable DRQUEUE_LOGS not set.");
         return -1;
       }
-      // TODO: path
+      // FIXME: path
       snprintf(job_path,PATH_MAX,"%s/%03u.%s.DEFAULT",basedir,t->ijob,t->jobname);
     }
-    // TODO: path
+    // FIXME: path
     snprintf(task_filename,PATH_MAX,"%s/%s.%04i.DEFAULT",job_path,t->jobname,t->frame);
   }
   
@@ -443,7 +459,8 @@ int log_dumptask_open_ro (struct task *t) {
   return lfd;
 }
 
-void log_get_time_str (char *timebuf,int buflen) {
+void
+log_get_time_str (char *timebuf, int buflen) {
   time_t now;
   size_t len = 0;
   char tbuf[MAXLOGLINELEN];
@@ -459,7 +476,7 @@ void log_get_time_str (char *timebuf,int buflen) {
 }
 
 void
-log_get_job_str (char *buffer,int buflen) {
+log_get_job_str (char *buffer, int buflen) {
   if (!buffer) {
     return;
   }
@@ -498,7 +515,8 @@ log_get_task_str (char *buffer, int buflen) {
 	    logger_task->jobname,logger_task->frame,logger_task->itask,logger_task->icomp);
 }
 
-void log_auto (int level, char *fmt, ...) {
+void
+log_auto (int level, char *fmt, ...) {
   // this will be the way to send log messages when no one is known
   // for sure.
   FILE *f_log = stderr;

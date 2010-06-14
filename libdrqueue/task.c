@@ -21,20 +21,19 @@
 //
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-#include "task.h"
 #include "libdrqueue.h"
 
 
-void task_init_all (struct task *task) {
+void
+task_init_all (struct task *task) {
   int i;
   for (i=0;i < MAXTASKS; i++)
     task_init (&task[i]);
 }
 
-void task_init (struct task *task) {
+void
+task_init (struct task *task) {
   if (!task) {
     return;
   }
@@ -76,7 +75,8 @@ task_available (struct slave_database *sdb) {
   return r;
 }
 
-void task_report (struct task *task) {
+void
+task_report (struct task *task) {
   printf ("Job name:\t%s\n",task->jobname);
   printf ("Job index:\t%i\n",task->ijob);
   printf ("Job command:\t%s\n",task->jobcmd);
@@ -86,7 +86,8 @@ void task_report (struct task *task) {
   printf ("Task status:\t%s\n",task_status_string(task->status));
 }
 
-char *task_status_string (unsigned char status) {
+char *
+task_status_string (unsigned char status) {
   char *st_string;
   switch (status) {
   case TASKSTATUS_LOADING:
@@ -148,15 +149,18 @@ task_environment_set (struct task *task) {
   static char ijob[BUFFERLEN];
   static char icomp[BUFFERLEN];
   static char jobname[BUFFERLEN];
+  uint32_t block_end;
+  uint32_t i;
+  struct envvars envvars;
 
   /* Padded frame number */
-  /* TODO: make padding length user defined */
+  /* FIXME: make padding length user defined */
   snprintf (padframe,BUFFERLEN,"DRQUEUE_PADFRAME=%0*i",task->frame_pad,task->frame);
   putenv (padframe);
 
   //create a variable with a space delimited padded frames list
-  uint32_t i;
-  uint32_t block_end = task->frame+task->block_size;
+  
+  block_end = task->frame+task->block_size;
   if (block_end > task->frame_end + 1) {
     block_end = task->frame_end + 1;
   }
@@ -216,20 +220,20 @@ task_environment_set (struct task *task) {
 
 
   // Job specific environment variables
-  struct envvars envvars;
   envvars_init(&envvars);
   if (!request_job_envvars (task->ijob,&envvars,SLAVE_LAUNCHER)) {
     log_auto (L_WARNING,"Could not receive job environment variables");
     return;
   }
   log_auto (L_DEBUG,"Received %u environment variables",envvars.nvariables);
-  char *buffer;
+  
   if (!envvars_attach(&envvars)) {
     if (envvars.nvariables > 0) {
       log_auto (L_WARNING,"Custom environment variables could not be attached. There should be %i available. (%s)",
 		envvars.nvariables,strerror(drerrno_system));
     }
   } else {
+    char *buffer;
     for (i = 0; i < envvars.nvariables; i++) {
       buffer = (char *) malloc (BUFFERLEN);
       snprintf (buffer,BUFFERLEN,"%s=%s",envvars.variables.ptr[i].name,envvars.variables.ptr[i].value);

@@ -20,13 +20,6 @@
 //
 
 #include <stdio.h>
-#include <time.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <string.h>
-#include <unistd.h>
 
 #include "cinema4dsg.h"
 #include "libdrqueue.h"
@@ -40,6 +33,7 @@ char *cinema4dsg_create (struct cinema4dsgi *info) {
   char *p;   /* Scene filename without path */
   char scene[MAXCMDLEN];
   char renderdir[MAXCMDLEN];
+  struct jobscript_info *ji;
 
   /* Check the parameters */
   if (!strlen(info->scene)) {
@@ -63,15 +57,20 @@ char *cinema4dsg_create (struct cinema4dsgi *info) {
   p = ( p ) ? p+1 : scene;
   snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
-  // TODO: Unified path handling
-  struct jobscript_info *ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
-
-  jobscript_write_heading (ji);
-  jobscript_set_variable (ji,"SCENE",scene);
-  jobscript_set_variable (ji,"RENDERDIR",renderdir);
-  jobscript_set_variable (ji,"RF_OWNER",info->file_owner);
-  jobscript_template_write (ji,"cinema4d_sg.py");
-  jobscript_close (ji);
+  // FIXME: Unified path handling
+  ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
+  if(ji)
+  {
+    jobscript_write_heading (ji);
+    jobscript_set_variable (ji,"SCENE",scene);
+    jobscript_set_variable (ji,"RENDERDIR",renderdir);
+    jobscript_set_variable (ji,"RF_OWNER",info->file_owner);
+    jobscript_template_write (ji,"cinema4d_sg.py");
+    jobscript_close (ji);
+  } else {
+    drerrno = DRE_NOTCOMPLETE;
+    return NULL;
+  }
 
   return filename;
 }

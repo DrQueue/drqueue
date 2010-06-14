@@ -107,7 +107,7 @@ get_architecture (void) {
 
 t_proctype
 get_proctype (void) {
-  // TODO: check values "hw.cputype" and "hw.cpusubtype"
+  // FIXME: check values "hw.cputype" and "hw.cpusubtype"
   t_arch arch;
 
   arch = get_architecture();

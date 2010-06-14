@@ -62,14 +62,27 @@ extern struct job *logger_job;
 extern struct task *logger_task;
 extern struct computer *logger_computer;
 
+
+/* One important detail about the logger functions is that all of them */
+/* add the trailing newline (\n). So the message shouldn't have it. */
+
 void log_auto (int level, char *fmt, ...);
+int log_on_screen (void);
 
 char *log_level_str (int level);
 void log_level_out_set (int outlevel);
 void log_level_severity_set (int severity);
+int log_level_dest (int level);
 
 int log_dumptask_open (struct task *t);
 int log_dumptask_open_ro (struct task *t);
+
+FILE *log_slave_open_task (int level, struct task *task);
+FILE *log_slave_open_computer (int level, char *name);
+FILE *log_master_open (int level);
+
+int log_job_path_get (uint32_t jobid, char *path, int pathlen);
+int log_task_filename_get (struct task *task, char *path, int pathlen);
 
 #endif
 

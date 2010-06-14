@@ -19,18 +19,16 @@
 // USA
 //
 
-#include <sys/types.h>
-#include <stdint.h>
 #include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <errno.h>
+
+#ifndef _WIN32
+  #include <sys/shm.h>
+#endif
 
 #include "libdrqueue.h"
 
-uint32_t job_index_free (void *pwdb) {
+uint32_t
+job_index_free (void *pwdb) {
   /* Return the index to a free job record OR -1 if there */
   /* are no more free records */
   uint32_t index = (uint32_t) -1;
@@ -47,7 +45,8 @@ uint32_t job_index_free (void *pwdb) {
   return index;
 }
 
-void job_report (struct job *job) {
+void
+job_report (struct job *job) {
   printf ("JOB Report\n");
   printf ("Name:\t\t\t%s\n",job->name);
   printf ("Status:\t\t\t%s\n",job_status_string(job->status));
@@ -56,7 +55,8 @@ void job_report (struct job *job) {
   printf ("Frame start,end:\t%i,%i\n",job->frame_start,job->frame_end);
 }
 
-void job_fix_received_invalid (struct job *job) {
+void
+job_fix_received_invalid (struct job *job) {
   // This function will fix all those values that, if received from a
   // remote location and left unchanged, could produce error or
   // warning messages, as well as undefined behaviour.
@@ -71,7 +71,8 @@ void job_fix_received_invalid (struct job *job) {
   job->fishmid = (int64_t)-1;
 }
 
-void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job) {
+void
+job_init_registered (struct database *wdb, uint32_t ijob, struct job *job) {
   /* Called when we have just received a job to be registered */
   int i;
   int nframes;
@@ -222,7 +223,7 @@ job_delete (struct job *job) {
   // Deallocates all memory reserved for the job and initializes it.
   //
   if (!job) {
-    // TODO: log it
+    // FIXME: log it
     return;
   }
   job_frame_info_free (job);
@@ -232,7 +233,8 @@ job_delete (struct job *job) {
   job_init (job);
 }
 
-char *job_status_string (uint16_t status) {
+char *
+job_status_string (uint16_t status) {
   char *msg;
 
   switch (status) {
@@ -279,7 +281,8 @@ char *job_frame_status_string (uint8_t status) {
   return msg;
 }
 
-uint32_t job_nframes (struct job *job) {
+uint32_t
+job_nframes (struct job *job) {
   uint32_t n_step,n = 0;
 
   if (job->frame_step) {
@@ -292,9 +295,8 @@ uint32_t job_nframes (struct job *job) {
   return n;
 }
 
-
-
-int job_available (struct database *wdb,uint32_t ijob, uint32_t *iframe, uint32_t icomp) {
+int
+job_available (struct database *wdb, uint32_t ijob, uint32_t *iframe, uint32_t icomp) {
   semaphore_lock(wdb->semid);
 
   if (!job_index_correct_master(wdb,ijob)) {
@@ -334,7 +336,8 @@ int job_available (struct database *wdb,uint32_t ijob, uint32_t *iframe, uint32_
 
 }
 
-uint32_t job_first_frame_available (struct database *wdb,uint32_t ijob,uint32_t icomp) {
+uint32_t
+job_first_frame_available (struct database *wdb, uint32_t ijob, uint32_t icomp) {
   /* To be called LOCKED */
   /* This function not only returns the first frame */
   /* available but also updates the job structure when found */
@@ -368,11 +371,13 @@ uint32_t job_first_frame_available (struct database *wdb,uint32_t ijob,uint32_t 
   return r;
 }
 
-void job_update_assigned (struct database *wdb, uint32_t ijob, uint32_t iframe, uint32_t icomp, uint16_t itask) {
+void
+job_update_assigned (struct database *wdb, uint32_t ijob, uint32_t iframe, uint32_t icomp, uint16_t itask) {
   /* LOCK BEFORE CALLING THIS FUNCTION */
   /* Here we should set all the information inside the task structure (slave) */
   /* about the assigned job (master) into the remote computer */
   /* This function is called by the master, locked */
+  time_t ttime;
 
   if (!job_index_correct_master (wdb,ijob)) {
     /* Somebody could have deleted the job meanwhile */
@@ -398,7 +403,6 @@ void job_update_assigned (struct database *wdb, uint32_t ijob, uint32_t iframe, 
   wdb->job[ijob].frame_info.ptr[iframe].itask = itask;
 
   /* Time stuff */
-  time_t ttime;
   time (&ttime);
   wdb->job[ijob].frame_info.ptr[iframe].start_time = (uint64_t) ttime;
   wdb->job[ijob].frame_info.ptr[iframe].end_time = wdb->job[ijob].frame_info.ptr[iframe].start_time
@@ -450,7 +454,8 @@ detach_blocked_host_shared_memory (struct blocked_host *bhshp) {
   bhshp = NULL;
 }
 
-int64_t get_frame_shared_memory (uint32_t nframes) {
+int64_t
+get_frame_shared_memory (uint32_t nframes) {
   int64_t shmid;
 
   if ((shmid = (int64_t) shmget (IPC_PRIVATE,sizeof(struct frame_info)*nframes, IPC_EXCL|IPC_CREAT|0600)) == (int64_t)-1) {
@@ -461,7 +466,8 @@ int64_t get_frame_shared_memory (uint32_t nframes) {
   return shmid;
 }
 
-struct frame_info *attach_frame_shared_memory (int64_t shmid) {
+struct frame_info *
+attach_frame_shared_memory (int64_t shmid) {
   void *pam;   // pointer to attached memory
 
   if ((pam = shmat ((int)shmid,0,0)) == (void *)-1) {
@@ -472,14 +478,16 @@ struct frame_info *attach_frame_shared_memory (int64_t shmid) {
   return (struct frame_info *) pam;
 }
 
-void detach_frame_shared_memory (struct frame_info *fishp) {
+void
+detach_frame_shared_memory (struct frame_info *fishp) {
   if (shmdt((char*)fishp) == -1) {
     drerrno = DRE_RMSHMEM;
     log_auto (L_ERROR,"Call to shmdt failed: detach_frame_shared_memory: %s. (%s)", drerrno_str(),strerror(errno));
   }
 }
 
-uint32_t job_njobs_masterdb (struct database *wdb) {
+uint32_t
+job_njobs_masterdb (struct database *wdb) {
   uint32_t i,c;
 
   for (i=0,c=0;i<MAXJOBS;i++) {
@@ -492,7 +500,7 @@ uint32_t job_njobs_masterdb (struct database *wdb) {
 }
 
 void
-job_update_info (struct database *wdb,uint32_t ijob) {
+job_update_info (struct database *wdb, uint32_t ijob) {
   /* This function is called by the master */
   /* It updates the number of process running */
   /* This function is called unlocked */
@@ -637,7 +645,8 @@ job_update_info (struct database *wdb,uint32_t ijob) {
   log_auto (L_DEBUG3,"job_update_info(): <Returning...");
 }
 
-int job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe, struct frame_info *fi) {
+int
+job_check_frame_status (struct database *wdb, uint32_t ijob, uint32_t iframe, struct frame_info *fi) {
   // This function checks if the running or loading (in frame_info at job) process is actually
   /* runnning or not (in task at computer) */
   t_framestatus fistatus;
@@ -703,7 +712,7 @@ int job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe,
       }
     } else { // itask == -1
       /* The task is being loaded, so it hasn't yet a itask assigned */
-      // TODO: check for timeout
+      // FIXME: check for timeout
       log_auto(L_WARNING,"job_check_frame_status(): task is being loaded (?). itask == -1.");
       running = 1;
     }
@@ -735,7 +744,8 @@ int job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe,
   return 1;
 }
 
-int priority_job_compare (const void *a,const void *b) {
+int
+priority_job_compare (const void *a, const void *b) {
   struct tpol *apt,*bpt;
 
   apt = (struct tpol *)a;
@@ -757,7 +767,8 @@ int priority_job_compare (const void *a,const void *b) {
   return 0;
 }
 
-void job_stop (struct job *job) {
+void
+job_stop (struct job *job) {
   /* This function is called locked */
   switch (job->status) {
   case JOBSTATUS_WAITING:
@@ -770,7 +781,8 @@ void job_stop (struct job *job) {
   }
 }
 
-void job_continue (struct job *job) {
+void
+job_continue (struct job *job) {
   /* This function is called locked */
   switch (job->status) {
   case JOBSTATUS_WAITING:
@@ -783,7 +795,8 @@ void job_continue (struct job *job) {
   }
 }
 
-void job_frame_waiting (struct database *wdb,uint32_t ijob, uint32_t iframe) {
+void
+job_frame_waiting (struct database *wdb, uint32_t ijob, uint32_t iframe) {
   /* This function is called unlocked, it's called by the master */
   /* This function sets a frame status to FS_WAITING */
   struct frame_info *fi;
@@ -816,11 +829,12 @@ void job_frame_waiting (struct database *wdb,uint32_t ijob, uint32_t iframe) {
 }
 
 uint32_t
-job_frame_index_to_number (struct job *job,uint32_t index) {
+job_frame_index_to_number (struct job *job, uint32_t index) {
   return (job->frame_start + (index * job->block_size * job->frame_step));
 }
 
-uint32_t job_frame_number_to_index (struct job *job,uint32_t number) {
+uint32_t
+job_frame_number_to_index (struct job *job, uint32_t number) {
   return ((number - job->frame_start) / (job->block_size * job->frame_step));
 }
 
@@ -835,7 +849,8 @@ int job_frame_number_correct (struct job *job,uint32_t number) {
   return 1;
 }
 
-int job_index_correct_master (struct database *wdb,uint32_t ijob) {
+int
+job_index_correct_master (struct database *wdb, uint32_t ijob) {
   if (ijob > MAXJOBS)
     return 0;
   if (!wdb->job[ijob].used)
@@ -844,7 +859,8 @@ int job_index_correct_master (struct database *wdb,uint32_t ijob) {
   return 1;
 }
 
-void job_environment_set (struct job *job, uint32_t iframe) {
+void
+job_environment_set (struct job *job, uint32_t iframe) {
   //
   // FIXME: needs to add compid and computer OS properly
   //
@@ -1130,7 +1146,8 @@ job_bswap_to_network (struct job *orig, struct job *dest) {
 //  dest->envvars.evshmid = (int64_t)-1; // 64bit 
 }
 
-int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp) {
+int
+job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp) {
   /* This function should return 0 in case the limits are not met for the computer */
   uint32_t i;
   struct blocked_host *bh ;
@@ -1183,7 +1200,8 @@ int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp) {
   return 1;
 }
 
-void job_frame_info_init (struct frame_info *fi) {
+void
+job_frame_info_init (struct frame_info *fi) {
   fi->status = FS_WAITING;
   fi->start_time = fi->end_time = 0;
   fi->exitcode = 0;
@@ -1208,7 +1226,8 @@ job_limits_bswap_from_network (struct job_limits *orig, struct job_limits *dest)
   dest->memory           = ntohl (orig->memory);
 }
 
-void job_logs_remove (struct job *job) {
+void
+job_logs_remove (struct job *job) {
   char dir[BUFFERLEN];
   char *basedir;
 
@@ -1222,7 +1241,8 @@ void job_logs_remove (struct job *job) {
   remove_dir(dir);
 }
 
-char *job_koj_string (struct job *job) {
+char *
+job_koj_string (struct job *job) {
   char *msg;
 
   switch (job->koj) {
@@ -1278,7 +1298,8 @@ char *job_koj_string (struct job *job) {
   return msg;
 }
 
-int job_available_no_icomp (struct database *wdb,uint32_t ijob, uint32_t *iframe) {
+int
+job_available_no_icomp (struct database *wdb, uint32_t ijob, uint32_t *iframe) {
   /* This function returns 1 in case there is a job available without asigning it to any computer */
   semaphore_lock(wdb->semid);
 
@@ -1308,7 +1329,8 @@ int job_available_no_icomp (struct database *wdb,uint32_t ijob, uint32_t *iframe
   return 1;
 }
 
-uint32_t job_first_frame_available_no_icomp (struct database *wdb,uint32_t ijob) {
+uint32_t
+job_first_frame_available_no_icomp (struct database *wdb,uint32_t ijob) {
   /* To be called LOCKED */
   /* This function not only returns the first frame */
   /* available without updating the job structure */
@@ -1347,7 +1369,7 @@ job_block_host_add_by_name (struct job *job, char *name) {
       return 0;
     }
 
-    // TODO: block_host_exists
+    // FIXME: block_host_exists
     // Search for coincidence
     for (i = 0; i < job->nblocked; i++) {
       if (strcmp (obh[i].name,name) == 0) {
@@ -1370,7 +1392,7 @@ job_block_host_add_by_name (struct job *job, char *name) {
     // Once copied we can remove the previous list
     detach_blocked_host_shared_memory (obh);
     if (shmctl ((int)job->bhshmid,IPC_RMID,NULL) == -1) {
-      // TODO: log error
+      // FIXME: log error
       // ...
     }
   }
@@ -1406,7 +1428,7 @@ job_block_host_exists_by_name (struct job *job, char *name) {
   }
 
   if ((obh = attach_blocked_host_shared_memory (job->bhshmid)) == (void *)-1) {
-    // TODO
+    // FIXME
     return exists;
   }
   
@@ -1435,11 +1457,11 @@ job_block_host_remove_by_name (struct job *job, char *name) {
 
   if (job->nblocked) {
     if ((obh = attach_blocked_host_shared_memory (job->bhshmid)) == (void *)-1) {
-      // TODO
+      // FIXME
       return 0;
     }
     if ((nbhshmid = get_blocked_host_shared_memory (sizeof(struct blocked_host)*(job->nblocked-1))) == (int64_t)-1) {
-      // TODO
+      // FIXME
       detach_blocked_host_shared_memory(obh);
       return 0;
     }

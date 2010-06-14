@@ -21,15 +21,7 @@
 //
 
 #include <stdio.h>
-#include <time.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <string.h>
-#include <unistd.h>
 
-#include "pixiesg.h"
 #include "libdrqueue.h"
 
 char *pixiesg_create (struct pixiesgi *info) {
@@ -40,6 +32,7 @@ char *pixiesg_create (struct pixiesgi *info) {
   static char filename[BUFFERLEN];
   char *p;   /* Scene filename without path */
   char scene[MAXCMDLEN];
+  struct jobscript_info *ji;
 
   /* Check the parameters */
   if (!strlen(info->scene)) {
@@ -57,42 +50,47 @@ char *pixiesg_create (struct pixiesgi *info) {
   p = ( p ) ? p+1 : scene;
   snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
-  // TODO: Unified path handling
-  struct jobscript_info *ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
+  // FIXME: Unified path handling
+  ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
+  if(ji) {
 
-  jobscript_write_heading (ji);
-  jobscript_set_variable (ji,"RIBFILE",scene);
-  
-  /*
-  old options that may be worth to include:
-  
-  fprintf(f,"set CUSTOM_CROP=%u\n",info->custom_crop);
-  if (info->custom_crop) {
-   fprintf(f,"set CROP_XMIN=%u\n",info->xmin);
-   fprintf(f,"set CROP_XMAX=%u\n",info->xmax);
-   fprintf(f,"set CROP_YMIN=%u\n",info->ymin);
-   fprintf(f,"set CROP_YMAX=%u\n",info->ymax);
+    jobscript_write_heading (ji);
+    jobscript_set_variable (ji,"RIBFILE",scene);
+    
+    /*
+    old options that may be worth to include:
+    
+    fprintf(f,"set CUSTOM_CROP=%u\n",info->custom_crop);
+    if (info->custom_crop) {
+     fprintf(f,"set CROP_XMIN=%u\n",info->xmin);
+     fprintf(f,"set CROP_XMAX=%u\n",info->xmax);
+     fprintf(f,"set CROP_YMIN=%u\n",info->ymin);
+     fprintf(f,"set CROP_YMAX=%u\n",info->ymax);
+    }
+    fprintf(f,"set CUSTOM_SAMPLES=%u\n",info->custom_samples);
+    if (info->custom_samples) {
+     fprintf(f,"set XSAMPLES=%u\n",info->xsamples);
+     fprintf(f,"set YSAMPLES=%u\n",info->ysamples);
+    }
+    fprintf(f,"set DISP_STATS=%u\n",info->disp_stats);
+    fprintf(f,"set VERBOSE=%u\n",info->verbose);
+    fprintf(f,"set CUSTOM_BEEP=%u\n",info->custom_beep);
+    fprintf(f,"set CUSTOM_RADIOSITY=%u\n",info->custom_radiosity);
+    if (info->custom_radiosity) {
+     fprintf(f,"set RADIOSITY_SAMPLES=%u\n",info->radiosity_samples);
+    }
+    fprintf(f,"set CUSTOM_RAYSAMPLES=%u\n",info->custom_raysamples);
+    if (info->custom_raysamples) {
+     fprintf(f,"set RAYSAMPLES=%u\n",info->raysamples);
+    }
+    */
+    
+    jobscript_template_write (ji,"pixie_sg.py");
+    jobscript_close (ji);
+  } else {
+    drerrno = DRE_NOTCOMPLETE;
+    return NULL;
   }
-  fprintf(f,"set CUSTOM_SAMPLES=%u\n",info->custom_samples);
-  if (info->custom_samples) {
-   fprintf(f,"set XSAMPLES=%u\n",info->xsamples);
-   fprintf(f,"set YSAMPLES=%u\n",info->ysamples);
-  }
-  fprintf(f,"set DISP_STATS=%u\n",info->disp_stats);
-  fprintf(f,"set VERBOSE=%u\n",info->verbose);
-  fprintf(f,"set CUSTOM_BEEP=%u\n",info->custom_beep);
-  fprintf(f,"set CUSTOM_RADIOSITY=%u\n",info->custom_radiosity);
-  if (info->custom_radiosity) {
-   fprintf(f,"set RADIOSITY_SAMPLES=%u\n",info->radiosity_samples);
-  }
-  fprintf(f,"set CUSTOM_RAYSAMPLES=%u\n",info->custom_raysamples);
-  if (info->custom_raysamples) {
-   fprintf(f,"set RAYSAMPLES=%u\n",info->raysamples);
-  }
-  */
-  
-  jobscript_template_write (ji,"pixie_sg.py");
-  jobscript_close (ji);
 
   return filename;
 }

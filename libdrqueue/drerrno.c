@@ -25,7 +25,8 @@
 int drerrno = DRE_NOERROR;
 int drerrno_system = 0;
 
-char *drerrno_str (void) {
+char *
+drerrno_str (void) {
   char *msg;
 
   switch (drerrno) {

@@ -35,7 +35,7 @@ extern "C" {
 #define VERSION_MINOR  65
 #define VERSION_PATCH  0
 #define VERSION_POST   0
-#define VERSION_PRE    3
+#define VERSION_PRE    0
 
 
 int common_environment_check (void);

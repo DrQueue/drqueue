@@ -22,7 +22,11 @@
 
 #include "libdrqueue.h"
 
-int main (int argc, char *argv[])
+// FIXME: complete this module
+
+int main (void)
 {
   config_read ("./sample.conf","config_reader");
+
+  return 0;
 }

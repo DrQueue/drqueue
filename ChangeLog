@@ -77,6 +77,10 @@ fixed bugs:
 #93: "watch frame log" assumes rows are ordered by number
 #97: Set variable values in XSI script generator in the right way
 #98: Add support for platform freebsd8 in SConstruct file
+#99: sendjob does not work with blender files
+#111: Fix DrQueue build version number and include Git commit id
+#128: mantrasg doesnt have it own python file
+#130: Dont leak memory when create a new python script
 
 added features:
 #35: script generator functions: single image / animation rendering
@@ -91,6 +95,7 @@ added features:
 #104: Remove Ruby bindings out of main DrQueue repository
 #105: Create new repository for Python bindings
 #106: Remove Python bindings out of main DrQueue repository
-#108 Port blender_same_directory.py to Python 3.x for compatibility to Blender 2.5
+#107: Distribute Python bindings through PyPI (like RubyGems for Ruby)
+#108: Port blender_same_directory.py to Python 3.x for compatibility to Blender 2.5
 #110: Add support for Linux on Playstation3 systems
 >>>>>>> 0.64.x

@@ -18,21 +18,16 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
+#include <stdio.h>
+#include <sys/stat.h>
 
 #include "common.h"
 #include "drerrno.h"
 #include "constants.h"
 #include "logger.h"
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <string.h>
-#include <ctype.h>
-
-int common_environment_check (void) {
+int
+common_environment_check (void) {
   /* This function checks the environment AND the directory structure */
   char *buf;
   struct stat s_stat;
@@ -145,11 +140,18 @@ int common_environment_check (void) {
   return 1;
 }
 
-void show_version (char **argv) {
+void
+show_version (char **argv) {
+  // fix compiler warning
+  (void)argv;
+  
+  // FIXME: use argv variable
+  
   printf ("DrQueue (Version: %s)\n",get_version_complete());
 }
 
-int rmdir_check_str (char *path) {
+int
+rmdir_check_str (char *path) {
   // This function should test a path's validity
   // So we don't pass a wrong path to remove_dir by mistake
 
@@ -163,7 +165,8 @@ int rmdir_check_str (char *path) {
   return 0;
 }
 
-int remove_dir (char *dir) {
+int
+remove_dir (char *dir) {
   /* Removes a directory recursively */
   char cmd[BUFFERLEN];
 
@@ -177,7 +180,8 @@ int remove_dir (char *dir) {
   return 0;
 }
 
-void mn_job_finished (struct job *job) {
+void
+mn_job_finished (struct job *job) {
   FILE *mail;
   char command[BUFFERLEN];
   uint32_t total;
@@ -202,7 +206,8 @@ void mn_job_finished (struct job *job) {
   pclose (mail);
 }
 
-char *time_str (uint32_t nseconds) {
+char *
+time_str (uint32_t nseconds) {
   static char msg[BUFFERLEN];
 
   if ((nseconds / 3600) > 0) {
@@ -221,7 +226,8 @@ char *time_str (uint32_t nseconds) {
   return msg;
 }
 
-int common_date_check (void) {
+int
+common_date_check (void) {
   time_t now;
   struct tm *tm_now;
 
@@ -236,7 +242,8 @@ int common_date_check (void) {
   return 1;
 }
 
-void set_default_env(void) {
+void
+set_default_env(void) {
   char *penv,renv[BUFFERLEN],*drq_root,*drq_root_cp;
 
   if ((drq_root = getenv("DRQUEUE_ROOT")) == NULL) {
@@ -309,13 +316,15 @@ void set_default_env(void) {
   
 }
 
-char *get_revision_string () {
+char *
+get_revision_string () {
   static char buf[BUFFERLEN];
   strncpy(buf, REVISION, BUFFERLEN-1);
   return buf;
 }
 
-char *get_version_prepost () {
+char *
+get_version_prepost () {
   static char buf[BUFFERLEN];
   if (VERSION_PRE > 0) {
     snprintf(buf,BUFFERLEN,"c%u",VERSION_PRE);
@@ -327,14 +336,16 @@ char *get_version_prepost () {
   return buf;
 }
 
-char *get_version_complete () {
+char *
+get_version_complete () {
   static char buffer[BUFFERLEN];
   snprintf (buffer,BUFFERLEN,"%i.%02i.%i%s (%s)",VERSION_MAJOR,VERSION_MINOR,VERSION_PATCH,
 	    get_version_prepost(),get_revision_string());
   return buffer;
 }
 
-uint64_t swap64 (uint64_t source) {
+uint64_t
+swap64 (uint64_t source) {
   uint64_t result;
   char *s = (char*)&source;
   char *r = (char*)&result;
@@ -350,7 +361,8 @@ uint64_t swap64 (uint64_t source) {
   return result;
 }
 
-uint64_t dr_hton64 (uint64_t source) {
+uint64_t
+dr_hton64 (uint64_t source) {
 #if defined (BIG_ENDIAN) && ! defined (LITTLE_ENDIAN)
   return source;
 #else
@@ -358,7 +370,8 @@ uint64_t dr_hton64 (uint64_t source) {
 #endif
 }
 
-uint64_t dr_ntoh64 (uint64_t source) {
+uint64_t
+dr_ntoh64 (uint64_t source) {
 #if defined (BIG_ENDIAN) && ! defined (LITTLE_ENDIAN)
   return source;
 #else

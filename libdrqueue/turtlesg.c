@@ -21,15 +21,7 @@
 //
 
 #include <stdio.h>
-#include <time.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <string.h>
-#include <unistd.h>
 
-#include "turtlesg.h"
 #include "libdrqueue.h"
 
 #ifdef __CYGWIN
@@ -46,6 +38,7 @@ char *turtlesg_create (struct turtlesgi *info) {
   char scene[MAXCMDLEN];
   char renderdir[MAXCMDLEN];
   char projectdir[MAXCMDLEN];
+  struct jobscript_info *ji;
 
   /* Check the parameters */
   if (!strlen(info->scene)) {
@@ -75,36 +68,41 @@ char *turtlesg_create (struct turtlesgi *info) {
   p = ( p ) ? p+1 : scene;
   snprintf(filename,BUFFERLEN-1,"%s/%s.%lX",info->scriptdir,p,(unsigned long int)time(NULL));
 
-  // TODO: Unified path handling
-  struct jobscript_info *ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
+  // FIXME: Unified path handling
+  ji = jobscript_new (JOBSCRIPT_PYTHON, filename);
+  if(ji) {
 
-  jobscript_write_heading (ji);
-  jobscript_set_variable (ji,"SCENE",scene);
-  jobscript_set_variable (ji,"RENDERDIR",renderdir);
-  jobscript_set_variable (ji,"PROJECTDIR",projectdir);
-  jobscript_set_variable (ji,"RF_OWNER",info->file_owner);
-  
-  if (strlen(info->format)) {
-    jobscript_set_variable (ji,"FFORMAT",info->format);
-  }
-  if (info->res_x > 0) {
-    jobscript_set_variable_int (ji,"RESX",info->res_x);
-  }
-  if (info->res_y > 0) {
-    jobscript_set_variable_int (ji,"RESY",info->res_y);
-  }
-  if (strlen(info->camera)) {
-    jobscript_set_variable (ji,"CAMERA",info->camera);
-  }
-  if (strlen(info->image)) {
-    jobscript_set_variable (ji,"DRQUEUE_IMAGE",info->image);
-  }
-  if (info->usemaya70 == 1) {
-    jobscript_set_variable_int (ji,"USEMAYA70",1);
-  }  
+    jobscript_write_heading (ji);
+    jobscript_set_variable (ji,"SCENE",scene);
+    jobscript_set_variable (ji,"RENDERDIR",renderdir);
+    jobscript_set_variable (ji,"PROJECTDIR",projectdir);
+    jobscript_set_variable (ji,"RF_OWNER",info->file_owner);
     
-  jobscript_template_write (ji,"turtle_sg.py");
-  jobscript_close (ji);
+    if (strlen(info->format)) {
+      jobscript_set_variable (ji,"FFORMAT",info->format);
+    }
+    if (info->res_x > 0) {
+      jobscript_set_variable_int (ji,"RESX",info->res_x);
+    }
+    if (info->res_y > 0) {
+      jobscript_set_variable_int (ji,"RESY",info->res_y);
+    }
+    if (strlen(info->camera)) {
+      jobscript_set_variable (ji,"CAMERA",info->camera);
+    }
+    if (strlen(info->image)) {
+      jobscript_set_variable (ji,"DRQUEUE_IMAGE",info->image);
+    }
+    if (info->usemaya70 == 1) {
+      jobscript_set_variable_int (ji,"USEMAYA70",1);
+    }  
+      
+    jobscript_template_write (ji,"turtle_sg.py");
+    jobscript_close (ji);
+  } else {
+    drerrno = DRE_NOTCOMPLETE;
+    return NULL;
+  }
 
   return filename;
 }

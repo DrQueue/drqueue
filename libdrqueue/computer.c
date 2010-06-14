@@ -18,32 +18,28 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <netdb.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
 #include <signal.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <errno.h>
-#include <unistd.h>
+
+#if defined (_WIN32)
+  #include "winsock2.h"
+  #define socklen_t int
+#else
+  #include <sys/socket.h>
+  #include <netinet/in.h>
+  #include <arpa/inet.h>
+  #include <netdb.h>
+#endif
 
 #include "libdrqueue.h"
-#include "computer_pool.h"
-#include "computer.h"
-#include "semaphore.h"
+
 
 // ONGOING:
 // * --- GUESS DONE task_is_running (some parts belong here)
 // * 
 
-int computer_index_addr (void *pwdb,struct in_addr addr) {
+int
+computer_index_addr (void *pwdb, struct in_addr addr) {
   /* This function is called by the master */
   /* This functions resolves the name associated with the ip of the socket and */
   /* and finds that name in the computer list and returns it's index position */
@@ -77,7 +73,8 @@ int computer_index_addr (void *pwdb,struct in_addr addr) {
   return index;
 }
 
-int computer_index_name (void *pwdb,char *name) {
+int
+computer_index_name (void *pwdb, char *name) {
   struct database *wdb = (struct database *)pwdb;
   int index = -1;
   int i;
@@ -90,7 +87,8 @@ int computer_index_name (void *pwdb,char *name) {
   return index;
 }
 
-int computer_index_free (void *pwdb) {
+int
+computer_index_free (void *pwdb) {
   /* Return the index to a free computer record OR -1 if there */
   /* are no more free records */
   int index = -1;
@@ -107,7 +105,8 @@ int computer_index_free (void *pwdb) {
   return index;
 }
 
-int computer_available (struct computer *computer) {
+int
+computer_available (struct computer *computer) {
   int npt;   /* number of possible tasks */
   int t;
 
@@ -163,7 +162,8 @@ int computer_available (struct computer *computer) {
   return 1;
 }
 
-void computer_update_assigned (struct database *wdb,uint32_t ijob,uint32_t iframe,uint32_t icomp,uint16_t itask) {
+void
+computer_update_assigned (struct database *wdb, uint32_t ijob, uint32_t iframe, uint32_t icomp, uint16_t itask) {
   /* This function should put into the computer task structure */
   /* all the information about ijob, iframe */
   /* This function must be called _locked_ */
@@ -209,7 +209,8 @@ void computer_update_assigned (struct database *wdb,uint32_t ijob,uint32_t ifram
   wdb->computer[icomp].status.nrunning++;
 }
 
-void computer_init (struct computer *computer) {
+void
+computer_init (struct computer *computer) {
   // Sets all computer values to the initial valid defaults.
   // It does not free any allocated memory, be sure to use it after
   // having freed all of it.
@@ -223,7 +224,8 @@ void computer_init (struct computer *computer) {
   computer_status_init(&computer->status);
 }
 
-int computer_free (struct computer *computer) {
+int
+computer_free (struct computer *computer) {
   if (!computer) {
     return 0;
   }
@@ -236,7 +238,8 @@ int computer_free (struct computer *computer) {
 }
 
 
-int computer_ncomputers_masterdb (struct database *wdb) {
+int
+computer_ncomputers_masterdb (struct database *wdb) {
   /* Returns the number of computers that are registered in the master database */
   int i,c=0;
 
@@ -313,12 +316,14 @@ computer_limits_init (struct computer_limits *cl) {
   computer_pool_init (cl);
 }
 
-void computer_limits_cpu_init (struct computer *comp) {
+void
+computer_limits_cpu_init (struct computer *comp) {
   comp->limits.nmaxcpus = comp->hwinfo.ncpus;
   comp->limits.maxfreeloadcpu = MAXLOADAVG * comp->hwinfo.ncpus;
 } 
 
-int computer_index_correct_master (struct database *wdb, uint32_t icomp) {
+int
+computer_index_correct_master (struct database *wdb, uint32_t icomp) {
   if (icomp > MAXCOMPUTERS)
     return 0;
   if (!wdb->computer[icomp].used)
@@ -327,7 +332,7 @@ int computer_index_correct_master (struct database *wdb, uint32_t icomp) {
 }
 
 uint16_t
-computer_nrunning_job (struct computer *comp,uint32_t ijob) {
+computer_nrunning_job (struct computer *comp, uint32_t ijob) {
   /* This function returns the number of tasks that are running the specified */
   /* ijob in the given computer */
   /* This function should be called locked */
@@ -389,6 +394,11 @@ computer_autoenable_check (struct slave_database *sdb) {
 int
 computer_lock_check (struct computer *computer) {
 #if defined (_NO_COMPUTER_SEMAPHORES)
+  // fix compiler warning
+  (void)computer;
+  
+  // FIXME: use computer variable
+  
   return 1;
 #else
   if (!semaphore_valid(computer->semid)) {
@@ -407,6 +417,11 @@ computer_lock_check (struct computer *computer) {
 int
 computer_lock (struct computer *computer) {
 #if defined (_NO_COMPUTER_SEMAPHORES)
+  // fix compiler warning
+  (void)computer;
+  
+  // FIXME: use computer variable
+  
   return 1;
 #else
   computer_lock_check (computer);
@@ -423,6 +438,11 @@ computer_lock (struct computer *computer) {
 int
 computer_release (struct computer *computer) {
 #if defined (_NO_COMPUTER_SEMAPHORES)
+  // fix compiler warning
+  (void)computer;
+  
+  // FIXME: use computer variable
+  
   return 1;
 #else
   computer_lock_check (computer);
@@ -436,7 +456,8 @@ computer_release (struct computer *computer) {
 #endif
 }
 
-int computer_attach (struct computer *computer) {
+int
+computer_attach (struct computer *computer) {
   // This function attachs shared memory, copies it to a local pointer and detachs.
   struct pool *pool;
 
@@ -462,7 +483,8 @@ int computer_attach (struct computer *computer) {
   return 1;
 }
 
-int computer_detach (struct computer *computer) {
+int
+computer_detach (struct computer *computer) {
   // This function frees allocated memory for local pools.
   log_auto (L_DEBUG2,"computer_detach(): Entering...");
   if (computer->limits.local_pool.ptr) {

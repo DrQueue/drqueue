@@ -46,45 +46,45 @@ extern "C" {
 
 #pragma pack(pop)
 
-  void handle_request_master (int sfd,struct database *wdb,int icomp,struct sockaddr_in *addr);
-  void handle_request_slave (int sfd,struct slave_database *sdb);
+  void handle_request_master (int sfd, struct database *wdb, int icomp, struct sockaddr_in *addr);
+  void handle_request_slave (int sfd, struct slave_database *sdb);
 
   /* handled by MASTER */
-  int handle_r_r_register (int sfd,struct database *wdb,int icomp,struct sockaddr_in *addr);
-  void handle_r_r_ucstatus (int sfd,struct database *wdb,int icomp);
-  void handle_r_r_regisjob (int sfd,struct database *wdb);
-  void handle_r_r_availjob (int sfd,struct database *wdb,int icomp);
-  void handle_r_r_taskfini (int sfd,struct database *wdb,int icomp);
-  void handle_r_r_listjobs (int sfd,struct database *wdb,int icomp);
-  void handle_r_r_listcomp (int sfd,struct database *wdb,int icomp);
-  void handle_r_r_deletjob (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_stopjob  (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_contjob  (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_hstopjob (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_rerunjob (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_jobxfer (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_jobxferfi (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_compxfer (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_jobfwait (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_jobfkill (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_jobffini (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_jobfkfin (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_uclimits (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_slavexit (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_jobsesup (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_joblnmcs (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_joblnmccs (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_jobpriup (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_jobfinfo (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_jobfrstrqd (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_jobblkhost (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_jobdelblkhost (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_joblstblkhost (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_joblms (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_joblps (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_jobenvvars (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_jobblkhostname (int sfd,struct database *wdb,int icomp,struct request *req);
-  void handle_r_r_jobunblkhostname (int sfd,struct database *wdb,int icomp,struct request *req);
+  int handle_r_r_register (int sfd, struct database *wdb, int icomp, struct sockaddr_in *addr);
+  void handle_r_r_ucstatus (int sfd, struct database *wdb, int icomp);
+  void handle_r_r_regisjob (int sfd, struct database *wdb);
+  void handle_r_r_availjob (int sfd, struct database *wdb, int icomp);
+  void handle_r_r_taskfini (int sfd, struct database *wdb, int icomp);
+  void handle_r_r_listjobs (int sfd, struct database *wdb, int icomp);
+  void handle_r_r_listcomp (int sfd, struct database *wdb, int icomp);
+  void handle_r_r_deletjob (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_stopjob  (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_contjob  (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_hstopjob (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_rerunjob (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_jobxfer (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_jobxferfi (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_compxfer (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_jobfwait (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_jobfkill (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_jobffini (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_jobfkfin (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_uclimits (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_slavexit (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_jobsesup (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_joblnmcs (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_joblnmccs (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_jobpriup (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_jobfinfo (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_jobfrstrqd (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_jobblkhost (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_jobdelblkhost (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_joblstblkhost (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_joblms (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_joblps (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_jobenvvars (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_jobblkhostname (int sfd, struct database *wdb, int icomp, struct request *req);
+  void handle_r_r_jobunblkhostname (int sfd, struct database *wdb, int icomp, struct request *req);
   void handle_r_r_jobname (int sfd, struct database *wdb, int icomp, struct request *req);
 
   /* sent TO MASTER */
@@ -99,7 +99,7 @@ extern "C" {
   int request_job_available (struct slave_database *sdb, uint16_t *itask);
   void request_task_finished (struct slave_database *sdb, uint16_t itask);
   int request_job_list (struct job **job, uint16_t who);
-  int request_job_delete (uint32_t ijob,uint16_t who);
+  int request_job_delete (uint32_t ijob, uint16_t who);
   int request_job_stop (uint32_t ijob, uint16_t who);
   int request_job_hstop (uint32_t ijob, uint16_t who);
   int request_job_continue (uint32_t ijob, uint16_t who);
@@ -129,7 +129,7 @@ extern "C" {
   int request_job_name (uint32_t ijob, char **jobname, uint16_t who);
 
   /* sent TO SLAVE */
-  int request_slave_killtask (char *slave,uint16_t itask,uint16_t who);
+  int request_slave_killtask (char *slave, uint16_t itask, uint16_t who);
   int request_slave_limits_enabled_set (char *slave, uint8_t enabled, uint16_t who);
   int request_slave_limits_nmaxcpus_set (char *slave, uint32_t nmaxcpus, uint16_t who);
   int request_slave_limits_maxfreeloadcpu_set (char *slave, uint32_t maxfreeloadcpu, uint16_t who);
@@ -140,13 +140,13 @@ extern "C" {
   void request_all_slaves_job_available (struct database *wdb);
 
   /* handled by SLAVE */
-  void handle_rs_r_killtask (int sfd,struct slave_database *sdb,struct request *req);
-  void handle_rs_r_setenabled (int sfd,struct slave_database *sdb,struct request *req);
-  void handle_rs_r_setnmaxcpus (int sfd,struct slave_database *sdb,struct request *req);
-  void handle_rs_r_setmaxfreeloadcpu (int sfd,struct slave_database *sdb,struct request *req);
-  void handle_rs_r_setautoenable (int sfd,struct slave_database *sdb,struct request *req);
-  void handle_rs_r_limitspooladd (int sfd,struct slave_database *sdb,struct request *req);
-  void handle_rs_r_limitspoolremove (int sfd,struct slave_database *sdb,struct request *req);
+  void handle_rs_r_killtask (int sfd, struct slave_database *sdb, struct request *req);
+  void handle_rs_r_setenabled (int sfd, struct slave_database *sdb, struct request *req);
+  void handle_rs_r_setnmaxcpus (int sfd, struct slave_database *sdb, struct request *req);
+  void handle_rs_r_setmaxfreeloadcpu (int sfd, struct slave_database *sdb, struct request *req);
+  void handle_rs_r_setautoenable (int sfd, struct slave_database *sdb, struct request *req);
+  void handle_rs_r_limitspooladd (int sfd, struct slave_database *sdb, struct request *req);
+  void handle_rs_r_limitspoolremove (int sfd, struct slave_database *sdb, struct request *req);
 
 #ifdef __CPLUSPLUS
 }
