@@ -1268,3 +1268,28 @@ dr_socket_write (int fd, char *buf, uint32_t len) {
 
   return nSent;
 }
+
+int network_initialize()
+{
+  int iResult = 0;
+#ifdef _WIN32
+  WSADATA wsaData;
+
+  // Initialize Winsock
+  iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+  if (iResult != 0) {
+    drerrno = DRE_NETWORKINIT;
+    log_auto(L_ERROR, "WSAStartup failed: %d\n", iResult);
+    return 1;
+  }
+#endif
+  return iResult;
+}
+
+int network_shutdown()
+{
+#ifdef _WIN32
+  return WSACleanup();
+#endif
+  return 0;
+}

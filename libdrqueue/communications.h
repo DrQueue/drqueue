@@ -79,4 +79,7 @@ int recv_string (int sfd, char **str);
 int send_blocked_host_list (int sfd, struct blocked_host *bh, uint32_t size, int do_checksize);
 int recv_blocked_host_list (int sfd, struct blocked_host **bh, uint32_t *size, int do_checksize);
 
+int network_initialize();
+int network_shutdown();
+
 #endif /* _COMMUNICATIONS_H_ */

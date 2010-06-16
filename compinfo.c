@@ -46,6 +46,12 @@ int main (int argc,char *argv[]) {
   struct computer *computer;
   int ncomputers;
   enum operation op = OP_NONE;
+  int nRet = 0;
+  
+  if(network_initialize() != 0) {
+    fprintf (stderr,"Could not initialize the network: %s\n", drerrno_str());
+    return 1;
+  }
 
   while ((opt = getopt (argc,argv,"lndc:vh")) != -1) {
     switch (opt) {
@@ -57,7 +63,7 @@ int main (int argc,char *argv[]) {
       break;
     case 'v':
       show_version (argv);
-      exit (0);
+      goto cleanup;
     case 'l':
       op = OP_LIST;
       break;
@@ -67,20 +73,23 @@ int main (int argc,char *argv[]) {
     case '?':
     case 'h':
       usage();
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
   }
 
   if ((op == OP_NONE)) {
     usage ();
-    exit (1);
+    nRet = 1;
+    goto cleanup;
   }
 
   set_default_env();
 
   if (!common_environment_check()) {
     fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
-    exit (1);
+    nRet = 1;
+    goto cleanup;
   }
 
   switch (op) {
@@ -90,14 +99,16 @@ int main (int argc,char *argv[]) {
   case OP_LIST:
     if ((ncomputers = request_computer_list (&computer,CLIENT)) == -1) {
       fprintf (stderr,"ERROR: While trying to request the computer list: %s\n",drerrno_str());
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
     print_computers (computer,ncomputers);
     break;
   case OP_NUMBER:
     if ((ncomputers = request_computer_list (&computer,CLIENT)) == -1) {
       fprintf (stderr,"ERROR: While trying to request the computer list: %s\n",drerrno_str());
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
     printf ("%i\n",ncomputers);
     break;
@@ -107,20 +118,26 @@ int main (int argc,char *argv[]) {
       computer_init(computer);
       if (!computer) {
         fprintf (stderr,"ERROR: Not enough memory\n");
-        exit (1);
+        nRet = 1;
+        goto cleanup;
       }
       if (!request_comp_xfer(icomp,computer,CLIENT)) {
         fprintf (stderr,"ERROR: While trying to request the computer transfer: %s\n",drerrno_str());
-        exit (1);
+        nRet = 1;
+        goto cleanup;
       }
       print_computer_details (computer);
     } else {
       fprintf (stderr,"You need to specify the computer id using -c <computer_id>\n");
-      exit(1);
+      nRet = 1;
+      goto cleanup;
     }
   }
 
-  exit (0);
+cleanup:
+  network_shutdown();
+
+  return nRet;
 }
 
 void print_computers (struct computer *computer, int ncomputers) {
