@@ -245,6 +245,35 @@ common_date_check (void) {
 void
 set_default_env(void) {
   char *penv,renv[BUFFERLEN],*drq_root,*drq_root_cp;
+#ifdef _WIN32
+  HKEY keyDrQueue;
+
+  /* Attempt to get the settings from the Registry. */
+  if(RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\DrQueue", 0, KEY_READ, &keyDrQueue) == ERROR_SUCCESS)
+  {
+    char pPath[BUFFERLEN] = {0};
+    DWORD nDataSize = BUFFERLEN;
+
+    if(RegQueryValueExA(keyDrQueue, "DRQUEUE_ROOT", NULL, NULL, pPath, &nDataSize) == ERROR_SUCCESS)
+    {
+      snprintf(renv,BUFFERLEN,"DRQUEUE_ROOT=%s",pPath);
+      penv = (char*) malloc (strlen(renv)+1);
+      strncpy(penv,renv,strlen(renv)+1);
+      putenv(penv);
+    }
+    
+    nDataSize = BUFFERLEN;
+    if(RegQueryValueExA(keyDrQueue, "DRQUEUE_MASTER", NULL, NULL, pAddress, &nDataSize) == ERROR_SUCCESS)
+    {
+      snprintf(renv,BUFFERLEN,"DRQUEUE_MASTER=%s",pAddress);
+      penv = (char*) malloc (strlen(renv)+1);
+      strncpy(penv,renv,strlen(renv)+1);
+      putenv(penv);
+    }
+
+    RegCloseKey(keyDrQueue);
+  }
+#endif
 
   if ((drq_root = getenv("DRQUEUE_ROOT")) == NULL) {
     drerrno = DRE_NOENVROOT;
@@ -265,7 +294,6 @@ set_default_env(void) {
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
-    //free(penv);
   }
 
   if (!getenv("DRQUEUE_ETC")) {
@@ -274,7 +302,6 @@ set_default_env(void) {
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
-    //free(penv);
   }
 
   if (!getenv("DRQUEUE_BIN")) {
@@ -283,7 +310,6 @@ set_default_env(void) {
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
-    //free(penv);
   }
 
   if (!getenv("DRQUEUE_LOGS")) {
@@ -292,7 +318,6 @@ set_default_env(void) {
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
-    //free(penv);
   }
 
   if (!getenv("DRQUEUE_DB")) {
@@ -301,7 +326,6 @@ set_default_env(void) {
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
-    //free(penv);
   }
 
 #ifdef __CYGWIN
@@ -310,7 +334,6 @@ set_default_env(void) {
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
-    //free(penv);
   }
 #endif
   
