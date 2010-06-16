@@ -47,6 +47,14 @@ int main (int argc,char *argv[]) {
   int toj = 0;
   char* frame_range;
   int fs, fe, sf;
+  int nRet = 0;
+  std::ifstream infile;
+  
+  if(network_initialize() != 0) {
+    fprintf (stderr,"Could not initialize the network: %s\n", drerrno_str());
+    nRet = 1;
+    goto cleanup;
+  }
 
   presentation();
   fs = 1;
@@ -70,128 +78,142 @@ int main (int argc,char *argv[]) {
     case '?':
     case 'h':
       usage();
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
   }
 
   if ((argc < 3) || (toj == TOJ_NONE)) {
     usage ();
-    exit (1);
+    nRet = 1;
+    goto cleanup;
   }
 
   set_default_env();
 
   if (!common_environment_check()) {
     std::cerr << "Error checking the environment: " << drerrno_str() << std::endl;
-    exit (1);
+    nRet = 1;
+    goto cleanup;
   }
 
-  std::ifstream infile(argv[argc-1]);
+  infile.open(argv[argc-1]);
   switch (toj) {
   case TOJ_GENERAL:
     if (RegisterGeneralJob (argv[argc-1], fs, fe, sf)) {
       std::cerr << "Error registering GENERAL job: " << argv[argc-1] << std::endl;
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
     break;
   case TOJ_MAYA:
     if (RegisterMayaJobFromFile (infile)) {
       std::cerr << "Error registering MAYA job from file: " << argv[argc-1] << std::endl;
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
     break;
   case TOJ_MENTALRAY:
     if (RegisterMentalrayJobFromFile (infile)) {
       std::cerr << "Error registering MENTALRAY job from file: " << argv[argc-1] << std::endl;
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
     break;
   case TOJ_BLENDER:
     if (RegisterBlenderJobFromFile (infile)) {
       std::cerr << "Error registering BLENDER job from file: " << argv[argc-1] << std::endl;
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
     break;
   case TOJ_THREEDELIGHT:
     if (RegisterThreedelightJobFromFile (infile)) {
       std::cerr << "Error registering 3Delight job from file: " << argv[argc-1] << std::endl;
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
     break;
   case TOJ_PIXIE:
     if (RegisterPixieJobFromFile (infile)) {
       std::cerr << "Error registering PIXIE job from file: " << argv[argc-1] << std::endl;
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
     break;
   case TOJ_LIGHTWAVE:
     if (RegisterLightwaveJobFromFile (infile)) {
       std::cerr << "Error registering Lightwave job from file: " << argv[argc-1] << std::endl;
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
     break;
   case TOJ_AFTEREFFECTS:
     if (RegisterAftereffectsJobFromFile (infile)) {
       std::cerr << "Error registering After Effects job from file: " << argv[argc-1] << std::endl;
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
     break;
   case TOJ_SHAKE:
     if (RegisterShakeJobFromFile (infile)) {
       std::cerr << "Error registering Shake job from file: " << argv[argc-1] << std::endl;
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
     break;
   case TOJ_AQSIS:
     if (RegisterAqsisJobFromFile (infile)) {
       std::cerr << "Error registering Aqsis job from file: " << argv[argc-1] << std::endl;
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
     break;
   case TOJ_MANTRA:
     if (RegisterMantraJobFromFile (infile)) {
       std::cerr << "Error registering Mantra job from file: " << argv[argc-1] << std::endl;
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
     break;
   case TOJ_TERRAGEN:
     if (RegisterTerragenJobFromFile (infile)) {
       std::cerr << "Error registering Terragen job from file: " << argv[argc-1] << std::endl;
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
     break;
   case TOJ_NUKE:
     if (RegisterNukeJobFromFile (infile)) {
       std::cerr << "Error registering Nuke job from file: " << argv[argc-1] << std::endl;
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
     break;
   case TOJ_XSI:
     if (RegisterXSIJobFromFile (infile)) {
       std::cerr << "Error registering XSI job from file: " << argv[argc-1] << std::endl;
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
   case TOJ_LUXRENDER:
     if (RegisterLuxrenderJobFromFile (infile)) {
       std::cerr << "Error registering LUXRENDER job from file: " << argv[argc-1] << std::endl;
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
   }
 
   std::cerr << "Job sent successfuly to the queue\n";
 
-  exit (0);
+cleanup:
+  network_shutdown();
+
+  return nRet;
 }
 
 void presentation (void) {
   std::cout << "DrQueue - by Jorge Daza Garcia-Blanes\n\n";
-}
-
-void cleanup (int signum) {
-  // fix compiler warning
-  (void)signum;
-
-  exit(0);
 }
 
 void usage (void) {

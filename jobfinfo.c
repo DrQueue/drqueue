@@ -46,6 +46,13 @@ int main (int argc,char *argv[]) {
   int ijob = -1;
   struct frame_info fi;
   enum operation op = OP_NONE;
+  int nRet = 0;
+  
+  if(network_initialize() != 0) {
+    fprintf (stderr,"Could not initialize the network: %s\n", drerrno_str());
+    nRet = 1;
+    goto cleanup;
+  }
 
   while ((opt = getopt (argc,argv,"rsj:f:vh")) != -1) {
     switch (opt) {
@@ -57,7 +64,7 @@ int main (int argc,char *argv[]) {
       break;
     case 'v':
       show_version (argv);
-      exit (0);
+      goto cleanup;
     case 'r':
       op = OP_REQUEUED;
       break;
@@ -67,25 +74,29 @@ int main (int argc,char *argv[]) {
     case '?':
     case 'h':
       usage();
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
   }
 
   if ((frame == -1) || (ijob == -1) || (op == OP_NONE)) {
     usage ();
-    exit (1);
+    nRet = 1;
+    goto cleanup;
   }
 
   set_default_env();
 
   if (!common_environment_check()) {
     fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
-    exit (1);
+    nRet = 1;
+    goto cleanup;
   }
 
   if (!request_job_frame_info ((uint32_t)ijob,(uint32_t)frame,&fi,CLIENT)) {
     fprintf (stderr,"ERROR: While trying to request the frame info: %s\n",drerrno_str());
-    exit (1);
+    nRet = 1;
+      goto cleanup;;
   }
 
   switch (op) {
@@ -100,7 +111,10 @@ int main (int argc,char *argv[]) {
     break;
   }
 
-  exit (0);
+cleanup:
+  network_shutdown();
+
+  return nRet;
 }
 
 void usage (void) {
