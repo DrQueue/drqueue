@@ -210,7 +210,6 @@ jobscript_template_write (struct jobscript_info *ji, char *template_file_name)
   char template_file_path[PATH_MAX];
   char *templates_directory;
   FILE *file_template;
-  int fd_template, fd_jobscript;
   int size;
   char buf[BUFFERLEN];
 
@@ -240,10 +239,8 @@ jobscript_template_write (struct jobscript_info *ji, char *template_file_name)
   fprintf (ji->file,"\n# jobscript starts writing template file '%s'\n",template_file_path);
 
   fflush (ji->file);
-  fd_template = fileno (file_template);
-  fd_jobscript = fileno (ji->file);
-  while ((size = read (fd_template,buf,BUFFERLEN)) != 0) {
-    write (fd_jobscript,buf,size);
+  while ((size = fread (buf, 1, BUFFERLEN, file_template)) != 0) {
+    fwrite (buf, size, 1, ji->file);
   }
   fclose(file_template);
   fflush (ji->file);
