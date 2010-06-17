@@ -47,7 +47,7 @@
 
 #include "constants.h"
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -102,7 +102,7 @@ extern "C" {
   char *mantrasg_create (struct mantrasgi *info);
   char *mantrasg_default_script_path (void);
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 }
 #endif
 

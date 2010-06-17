@@ -22,7 +22,7 @@
 #ifndef _JOB_H_
 #define _JOB_H_
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -360,7 +360,7 @@ int job_block_host_add_by_name (struct job *job, char *name);
 int job_block_host_remove_by_name (struct job *job, char *name);
 int job_block_host_exists_by_name (struct job *job, char *name);
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 }
 #endif
 

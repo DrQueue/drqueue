@@ -25,7 +25,7 @@
 #include "constants.h"
 #include "inttypes.h"
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -43,7 +43,7 @@ extern "C" {
   char *cinema4dsg_create (struct cinema4dsgi *info);
   char *cinema4dsg_default_script_path (void);
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 }
 #endif
 

@@ -26,7 +26,7 @@
 #include "constants.h"
 #include "stdint.h"
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -42,7 +42,7 @@ extern "C" {
   char *vraysg_create (struct vraysgi *info);
   char *vraysg_default_script_path (void);
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 }
 #endif
 

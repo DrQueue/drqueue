@@ -22,7 +22,7 @@
 #ifndef _COMMON_H_
 #define _COMMON_H_
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -59,7 +59,7 @@ uint64_t dr_ntoh64(uint64_t);
 
 void dr_copy_path(char *pDest, const char *pSrc, int nLen);
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 }
 #endif
 

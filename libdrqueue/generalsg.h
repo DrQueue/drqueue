@@ -25,7 +25,7 @@
 
 #include "constants.h"
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -43,7 +43,7 @@ extern "C" {
   char *generalsg_create (struct generalsgi *info);
   char *generalsg_default_script_path (void);
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 }
 #endif
 

@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include <errno.h>
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -59,7 +59,7 @@ extern "C" {
 
   char *mayasg_default_script_path (void);
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 }
 #endif
 

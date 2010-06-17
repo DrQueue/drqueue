@@ -25,7 +25,7 @@
 
 #include "constants.h"
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -42,7 +42,7 @@ extern "C" {
 
 #pragma pack(pop)
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 }
 #endif
 

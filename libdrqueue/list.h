@@ -22,7 +22,7 @@
 #ifndef _LIST_H_
 #define _LIST_H_
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -50,7 +50,7 @@ int list_count (struct list *list);
 void list_reset (struct list *list);
 void *list_get_seq (struct list *list);
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 }
 #endif
 

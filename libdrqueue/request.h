@@ -32,7 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -148,7 +148,7 @@ extern "C" {
   void handle_rs_r_limitspooladd (int sfd, struct slave_database *sdb, struct request *req);
   void handle_rs_r_limitspoolremove (int sfd, struct slave_database *sdb, struct request *req);
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 }
 #endif
 

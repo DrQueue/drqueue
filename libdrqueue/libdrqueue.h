@@ -22,7 +22,7 @@
 #ifndef _LIBDRQUEUE_H_
 #define _LIBDRQUEUE_H_
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -100,7 +100,7 @@ extern int phantom[2];         /* FIXME: This should be local to the
 
 #pragma pack(pop)
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 }
 #endif
 

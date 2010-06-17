@@ -22,7 +22,7 @@
 #ifndef _FIXED_POINTER_H_
 #define _FIXED_POINTER_H_
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -34,7 +34,7 @@ extern "C" {
 
 #pragma pack(pop)
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 }
 #endif
 

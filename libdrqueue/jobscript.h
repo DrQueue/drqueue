@@ -23,7 +23,7 @@
 #ifndef _JOBSCRIPT_H_
 #define _JOBSCRIPT_H_
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -67,7 +67,7 @@ int jobscript_python_check_pointer (struct jobscript_info *ji);
 int jobscript_python_write_heading (struct jobscript_info *ji);
 int jobscript_python_set_variable (struct jobscript_info *ji, char *name, char *value);
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 }
 #endif
 

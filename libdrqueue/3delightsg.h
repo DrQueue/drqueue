@@ -25,7 +25,7 @@
 
 #include "constants.h"
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -42,7 +42,7 @@ extern "C" {
   char *threedelightsg_create (struct threedelightsgi *info);
   char *threedelightsg_default_script_path (void);
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 }
 #endif
 

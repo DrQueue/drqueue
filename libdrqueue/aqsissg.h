@@ -47,7 +47,7 @@
 
 #include "constants.h"
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -71,7 +71,7 @@ extern "C" {
   char *aqsissg_create (struct aqsissgi *info);
   char *aqsissg_default_script_path (void);
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 }
 #endif
 

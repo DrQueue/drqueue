@@ -22,7 +22,7 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -61,7 +61,7 @@ int config_find_nodes (struct config_node *base, FILE *file);
 int config_end_node (struct config_node *base, FILE *file);
 int config_line_ends_node (struct config_node *base, char *line);
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 }
 #endif
 
