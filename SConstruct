@@ -36,7 +36,7 @@ def get_architecture(env,escape=False,underscore=True):
         machine = re.escape(machine)
     if not machine:
         machine = 'unknown'
-    elif os.uname()[0] == 'Darwin':
+    elif platform.uname()[0] == 'Darwin':
     	if env.get('universal_binary'):
         	machine = Universal_Binaries_Short_Name
         elif platform.architecture()[0] == '64bit':
@@ -51,12 +51,6 @@ def wrapper_complete_command (env,cmdlist):
         cmd = os.path.split(cmd)[1] # Removes any directory component
         rlist.append('.'.join([cmd,kernel,arch]))
     return rlist
-     
-def get_platform_name():
-    name = sys.platform
-    if name == 'win32':
-       return 'cygwin'
-    return name
 
 def get_abspath_glob(path):
     pathlist=glob.glob(path)
@@ -111,7 +105,11 @@ write_git_rev(get_git_commit())
 conf = Configure(env_lib)
 # FIXME: write configure tests
 if conf.CheckCHeader('unistd.h'):
-    conf.env.Append(CPPDEFINES = Split ('-DHAVE_UNISTD_H'))
+    conf.env.Append(CPPDEFINES = Split ('HAVE_UNISTD_H'))
+if conf.CheckCHeader('stdint.h'):
+    conf.env.Append(CPPDEFINES = Split('HAVE_STDINT_H'))
+if conf.CheckCHeader('getopt.h'):
+    conf.env.Append(CPPDEFINES = Split('HAVE_GETOPT_H'))
 env_lib = conf.Finish()
 
 # Installation paths
@@ -125,17 +123,15 @@ idir_logs   = os.path.join(idir_prefix,'logs')
 idir_tmp    = os.path.join(idir_prefix,'tmp')
 Export('env_lib idir_prefix idir_bin idir_bin_viewcmd idir_etc idir_db idir_doc idir_logs idir_tmp')
 
-if sys.platform == 'win32':
-    print "-> Win32 using Cygwin mode"
-    Tool('mingw')(env_lib)
+env_lib.Append (CPPPATH=['.','libdrqueue'])
 
-env_lib.Append (CPPPATH=['.','libdrqueue'],CCFLAGS=Split('-fPIC'))
-env_lib.Append (CPPDEFINES = Split ('-DCOMM_REPORT -D_GNU_SOURCE ' \
-                + '-D_NO_COMPUTER_POOL_SEMAPHORES -D_NO_COMPUTER_SEMAPHORES'),
+if env_lib['CC'] == "gcc":
+    env_lib.Append (CCFLAGS=Split('-fPIC'))
+
+env_lib.Append (CPPDEFINES = Split ('COMM_REPORT _GNU_SOURCE ' \
+                + '_NO_COMPUTER_POOL_SEMAPHORES _NO_COMPUTER_SEMAPHORES'),
                 CFLAGS = Split(os.environ.get('CFLAGS', '')),
-                CXXFLAGS = ['-D__CPLUSPLUS',Split(env_lib.subst('$CCFLAGS')),
-                            Split(env_lib.subst('$CPPDEFINES')),
-                            Split(os.environ.get('CXXFLAGS', ''))])
+                CXXFLAGS = [Split(os.environ.get('CXXFLAGS', ''))])
 
 print "Platform is: ",sys.platform
 if sys.platform == "linux2":
@@ -159,7 +155,7 @@ elif sys.platform == "cygwin":
   env_lib.Append (CPPDEFINES = Split ('-D__CYGWIN'))
   os.environ['PKG_CONFIG_PATH'] = 'C:\GTK\lib\pkgconfig'
 elif sys.platform == "win32":
-  env_lib.Append (CPPDEFINES = Split ('-D__CYGWIN'))
+  env_lib.Append (CPPDEFINES = Split ('_POSIX_'))
 elif (sys.platform == "freebsd7") or (sys.platform == "freebsd8"):
   env_lib.Append (CPPDEFINES = Split ('-D__FREEBSD'))
 else:
@@ -168,8 +164,10 @@ else:
 
 # add additional warnings if requested
 if env_lib.get('enable_warnings'):
-  env_lib.Append (CCFLAGS = Split('-Wall -Wextra'))
-  env_lib.Append (LINKFLAGS = Split('-Wall -Wextra'))
+  if env_lib['CC'] == "msvc":
+    env_lib.Append (CCFLAGS = Split('/W4'))
+  else: 
+    env_lib.Append (CCFLAGS = Split('-Wall -Wextra'))
 
 # add additional debug output if requested
 if env_lib.get('enable_debug'):
@@ -244,7 +242,7 @@ for tool in cmdline_tools:
 
 install_base = idir_prefix
 
-if sys.platform == 'cygwin':
+if sys.platform == 'cygwin' or sys.platform == 'win32':
 	cmdline_tools_tmp = []
 	for tool in cmdline_tools:
 		cmdline_tools_tmp.append(tool + '.exe')
