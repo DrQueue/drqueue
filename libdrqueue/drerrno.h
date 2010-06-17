@@ -56,6 +56,7 @@ extern int drerrno_system;       // system's errno at the time of the error
 #define DRE_DTSHMEM         26  // Detach shared memory
 #define DRE_CONNMASTER      27  // No connection to master
 #define DRE_COMMPROBLEM     28  // Communications problem
+#define DRE_NETWORKINIT     29  /* Failed to Initialized the network */
 
 char *drerrno_str (void);
 
