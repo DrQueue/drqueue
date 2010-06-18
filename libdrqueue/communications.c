@@ -29,6 +29,7 @@
 #else
   #include <winsock2.h>
   #define socklen_t int
+  #define ssize_t int
 #endif
 
 #include "pointer.h"
@@ -1283,6 +1284,7 @@ int network_initialize()
     return 1;
   }
 #endif
+
   return iResult;
 }
 
@@ -1290,6 +1292,7 @@ int network_shutdown()
 {
 #ifdef _WIN32
   return WSACleanup();
-#endif
+#else
   return 0;
+#endif
 }

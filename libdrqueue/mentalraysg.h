@@ -23,8 +23,12 @@
 #ifndef _MENTALRAYSG_H_
 #define _MENTALRAYSG_H_
 
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
+
 #include "constants.h"
-#include "inttypes.h"
+
 
 #ifdef __cplusplus
 extern "C" {

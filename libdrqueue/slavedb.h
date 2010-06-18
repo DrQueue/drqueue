@@ -24,10 +24,13 @@
 #ifndef _SLAVEDB_H_
 #define _SLAVEDB_H_
 
-#include "computer.h"
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
 
 #include <limits.h>
-#include <stdint.h>
+
+#include "computer.h"
 
 #define KEY_SLAVE "slave" /* Key file for shared memory and semaphores */
 

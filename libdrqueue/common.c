@@ -251,7 +251,7 @@ set_default_env(void) {
   /* Attempt to get the settings from the Registry. */
   if(RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\DrQueue", 0, KEY_READ, &keyDrQueue) == ERROR_SUCCESS)
   {
-    char pPath[BUFFERLEN] = {0};
+    BYTE pPath[BUFFERLEN] = {0};
     DWORD nDataSize = BUFFERLEN;
 
     if(RegQueryValueExA(keyDrQueue, "DRQUEUE_ROOT", NULL, NULL, pPath, &nDataSize) == ERROR_SUCCESS)
