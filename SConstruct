@@ -110,6 +110,12 @@ if conf.CheckCHeader('stdint.h'):
     conf.env.Append(CPPDEFINES = Split('HAVE_STDINT_H'))
 if conf.CheckCHeader('getopt.h'):
     conf.env.Append(CPPDEFINES = Split('HAVE_GETOPT_H'))
+if conf.CheckCHeader('inttypes.h'):
+    conf.env.Append(CPPDEFINES = Split ('HAVE_INTTYPES_H'))
+#if not conf.CheckType('PATH_MAX'):
+#    conf.env.Append(CPPDEFINES = Split ('PATH_MAX=512'))
+if not conf.CheckFunc('snprintf'):
+    conf.env.Append(CPPDEFINES = Split ('snprintf=_snprintf'))
 env_lib = conf.Finish()
 
 # Installation paths
@@ -164,14 +170,19 @@ else:
 
 # add additional warnings if requested
 if env_lib.get('enable_warnings'):
-  if env_lib['CC'] == "msvc":
+  if env_lib['CC'] == "cl":
     env_lib.Append (CCFLAGS = Split('/W4'))
   else: 
     env_lib.Append (CCFLAGS = Split('-Wall -Wextra'))
 
 # add additional debug output if requested
 if env_lib.get('enable_debug'):
-  env_lib.Append (CCFLAGS = Split('-g'))
+  env_lib.Append (CPPDEFINES = Split ('_DEBUG'))
+  if env_lib['CC'] == "cl":
+    env_lib.Append (CCFLAGS = Split('/Od'))
+    env_lib.Append (LINKFLAGS = Split('/Debug /SUBSYSTEM:Console'))
+  else: 
+    env_lib.Append (CCFLAGS = Split('-g'))
 
 # Base construction environment that links with the library
 env = env_lib.Clone()
@@ -209,7 +220,7 @@ def build_drqman():
 #
 master = env.Program ('master.c')
 slave = env.Program ('slave.c')
-if sys.platform == 'cygwin':
+if sys.platform == 'cygwin'  or sys.platform == 'win32':
 	main_list = [ 'master.exe', 'slave.exe' ] + build_drqman()
 else:
 	main_list = [ 'master', 'slave' ] + build_drqman()
