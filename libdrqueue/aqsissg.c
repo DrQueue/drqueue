@@ -76,7 +76,7 @@ char *aqsissg_default_script_path (void) {
   static char buf[BUFFERLEN];
   char *p;
 
-  if (!(p = getenv("DRQUEUE_TMP"))) {
+  if ((p = getenv("DRQUEUE_TMP")) == NULL) {
     return ("/drqueue_tmp/not/set/");
   }
 
