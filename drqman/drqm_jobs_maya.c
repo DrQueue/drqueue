@@ -18,9 +18,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-//
-// $Id$ 
-//
 
 #include <string.h>
 #include <unistd.h>
@@ -48,7 +45,8 @@ static void dnj_koj_frame_maya_scene_set (GtkWidget *button, struct drqmj_koji_m
 static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info);
 static void dnj_koj_frame_maya_toggle_button(GtkWidget *button, struct drqmj_koji_maya *info);
 
-GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info) {
+GtkWidget *
+dnj_koj_frame_maya (struct drqm_jobs_info *info) {
   GtkWidget *frame;
   GtkWidget *vbox;
   GtkWidget *hbox,*hbox2;
@@ -253,7 +251,8 @@ GtkWidget *dnj_koj_frame_maya (struct drqm_jobs_info *info) {
   return frame;
 }
 
-GtkWidget *jdd_koj_maya_widgets (struct drqm_jobs_info *info) {
+GtkWidget *
+jdd_koj_maya_widgets (struct drqm_jobs_info *info) {
   GtkWidget *table;
   GtkWidget *label;
   GtkAttachOptions options = (GtkAttachOptions)(GTK_EXPAND | GTK_SHRINK | GTK_FILL) ;
@@ -290,8 +289,12 @@ GtkWidget *jdd_koj_maya_widgets (struct drqm_jobs_info *info) {
   return table;
 }
 
-static void dnj_koj_frame_maya_projectdir_search (GtkWidget *button, struct drqmj_koji_maya *info) {
+static void
+dnj_koj_frame_maya_projectdir_search (GtkWidget *button, struct drqmj_koji_maya *info) {
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select the project directory");
   info->fsprojectdir = dialog;
@@ -312,11 +315,15 @@ static void dnj_koj_frame_maya_projectdir_search (GtkWidget *button, struct drqm
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void dnj_koj_frame_maya_projectdir_set (GtkWidget *button, struct drqmj_koji_maya *info) {
+static void
+dnj_koj_frame_maya_projectdir_set (GtkWidget *button, struct drqmj_koji_maya *info) {
   struct stat s;
   char buf[BUFFERLEN];
   char buf2[BUFFERLEN];
   char *p;
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsprojectdir)),BUFFERLEN-1);
   stat(buf, &s);
@@ -345,8 +352,12 @@ static void dnj_koj_frame_maya_projectdir_set (GtkWidget *button, struct drqmj_k
 #endif
 }
 
-static void dnj_koj_frame_maya_renderdir_search (GtkWidget *button, struct drqmj_koji_maya *info) {
+static void
+dnj_koj_frame_maya_renderdir_search (GtkWidget *button, struct drqmj_koji_maya *info) {
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select the output directory");
   info->fsrenderdir = dialog;
@@ -367,11 +378,14 @@ static void dnj_koj_frame_maya_renderdir_search (GtkWidget *button, struct drqmj
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-
-static void dnj_koj_frame_maya_renderdir_set (GtkWidget *button, struct drqmj_koji_maya *info) {
+static void
+dnj_koj_frame_maya_renderdir_set (GtkWidget *button, struct drqmj_koji_maya *info) {
   struct stat s;
   char buf[BUFFERLEN];
   char *p;
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsrenderdir)),BUFFERLEN-1);
   stat(buf, &s);
@@ -383,8 +397,12 @@ static void dnj_koj_frame_maya_renderdir_set (GtkWidget *button, struct drqmj_ko
   gtk_entry_set_text (GTK_ENTRY(info->erenderdir),buf);
 }
 
-static void dnj_koj_frame_maya_scene_search (GtkWidget *button, struct drqmj_koji_maya *info) {
+static void
+dnj_koj_frame_maya_scene_search (GtkWidget *button, struct drqmj_koji_maya *info) {
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select a scene file");
   info->fsscene = dialog;
@@ -405,16 +423,24 @@ static void dnj_koj_frame_maya_scene_search (GtkWidget *button, struct drqmj_koj
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void dnj_koj_frame_maya_scene_set (GtkWidget *button, struct drqmj_koji_maya *info) {
+static void
+dnj_koj_frame_maya_scene_set (GtkWidget *button, struct drqmj_koji_maya *info) {
   char buf[BUFFERLEN];
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscene)),BUFFERLEN-1);
   gtk_entry_set_text (GTK_ENTRY(info->escene),buf);
 }
 
-static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info) {
+static void
+dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info) {
   struct mayasgi mayasgi; /* Maya script generator info */
   char *file;
+  
+  // fix compiler warning
+  (void)button;
 
   memset (&mayasgi,0,sizeof(mayasgi));
   mayasgi.renderer = info->koji_maya.renderer_id ;
@@ -438,8 +464,12 @@ static void dnj_koj_frame_maya_bcreate_pressed (GtkWidget *button, struct drqmj_
   }
 }
 
-static void dnj_koj_frame_maya_script_search (GtkWidget *button, struct drqmj_koji_maya *info) {
+static void
+dnj_koj_frame_maya_script_search (GtkWidget *button, struct drqmj_koji_maya *info) {
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select a script directory");
   info->fsscript = dialog;
@@ -460,15 +490,20 @@ static void dnj_koj_frame_maya_script_search (GtkWidget *button, struct drqmj_ko
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void dnj_koj_frame_maya_script_set (GtkWidget *button, struct drqmj_koji_maya *info) {
+static void
+dnj_koj_frame_maya_script_set (GtkWidget *button, struct drqmj_koji_maya *info) {
   char buf[BUFFERLEN];
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscript)),BUFFERLEN-1);
   gtk_entry_set_text (GTK_ENTRY(info->escript),buf);
 }
 
 /* callback function for radio buttons */
-static void dnj_koj_frame_maya_toggle_button(GtkWidget *button, struct drqmj_koji_maya *info) {
+static void
+dnj_koj_frame_maya_toggle_button(GtkWidget *button, struct drqmj_koji_maya *info) {
 	if( GTK_TOGGLE_BUTTON(button)->active) {
 		GtkWidget *button_label = gtk_bin_get_child(GTK_BIN(button));
 		if (g_str_has_prefix(gtk_label_get_text(GTK_LABEL(button_label)), "Maya") == TRUE) {

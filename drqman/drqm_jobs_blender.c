@@ -18,8 +18,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$ 
-// 
 
 #include <string.h>
 #include <unistd.h>
@@ -39,7 +37,8 @@ static void dnj_koj_frame_blender_bcreate_pressed (GtkWidget *button, struct drq
 static void dnj_koj_frame_blender_menuitem_response (GtkWidget *menuitem, struct drqmj_koji_blender *info);
 
 
-GtkWidget *dnj_koj_frame_blender (struct drqm_jobs_info *info) {
+GtkWidget *
+dnj_koj_frame_blender (struct drqm_jobs_info *info) {
   GtkWidget *frame;
   GtkWidget *vbox;
   GtkWidget *hbox,*hbox2;
@@ -162,7 +161,8 @@ GtkWidget *dnj_koj_frame_blender (struct drqm_jobs_info *info) {
   return frame;
 }
 
-GtkWidget *jdd_koj_blender_widgets (struct drqm_jobs_info *info) {
+GtkWidget *
+jdd_koj_blender_widgets (struct drqm_jobs_info *info) {
   GtkWidget *table;
   GtkWidget *label;
   GtkAttachOptions options = (GtkAttachOptions)(GTK_EXPAND | GTK_SHRINK | GTK_FILL) ;
@@ -194,8 +194,12 @@ GtkWidget *jdd_koj_blender_widgets (struct drqm_jobs_info *info) {
   return table;
 }
 
-static void dnj_koj_frame_blender_scene_search (GtkWidget *button, struct drqmj_koji_blender *info) {
+static void
+dnj_koj_frame_blender_scene_search (GtkWidget *button, struct drqmj_koji_blender *info) {
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select a scene file");
   info->fsscene = dialog;
@@ -216,9 +220,13 @@ static void dnj_koj_frame_blender_scene_search (GtkWidget *button, struct drqmj_
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void dnj_koj_frame_blender_scene_set (GtkWidget *button, struct drqmj_koji_blender *info) {
+static void
+dnj_koj_frame_blender_scene_set (GtkWidget *button, struct drqmj_koji_blender *info) {
   char buf[BUFFERLEN];
   char *p;
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscene)),BUFFERLEN-1);
   /* We need the whole scene path */
@@ -226,9 +234,13 @@ static void dnj_koj_frame_blender_scene_set (GtkWidget *button, struct drqmj_koj
   gtk_entry_set_text (GTK_ENTRY(info->escene),p);
 }
 
-static void dnj_koj_frame_blender_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info) {
+static void
+dnj_koj_frame_blender_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info) {
   struct blendersgi blendersgi; /* Blender script generator info */
   char *file;
+  
+  // fix compiler warning
+  (void)button;
 
   printf("%i\n", info->koji_blender.render_type);
   if ((info->koji_blender.render_type == 2) || (info->koji_blender.render_type == 1)) {
@@ -247,8 +259,13 @@ static void dnj_koj_frame_blender_bcreate_pressed (GtkWidget *button, struct drq
     gtk_entry_set_text(GTK_ENTRY(info->ecmd),file);
   }
 }
-static void dnj_koj_frame_blender_script_search (GtkWidget *button, struct drqmj_koji_blender *info) {
+
+static void
+dnj_koj_frame_blender_script_search (GtkWidget *button, struct drqmj_koji_blender *info) {
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select a script directory");
   info->fsscript = dialog;
@@ -269,9 +286,13 @@ static void dnj_koj_frame_blender_script_search (GtkWidget *button, struct drqmj
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void dnj_koj_frame_blender_script_set (GtkWidget *button, struct drqmj_koji_blender *info) {
+static void
+dnj_koj_frame_blender_script_set (GtkWidget *button, struct drqmj_koji_blender *info) {
   char buf[BUFFERLEN];
   char *p;
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscript)),BUFFERLEN-1);
   p = strrchr(buf,'/');
@@ -280,7 +301,8 @@ static void dnj_koj_frame_blender_script_set (GtkWidget *button, struct drqmj_ko
   gtk_entry_set_text (GTK_ENTRY(info->escript),buf);
 }
 
-static void dnj_koj_frame_blender_menuitem_response (GtkWidget *menuitem, struct drqmj_koji_blender *info) {
+static void
+dnj_koj_frame_blender_menuitem_response (GtkWidget *menuitem, struct drqmj_koji_blender *info) {
     GtkWidget *menu_label = gtk_bin_get_child(GTK_BIN(menuitem)); 
     if (g_str_has_prefix(gtk_label_get_text(GTK_LABEL(menu_label)), "ani") == TRUE) {
     	info->render_type = 1;

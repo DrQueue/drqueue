@@ -18,8 +18,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$ 
-//
 
 #ifdef HAVE_CONFIG_H
 # include <lconfig.h>
@@ -35,7 +33,8 @@ static void dnj_koj_frame_aftereffects_script_search (GtkWidget *button, struct 
 static void dnj_koj_frame_aftereffects_script_set (GtkWidget *button, struct drqmj_koji_aftereffects *info);
 static void dnj_koj_frame_aftereffects_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info);
 
-GtkWidget *dnj_koj_frame_aftereffects (struct drqm_jobs_info *info) {
+GtkWidget *
+dnj_koj_frame_aftereffects (struct drqm_jobs_info *info) {
   GtkWidget *frame;
   GtkWidget *vbox;
   GtkWidget *hbox,*hbox2;
@@ -135,7 +134,8 @@ GtkWidget *dnj_koj_frame_aftereffects (struct drqm_jobs_info *info) {
   return frame;
 }
 
-GtkWidget *jdd_koj_aftereffects_widgets (struct drqm_jobs_info *info) {
+GtkWidget *
+jdd_koj_aftereffects_widgets (struct drqm_jobs_info *info) {
   GtkWidget *table;
   GtkWidget *label;
   GtkAttachOptions options = (GtkAttachOptions)(GTK_EXPAND | GTK_SHRINK | GTK_FILL) ;
@@ -168,9 +168,13 @@ GtkWidget *jdd_koj_aftereffects_widgets (struct drqm_jobs_info *info) {
   return table;
 }
 
-static void dnj_koj_frame_aftereffects_project_search (GtkWidget *button, struct drqmj_koji_aftereffects *info) {
+static void
+dnj_koj_frame_aftereffects_project_search (GtkWidget *button, struct drqmj_koji_aftereffects *info) {
   GtkWidget *dialog;
   char dir[BUFFERLEN];
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select the project file");
   info->fsproject = dialog;
@@ -192,16 +196,24 @@ static void dnj_koj_frame_aftereffects_project_search (GtkWidget *button, struct
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void dnj_koj_frame_aftereffects_project_set (GtkWidget *button, struct drqmj_koji_aftereffects *info) {
+static void
+dnj_koj_frame_aftereffects_project_set (GtkWidget *button, struct drqmj_koji_aftereffects *info) {
   char buf[BUFFERLEN];
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsproject)),BUFFERLEN-1);
   gtk_entry_set_text (GTK_ENTRY(info->eproject),buf);
 }
 
-static void dnj_koj_frame_aftereffects_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info) {
+static void
+dnj_koj_frame_aftereffects_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info) {
   struct aftereffectssgi aftereffectssgi; /* Aftereffects script generator info */
   char *file;
+
+  // fix compiler warning
+  (void)button;
 
   strncpy (aftereffectssgi.project,gtk_entry_get_text(GTK_ENTRY(info->koji_aftereffects.eproject)),BUFFERLEN-1);
   strncpy (aftereffectssgi.comp,gtk_entry_get_text(GTK_ENTRY(info->koji_aftereffects.ecomp)),BUFFERLEN-1);
@@ -216,8 +228,12 @@ static void dnj_koj_frame_aftereffects_bcreate_pressed (GtkWidget *button, struc
   }
 }
 
-static void dnj_koj_frame_aftereffects_script_search (GtkWidget *button, struct drqmj_koji_aftereffects *info) {
+static void
+dnj_koj_frame_aftereffects_script_search (GtkWidget *button, struct drqmj_koji_aftereffects *info) {
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select a script directory");
   info->fsscript = dialog;
@@ -239,9 +255,13 @@ static void dnj_koj_frame_aftereffects_script_search (GtkWidget *button, struct 
 
 }
 
-static void dnj_koj_frame_aftereffects_script_set (GtkWidget *button, struct drqmj_koji_aftereffects *info) {
+static void
+dnj_koj_frame_aftereffects_script_set (GtkWidget *button, struct drqmj_koji_aftereffects *info) {
   char buf[BUFFERLEN];
   char *p;
+
+  // fix compiler warning
+  (void)button;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscript)),BUFFERLEN-1);
   p = strrchr(buf,'/');

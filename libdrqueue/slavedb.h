@@ -18,8 +18,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id: /drqueue/remote/branches/0.65.x/slave.h 1813 2007-02-25T23:33:33.078183Z jorge  $
-//
 
 #ifndef _SLAVEDB_H_
 #define _SLAVEDB_H_

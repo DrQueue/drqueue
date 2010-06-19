@@ -18,9 +18,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-//
-// $Id$ 
-//
 
 #include <string.h>
 #include <unistd.h>
@@ -38,7 +35,8 @@ static void dnj_koj_frame_pixie_scene_search (GtkWidget *button, struct drqmj_ko
 static void dnj_koj_frame_pixie_scene_set (GtkWidget *button, struct drqmj_koji_pixie *info);
 static void dnj_koj_frame_pixie_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info);
 
-GtkWidget *dnj_koj_frame_pixie (struct drqm_jobs_info *info) {
+GtkWidget *
+dnj_koj_frame_pixie (struct drqm_jobs_info *info) {
   GtkWidget *frame;
   GtkWidget *vbox;
   GtkWidget *hbox,*hbox2;
@@ -128,7 +126,8 @@ GtkWidget *dnj_koj_frame_pixie (struct drqm_jobs_info *info) {
   return frame;
 }
 
-GtkWidget *jdd_koj_pixie_widgets (struct drqm_jobs_info *info) {
+GtkWidget *
+jdd_koj_pixie_widgets (struct drqm_jobs_info *info) {
   GtkWidget *table;
   GtkWidget *label;
   GtkAttachOptions options = (GtkAttachOptions)(GTK_EXPAND | GTK_SHRINK | GTK_FILL) ;
@@ -160,8 +159,12 @@ GtkWidget *jdd_koj_pixie_widgets (struct drqm_jobs_info *info) {
   return table;
 }
 
-static void dnj_koj_frame_pixie_scene_search (GtkWidget *button, struct drqmj_koji_pixie *info) {
+static void
+dnj_koj_frame_pixie_scene_search (GtkWidget *button, struct drqmj_koji_pixie *info) {
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select a RIB file");
   info->fsscene = dialog;
@@ -182,9 +185,13 @@ static void dnj_koj_frame_pixie_scene_search (GtkWidget *button, struct drqmj_ko
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void dnj_koj_frame_pixie_scene_set (GtkWidget *button, struct drqmj_koji_pixie *info) {
+static void
+dnj_koj_frame_pixie_scene_set (GtkWidget *button, struct drqmj_koji_pixie *info) {
   char buf[BUFFERLEN];
   char *p;
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscene)),BUFFERLEN-1);
   /* We need the whole scene path */
@@ -192,9 +199,13 @@ static void dnj_koj_frame_pixie_scene_set (GtkWidget *button, struct drqmj_koji_
   gtk_entry_set_text (GTK_ENTRY(info->escene),p);
 }
 
-static void dnj_koj_frame_pixie_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info) {
+static void
+dnj_koj_frame_pixie_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info) {
   struct pixiesgi pixiesgi; /* Pixie script generator info */
   char *file;
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy (pixiesgi.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_pixie.escene)),BUFFERLEN-1);
   strncpy (pixiesgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->koji_pixie.escript)),BUFFERLEN-1);
@@ -206,8 +217,13 @@ static void dnj_koj_frame_pixie_bcreate_pressed (GtkWidget *button, struct drqmj
     gtk_entry_set_text(GTK_ENTRY(info->ecmd),file);
   }
 }
-static void dnj_koj_frame_pixie_script_search (GtkWidget *button, struct drqmj_koji_pixie *info) {
+
+static void
+dnj_koj_frame_pixie_script_search (GtkWidget *button, struct drqmj_koji_pixie *info) {
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select a script directory");
   info->fsscript = dialog;
@@ -224,9 +240,13 @@ static void dnj_koj_frame_pixie_script_search (GtkWidget *button, struct drqmj_k
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void dnj_koj_frame_pixie_script_set (GtkWidget *button, struct drqmj_koji_pixie *info) {
+static void
+dnj_koj_frame_pixie_script_set (GtkWidget *button, struct drqmj_koji_pixie *info) {
   char buf[BUFFERLEN];
   char *p;
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscript)),BUFFERLEN-1);
   p = strrchr(buf,DIR_SEPARATOR_CHAR);

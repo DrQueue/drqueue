@@ -16,9 +16,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-/*
- * $Header: /root/cvs/drqueue/drqman/notebook.h,v 1.2 2001/08/28 21:49:29 jorge Exp $
- */
 
 #ifndef _NOTEBOOK_H
 #define _NOTEBOOK_H

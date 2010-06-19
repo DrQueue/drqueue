@@ -16,9 +16,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-//
-// $Id: drqm_jobs_luxrender.h 1459 2006-08-11 05:28:31Z jorge $
-//
 
 #ifndef _DRQM_JOBS_LUXRENDER_H_
 #define _DRQM_JOBS_LUXRENDER_H_

@@ -18,9 +18,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-//
-// $Header: /root/cvs/drqueue/drqman/drqm_common.h,v 1.2 2001/09/24 16:10:20 jorge Exp $
-//
 
 #ifndef _DRQM_COMMON_H_
 #define _DRQM_COMMON_H_

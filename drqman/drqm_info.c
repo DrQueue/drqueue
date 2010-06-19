@@ -18,8 +18,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
 
 #include <string.h>
 #include <unistd.h>
@@ -47,6 +45,9 @@ void CreateInfoPage (GtkWidget *notebook, struct info_drqm *info) {
   GtkWidget *icon;
   GdkPixbuf *info_icon_pb;
   char msg[BUFFERLEN];
+  
+   // fix compiler warning
+  (void)info;
 
   container = gtk_frame_new ("About DrQueue");
   gtk_container_border_width (GTK_CONTAINER(container),2);

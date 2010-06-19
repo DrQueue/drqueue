@@ -4,8 +4,6 @@
 #
 # This file is part of DrQueue
 #
-# $Id$
-#
 
 SHLIB=$DRQUEUE_ROOT/bin/shlib
 
