@@ -290,19 +290,19 @@ check_send_datasize (int sfd, uint32_t datasize) {
 
   localsize = htonl(datasize);
   if (!dr_socket_write(sfd,(char*)&localsize,sizeof(uint32_t))) {
-    log_auto (L_ERROR,"check_recv_datasize(): communications problem. Could not write to socket or file. (%s)",strerror(errno));
+    log_auto (L_ERROR,"check_send_datasize(): communications problem. Could not write to socket or file. (%s)",strerror(errno));
     return 0;
   }
   if (!dr_socket_read(sfd,(char*)&remotesize,sizeof(uint32_t))) {
-    log_auto (L_ERROR,"check_recv_datasize(): communications problem. Could not read from socket or file. (%s)",strerror(errno));
+    log_auto (L_ERROR,"check_send_datasize(): communications problem. Could not read from socket or file. (%s)",strerror(errno));
     return 0;
   }
   remotesize = ntohl(remotesize);
 
   if (datasize != remotesize) {
-    log_auto (L_ERROR,"check_recv_datasize(): remote and local sizes for data are different.");
-    log_auto (L_ERROR,"check_recv_datasize(): if you are using different versions of the software please, update older ones.");
-    log_auto (L_ERROR,"check_recv_datasize(): if not this is probably a BUG. Check if it's has been reported.");
+    log_auto (L_ERROR,"check_send_datasize(): remote and local sizes for data are different.");
+    log_auto (L_ERROR,"check_send_datasize(): if you are using different versions of the software please, update older ones.");
+    log_auto (L_ERROR,"check_send_datasize(): if not this is probably a BUG. Check if it's has been reported.");
     return 0;
   }
 
