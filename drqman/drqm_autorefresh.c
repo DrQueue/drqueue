@@ -19,11 +19,6 @@
 // USA
 //
 
-#include <string.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <pwd.h>
-#include <sys/types.h>
 #include <gtk/gtk.h>
 
 #include "drqm_autorefresh.h"

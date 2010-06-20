@@ -22,11 +22,13 @@
 #ifndef _FIXED_POINTER_H_
 #define _FIXED_POINTER_H_
 
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <stdint.h>
 
 #pragma pack(push,1)
 

@@ -20,12 +20,11 @@
 // USA
 //
 
-#include <string.h>
-#include <stdlib.h>
-#include <pwd.h>
-#include <sys/types.h>
-#include <stdint.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+#include <sys/types.h>
+#include <pwd.h>
 
 #include "libdrqueue.h"
 

@@ -19,12 +19,6 @@
 // USA
 //
 
-#include <string.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <pwd.h>
-#include <sys/types.h>
-
 #include "drqman.h"
 #include "drqm_common.h"
 

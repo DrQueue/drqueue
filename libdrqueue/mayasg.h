@@ -23,11 +23,11 @@
 #ifndef _MAYASG_H_
 #define _MAYASG_H_
 
-#include "constants.h"
+#ifdef HAVE_STDINT_H
 #include <stdint.h>
-#include <sys/types.h>
-#include <stdio.h>
-#include <errno.h>
+#endif
+
+#include "constants.h"
 
 #ifdef __cplusplus
 extern "C" {

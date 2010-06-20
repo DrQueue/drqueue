@@ -28,19 +28,10 @@
 #include <unistd.h>
 #endif
 
-#if defined(__LINUX)
-# include <stdint.h>
-#elif defined(__IRIX)
-# include <sys/types.h>
+#if defined(__IRIX)
 # include <sys/sysget.h>
 #elif defined(__OSX)
-# include <stdint.h>
 # include <string.h>
-#elif defined(__FREEBSD)
-# include <stdint.h>
-#elif defined(__CYGWIN)
-#else
-# error You need to define the OS, or OS defined not supported
 #endif
 
 #include "computer_status.h"

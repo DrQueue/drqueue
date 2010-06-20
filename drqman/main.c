@@ -19,18 +19,9 @@
 // USA
 //
 
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#include <stdio.h>
-#include <signal.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <sys/sem.h>
-#include <errno.h>
-#include <sys/wait.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <string.h>
-#include <ctype.h>
+#endif
 
 #include "drqman.h"
 #include "drqm_common.h"

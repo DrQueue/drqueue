@@ -20,12 +20,19 @@
 // USA
 //
 
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <stdint.h>
-#include <sys/types.h>
 #include <stdio.h>
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
+#ifdef _WIN32
+#include <io.h>
+#endif
+
+#include "constants.h"
 
 // Graphics
 #include "waiting.xpm"

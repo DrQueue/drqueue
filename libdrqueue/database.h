@@ -22,14 +22,13 @@
 #ifndef _DATABASE_H_
 #define _DATABASE_H_
 
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
+
 #include "constants.h"
 #include "job.h"
 #include "computer.h"
-
-#include <stdint.h>
-#include <sys/types.h>
-#include <stdlib.h>
-#include <stdio.h>
 
 #pragma pack(push,1)
 

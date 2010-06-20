@@ -19,12 +19,11 @@
 // USA
 //
 
-#include <string.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#include <stdlib.h>
+#endif
 #include <pwd.h>
 #include <sys/stat.h>
-#include <sys/types.h>
 
 #include "drqm_jobs.h"
 #include "drqm_common.h"

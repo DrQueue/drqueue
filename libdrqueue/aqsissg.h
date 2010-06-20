@@ -23,26 +23,12 @@
 #ifndef _AQSISSG_H_
 #define _AQSISSG_H_
 
-#ifdef __LINUX
+#ifdef HAVE_STDINT_H
 #include <stdint.h>
-#else
-# ifdef __IRIX
-#  include <sys/types.h>
-# else
-#  ifdef __OSX
-#  include <stdint.h>
-#  else
-#  ifdef __FREEBSD
-#   include <stdint.h>
-#  else
-#   ifdef __CYGWIN
-#   include <stdint.h>
-#   else
-#   error You need to define the OS, or OS defined not supported
-#   endif
-#  endif
-#  endif
-# endif
+#endif
+
+#ifdef __IRIX
+#include <sys/types.h>
 #endif
 
 #include "constants.h"

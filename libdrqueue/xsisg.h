@@ -23,8 +23,10 @@
 #ifndef _XSISG_H_
 #define _XSISG_H_
 
-#include "constants.h"
+#ifdef HAVE_STDINT_H
 #include <stdint.h>
+#endif
+#include "constants.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -22,12 +22,15 @@
 #ifndef _COMPUTER_STATUS_H_
 #define _COMPUTER_STATUS_H_
 
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
+
+#include <sys/types.h>
+
 #include "constants.h"
 #include "task.h"
 
-#include <time.h>
-#include <sys/types.h>
-#include <stdint.h>
 
 #pragma pack(push,1)
 

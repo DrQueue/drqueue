@@ -22,12 +22,14 @@
 #ifndef _LIST_H_
 #define _LIST_H_
 
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
+#include <sys/types.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <stdint.h>
-#include <sys/types.h>
 
 #pragma pack(push,1)
 

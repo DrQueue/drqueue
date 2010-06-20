@@ -20,19 +20,10 @@
 // USA
 //
 
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdint.h>
-#include <sys/types.h>
-#include <stdio.h>
-#include <errno.h>
-#include <string.h>
-
 #include "libdrqueue.h"
 #include "drqm_jobs.h"
 #include "drqm_computers.h"
 #include "drqm_request.h"
-#include "logger.h"
 
 void
 drqm_request_joblist (struct drqm_jobs_info *info) {

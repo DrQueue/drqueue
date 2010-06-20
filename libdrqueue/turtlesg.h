@@ -23,11 +23,12 @@
 #ifndef _TURTLESG_H_
 #define _TURTLESG_H_
 
-#include "constants.h"
-#include <stdint.h>
-#include <sys/types.h>
 #include <stdio.h>
-#include <errno.h>
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
+
+#include "constants.h"
 
 #ifdef __cplusplus
 extern "C" {
