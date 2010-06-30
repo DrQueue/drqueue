@@ -86,10 +86,18 @@ def write_git_rev(commit_id):
 
 env_lib = Environment (ENV=os.environ)
 
+pathprefix = '/usr/local'
+
+# Use the specific directory for non-unix systems.
+if sys.platform == "darwin":
+  pathprefix = os.getcwd()
+elif sys.platform == "win32":
+  pathprefix = 'C:\\Program Files\\drqueue'
+
 # Configuration options
 opts = Variables('scons.conf')
 opts.AddVariables(PathVariable('DESTDIR','Alternate root directory','',[]),
-                  PathVariable('PREFIX','Directory to install under','/usr/local'),
+                  PathVariable('PREFIX','Directory to install under',pathprefix, PathVariable.PathAccept),
                   BoolVariable('universal_binary', 'Whether to build as an Universal Binary (MacOS X >= 10.3.9 only)', 0),
                   BoolVariable('build_drqman','Build drqman',1),
                   BoolVariable('enable_warnings','Enable warnings for compiling',0),
@@ -288,6 +296,7 @@ n = len(doc_files)
 for i in range(0, n):
 	env.Install(idir_doc, doc_files[i])
 
+env.Command (idir_prefix,[],[Mkdir("$TARGET"),Chmod("$TARGET",0777)])
 perm_logs = env.Command (idir_logs,[],[Mkdir("$TARGET"),Chmod("$TARGET",0777)])
 env.Clean(perm_logs,idir_logs)
 perm_tmp = env.Command (idir_tmp,[],[Mkdir("$TARGET"),Chmod("$TARGET",0777)])
