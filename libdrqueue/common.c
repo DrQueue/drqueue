@@ -263,7 +263,7 @@ set_default_env(void) {
     }
     
     nDataSize = BUFFERLEN;
-    if(RegQueryValueExA(keyDrQueue, "DRQUEUE_MASTER", NULL, NULL, pAddress, &nDataSize) == ERROR_SUCCESS)
+    if(RegQueryValueExA(keyDrQueue, "DRQUEUE_MASTER", NULL, NULL, pPath, &nDataSize) == ERROR_SUCCESS)
     {
       snprintf(renv,BUFFERLEN,"DRQUEUE_MASTER=%s",pPath);
       penv = (char*) malloc (strlen(renv)+1);
