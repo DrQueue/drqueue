@@ -84,7 +84,11 @@ def write_git_rev(commit_id):
 	os.chdir("..")
 	rev_file.close()
 
-env_lib = Environment (ENV=os.environ)
+# Default to mingw on windows for now.
+if sys.platform == "win32":
+  env_lib = Environment (ENV=os.environ, TOOLS = ['mingw'])
+else:
+  env_lib = Environment (ENV=os.environ)
 
 pathprefix = '/usr/local'
 
@@ -110,21 +114,23 @@ Help(opts.GenerateHelpText(env_lib))
 # fetch Git commit id and write into git_rev.h
 write_git_rev(get_git_commit())
 
-conf = Configure(env_lib)
-# FIXME: write configure tests
-if conf.CheckCHeader('unistd.h'):
-    conf.env.Append(CPPDEFINES = Split ('HAVE_UNISTD_H'))
-if conf.CheckCHeader('stdint.h'):
-    conf.env.Append(CPPDEFINES = Split('HAVE_STDINT_H'))
-if conf.CheckCHeader('getopt.h'):
-    conf.env.Append(CPPDEFINES = Split('HAVE_GETOPT_H'))
-if conf.CheckCHeader('inttypes.h'):
-    conf.env.Append(CPPDEFINES = Split ('HAVE_INTTYPES_H'))
-#if not conf.CheckType('PATH_MAX'):
-#    conf.env.Append(CPPDEFINES = Split ('PATH_MAX=512'))
-if not conf.CheckFunc('snprintf'):
-    conf.env.Append(CPPDEFINES = Split ('snprintf=_snprintf'))
-env_lib = conf.Finish()
+if not env_lib.GetOption('clean'):
+  conf = Configure(env_lib)
+  if conf.CheckCHeader('unistd.h'):
+      conf.env.Append(CPPDEFINES = Split ('HAVE_UNISTD_H'))
+  if conf.CheckCHeader('stdint.h'):
+      conf.env.Append(CPPDEFINES = Split('HAVE_STDINT_H'))
+  if conf.CheckCHeader('getopt.h'):
+      conf.env.Append(CPPDEFINES = Split('HAVE_GETOPT_H'))
+  if conf.CheckCHeader('inttypes.h'):
+      conf.env.Append(CPPDEFINES = Split ('HAVE_INTTYPES_H'))
+  if conf.CheckCHeader('pwd.h'):
+      conf.env.Append(CPPDEFINES = Split ('HAVE_PWD_H'))
+  #if not conf.CheckType('PATH_MAX'):
+  #    conf.env.Append(CPPDEFINES = Split ('PATH_MAX=512'))
+  if not conf.CheckFunc('snprintf'):
+      conf.env.Append(CPPDEFINES = Split ('snprintf=_snprintf'))
+  env_lib = conf.Finish()
 
 # Installation paths
 idir_prefix = os.path.normpath(os.path.join('${DESTDIR}','${PREFIX}','drqueue'))
@@ -139,7 +145,8 @@ Export('env_lib idir_prefix idir_bin idir_bin_viewcmd idir_etc idir_db idir_doc 
 
 env_lib.Append (CPPPATH=['.','libdrqueue'])
 
-if env_lib['CC'] == "gcc":
+# mingw doesnt need the -fPIC flag.
+if env_lib['CC'] == "gcc" and not sys.platform == "win32":
     env_lib.Append (CCFLAGS=Split('-fPIC'))
 
 env_lib.Append (CPPDEFINES = Split ('COMM_REPORT _GNU_SOURCE ' \
@@ -169,7 +176,12 @@ elif sys.platform == "cygwin":
   env_lib.Append (CPPDEFINES = Split ('-D__CYGWIN'))
   os.environ['PKG_CONFIG_PATH'] = 'C:\GTK\lib\pkgconfig'
 elif sys.platform == "win32":
-  env_lib.Append (CPPDEFINES = Split ('_POSIX_'))
+  # Ignore MSVC security warnings by default.
+  env_lib.Append (CPPDEFINES = Split ('_WIN32 _CRT_SECURE_NO_WARNINGS'))
+  env_lib.Append (LIBS = Split ('kernel32 ws2_32 advapi32'))
+  if env_lib['CC'] == "cl":
+    env_lib.Append (LIBS = Split ('msvcrt OLDNAMES'))
+    env_lib.Append (LINKFLAGS = Split('/DEFAULTLIB:MSVCRT /NODEFAULTLIB'))
 elif (sys.platform == "freebsd7") or (sys.platform == "freebsd8"):
   env_lib.Append (CPPDEFINES = Split ('-D__FREEBSD'))
 else:
@@ -195,6 +207,11 @@ if env_lib.get('enable_debug'):
 # Base construction environment that links with the library
 env = env_lib.Clone()
 env.Append (LIBS = ['drqueue'],LIBPATH = ['libdrqueue'])
+
+if sys.platform == "win32":
+  # Ignore MSVC security warnings by default.
+  env.Append (CPPDEFINES = Split ('_WIN32 _CRT_SECURE_NO_WARNINGS'))
+  env.Append (LIBS = Split ('kernel32 ws2_32 advapi32'))
 
 #
 # libdrqueue.a
@@ -279,7 +296,11 @@ copy_with_clean(etc_files,etc_files,idir_prefix,env)
 # install bin files
 bin_files = glob.glob(os.path.join('bin','*'))
 # remove viewcmd because it's a directory, not a file
-bin_files.remove('bin/viewcmd')
+try:
+  bin_files.remove('bin/viewcmd')
+except ValueError:
+   print("bin/viewcmd not found.")
+
 # remove drqman wrapper if drqman wasn't built
 if not env_lib['build_drqman']:
 	bin_files.remove('bin/drqman')
