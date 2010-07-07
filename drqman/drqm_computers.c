@@ -39,7 +39,7 @@ static GtkWidget *CreateComputersList(struct drqm_computers_info *info);
 static GtkWidget *CreateClist ();
 static GtkWidget *CreateButtonRefresh (struct drqm_computers_info *info);
 static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_computers_info *info);
-static GtkWidget *CreateMenu (struct drqm_computers_info *info);
+static GtkWidget *CreateComputerMenu (struct drqm_computers_info *info);
 static gboolean AutoRefreshUpdate (gpointer info);
 static void EnableComputers (GtkWidget *button,struct drqm_computers_info *info);
 static void DisableComputers (GtkWidget *button,struct drqm_computers_info *info);
@@ -167,7 +167,7 @@ CreateComputersList(struct drqm_computers_info *info) {
   gtk_container_add (GTK_CONTAINER(window),info->clist);
 
   /* Create the popup menu */
-  info->menu = CreateMenu(info);
+  info->menu = CreateComputerMenu(info);
 
   return (window);
 }
@@ -299,7 +299,7 @@ PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_computers_info *info) {
 }
 
 static GtkWidget *
-CreateMenu (struct drqm_computers_info *info) {
+CreateComputerMenu (struct drqm_computers_info *info) {
   GtkWidget *menu;
   GtkWidget *menu_item;
 

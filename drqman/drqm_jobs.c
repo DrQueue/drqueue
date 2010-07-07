@@ -61,7 +61,7 @@ static GtkWidget *CreateClist ();
 static GtkWidget *CreateButtonRefresh (struct drqm_jobs_info *info);
 static void PressedButtonRefresh (GtkWidget *b, struct drqm_jobs_info *info);
 static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *info);
-static GtkWidget *CreateMenu (struct drqm_jobs_info *info);
+static GtkWidget *CreateJobsMenu (struct drqm_jobs_info *info);
 static int pri_cmp_clist (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
 static void update_joblist (GtkWidget *widget, struct drqm_jobs_info *info);
 static gboolean AutoRefreshUpdate (gpointer info);
@@ -195,7 +195,7 @@ CreateJobsList(struct drqm_jobs_info *info) {
   gtk_container_add (GTK_CONTAINER(window),info->clist);
 
   /* Create the popup menu */
-  info->menu = CreateMenu(info);
+  info->menu = CreateJobsMenu(info);
 
   return (window);
 }
@@ -332,7 +332,7 @@ PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *info) {
 }
 
 static GtkWidget *
-CreateMenu (struct drqm_jobs_info *info) {
+CreateJobsMenu (struct drqm_jobs_info *info) {
   // This function creates the popup menu on the job's page
   GtkWidget *menu;
   GtkWidget *menu_item;
