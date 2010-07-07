@@ -23,7 +23,6 @@
 #define _3DSMAXSG_H_
 
 #include "constants.h"
-#include "stdint.h"
 
 #ifdef __cplusplus
 extern "C" {

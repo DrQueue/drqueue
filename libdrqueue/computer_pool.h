@@ -22,11 +22,14 @@
 #ifndef _COMPUTER_POOL_H_
 #define _COMPUTER_POOL_H_
 
+#ifdef HAVE_STDINT_H
 #include <stdint.h>
+#endif
 #include <sys/types.h>
 
 #include "computer.h"
 #include "logger.h"
+#include "constants.h"
 
 #pragma pack(push,1)
 struct pool {

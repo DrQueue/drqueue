@@ -22,10 +22,6 @@
 #ifndef _LUXRENDERSG_H_
 #define _LUXRENDERSG_H_
 
-#ifdef HAVE_STDINT_H
-#include <stdint.h>
-#endif
-
 #include "constants.h"
 
 #ifdef __cplusplus

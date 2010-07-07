@@ -23,13 +23,21 @@
 #define _COMPUTER_H_
 
 #include <sys/types.h>
-#include <netinet/in.h>
+#ifndef _WIN32
+  #include <netinet/in.h>
+#else
+  #include <winsock2.h>
+#endif
 #include <time.h>
+
+#ifdef HAVE_STDINT_H
 #include <stdint.h>
+#endif
 
 #include "pointer.h"
 #include "computer_info.h"
 #include "computer_status.h"
+#include "constants.h"
 
 #pragma pack (push,1)
 

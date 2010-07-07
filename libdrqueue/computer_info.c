@@ -23,8 +23,6 @@
 #include <ctype.h>
 #include <sys/types.h>
 #include <signal.h>
-#include <stdint.h>
-#include <logger.h>
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -38,6 +36,7 @@
 #include <sys/sysctl.h>
 #endif
 
+#include "logger.h"
 #include "pointer.h"
 #include "constants.h"
 #include "computer_info.h"

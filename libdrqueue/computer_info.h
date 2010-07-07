@@ -22,12 +22,14 @@
 #ifndef _COMPUTER_INFO_H_
 #define _COMPUTER_INFO_H_
 
-#include "constants.h"
-
+#ifdef HAVE_STDINT_H
 #include <stdint.h>
+#endif
 #include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "constants.h"
 
 #pragma pack(push,1)
 
