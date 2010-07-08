@@ -90,12 +90,11 @@ if sys.platform == "win32":
 else:
   env_lib = Environment (ENV=os.environ)
 
+# Default install path for unix systems
 pathprefix = '/usr/local'
 
 # Use the specific directory for non-unix systems.
-if sys.platform == "darwin":
-  pathprefix = os.getcwd()
-elif sys.platform == "win32":
+if sys.platform == "win32":
   pathprefix = 'C:\\Program Files\\drqueue'
 
 # Configuration options
