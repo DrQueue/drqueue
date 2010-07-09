@@ -449,6 +449,8 @@ jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
   static GdkPixmap *f_data = NULL;
   static GdkBitmap *e_mask = NULL;
   static GdkPixmap *e_data = NULL;
+  char *submit_time;
+  time_t ttime;
 
   jdd_update_blocked_hosts (w,info);
 
@@ -505,8 +507,8 @@ jdd_update (GtkWidget *w, struct drqm_jobs_info *info) {
            info->jdd.job.ffailed);
   gtk_label_set_text (GTK_LABEL(info->jdd.lfrldf),msg);
 
-  time_t ttime = info->jdd.job.submit_time;
-  char *submit_time = ctime(&ttime);
+  ttime = info->jdd.job.submit_time;
+  submit_time = ctime(&ttime);
   submit_time[strlen(submit_time)-1]=0;
   gtk_label_set_text (GTK_LABEL(info->jdd.lsubmitt),submit_time);
   gtk_label_set_text (GTK_LABEL(info->jdd.lavgt),time_str(info->jdd.job.avg_frame_time));

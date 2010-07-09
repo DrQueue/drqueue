@@ -1571,6 +1571,10 @@ computers_cmp_pools (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   struct computer *ca,*cb;
   struct computer_limits *cla,*clb;
   int diff;
+  char pa[BUFFERLEN];
+  char pb[BUFFERLEN];
+  char msg2[BUFFERLEN];
+  int i;
   
   // fix compiler warning
   (void)clist;
@@ -1580,12 +1584,6 @@ computers_cmp_pools (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
 
   cla = &ca->limits;
   clb = &cb->limits;
-
-  char pa[BUFFERLEN];
-  char pb[BUFFERLEN];
-  char msg2[BUFFERLEN];
-
-  int i;
 
   if (cla->npools) {
     struct pool *pool;

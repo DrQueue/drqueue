@@ -297,8 +297,9 @@ dnj_koj_frame_mentalray_scene_set (GtkWidget *button, struct drqmj_koji_mentalra
 static void
 dnj_koj_frame_mentalray_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info) {
   struct mentalraysgi mentalraysgi; /* Mental Ray script generator info */
-  mentalraysgi.render_type = 1; /* we render animations */
   char *file;
+
+  mentalraysgi.render_type = 1; /* we render animations */
   
   // fix compiler warning
   (void)button;
