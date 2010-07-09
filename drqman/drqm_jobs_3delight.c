@@ -19,17 +19,13 @@
 // USA
 //
 
-#ifdef HAVE_CONFIG_H
-#   include <lconfig.h>
-#endif
-
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <pwd.h>
-#include <sys/stat.h>
 #include <sys/types.h>
 
+#include "drq_stat.h"
 #include "drqm_jobs.h"
 #include "drqm_common.h"
 #include "drqm_jobs_3delight.h"
