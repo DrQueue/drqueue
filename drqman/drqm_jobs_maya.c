@@ -23,8 +23,8 @@
 #include <unistd.h>
 #endif
 #include <pwd.h>
-#include <sys/stat.h>
 
+#include "drq_stat.h"
 #include "drqm_jobs.h"
 #include "drqm_common.h"
 #include "drqm_jobs_maya.h"

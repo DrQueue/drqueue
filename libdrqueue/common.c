@@ -19,8 +19,8 @@
 // USA
 //
 #include <stdio.h>
-#include <sys/stat.h>
 
+#include "drq_stat.h"
 #include "common.h"
 #include "drerrno.h"
 #include "constants.h"
@@ -54,7 +54,7 @@ common_environment_check (void) {
     log_auto (L_ERROR,"Could not find temp path '%s'. (%s)",dir_str,strerror(drerrno_system));
     return 0;
   } else {
-#ifdef __CYGWIN
+#if defined (__CYGWIN) || defined(_WIN32)
     if (!S_ISDIR(s_stat.st_mode)) {
       drerrno = DRE_NOTMPDIR;
       return 0;
@@ -78,7 +78,7 @@ common_environment_check (void) {
     drerrno = DRE_NODBDIR;
     return 0;
   } else {
-#ifdef __CYGWIN
+#if defined (__CYGWIN) || defined(_WIN32)
     if (!S_ISDIR(s_stat.st_mode)) {
       drerrno_system = errno;  
       log_auto (L_ERROR,"no database directory found on '%s'. It's not a directory. (%s)",dir_str,strerror(drerrno_system));
@@ -104,7 +104,7 @@ common_environment_check (void) {
     drerrno = DRE_NOLOGDIR;
     return 0;
   } else {
-#ifdef __CYGWIN
+#if defined (__CYGWIN) || defined(_WIN32)
     if (!S_ISDIR(s_stat.st_mode)) {
       drerrno = DRE_NOLOGDIR;
       return 0;

@@ -20,12 +20,12 @@
 // USA
 //
 #include <stdio.h>
-#include <sys/stat.h>
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 
+#include "drq_stat.h"
 #include "libdrqueue.h"
 
 /* create a new script file */
@@ -47,8 +47,9 @@ jobscript_new (jobscript_type type, char *filename) {
     return NULL;
   }
 
+#ifndef _WIN32
   fchmod (fileno(f),0777);
-
+#endif
   jsi = (struct jobscript_info*) malloc (sizeof (struct jobscript_info));
   if(jsi) {
     jsi->type = type;

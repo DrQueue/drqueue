@@ -45,8 +45,15 @@ int main (int argc, char *argv[]) {
   GtkWidget *window;
   GtkWidget *main_vbox;
   char rc_file[MAXCMDLEN];
+  int nRet = 0;
 
   gtk_init(&argc,&argv);
+  
+  if(network_initialize() != 0) {
+    fprintf (stderr,"Could not initialize the network: %s\n", drerrno_str());
+    nRet = 1;
+    goto cleanup;
+  }
   
   // fprintf (stderr,"drqman pid: %i\n",getpid());
   drqman_get_options(&argc,&argv);
@@ -93,7 +100,10 @@ int main (int argc, char *argv[]) {
 
   gtk_main();
 
-  return (0);
+  cleanup:
+  network_shutdown();
+
+  return nRet;
 }
 
 void drqman_get_options (int *argc,char ***argv) {

@@ -23,9 +23,8 @@
 #include <unistd.h>
 #endif
 #include <pwd.h>
-#include <sys/stat.h>
 
-
+#include "drq_stat.h"
 #include "mantrasg.h"
 #include "drqm_jobs.h"
 #include "drqm_common.h"

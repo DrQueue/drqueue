@@ -20,13 +20,13 @@
 //
 
 #include <stdio.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 
+#include "drq_stat.h"
 #include "pointer.h"
 #include "database.h"
 #include "computer.h"
@@ -266,8 +266,12 @@ database_save (struct database *wdb) {
   if ((fd = open (filename, O_CREAT | O_TRUNC | O_RDWR, 0664)) == -1) {
     if (errno == ENOENT) {
       /* If its because the directory does not exist we try creating it first */
+#ifdef _WIN32
+      if (mkdir (dir) == -1) {
+#else
       if (mkdir (dir, 0775) == -1) {
-	drerrno_system = errno;
+#endif
+        drerrno_system = errno;
         log_auto (L_WARNING,"Could not create database directory. Check permissions: %s. (%s)",
 		  dir,strerror(drerrno_system));
         drerrno = DRE_COULDNOTCREATE;
