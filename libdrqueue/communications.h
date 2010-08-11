@@ -33,7 +33,7 @@ extern long int brecv;  /* Bytes received */
 #endif
 
 int get_socket (uint16_t port);
-int accept_socket (int sfd, struct database *wdb, struct sockaddr_in *addr);
+int accept_socket_master (int sfd, struct database *wdb, struct sockaddr_in *addr);
 int accept_socket_slave (int sfd);
 int connect_to_master (void);
 int connect_to_slave (char *slave);
