@@ -128,7 +128,7 @@ int main (int argc, char *argv[]) {
     if (n_children < MASTERNCHILDREN) {
       if ((child = fork()) == 0) {
         set_signal_handlers_child_conn_handler ();
-        if ((csfd = accept_socket (sfd,wdb,&addr)) != -1) {
+        if ((csfd = accept_socket_master (sfd,wdb,&addr)) != -1) {
 #ifdef COMM_REPORT
           long int bsentb = bsent; /* Bytes sent before */
           long int brecvb = brecv; /* Bytes received before */

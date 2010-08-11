@@ -104,9 +104,8 @@ get_socket (uint16_t port) {
   return sfd;
 }
 
-// FIXME: should be named accept_socket_master
 int
-accept_socket (int sfd, struct database *wdb, struct sockaddr_in *addr) {
+accept_socket_master (int sfd, struct database *wdb, struct sockaddr_in *addr) {
   int fd;
   socklen_t len;
 
@@ -119,7 +118,7 @@ accept_socket (int sfd, struct database *wdb, struct sockaddr_in *addr) {
 
   if ((fd = accept (sfd,(struct sockaddr *)addr,&len)) == -1) {
     drerrno_system = errno;
-    log_auto (L_ERROR,"accept_socket(): error accepting connection. Msg: %s",strerror(drerrno_system));
+    log_auto (L_ERROR,"accept_socket_master(): error accepting connection. Msg: %s",strerror(drerrno_system));
     return fd;
   }
 
