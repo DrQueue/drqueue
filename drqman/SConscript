@@ -1,0 +1,19 @@
+import sys
+import glob
+import os
+import platform,re
+import subprocess
+
+Import('env_lib')
+
+
+print "Building drqman"
+drqman_c = glob.glob (os.path.join('.','*.c'))
+
+env_gtkstuff = env_lib.Clone ()
+env_gtkstuff.Append (CPPPATH=['../libdrqueue'])
+env_gtkstuff.Append (LIBS = ['drqueue'],LIBPATH = ['../libdrqueue'])
+env_gtkstuff.ParseConfig ('pkg-config --cflags --libs gtk+-2.0', None, 0)
+drqman = env_gtkstuff.Program (drqman_c)
+
+Default (drqman)
