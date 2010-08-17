@@ -1,0 +1,15 @@
+import sys
+import glob
+import os
+import platform,re
+import subprocess
+
+Import('env_lib')
+
+print "Building libdrqueue"
+libdrq_c = glob.glob (os.path.join('.','*.c'))
+
+drq_lib = env_lib.Clone ()
+libdrq = drq_lib.Library ('libdrqueue', libdrq_c)
+
+Default (libdrq)

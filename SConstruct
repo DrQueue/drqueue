@@ -212,32 +212,21 @@ if sys.platform == "win32":
   env.Append (CPPDEFINES = Split ('_WIN32 _CRT_SECURE_NO_WARNINGS'))
   env.Append (LIBS = Split ('kernel32 ws2_32 advapi32'))
 
+conscripts = []
+
 #
 # libdrqueue.a
 #
-libdrqueue_src = get_abspath_glob(os.path.join('libdrqueue','*.c'))
-libdrqueue = env_lib.Library ('libdrqueue/drqueue', libdrqueue_src)
-Default (libdrqueue)
+conscripts.append('libdrqueue/SConscript')
 
 #
 # drqman
 #
-def build_drqman():
-    result = []
-    if env_lib['build_drqman']:
-        print "Building drqman"
-        drqman_c = glob.glob (os.path.join('drqman','*.c'))
-        env_gtkstuff = env.Clone ()
-        env_gtkstuff.ParseConfig ('pkg-config --cflags --libs gtk+-2.0', None, 0)
-        drqman = env_gtkstuff.Program (os.path.join('drqman','drqman'),drqman_c)
-        if sys.platform == 'cygwin':
-        	result.append(os.path.join('drqman','drqman.exe'))
-        else:
-        	result.append(os.path.join('drqman','drqman'))
-        Default (drqman)
-    else:
-        print "Not building drqman"
-    return result
+if env_lib['build_drqman']:
+	conscripts.append('drqman/SConscript')
+
+# Build all the files.
+SConscript(conscripts, exports='env_lib')
 
 #
 # Main
@@ -245,9 +234,9 @@ def build_drqman():
 master = env.Program ('master.c')
 slave = env.Program ('slave.c')
 if sys.platform == 'cygwin'  or sys.platform == 'win32':
-	main_list = [ 'master.exe', 'slave.exe' ] + build_drqman()
+	main_list = [ 'master.exe', 'slave.exe' ]
 else:
-	main_list = [ 'master', 'slave' ] + build_drqman()
+	main_list = [ 'master', 'slave' ]
 Default (master)
 Default (slave)
 
