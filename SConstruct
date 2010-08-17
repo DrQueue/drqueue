@@ -1,6 +1,7 @@
 #
 # Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
 # Copyright (C) 2009,2010 Andreas Schroeder
+# Copyright (C) 2010 Alistair Leslie-Hughes
 #
 # This file is part of DrQueue
 #
@@ -223,7 +224,10 @@ conscripts.append('libdrqueue/SConscript')
 # drqman
 #
 if env_lib['build_drqman']:
+	print "Building drqman"
 	conscripts.append('drqman/SConscript')
+else:
+	print "Not building drqman"
 
 # Build all the files.
 SConscript(conscripts, exports='env_lib')

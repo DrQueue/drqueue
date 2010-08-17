@@ -7,7 +7,6 @@ import subprocess
 Import('env_lib')
 
 
-print "Building drqman"
 drqman_c = glob.glob (os.path.join('.','*.c'))
 
 env_gtkstuff = env_lib.Clone ()
