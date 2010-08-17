@@ -9,10 +9,15 @@ Import('env_lib')
 
 drqman_c = glob.glob (os.path.join('.','*.c'))
 
+if sys.platform == 'cygwin' or sys.platform == 'win32':
+    drqman_bin_name = 'drqman.exe'
+else:
+    drqman_bin_name = 'drqman'
+
 env_gtkstuff = env_lib.Clone ()
 env_gtkstuff.Append (CPPPATH=['../libdrqueue'])
 env_gtkstuff.Append (LIBS = ['drqueue'],LIBPATH = ['../libdrqueue'])
 env_gtkstuff.ParseConfig ('pkg-config --cflags --libs gtk+-2.0', None, 0)
-drqman = env_gtkstuff.Program (drqman_c)
+drqman = env_gtkstuff.Program (drqman_bin_name, drqman_c)
 
 Default (drqman)
