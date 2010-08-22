@@ -73,11 +73,12 @@ int main (int argc,char *argv[]) {
       if(debug) { std::cerr << "evaluating render type argument.\n"; }
       toj = str2toj (optarg);
       break;
+    // only used for TOJ_GENERAL:
     case 'f':
       // DEBUG:
       if(debug) { std::cerr << "evaluating frame argument.\n"; }
       // FIXME: make second and third frame number optional
-      // count ':' and quit if not enough
+      // otherwise count ':' and quit if not enough
       frame_range = (optarg);
       fs = atoi(strtok(frame_range,":"));
       fe = atoi(strtok(NULL,":"));
@@ -240,7 +241,7 @@ void usage (void) {
   << "\t-v version information\n"
   << "\t-d enable debug messages\n"
   << "\t-h prints this help\n"
-  << "\t-f [frameStart[:frameEnd[:stepFrame]]]\n"
+  << "\t-f [frameStart[:frameEnd[:stepFrame]]] (only for general jobs)\n"
   << "\t-t [general|maya|blender|mentalray|aqsis|3delight|pixie|lightwave|terragen|nuke|aftereffects|shake|xsi|luxrender] type of job\n";
 }
 
