@@ -234,13 +234,14 @@ void show_version () {
 }
 
 void usage (void) {
+  std::cerr << "About: sendjob generates a render job from a description file. See sendjob_maya_example.txt for an example.\n\n"; 
   std::cerr << "Usage: sendjob [-vdh] [-f frameStart[:frameEnd[:stepFrame]]] -t <type> <job_file>\n"
   << "Valid options:\n"
   << "\t-v version information\n"
   << "\t-d enable debug messages\n"
   << "\t-h prints this help\n"
   << "\t-f [frameStart[:frameEnd[:stepFrame]]]\n"
-  << "\t-t [general|maya|blender|mentalray|aqsis|3delight|pixie|lightwave|terragen|nuke|aftereffects|shake|xsi§luxrender] type of job\n";
+  << "\t-t [general|maya|blender|mentalray|aqsis|3delight|pixie|lightwave|terragen|nuke|aftereffects|shake|xsi|luxrender] type of job\n";
 }
 
 
