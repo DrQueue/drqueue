@@ -77,7 +77,7 @@ int main (int argc,char *argv[]) {
       // DEBUG:
       if(debug) { std::cerr << "evaluating frame argument.\n"; }
       // FIXME: make second and third frame number optional
-      // count : and quit if not enough
+      // count ':' and quit if not enough
       frame_range = (optarg);
       fs = atoi(strtok(frame_range,":"));
       fe = atoi(strtok(NULL,":"));
@@ -394,7 +394,34 @@ int RegisterMayaJobFromFile (std::ifstream &infile) {
   mayaSgi.res_x = resX;
   mayaSgi.res_y = resY;
   strncpy(mayaSgi.format,fileFormat.c_str(),BUFFERLEN-1);
-
+  
+  // DEBUG:
+  if(debug) {
+    std::cerr << "\nFetched job variables:\nrenderer: ";
+    std::cerr << mayaSgi.renderer;
+    std::cerr << "\nrenderdir: ";
+    std::cerr << mayaSgi.renderdir;
+    std::cerr << "\nprojectdir: ";
+    std::cerr << mayaSgi.projectdir;
+    std::cerr << "\nscene: ";
+    std::cerr << mayaSgi.scene;
+    std::cerr << "\nrenderdir: ";
+    std::cerr << mayaSgi.image;
+    std::cerr << "\nscriptdir: ";
+    std::cerr << mayaSgi.scriptdir;
+    std::cerr << "\nfile_owner: ";
+    std::cerr << mayaSgi.file_owner;
+    std::cerr << "\ncamera: ";
+    std::cerr << mayaSgi.camera;
+    std::cerr << "\nres_x: ";
+    std::cerr << mayaSgi.res_x;
+    std::cerr << "\nres_y: ";
+    std::cerr << mayaSgi.res_y;
+    std::cerr << "\nformat: ";
+    std::cerr << mayaSgi.format;
+    std::cerr << "\n\n";
+  }
+  
   if (!(pathToScript = mayasg_create(&mayaSgi))) {
     std::cerr << "Error creating script file\n";
     return 1;
