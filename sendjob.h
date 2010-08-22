@@ -23,8 +23,10 @@
 #include <fstream>
 #include "job.h"
 
+// FIXME: Use Koj types from libdrqueue/job.h
+
 #define TOJ_NONE                 0
-#define TOJ_MAYA                 1
+#define TOJ_MAYA                 1 // Maya koj
 #define TOJ_BLENDER              2 // Blender koj
 #define TOJ_THREEDELIGHT         4 // 3delight koj
 #define TOJ_PIXIE                5 // Pixie koj
@@ -61,7 +63,9 @@ int RegisterXSIJobFromFile (std::ifstream &infile);
 int RegisterLuxrenderJobFromFile (std::ifstream &infile);
 
 int str2toj (char *str);
-
+void show_version (void);
 void cleanup (int signum);
+
+bool debug = false;
 
 #endif /* _SENDJOB_H_ */
