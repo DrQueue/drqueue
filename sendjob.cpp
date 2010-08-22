@@ -48,6 +48,7 @@ int main (int argc,char *argv[]) {
   int nRet = 0;
   std::ifstream infile;
   
+  
   if(network_initialize() != 0) {
     fprintf (stderr,"Could not initialize the network: %s\n", drerrno_str());
     nRet = 1;
@@ -59,15 +60,24 @@ int main (int argc,char *argv[]) {
   fe = 1;
   sf = 1;
 
-  while ((opt = getopt (argc,argv,"f:hvt:")) != -1) {
+  while ((opt = getopt (argc,argv,"df:hvt:")) != -1) {
     switch (opt) {
+    case 'd':
+      debug = true;
+      continue;
     case 'v':
-      //      show_version (argv);
+      show_version();
       exit (0);
     case 't':
+      // DEBUG:
+      if(debug) { std::cerr << "evaluating render type argument.\n"; }
       toj = str2toj (optarg);
       break;
     case 'f':
+      // DEBUG:
+      if(debug) { std::cerr << "evaluating frame argument.\n"; }
+      // FIXME: make second and third frame number optional
+      // count : and quit if not enough
       frame_range = (optarg);
       fs = atoi(strtok(frame_range,":"));
       fe = atoi(strtok(NULL,":"));
@@ -86,7 +96,9 @@ int main (int argc,char *argv[]) {
     nRet = 1;
     goto cleanup;
   }
-
+  
+  // DEBUG:  
+  if(debug) { std::cerr << "set_default_env().\n"; }
   set_default_env();
 
   if (!common_environment_check()) {
@@ -105,6 +117,9 @@ int main (int argc,char *argv[]) {
     }
     break;
   case TOJ_MAYA:
+    // DEBUG:  
+    if(debug) { std::cerr << "entering RegisterMayaJobFromFile().\n"; }
+  
     if (RegisterMayaJobFromFile (infile)) {
       std::cerr << "Error registering MAYA job from file: " << argv[argc-1] << std::endl;
       nRet = 1;
@@ -214,10 +229,15 @@ void presentation (void) {
   std::cout << "DrQueue - by Jorge Daza Garcia-Blanes\n\n";
 }
 
+void show_version () {
+  std::cout << "sendjob - version 0.64.x\n\n";
+}
+
 void usage (void) {
-  std::cerr << "Usage: sendjob [-vh] [-f frameStart[:frameEnd[:stepFrame]]] -t <type> <job_file>\n"
+  std::cerr << "Usage: sendjob [-vdh] [-f frameStart[:frameEnd[:stepFrame]]] -t <type> <job_file>\n"
   << "Valid options:\n"
   << "\t-v version information\n"
+  << "\t-d enable debug messages\n"
   << "\t-h prints this help\n"
   << "\t-f [frameStart[:frameEnd[:stepFrame]]]\n"
   << "\t-t [general|maya|blender|mentalray|aqsis|3delight|pixie|lightwave|terragen|nuke|aftereffects|shake|xsi§luxrender] type of job\n";
@@ -325,6 +345,10 @@ int RegisterGeneralJob (char* infile, int frameStart, int frameEnd, int frameSte
 }
 
 int RegisterMayaJobFromFile (std::ifstream &infile) {
+  
+  // DEBUG:  
+  if(debug) { std::cerr << "RegisterMayaJobFromFile().\n"; }
+  
   // Job variables for the script generator
   struct job job;
   struct mayasgi mayaSgi;
