@@ -2,9 +2,9 @@ class Profile < ActiveRecord::Base
 
   require 'rubygems'
   require 'net/ldap'
-	
+  
   has_many :jobs
-	
+  
   @@per_page = 10
 
 
@@ -59,12 +59,12 @@ class Profile < ActiveRecord::Base
         return myprofile
       end
     else
-	
+  
     # LDAP lookup
     ldap = Net::LDAP.new
     ldap.host = ENV['LDAP_HOST']
     ldap.port = ENV['LDAP_PORT']
-	     
+       
     # search uid in ldap server
     user = ldap.search(:base => ENV['LDAP_TREEBASE'], :filter => "uid="+account)
     if user.length == 0
@@ -74,10 +74,10 @@ class Profile < ActiveRecord::Base
     auth_string = user[0].dn
     # authenticate with dn and password
     ldap.auth auth_string, password
-		 
+     
     if ldap.bind
     # authentication succeeded
-						
+            
       # search user in db
       # user is there and logged in
       if myprofile = Profile.find_by_ldap_account(account)
@@ -89,7 +89,7 @@ class Profile < ActiveRecord::Base
         myprofile.ldap_account = account
         # give user the lowest status
         myprofile.status = "student"
-        # get user info from ldap server	
+        # get user info from ldap server  
         filter = Net::LDAP::Filter.eq(ENV['LDAP_FILTER'], account )
         attrs = ENV['LDAP_ATTRS'].split(",")
         ldap.search( :base => ENV['LDAP_TREEBASE'], :filter => filter, :attributes => attrs, :return_result => false ) do |entry|
@@ -101,13 +101,13 @@ class Profile < ActiveRecord::Base
         end
         # save profile
         myprofile.save
-        return myprofile			
+        return myprofile      
       end
     else
      # authentication failed
      return false
     end
    end
-		 	 
+       
   end
 end
