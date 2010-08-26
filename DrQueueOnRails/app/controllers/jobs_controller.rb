@@ -144,7 +144,11 @@ ENV['WEB_PROTO']+"://")
 
     # check disk usage of user
     profile = Profile.find(session[:profile].id)  
-    userdir = ENV["DRQUEUE_TMP"]+"/"+profile.id.to_s
+    if (ENV['USER_TMP_DIR'] != "ldap_account")
+      userdir = ENV["DRQUEUE_TMP"]+"/"+profile.id.to_s
+    else
+      userdir = ENV["DRQUEUE_TMP"]+"/"+profile.ldap_account.to_s
+    end
     
     if File.directory?(userdir) 
       # calculate quota usage (in GB)
@@ -173,7 +177,7 @@ ENV['WEB_PROTO']+"://")
       used = du / 1048576.0
       
       if used > quota
-        flash[:notice] = 'You disk quota is reached. No new jobs at this time. Please delete some old jobs or contact the system administrator.'
+        flash[:notice] = 'Your disk quota is reached. No new jobs at this time. Please delete some old jobs or contact the system administrator.'
         redirect_to :action => 'list' and return
       end
   end
@@ -268,13 +272,17 @@ ENV['WEB_PROTO']+"://")
     
     # email notification
     if session[:profile].ldap_account != "demo"
-      @jobm.email = session[:profile].email
+      @jobm.email = session[:profile].email.to_s
       @jobm.flags = @jobm.flags | 1
       @jobm.flags = @jobm.flags | 2
     end
     
     # create user directory
-    userdir = ENV["DRQUEUE_TMP"]+"/"+session[:profile].id.to_s
+    if (ENV['USER_TMP_DIR'] != "ldap_account")
+      userdir = ENV["DRQUEUE_TMP"]+"/"+profile.id.to_s
+    else
+      userdir = ENV["DRQUEUE_TMP"]+"/"+profile.ldap_account.to_s
+    end
     if File.directory?(userdir)
       File.makedirs(userdir)
     end
@@ -1077,7 +1085,11 @@ ENV['WEB_PROTO']+"://")
       if File.exist? renderpath
         #exit_status = system("/bin/rm -rf "+renderpath)
         #puts `rm -rf #{renderpath}`
-        userdir = ENV["DRQUEUE_TMP"]+"/"+session[:profile].id.to_s
+        if (ENV['USER_TMP_DIR'] != "ldap_account")
+          userdir = ENV["DRQUEUE_TMP"]+"/"+profile.id.to_s
+        else
+          userdir = ENV["DRQUEUE_TMP"]+"/"+profile.ldap_account.to_s
+        end
         FileUtils.cd(userdir)
         FileUtils.remove_dir(renderpath, true) 
       end

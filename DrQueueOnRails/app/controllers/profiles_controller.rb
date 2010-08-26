@@ -37,8 +37,12 @@ class ProfilesController < ApplicationController
     else
       @profile = Profile.find(params[:id])
       
-      userdir = ENV["DRQUEUE_TMP"]+"/"+@profile.id.to_s
-      
+      if (ENV['USER_TMP_DIR'] != "ldap_account")
+        userdir = ENV["DRQUEUE_TMP"]+"/"+profile.id.to_s
+      else
+        userdir = ENV["DRQUEUE_TMP"]+"/"+profile.ldap_account.to_s
+      end
+
       # calculate quota usage (in GB)
       
       # use user and quota settings from environment.rb
@@ -143,7 +147,11 @@ class ProfilesController < ApplicationController
       end
       
       # delete userdir
-      userdir = ENV['DRQUEUE_TMP']+'/'+params[:id]
+      if (ENV['USER_TMP_DIR'] != "ldap_account")
+        userdir = ENV["DRQUEUE_TMP"]+"/"+profile.id.to_s
+      else
+        userdir = ENV["DRQUEUE_TMP"]+"/"+profile.ldap_account.to_s
+      end
       
       if File.exist? userdir
         puts `rm -rf #{userdir}`

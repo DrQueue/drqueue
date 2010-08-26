@@ -31,6 +31,9 @@ ENV['USER_QUOTA'] ||= "0.5,5,15,35"
 ENV['USER_PRIO'] ||= "100,500,750,1000"
 ENV['USER_ADMIN_PW'] ||= "changeme"
 
+# suffix for user's temp dir (use "id" for number, "ldap_account" for user's account name)
+ENV['USER_TMP_DIR'] ||= "id"
+
 # text for login dialog
 ENV['LOG_SHOW_USER'] ||= "account name"
 ENV['LOG_SHOW_PW'] ||= "password"
