@@ -5,14 +5,18 @@ import platform,re
 import subprocess
 
 Import('env_lib')
+Import('main_list')
 
 
 drqman_c = glob.glob (os.path.join('.','*.c'))
 
 if sys.platform == 'cygwin' or sys.platform == 'win32':
-    drqman_bin_name = 'drqman.exe'
+  drqman_bin_name = 'drqman.exe'
+  main_list.append('drqman/drqman.exe')
 else:
-    drqman_bin_name = 'drqman'
+  drqman_bin_name = 'drqman'
+  main_list.append('drqman/drqman')
+
 
 env_gtkstuff = env_lib.Clone ()
 env_gtkstuff.Append (CPPPATH=['../libdrqueue'])

@@ -221,18 +221,6 @@ conscripts = []
 conscripts.append('libdrqueue/SConscript')
 
 #
-# drqman
-#
-if env_lib['build_drqman']:
-	print "Building drqman"
-	conscripts.append('drqman/SConscript')
-else:
-	print "Not building drqman"
-
-# Build all the files.
-SConscript(conscripts, exports='env_lib')
-
-#
 # Main
 #
 master = env.Program ('master.c')
@@ -243,6 +231,18 @@ else:
 	main_list = [ 'master', 'slave' ]
 Default (master)
 Default (slave)
+
+#
+# drqman
+#
+if env_lib['build_drqman']:
+	print "Building drqman"
+	conscripts.append('drqman/SConscript')
+else:
+	print "Not building drqman"
+
+# Build all the files.
+SConscript(conscripts, exports=['env_lib','main_list'])
 
 ## Build python modules
 #Export ('env','env_lib','libdrqueue','libdrqueue_src')
