@@ -362,12 +362,13 @@ handle_r_r_register (int sfd, struct database *wdb, int icomp, struct sockaddr_i
   }
 
   memcpy (&wdb->computer[index].hwinfo, &hwinfo, sizeof(hwinfo));
-  strncpy(wdb->computer[index].hwinfo.name,name,MAXNAMELEN); /* We substitute the name that the computer sent */
+  strncpy(wdb->computer[index].hwinfo.address, inet_ntoa(addr->sin_addr), MAXNAMELEN);
+  strncpy(wdb->computer[index].hwinfo.name, name, MAXNAMELEN); /* We substitute the name that the computer sent */
   /* with the name that we obtained resolving it's ip */
 
   semaphore_release(wdb->semid);
 
-  log_auto (L_INFO,"handle_r_r_register(): Computer %s registered with id %i.",wdb->computer[index].hwinfo.name,index);
+  log_auto (L_INFO, "handle_r_r_register(): Computer %s (%s) registered with id %i.", wdb->computer[index].hwinfo.name, wdb->computer[index].hwinfo.address, index);
   log_auto (L_DEBUG3,"handle_r_r_register(): <Exiting...");
 
   return index;
@@ -1349,7 +1350,7 @@ handle_r_r_deletjob (int sfd, struct database *wdb, int icomp, struct request *r
     for (i=0;i<nframes;i++) {
       if (fi[i].status == FS_ASSIGNED) {
         /* FIXME: We use fi[i].icomp without checking it's value */
-        request_slave_killtask (wdb->computer[fi[i].icomp].hwinfo.name,fi[i].itask,MASTER);
+        request_slave_killtask (wdb->computer[fi[i].icomp].hwinfo.address,fi[i].itask,MASTER);
       }
     }
     detach_frame_shared_memory (fi);
@@ -1613,7 +1614,7 @@ handle_r_r_hstopjob (int sfd, struct database *wdb, int icomp, struct request *r
     nframes = job_nframes (&wdb->job[ijob]);
     for (i=0;i<nframes;i++) {
       if (fi[i].status == FS_ASSIGNED) {
-        request_slave_killtask (wdb->computer[fi[i].icomp].hwinfo.name,fi[i].itask,MASTER);
+        request_slave_killtask (wdb->computer[fi[i].icomp].hwinfo.address,fi[i].itask,MASTER);
       }
     }
     detach_frame_shared_memory (fi);
@@ -1710,7 +1711,7 @@ handle_r_r_rerunjob (int sfd, struct database *wdb, int icomp, struct request *r
     nframes = job_nframes (&wdb->job[ijob]);
     for (i=0;i<nframes;i++) {
       if (fi[i].status == FS_ASSIGNED) {
-        request_slave_killtask (wdb->computer[fi[i].icomp].hwinfo.name,fi[i].itask,MASTER);
+        request_slave_killtask (wdb->computer[fi[i].icomp].hwinfo.address,fi[i].itask,MASTER);
       } else {
         fi[i].status = FS_WAITING;
         fi[i].start_time = 0;
@@ -2492,7 +2493,7 @@ handle_r_r_jobfkill (int sfd, struct database *wdb, int icomp, struct request *r
   case FS_WAITING:
     break;
   case FS_ASSIGNED:
-    request_slave_killtask (wdb->computer[fi[iframe].icomp].hwinfo.name,fi[iframe].itask,MASTER);
+    request_slave_killtask (wdb->computer[fi[iframe].icomp].hwinfo.address,fi[iframe].itask,MASTER);
     break;
   case FS_ERROR:
   case FS_FINISHED:
@@ -3051,7 +3052,7 @@ handle_r_r_jobfkfin (int sfd, struct database *wdb, int icomp, struct request *r
     break;
   case FS_ASSIGNED:
     fi[iframe].status = FS_FINISHED;
-    request_slave_killtask (wdb->computer[fi[iframe].icomp].hwinfo.name,fi[iframe].itask,MASTER);
+    request_slave_killtask (wdb->computer[fi[iframe].icomp].hwinfo.address,fi[iframe].itask,MASTER);
     break;
   case FS_ERROR:
   case FS_FINISHED:
@@ -3532,7 +3533,7 @@ handle_r_r_jobsesup (int sfd, struct database *wdb, int icomp, struct request *r
   uint32_t i;
   int64_t nfishmid;   /* New identifier for new shared frame info struct */
   int64_t ofishmid;   /* Old identifier */
-  char cname[MAXNAMELEN]; /* Computer name */
+  char *caddress; /* Computer address */
 
   // fix compiler warning
   (void)icomp;
@@ -3638,10 +3639,10 @@ handle_r_r_jobsesup (int sfd, struct database *wdb, int icomp, struct request *r
       case FS_ASSIGNED:
         semaphore_lock (wdb->semid);
         if (computer_index_correct_master(wdb,ofi[i].icomp)) {
-          strncpy(cname,wdb->computer[ofi[i].icomp].hwinfo.name,MAXNAMELEN-1);
+          strncpy(caddress,wdb->computer[ofi[i].icomp].hwinfo.address,MAXNAMELEN-1);
         }
         semaphore_release (wdb->semid);
-        request_slave_killtask (cname,ofi[i].itask,MASTER);
+        request_slave_killtask (caddress,ofi[i].itask,MASTER);
         break;
       case FS_ERROR:
       case FS_FINISHED:
@@ -4051,7 +4052,7 @@ request_all_slaves_job_available (struct database *wdb) {
     if (wdb->computer[i].used) {
       //  if (computer_available(&wdb->computer[i])) {
       log_auto (L_DEBUG,"Notifying slave (%s)",wdb->computer[i].hwinfo.name);
-      request_slave_job_available (wdb->computer[i].hwinfo.name,MASTER);
+      request_slave_job_available (wdb->computer[i].hwinfo.address,MASTER);
     }
   }
 

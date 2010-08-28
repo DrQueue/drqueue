@@ -768,11 +768,11 @@ cdd_limits_enabled_bcp (GtkWidget *button, struct drqm_computers_info *info) {
   
   /* Computer Details Dialog Limits enabled Button Change Pressed */
   if (info->computers[info->row].limits.enabled) {
-    drqm_request_slave_limits_enabled_set(info->computers[info->row].hwinfo.name,0);
+    drqm_request_slave_limits_enabled_set(info->computers[info->row].hwinfo.address,0);
     info->computers[info->row].limits.enabled = 0;
     gtk_label_set_text (GTK_LABEL(info->cdd.limits.lenabled),"No");
   } else {
-    drqm_request_slave_limits_enabled_set(info->computers[info->row].hwinfo.name,1);
+    drqm_request_slave_limits_enabled_set(info->computers[info->row].hwinfo.address,1);
     info->computers[info->row].limits.enabled = 1;
     gtk_label_set_text (GTK_LABEL(info->cdd.limits.lenabled),"Yes");
   }
@@ -854,7 +854,7 @@ nmcd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info) {
   if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->cdd.limits.enmaxcpus)),"%u",&nmaxcpus) != 1)
     return;   /* Error in the entry */
 
-  drqm_request_slave_limits_nmaxcpus_set(info->computers[info->row].hwinfo.name,nmaxcpus);
+  drqm_request_slave_limits_nmaxcpus_set(info->computers[info->row].hwinfo.address,nmaxcpus);
 
   info->computers[info->row].limits.nmaxcpus = nmaxcpus;
 
@@ -938,7 +938,7 @@ mflcd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info) {
   if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->cdd.limits.emaxfreeloadcpu)),"%u",&maxfreeloadcpu) != 1)
     return;   /* Error in the entry */
 
-  drqm_request_slave_limits_maxfreeloadcpu_set(info->computers[info->row].hwinfo.name,maxfreeloadcpu);
+  drqm_request_slave_limits_maxfreeloadcpu_set(info->computers[info->row].hwinfo.address,maxfreeloadcpu);
 
   info->computers[info->row].limits.maxfreeloadcpu = maxfreeloadcpu;
 
@@ -988,7 +988,7 @@ dtk_bok_pressed (GtkWidget *button,struct drqm_computers_info *info) {
   for (;sel;sel = sel->next) {
     itaskp = (uint16_t*)gtk_clist_get_row_data(GTK_CLIST(info->cdd.clist),GPOINTER_TO_INT(sel->data));
     if (itaskp != NULL) {
-      drqm_request_slave_task_kill (info->computers[info->row].hwinfo.name,*itaskp);
+      drqm_request_slave_task_kill (info->computers[info->row].hwinfo.address,*itaskp);
       /*   printf ("Killing task: %i on computer: %s\n",itask,info->computers[info->row].hwinfo.name); */
     } else {
       log_auto (L_ERROR,"dtk_bok_pressed() : itaskp stored on clist data == NULL");
@@ -1120,7 +1120,7 @@ cdd_limits_pool_add_clicked (GtkWidget *bclicked, struct drqm_computers_info *in
   // fix compiler warning
   (void)bclicked;
   
-  drqm_request_slave_limits_pool_add (info->computers[info->row].hwinfo.name,
+  drqm_request_slave_limits_pool_add (info->computers[info->row].hwinfo.address,
                                       (char *)gtk_entry_get_text(GTK_ENTRY(info->cdd.limits.epool)));
   cdd_limits_pool_refresh_pool_list (bclicked,info);
 }
@@ -1137,7 +1137,7 @@ cdd_limits_pool_remove_clicked (GtkWidget *bclicked, struct drqm_computers_info 
     char *buf;
 
     gtk_tree_model_get (GTK_TREE_MODEL(model),&iter,CDD_POOL_COL_NAME,&buf,-1);
-    drqm_request_slave_limits_pool_remove(info->computers[info->row].hwinfo.name,buf);
+    drqm_request_slave_limits_pool_remove(info->computers[info->row].hwinfo.address,buf);
     cdd_limits_pool_refresh_pool_list (bclicked,info);
   }
 }
@@ -1294,7 +1294,7 @@ aecd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info) {
   h = h % 24;
   m = m % 60;
 
-  drqm_request_slave_limits_autoenable_set(info->computers[info->row].hwinfo.name,h,m,flags);
+  drqm_request_slave_limits_autoenable_set(info->computers[info->row].hwinfo.address,h,m,flags);
 
   info->computers[info->row].limits.autoenable.h = h;
   info->computers[info->row].limits.autoenable.m = m;
@@ -1308,7 +1308,7 @@ aecd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info) {
 static void
 EnableComputers (GtkWidget *button,struct drqm_computers_info *info) {
   GList *sel;
-  char *name;
+  char *address;
   
   // fix compiler warning
   (void)button;
@@ -1318,8 +1318,8 @@ EnableComputers (GtkWidget *button,struct drqm_computers_info *info) {
   }
 
   for (;sel;sel = sel->next) {
-    name = (char*) gtk_clist_get_row_data(GTK_CLIST(info->clist),GPOINTER_TO_INT(sel->data));
-    drqm_request_slave_limits_enabled_set(name,1);
+    address = (char*) info->computers[GPOINTER_TO_INT(sel->data)].hwinfo.address;
+    drqm_request_slave_limits_enabled_set(address, 1);
   }
 
   AutoRefreshUpdate(info);
@@ -1328,7 +1328,7 @@ EnableComputers (GtkWidget *button,struct drqm_computers_info *info) {
 static void
 DisableComputers (GtkWidget *button,struct drqm_computers_info *info) {
   GList *sel;
-  char *name;
+  char *address;
   
   // fix compiler warning
   (void)button;
@@ -1338,8 +1338,8 @@ DisableComputers (GtkWidget *button,struct drqm_computers_info *info) {
   }
 
   for (;sel;sel = sel->next) {
-    name = (char*) gtk_clist_get_row_data(GTK_CLIST(info->clist),GPOINTER_TO_INT(sel->data));
-    drqm_request_slave_limits_enabled_set(name,0);
+    address = (char*) info->computers[GPOINTER_TO_INT(sel->data)].hwinfo.address;
+    drqm_request_slave_limits_enabled_set(address, 0);
   }
 
   AutoRefreshUpdate(info);

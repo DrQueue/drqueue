@@ -75,6 +75,7 @@ typedef enum {
 
 struct computer_hwinfo {
   char     name[MAXNAMELEN];   /* Name of the computer */
+  char     address[MAXNAMELEN]; /* cached IP address */ 
   uint32_t id;                 /* Identification number */
   uint8_t  arch;               /* type of architecture */
   uint8_t  os;                 /* type of operating system */

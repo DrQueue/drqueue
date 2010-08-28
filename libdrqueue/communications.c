@@ -224,17 +224,18 @@ connect_to_slave (char *slave) {
   /* Connects to the slave and returns the socket fd */
   int sfd;
   struct sockaddr_in addr;
-  struct hostent *hostinfo;
+
+  /* check IP address */
+  // FIXME: handle IPv4 and IPv6 with a regex */
+  if ( (strchr(slave, '.') == NULL) && (strchr(slave, ':') == NULL) ) {
+    drerrno_system = errno;
+    drerrno = DRE_NOTCOMPLETE;
+    return -1;
+    }
 
   addr.sin_family = AF_INET;
   addr.sin_port = htons(SLAVEPORT); /* Whatever */
-  hostinfo = gethostbyname (slave);
-  if (hostinfo == NULL) {
-    drerrno_system = errno;
-    drerrno = DRE_NOTRESOLVE;
-    return -1;
-  }
-  addr.sin_addr = *(struct in_addr *) hostinfo->h_addr;
+  addr.sin_addr = *(struct in_addr *) slave;
 
   sfd = socket (PF_INET,SOCK_STREAM,0);
   if (sfd == -1) {
@@ -317,6 +318,7 @@ recv_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo) {
   datasize = sizeof(struct computer_hwinfo);
   if (!check_recv_datasize(sfd, datasize)) {
     log_auto (L_ERROR,"recv_computer_hwinfo(): different data sizes for 'struct computer_hwinfo'.");
+    log_auto (L_ERROR,"datasize is %i",datasize);
     return 0;
   }
 
@@ -347,6 +349,7 @@ send_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo) {
   datasize = sizeof(bswapped);
   if (!check_send_datasize(sfd,datasize)) {
     log_auto (L_ERROR,"send_computer_hwinfo(): different data sizes for struct computer_hwinfo.");
+    log_auto (L_ERROR,"datasize is %i",datasize);
     return 0;
   }
 

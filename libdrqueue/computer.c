@@ -41,34 +41,23 @@
 int
 computer_index_addr (void *pwdb, struct in_addr addr) {
   /* This function is called by the master */
-  /* This functions resolves the name associated with the ip of the socket and */
-  /* and finds that name in the computer list and returns it's index position */
-  int index;
-  struct hostent *host;
-  char *dot;
-  char *name;
+  /* This function uses the ip of the socket, */
+  /* searches it in the computer list and returns it's index position */
+  struct database *wdb = (struct database *)pwdb;
+  int index = -1;
+  int i;
 
   log_auto (L_DEBUG,"Entering computer_index_addr");
 
-  if ((host = gethostbyaddr ((const void *)&addr.s_addr,sizeof (struct in_addr),AF_INET)) == NULL) {
-    log_auto (L_INFO,"computer_index_addr(). Using IP address as host name because '%s' could not be resolved",inet_ntoa(addr));
-    name=inet_ntoa(addr);
-  } else {
-    //int i=0;
-    if (((dot = strchr (host->h_name,'.')) != NULL) && (dot != host->h_name)) {
-      // take out whatever comes after the first '.', if it's not the
-      // whole name.
-      *dot = '\0';
-    }
-    name = (char*) host->h_name;
-  }
-
-
   semaphore_lock(((struct database *)pwdb)->semid);
-  index = computer_index_name (pwdb,name);
+  /* search for address */
+  for (i=0;((i<MAXCOMPUTERS)&&(index==-1)); i++) {
+    if ((strcmp(inet_ntoa(addr),wdb->computer[i].hwinfo.address) == 0) && (wdb->computer[i].used))
+      index = i;
+  }
   semaphore_release(((struct database *)pwdb)->semid);
 
-  log_auto (L_DEBUG,"Exiting computer_index_addr. Index of computer %s is %i.",name,index);
+  log_auto (L_DEBUG, "Exiting computer_index_addr. Index of computer %s is %i.", inet_ntoa(addr), index);
 
   return index;
 }
