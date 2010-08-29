@@ -1320,6 +1320,7 @@ EnableComputers (GtkWidget *button,struct drqm_computers_info *info) {
   for (;sel;sel = sel->next) {
     address = (char*) info->computers[GPOINTER_TO_INT(sel->data)].hwinfo.address;
     drqm_request_slave_limits_enabled_set(address, 1);
+    log_auto (L_DEBUG, "enabling computer %s", address);
   }
 
   AutoRefreshUpdate(info);
@@ -1340,6 +1341,7 @@ DisableComputers (GtkWidget *button,struct drqm_computers_info *info) {
   for (;sel;sel = sel->next) {
     address = (char*) info->computers[GPOINTER_TO_INT(sel->data)].hwinfo.address;
     drqm_request_slave_limits_enabled_set(address, 0);
+    log_auto (L_DEBUG, "disabling computer %s", address);
   }
 
   AutoRefreshUpdate(info);
