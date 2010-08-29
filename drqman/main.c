@@ -75,7 +75,7 @@ int main (int argc, char *argv[]) {
 
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(window),DRQ_TITLE);
-  gtk_window_set_default_size(GTK_WINDOW(window),700,400);
+  gtk_window_set_default_size(GTK_WINDOW(window),700,450);
   gtk_container_border_width(GTK_CONTAINER(window), 0);
   g_signal_connect(GTK_OBJECT(window),"delete_event",
                    G_CALLBACK(gtk_main_quit), NULL);
