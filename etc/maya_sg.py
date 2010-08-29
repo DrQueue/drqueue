@@ -46,60 +46,64 @@ DRQUEUE_STEPFRAME = int(os.getenv("DRQUEUE_STEPFRAME"))
 
 
 if DRQUEUE_OS == "WINDOWS":
-	# convert to windows path with drive letter
-	SCENE = subprocess.Popen(["cygpath.exe", "-w "+SCENE], stdout=subprocess.PIPE).communicate()[0]
-	RENDERDIR = subprocess.Popen(["cygpath.exe", "-w "+RENDERDIR], stdout=subprocess.PIPE).communicate()[0]
-	PROJECTDIR = subprocess.Popen(["cygpath.exe", "-w "+PROJECTDIR], stdout=subprocess.PIPE).communicate()[0]
+  # convert to windows path with drive letter
+  SCENE = subprocess.Popen(["cygpath.exe", "-w "+SCENE], stdout=subprocess.PIPE).communicate()[0]
+  RENDERDIR = subprocess.Popen(["cygpath.exe", "-w "+RENDERDIR], stdout=subprocess.PIPE).communicate()[0]
+  PROJECTDIR = subprocess.Popen(["cygpath.exe", "-w "+PROJECTDIR], stdout=subprocess.PIPE).communicate()[0]
 	
 
 BLOCK = DRQUEUE_FRAME + DRQUEUE_BLOCKSIZE - 1
 
 if BLOCK > DRQUEUE_ENDFRAME:
-	BLOCK = DRQUEUE_ENDFRAME
+  BLOCK = DRQUEUE_ENDFRAME
 
 
 if ("DRQUEUE_IMAGE" in locals()) and (DRQUEUE_IMAGE != ""):
-	image_args="-im "+DRQUEUE_IMAGE
+  image_args="-im "+DRQUEUE_IMAGE
 else:
-	image_args=""
+  image_args=""
 
 if ("CAMERA" in locals()) and (CAMERA != ""):
-	camera_args="-cam "+CAMERA
+  camera_args="-cam "+CAMERA
 else:
-	camera_args=""
+  camera_args=""
 
 if ("RESX" in locals()) and ("RESX" in locals()) and (int(RESX) > 0) and (int(RESY) > 0):
-	res_args="-x "+RESX+" -y "+RESY
+  res_args="-x "+RESX+" -y "+RESY
 else:
-	res_args=""
+  res_args=""
 
 if ("FFORMAT" in locals()) and (FFORMAT != ""):
-	format_args="-of "+FFORMAT
+  format_args="-of "+FFORMAT
 else:
-	format_args=""
+  format_args=""
 
 if ("RENDERER" in locals()) and (RENDERER == "mr"):
-	## number of processors/cores to use
-	#proc_args="-rt 2"
+  ## number of processors/cores to use
+  #proc_args="-rt 2"
 
-	## use Maya's automatic detection
-	proc_args="-art"
+  ## use Maya's automatic detection
+  proc_args="-art"
+elif ("RENDERER" in locals()) and (RENDERER == "sw"):
+  ## number of processors/cores to use
+  #proc_args="-n 2"
+
+  ## use Maya's automatic detection
+  proc_args="-n 0"
 else:
-	## number of processors/cores to use
-	#proc_args="-n 2"
+  ## don't add something
+  proc_args=""
 
-	## use Maya's automatic detection
-	proc_args="-n 0"
 
 if ("DRQUEUE_PRE" in locals()) and (DRQUEUE_PRE != ""):
-	pre_args="-preRender \""+DRQUEUE_PRE+"\""
+  pre_args="-preRender \""+DRQUEUE_PRE+"\""
 else:
-	pre_args=""
+  pre_args=""
 	
 if ("DRQUEUE_POST" in locals()) and (DRQUEUE_POST != ""):
-	post_args="-postRender \""+DRQUEUE_POST+"\""
+  post_args="-postRender \""+DRQUEUE_POST+"\""
 else:
-	post_args=""
+  post_args=""
 
 
 ENGINE_PATH="Render"
@@ -115,18 +119,18 @@ sts = os.waitpid(p.pid, 0)
 
 # This should requeue the frame if failed
 if sts[1] != 0:
-	print("Requeueing frame...")
-	os.kill(os.getppid(), signal.SIGINT)
-	exit(1)
+  print("Requeueing frame...")
+  os.kill(os.getppid(), signal.SIGINT)
+  exit(1)
 else:
-	#if DRQUEUE_OS != "WINDOWS" then:
-	# The frame was rendered properly
-	# We don't know the output image name. If we knew we could set this correctly
-	# chown_block RF_OWNER RD/IMAGE DRQUEUE_FRAME BLOCK 
+  #if DRQUEUE_OS != "WINDOWS" then:
+  # The frame was rendered properly
+  # We don't know the output image name. If we knew we could set this correctly
+  # chown_block RF_OWNER RD/IMAGE DRQUEUE_FRAME BLOCK 
 
-	# change userid and groupid
-	#chown 1002:1004 $SCENE:h/*
-	print("Finished.")
+  # change userid and groupid
+  #chown 1002:1004 $SCENE:h/*
+  print("Finished.")
 #
 # Notice that the exit code of the last command is received by DrQueue
 #
