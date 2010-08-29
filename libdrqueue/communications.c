@@ -26,6 +26,7 @@
 
 #ifndef _WIN32
   #include <netdb.h>
+  #include <arpa/inet.h>
 #else
   #include <winsock2.h>
   #define socklen_t int
@@ -224,6 +225,7 @@ connect_to_slave (char *slave) {
   /* Connects to the slave and returns the socket fd */
   int sfd;
   struct sockaddr_in addr;
+  struct in_addr slave_addr;
 
   /* check IP address */
   // FIXME: handle IPv4 and IPv6 with a regex */
@@ -233,9 +235,16 @@ connect_to_slave (char *slave) {
     return -1;
     }
 
+  /* convert address to usabel type */
+  if (inet_aton(slave, &slave_addr) == 0) {
+    drerrno_system = errno;
+    drerrno = DRE_NOTCOMPLETE;
+    return -1;
+    }
+
   addr.sin_family = AF_INET;
   addr.sin_port = htons(SLAVEPORT); /* Whatever */
-  addr.sin_addr = *(struct in_addr *) slave;
+  addr.sin_addr = slave_addr;
 
   sfd = socket (PF_INET,SOCK_STREAM,0);
   if (sfd == -1) {
