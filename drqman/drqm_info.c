@@ -51,10 +51,13 @@ void CreateInfoPage (GtkWidget *notebook, struct info_drqm *info) {
   logo = gtk_image_new_from_pixbuf (drqman_icon);
   gtk_box_pack_start (GTK_BOX(vbox),logo,FALSE,FALSE,2);
 
-  snprintf (msg,BUFFERLEN-1,"DrQueue Version %s\nby Jorge Daza\n"
-            "jorge@drqueue.org\n"
+  snprintf (msg, BUFFERLEN-1, "DrQueue version %s\nby Jorge Daza and the DrQueue development team\n"
             DRQ_COMPILED_FOR
-            "For bug reports use the bugtracker at http://www.drqueue.org/",get_version_complete());
+            "\nCommunity support: <a href=\"https://ssl.drqueue.org/cwebsite/drqueue_community/\">DrQueue community forums</a>\n"
+            "Commercial support: <a href=\"mailto:support@drqueue.org\">support@drqueue.org</a>\n"
+            "Documentation: <a href=\"https://ssl.drqueue.org/redmine/projects/drqueue/wiki/Documentation/\">Redmine wiki</a>\n"
+            "Bug reports: <a href=\"https://ssl.drqueue.org/redmine/projects/drqueue/issues/\">Redmine bugtracker</a>"
+            , get_version_complete());
   text = gtk_label_new (NULL);
   gtk_label_set_markup (GTK_LABEL(text), msg);
   gtk_box_pack_start (GTK_BOX(vbox),text,FALSE,FALSE,2);
