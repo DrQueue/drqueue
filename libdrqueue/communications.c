@@ -235,7 +235,7 @@ connect_to_slave (char *slave) {
     return -1;
     }
 
-  /* convert address to usabel type */
+  /* convert address to usable type */
   if (inet_aton(slave, &slave_addr) == 0) {
     drerrno_system = errno;
     drerrno = DRE_NOTCOMPLETE;
@@ -243,7 +243,7 @@ connect_to_slave (char *slave) {
     }
 
   addr.sin_family = AF_INET;
-  addr.sin_port = htons(SLAVEPORT); /* Whatever */
+  addr.sin_port = htons(SLAVEPORT);
   addr.sin_addr = slave_addr;
 
   sfd = socket (PF_INET,SOCK_STREAM,0);
