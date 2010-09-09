@@ -54,7 +54,6 @@ def wrapper_complete_command (env,cmdlist):
     return rlist
 
 def get_abspath_glob(path):
-    """Receives a path string to glob, and returns the list of absolute paths to every globbed file"""
     pathlist=glob.glob(path)
     rlist=[]
     for file in pathlist:
@@ -62,8 +61,6 @@ def get_abspath_glob(path):
     return rlist
 
 def copy_with_clean(src_files,dest_files,dest_path,env):
-    """Installs the list of src_files as dest_files on path dest_path.
-    Receives the build environment 'env' to add the installed files to the list of files to clean when uninstalling"""
     rlist = []
     for s,d in zip(src_files,dest_files):
         t = env.InstallAs(os.path.join(dest_path,d),s)
@@ -281,8 +278,7 @@ if sys.platform == 'cygwin' or sys.platform == 'win32':
 
 bin_list = main_list + cmdline_tools
 wrapped_bin_list = wrapper_complete_command (env,bin_list)
-bin_list = add_suffix_to_list(bin_list,get_bin_extension())
-wrapped_bin_list = add_suffix_to_list(wrapped_bin_list,get_bin_extension())
+#wrapped_bin_copies = copy_with_clean(bin_list,wrapped_bin_list,'bin',env)
 wrapped_bin_copies = copy_with_clean(bin_list,wrapped_bin_list,idir_bin,env)
 
 # install etc files
