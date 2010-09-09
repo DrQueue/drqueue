@@ -18,12 +18,14 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
 
 #include <stdio.h>
 #include <sys/types.h>
+
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/sem.h>
@@ -126,7 +128,7 @@ int main (int argc, char *argv[]) {
     if (n_children < MASTERNCHILDREN) {
       if ((child = fork()) == 0) {
         set_signal_handlers_child_conn_handler ();
-        if ((csfd = accept_socket (sfd,wdb,&addr)) != -1) {
+        if ((csfd = accept_socket_master (sfd,wdb,&addr)) != -1) {
 #ifdef COMM_REPORT
           long int bsentb = bsent; /* Bytes sent before */
           long int brecvb = brecv; /* Bytes received before */
@@ -406,6 +408,11 @@ void clean_out (int signal) {
   printf ("Kbytes recv:\t\t%ji\tBytes:\t%ji\n",wdb->brecv/1024,wdb->brecv);
   printf ("Kbytes sent/second:\t%f\n",(float)(wdb->bsent/1024)/ttotal);
   printf ("Kbytes recv/second:\t%f\n",(float)(wdb->brecv/1024)/ttotal);
+#else
+  // fix compiler warning
+  (void)tstop;
+  (void)ttotal;
+  // FIXME: use tstop and ttotal / work on COMM_REPORT and COMM_REPORT_ILL
 #endif
 
   kill(0,SIGINT);  /* Kill all the children (Wow, I don't really want to do that...) */
@@ -428,7 +435,7 @@ void clean_out (int signal) {
     perror ("wdb->shmid");
   }
 
-  fprintf (stderr,"PID,Signal that caused death: %i,%i\n",(int)getpid(),signal);
+  fprintf (stderr,"PID, Signal that caused death: %i, %ji (%s)\n", (int)getpid(), (ssize_t)signal, strsignal(signal));
 
   exit (1);
 }
@@ -438,20 +445,26 @@ void set_alarm (void) {
 }
 
 void sigalarm_handler (int signal) {
-  char *msg = "Connection time exceeded";
-  log_auto (L_WARNING,msg);
+  // fix compiler warning
+  (void)signal;
+  char *msg = "Connection time exceeded.";
+  log_auto (L_WARNING, msg);
   exit (1);
 }
 
 void sigpipe_handler (int signal) {
-  char *msg = "Broken connection while reading or writing (SIGPIPE)";
-  log_auto (L_WARNING,msg);
+  // fix compiler warning
+  (void)signal;
+  char *msg = "Broken connection while reading or writing (SIGPIPE).";
+  log_auto (L_WARNING, msg);
   exit (1);
 }
 
 void sigsegv_handler (int signal) {
-  char *msg = "Segmentation fault... too bad";
-  log_auto (L_ERROR,msg);
+  // fix compiler warning
+  (void)signal;
+  char *msg = "Segmentation fault... too bad.";
+  log_auto (L_ERROR, msg);
   exit (1);
 }
 

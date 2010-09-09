@@ -1,6 +1,8 @@
 #!/usr/bin/perl
 #
-# $Id$
+# Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
+#
+# This file is part of DrQueue
 #
 # This script changes the owner and group of a list of files
 # as stated in the command line.

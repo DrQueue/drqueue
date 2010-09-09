@@ -3,12 +3,12 @@
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -18,20 +18,17 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
 
 #ifndef _DATABASE_H_
 #define _DATABASE_H_
 
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
+
 #include "constants.h"
 #include "job.h"
 #include "computer.h"
-
-#include <stdint.h>
-#include <sys/types.h>
-#include <stdlib.h>
-#include <stdio.h>
 
 #pragma pack(push,1)
 
@@ -74,8 +71,8 @@ int database_load (struct database *wdb);
 int database_backup (struct database *wdb);
 uint32_t database_version_id (void);
 
-int database_job_load_frames (int sfd,struct job *job);
-int database_job_save_frames (int sfd,struct job *job);
+int database_job_load_frames (int sfd, struct job *job);
+int database_job_save_frames (int sfd, struct job *job);
 int database_job_load_blocked_hosts (int sfd, struct job *job);
 int database_job_save_blocked_hosts (int sfd, struct job *job);
 int database_job_load_envvars (int sfd, struct job *job);

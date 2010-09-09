@@ -1,0 +1,22 @@
+# /etc/conf.d/drqsd config file for /etc/init.d/drqsd
+
+# enter your master hostname here
+DRQUEUE_MASTER=""
+
+# this is the drqueue root dir, do not change below here unless you know what you're doing
+DRQUEUE_ROOT="/usr"
+DRQUEUE_DB="/usr/share/drqueue/db"
+DRQUEUE_LOGS="/usr/share/drqueue/logs"
+DRQUEUE_ETC="/etc/drqueue"
+
+# list of pools the slave is belonging to ("blender:mentalray:bla123") 
+DRQUEUE_POOL=""
+
+# set the environmental variables for drqueue
+ENV="env DRQUEUE_ROOT=${DRQUEUE_ROOT} DRQUEUE_MASTER=${DRQUEUE_MASTER} DRQUEUE_DB=${DRQUEUE_DB} DRQUEUE_LOGS=${DRQUEUE_LOGS} DRQUEUE_ETC=${DRQUEUE_ETC} DRQUEUE_POOL=${DRQUEUE_POOL}"
+
+# this is the drqueue slave executable
+DRQUEUESLAVE_EXEC="/usr/bin/slave"
+
+# this is where drqueue slave will store its pid file
+DRQUEUESLAVE_PIDFILE="/var/run/drqueue/drqsd.pid"

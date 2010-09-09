@@ -1,5 +1,8 @@
 //
 // Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
+// Copyright (C) 2010 Andreas Schroeder
+//
+// This file is part of DrQueue
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,22 +19,22 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <stdlib.h>
-#include <string.h>
 #include <stdio.h>
+
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+
+#include "drq_stat.h"
 #include "libdrqueue.h"
-#include "jobscript.h"
 
-struct jobscript_info *jobscript_new (jobscript_type type,char *filename) {
+/* create a new script file */
+struct jobscript_info *
+jobscript_new (jobscript_type type, char *filename) {
   FILE *f = NULL;
+  struct jobscript_info *jsi;
 
-  if ( type != JOBSCRIPT_TCSH ) {
+  if ( (type != JOBSCRIPT_TCSH) && (type != JOBSCRIPT_PYTHON) ) {
     fprintf (stderr,"ERROR: Job type requested unknown (%i)\n",type);
     fprintf (stderr,"ERROR: %s\n",drerrno_str());
     return NULL;
@@ -44,17 +47,22 @@ struct jobscript_info *jobscript_new (jobscript_type type,char *filename) {
     return NULL;
   }
 
+#ifndef _WIN32
   fchmod (fileno(f),0777);
-
-  struct jobscript_info *jsi = (struct jobscript_info*) malloc (sizeof (struct jobscript_info));
-  jsi->type = type;
-  jsi->file = f;
-  strncpy(jsi->filename,filename,PATH_MAX);
+#endif
+  jsi = (struct jobscript_info*) malloc (sizeof (struct jobscript_info));
+  if(jsi) {
+    jsi->type = type;
+    jsi->file = f;
+    strncpy(jsi->filename,filename,PATH_MAX);
+  }
 
   return jsi;
 }
 
-int jobscript_check_pointer (struct jobscript_info *ji) {
+/* check for null pointer */
+int
+jobscript_check_pointer (struct jobscript_info *ji) {
   if ( ji == NULL ) {
     fprintf (stderr,"ERROR: jobscript: invalid NULL pointer\n");
     return 0;
@@ -63,7 +71,9 @@ int jobscript_check_pointer (struct jobscript_info *ji) {
   return 1;
 }
 
-int jobscript_write_heading (struct jobscript_info *ji) {
+/* write shebang line into script file */
+int
+jobscript_write_heading (struct jobscript_info *ji) {
   int rv;
   if ( (rv = jobscript_check_pointer (ji)) == 0 ) {
     return rv;
@@ -73,19 +83,26 @@ int jobscript_write_heading (struct jobscript_info *ji) {
   case JOBSCRIPT_TCSH:
     return jobscript_tcsh_write_heading (ji);
     break;
+  case JOBSCRIPT_PYTHON:
+    return jobscript_python_write_heading (ji);
+    break;
   }
   
-  // TODO: ERROR bla bla
+  // FIXME: ERROR bla bla
   return 0;
 }
 
-int jobscript_set_variable_int (struct jobscript_info *ji,char *name,int64_t value) {
+/* set an integer variable */
+int
+jobscript_set_variable_int (struct jobscript_info *ji, char *name,int64_t value) {
   char str_value[JS_MAX_VAR_VALUE];
-  snprintf (str_value,JS_MAX_VAR_VALUE,"%ji",value);
+  snprintf (str_value,JS_MAX_VAR_VALUE,"%ji",(intmax_t)value);
   return jobscript_set_variable (ji,name,str_value);
 }
 
-int jobscript_set_variable (struct jobscript_info *ji,char *name,char *value) {
+/* set a general variable */
+int
+jobscript_set_variable (struct jobscript_info *ji, char *name, char *value) {
   int rv;
   if ((rv = jobscript_check_pointer (ji)) == 0 ) {
     return rv;
@@ -95,25 +112,46 @@ int jobscript_set_variable (struct jobscript_info *ji,char *name,char *value) {
   case JOBSCRIPT_TCSH:
     return jobscript_tcsh_set_variable (ji,name,value);
     break;
+  case JOBSCRIPT_PYTHON:
+    return jobscript_python_set_variable (ji,name,value);
+    break;
   }
 
-  // TODO: ERROR bla bla
+  // FIXME: ERROR bla bla
   return 0;
 }
 
-int jobscript_tcsh_check_pointer (struct jobscript_info *ji) {
+/* check for valid TCSH script file */
+int
+jobscript_tcsh_check_pointer (struct jobscript_info *ji) {
   if ( ji == NULL ) {
     fprintf (stderr,"ERROR: tcsh jobscript: invalid NULL pointer\n");
     return 0;
   } else if ( ji->type != JOBSCRIPT_TCSH ) {
-    fprintf (stderr,"ERROR: tcsh jobscript: pointer indicates not a tcsh script file\n");
+    fprintf (stderr,"ERROR: tcsh jobscript: pointer indicates not a tcsh script file (type is %i and should be JOBSCRIPT_TCSH)\n", ji->type);
     return 0;
   }
 
   return 1;
 }
 
-int jobscript_tcsh_write_heading (struct jobscript_info *ji) {
+/* check for valid Python script file */
+int
+jobscript_python_check_pointer (struct jobscript_info *ji) {
+  if ( ji == NULL ) {
+    fprintf (stderr,"ERROR: python jobscript: invalid NULL pointer\n");
+    return 0;
+  } else if ( ji->type != JOBSCRIPT_PYTHON ) {
+    fprintf (stderr,"ERROR: python jobscript: pointer indicates not a python script file (type is %i and should be JOBSCRIPT_PYTHON)\n", ji->type);
+    return 0;
+  }
+
+  return 1;
+}
+
+/* write TCSH shebang line into script file */
+int
+jobscript_tcsh_write_heading (struct jobscript_info *ji) {
   int rv;
   if ( (rv = jobscript_tcsh_check_pointer (ji)) == 0 ) {
     return rv;
@@ -125,28 +163,58 @@ int jobscript_tcsh_write_heading (struct jobscript_info *ji) {
   return 1;
 }
 
-int jobscript_tcsh_set_variable (struct jobscript_info *ji,char *name,char *value) {
+/* write Python shebang line into script file */
+int
+jobscript_python_write_heading (struct jobscript_info *ji) {
+  int rv;
+  if ( (rv = jobscript_python_check_pointer (ji)) == 0 ) {
+    return rv;
+  }
+  fprintf(ji->file,"#!/usr/bin/env python\n");
+  fprintf(ji->file,"### GENERATED BY JOBSCRIPT TOOLS\n");
+  fprintf(ji->file,"# generated using the jobscript tools from libdrqueue\n");
+  fprintf(ji->file,"### END OF HEADING\n");
+  return 1;
+}
+
+/* set a variable in TCSH style */
+int
+jobscript_tcsh_set_variable (struct jobscript_info *ji, char *name,char *value) {
   int rv;
   if ( (rv = jobscript_tcsh_check_pointer (ji)) == 0 ) {
     return rv;
   }
-  // TODO: correct name of variable
+  // FIXME: correct name of variable
   fprintf (ji->file,"\n## tcsh variable set by jobscript tools\n");
   fprintf (ji->file,"set %s=\"%s\"\n",name,value);
   return 1;
 }
 
-int jobscript_template_write (struct jobscript_info *ji,char *template_file_name)
+/* set a variable in Python style */
+int
+jobscript_python_set_variable (struct jobscript_info *ji, char *name,char *value) {
+  int rv;
+  if ( (rv = jobscript_python_check_pointer (ji)) == 0 ) {
+    return rv;
+  }
+  // FIXME: correct name of variable
+  fprintf (ji->file,"\n## python variable set by jobscript tools\n");
+  fprintf (ji->file,"%s=\"%s\"\n",name,value);
+  return 1;
+}
+
+/* use template to create script file */
+int
+jobscript_template_write (struct jobscript_info *ji, char *template_file_name)
 {
   int rv;
   char template_file_path[PATH_MAX];
   char *templates_directory;
   FILE *file_template;
-  int fd_template, fd_jobscript;
   int size;
   char buf[BUFFERLEN];
 
-  // TODO: Check template type (bash,tcsh,...), detect and report errors
+  // FIXME: Check template type (bash,tcsh,...), detect and report errors
 
   if ( (rv = jobscript_check_pointer (ji)) == 0 ) {
     return rv;
@@ -172,10 +240,8 @@ int jobscript_template_write (struct jobscript_info *ji,char *template_file_name
   fprintf (ji->file,"\n# jobscript starts writing template file '%s'\n",template_file_path);
 
   fflush (ji->file);
-  fd_template = fileno (file_template);
-  fd_jobscript = fileno (ji->file);
-  while ((size = read (fd_template,buf,BUFFERLEN)) != 0) {
-    write (fd_jobscript,buf,size);
+  while ((size = fread (buf, 1, BUFFERLEN, file_template)) != 0) {
+    fwrite (buf, size, 1, ji->file);
   }
   fclose(file_template);
   fflush (ji->file);
@@ -185,6 +251,17 @@ int jobscript_template_write (struct jobscript_info *ji,char *template_file_name
   return 1;
 }
 
-int jobscript_close (struct jobscript_info *ji) {
-  return fclose (ji->file);
+/* close script file */
+int
+jobscript_close (struct jobscript_info *ji) {
+  int rv = 0;
+  
+  if ( (rv = jobscript_check_pointer (ji)) == 0 ) {
+    return rv;
+  }
+
+  rv = fclose (ji->file);
+  free(ji);
+
+  return rv;
 }

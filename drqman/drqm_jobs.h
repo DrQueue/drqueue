@@ -18,9 +18,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-//
-// $Id$
-//
 
 #ifndef _DRQM_JOBS_H_
 #define _DRQM_JOBS_H_
@@ -35,7 +32,6 @@
 #include "drqm_jobs_maya.h"
 #include "drqm_jobs_mentalray.h"
 #include "drqm_jobs_blender.h"
-#include "drqm_jobs_bmrt.h"
 #include "drqm_jobs_mantra.h"
 #include "drqm_jobs_aqsis.h"
 #include "drqm_jobs_pixie.h"
@@ -47,6 +43,7 @@
 #include "drqm_jobs_nuke.h"
 #include "drqm_jobs_turtle.h"
 #include "drqm_jobs_xsi.h"
+#include "drqm_jobs_luxrender.h"
 
 #include <string.h>
 
@@ -101,7 +98,6 @@ struct drqmj_dnji {       /* dialog new job info */
   struct drqmj_koji_maya koji_maya; /* koj info for maya */
   struct drqmj_koji_mentalray koji_mentalray; /* koj info for mentalray */
   struct drqmj_koji_blender koji_blender; /* koj info for blender */
-  struct drqmj_koji_bmrt koji_bmrt; /* koj info for bmrt */
   struct drqmj_koji_aqsis koji_aqsis; /* koj info for aqsis */
   struct drqmj_koji_mantra koji_mantra; /* koj info for aqsis */
   struct drqmj_koji_pixie koji_pixie; /* koj info for pixie */
@@ -113,6 +109,7 @@ struct drqmj_dnji {       /* dialog new job info */
   struct drqmj_koji_terragen koji_terragen;
   struct drqmj_koji_turtle koji_turtle;
   struct drqmj_koji_xsi koji_xsi;
+  struct drqmj_koji_luxrender koji_luxrender;
 
   struct drqmj_limits limits;   /* limits info */
   struct drqmj_flags flags;     /* flags info */

@@ -18,15 +18,17 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
 
 #ifdef HAVE_CONFIG_H
 #include <lconfig.h>
 #endif
 
 #include <stdio.h>
+
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+
 #include <signal.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
@@ -67,17 +69,21 @@ int main (int argc,char *argv[]) {
   pid_t listener_pid;
 
   slave_get_options(&argc,&argv,&force,&sdb);
-  
+
   logtool = DRQ_LOG_TOOL_SLAVE;
 
   // Set some standard defaults based on DRQUEUE_ROOT (must be already set!)
-  set_default_env(); 
-  
-  // Config files overrides environment CHANGE (?)
+  set_default_env();
+
+  // Config files overrides environment
   // Read the config file after reading the arguments, as those may change
   // the path to the config file
-  config_parse_tool("slave");
-  
+  if (sdb.conf[0]) {
+    config_parse(sdb.conf);
+  } else {
+    config_parse_tool("slave");
+  }
+
   if (!common_environment_check()) {
     log_auto (L_ERROR,"Error checking the environment: %s",drerrno_str());
     exit (1);
@@ -126,7 +132,7 @@ int main (int argc,char *argv[]) {
   } else if (listener_pid == -1) {
     drerrno_system = errno;
     log_auto (L_ERROR,"Could not create the listener process. (%s)", strerror(drerrno_system));
-    slave_exit(1);
+    slave_exit(SIGINT);
   }
 
   if ((consistency_pid = fork()) == 0) {
@@ -140,7 +146,7 @@ int main (int argc,char *argv[]) {
   } else if (consistency_pid == -1) {
     drerrno_system = errno;
     log_auto (L_ERROR,"Could not create the listener process. (%s)", strerror(drerrno_system));
-    slave_exit(1);
+    slave_exit(SIGINT);
   } 
 
   while (1) {
@@ -217,6 +223,9 @@ void clean_out (int signal) {
   int i;
   struct sigaction ignore;
   struct sigaction action_dfl;
+
+  // fix compiler warning
+  (void)signal;
 
   /* Ignore new int signals that could arrive during clean up */
   ignore.sa_handler = SIG_IGN;
@@ -510,7 +519,7 @@ void slave_listening_process (struct slave_database *sdb) {
 
   if ((sfd = get_socket(SLAVEPORT)) == -1) {
     log_auto(L_ERROR,"Unable to open socket (server)");
-    slave_exit(1);
+    slave_exit(SIGINT);
   }
   highest_fd = sfd+1;
   log_auto (L_DEBUG,"Highest file descriptor after initialization %i",highest_fd);
@@ -544,12 +553,16 @@ void slave_listening_process (struct slave_database *sdb) {
 }
 
 void sigalarm_handler (int signal) {
+  // fix compiler warning
+  (void)signal;
   /* This is not an error because it only happens on a connection handler */
   log_auto (L_WARNING,"Connection time exceeded");
   exit (1);
 }
 
 void sigpipe_handler (int signal) {
+  // fix compiler warning
+  (void)signal;
   /* This is not an error because it only happens on a connection handler */
   log_auto (L_WARNING,"Broken connection while reading or writing");
   exit (1);
@@ -632,7 +645,7 @@ void launch_task (struct slave_database *sdb, uint16_t itask) {
       // Wouldn't reach this point unless error on execve
       drerrno_system = errno;
       log_auto(L_ERROR,"launch_task(): error on execve. (%s)",strerror(drerrno_system));
-      slave_exit(drerrno_system);
+      slave_exit(SIGINT);
     } else if (task_pid == -1) {
       log_auto(L_ERROR,"lauch_task(): Fork failed. Task not created.");
 
@@ -661,7 +674,7 @@ void launch_task (struct slave_database *sdb, uint16_t itask) {
       sdb->comp->status.ntasks = computer_ntasks (sdb->comp);
       sdb->comp->status.nrunning = computer_nrunning (sdb->comp);
       semaphore_release(sdb->semid);
-      // TODO: notify the master ?
+      // FIXME: notify the master ?
     } else {
       // waitpid returned successfully
       /* We have to clean the task and send the info to the master */
@@ -801,8 +814,9 @@ void slave_set_limits (struct slave_database *sdb) {
 }
 
 void
-slave_exit (int rc) {
+slave_exit (int signal) {
   // Slave's clean exit procedure
-  // FIXME: this is the OLD procedure
-  kill(0,SIGINT);
+  
+  // kill all slave processes with signal
+  kill(0, signal);
 }

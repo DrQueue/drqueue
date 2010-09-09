@@ -16,7 +16,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-/* $Id$ */
 
 #ifndef _DRQM_JOBS_MAYA_H_
 #define _DRQM_JOBS_MAYA_H_
@@ -41,9 +40,9 @@ struct drqmj_koji_maya {
   GtkWidget *eimage;
   GtkWidget *eviewcmd;
   GtkWidget *escript;  /* Entry script location */
-  GtkWidget *fsscript;  /* File selectot for the script directory */
+  GtkWidget *fsscript;  /* File selector for the script directory */
   GtkWidget *efile_owner; /* Owner of the rendered files */
-  GtkWidget *cbmentalray;
+  guint renderer_id; /* id of renderer to use */
 };
 
 struct drqm_jobs_info;

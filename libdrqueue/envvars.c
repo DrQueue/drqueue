@@ -3,12 +3,12 @@
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -18,22 +18,15 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
+#include <stdio.h>
+
+#ifndef _WIN32
+  #include <sys/shm.h>
+#endif
 
 #include "envvars.h"
 #include "drerrno.h"
 #include "logger.h"
-
-#include <unistd.h>
-#include <stdio.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <string.h>
-#include <stdint.h>
-#include <errno.h>
-#include <sys/types.h>
-
 #include "pointer.h"
 
 int
@@ -71,7 +64,8 @@ envvars_free (struct envvars *envvars) {
   return rv;
 }
 
-int envvars_attach (struct envvars *envvars) {
+int
+envvars_attach (struct envvars *envvars) {
   // This function just tries to attach the segment identified by
   // evshmid to the data structure
   
@@ -124,15 +118,15 @@ void
 envvars_dump_info (struct envvars *envvars) {
   // This fuction will try to dump the contents of envvars to stderr
   int i;
+  struct envvar *temp;
 
   fprintf (stderr,"envvars_dump_info() Starting...\n");
   fprintf (stderr,"variables=%p\n",(void*)envvars->variables.ptr);
   fprintf (stderr,"nvariables=%i\n",envvars->nvariables);
-  fprintf (stderr,"evshmid=%ji\n",envvars->evshmid);
+  fprintf (stderr,"evshmid=%ji\n",(intmax_t)envvars->evshmid);
 
   if (envvars->evshmid != -1) {
-    // There's a possible valid value on evshmid. Let's check
-    struct envvar *temp;
+    // There's a possible valid value on evshmid. Let's check   
     temp = (struct envvar *) shmat ((int)envvars->evshmid,0,0);
     if ( temp != (struct envvar *)-1 ) {
       if (envvars->variables.ptr != NULL) {
@@ -159,7 +153,7 @@ envvars_dump_info (struct envvars *envvars) {
         fprintf (stderr,"Value='%s'\n",temp[i].value);
       }
       
-      // TODO: detach tests -> (shmdt (envvars->variables) != -1))
+      // FIXME: detach tests -> (shmdt (envvars->variables) != -1))
       
       if (shmdt(temp) == -1) {
         fprintf (stderr,"envvars_dump_info() failed at shmdt(temp)\n");
@@ -278,8 +272,13 @@ envvars_get_shared_memory (int size) {
   return shmid;
 }
 
-int envvars_variable_add (struct envvars *envvars, char *name, char *value) {
-
+int
+envvars_variable_add (struct envvars *envvars, char *name, char *value) {
+  struct envvar *var;
+  int16_t new_size;
+  int64_t nshmid;
+  struct envvars new_envvars;
+  
 #ifdef __DEBUG_ENVVARS
   fprintf (stderr,"envvars_variable_add() Starting...\n");
 #endif
@@ -288,7 +287,7 @@ int envvars_variable_add (struct envvars *envvars, char *name, char *value) {
   }
 
   // Search for another one with the same name.
-  struct envvar *var = envvars_variable_find (envvars,name);
+  var = envvars_variable_find (envvars,name);
   if (var != NULL) {
     // If the variable already exists UPDATE the value
     strncpy (var->value,value,MAXNAMELEN);
@@ -298,9 +297,8 @@ int envvars_variable_add (struct envvars *envvars, char *name, char *value) {
   }
 
   // New number of environment variables
-  int16_t new_size = envvars->nvariables + 1;
+  new_size = envvars->nvariables + 1;
 
-  int64_t nshmid;
   if ((nshmid = envvars_get_shared_memory (new_size)) == (int64_t)-1) {
     log_auto (L_ERROR,"envvars_variable_add(): couldn't allocate memory for %i variables. (%s)",
               new_size,strerror(drerrno_system));
@@ -309,8 +307,7 @@ int envvars_variable_add (struct envvars *envvars, char *name, char *value) {
     }
     return 0;
   }
-
-  struct envvars new_envvars;
+  
   envvars_init(&new_envvars);
   new_envvars.nvariables = new_size;
   new_envvars.evshmid = nshmid;
@@ -354,8 +351,13 @@ int envvars_variable_add (struct envvars *envvars, char *name, char *value) {
   return 1;
 }
 
-int envvars_variable_delete (struct envvars *envvars, char *name) {
+int
+envvars_variable_delete (struct envvars *envvars, char *name) {
   struct envvar *var = envvars_variable_find (envvars,name);
+  int new_size;
+  int64_t nshmid;
+  struct envvars new_envvars;
+  int i,j;
 
   if (!var) {
     // Trying to delete a non-existing variable
@@ -368,7 +370,7 @@ int envvars_variable_delete (struct envvars *envvars, char *name) {
     return 1;
   }
 
-  int new_size = envvars->nvariables - 1;
+  new_size = envvars->nvariables - 1;
 
   if (new_size == 0) {
     envvars_detach (envvars);
@@ -376,22 +378,21 @@ int envvars_variable_delete (struct envvars *envvars, char *name) {
   }
 
   // New shared memory id
-  int64_t nshmid = envvars_get_shared_memory (new_size);
+  nshmid = envvars_get_shared_memory (new_size);
   if (nshmid == (int64_t)-1) {
-    // TODO: Report
+    // FIXME: Report
     return 0;
   }
-  struct envvars new_envvars;
+  
   envvars_init(&new_envvars);
   new_envvars.nvariables = new_size;
   new_envvars.evshmid = nshmid;
   if (!envvars_attach(&new_envvars)) {
-    // TODO: Report
+    // FIXME: Report
     return 0;
   }
 
   // Copy all but the deleted one to the new allocated space
-  int i,j;
   for (i = 0,j = 0; i < envvars->nvariables; i++) {
     // FIXME: What would happen with two variables with the same name ?
     if (strncmp(envvars->variables.ptr[i].name,name,MAXNAMELEN) == 0) {

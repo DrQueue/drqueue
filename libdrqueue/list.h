@@ -1,6 +1,8 @@
 //
 // Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
+// This file is part of DrQueue
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -16,18 +18,18 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
 
 #ifndef _LIST_H_
 #define _LIST_H_
 
-#ifdef __CPLUSPLUS
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
+#include <sys/types.h>
+
+#ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <stdint.h>
-#include <sys/types.h>
 
 #pragma pack(push,1)
 
@@ -50,7 +52,7 @@ int list_count (struct list *list);
 void list_reset (struct list *list);
 void *list_get_seq (struct list *list);
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 }
 #endif
 

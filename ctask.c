@@ -16,17 +16,12 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
 
 #include <stdio.h>
+
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#include <errno.h>
-#include <sys/wait.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <string.h>
-#include <ctype.h>
+#endif
 
 #include "libdrqueue.h"
 
@@ -43,6 +38,13 @@ int main (int argc,char *argv[]) {
   uint32_t frame = -1;
   uint32_t ijob = -1;
   int status = STATUS_NONE;
+  int nRet = 0;
+  
+  if(network_initialize() != 0) {
+    fprintf (stderr,"Could not initialize the network: %s\n", drerrno_str());
+    nRet = 1;
+    goto cleanup;
+  }
 
   while ((opt = getopt (argc,argv,"j:f:dervh")) != -1) {
     switch (opt) {
@@ -63,24 +65,27 @@ int main (int argc,char *argv[]) {
       break;
     case 'v':
       show_version (argv);
-      exit (0);
+      goto cleanup;
     case '?':
     case 'h':
       usage();
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
   }
 
   if ((ijob == -1) || (status == STATUS_NONE)) {
     usage ();
-    exit (1);
+    nRet = 1;
+    goto cleanup;
   }
 
   set_default_env();
 
   if (!common_environment_check()) {
     fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
-    exit (1);
+    nRet = 1;
+    goto cleanup;
   }
 
   switch (status) {
@@ -88,7 +93,8 @@ int main (int argc,char *argv[]) {
     printf ("Setting frame finished: %i,%i\n",frame,ijob);
     if (! request_job_frame_finish (ijob,frame,CLIENT)) {
       fprintf (stderr,"ERROR: While trying to set finished: %s\n",drerrno_str());
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
     printf ("Frame set finished successfully\n");
     break;
@@ -99,13 +105,17 @@ int main (int argc,char *argv[]) {
     printf ("Requeueing frame: %i,%i\n",frame,ijob);
     if (! request_job_frame_waiting (ijob,frame,CLIENT)) {
       fprintf (stderr,"ERROR: While trying to requeue: %s\n",drerrno_str());
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
     printf ("Frame requeued successfully\n");
     break;
   }
 
-  exit (0);
+cleanup:
+  network_shutdown();
+
+  return nRet;
 }
 
 void usage (void) {

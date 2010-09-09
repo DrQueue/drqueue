@@ -1,6 +1,8 @@
 //
 // Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
+// This file is part of DrQueue
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -16,17 +18,17 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
 
 #ifndef _FIXED_POINTER_H_
 #define _FIXED_POINTER_H_
 
-#ifdef __CPLUSPLUS
-extern "C" {
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
 #endif
 
-#include <stdint.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #pragma pack(push,1)
 
@@ -34,7 +36,7 @@ extern "C" {
 
 #pragma pack(pop)
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 }
 #endif
 

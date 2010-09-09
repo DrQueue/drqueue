@@ -3,12 +3,12 @@
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -18,17 +18,15 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$ */
-//
-
-#include <unistd.h>
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include <sys/types.h>
 #include <signal.h>
-#include <stdint.h>
-#include <logger.h>
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 
 #ifdef __IRIX
 #include <sys/sysmp.h>
@@ -38,6 +36,7 @@
 #include <sys/sysctl.h>
 #endif
 
+#include "logger.h"
 #include "pointer.h"
 #include "constants.h"
 #include "computer_info.h"
@@ -65,8 +64,8 @@ get_speedindex (struct computer_hwinfo *hwinfo) {
   return speedindex;
 }
 
-
-void report_hwinfo (struct computer_hwinfo *hwinfo) {
+void
+report_hwinfo (struct computer_hwinfo *hwinfo) {
   printf ("HWINFO Report\n");
   printf ("Name:\t\t\t%s\n",hwinfo->name);
   printf ("Architecture:\t\t%s\n",archstring((t_arch)hwinfo->arch));
@@ -79,7 +78,8 @@ void report_hwinfo (struct computer_hwinfo *hwinfo) {
   printf ("Memory:\t\t\t%i Mbytes\n",hwinfo->memory);
 }
 
-char *osstring (t_os os) {
+char *
+osstring (t_os os) {
   char *msg;
 
   switch (os) {
@@ -149,7 +149,8 @@ bitsstring (uint8_t nnbits) {
   return msg;
 }
 
-char *archstring (t_arch arch) {
+char *
+archstring (t_arch arch) {
   char *msg;
 
   switch (arch) {
@@ -168,6 +169,9 @@ char *archstring (t_arch arch) {
   case ARCH_SPARC:
     msg = "Sparc";
     break;
+  case ARCH_POWER:
+    msg = "Power";
+    break;
   default:
     msg = "DEFAULT (ERROR)";
     fprintf (stderr,"arch == DEFAULT\n");
@@ -176,7 +180,8 @@ char *archstring (t_arch arch) {
   return msg;
 }
 
-char *proctypestring (t_proctype proctype) {
+char *
+proctypestring (t_proctype proctype) {
   char *msg;
 
   switch (proctype) {
@@ -233,6 +238,9 @@ char *proctypestring (t_proctype proctype) {
     break;
   case PROCTYPE_ULTRASPARC:
     msg = "Ultrasparc";
+    break;
+  case PROCTYPE_CELLBE:
+    msg = "Cell Broadband Engine";
     break;
   default:
     msg = "DEFAULT (ERROR)";

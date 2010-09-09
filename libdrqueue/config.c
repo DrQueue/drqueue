@@ -3,12 +3,12 @@
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -18,23 +18,16 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
+#include <stdio.h>
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <stdlib.h>
-#include <string.h>
 #include "libdrqueue.h"
-#include "config.h"
-#include "list.h"
-#include "constants.h"
+
 
 void config_close (FILE *f_cfg);
 char *config_eol_remove (char *buffer, int len);
 char *config_read_line (char *buffer, int buflen, FILE *f_conf);
 
-void config_get_default_file (char *dst,char *tool,int dstlen) {
+void config_get_default_file (char *dst, char *tool, int dstlen) {
   snprintf (dst,dstlen,"%s/%s.%s",BASE_CONF_PATH,tool,BASE_CONF_EXT);
 }
 
@@ -64,7 +57,11 @@ config_eol_remove (char *buffer, int buflen) {
     return NULL;
   }
 
-  // TODO: Check return pointers in lenght range
+  // fix compiler warning
+  (void)buflen;
+  
+  // FIXME: Check return pointers in lenght range
+    
   // Check windows
   beol = strchr(buffer,'\r');
   if (beol) {
@@ -135,7 +132,7 @@ config_parse (char *cfg) {
         }
         strncpy(penv,renv,strlen(renv)+1);
         if (putenv (penv) != 0) {
-          fprintf (stderr,"ERROR seting the environment: '%s'\n",penv);
+          fprintf (stderr,"ERROR setting the environment: '%s'\n",penv);
         }
       } else {
         fprintf (stderr,"Warning parsing config file. No value for logs. Using default.\n");
@@ -151,7 +148,7 @@ config_parse (char *cfg) {
         }
         strncpy(penv,renv,strlen(renv)+1);
         if (putenv (penv) != 0) {
-          fprintf (stderr,"ERROR seting the environment: '%s'\n",penv);
+          fprintf (stderr,"ERROR setting the environment: '%s'\n",penv);
         }
       } else {
         fprintf (stderr,"Warning parsing config file. No value for tmp. Using default.\n");
@@ -167,7 +164,7 @@ config_parse (char *cfg) {
         }
         strncpy(penv,renv,strlen(renv)+1);
         if (putenv (penv) != 0) {
-          fprintf (stderr,"ERROR seting the environment: '%s'\n",penv);
+          fprintf (stderr,"ERROR setting the environment: '%s'\n",penv);
         }
       } else {
         fprintf (stderr,"Warning parsing config file. No value for bin. Using default.\n");
@@ -183,7 +180,7 @@ config_parse (char *cfg) {
         }
         strncpy(penv,renv,strlen(renv)+1);
         if (putenv (penv) != 0) {
-          fprintf (stderr,"ERROR seting the environment: '%s'\n",penv);
+          fprintf (stderr,"ERROR setting the environment: '%s'\n",penv);
         }
       } else {
         fprintf (stderr,"Warning parsing config file. No value for etc. Using default.\n");
@@ -199,9 +196,8 @@ config_parse (char *cfg) {
         }
         strncpy(penv,renv,strlen(renv)+1);
         if (putenv (penv) != 0) {
-          fprintf (stderr,"ERROR seting the environment: '%s'\n",penv);
+          fprintf (stderr,"ERROR setting the environment: '%s'\n",penv);
         }
-        free(penv);
       } else {
         fprintf (stderr,"Warning parsing config file. No value for db. Using default.\n");
       }
@@ -216,9 +212,8 @@ config_parse (char *cfg) {
         }
         strncpy(penv,renv,strlen(renv)+1);
         if (putenv (penv) != 0) {
-          fprintf (stderr,"ERROR seting the environment: '%s'\n",penv);
+          fprintf (stderr,"ERROR setting the environment: '%s'\n",penv);
         }
-        free(penv);
       } else {
         fprintf (stderr,"Warning parsing config file. No value for pool. Using default.\n");
       }
@@ -259,7 +254,8 @@ config_line_ends_node (struct config_node *base, char *line) {
   return 0;
 }
 
-int config_end_node (struct config_node *base, FILE *file) {
+int
+config_end_node (struct config_node *base, FILE *file) {
   char line[BUFFERLEN];
   char *res;
   long pos = ftell (file);
@@ -275,10 +271,15 @@ int config_end_node (struct config_node *base, FILE *file) {
   return 0;
 }
 
-struct config_item *config_item_new (struct config_node *base, char *line) {
+struct config_item *
+config_item_new (struct config_node *base, char *line) {
   char *name;
   char *value;
   char *sep;
+  // fix compiler warning
+  (void)base;	
+  
+  // FIXME: use base variable
 
   sep = strchr (line,'=');
   if ( !sep ) {
@@ -291,7 +292,8 @@ struct config_item *config_item_new (struct config_node *base, char *line) {
   return NULL;
 }
 
-void config_read_item (struct config_node *base, FILE *file) {
+void
+config_read_item (struct config_node *base, FILE *file) {
   char line[BUFFERLEN];
   char *res;
   res = fgets (line,BUFFERLEN,file);
@@ -299,13 +301,15 @@ void config_read_item (struct config_node *base, FILE *file) {
     config_item_new (base,res);
 }
 
-void config_add_node_items (struct config_node *base, FILE *file) {
+void
+config_add_node_items (struct config_node *base, FILE *file) {
   while ( ! config_end_node (base,file) ) {
     config_read_item (base,file);
   }
 }
 
-void config_add_node (struct config_node *base, FILE *file, char *line) {
+void
+config_add_node (struct config_node *base, FILE *file, char *line) {
   struct config_node *node = config_node_new (base,"Temp Name","No description",file);
   int len = (strlen(line)-3 > CFG_ITEM_NAME_LEN) ? CFG_ITEM_NAME_LEN : strlen(line)-3; 
   strncpy (node->name,&line[1],len);
@@ -314,7 +318,8 @@ void config_add_node (struct config_node *base, FILE *file, char *line) {
   //config_add_node_children (node,file);
 }
 
-int config_find_nodes (struct config_node *base,FILE *file) {
+int
+config_find_nodes (struct config_node *base, FILE *file) {
   char line[BUFFERLEN];
   char *res;
   while ((res = config_read_line (line,BUFFERLEN,file)) != NULL) {
@@ -351,21 +356,23 @@ config_node_new (struct config_node *parent, char *name, char *desc, FILE *file)
 }
 
 struct config_node *
-config_read (char *filename,char *tool) {
+config_read (char *filename, char *tool) {
 
   // Fuction to be called for parsing "filename" config related to "tool"
   FILE *cfg_file = config_open (filename);
+  struct config_node *config;
 
   if ( cfg_file == NULL ) {
     fprintf (stderr,"ERROR: Could not open file: '%s'\n",filename);
     return NULL;
   }
 
-  struct config_node *config = config_node_new (NULL,tool,"Root config node",cfg_file);
+  config = config_node_new (NULL,tool,"Root config node",cfg_file);
+  if(config) {
+    config_find_nodes (config,cfg_file);
 
-  config_find_nodes (config,cfg_file);
-
-  fclose(cfg_file);
+    fclose(cfg_file);
+  }
 
   return config;
 }

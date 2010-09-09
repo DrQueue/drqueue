@@ -18,17 +18,13 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-//
-// $Id$ 
-//
 
-#include <string.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#include <stdlib.h>
+#endif
 #include <pwd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 
+#include "drq_stat.h"
 #include "drqm_jobs.h"
 #include "drqm_common.h"
 #include "drqm_jobs_turtle.h"
@@ -43,7 +39,8 @@ static void dnj_koj_frame_turtle_scene_search (GtkWidget *button, struct drqmj_k
 static void dnj_koj_frame_turtle_scene_set (GtkWidget *button, struct drqmj_koji_turtle *info);
 static void dnj_koj_frame_turtle_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info);
 
-GtkWidget *dnj_koj_frame_turtle (struct drqm_jobs_info *info) {
+GtkWidget *
+dnj_koj_frame_turtle (struct drqm_jobs_info *info) {
   GtkWidget *frame;
   GtkWidget *vbox;
   GtkWidget *hbox,*hbox2;
@@ -237,7 +234,8 @@ GtkWidget *dnj_koj_frame_turtle (struct drqm_jobs_info *info) {
   return frame;
 }
 
-GtkWidget *jdd_koj_turtle_widgets (struct drqm_jobs_info *info) {
+GtkWidget *
+jdd_koj_turtle_widgets (struct drqm_jobs_info *info) {
   GtkWidget *table;
   GtkWidget *label;
   GtkAttachOptions options = (GtkAttachOptions)(GTK_EXPAND | GTK_SHRINK | GTK_FILL) ;
@@ -280,9 +278,13 @@ GtkWidget *jdd_koj_turtle_widgets (struct drqm_jobs_info *info) {
   return table;
 }
 
-static void dnj_koj_frame_turtle_projectdir_search (GtkWidget *button, struct drqmj_koji_turtle *info) {
+static void
+dnj_koj_frame_turtle_projectdir_search (GtkWidget *button, struct drqmj_koji_turtle *info) {
   GtkWidget *dialog;
   char dir[BUFFERLEN];
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select the project directory");
   info->fsprojectdir = dialog;
@@ -304,10 +306,14 @@ static void dnj_koj_frame_turtle_projectdir_search (GtkWidget *button, struct dr
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void dnj_koj_frame_turtle_projectdir_set (GtkWidget *button, struct drqmj_koji_turtle *info) {
+static void
+dnj_koj_frame_turtle_projectdir_set (GtkWidget *button, struct drqmj_koji_turtle *info) {
   struct stat s;
   char buf[BUFFERLEN];
   char *p;
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsprojectdir)),BUFFERLEN-1);
   stat(buf, &s);
@@ -319,9 +325,13 @@ static void dnj_koj_frame_turtle_projectdir_set (GtkWidget *button, struct drqmj
   gtk_entry_set_text (GTK_ENTRY(info->eprojectdir),buf);
 }
 
-static void dnj_koj_frame_turtle_renderdir_search (GtkWidget *button, struct drqmj_koji_turtle *info) {
+static void
+dnj_koj_frame_turtle_renderdir_search (GtkWidget *button, struct drqmj_koji_turtle *info) {
   GtkWidget *dialog;
   char dir[BUFFERLEN];
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select the output directory");
   info->fsrenderdir = dialog;
@@ -343,11 +353,14 @@ static void dnj_koj_frame_turtle_renderdir_search (GtkWidget *button, struct drq
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-
-static void dnj_koj_frame_turtle_renderdir_set (GtkWidget *button, struct drqmj_koji_turtle *info) {
+static void
+dnj_koj_frame_turtle_renderdir_set (GtkWidget *button, struct drqmj_koji_turtle *info) {
   struct stat s;
   char buf[BUFFERLEN];
   char *p;
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsrenderdir)),BUFFERLEN-1);
   stat(buf, &s);
@@ -359,8 +372,12 @@ static void dnj_koj_frame_turtle_renderdir_set (GtkWidget *button, struct drqmj_
   gtk_entry_set_text (GTK_ENTRY(info->erenderdir),buf);
 }
 
-static void dnj_koj_frame_turtle_scene_search (GtkWidget *button, struct drqmj_koji_turtle *info) {
+static void
+dnj_koj_frame_turtle_scene_search (GtkWidget *button, struct drqmj_koji_turtle *info) {
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select a scene file");
   info->fsscene = dialog;
@@ -381,9 +398,13 @@ static void dnj_koj_frame_turtle_scene_search (GtkWidget *button, struct drqmj_k
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void dnj_koj_frame_turtle_scene_set (GtkWidget *button, struct drqmj_koji_turtle *info) {
+static void
+dnj_koj_frame_turtle_scene_set (GtkWidget *button, struct drqmj_koji_turtle *info) {
   char buf[BUFFERLEN];
   char *p;
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscene)),BUFFERLEN-1);
   /* This removed the path part of the filename */
@@ -394,9 +415,13 @@ static void dnj_koj_frame_turtle_scene_set (GtkWidget *button, struct drqmj_koji
   gtk_entry_set_text (GTK_ENTRY(info->escene),p);
 }
 
-static void dnj_koj_frame_turtle_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info) {
+static void
+dnj_koj_frame_turtle_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info) {
   struct turtlesgi turtlesgi; /* Maya script generator info */
   char *file;
+  
+  // fix compiler warning
+  (void)button;
 
   turtlesgi.usemaya70 = GTK_TOGGLE_BUTTON(info->koji_turtle.cbusemaya70)->active;
   strncpy (turtlesgi.renderdir,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.erenderdir)),BUFFERLEN-1);
@@ -406,8 +431,10 @@ static void dnj_koj_frame_turtle_bcreate_pressed (GtkWidget *button, struct drqm
   strncpy (turtlesgi.image,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.eimage)),BUFFERLEN-1);
   strncpy (turtlesgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.escript)),BUFFERLEN-1);
   strncpy (turtlesgi.file_owner,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.efile_owner)),BUFFERLEN-1);
-  strncpy (turtlesgi.resx,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.eresx)),BUFFERLEN-1);
-  strncpy (turtlesgi.resy,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.eresy)),BUFFERLEN-1);
+  //strncpy (turtlesgi.res_x,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.eresx)),BUFFERLEN-1);
+  //strncpy (turtlesgi.res_y,gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.eresy)),BUFFERLEN-1);
+  turtlesgi.res_x = atoi(gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.eresx)));
+  turtlesgi.res_y = atoi(gtk_entry_get_text(GTK_ENTRY(info->koji_turtle.eresy)));
   // turtlesgi.resx = turtlesgi.resy = -1; /* ojo aca !! */
   strncpy (turtlesgi.format,"",BUFFERLEN-1);
 
@@ -419,8 +446,12 @@ static void dnj_koj_frame_turtle_bcreate_pressed (GtkWidget *button, struct drqm
   }
 }
 
-static void dnj_koj_frame_turtle_script_search (GtkWidget *button, struct drqmj_koji_turtle *info) {
+static void
+dnj_koj_frame_turtle_script_search (GtkWidget *button, struct drqmj_koji_turtle *info) {
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select a script directory");
   info->fsscript = dialog;
@@ -441,8 +472,12 @@ static void dnj_koj_frame_turtle_script_search (GtkWidget *button, struct drqmj_
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void dnj_koj_frame_turtle_script_set (GtkWidget *button, struct drqmj_koji_turtle *info) {
+static void
+dnj_koj_frame_turtle_script_set (GtkWidget *button, struct drqmj_koji_turtle *info) {
   struct stat s;
+  
+  // fix compiler warning
+  (void)button;
 
   char buf[BUFFERLEN];
   char *p;

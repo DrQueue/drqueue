@@ -18,17 +18,14 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-//
-// $Id$ 
-//
 
-#include <string.h>
+#include <stdio.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#include <stdlib.h>
+#endif
 #include <pwd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 
+#include "drq_stat.h"
 #include "drqm_jobs.h"
 #include "drqm_common.h"
 #include "drqm_jobs_lightwave.h"
@@ -43,7 +40,8 @@ static void dnj_koj_frame_lightwave_scene_search (GtkWidget *button, struct drqm
 static void dnj_koj_frame_lightwave_scene_set (GtkWidget *button, struct drqmj_koji_lightwave *info);
 static void dnj_koj_frame_lightwave_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info);
 
-GtkWidget *dnj_koj_frame_lightwave (struct drqm_jobs_info *info) {
+GtkWidget *
+dnj_koj_frame_lightwave (struct drqm_jobs_info *info) {
   GtkWidget *frame;
   GtkWidget *vbox;
   GtkWidget *hbox,*hbox2;
@@ -186,7 +184,8 @@ GtkWidget *dnj_koj_frame_lightwave (struct drqm_jobs_info *info) {
   return frame;
 }
 
-GtkWidget *jdd_koj_lightwave_widgets (struct drqm_jobs_info *info) {
+GtkWidget *
+jdd_koj_lightwave_widgets (struct drqm_jobs_info *info) {
   GtkWidget *table;
   GtkWidget *label;
   GtkAttachOptions options = (GtkAttachOptions)(GTK_EXPAND | GTK_SHRINK | GTK_FILL) ;
@@ -220,9 +219,13 @@ GtkWidget *jdd_koj_lightwave_widgets (struct drqm_jobs_info *info) {
   return table;
 }
 
-static void dnj_koj_frame_lightwave_projectdir_search (GtkWidget *button, struct drqmj_koji_lightwave *info) {
+static void
+dnj_koj_frame_lightwave_projectdir_search (GtkWidget *button, struct drqmj_koji_lightwave *info) {
   GtkWidget *dialog;
   char dir[BUFFERLEN];
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select the project directory");
   info->fsprojectdir = dialog;
@@ -245,10 +248,14 @@ static void dnj_koj_frame_lightwave_projectdir_search (GtkWidget *button, struct
 }
 
 
-static void dnj_koj_frame_lightwave_projectdir_set (GtkWidget *button, struct drqmj_koji_lightwave *info) {
+static void
+dnj_koj_frame_lightwave_projectdir_set (GtkWidget *button, struct drqmj_koji_lightwave *info) {
   struct stat s;
   char buf[BUFFERLEN];
   char *p;
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsprojectdir)),BUFFERLEN-1);
   stat(buf, &s);
@@ -260,9 +267,13 @@ static void dnj_koj_frame_lightwave_projectdir_set (GtkWidget *button, struct dr
   gtk_entry_set_text (GTK_ENTRY(info->eprojectdir),buf);
 }
 
-static void dnj_koj_frame_lightwave_configdir_search (GtkWidget *button, struct drqmj_koji_lightwave *info) {
+static void
+dnj_koj_frame_lightwave_configdir_search (GtkWidget *button, struct drqmj_koji_lightwave *info) {
   GtkWidget *dialog;
   char dir[BUFFERLEN];
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select the config directory");
   info->fsconfigdir = dialog;
@@ -285,10 +296,14 @@ static void dnj_koj_frame_lightwave_configdir_search (GtkWidget *button, struct 
 }
 
 
-static void dnj_koj_frame_lightwave_configdir_set (GtkWidget *button, struct drqmj_koji_lightwave *info) {
+static void
+dnj_koj_frame_lightwave_configdir_set (GtkWidget *button, struct drqmj_koji_lightwave *info) {
   struct stat s;
   char buf[BUFFERLEN];
   char *p;
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsconfigdir)),BUFFERLEN-1);
   stat(buf, &s);
@@ -300,8 +315,12 @@ static void dnj_koj_frame_lightwave_configdir_set (GtkWidget *button, struct drq
   gtk_entry_set_text (GTK_ENTRY(info->econfigdir),buf);
 }
 
-static void dnj_koj_frame_lightwave_scene_search (GtkWidget *button, struct drqmj_koji_lightwave *info) {
+static void
+dnj_koj_frame_lightwave_scene_search (GtkWidget *button, struct drqmj_koji_lightwave *info) {
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select a scene file");
   info->fsscene = dialog;
@@ -322,10 +341,13 @@ static void dnj_koj_frame_lightwave_scene_search (GtkWidget *button, struct drqm
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void dnj_koj_frame_lightwave_scene_set (GtkWidget *button, struct drqmj_koji_lightwave *info) {
+static void
+dnj_koj_frame_lightwave_scene_set (GtkWidget *button, struct drqmj_koji_lightwave *info) {
   char buf[BUFFERLEN];
   char *p;
-
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscene)),BUFFERLEN-1);
   /* This removed the path part of the filename */
@@ -339,9 +361,13 @@ static void dnj_koj_frame_lightwave_scene_set (GtkWidget *button, struct drqmj_k
 
 }
 
-static void dnj_koj_frame_lightwave_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info) {
+static void
+dnj_koj_frame_lightwave_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info) {
   struct lightwavesgi lightwavesgi; /* Maya script generator info */
   char *file;
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy (lightwavesgi.projectdir,gtk_entry_get_text(GTK_ENTRY(info->koji_lightwave.eprojectdir)),BUFFERLEN-1);
   strncpy (lightwavesgi.configdir,gtk_entry_get_text(GTK_ENTRY(info->koji_lightwave.econfigdir)),BUFFERLEN-1);
@@ -389,8 +415,12 @@ static void dnj_koj_frame_lightwave_bcreate_pressed (GtkWidget *button, struct d
   }
 }
 
-static void dnj_koj_frame_lightwave_script_search (GtkWidget *button, struct drqmj_koji_lightwave *info) {
+static void
+dnj_koj_frame_lightwave_script_search (GtkWidget *button, struct drqmj_koji_lightwave *info) {
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select a script directory");
   info->fsscript = dialog;
@@ -411,9 +441,13 @@ static void dnj_koj_frame_lightwave_script_search (GtkWidget *button, struct drq
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void dnj_koj_frame_lightwave_script_set (GtkWidget *button, struct drqmj_koji_lightwave *info) {
+static void
+dnj_koj_frame_lightwave_script_set (GtkWidget *button, struct drqmj_koji_lightwave *info) {
   char buf[BUFFERLEN];
   char *p;
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscript)),BUFFERLEN-1);
   p = strrchr(buf,'/');

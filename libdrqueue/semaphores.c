@@ -3,12 +3,12 @@
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -18,17 +18,12 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
 
-#include <sys/types.h>
-#include <sys/sem.h>
-#include <sys/ipc.h>
-#include <signal.h>
 #include <stdio.h>
-#include <errno.h>
-#include <string.h>
-#include <unistd.h>
+
+#ifndef _WIN32
+    #include <sys/sem.h>
+#endif
 
 #include "drerrno.h"
 #include "logger.h"

@@ -3,12 +3,12 @@
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -18,18 +18,15 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
 
-#include <stdlib.h>
 #include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
-#include <errno.h>
-#include <unistd.h>
-#include <stdint.h>
 
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
+#include "drq_stat.h"
 #include "pointer.h"
 #include "database.h"
 #include "computer.h"
@@ -37,6 +34,14 @@
 #include "drerrno.h"
 #include "logger.h"
 #include "semaphores.h"
+
+/* Foward declares */
+static int write_32b (int sfd, void *data);
+static int write_16b (int sfd, void *data);
+static int read_32b (int sfd, void *data);
+static int read_16b (int sfd, void *data);
+static int dr_file_read (int fd, char *buf, uint32_t len);
+static int dr_file_write (int fd, char *buf, uint32_t len);
 
 void
 database_init (struct database *wdb) {
@@ -69,14 +74,14 @@ database_job_save (int sfd, struct job *job) {
   
   datasize = sizeof (struct job);
   datasize = htonl (datasize);
-  if (!dr_write(sfd,(char*)&datasize,sizeof(datasize))) {
+  if (!dr_file_write(sfd,(char*)&datasize,sizeof(datasize))) {
     log_auto (L_ERROR,"database_job_save(): error saving job data size (%u). (%s)",ntohl(datasize),strerror(drerrno_system));
     return 0;
   }
   datasize = ntohl (datasize);
 
   job_bswap_to_network (job,&bswapped);
-  if (!dr_write(sfd,buf,datasize)) {
+  if (!dr_file_write(sfd,buf,datasize)) {
     log_auto (L_ERROR,"database_job_save(): error saving job main information. (%s)",strerror(drerrno_system));
     return 0;
   }
@@ -104,7 +109,7 @@ int
 database_job_load (int sfd, struct job *job) {
   uint32_t datasize;
   
-  if (!dr_read(sfd,(char*)&datasize,sizeof(datasize))) {
+  if (!dr_file_read(sfd,(char*)&datasize,sizeof(datasize))) {
     log_auto (L_ERROR,"database_job_load(): error reading job data size (%u). (%s)",ntohl(datasize),strerror(drerrno_system));
     return 0;
   }
@@ -116,7 +121,7 @@ database_job_load (int sfd, struct job *job) {
   }
   
   job_delete(job);
-  if (!dr_read(sfd,(char*)job,datasize)) {
+  if (!dr_file_read(sfd,(char*)job,datasize)) {
     log_auto (L_ERROR,"database_job_load(): error reading job main information. (%s)",strerror(drerrno_system));
     return 0;
   }
@@ -163,7 +168,7 @@ database_load (struct database *wdb) {
   int fd;
   int c;           /* counters */
 
-  // TODO: no filename guessing.
+  // FIXME: no filename guessing.
   if ((basedir = getenv ("DRQUEUE_DB")) == NULL) {
     /* This should never happen because we check it at the beginning of the program */
     drerrno = DRE_NOENVROOT;
@@ -213,6 +218,12 @@ database_load (struct database *wdb) {
 int
 database_backup (struct database *wdb) {
   // FIXME: to be written !!
+  
+  // fix compiler warning
+  (void)wdb;
+  
+  // FIXME: use wdb variable
+  
   return 1;
 }
 
@@ -228,7 +239,7 @@ database_save (struct database *wdb) {
   int fd;
   uint32_t c;
 
-  // TODO: this all filename guessing should be inside a function
+  // FIXME: this all filename guessing should be inside a function
   if ((basedir = getenv ("DRQUEUE_DB")) == NULL) {
     /* This should never happen because we check it at the beginning of the program */
     log_auto (L_ERROR,"database_save() : DRQUEUE_DB environment variable could not be found. Master db cannot be saved.");
@@ -243,20 +254,24 @@ database_save (struct database *wdb) {
   semaphore_lock(wdb->semid);
 
   if (database_backup(wdb) == 0) {
-    // TODO: filename should be a value returned by a function
+    // FIXME: filename should be a value returned by a function
     log_auto (L_ERROR,"database_save() : there was an error while backing up old database. NOT SAVING current one. (file: %s)",
               filename);
   }
 
-  // TODO:
+  // FIXME:
   // dbfd = database_file_open(filename)
   log_auto (L_INFO,"Storing DB into: '%s'",filename);
 
   if ((fd = open (filename, O_CREAT | O_TRUNC | O_RDWR, 0664)) == -1) {
     if (errno == ENOENT) {
       /* If its because the directory does not exist we try creating it first */
+#ifdef _WIN32
+      if (mkdir (dir) == -1) {
+#else
       if (mkdir (dir, 0775) == -1) {
-	drerrno_system = errno;
+#endif
+        drerrno_system = errno;
         log_auto (L_WARNING,"Could not create database directory. Check permissions: %s. (%s)",
 		  dir,strerror(drerrno_system));
         drerrno = DRE_COULDNOTCREATE;
@@ -277,7 +292,7 @@ database_save (struct database *wdb) {
     }
   }
 
-  // TODO: database_header_save()
+  // FIXME: database_header_save()
   hdr.magic = DB_MAGIC;
   hdr.version = database_version_id();
   hdr.job_size = MAXJOBS;
@@ -288,7 +303,7 @@ database_save (struct database *wdb) {
   for (c = 0; c < hdr.job_size; c++) {
     logger_job = &wdb->job[c];
     if (!database_job_save (fd, &wdb->job[c])) {
-      // TODO: report
+      // FIXME: report
       log_auto (L_ERROR,"database_save(): error saving job number %i. (%s)",c,strerror(drerrno_system));
       return 0;
     }
@@ -304,14 +319,14 @@ database_save (struct database *wdb) {
 }
 
 int
-database_job_save_frames (int sfd,struct job *job) {
+database_job_save_frames (int sfd, struct job *job) {
   int nframes = job_nframes (job);
   struct frame_info *fi;
   int i;
 
   if ((fi = attach_frame_shared_memory (job->fishmid)) == (void *) -1) {
     // Store empty frames in an attemp to save other jobs
-    // TODO: Warning CORRUPT
+    // FIXME: Warning CORRUPT
     struct frame_info fi2;
     job_frame_info_init (&fi2);
     for (i = 0; i < nframes; i++) {
@@ -332,10 +347,10 @@ database_job_save_frames (int sfd,struct job *job) {
 }
 
 int
-database_job_load_frames (int sfd,struct job *job) {
+database_job_load_frames (int sfd, struct job *job) {
   uint32_t nframes = job_nframes (job);
   struct frame_info *fi;
-  int d;
+  uint32_t d;
 
   if (nframes) {
     if ((job->fishmid = get_frame_shared_memory (nframes)) == (int64_t)-1) {
@@ -437,3 +452,115 @@ int
 database_job_load_envvars (int sfd, struct job *job) {
   return recv_envvars (sfd,&job->envvars,0);
 }
+
+static int
+dr_file_read (int fd, char *buf, uint32_t len) {
+  int r;
+  int bleft;
+  int total = 0;
+
+  bleft = len;
+  while ((r = read (fd,buf,bleft)) < bleft) {
+    if ((r == -1) || ((r == 0) && (bleft > 0))) {
+      /* if r is error or if there are no more bytes left on the socket but there _SHOULD_ be */
+      drerrno_system = errno;
+      drerrno = DRE_ERRORREADING;
+      return 0;
+    }
+    bleft -= r;
+    buf += r;
+    total += r;
+#ifdef COMM_REPORT
+    brecv += r;
+#endif
+  }
+
+#ifdef COMM_REPORT
+  brecv += r;
+#endif
+
+  return len;
+}
+
+static int
+dr_file_write (int fd, char *buf, uint32_t len) {
+  int w;
+  int bleft;
+
+  bleft = len;
+  while ((w = write(fd,buf,bleft)) < bleft) {
+    bleft -= w;
+    buf += w;
+    if ((w == -1) || ((w == 0) && (bleft > 0))) {
+      /* if w is error or if no more bytes are written but they _SHOULD_ be */
+      drerrno_system = errno;
+      drerrno = DRE_ERRORWRITING;
+      return 0;
+    }
+#ifdef COMM_REPORT
+    bsent += w;
+#endif
+
+  }
+#ifdef COMM_REPORT
+  bsent += w;
+#endif
+
+  return len;
+}
+
+static int
+write_32b (int sfd, void *data) {
+  uint32_t bswapped;
+  void *buf = &bswapped;
+
+  bswapped = htonl (*(uint32_t *)data);
+  if (!dr_file_write (sfd,(char*)buf,sizeof (uint32_t))) {
+    return 0;
+  }
+
+  return 1;
+}
+
+static int
+write_16b (int sfd, void *data) {
+  uint16_t bswapped;
+  void *buf = &bswapped;
+
+  bswapped = htons (*(uint16_t *)data);
+  if (!dr_file_write (sfd,(char*)buf,sizeof (uint16_t))) {
+    return 0;
+  }
+
+  return 1;
+}
+
+static int
+read_32b (int sfd, void *data) {
+  void *buf;
+
+  buf = data;
+  if (!dr_file_read (sfd,(char*)buf,sizeof(uint32_t))) {
+    return 0;
+  }
+
+  *(uint32_t *)data = ntohl (*((uint32_t *)data));
+
+  return 1;
+}
+
+static int
+read_16b (int sfd, void *data) {
+  void *buf;
+
+  buf = data;
+  if (!dr_file_read (sfd,(char*)buf,sizeof(uint16_t))) {
+    return 0;
+  }
+
+  *(uint16_t *)data = ntohs (*((uint16_t *)data));
+
+  return 1;
+}
+
+

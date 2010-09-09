@@ -1,14 +1,15 @@
 //
 // Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
+// Copyright (C) 2010 Andreas Schroeder
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -18,16 +19,12 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-//
-// $Id$
-//
 
-#include <string.h>
-#include <stdlib.h>
-#include <pwd.h>
-#include <sys/types.h>
-#include <stdint.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+#include <sys/types.h>
+#include <pwd.h>
 
 #include "libdrqueue.h"
 
@@ -44,7 +41,6 @@
 #include "drqm_jobs_maya.h"
 #include "drqm_jobs_mentalray.h"
 #include "drqm_jobs_blender.h"
-#include "drqm_jobs_bmrt.h"
 #include "drqm_jobs_mantra.h"
 #include "drqm_jobs_aqsis.h"
 #include "drqm_jobs_pixie.h"
@@ -54,6 +50,7 @@
 #include "drqm_jobs_nuke.h"
 #include "drqm_jobs_turtle.h"
 #include "drqm_jobs_xsi.h"
+#include "drqm_jobs_luxrender.h"
 
 // Icon includes
 #include "job_icon.h"
@@ -64,7 +61,7 @@ static GtkWidget *CreateClist ();
 static GtkWidget *CreateButtonRefresh (struct drqm_jobs_info *info);
 static void PressedButtonRefresh (GtkWidget *b, struct drqm_jobs_info *info);
 static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *info);
-static GtkWidget *CreateMenu (struct drqm_jobs_info *info);
+static GtkWidget *CreateJobsMenu (struct drqm_jobs_info *info);
 static int pri_cmp_clist (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2);
 static void update_joblist (GtkWidget *widget, struct drqm_jobs_info *info);
 static gboolean AutoRefreshUpdate (gpointer info);
@@ -109,9 +106,13 @@ static void job_hstop_cb (GtkWidget *button, struct drqm_jobs_info *info);
 static void job_rerun_cb (GtkWidget *button, struct drqm_jobs_info *info);
 
 void
-free_job_list(GtkWidget *joblist,void *userdata) {
+free_job_list(GtkWidget *joblist, void *userdata) {
   struct drqm_jobs_info *info = (struct drqm_jobs_info *) userdata;
-  int i;
+  uint32_t i;
+  
+  // fix compiler warning
+  (void)joblist;
+  
   if (!info) {
     return;
   }
@@ -125,7 +126,8 @@ free_job_list(GtkWidget *joblist,void *userdata) {
   info->njobs=0;
 }
 
-void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info) {
+void
+CreateJobsPage (GtkWidget *notebook, struct info_drqm *info) {
   /* This function receives the notebook widget to wich the new tab will append */
   GtkWidget *label;
   GtkWidget *container;
@@ -178,7 +180,8 @@ void CreateJobsPage (GtkWidget *notebook, struct info_drqm *info) {
   gtk_widget_show_all(container);
 }
 
-static GtkWidget *CreateJobsList(struct drqm_jobs_info *info) {
+static GtkWidget *
+CreateJobsList(struct drqm_jobs_info *info) {
   GtkWidget *window;
 
   /* Scrolled window */
@@ -192,12 +195,13 @@ static GtkWidget *CreateJobsList(struct drqm_jobs_info *info) {
   gtk_container_add (GTK_CONTAINER(window),info->clist);
 
   /* Create the popup menu */
-  info->menu = CreateMenu(info);
+  info->menu = CreateJobsMenu(info);
 
   return (window);
 }
 
-static GtkWidget *CreateClist () {
+static GtkWidget *
+CreateClist () {
   gchar *titles[] = { "ID","Name","Owner","Status","Processors","Left","Done","Failed","Total","Pri","Pool" };
   GtkWidget *clist;
 
@@ -222,8 +226,8 @@ static GtkWidget *CreateClist () {
   return (clist);
 }
 
-
-static GtkWidget *CreateButtonRefresh (struct drqm_jobs_info *info) {
+static GtkWidget *
+CreateButtonRefresh (struct drqm_jobs_info *info) {
   GtkWidget *b;
   GtkWidget *i;
 
@@ -237,21 +241,24 @@ static GtkWidget *CreateButtonRefresh (struct drqm_jobs_info *info) {
   return b;
 }
 
-static gboolean AutoRefreshUpdate (gpointer info) {
+static gboolean
+AutoRefreshUpdate (gpointer info) {
   drqm_request_joblist ((struct drqm_jobs_info*)info);
   drqm_update_joblist ((struct drqm_jobs_info*)info);
 
   return TRUE;
 }
 
-static void PressedButtonRefresh (GtkWidget *b, struct drqm_jobs_info *info) {
+static void
+PressedButtonRefresh (GtkWidget *b, struct drqm_jobs_info *info) {
   update_joblist (b,info);
 }
 
-void drqm_update_joblist (struct drqm_jobs_info *info) {
-  int i;
+void
+drqm_update_joblist (struct drqm_jobs_info *info) {
+  uint32_t i;
   char **buff;
-  int ncols = 11;
+  uint32_t ncols = 11;
 
   buff = (char**) malloc((ncols + 1) * sizeof(char*));
   for (i=0;i<ncols;i++)
@@ -286,9 +293,13 @@ void drqm_update_joblist (struct drqm_jobs_info *info) {
   free(buff);
 }
 
-static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *info) {
-  int i;
+static gint
+PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *info) {
+  uint32_t i;
   char *buf;
+  
+  // fix compiler warning
+  (void)clist;
 
   if (event->type == GDK_BUTTON_PRESS) {
     GdkEventButton *bevent = (GdkEventButton *) event;
@@ -304,7 +315,7 @@ static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *
 
       info->row = -1;
       for (i=0;i<info->njobs;i++) {
-        if (info->jobs[i].id == info->ijob) {
+        if (info->jobs[i].id == (uint32_t)info->ijob) {
           info->row = i; // Points from this point on, to index of the job in info.
         }
       }
@@ -320,7 +331,8 @@ static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_jobs_info *
   return FALSE;
 }
 
-static GtkWidget *CreateMenu (struct drqm_jobs_info *info) {
+static GtkWidget *
+CreateJobsMenu (struct drqm_jobs_info *info) {
   // This function creates the popup menu on the job's page
   GtkWidget *menu;
   GtkWidget *menu_item;
@@ -386,8 +398,8 @@ static GtkWidget *CreateMenu (struct drqm_jobs_info *info) {
   return (menu);
 }
 
-
-static GtkWidget *GetNewJobDialog (struct drqm_jobs_info *info) {
+static GtkWidget *
+GetNewJobDialog (struct drqm_jobs_info *info) {
   static GtkWidget *dialog = NULL;
 
   if (!dialog)
@@ -396,17 +408,24 @@ static GtkWidget *GetNewJobDialog (struct drqm_jobs_info *info) {
   return dialog;
 }
 
-
-static void NewJob (GtkWidget *menu_item, struct drqm_jobs_info *info) {
+static void
+NewJob (GtkWidget *menu_item, struct drqm_jobs_info *info) {
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)menu_item;
 
   dialog = GetNewJobDialog(info);
   gtk_widget_show (dialog);
   gtk_grab_add(dialog);
 }
 
-static void CopyJob (GtkWidget *menu_item, struct drqm_jobs_info *info) {
+static void
+CopyJob (GtkWidget *menu_item, struct drqm_jobs_info *info) {
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)menu_item;
 
   if (!info->selected)
     return;
@@ -417,7 +436,8 @@ static void CopyJob (GtkWidget *menu_item, struct drqm_jobs_info *info) {
   gtk_grab_add(dialog);
 }
 
-static void CopyJob_CloneInfo (struct drqm_jobs_info *info) {
+static void
+CopyJob_CloneInfo (struct drqm_jobs_info *info) {
   char buf[BUFFERLEN];
 
   /* General */
@@ -429,7 +449,7 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info) {
   snprintf(buf,BUFFERLEN-1,"%i",info->jobs[info->row].frame_step);
   gtk_entry_set_text(GTK_ENTRY(info->dnj.estf),buf);
   snprintf(buf,BUFFERLEN-1,"%hhu",info->jobs[info->row].frame_pad);
-  gtk_entry_set_text(GTK_ENTRY(info->dnj.estf),buf);
+  gtk_entry_set_text(GTK_ENTRY(info->dnj.efp),buf);
 
   /* Priority */
   if (info->jobs[info->row].priority == 1000) {
@@ -509,49 +529,6 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info) {
                        info->jobs[info->row].koji.blender.scene);
     gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_blender.eviewcmd),
                        info->jobs[info->row].koji.blender.viewcmd);
-    break;
-  case KOJ_BMRT:
-    gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(info->dnj.ckoj)->entry),
-                       "Bmrt");
-    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_bmrt.escene),
-                       info->jobs[info->row].koji.bmrt.scene);
-    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_bmrt.eviewcmd),
-                       info->jobs[info->row].koji.bmrt.viewcmd);
-    /* Custom crop */
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(info->dnj.koji_bmrt.cbcrop),
-                                 info->jobs[info->row].koji.bmrt.custom_crop);
-    snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].koji.bmrt.xmin);
-    gtk_entry_set_text (GTK_ENTRY(info->dnj.koji_bmrt.ecropxmin),buf);
-    snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].koji.bmrt.xmax);
-    gtk_entry_set_text (GTK_ENTRY(info->dnj.koji_bmrt.ecropxmax),buf);
-    snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].koji.bmrt.ymin);
-    gtk_entry_set_text (GTK_ENTRY(info->dnj.koji_bmrt.ecropymin),buf);
-    snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].koji.bmrt.ymax);
-    gtk_entry_set_text (GTK_ENTRY(info->dnj.koji_bmrt.ecropymax),buf);
-    /* Custom samples */
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(info->dnj.koji_bmrt.cbsamples),
-                                 info->jobs[info->row].koji.bmrt.custom_samples);
-    snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].koji.bmrt.xsamples);
-    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_bmrt.exsamples),buf);
-    snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].koji.bmrt.ysamples);
-    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_bmrt.eysamples),buf);
-    /* Stats, verbose, beep */
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(info->dnj.koji_bmrt.cbstats),
-                                 info->jobs[info->row].koji.bmrt.disp_stats);
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(info->dnj.koji_bmrt.cbverbose),
-                                 info->jobs[info->row].koji.bmrt.verbose);
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(info->dnj.koji_bmrt.cbbeep),
-                                 info->jobs[info->row].koji.bmrt.custom_beep);
-    /* Radiosity samples */
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(info->dnj.koji_bmrt.cbradiositysamples),
-                                 info->jobs[info->row].koji.bmrt.custom_radiosity);
-    snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].koji.bmrt.radiosity_samples);
-    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_bmrt.eradiositysamples),buf);
-    /* Custom raysamples */
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(info->dnj.koji_bmrt.cbraysamples),
-                                 info->jobs[info->row].koji.bmrt.custom_raysamples);
-    snprintf(buf,BUFFERLEN-1,"%u",info->jobs[info->row].koji.bmrt.raysamples);
-    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_bmrt.eraysamples),buf);
     break;
   case KOJ_PIXIE:
     gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(info->dnj.ckoj)->entry),
@@ -657,14 +634,25 @@ static void CopyJob_CloneInfo (struct drqm_jobs_info *info) {
     gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_xsi.eimageExt), info->jobs[info->row].koji.xsi.imageExt);
     gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_xsi.eviewcmd), info->jobs[info->row].koji.xsi.viewcmd);
     break;
+  case KOJ_LUXRENDER:
+    gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(info->dnj.ckoj)->entry), "Luxrender");
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_luxrender.escene), info->jobs[info->row].koji.luxrender.scene);
+    gtk_entry_set_text(GTK_ENTRY(info->dnj.koji_luxrender.eviewcmd), info->jobs[info->row].koji.luxrender.viewcmd);
+    break;
   }
 }
 
-static void dnj_destroy (GtkWidget *dialog, struct drqm_jobs_info *info) {
+static void
+dnj_destroy (GtkWidget *dialog, struct drqm_jobs_info *info) {
+  // fix compiler warning
+  (void)dialog;
+  (void)info;
+  
   //envvars_empty (&info->dnj.envvars.envvars);
 }
 
-static GtkWidget *NewJobDialog (struct drqm_jobs_info *info) {
+static GtkWidget *
+NewJobDialog (struct drqm_jobs_info *info) {
   GtkWidget *window;
   GtkWidget *frame;
   GtkWidget *vbox;
@@ -897,12 +885,20 @@ static GtkWidget *NewJobDialog (struct drqm_jobs_info *info) {
   return window;
 }
 
-static void dnj_bsubmitstopped_pressed (GtkWidget *button, struct drqmj_dnji *info) {
+static void
+dnj_bsubmitstopped_pressed (GtkWidget *button, struct drqmj_dnji *info) {
+  // fix compiler warning
+  (void)button;
+  
   info->submitstopped = 1;
 }
 
-static void dnj_psearch (GtkWidget *button, struct drqmj_dnji *info) {
+static void
+dnj_psearch (GtkWidget *button, struct drqmj_dnji *info) {
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select a file as job command");
   info->fs = dialog;
@@ -922,11 +918,16 @@ static void dnj_psearch (GtkWidget *button, struct drqmj_dnji *info) {
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void dnj_set_cmd (GtkWidget *button, struct drqmj_dnji *info) {
+static void
+dnj_set_cmd (GtkWidget *button, struct drqmj_dnji *info) {
+  // fix compiler warning
+  (void)button;
+  
   gtk_entry_set_text (GTK_ENTRY(info->ecmd),gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fs)));
 }
 
-static void dnj_cpri_changed (GtkWidget *entry, struct drqmj_dnji *info) {
+static void
+dnj_cpri_changed (GtkWidget *entry, struct drqmj_dnji *info) {
   if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Highest") == 0) {
     gtk_entry_set_editable (GTK_ENTRY(info->epri),FALSE);
     gtk_entry_set_text (GTK_ENTRY(info->epri),"1000");
@@ -949,9 +950,13 @@ static void dnj_cpri_changed (GtkWidget *entry, struct drqmj_dnji *info) {
   }
 }
 
-static void dnj_bsubmit_pressed (GtkWidget *button, struct drqmj_dnji *info) {
+static void
+dnj_bsubmit_pressed (GtkWidget *button, struct drqmj_dnji *info) {
   GtkWidget *dialog, *label, *image, *okay_button;
   GtkWidget *hbox;
+  
+  // fix compiler warning
+  (void)button;
 
   if (!dnj_submit(info)) {
     dialog = gtk_dialog_new();
@@ -982,7 +987,8 @@ static void dnj_bsubmit_pressed (GtkWidget *button, struct drqmj_dnji *info) {
   }
 }
 
-static int dnj_submit (struct drqmj_dnji *info) {
+static int
+dnj_submit (struct drqmj_dnji *info) {
   /* This is the function that actually submits the job info */
   struct job job;
   struct passwd *pw;
@@ -1057,62 +1063,6 @@ static int dnj_submit (struct drqmj_dnji *info) {
     strncpy(job.koji.blender.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_blender.escene)),BUFFERLEN-1);
     strncpy(job.koji.blender.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_blender.eviewcmd)),BUFFERLEN-1);
     break;
-  case KOJ_BMRT:
-    strncpy(job.koji.bmrt.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.escene)),BUFFERLEN-1);
-    strncpy(job.koji.bmrt.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eviewcmd)),BUFFERLEN-1);
-    /* Custom crop */
-    job.koji.bmrt.custom_crop = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbcrop)->active;
-    if (job.koji.bmrt.custom_crop) {
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropxmin)),"%u",&job.koji.bmrt.xmin) != 1) {
-        fprintf (stderr,"x min could not be read\n");
-        return 0;
-      }
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropxmax)),"%u",&job.koji.bmrt.xmax) != 1) {
-        fprintf (stderr,"x max could not be read\n");
-        return 0;
-      }
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropymin)),"%u",&job.koji.bmrt.ymin) != 1) {
-        fprintf (stderr,"y min could not be read\n");
-        return 0;
-      }
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.ecropymax)),"%u",&job.koji.bmrt.ymax) != 1) {
-        fprintf (stderr,"y max could not be read\n");
-        return 0;
-      }
-    }
-    /* Custom samples */
-    job.koji.bmrt.custom_samples = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbsamples)->active;
-    if (job.koji.bmrt.custom_samples) {
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.exsamples)),"%u",&job.koji.bmrt.xsamples) != 1) {
-        fprintf (stderr,"x samples could not be read\n");
-        return 0;
-      }
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eysamples)),"%u",&job.koji.bmrt.ysamples) != 1) {
-        fprintf (stderr,"y samples could not be read\n");
-        return 0;
-      }
-    }
-    /* Stats, verbose, beep */
-    job.koji.bmrt.disp_stats = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbstats)->active;
-    job.koji.bmrt.verbose = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbverbose)->active;
-    job.koji.bmrt.custom_beep = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbbeep)->active;
-    /* Custom radiosity */
-    job.koji.bmrt.custom_radiosity = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbradiositysamples)->active;
-    if (job.koji.bmrt.custom_radiosity) {
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eradiositysamples)),"%u",&job.koji.bmrt.radiosity_samples) != 1) {
-        fprintf (stderr,"radiosity_samples could not be read\n");
-        return 0;
-      }
-    }
-    /* Custom ray samples */
-    job.koji.bmrt.custom_raysamples = GTK_TOGGLE_BUTTON(info->koji_bmrt.cbraysamples)->active;
-    if (job.koji.bmrt.custom_raysamples) {
-      if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->koji_bmrt.eraysamples)),"%u",&job.koji.bmrt.raysamples) != 1) {
-        fprintf (stderr,"ray samples could not be read\n");
-        return 0;
-      }
-    }
-    break;
   case KOJ_PIXIE:
     strncpy(job.koji.pixie.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_pixie.escene)),BUFFERLEN-1);
     strncpy(job.koji.pixie.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_pixie.eviewcmd)),BUFFERLEN-1);
@@ -1164,6 +1114,10 @@ static int dnj_submit (struct drqmj_dnji *info) {
     strncpy(job.koji.xsi.imageExt,gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.eimageExt)),BUFFERLEN-1);
     strncpy(job.koji.xsi.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_xsi.eviewcmd)),BUFFERLEN-1);
     job.autoRequeue=0;
+    break;
+  case KOJ_LUXRENDER:
+    strncpy(job.koji.luxrender.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_luxrender.escene)),BUFFERLEN-1);
+    strncpy(job.koji.luxrender.viewcmd,gtk_entry_get_text(GTK_ENTRY(info->koji_luxrender.eviewcmd)),BUFFERLEN-1);
     break;
   }
 
@@ -1232,20 +1186,34 @@ static int dnj_submit (struct drqmj_dnji *info) {
   return 1;
 }
 
-static void update_joblist (GtkWidget *widget, struct drqm_jobs_info *info) {
+static void
+update_joblist (GtkWidget *widget, struct drqm_jobs_info *info) {
+  // fix compiler warning
+  (void)widget;
+  
   drqm_request_joblist ((struct drqm_jobs_info*)info);
   drqm_update_joblist ((struct drqm_jobs_info*)info);
 }
 
-static gboolean dnj_deleted (GtkWidget *dialog, GdkEvent *event, struct drqm_jobs_info *info) {
+static gboolean
+dnj_deleted (GtkWidget *dialog, GdkEvent *event, struct drqm_jobs_info *info) {
   gtk_widget_hide (dialog);
   gtk_grab_remove (dialog);
-
+  
+  // fix compiler warning
+  (void)info;
+  (void)event;
+  
   return TRUE;
 }
 
-static int pri_cmp_clist (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
+// FIXME: call this function where it makes sense
+static int
+pri_cmp_clist (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   uint32_t a,b;
+  
+  // fix compiler warning
+  (void)clist;
 
   a = (uint32_t) ((struct job *)((GtkCListRow*)ptr1)->data)->priority;
   b = (uint32_t) ((struct job *)((GtkCListRow*)ptr2)->data)->priority;
@@ -1261,8 +1229,12 @@ static int pri_cmp_clist (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr
   return 0;
 }
 
-void DeleteJob (GtkWidget *menu_item, struct drqm_jobs_info *info) {
+void
+DeleteJob (GtkWidget *menu_item, struct drqm_jobs_info *info) {
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)menu_item;
 
   if (!info->selected)
     return;
@@ -1272,7 +1244,8 @@ void DeleteJob (GtkWidget *menu_item, struct drqm_jobs_info *info) {
   gtk_window_set_modal(GTK_WINDOW(dialog),TRUE);
 }
 
-static GtkWidget *DeleteJobDialog (struct drqm_jobs_info *info) {
+static GtkWidget *
+DeleteJobDialog (struct drqm_jobs_info *info) {
   GtkWidget *dialog;
   GtkWidget *label;
   GtkWidget *button;
@@ -1308,7 +1281,8 @@ static GtkWidget *DeleteJobDialog (struct drqm_jobs_info *info) {
   return dialog;
 }
 
-static void djd_bok_pressed (GtkWidget *button, struct drqm_jobs_info *info) {
+static void
+djd_bok_pressed (GtkWidget *button, struct drqm_jobs_info *info) {
   if (info->jdd.dialog) {
     drqm_request_job_delete (info->jdd.job.id);
     //update_joblist(button,info->jdd.oldinfo);
@@ -1330,7 +1304,8 @@ static void djd_bok_pressed (GtkWidget *button, struct drqm_jobs_info *info) {
   }
 }
 
-void StopJob (GtkWidget *menu_item, struct drqm_jobs_info *info) {
+void
+StopJob (GtkWidget *menu_item, struct drqm_jobs_info *info) {
   if (!info->selected)
     return;
 
@@ -1342,7 +1317,8 @@ void StopJob (GtkWidget *menu_item, struct drqm_jobs_info *info) {
   update_joblist(menu_item,info); /* updates the list */
 }
 
-void ContinueJob (GtkWidget *menu_item, struct drqm_jobs_info *info) {
+void
+ContinueJob (GtkWidget *menu_item, struct drqm_jobs_info *info) {
   if (!info->selected)
     return;
 
@@ -1354,9 +1330,13 @@ void ContinueJob (GtkWidget *menu_item, struct drqm_jobs_info *info) {
   update_joblist(menu_item,info); /* Updates the list */
 }
 
-void ReRunJob (GtkWidget *menu_item, struct drqm_jobs_info *info) {
+void
+ReRunJob (GtkWidget *menu_item, struct drqm_jobs_info *info) {
   GtkWidget *dialog;
   GList *cbs = NULL ;  /* callbacks, pairs (function, argument)*/
+  
+  // fix compiler warning
+  (void)menu_item;
 
   if (!info->selected)
     return;
@@ -1374,7 +1354,11 @@ void ReRunJob (GtkWidget *menu_item, struct drqm_jobs_info *info) {
   gtk_grab_add(dialog);
 }
 
-static void job_rerun_cb (GtkWidget *button, struct drqm_jobs_info *info) {
+static void
+job_rerun_cb (GtkWidget *button, struct drqm_jobs_info *info) {
+  // fix compiler warning
+  (void)button;
+  
   /* job hstop in the for of a gtk signal func callback */
   if (info->jdd.dialog) {
     drqm_request_job_rerun (info->jdd.job.id);
@@ -1383,9 +1367,13 @@ static void job_rerun_cb (GtkWidget *button, struct drqm_jobs_info *info) {
   }
 }
 
-void HStopJob (GtkWidget *menu_item, struct drqm_jobs_info *info) {
+void
+HStopJob (GtkWidget *menu_item, struct drqm_jobs_info *info) {
   GtkWidget *dialog;
   GList *cbs = NULL ;  /* callbacks, pairs (function, argument)*/
+  
+  // fix compiler warning
+  (void)menu_item;
 
   if (!info->selected)
     return;
@@ -1403,7 +1391,11 @@ void HStopJob (GtkWidget *menu_item, struct drqm_jobs_info *info) {
   gtk_grab_add(dialog);
 }
 
-static void job_hstop_cb (GtkWidget *button, struct drqm_jobs_info *info) {
+static void
+job_hstop_cb (GtkWidget *button, struct drqm_jobs_info *info) {
+  // fix compiler warning
+  (void)button;
+  
   /* job hstop in the for of a gtk signal func callback */
   if (info->jdd.dialog) {
     drqm_request_job_hstop (info->jdd.job.id);
@@ -1412,7 +1404,8 @@ static void job_hstop_cb (GtkWidget *button, struct drqm_jobs_info *info) {
   }
 }
 
-static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info) {
+static GtkWidget *
+dnj_koj_widgets (struct drqm_jobs_info *info) {
   GtkWidget *frame;
   GtkWidget *vbox, *hbox, *hbox2;
   GtkWidget *label, *combo;
@@ -1437,7 +1430,6 @@ static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info) {
   items = g_list_append (items,(char*)"Maya");
   items = g_list_append (items,(char*)"Mental Ray");
   items = g_list_append (items,(char*)"Blender");
-  items = g_list_append (items,(char*)"Bmrt");
   items = g_list_append (items,(char*)"Mantra");
   items = g_list_append (items,(char*)"Aqsis");
   items = g_list_append (items,(char*)"Pixie");
@@ -1449,6 +1441,7 @@ static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info) {
   items = g_list_append (items,(char*)"Nuke");
   items = g_list_append (items,(char*)"Turtle");
   items = g_list_append (items,(char*)"XSI");
+  items = g_list_append (items,(char*)"Luxrender");
   combo = gtk_combo_new();
   gtk_tooltips_set_tip(tooltips,GTK_COMBO(combo)->entry,"Selector for the kind of job",NULL);
   gtk_combo_set_popdown_strings (GTK_COMBO(combo),items);
@@ -1464,7 +1457,8 @@ static GtkWidget *dnj_koj_widgets (struct drqm_jobs_info *info) {
   return (frame);
 }
 
-static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info) {
+static void
+dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info) {
   int new_koj = -1;
 
   if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"General") == 0) {
@@ -1475,8 +1469,6 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
     new_koj = KOJ_MENTALRAY;
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Blender") == 0) {
     new_koj = KOJ_BLENDER;
-  } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Bmrt") == 0) {
-    new_koj = KOJ_BMRT;
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Mantra") == 0) {
     new_koj = KOJ_MANTRA;
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Aqsis") == 0) {
@@ -1499,6 +1491,8 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
     new_koj = KOJ_TURTLE;
   } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"XSI") == 0) {
     new_koj = KOJ_XSI;
+  } else if (strcmp(gtk_entry_get_text(GTK_ENTRY(entry)),"Luxrender") == 0) {
+    new_koj = KOJ_LUXRENDER;
   } else {
     /*   fprintf (stderr,"dnj_koj_combo_changed: koj not listed!\n"); */
     /*  fprintf (stderr,"entry: %s\n",gtk_entry_get_text(GTK_ENTRY(entry))); */
@@ -1526,10 +1520,6 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
       break;
     case KOJ_BLENDER:
       info->dnj.fkoj = dnj_koj_frame_blender (info);
-      gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
-      break;
-    case KOJ_BMRT:
-      info->dnj.fkoj = dnj_koj_frame_bmrt (info);
       gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
       break;
     case KOJ_MANTRA:
@@ -1576,11 +1566,16 @@ static void dnj_koj_combo_changed (GtkWidget *entry, struct drqm_jobs_info *info
       info->dnj.fkoj = dnj_koj_frame_xsi (info);
       gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
       break;
+    case KOJ_LUXRENDER:
+      info->dnj.fkoj = dnj_koj_frame_luxrender (info);
+      gtk_box_pack_start(GTK_BOX(info->dnj.vbkoj),info->dnj.fkoj,TRUE,TRUE,2);
+      break;
     }
   }
 }
 
-static GtkWidget *dnj_limits_widgets (struct drqm_jobs_info *info) {
+static GtkWidget *
+dnj_limits_widgets (struct drqm_jobs_info *info) {
   GtkWidget *frame;
   GtkWidget *vbox, *hbox;
   GtkWidget *label, *entry;
@@ -1684,20 +1679,28 @@ static GtkWidget *dnj_limits_widgets (struct drqm_jobs_info *info) {
   return (frame);
 }
 
-void dnj_envvars_add_accept (GtkWidget *bpressed, gpointer userdata) {
+void
+dnj_envvars_add_accept (GtkWidget *bpressed, gpointer userdata) {
   struct drqmj_envvars *info = (struct drqmj_envvars *)userdata;
+  
+  // fix compiler warning
+  (void)bpressed;
 
   envvars_variable_add(&info->envvars,
                        (char *)gtk_entry_get_text(GTK_ENTRY(info->ename)),
                        (char *)gtk_entry_get_text(GTK_ENTRY(info->evalue)));
 }
 
-void dnj_envvars_delete_accept (GtkWidget *bpressed, gpointer userdata) {
+void
+dnj_envvars_delete_accept (GtkWidget *bpressed, gpointer userdata) {
   struct drqmj_envvars *info = (struct drqmj_envvars *)userdata;
 
   GtkTreeSelection *selection;
   GtkTreeModel *model;
   GtkTreeIter iter;
+  
+  // fix compiler warning
+  (void)bpressed;
 
   selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(info->view));
   if (gtk_tree_selection_get_selected(selection, &model, &iter)) {
@@ -1708,13 +1711,17 @@ void dnj_envvars_delete_accept (GtkWidget *bpressed, gpointer userdata) {
   }
 }
 
-void dnj_envvars_add (GtkWidget *menuitem, gpointer userdata) {
+void
+dnj_envvars_add (GtkWidget *menuitem, gpointer userdata) {
   GtkWidget *dialog;
   GtkWidget *button;
   GtkWidget *image;
   GtkWidget *hbox;
   GtkWidget *label;
   GtkWidget *entry;
+  
+  // fix compiler warning
+  (void)menuitem;
 
   struct drqmj_envvars *info = &((struct drqm_jobs_info *)userdata)->dnj.envvars;
   userdata = (gpointer) info;
@@ -1758,9 +1765,13 @@ void dnj_envvars_add (GtkWidget *menuitem, gpointer userdata) {
   gtk_widget_show_all (dialog);
 }
 
-void dnj_envvars_delete (GtkWidget *menu_item, gpointer userdata) {
+void
+dnj_envvars_delete (GtkWidget *menu_item, gpointer userdata) {
   GtkWidget *dialog;
   GList *cbs = NULL ;  /* callbacks, pairs (function, argument)*/
+  
+  // fix compiler warning
+  (void)menu_item;
 
   struct drqmj_envvars *info = &((struct drqm_jobs_info *)userdata)->dnj.envvars;
   userdata = (gpointer) info;
@@ -1784,7 +1795,8 @@ void dnj_envvars_delete (GtkWidget *menu_item, gpointer userdata) {
   gtk_grab_add(dialog);
 }
 
-void dnj_envvars_popup_menu (GtkWidget *treeview, GdkEventButton *event, gpointer userdata) {
+void
+dnj_envvars_popup_menu (GtkWidget *treeview, GdkEventButton *event, gpointer userdata) {
   GtkWidget *menu, *menuitem;
 
   menu = gtk_menu_new ();
@@ -1809,7 +1821,8 @@ void dnj_envvars_popup_menu (GtkWidget *treeview, GdkEventButton *event, gpointe
 }
 
 // Envvars button pressed callback
-gboolean dnj_envvars_bpressed (GtkWidget *treeview, GdkEventButton *event, gpointer userdata) {
+gboolean
+dnj_envvars_bpressed (GtkWidget *treeview, GdkEventButton *event, gpointer userdata) {
   if (event->type == GDK_BUTTON_PRESS && event->button == 3) {
     dnj_envvars_popup_menu (treeview, event, userdata);
 
@@ -1820,13 +1833,15 @@ gboolean dnj_envvars_bpressed (GtkWidget *treeview, GdkEventButton *event, gpoin
 }
 
 // Envvars popup
-gboolean dnj_envvars_popup (GtkWidget *treeview, gpointer userdata) {
+gboolean
+dnj_envvars_popup (GtkWidget *treeview, gpointer userdata) {
   dnj_envvars_popup_menu (treeview,NULL,userdata);
 
   return TRUE;
 }
 
-GtkWidget *dnj_envvars_widgets (struct drqm_jobs_info *info) {
+GtkWidget *
+dnj_envvars_widgets (struct drqm_jobs_info *info) {
   GtkWidget *frame;
   GtkTooltips *tooltips;
   GtkWidget *swindow;
@@ -1881,7 +1896,8 @@ GtkWidget *dnj_envvars_widgets (struct drqm_jobs_info *info) {
   return frame;
 }
 
-GtkWidget *dnj_flags_widgets (struct drqm_jobs_info *info) {
+GtkWidget *
+dnj_flags_widgets (struct drqm_jobs_info *info) {
   GtkWidget *frame;
   GtkWidget *vbox, *hbox;
   GtkWidget *cbutton,*entry;
@@ -1976,10 +1992,14 @@ GtkWidget *dnj_flags_widgets (struct drqm_jobs_info *info) {
   return (frame);
 }
 
-void dnj_envvars_list (GtkWidget *bclicked, struct drqmj_envvars *info) {
+void
+dnj_envvars_list (GtkWidget *bclicked, struct drqmj_envvars *info) {
   GtkListStore *store = info->store;
   GtkTreeIter iter;
   int i;
+  
+  // fix compiler warning
+  (void)bclicked;
 
   gtk_list_store_clear (GTK_LIST_STORE(store));
   if (info->envvars.nvariables) {
@@ -1998,10 +2018,11 @@ void dnj_envvars_list (GtkWidget *bclicked, struct drqmj_envvars *info) {
   }
 }
 
-void dnj_flags_jdepend_refresh_job_list (GtkWidget *bclicked, struct drqm_jobs_info *info) {
+void
+dnj_flags_jdepend_refresh_job_list (GtkWidget *bclicked, struct drqm_jobs_info *info) {
   GtkListStore *store = info->dnj.flags.store;
   GtkTreeIter iter;
-  int i;
+  uint32_t i;
 
   gtk_list_store_clear (GTK_LIST_STORE(store));
   update_joblist(bclicked,info);
@@ -2014,11 +2035,15 @@ void dnj_flags_jdepend_refresh_job_list (GtkWidget *bclicked, struct drqm_jobs_i
   }
 }
 
-void dnj_flags_bjobdepend_clicked (GtkWidget *bclicked, struct drqm_jobs_info *info) {
+void
+dnj_flags_bjobdepend_clicked (GtkWidget *bclicked, struct drqm_jobs_info *info) {
   GtkWidget *dialog;
   GtkWidget *swindow;
   GtkWidget *button;
   GtkWidget *image;
+  
+  // fix compiler warning
+  (void)bclicked;
 
   // TreeView stuff
   GtkCellRenderer *renderer;
@@ -2095,10 +2120,14 @@ void dnj_flags_bjobdepend_clicked (GtkWidget *bclicked, struct drqm_jobs_info *i
   gtk_grab_add (dialog);
 }
 
-void dnj_flags_jdepend_accept (GtkWidget *bclicked, struct drqm_jobs_info *info) {
+void
+dnj_flags_jdepend_accept (GtkWidget *bclicked, struct drqm_jobs_info *info) {
   GtkTreeSelection *selection = NULL;
   GtkTreeModel *model;
   GtkTreeIter iter;
+  
+  // fix compiler warning
+  (void)bclicked;
 
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(info->dnj.flags.view));
 
@@ -2112,7 +2141,11 @@ void dnj_flags_jdepend_accept (GtkWidget *bclicked, struct drqm_jobs_info *info)
   }
 }
 
-void dnj_flags_cbjobdepend_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+void
+dnj_flags_cbjobdepend_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+  // fix compiler warning
+  (void)cbutton;
+  
   if (GTK_TOGGLE_BUTTON(info->dnj.flags.cbjobdepend)->active) {
     gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.flags.ejobdepend),TRUE);
     gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.flags.bjobdepend),TRUE);
@@ -2123,7 +2156,11 @@ void dnj_flags_cbjobdepend_toggled (GtkWidget *cbutton, struct drqm_jobs_info *i
 }
 
 
-void dnj_flags_cbdifemail_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+void
+dnj_flags_cbdifemail_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+  // fix compiler warning
+  (void)cbutton;
+  
   if (GTK_TOGGLE_BUTTON(info->dnj.flags.cbdifemail)->active) {
     gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.flags.edifemail),TRUE);
   } else {
@@ -2131,7 +2168,11 @@ void dnj_flags_cbdifemail_toggled (GtkWidget *cbutton, struct drqm_jobs_info *in
   }
 }
 
-void dnj_flags_cbmailnotify_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+void
+dnj_flags_cbmailnotify_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+  // fix compiler warning
+  (void)cbutton;
+  
   if (GTK_TOGGLE_BUTTON(info->dnj.flags.cbmailnotify)->active) {
     gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.flags.cbdifemail),TRUE);
   } else {
@@ -2140,9 +2181,13 @@ void dnj_flags_cbmailnotify_toggled (GtkWidget *cbutton, struct drqm_jobs_info *
   }
 }
 
-void jobs_column_clicked (GtkCList *clist, gint column, struct drqm_jobs_info *info) {
+void
+jobs_column_clicked (GtkCList *clist, gint column, struct drqm_jobs_info *info) {
   static GtkSortType dir = GTK_SORT_ASCENDING;
   static int lastClick = 0;
+  
+  // fix compiler warning
+  (void)info;
 
   if (lastClick != column) {
     lastClick = column;
@@ -2203,8 +2248,12 @@ void jobs_column_clicked (GtkCList *clist, gint column, struct drqm_jobs_info *i
   }
 }
 
-int jobs_cmp_id (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
+int
+jobs_cmp_id (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   struct job *ja,*jb;
+  
+  // fix compiler warning
+  (void)clist;
 
   ja = (struct job *) ((GtkCListRow*)ptr1)->data;
   jb = (struct job *) ((GtkCListRow*)ptr2)->data;
@@ -2220,8 +2269,12 @@ int jobs_cmp_id (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   return 0;
 }
 
-int jobs_cmp_name (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
+int
+jobs_cmp_name (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   struct job *ja,*jb;
+  
+  // fix compiler warning
+  (void)clist;
 
   int diff;
 
@@ -2241,8 +2294,12 @@ int jobs_cmp_name (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   return 0;
 }
 
-int jobs_cmp_owner (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
+int
+jobs_cmp_owner (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   struct job *ja,*jb;
+  
+  // fix compiler warning
+  (void)clist;
 
   int diff;
 
@@ -2262,8 +2319,12 @@ int jobs_cmp_owner (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   return 0;
 }
 
-int jobs_cmp_status (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
+int
+jobs_cmp_status (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   struct job *ja,*jb;
+  
+  // fix compiler warning
+  (void)clist;
 
   ja = (struct job *) ((GtkCListRow*)ptr1)->data;
   jb = (struct job *) ((GtkCListRow*)ptr2)->data;
@@ -2288,8 +2349,12 @@ int jobs_cmp_status (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   return 0;
 }
 
-int jobs_cmp_processors (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
+int
+jobs_cmp_processors (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   struct job *ja,*jb;
+  
+  // fix compiler warning
+  (void)clist;
 
   ja = (struct job *) ((GtkCListRow*)ptr1)->data;
   jb = (struct job *) ((GtkCListRow*)ptr2)->data;
@@ -2305,8 +2370,12 @@ int jobs_cmp_processors (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2
   return 0;
 }
 
-int jobs_cmp_left (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
+int
+jobs_cmp_left (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   struct job *ja,*jb;
+  
+  // fix compiler warning
+  (void)clist;
 
   ja = (struct job *) ((GtkCListRow*)ptr1)->data;
   jb = (struct job *) ((GtkCListRow*)ptr2)->data;
@@ -2322,8 +2391,12 @@ int jobs_cmp_left (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   return 0;
 }
 
-int jobs_cmp_done (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
+int
+jobs_cmp_done (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   struct job *ja,*jb;
+  
+  // fix compiler warning
+  (void)clist;
 
   ja = (struct job *) ((GtkCListRow*)ptr1)->data;
   jb = (struct job *) ((GtkCListRow*)ptr2)->data;
@@ -2339,8 +2412,12 @@ int jobs_cmp_done (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   return 0;
 }
 
-int jobs_cmp_failed (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
+int
+jobs_cmp_failed (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   struct job *ja,*jb;
+  
+  // fix compiler warning
+  (void)clist;
 
   ja = (struct job *) ((GtkCListRow*)ptr1)->data;
   jb = (struct job *) ((GtkCListRow*)ptr2)->data;
@@ -2356,8 +2433,12 @@ int jobs_cmp_failed (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   return 0;
 }
 
-int jobs_cmp_total (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
+int
+jobs_cmp_total (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   struct job *ja,*jb;
+  
+  // fix compiler warning
+  (void)clist;
 
   ja = (struct job *) ((GtkCListRow*)ptr1)->data;
   jb = (struct job *) ((GtkCListRow*)ptr2)->data;
@@ -2378,8 +2459,12 @@ int jobs_cmp_total (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   return 0;
 }
 
-int jobs_cmp_pri (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
+int
+jobs_cmp_pri (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   struct job *ja,*jb;
+  
+  // fix compiler warning
+  (void)clist;
 
   ja = (struct job *) ((GtkCListRow*)ptr1)->data;
   jb = (struct job *) ((GtkCListRow*)ptr2)->data;
@@ -2395,8 +2480,12 @@ int jobs_cmp_pri (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   return 0;
 }
 
-int jobs_cmp_pool (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
+int
+jobs_cmp_pool (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   struct job *ja,*jb;
+  
+  // fix compiler warning
+  (void)clist;
 
   int diff;
 

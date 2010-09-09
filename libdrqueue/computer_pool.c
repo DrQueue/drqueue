@@ -3,12 +3,12 @@
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -18,34 +18,28 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id: computer.c 1595 2006-10-07 07:12:47Z jorge $
-//
+
+#include <stdio.h>
+#include <signal.h>
+
+#ifndef _WIN32
+  #include <sys/ipc.h>
+  #include <sys/shm.h>
+#endif
 
 #include "libdrqueue.h"
 
-#include <stdio.h>
-#include <unistd.h>
-#include <signal.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <sys/sem.h>
-#include <errno.h>
-#include <sys/wait.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <string.h>
-#include <ctype.h>
-#include <unistd.h>
-#include <stdint.h>
-
-
-// PENDING:
-// * attach counter
-// * semaphore
+// FIXME: attach counter
+// FIXME: semaphore
 
 int
 computer_pool_lock_check (struct computer_limits *cl) {
 #if defined (_NO_COMPUTER_POOL_SEMAPHORES)
+  // fix compiler warning
+  (void)cl;
+  
+  // FIXME: use cl variable
+  
   return 1;
 #else
   if (!semaphore_valid(cl->poolsemid) ) {
@@ -65,6 +59,11 @@ computer_pool_lock_check (struct computer_limits *cl) {
 int
 computer_pool_lock (struct computer_limits *cl) {
 #if defined (_NO_COMPUTER_POOL_SEMAPHORES)
+  // fix compiler warning
+  (void)cl;
+  
+  // FIXME: use cl variable
+  
   return 1;
 #else
   computer_pool_lock_check (cl);
@@ -81,6 +80,11 @@ computer_pool_lock (struct computer_limits *cl) {
 int
 computer_pool_release (struct computer_limits *cl) {
 #if defined (_NO_COMPUTER_POOL_SEMAPHORES)
+  // fix compiler warning
+  (void)cl;
+  
+  // FIXME: use cl variable
+  
   return 1;
 #else
   computer_pool_lock_check (cl);
@@ -104,7 +108,7 @@ computer_pool_set_from_environment (struct computer_limits *cl) {
     log_auto (L_WARNING,"WARNING: Adding default pool. DRQUEUE_POOL not set, joining \"%s\"",DEFAULT_POOL);
     computer_pool_add (cl,DEFAULT_POOL);
   } else {
-    // TODO: list = config_pool_list_get()
+    // FIXME: list = config_pool_list_get()
     while ((pool = strtok (buf,": ,=\n")) != NULL) {
       if (strlen(pool) > 0) {
         buf=NULL;
@@ -128,7 +132,7 @@ computer_pool_set_from_environment (struct computer_limits *cl) {
     } else {
       log_auto (L_ERROR,"computer_pool_set_from_environment() it has been not possible to add any pool. "
 		"Check your logs for shared memory problems.");
-      // TODO: clean_exit()
+      // FIXME: clean_exit()
       kill(0,SIGINT);
     }
   }
@@ -249,7 +253,8 @@ computer_pool_detach_shared_memory (struct computer_limits *cl) {
   return rv;
 }
 
-int computer_pool_add (struct computer_limits *cl, char *poolname) {
+int
+computer_pool_add (struct computer_limits *cl, char *poolname) {
   struct pool *opool = (struct pool *)-1;
   struct pool *npool = (struct pool *)-1;
   int64_t npoolshmid;
@@ -421,7 +426,8 @@ computer_pool_list (struct computer_limits *cl) {
 }
 
 
-int computer_pool_exists (struct computer_limits *cl,char *poolname) {
+int
+computer_pool_exists (struct computer_limits *cl, char *poolname) {
   int i;
   struct pool *npool;
   int found = 0;

@@ -1,0 +1,22 @@
+<div style="text-align:center;">
+
+Please login first.
+<br /><br />
+
+<% form_tag(:action => 'login') do %>
+
+<input id="infos_account" name="infos[account]" size="10" style="height: 15px; vertical-align: bottom;" type="text" value="<%= ENV['LOG_SHOW_USER'] %>" onclick="javascript:document.forms[0].infos_account.value=''" />
+
+&nbsp;&nbsp;&nbsp;
+
+<input id="infos_password" name="infos[password]" size="10" style="height: 15px; vertical-align: bottom;" type="password" value="<%= ENV['LOG_SHOW_PW'] %>" onclick="javascript:document.forms[0].infos_password.value=''" />
+
+&nbsp;&nbsp;&nbsp;
+
+<%= submit_tag("login") %>
+
+<% end %>
+
+</div>
+
+<br /><br /><br />

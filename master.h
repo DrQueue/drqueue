@@ -16,17 +16,16 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
 
 #ifndef _MASTER_H_
 #define _MASTER_H_
 
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
+
 #include "database.h"
 #include "constants.h"
-#include <stdint.h>
-
-#include <stdint.h>
 
 #define KEY_MASTER "master" /* Key for shared memory and semaphores */
 

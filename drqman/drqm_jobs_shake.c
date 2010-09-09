@@ -18,15 +18,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-//
-// $Id$
-//
-
-#include <string.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <pwd.h>
-#include <sys/types.h>
 
 #include "drqm_jobs.h"
 #include "drqm_common.h"
@@ -38,7 +29,9 @@ static void dnj_koj_frame_shake_shakescript_search (GtkWidget *button, struct dr
 static void dnj_koj_frame_shake_shakescript_set (GtkWidget *button, struct drqmj_koji_shake *info);
 static void dnj_koj_frame_shake_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info);
 
-GtkWidget *dnj_koj_frame_shake (struct drqm_jobs_info *info) {
+
+GtkWidget *
+dnj_koj_frame_shake (struct drqm_jobs_info *info) {
   GtkWidget *frame;
   GtkWidget *vbox;
   GtkWidget *hbox,*hbox2;
@@ -128,7 +121,8 @@ GtkWidget *dnj_koj_frame_shake (struct drqm_jobs_info *info) {
   return frame;
 }
 
-GtkWidget *jdd_koj_shake_widgets (struct drqm_jobs_info *info) {
+GtkWidget *
+jdd_koj_shake_widgets (struct drqm_jobs_info *info) {
   GtkWidget *table;
   GtkWidget *label;
   GtkAttachOptions options = (GtkAttachOptions)(GTK_EXPAND | GTK_SHRINK | GTK_FILL) ;
@@ -160,8 +154,12 @@ GtkWidget *jdd_koj_shake_widgets (struct drqm_jobs_info *info) {
   return table;
 }
 
-static void dnj_koj_frame_shake_shakescript_search (GtkWidget *button, struct drqmj_koji_shake *info) {
+static void
+dnj_koj_frame_shake_shakescript_search (GtkWidget *button, struct drqmj_koji_shake *info) {
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select a shake script file");
   info->fsshakescript = dialog;
@@ -182,16 +180,24 @@ static void dnj_koj_frame_shake_shakescript_search (GtkWidget *button, struct dr
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void dnj_koj_frame_shake_shakescript_set (GtkWidget *button, struct drqmj_koji_shake *info) {
+static void
+dnj_koj_frame_shake_shakescript_set (GtkWidget *button, struct drqmj_koji_shake *info) {
   char buf[BUFFERLEN];
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsshakescript)),BUFFERLEN-1);
   gtk_entry_set_text (GTK_ENTRY(info->eshakescript),buf);
 }
 
-static void dnj_koj_frame_shake_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info) {
+static void
+dnj_koj_frame_shake_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info) {
   struct shakesgi shakesgi; /* Shake script generator info */
   char *file;
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy (shakesgi.script,gtk_entry_get_text(GTK_ENTRY(info->koji_shake.eshakescript)),BUFFERLEN-1);
   strncpy (shakesgi.scriptdir,gtk_entry_get_text(GTK_ENTRY(info->koji_shake.escript)),BUFFERLEN-1);
@@ -203,8 +209,13 @@ static void dnj_koj_frame_shake_bcreate_pressed (GtkWidget *button, struct drqmj
     gtk_entry_set_text(GTK_ENTRY(info->ecmd),file);
   }
 }
-static void dnj_koj_frame_shake_script_search (GtkWidget *button, struct drqmj_koji_shake *info) {
+
+static void
+dnj_koj_frame_shake_script_search (GtkWidget *button, struct drqmj_koji_shake *info) {
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select a script directory");
   info->fsscript = dialog;
@@ -225,8 +236,12 @@ static void dnj_koj_frame_shake_script_search (GtkWidget *button, struct drqmj_k
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void dnj_koj_frame_shake_script_set (GtkWidget *button, struct drqmj_koji_shake *info) {
+static void
+dnj_koj_frame_shake_script_set (GtkWidget *button, struct drqmj_koji_shake *info) {
   char buf[BUFFERLEN];
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscript)),BUFFERLEN-1);
   gtk_entry_set_text (GTK_ENTRY(info->escript),buf);

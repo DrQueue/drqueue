@@ -18,20 +18,13 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
 
-#ifdef HAVE_CONFIG_H
-#   include <lconfig.h>
-#endif
-
-#include <string.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#include <stdlib.h>
+#endif
 #include <pwd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 
+#include "drq_stat.h"
 #include "mantrasg.h"
 #include "drqm_jobs.h"
 #include "drqm_common.h"
@@ -66,7 +59,8 @@ static void dnj_koj_frame_mantra_cbType_toggled (GtkWidget *cbutton, struct drqm
 
 //static void dnj_koj_frame_mantra_cbVerbose_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info);
 
-GtkWidget *dnj_koj_frame_mantra (struct drqm_jobs_info *info) {
+GtkWidget *
+dnj_koj_frame_mantra (struct drqm_jobs_info *info) {
   GtkWidget *frame;
   GtkWidget *vbox;
   GtkWidget *hbox,*hbox2;
@@ -421,7 +415,11 @@ GtkWidget *dnj_koj_frame_mantra (struct drqm_jobs_info *info) {
   return frame;
 }
 
-void dnj_koj_frame_mantra_cbbucket_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+void
+dnj_koj_frame_mantra_cbbucket_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+  // fix compiler warning
+  (void)cbutton;
+  
   if (GTK_TOGGLE_BUTTON(info->dnj.koji_mantra.cbbucket)->active) {
     gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.koji_mantra.ebucket),TRUE);
   } else {
@@ -429,7 +427,11 @@ void dnj_koj_frame_mantra_cbbucket_toggled (GtkWidget *cbutton, struct drqm_jobs
   }
 }
 
-void dnj_koj_frame_mantra_cblod_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+void
+dnj_koj_frame_mantra_cblod_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+  // fix compiler warning
+  (void)cbutton;
+  
   if (GTK_TOGGLE_BUTTON(info->dnj.koji_mantra.cblod)->active) {
     gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.koji_mantra.elod),TRUE);
   } else {
@@ -437,7 +439,11 @@ void dnj_koj_frame_mantra_cblod_toggled (GtkWidget *cbutton, struct drqm_jobs_in
   }
 }
 
-void dnj_koj_frame_mantra_cbvaryaa_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+void
+dnj_koj_frame_mantra_cbvaryaa_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+  // fix compiler warning
+  (void)cbutton;
+  
   if (GTK_TOGGLE_BUTTON(info->dnj.koji_mantra.cbvaryaa)->active) {
     gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.koji_mantra.evaryaa),TRUE);
   } else {
@@ -445,7 +451,11 @@ void dnj_koj_frame_mantra_cbvaryaa_toggled (GtkWidget *cbutton, struct drqm_jobs
   }
 }
 
-void dnj_koj_frame_mantra_cbbd_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+void
+dnj_koj_frame_mantra_cbbd_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+  // fix compiler warning
+  (void)cbutton;
+  
   if (GTK_TOGGLE_BUTTON(info->dnj.koji_mantra.cbbd)->active) {
     gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.koji_mantra.ebd),TRUE);
   } else {
@@ -453,7 +463,11 @@ void dnj_koj_frame_mantra_cbbd_toggled (GtkWidget *cbutton, struct drqm_jobs_inf
   }
 }
 
-void dnj_koj_frame_mantra_cbzDepth_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+void
+dnj_koj_frame_mantra_cbzDepth_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+  // fix compiler warning
+  (void)cbutton;
+  
   if (GTK_TOGGLE_BUTTON(info->dnj.koji_mantra.cbzDepth)->active) {
     gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.koji_mantra.ezDepth),TRUE);
   } else {
@@ -461,7 +475,11 @@ void dnj_koj_frame_mantra_cbzDepth_toggled (GtkWidget *cbutton, struct drqm_jobs
   }
 }
 
-void dnj_koj_frame_mantra_cbCracks_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+void
+dnj_koj_frame_mantra_cbCracks_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+  // fix compiler warning
+  (void)cbutton;
+  
   if (GTK_TOGGLE_BUTTON(info->dnj.koji_mantra.cbCracks)->active) {
     gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.koji_mantra.eCracks),TRUE);
   } else {
@@ -469,7 +487,11 @@ void dnj_koj_frame_mantra_cbCracks_toggled (GtkWidget *cbutton, struct drqm_jobs
   }
 }
 
-void dnj_koj_frame_mantra_cbQuality_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+void
+dnj_koj_frame_mantra_cbQuality_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+  // fix compiler warning
+  (void)cbutton;
+  
   if (GTK_TOGGLE_BUTTON(info->dnj.koji_mantra.cbQuality)->active) {
     gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.koji_mantra.eQuality),TRUE);
   } else {
@@ -477,7 +499,11 @@ void dnj_koj_frame_mantra_cbQuality_toggled (GtkWidget *cbutton, struct drqm_job
   }
 }
 
-void dnj_koj_frame_mantra_cbQFiner_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+void
+dnj_koj_frame_mantra_cbQFiner_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+  // fix compiler warning
+  (void)cbutton;
+  
   if (GTK_TOGGLE_BUTTON(info->dnj.koji_mantra.cbQFiner)->active) {
     gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.koji_mantra.eQFiner),TRUE);
   } else {
@@ -485,7 +511,11 @@ void dnj_koj_frame_mantra_cbQFiner_toggled (GtkWidget *cbutton, struct drqm_jobs
   }
 }
 
-void dnj_koj_frame_mantra_cbSMultiplier_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+void
+dnj_koj_frame_mantra_cbSMultiplier_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+  // fix compiler warning
+  (void)cbutton;
+  
   if (GTK_TOGGLE_BUTTON(info->dnj.koji_mantra.cbSMultiplier)->active) {
     gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.koji_mantra.eSMultiplier),TRUE);
   } else {
@@ -493,7 +523,11 @@ void dnj_koj_frame_mantra_cbSMultiplier_toggled (GtkWidget *cbutton, struct drqm
   }
 }
 
-void dnj_koj_frame_mantra_cbMPCache_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+void
+dnj_koj_frame_mantra_cbMPCache_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+  // fix compiler warning
+  (void)cbutton;
+  
   if (GTK_TOGGLE_BUTTON(info->dnj.koji_mantra.cbMPCache)->active) {
     gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.koji_mantra.eMPCache),TRUE);
   } else {
@@ -501,7 +535,11 @@ void dnj_koj_frame_mantra_cbMPCache_toggled (GtkWidget *cbutton, struct drqm_job
   }
 }
 
-void dnj_koj_frame_mantra_cbMCache_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+void
+dnj_koj_frame_mantra_cbMCache_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+  // fix compiler warning
+  (void)cbutton;
+  
   if (GTK_TOGGLE_BUTTON(info->dnj.koji_mantra.cbMCache)->active) {
     gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.koji_mantra.eMCache),TRUE);
   } else {
@@ -509,7 +547,11 @@ void dnj_koj_frame_mantra_cbMCache_toggled (GtkWidget *cbutton, struct drqm_jobs
   }
 }
 
-void dnj_koj_frame_mantra_cbSMPolygon_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+void
+dnj_koj_frame_mantra_cbSMPolygon_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+  // fix compiler warning
+  (void)cbutton;
+  
   if (GTK_TOGGLE_BUTTON(info->dnj.koji_mantra.cbSMPolygon)->active) {
     gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.koji_mantra.eSMPolygon),TRUE);
   } else {
@@ -517,7 +559,11 @@ void dnj_koj_frame_mantra_cbSMPolygon_toggled (GtkWidget *cbutton, struct drqm_j
   }
 }
 
-void dnj_flags_cbWH_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+void
+dnj_flags_cbWH_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+  // fix compiler warning
+  (void)cbutton;
+  
   if (GTK_TOGGLE_BUTTON(info->dnj.koji_mantra.cbWH)->active) {
     gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.koji_mantra.eWidth),TRUE);
     gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.koji_mantra.eHeight),TRUE);
@@ -527,7 +573,11 @@ void dnj_flags_cbWH_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
   }
 }
 
-void dnj_koj_frame_mantra_cbType_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+void
+dnj_koj_frame_mantra_cbType_toggled (GtkWidget *cbutton, struct drqm_jobs_info *info) {
+  // fix compiler warning
+  (void)cbutton;
+  
   if (GTK_TOGGLE_BUTTON(info->dnj.koji_mantra.cbType)->active) {
     gtk_widget_set_sensitive (GTK_WIDGET(info->dnj.koji_mantra.eType),TRUE);
   } else {
@@ -535,7 +585,8 @@ void dnj_koj_frame_mantra_cbType_toggled (GtkWidget *cbutton, struct drqm_jobs_i
   }
 }
 
-GtkWidget *jdd_koj_mantra_widgets (struct drqm_jobs_info *info) {
+GtkWidget *
+jdd_koj_mantra_widgets (struct drqm_jobs_info *info) {
   GtkWidget *table;
   GtkWidget *label;
   GtkAttachOptions options = (GtkAttachOptions)(GTK_EXPAND | GTK_SHRINK | GTK_FILL) ;
@@ -568,8 +619,12 @@ GtkWidget *jdd_koj_mantra_widgets (struct drqm_jobs_info *info) {
   return table;
 }
 
-static void dnj_koj_frame_mantra_scene_search (GtkWidget *button, struct drqmj_koji_mantra *info) {
+static void
+dnj_koj_frame_mantra_scene_search (GtkWidget *button, struct drqmj_koji_mantra *info) {
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select a scene file");
   info->fsscene = dialog;
@@ -590,16 +645,24 @@ static void dnj_koj_frame_mantra_scene_search (GtkWidget *button, struct drqmj_k
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void dnj_koj_frame_mantra_scene_set (GtkWidget *button, struct drqmj_koji_mantra *info) {
+static void
+dnj_koj_frame_mantra_scene_set (GtkWidget *button, struct drqmj_koji_mantra *info) {
   char buf[BUFFERLEN];
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscene)),BUFFERLEN-1);
   gtk_entry_set_text (GTK_ENTRY(info->escene),buf);
 }
 
-static void dnj_koj_frame_mantra_renderdir_search (GtkWidget *button, struct drqmj_koji_mantra *info) {
+static void
+dnj_koj_frame_mantra_renderdir_search (GtkWidget *button, struct drqmj_koji_mantra *info) {
   GtkWidget *dialog;
   char dir[BUFFERLEN];
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select the output directory");
   info->fsrenderdir = dialog;
@@ -621,10 +684,14 @@ static void dnj_koj_frame_mantra_renderdir_search (GtkWidget *button, struct drq
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void dnj_koj_frame_mantra_renderdir_set (GtkWidget *button, struct drqmj_koji_mantra *info) {
+static void
+dnj_koj_frame_mantra_renderdir_set (GtkWidget *button, struct drqmj_koji_mantra *info) {
   struct stat s;
   char buf[BUFFERLEN];
   char *p;
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsrenderdir)),BUFFERLEN-1);
   stat(buf, &s);
@@ -636,9 +703,13 @@ static void dnj_koj_frame_mantra_renderdir_set (GtkWidget *button, struct drqmj_
   gtk_entry_set_text (GTK_ENTRY(info->erenderdir),buf);
 }
 
-static void dnj_koj_frame_mantra_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info) {
+static void
+dnj_koj_frame_mantra_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info) {
   struct mantrasgi mantrasgi; /* Mantra script generator info */
   char *file;
+  
+  // fix compiler warning
+  (void)button;
 
   mantrasgi.raytrace = GTK_TOGGLE_BUTTON(info->koji_mantra.cbraytrace)->active;
   mantrasgi.aaoff = GTK_TOGGLE_BUTTON(info->koji_mantra.cbaaoff)->active;
@@ -753,8 +824,12 @@ static void dnj_koj_frame_mantra_bcreate_pressed (GtkWidget *button, struct drqm
   }
 }
 
-static void dnj_koj_frame_mantra_script_search (GtkWidget *button, struct drqmj_koji_mantra *info) {
+static void
+dnj_koj_frame_mantra_script_search (GtkWidget *button, struct drqmj_koji_mantra *info) {
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select a script directory");
   info->fsscript = dialog;
@@ -775,9 +850,13 @@ static void dnj_koj_frame_mantra_script_search (GtkWidget *button, struct drqmj_
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void dnj_koj_frame_mantra_script_set (GtkWidget *button, struct drqmj_koji_mantra *info) {
+static void
+dnj_koj_frame_mantra_script_set (GtkWidget *button, struct drqmj_koji_mantra *info) {
   char buf[BUFFERLEN];
   char *p;
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscript)),BUFFERLEN-1);
   p = strrchr(buf,DIR_SEPARATOR_CHAR);

@@ -34,9 +34,9 @@ slaves. Also provides access to all data structures of DrQueue."
 #include "libdrqueue.h"
 %}
 
-
 %include "typemaps.i"
 
+%newobject request_computer_list;
 %typemap(in,numinputs=0) struct computer **computer (struct computer *computer) {
     $1 = &computer;
 }
@@ -47,14 +47,17 @@ slaves. Also provides access to all data structures of DrQueue."
     } else {
         int i;
         PyObject *l = PyList_New(0);
-        struct computer *c = malloc (sizeof(struct computer)*result);
-        if (!c)
+		struct computer *c = malloc (sizeof(struct computer)*result);
+        if (!c) {
+			Py_DECREF(l);
             return PyErr_NoMemory();
+		}
         struct computer *tc = c;
         memcpy (c,*$1,sizeof(struct computer)*result);
         for (i=0; i<result; i++) {
-            PyObject *o = SWIG_NewPointerObj((void*)(tc), SWIGTYPE_p_computer, 0);
+            PyObject *o = SWIG_NewPointerObj((void*)(tc), SWIGTYPE_p_computer, 1);
             PyList_Append(l,o);
+            Py_DECREF(o);
             tc++;
         }
         //free (c);
@@ -63,6 +66,7 @@ slaves. Also provides access to all data structures of DrQueue."
     }
 }
 
+%newobject request_job_list;
 %typemap(in,numinputs=0) struct job **job (struct job *job) {
     $1 = &job;
 }
@@ -73,17 +77,19 @@ slaves. Also provides access to all data structures of DrQueue."
     } else {
         int i;
         PyObject *l = PyList_New(0);
-        struct job *j = malloc (sizeof(struct job)*result);
-        if (!j)
-            return PyErr_NoMemory();
-        struct job *tj = j;
-        memcpy (j,*$1,sizeof(struct job)*result);
+        struct job *tj = *$1;
         for (i=0; i<result; i++) {
-            PyObject *o = SWIG_NewPointerObj((void*)(tj), SWIGTYPE_p_job, 0);
+            struct job *j = (struct job *)malloc(sizeof(struct job));
+            if (!j) {
+				Py_DECREF(l);
+                return PyErr_NoMemory();  
+			}
+            memcpy(j,($1[i]),sizeof(struct job));
+            PyObject *o = SWIG_NewPointerObj((void*)(j), SWIGTYPE_p_job, 1);
             PyList_Append(l,o);
+            Py_DECREF(o);
             tj++;
         }
-        //free (j);
         free(*$1);
         $result = l;
     }
@@ -108,23 +114,31 @@ typedef unsigned long int uint32_t;
 typedef unsigned char uint8_t;
 
 
+// these methods generate new objects
+%newobject *::request_job_list;
+%newobject *::request_computer_list;
+
+
 // JOB
 %extend job {
+    %newobject job;
     job ()
     {
         struct job *j;
         j = malloc (sizeof(struct job));
         if (!j)
             return (struct job *)PyErr_NoMemory();
-        
         job_init (j);
         return j;
     }
     
+    %delobject ~job;
     ~job ()
     {
         job_init(self);
-        free (self);
+        //free(self);
+        job_frame_info_free (self);
+		job_delete (self);
     }
     
     int environment_variable_add (char *name, char *value)
@@ -150,7 +164,8 @@ typedef unsigned char uint8_t;
     
         return variable->value;
     }
-    
+   
+    %newobject request_frame_list;
     PyObject *request_frame_list (int who)
     {
         PyObject *l = PyList_New(0);
@@ -159,18 +174,23 @@ typedef unsigned char uint8_t;
         if (nframes) {
             struct frame_info *fi = malloc (sizeof(struct frame_info) * nframes);
             if (!fi) {
+				Py_DECREF(l);
                 return PyErr_NoMemory();
             }
             if (!request_job_xferfi (self->id,fi,nframes,who)) {
+                free(fi);
                 PyErr_SetString(PyExc_IOError,drerrno_str());
+                Py_DECREF(l);
                 return NULL;
             }
             for (i=0; i<nframes; i++) {
                 PyObject *o = SWIG_NewPointerObj((void*)(&fi[i]), SWIGTYPE_p_frame_info, 0);
                 PyList_Append(l,o);
+				Py_DECREF(o);
             }
-            //free (fi);
+            free (fi);
         }
+        Py_INCREF(l);
         return l;
     }
     
@@ -345,6 +365,7 @@ typedef unsigned char uint8_t;
 
 // struct pool
 %extend pool {
+    %newobject pool;
     pool (char *name)
     {
         struct pool *p;
@@ -356,15 +377,18 @@ typedef unsigned char uint8_t;
         return p;
     }
     
+    %delobject ~pool;
     ~pool ()
     {
-        free (self);
+        //free (self);
+        computer_pool_free (self);
     }
 }
 
 
 // COMPUTER
 %extend computer {
+    %newobject computer;
     computer ()
     {
         struct computer *c;
@@ -375,19 +399,20 @@ typedef unsigned char uint8_t;
         return c;
     }
     
+    %delobject computer;
     ~computer ()
     {
-        free (self);
+        //free (self);
+        computer_free (self);
     }
     
+    %newobject list_pools;
     PyObject *list_pools (void)
     {
         PyObject *l = PyList_New(0);
-            int npools = self->limits.npools;
+        int npools = self->limits.npools;
         
-        if ((self->limits.pool.ptr = (struct pool *)
-                computer_pool_attach_shared_memory(&self->limits))
-            == (void*)-1)
+        if ((self->limits.pool.ptr = (struct pool *) computer_pool_attach_shared_memory(&self->limits)) == (void*)-1)
         {
             PyErr_SetString(PyExc_MemoryError,drerrno_str());
         }
@@ -395,13 +420,15 @@ typedef unsigned char uint8_t;
         int i;
         for (i=0;i<npools;i++) {
             struct pool *pool_i = (struct pool *)malloc (sizeof(struct pool));
-                if (!pool_i) {
-                    return PyErr_NoMemory();
-                }
+            if (!pool_i) {
+				Py_DECREF(l);
+                return PyErr_NoMemory();
+            }
             memcpy (pool_i,&self->limits.pool.ptr[i],sizeof(struct pool));
-            PyObject *o = SWIG_NewPointerObj((void*)(pool_i), 
-                                             SWIGTYPE_p_pool, 0);
+            PyObject *o = SWIG_NewPointerObj((void*)(pool_i), SWIGTYPE_p_pool, 0);
             PyList_Append(l,o);
+			Py_DECREF(o);
+            free(pool_i);
         }
         
         computer_pool_detach_shared_memory (&self->limits);

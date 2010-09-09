@@ -1,14 +1,15 @@
 //
 // Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
+// Copyright (C) 2010 Andreas Schroeder
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -18,16 +19,12 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-//
-// $Id$
-//
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ifdef HAVE_STDINT_H
 #include <stdint.h>
-#include <stdarg.h>
+#endif
+
+#include "constants.h"
 
 #include "drqman.h"
 #include "drqm_request.h"
@@ -42,7 +39,7 @@ static GtkWidget *CreateComputersList(struct drqm_computers_info *info);
 static GtkWidget *CreateClist ();
 static GtkWidget *CreateButtonRefresh (struct drqm_computers_info *info);
 static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_computers_info *info);
-static GtkWidget *CreateMenu (struct drqm_computers_info *info);
+static GtkWidget *CreateComputerMenu (struct drqm_computers_info *info);
 static gboolean AutoRefreshUpdate (gpointer info);
 static void EnableComputers (GtkWidget *button,struct drqm_computers_info *info);
 static void DisableComputers (GtkWidget *button,struct drqm_computers_info *info);
@@ -83,7 +80,8 @@ static void dtk_bok_pressed (GtkWidget *button,struct drqm_computers_info *info)
 static void drqm_computer_list_init (struct drqm_computers_info *cinfo);
 
 
-void CreateComputersPage (GtkWidget *notebook,struct info_drqm *info) {
+void
+CreateComputersPage (GtkWidget *notebook,struct info_drqm *info) {
   GtkWidget *label;
   GtkWidget *container;
   GtkWidget *clist;
@@ -146,14 +144,16 @@ drqm_computer_list_init (struct drqm_computers_info *cinfo) {
   cinfo->computers = NULL;
 }
 
-static gboolean AutoRefreshUpdate (gpointer info) {
+static
+gboolean AutoRefreshUpdate (gpointer info) {
   drqm_request_computerlist ((struct drqm_computers_info *)info);
   drqm_update_computerlist ((struct drqm_computers_info *)info);
 
   return TRUE;
 }
 
-static GtkWidget *CreateComputersList(struct drqm_computers_info *info) {
+static GtkWidget *
+CreateComputersList(struct drqm_computers_info *info) {
   GtkWidget *window;
 
   /* Scrolled window */
@@ -167,12 +167,13 @@ static GtkWidget *CreateComputersList(struct drqm_computers_info *info) {
   gtk_container_add (GTK_CONTAINER(window),info->clist);
 
   /* Create the popup menu */
-  info->menu = CreateMenu(info);
+  info->menu = CreateComputerMenu(info);
 
   return (window);
 }
 
-static GtkWidget *CreateClist () {
+static GtkWidget *
+CreateClist () {
   gchar *titles[] = { "ID","Enabled","Running","Name","OS","CPUs","Load Avg", "Pools" };
   GtkWidget *clist;
 
@@ -199,7 +200,8 @@ static GtkWidget *CreateClist () {
   return (clist);
 }
 
-static GtkWidget *CreateButtonRefresh (struct drqm_computers_info *info) {
+static GtkWidget *
+CreateButtonRefresh (struct drqm_computers_info *info) {
   GtkWidget *b;
   GtkWidget *i;
 
@@ -214,10 +216,11 @@ static GtkWidget *CreateButtonRefresh (struct drqm_computers_info *info) {
   return b;
 }
 
-void drqm_update_computerlist (struct drqm_computers_info *info) {
-  int i, j;
+void
+drqm_update_computerlist (struct drqm_computers_info *info) {
+  uint32_t i, j;
   char **buff;
-  int ncols = 8;
+  uint32_t ncols = 8;
 
   buff = (char**) malloc((ncols+1) * sizeof(char*));
   for (i=0;i<ncols;i++)
@@ -235,7 +238,7 @@ void drqm_update_computerlist (struct drqm_computers_info *info) {
     }
     snprintf (buff[2],BUFFERLEN,"%i",info->computers[i].status.ntasks);
     strncpy(buff[3],info->computers[i].hwinfo.name,BUFFERLEN);
-    snprintf (buff[4],BUFFERLEN,osstring((t_os)info->computers[i].hwinfo.os));
+    snprintf (buff[4],BUFFERLEN,"%s",osstring((t_os)info->computers[i].hwinfo.os));
     snprintf (buff[5],BUFFERLEN,"%i",info->computers[i].hwinfo.ncpus);
     snprintf (buff[6],BUFFERLEN,"%i,%i,%i",
               info->computers[i].status.loadavg[0],
@@ -262,9 +265,8 @@ void drqm_update_computerlist (struct drqm_computers_info *info) {
     gtk_clist_append(GTK_CLIST(info->clist),buff);
     gtk_clist_set_row_data (GTK_CLIST(info->clist),i,(gpointer)info->computers[i].hwinfo.name);
 
-    // We don't need the pool any more
-    // ----TESTING----
-    //computer_pool_free(&info->computers[i].limits);
+    // tidy up shared memory piece of computer
+    computer_pool_free(&info->computers[i].limits);
   }
   gtk_clist_thaw(GTK_CLIST(info->clist));
 
@@ -277,7 +279,11 @@ void drqm_update_computerlist (struct drqm_computers_info *info) {
 
 }
 
-static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_computers_info *info) {
+static gint
+PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_computers_info *info) {
+  // fix compiler warning
+  (void)clist;
+  
   if (event->type == GDK_BUTTON_PRESS) {
     GdkEventButton *bevent = (GdkEventButton *) event;
     if (bevent->button != 3)
@@ -292,7 +298,8 @@ static gint PopupMenu(GtkWidget *clist, GdkEvent *event, struct drqm_computers_i
   return FALSE;
 }
 
-static GtkWidget *CreateMenu (struct drqm_computers_info *info) {
+static GtkWidget *
+CreateComputerMenu (struct drqm_computers_info *info) {
   GtkWidget *menu;
   GtkWidget *menu_item;
 
@@ -321,8 +328,12 @@ static GtkWidget *CreateMenu (struct drqm_computers_info *info) {
   return (menu);
 }
 
-static void ComputerDetails(GtkWidget *menu_item, struct drqm_computers_info *info) {
+static void
+ComputerDetails(GtkWidget *menu_item, struct drqm_computers_info *info) {
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)menu_item;
 
   if (!info->selected)
     return;
@@ -332,13 +343,18 @@ static void ComputerDetails(GtkWidget *menu_item, struct drqm_computers_info *in
     gtk_grab_add(dialog);
 }
 
-static void cdd_destroy (GtkWidget *w, struct drqm_computers_info *info) {
+static void
+cdd_destroy (GtkWidget *w, struct drqm_computers_info *info) {
+  // fix compiler warning
+  (void)w;
+  
   if (GTK_TOGGLE_BUTTON(info->cdd.ari.cbenabled)->active) {
     g_source_remove (info->cdd.ari.sourceid);
   }
 }
 
-static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info) {
+static GtkWidget *
+ComputerDetailsDialog (struct drqm_computers_info *info) {
   GtkWidget *window;
   GtkWidget *frame;
   GtkWidget *vbox,*vbox2;
@@ -559,17 +575,19 @@ static GtkWidget *ComputerDetailsDialog (struct drqm_computers_info *info) {
   }
 
   gtk_widget_show_all(window);
-
+  
   return window;
 }
 
-static gboolean cdd_autorefreshupdate (gpointer info) {
+static gboolean
+cdd_autorefreshupdate (gpointer info) {
   cdd_update (NULL,(struct drqm_computers_info *) info);
 
   return TRUE;
 }
 
-GtkWidget *CreateTasksClist (void) {
+GtkWidget *
+CreateTasksClist (void) {
   gchar *titles[] = { "ID","Status","Job name","Job id","Owner","Frame","PID","Start","End"};
   GtkWidget *clist;
 
@@ -604,6 +622,9 @@ cdd_update (GtkWidget *w, struct drqm_computers_info *info) {
   char **buff;   /* for hte clist stuff */
   int ncols = 9;
   int i,row;
+  
+  // fix compiler warning
+  (void)w;
 
   if (!request_comp_xfer(info->icomp,&info->computers[info->row],CLIENT)) {
     if (drerrno == DRE_NOTREGISTERED) {
@@ -734,32 +755,44 @@ cdd_update (GtkWidget *w, struct drqm_computers_info *info) {
     free (buff[i]);
   free(buff);
 
+  // tidy up shared memory piece of computer
+  computer_pool_free(&info->computers[info->row].limits);
+
   return 1;
 }
 
-void cdd_limits_enabled_bcp (GtkWidget *button, struct drqm_computers_info *info) {
+void
+cdd_limits_enabled_bcp (GtkWidget *button, struct drqm_computers_info *info) {
+  // fix compiler warning
+  (void)button;
+  
   /* Computer Details Dialog Limits enabled Button Change Pressed */
   if (info->computers[info->row].limits.enabled) {
-    drqm_request_slave_limits_enabled_set(info->computers[info->row].hwinfo.name,0);
+    drqm_request_slave_limits_enabled_set(info->computers[info->row].hwinfo.address,0);
     info->computers[info->row].limits.enabled = 0;
     gtk_label_set_text (GTK_LABEL(info->cdd.limits.lenabled),"No");
   } else {
-    drqm_request_slave_limits_enabled_set(info->computers[info->row].hwinfo.name,1);
+    drqm_request_slave_limits_enabled_set(info->computers[info->row].hwinfo.address,1);
     info->computers[info->row].limits.enabled = 1;
     gtk_label_set_text (GTK_LABEL(info->cdd.limits.lenabled),"Yes");
   }
 }
 
-void cdd_limits_nmaxcpus_bcp (GtkWidget *button, struct drqm_computers_info *info) {
+void
+cdd_limits_nmaxcpus_bcp (GtkWidget *button, struct drqm_computers_info *info) {
   /* Computer Details Dialog Limits nmaxcpus Button Change Pressed */
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = nmc_dialog (info);
   if (dialog)
     gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-GtkWidget *nmc_dialog (struct drqm_computers_info *info) {
+GtkWidget *
+nmc_dialog (struct drqm_computers_info *info) {
   GtkWidget *window;
   GtkWidget *vbox;
   GtkWidget *hbox;
@@ -810,14 +843,18 @@ GtkWidget *nmc_dialog (struct drqm_computers_info *info) {
   return window;
 }
 
-void nmcd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info) {
+void
+nmcd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info) {
   uint32_t nmaxcpus;
   char msg[BUFFERLEN];
+  
+  // fix compiler warning
+  (void)button;
 
   if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->cdd.limits.enmaxcpus)),"%u",&nmaxcpus) != 1)
     return;   /* Error in the entry */
 
-  drqm_request_slave_limits_nmaxcpus_set(info->computers[info->row].hwinfo.name,nmaxcpus);
+  drqm_request_slave_limits_nmaxcpus_set(info->computers[info->row].hwinfo.address,nmaxcpus);
 
   info->computers[info->row].limits.nmaxcpus = nmaxcpus;
 
@@ -829,13 +866,17 @@ void nmcd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info) 
 void cdd_limits_maxfreeloadcpu_bcp (GtkWidget *button, struct drqm_computers_info *info) {
   /* Computer Details Dialog Limits maxfreeloadcpu Button Change Pressed */
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = mflc_dialog (info);
   if (dialog)
     gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-GtkWidget *mflc_dialog (struct drqm_computers_info *info) {
+GtkWidget *
+mflc_dialog (struct drqm_computers_info *info) {
   GtkWidget *window;
   GtkWidget *vbox;
   GtkWidget *hbox;
@@ -886,14 +927,18 @@ GtkWidget *mflc_dialog (struct drqm_computers_info *info) {
   return window;
 }
 
-void mflcd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info) {
+void
+mflcd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info) {
   uint32_t maxfreeloadcpu;
   char msg[BUFFERLEN];
+  
+  // fix compiler warning
+  (void)button;
 
   if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->cdd.limits.emaxfreeloadcpu)),"%u",&maxfreeloadcpu) != 1)
     return;   /* Error in the entry */
 
-  drqm_request_slave_limits_maxfreeloadcpu_set(info->computers[info->row].hwinfo.name,maxfreeloadcpu);
+  drqm_request_slave_limits_maxfreeloadcpu_set(info->computers[info->row].hwinfo.address,maxfreeloadcpu);
 
   info->computers[info->row].limits.maxfreeloadcpu = maxfreeloadcpu;
 
@@ -902,9 +947,13 @@ void mflcd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info)
   gtk_label_set_text (GTK_LABEL(info->cdd.limits.lmaxfreeloadcpu),msg);
 }
 
-static void KillTask (GtkWidget *menu_item, struct drqm_computers_info *info) {
+static void
+KillTask (GtkWidget *menu_item, struct drqm_computers_info *info) {
   GtkWidget *dialog;
   static GList *cbs = NULL;  /* callbacks */
+  
+  // fix compiler warning
+  (void)menu_item;
 
   if (!info->selected)
     return;
@@ -922,11 +971,15 @@ static void KillTask (GtkWidget *menu_item, struct drqm_computers_info *info) {
     gtk_window_set_modal(GTK_WINDOW(dialog),TRUE);
 }
 
-static void dtk_bok_pressed (GtkWidget *button,struct drqm_computers_info *info) {
+static void
+dtk_bok_pressed (GtkWidget *button,struct drqm_computers_info *info) {
   /* Kill the tasks */
   /* Requeues the finished frames, sets them as waiting again */
   GList *sel;
   uint16_t *itaskp;
+  
+  // fix compiler warning
+  (void)button;
 
   if (!(sel = GTK_CLIST(info->cdd.clist)->selection)) {
     return;
@@ -935,7 +988,7 @@ static void dtk_bok_pressed (GtkWidget *button,struct drqm_computers_info *info)
   for (;sel;sel = sel->next) {
     itaskp = (uint16_t*)gtk_clist_get_row_data(GTK_CLIST(info->cdd.clist),GPOINTER_TO_INT(sel->data));
     if (itaskp != NULL) {
-      drqm_request_slave_task_kill (info->computers[info->row].hwinfo.name,*itaskp);
+      drqm_request_slave_task_kill (info->computers[info->row].hwinfo.address,*itaskp);
       /*   printf ("Killing task: %i on computer: %s\n",itask,info->computers[info->row].hwinfo.name); */
     } else {
       log_auto (L_ERROR,"dtk_bok_pressed() : itaskp stored on clist data == NULL");
@@ -943,7 +996,8 @@ static void dtk_bok_pressed (GtkWidget *button,struct drqm_computers_info *info)
   }
 }
 
-static GtkWidget *CreateMenuTasks (struct drqm_computers_info *info) {
+static GtkWidget *
+CreateMenuTasks (struct drqm_computers_info *info) {
   GtkWidget *menu;
   GtkWidget *menu_item;
 
@@ -959,7 +1013,11 @@ static GtkWidget *CreateMenuTasks (struct drqm_computers_info *info) {
   return (menu);
 }
 
-static gint PopupMenuTasks (GtkWidget *clist, GdkEvent *event, struct drqm_computers_info *info) {
+static gint
+PopupMenuTasks (GtkWidget *clist, GdkEvent *event, struct drqm_computers_info *info) {
+  // fix compiler warning
+  (void)clist;
+  
   if (event->type == GDK_BUTTON_PRESS) {
     GdkEventButton *bevent = (GdkEventButton *) event;
     if (bevent->button != 3)
@@ -974,7 +1032,8 @@ static gint PopupMenuTasks (GtkWidget *clist, GdkEvent *event, struct drqm_compu
   return FALSE;
 }
 
-void cdd_limits_pool_bcp (GtkWidget *bclicked, struct drqm_computers_info *info) {
+void
+cdd_limits_pool_bcp (GtkWidget *bclicked, struct drqm_computers_info *info) {
   /* Computer Details Dialog Limits pool Button Change Pressed */
   GtkWidget *dialog;
   GtkWidget *swindow;
@@ -988,6 +1047,9 @@ void cdd_limits_pool_bcp (GtkWidget *bclicked, struct drqm_computers_info *info)
   GtkWidget *view;
   // Store
   GtkListStore *store;
+  
+  // fix compiler warning
+  (void)bclicked;
 
   dialog = gtk_dialog_new();
   gtk_window_set_title (GTK_WINDOW(dialog),"List of pools");
@@ -1053,13 +1115,18 @@ void cdd_limits_pool_bcp (GtkWidget *bclicked, struct drqm_computers_info *info)
   gtk_grab_add (dialog);
 }
 
-void cdd_limits_pool_add_clicked (GtkWidget *bclicked, struct drqm_computers_info *info) {
-  drqm_request_slave_limits_pool_add (info->computers[info->row].hwinfo.name,
+void
+cdd_limits_pool_add_clicked (GtkWidget *bclicked, struct drqm_computers_info *info) {
+  // fix compiler warning
+  (void)bclicked;
+  
+  drqm_request_slave_limits_pool_add (info->computers[info->row].hwinfo.address,
                                       (char *)gtk_entry_get_text(GTK_ENTRY(info->cdd.limits.epool)));
   cdd_limits_pool_refresh_pool_list (bclicked,info);
 }
 
-void cdd_limits_pool_remove_clicked (GtkWidget *bclicked, struct drqm_computers_info *info) {
+void
+cdd_limits_pool_remove_clicked (GtkWidget *bclicked, struct drqm_computers_info *info) {
   GtkTreeSelection *selection = NULL;
   GtkTreeModel *model;
   GtkTreeIter iter;
@@ -1070,16 +1137,20 @@ void cdd_limits_pool_remove_clicked (GtkWidget *bclicked, struct drqm_computers_
     char *buf;
 
     gtk_tree_model_get (GTK_TREE_MODEL(model),&iter,CDD_POOL_COL_NAME,&buf,-1);
-    drqm_request_slave_limits_pool_remove(info->computers[info->row].hwinfo.name,buf);
+    drqm_request_slave_limits_pool_remove(info->computers[info->row].hwinfo.address,buf);
     cdd_limits_pool_refresh_pool_list (bclicked,info);
   }
 }
 
 
-void cdd_limits_pool_refresh_pool_list (GtkWidget *bclicked, struct drqm_computers_info *info) {
+void
+cdd_limits_pool_refresh_pool_list (GtkWidget *bclicked, struct drqm_computers_info *info) {
   GtkListStore *store = info->cdd.limits.pool_store;
   GtkTreeIter iter;
   int i;
+  
+  // fix compiler warning
+  (void)bclicked;
 
   gtk_list_store_clear (GTK_LIST_STORE(store));
   // cdd_update(bclicked,info);
@@ -1108,9 +1179,13 @@ void cdd_limits_pool_refresh_pool_list (GtkWidget *bclicked, struct drqm_compute
 }
 
 
-void cdd_limits_autoenable_bcp (GtkWidget *button, struct drqm_computers_info *info) {
+void
+cdd_limits_autoenable_bcp (GtkWidget *button, struct drqm_computers_info *info) {
   /* Computer Details Dialog Limits autoenable Button Change Pressed */
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = autoenable_change_dialog (info);
 
@@ -1118,7 +1193,8 @@ void cdd_limits_autoenable_bcp (GtkWidget *button, struct drqm_computers_info *i
     gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-GtkWidget *autoenable_change_dialog (struct drqm_computers_info *info) {
+GtkWidget *
+autoenable_change_dialog (struct drqm_computers_info *info) {
   GtkWidget *window;
   GtkWidget *vbox;
   GtkWidget *hbox,*hbox2;
@@ -1193,10 +1269,14 @@ GtkWidget *autoenable_change_dialog (struct drqm_computers_info *info) {
   return window;
 }
 
-void aecd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info) {
+void
+aecd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info) {
   uint32_t h,m;   /* Hour, minute */
   unsigned char flags ;
   char msg[BUFFERLEN];
+  
+  // fix compiler warning
+  (void)button;
 
   if (sscanf(gtk_entry_get_text(GTK_ENTRY(info->cdd.limits.eautoenabletime_h)),"%u",&h) != 1)
     return;   /* Error in the entry */
@@ -1214,7 +1294,7 @@ void aecd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info) 
   h = h % 24;
   m = m % 60;
 
-  drqm_request_slave_limits_autoenable_set(info->computers[info->row].hwinfo.name,h,m,flags);
+  drqm_request_slave_limits_autoenable_set(info->computers[info->row].hwinfo.address,h,m,flags);
 
   info->computers[info->row].limits.autoenable.h = h;
   info->computers[info->row].limits.autoenable.m = m;
@@ -1225,41 +1305,55 @@ void aecd_bsumbit_pressed (GtkWidget *button, struct drqm_computers_info *info) 
   gtk_label_set_text (GTK_LABEL(info->cdd.limits.lautoenabletime),msg);
 }
 
-static void EnableComputers (GtkWidget *button,struct drqm_computers_info *info) {
+static void
+EnableComputers (GtkWidget *button,struct drqm_computers_info *info) {
   GList *sel;
-  char *name;
+  char *address;
+  
+  // fix compiler warning
+  (void)button;
 
   if (!(sel = GTK_CLIST(info->clist)->selection)) {
     return;
   }
 
   for (;sel;sel = sel->next) {
-    name = (char*) gtk_clist_get_row_data(GTK_CLIST(info->clist),GPOINTER_TO_INT(sel->data));
-    drqm_request_slave_limits_enabled_set(name,1);
+    address = (char*) info->computers[GPOINTER_TO_INT(sel->data)].hwinfo.address;
+    drqm_request_slave_limits_enabled_set(address, 1);
+    log_auto (L_DEBUG, "enabling computer %s", address);
   }
 
   AutoRefreshUpdate(info);
 }
 
-static void DisableComputers (GtkWidget *button,struct drqm_computers_info *info) {
+static void
+DisableComputers (GtkWidget *button,struct drqm_computers_info *info) {
   GList *sel;
-  char *name;
+  char *address;
+  
+  // fix compiler warning
+  (void)button;
 
   if (!(sel = GTK_CLIST(info->clist)->selection)) {
     return;
   }
 
   for (;sel;sel = sel->next) {
-    name = (char*) gtk_clist_get_row_data(GTK_CLIST(info->clist),GPOINTER_TO_INT(sel->data));
-    drqm_request_slave_limits_enabled_set(name,0);
+    address = (char*) info->computers[GPOINTER_TO_INT(sel->data)].hwinfo.address;
+    drqm_request_slave_limits_enabled_set(address, 0);
+    log_auto (L_DEBUG, "disabling computer %s", address);
   }
 
   AutoRefreshUpdate(info);
 }
 
-void computers_column_clicked (GtkCList *clist, gint column, struct drqm_computers_info *info) {
+void
+computers_column_clicked (GtkCList *clist, gint column, struct drqm_computers_info *info) {
   static GtkSortType dir = GTK_SORT_ASCENDING;
   static int lastClick = 0;
+  
+  // fix compiler warning
+  (void)info;
 
   if (lastClick != column) {
     lastClick = column;
@@ -1309,8 +1403,12 @@ void computers_column_clicked (GtkCList *clist, gint column, struct drqm_compute
   }
 }
 
-int computers_cmp_id (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
+int
+computers_cmp_id (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   struct computer *ca,*cb;
+  
+  // fix compiler warning
+  (void)clist;
 
   ca = (struct computer *) ((GtkCListRow*)ptr1)->data;
   cb = (struct computer *) ((GtkCListRow*)ptr2)->data;
@@ -1326,8 +1424,12 @@ int computers_cmp_id (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   return 0;
 }
 
-int computers_cmp_enabled (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
+int
+computers_cmp_enabled (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   struct computer *ca,*cb;
+  
+  // fix compiler warning
+  (void)clist;
 
   ca = (struct computer *) ((GtkCListRow*)ptr1)->data;
   cb = (struct computer *) ((GtkCListRow*)ptr2)->data;
@@ -1343,8 +1445,12 @@ int computers_cmp_enabled (GtkCList *clist, gconstpointer ptr1, gconstpointer pt
   return 0;
 }
 
-int computers_cmp_running (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
+int
+computers_cmp_running (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   struct computer *ca,*cb;
+  
+  // fix compiler warning
+  (void)clist;
 
   ca = (struct computer *) ((GtkCListRow*)ptr1)->data;
   cb = (struct computer *) ((GtkCListRow*)ptr2)->data;
@@ -1360,10 +1466,13 @@ int computers_cmp_running (GtkCList *clist, gconstpointer ptr1, gconstpointer pt
   return 0;
 }
 
-int computers_cmp_name (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
+int
+computers_cmp_name (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   struct computer *ca,*cb;
-
   int diff;
+  
+  // fix compiler warning
+  (void)clist;
 
   ca = (struct computer *) ((GtkCListRow*)ptr1)->data;
   cb = (struct computer *) ((GtkCListRow*)ptr2)->data;
@@ -1381,10 +1490,13 @@ int computers_cmp_name (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
   return 0;
 }
 
-int computers_cmp_os (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
+int
+computers_cmp_os (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   struct computer *ca,*cb;
-
   int diff;
+  
+  // fix compiler warning
+  (void)clist;
 
   ca = (struct computer *) ((GtkCListRow*)ptr1)->data;
   cb = (struct computer *) ((GtkCListRow*)ptr2)->data;
@@ -1402,8 +1514,12 @@ int computers_cmp_os (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   return 0;
 }
 
-int computers_cmp_cpus (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
+int
+computers_cmp_cpus (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   struct computer *ca,*cb;
+  
+  // fix compiler warning
+  (void)clist;
 
   ca = (struct computer *) ((GtkCListRow*)ptr1)->data;
   cb = (struct computer *) ((GtkCListRow*)ptr2)->data;
@@ -1419,8 +1535,12 @@ int computers_cmp_cpus (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
   return 0;
 }
 
-int computers_cmp_loadavg (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
+int
+computers_cmp_loadavg (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   struct computer *ca,*cb;
+  
+  // fix compiler warning
+  (void)clist;
 
   ca = (struct computer *) ((GtkCListRow*)ptr1)->data;
   cb = (struct computer *) ((GtkCListRow*)ptr2)->data;
@@ -1448,23 +1568,24 @@ int computers_cmp_loadavg (GtkCList *clist, gconstpointer ptr1, gconstpointer pt
   return 0;
 }
 
-int computers_cmp_pools (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
+int
+computers_cmp_pools (GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2) {
   struct computer *ca,*cb;
   struct computer_limits *cla,*clb;
-
   int diff;
+  char pa[BUFFERLEN];
+  char pb[BUFFERLEN];
+  char msg2[BUFFERLEN];
+  int i;
+  
+  // fix compiler warning
+  (void)clist;
 
   ca = (struct computer *) ((GtkCListRow*)ptr1)->data;
   cb = (struct computer *) ((GtkCListRow*)ptr2)->data;
 
   cla = &ca->limits;
   clb = &cb->limits;
-
-  char pa[BUFFERLEN];
-  char pb[BUFFERLEN];
-  char msg2[BUFFERLEN];
-
-  int i;
 
   if (cla->npools) {
     struct pool *pool;

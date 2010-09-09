@@ -1,6 +1,8 @@
 //
 // Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 //
+// This file is part of DrQueue
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -16,13 +18,11 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
 
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -53,7 +53,7 @@ void config_parse (char *cfg);
 
 // New config tools
 struct config_node *config_node_new (struct config_node *parent, char *name, char *desc, FILE *file);
-struct config_node *config_read (char *filename,char *tool);
+struct config_node *config_read (char *filename, char *tool);
 struct config_item *config_item_new (struct config_node *base, char *line);
 void config_add_node (struct config_node *base, FILE *file, char *line);
 void config_read_item (struct config_node *base, FILE *file);
@@ -61,7 +61,7 @@ int config_find_nodes (struct config_node *base, FILE *file);
 int config_end_node (struct config_node *base, FILE *file);
 int config_line_ends_node (struct config_node *base, char *line);
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 }
 #endif
 

@@ -3,12 +3,12 @@
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -18,21 +18,22 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
-
 
 #ifndef _JOB_H_
 #define _JOB_H_
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <sys/types.h>
-#include <stdint.h>
-#include <time.h>
 #include <stdio.h>
+
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
+
+#include <sys/types.h>
+#include <time.h>
 #include <limits.h>
 
 #include "constants.h"
@@ -105,22 +106,6 @@ union koj_info {  /* Kind of job information */
     char viewcmd[BUFFERLEN]; /* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
   }
   blender;
-  struct koji_bmrt {
-    char scene[BUFFERLEN];
-    char viewcmd[BUFFERLEN];
-    char custom_crop;
-    uint32_t xmin,xmax,ymin,ymax;
-    char custom_samples;
-    uint32_t xsamples,ysamples;
-    char disp_stats;
-    char verbose;
-    char custom_beep;
-    char custom_radiosity;
-    uint32_t radiosity_samples;
-    char custom_raysamples;
-    uint32_t raysamples;
-  }
-  bmrt;
   struct koji_pixie {
     char scene[BUFFERLEN];
     char viewcmd[BUFFERLEN]; /* something like "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi" */
@@ -191,13 +176,31 @@ union koj_info {  /* Kind of job information */
     char viewcmd[BUFFERLEN]; /* something like "$DRQUEUE_BIN/viewcmd/imf_batch" */
   }
   xsi;
+  struct koji_luxrender {
+    char scene[BUFFERLEN];
+    char script[BUFFERLEN];
+    char viewcmd[BUFFERLEN];
+  }
+  luxrender;
+  struct koji_vray {
+    char script[BUFFERLEN];
+    char viewcmd[BUFFERLEN];
+  }
+  vray;
+  struct koji_threedsmax {
+    char scene[BUFFERLEN];
+    char script[BUFFERLEN];
+    char image[BUFFERLEN];
+    char viewcmd[BUFFERLEN];
+  }
+  threedsmax;
+
 };
 
 /* Koj types */
 #define KOJ_GENERAL       0  // Not specific koj
 #define KOJ_MAYA          1  // Maya koj
 #define KOJ_BLENDER       2  // Blender koj
-#define KOJ_BMRT          3  // BMRT koj
 #define KOJ_3DELIGHT      4  // 3delight koj
 #define KOJ_PIXIE         5  // Pixie koj
 #define KOJ_MENTALRAY     6  // Mental Ray koj
@@ -210,6 +213,9 @@ union koj_info {  /* Kind of job information */
 #define KOJ_TURTLE        13 // Turtle koj
 #define KOJ_MANTRA        14 // Mantra koj
 #define KOJ_XSI           15 // XSI koj
+#define KOJ_LUXRENDER     16 // LUXRENDER koj
+#define KOJ_VRAY		  17 // VRAY koj
+#define KOJ_3DSMAX        18 // 3DSMAX koj
 
 /* JOB SECTION */
 typedef enum {
@@ -274,10 +280,10 @@ struct job {
   uint32_t est_finish_time;     // Estimated finish time
                                 // we checked.
 
-  fptr_type (struct frame_info,frame_info);      // Status of every frame (1 pointer)
+  fptr_type (struct frame_info, frame_info);      // Status of every frame (1 pointer)
   int64_t fishmid;               // Frame info shared memory id
 
-  fptr_type (struct blocked_host,blocked_host);  // Blocked hosts    (1 pointer)
+  fptr_type (struct blocked_host, blocked_host);  // Blocked hosts    (1 pointer)
   int64_t bhshmid;               // Shared memory id for the blocked_host structure
   uint16_t nblocked;             // Number of blocked hosts
 
@@ -303,32 +309,33 @@ uint32_t job_index_free (void *pwdb);
 void job_report (struct job *job);
 char *job_status_string (uint16_t status);
 char *job_frame_status_string (uint8_t status);
-uint32_t job_frame_index_to_number (struct job *job,uint32_t index);
-uint32_t job_frame_number_to_index (struct job *job,uint32_t number);
-int job_frame_number_correct (struct job *job,uint32_t number);
+uint32_t job_frame_index_to_number (struct job *job, uint32_t index);
+uint32_t job_frame_number_to_index (struct job *job, uint32_t number);
+int job_frame_number_correct (struct job *job, uint32_t number);
 uint32_t job_nframes (struct job *job);
 void job_copy (struct job *src, struct job *dst);
 void job_fix_received_invalid (struct job *job);
 void job_bswap_from_network (struct job *orig, struct job *dest);
 void job_bswap_to_network (struct job *orig, struct job *dest);
 
-int job_available (struct database *wdb,uint32_t ijob, uint32_t *iframe, uint32_t icomp);
-int job_available_no_icomp (struct database *wdb,uint32_t ijob, uint32_t *iframe);
-uint32_t job_first_frame_available (struct database *wdb,uint32_t ijob,uint32_t icomp);
-uint32_t job_first_frame_available_no_icomp (struct database *wdb,uint32_t ijob);
+int job_available (struct database *wdb, uint32_t ijob, uint32_t *iframe, uint32_t icomp);
+int job_available_no_icomp (struct database *wdb, uint32_t ijob, uint32_t *iframe);
+uint32_t job_first_frame_available (struct database *wdb, uint32_t ijob, uint32_t icomp);
+uint32_t job_first_frame_available_no_icomp (struct database *wdb, uint32_t ijob);
 
-void job_frame_waiting (struct database *wdb,uint32_t ijob, uint32_t iframe);
-void job_update_assigned (struct database *wdb,uint32_t ijob, uint32_t iframe, uint32_t icomp, uint16_t itask);
-void job_init_registered (struct database *wdb,uint32_t ijob,struct job *job);
+void job_frame_waiting (struct database *wdb, uint32_t ijob, uint32_t iframe);
+void job_update_assigned (struct database *wdb, uint32_t ijob, uint32_t iframe, uint32_t icomp, uint16_t itask);
+void job_init_registered (struct database *wdb, uint32_t ijob, struct job *job);
 void job_init (struct job *job);
 void job_frame_info_init (struct frame_info *fi);
+int job_frame_info_free (struct job *job);
 void job_delete (struct job *job);
 uint32_t job_njobs_masterdb (struct database *wdb);
 void job_update_info (struct database *wdb,uint32_t ijob);
-int job_check_frame_status (struct database *wdb,uint32_t ijob, uint32_t iframe, struct frame_info *fi); // bool
+int job_check_frame_status (struct database *wdb, uint32_t ijob, uint32_t iframe, struct frame_info *fi); // bool
 void job_stop (struct job *job);
 void job_continue (struct job *job);
-int job_index_correct_master (struct database *wdb,uint32_t ijob); // bool
+int job_index_correct_master (struct database *wdb, uint32_t ijob); // bool
 
 void job_limits_init (struct job_limits *limits);
 int job_limits_passed (struct database *wdb, uint32_t ijob, uint32_t icomp); // bool
@@ -349,16 +356,15 @@ int64_t get_blocked_host_shared_memory (uint32_t nhosts); /* ipc shared memory *
 struct blocked_host *attach_blocked_host_shared_memory (int64_t shmid);
 void detach_blocked_host_shared_memory (struct blocked_host *bhshp);
 
-int priority_job_compare (const void *a,const void *b);
+int priority_job_compare (const void *a, const void *b);
 
 char *job_koj_string (struct job *job);
-
 
 int job_block_host_add_by_name (struct job *job, char *name);
 int job_block_host_remove_by_name (struct job *job, char *name);
 int job_block_host_exists_by_name (struct job *job, char *name);
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 }
 #endif
 

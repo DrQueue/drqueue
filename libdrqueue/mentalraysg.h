@@ -1,5 +1,8 @@
 //
 // Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2010 Andreas Schroeder
+//
+// This file is part of DrQueue
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,9 +23,14 @@
 #ifndef _MENTALRAYSG_H_
 #define _MENTALRAYSG_H_
 
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
+
 #include "constants.h"
 
-#ifdef __CPLUSPLUS
+
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -37,7 +45,8 @@ extern "C" {
     char camera[BUFFERLEN];
     int  res_x,res_y;  /* Resolution of the frame */
     char format[BUFFERLEN];
-    int  mentalray;  // 1 if we should render with mr
+    uint8_t render_type;  // 1 if we should render animations
+    				      // 2 if we should distribute one single image
   };
 
 #pragma pack(pop)
@@ -46,7 +55,7 @@ extern "C" {
 
   char *mentalraysg_default_script_path (void);
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 }
 #endif
 

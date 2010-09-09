@@ -18,15 +18,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-//
-// $Id$
-//
 
-#include <string.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <pwd.h>
-#include <sys/types.h>
 #include <gtk/gtk.h>
 
 #include "drqm_autorefresh.h"
@@ -56,6 +48,9 @@ GtkWidget *CreateAutoRefreshWidgets (struct drqm_autorefresh_info *ari) {
 
 void AutoRefreshCheckButtonToggled (GtkWidget *cbutton, struct drqm_autorefresh_info *ari) {
   int delay;
+  
+  // fix compiler warning
+  (void)cbutton;
 
   if (GTK_TOGGLE_BUTTON(ari->cbenabled)->active) {
     gtk_entry_set_editable(GTK_ENTRY(ari->eseconds),FALSE);
@@ -72,5 +67,8 @@ void AutoRefreshCheckButtonToggled (GtkWidget *cbutton, struct drqm_autorefresh_
 }
 
 void AutoRefreshEntryChanged (GtkWidget *entry, struct drqm_autorefresh_info *ari) {
-  // Not necessary at the moment
+  // FIXME: Not necessary at the moment
+  // fix compiler warning
+  (void)entry;
+  (void)ari;
 }

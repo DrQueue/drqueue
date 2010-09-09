@@ -18,18 +18,13 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-//
-// $Id$
-//
 
-
-#include <string.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#include <stdlib.h>
+#endif
 #include <pwd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 
+#include "drq_stat.h"
 #include "drqm_jobs.h"
 #include "drqm_common.h"
 #include "drqm_jobs_mentalray.h"
@@ -42,7 +37,8 @@ static void dnj_koj_frame_mentalray_scene_search (GtkWidget *button, struct drqm
 static void dnj_koj_frame_mentalray_scene_set (GtkWidget *button, struct drqmj_koji_mentalray *info);
 static void dnj_koj_frame_mentalray_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info);
 
-GtkWidget *dnj_koj_frame_mentalray (struct drqm_jobs_info *info) {
+GtkWidget *
+dnj_koj_frame_mentalray (struct drqm_jobs_info *info) {
   GtkWidget *frame;
   GtkWidget *vbox;
   GtkWidget *hbox,*hbox2;
@@ -179,7 +175,8 @@ GtkWidget *dnj_koj_frame_mentalray (struct drqm_jobs_info *info) {
   return frame;
 }
 
-GtkWidget *jdd_koj_mentalray_widgets (struct drqm_jobs_info *info) {
+GtkWidget *
+jdd_koj_mentalray_widgets (struct drqm_jobs_info *info) {
   GtkWidget *table;
   GtkWidget *label;
   GtkAttachOptions options = (GtkAttachOptions)(GTK_EXPAND | GTK_SHRINK | GTK_FILL) ;
@@ -213,9 +210,12 @@ GtkWidget *jdd_koj_mentalray_widgets (struct drqm_jobs_info *info) {
   return table;
 }
 
-static void dnj_koj_frame_mentalray_renderdir_search (GtkWidget *button, struct drqmj_koji_mentalray *info) {
+static void
+dnj_koj_frame_mentalray_renderdir_search (GtkWidget *button, struct drqmj_koji_mentalray *info) {
   GtkWidget *dialog;
-  char dir[BUFFERLEN];
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select the output directory");
   info->fsrenderdir = dialog;
@@ -232,10 +232,14 @@ static void dnj_koj_frame_mentalray_renderdir_search (GtkWidget *button, struct 
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void dnj_koj_frame_mentalray_renderdir_set (GtkWidget *button, struct drqmj_koji_mentalray *info) {
+static void
+dnj_koj_frame_mentalray_renderdir_set (GtkWidget *button, struct drqmj_koji_mentalray *info) {
   struct stat s;
   char buf[BUFFERLEN];
   char *p;
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsrenderdir)),BUFFERLEN-1);
   stat(buf, &s);
@@ -247,8 +251,12 @@ static void dnj_koj_frame_mentalray_renderdir_set (GtkWidget *button, struct drq
   gtk_entry_set_text (GTK_ENTRY(info->erenderdir),buf);
 }
 
-static void dnj_koj_frame_mentalray_scene_search (GtkWidget *button, struct drqmj_koji_mentalray *info) {
+static void
+dnj_koj_frame_mentalray_scene_search (GtkWidget *button, struct drqmj_koji_mentalray *info) {
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select a scene file");
   info->fsscene = dialog;
@@ -269,9 +277,13 @@ static void dnj_koj_frame_mentalray_scene_search (GtkWidget *button, struct drqm
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void dnj_koj_frame_mentalray_scene_set (GtkWidget *button, struct drqmj_koji_mentalray *info) {
+static void
+dnj_koj_frame_mentalray_scene_set (GtkWidget *button, struct drqmj_koji_mentalray *info) {
   char buf[BUFFERLEN];
   char *p;
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscene)),BUFFERLEN-1);
   /* This removed the path part of the filename */
@@ -282,9 +294,15 @@ static void dnj_koj_frame_mentalray_scene_set (GtkWidget *button, struct drqmj_k
   gtk_entry_set_text (GTK_ENTRY(info->escene),p);
 }
 
-static void dnj_koj_frame_mentalray_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info) {
+static void
+dnj_koj_frame_mentalray_bcreate_pressed (GtkWidget *button, struct drqmj_dnji *info) {
   struct mentalraysgi mentalraysgi; /* Mental Ray script generator info */
   char *file;
+
+  mentalraysgi.render_type = 1; /* we render animations */
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy (mentalraysgi.renderdir,gtk_entry_get_text(GTK_ENTRY(info->koji_mentalray.erenderdir)),BUFFERLEN-1);
   strncpy (mentalraysgi.scene,gtk_entry_get_text(GTK_ENTRY(info->koji_mentalray.escene)),BUFFERLEN-1);
@@ -303,8 +321,12 @@ static void dnj_koj_frame_mentalray_bcreate_pressed (GtkWidget *button, struct d
   }
 }
 
-static void dnj_koj_frame_mentalray_script_search (GtkWidget *button, struct drqmj_koji_mentalray *info) {
+static void
+dnj_koj_frame_mentalray_script_search (GtkWidget *button, struct drqmj_koji_mentalray *info) {
   GtkWidget *dialog;
+  
+  // fix compiler warning
+  (void)button;
 
   dialog = gtk_file_selection_new ("Please select a script directory");
   info->fsscript = dialog;
@@ -328,9 +350,13 @@ static void dnj_koj_frame_mentalray_script_search (GtkWidget *button, struct drq
   gtk_window_set_modal (GTK_WINDOW(dialog),TRUE);
 }
 
-static void dnj_koj_frame_mentalray_script_set (GtkWidget *button, struct drqmj_koji_mentalray *info) {
+static void
+dnj_koj_frame_mentalray_script_set (GtkWidget *button, struct drqmj_koji_mentalray *info) {
   char buf[BUFFERLEN];
   char *p;
+  
+  // fix compiler warning
+  (void)button;
 
   strncpy(buf,gtk_file_selection_get_filename(GTK_FILE_SELECTION(info->fsscript)),BUFFERLEN-1);
   p = strrchr(buf,'/');

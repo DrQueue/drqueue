@@ -1,5 +1,8 @@
 //
 // Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2010 Andreas Schroeder
+//
+// This file is part of DrQueue
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,7 +16,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA      02111-1307
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
 
@@ -22,17 +25,15 @@
 
 #include "constants.h"
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 extern "C" {
 #endif
 
 #pragma pack(push,1)
 
   struct generalsgi {             /* general Script Generator Info */
-    char drqueue_scriptdir[BUFFERLEN];
+    char scriptdir[BUFFERLEN];
     char script[BUFFERLEN];
-    // I'd like to get the script location path and store it.
-    char *scriptdir;
     uid_t uid_owner;
     gid_t gid_owner;
   };
@@ -42,7 +43,7 @@ extern "C" {
   char *generalsg_create (struct generalsgi *info);
   char *generalsg_default_script_path (void);
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 }
 #endif
 

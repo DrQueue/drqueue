@@ -3,12 +3,12 @@
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -18,16 +18,15 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
 
 #ifndef _TASK_H_
 #define _TASK_H_
 
-#include "constants.h"
-
-#include <sys/types.h>
+#ifdef HAVE_STDINT_H
 #include <stdint.h>
+#endif
+
+#include "constants.h"
 
 #define DR_EXITEDFLAG (0x0100)
 #define DR_SIGNALEDFLAG (0x0200)
@@ -37,7 +36,7 @@
 #define DR_WIFSIGNALED(stat) ((stat)&DR_SIGNALEDFLAG)
 #define DR_WTERMSIG(stat)   ((stat)&0xff)
 
-// TODO: limit time LOADING and FINISHED
+// FIXME: limit time LOADING and FINISHED
 typedef enum {
   TASKSTATUS_LOADING,  /* Assigned but not running yet */
   TASKSTATUS_RUNNING,

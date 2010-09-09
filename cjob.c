@@ -1,5 +1,8 @@
 //
 // Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2010 Andreas Schroeder
+//
+// This file is part of DrQueue
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,17 +19,12 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
 
 #include <stdio.h>
+
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#include <errno.h>
-#include <sys/wait.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <string.h>
-#include <ctype.h>
+#endif
 
 #include "libdrqueue.h"
 
@@ -41,9 +39,16 @@ void usage (void);
 
 int main (int argc,char *argv[]) {
   int opt;
-  uint32_t ijob = -1;
+  int ijob = -1;
   int action = ACTION_NONE;
   struct job job;
+  int nRet = 0;
+
+  if(network_initialize() != 0) {
+    fprintf (stderr,"Could not initialize the network: %s\n", drerrno_str());
+    nRet = 1;
+    goto cleanup;
+  }
 
   while ((opt = getopt (argc,argv,"sdcktj:vh")) != -1) {
     switch (opt) {
@@ -67,50 +72,56 @@ int main (int argc,char *argv[]) {
       break;
     case 'v':
       show_version (argv);
-      exit (0);
+      goto cleanup;
     case '?':
     case 'h':
       usage();
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
   }
 
   if ((ijob == -1) || (action == ACTION_NONE)) {
     usage ();
-    exit (1);
+    nRet = 1;
+      goto cleanup;
   }
 
   set_default_env();
 
   if (!common_environment_check()) {
     fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
-    exit (1);
+    nRet = 1;
+    goto cleanup;
   }
 
   switch (action) {
   case ACTION_STOP:
     printf ("Stopping job: %i\n",ijob);
-    request_job_stop(ijob,CLIENT);
+    request_job_stop((uint32_t)ijob,CLIENT);
     break;
   case ACTION_HSTOP:
     printf ("Hard stopping job: %i\n",ijob);
-    request_job_hstop(ijob,CLIENT);
+    request_job_hstop((uint32_t)ijob,CLIENT);
     break;
   case ACTION_DEL:
     printf ("Deleting job: %i\n",ijob);
-    request_job_delete(ijob,CLIENT);
+    request_job_delete((uint32_t)ijob,CLIENT);
     break;
   case ACTION_CONT:
     printf ("Continue job: %i\n",ijob);
-    request_job_continue(ijob,CLIENT);
+    request_job_continue((uint32_t)ijob,CLIENT);
     break;
   case ACTION_STATUS:
-    request_job_xfer(ijob,&job,CLIENT);
+    request_job_xfer((uint32_t)ijob,&job,CLIENT);
     printf ("%s\n",job_status_string(job.status));
     break;
   }
 
-  exit (0);
+cleanup:
+  network_shutdown();
+
+  return nRet;
 }
 
 void usage (void) {

@@ -1,5 +1,8 @@
 //
 // Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2010 Andreas Schroeder
+//
+// This file is part of DrQueue
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,37 +19,21 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
 
 #ifndef _PIXIESG_H_
 #define _PIXIESG_H_
 
-#ifdef __LINUX
+#ifdef HAVE_STDINT_H
 #include <stdint.h>
-#else
-# ifdef __IRIX
-#  include <sys/types.h>
-# else
-#  ifdef __OSX
-#  include <stdint.h>
-#  else
-#  ifdef __FREEBSD
-#   include <stdint.h>
-#  else
-#   ifdef __CYGWIN
-#   include <stdint.h>
-#   else
-#   error You need to define the OS, or OS defined not supported
-#   endif
-#  endif
-#  endif
-# endif
+#endif
+
+#ifdef __IRIX
+  #include <sys/types.h>
 #endif
 
 #include "constants.h"
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -76,7 +63,7 @@ extern "C" {
   char *pixiesg_create (struct pixiesgi *info);
   char *pixiesg_default_script_path (void);
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 }
 #endif
 

@@ -3,12 +3,12 @@
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -18,21 +18,19 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
 
 #ifndef _COMMON_H_
 #define _COMMON_H_
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 extern "C" {
 #endif
 
 #include "libdrqueue.h"
 #include "pointer.h"
 #include "job.h"
+#include "git_rev.h"
 
-#define REVISION "$Rev$"
 #define VERSION_MAJOR  0
 #define VERSION_MINOR  65
 #define VERSION_PATCH  0
@@ -59,7 +57,9 @@ char *get_version_complete (void);
 uint64_t dr_hton64(uint64_t);
 uint64_t dr_ntoh64(uint64_t);
 
-#ifdef __CPLUSPLUS
+void dr_copy_path(char *pDest, const char *pSrc, int nLen);
+
+#ifdef __cplusplus
 }
 #endif
 

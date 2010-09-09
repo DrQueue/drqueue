@@ -3,12 +3,12 @@
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -18,23 +18,16 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
+#include <stdio.h>
 
+#include "drq_stat.h"
 #include "common.h"
 #include "drerrno.h"
 #include "constants.h"
 #include "logger.h"
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <string.h>
-#include <ctype.h>
-
-int common_environment_check (void) {
+int
+common_environment_check (void) {
   /* This function checks the environment AND the directory structure */
   char *buf;
   struct stat s_stat;
@@ -61,7 +54,7 @@ int common_environment_check (void) {
     log_auto (L_ERROR,"Could not find temp path '%s'. (%s)",dir_str,strerror(drerrno_system));
     return 0;
   } else {
-#ifdef __CYGWIN
+#if defined (__CYGWIN) || defined(_WIN32)
     if (!S_ISDIR(s_stat.st_mode)) {
       drerrno = DRE_NOTMPDIR;
       return 0;
@@ -85,7 +78,7 @@ int common_environment_check (void) {
     drerrno = DRE_NODBDIR;
     return 0;
   } else {
-#ifdef __CYGWIN
+#if defined (__CYGWIN) || defined(_WIN32)
     if (!S_ISDIR(s_stat.st_mode)) {
       drerrno_system = errno;  
       log_auto (L_ERROR,"no database directory found on '%s'. It's not a directory. (%s)",dir_str,strerror(drerrno_system));
@@ -111,7 +104,7 @@ int common_environment_check (void) {
     drerrno = DRE_NOLOGDIR;
     return 0;
   } else {
-#ifdef __CYGWIN
+#if defined (__CYGWIN) || defined(_WIN32)
     if (!S_ISDIR(s_stat.st_mode)) {
       drerrno = DRE_NOLOGDIR;
       return 0;
@@ -147,11 +140,18 @@ int common_environment_check (void) {
   return 1;
 }
 
-void show_version (char **argv) {
+void
+show_version (char **argv) {
+  // fix compiler warning
+  (void)argv;
+  
+  // FIXME: use argv variable
+  
   printf ("DrQueue (Version: %s)\n",get_version_complete());
 }
 
-int rmdir_check_str (char *path) {
+int
+rmdir_check_str (char *path) {
   // This function should test a path's validity
   // So we don't pass a wrong path to remove_dir by mistake
 
@@ -165,7 +165,8 @@ int rmdir_check_str (char *path) {
   return 0;
 }
 
-int remove_dir (char *dir) {
+int
+remove_dir (char *dir) {
   /* Removes a directory recursively */
   char cmd[BUFFERLEN];
 
@@ -179,7 +180,8 @@ int remove_dir (char *dir) {
   return 0;
 }
 
-void mn_job_finished (struct job *job) {
+void
+mn_job_finished (struct job *job) {
   FILE *mail;
   char command[BUFFERLEN];
   uint32_t total;
@@ -204,7 +206,8 @@ void mn_job_finished (struct job *job) {
   pclose (mail);
 }
 
-char *time_str (uint32_t nseconds) {
+char *
+time_str (uint32_t nseconds) {
   static char msg[BUFFERLEN];
 
   if ((nseconds / 3600) > 0) {
@@ -223,7 +226,8 @@ char *time_str (uint32_t nseconds) {
   return msg;
 }
 
-int common_date_check (void) {
+int
+common_date_check (void) {
   time_t now;
   struct tm *tm_now;
 
@@ -238,8 +242,38 @@ int common_date_check (void) {
   return 1;
 }
 
-void set_default_env(void) {
+void
+set_default_env(void) {
   char *penv,renv[BUFFERLEN],*drq_root,*drq_root_cp;
+#ifdef _WIN32
+  HKEY keyDrQueue;
+
+  /* Attempt to get the settings from the Registry. */
+  if(RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\DrQueue", 0, KEY_READ, &keyDrQueue) == ERROR_SUCCESS)
+  {
+    BYTE pPath[BUFFERLEN] = {0};
+    DWORD nDataSize = BUFFERLEN;
+
+    if(RegQueryValueExA(keyDrQueue, "DRQUEUE_ROOT", NULL, NULL, pPath, &nDataSize) == ERROR_SUCCESS)
+    {
+      snprintf(renv,BUFFERLEN,"DRQUEUE_ROOT=%s",pPath);
+      penv = (char*) malloc (strlen(renv)+1);
+      strncpy(penv,renv,strlen(renv)+1);
+      putenv(penv);
+    }
+    
+    nDataSize = BUFFERLEN;
+    if(RegQueryValueExA(keyDrQueue, "DRQUEUE_MASTER", NULL, NULL, pPath, &nDataSize) == ERROR_SUCCESS)
+    {
+      snprintf(renv,BUFFERLEN,"DRQUEUE_MASTER=%s",pPath);
+      penv = (char*) malloc (strlen(renv)+1);
+      strncpy(penv,renv,strlen(renv)+1);
+      putenv(penv);
+    }
+
+    RegCloseKey(keyDrQueue);
+  }
+#endif
 
   if ((drq_root = getenv("DRQUEUE_ROOT")) == NULL) {
     drerrno = DRE_NOENVROOT;
@@ -260,7 +294,6 @@ void set_default_env(void) {
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
-    //free(penv);
   }
 
   if (!getenv("DRQUEUE_ETC")) {
@@ -269,7 +302,6 @@ void set_default_env(void) {
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
-    //free(penv);
   }
 
   if (!getenv("DRQUEUE_BIN")) {
@@ -278,7 +310,6 @@ void set_default_env(void) {
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
-    //free(penv);
   }
 
   if (!getenv("DRQUEUE_LOGS")) {
@@ -287,7 +318,6 @@ void set_default_env(void) {
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
-    //free(penv);
   }
 
   if (!getenv("DRQUEUE_DB")) {
@@ -296,7 +326,6 @@ void set_default_env(void) {
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
-    //free(penv);
   }
 
 #ifdef __CYGWIN
@@ -305,7 +334,6 @@ void set_default_env(void) {
     penv = (char*) malloc (strlen(renv)+1);
     strncpy(penv,renv,strlen(renv)+1);
     putenv(penv);
-    //free(penv);
   }
 #endif
   
@@ -313,27 +341,9 @@ void set_default_env(void) {
 
 char *
 get_revision_string () {
-  char *duprev = strdup("$Rev$");
-  char *number = duprev;
-  char *p = duprev;
-  char *e = p + strlen(duprev);
-
-  while ((p!=e) && !isdigit(*p)) {
-    p++;
-  }
-  if (p!=e) {
-    char *t = e;
-    number = p;
-    e=p;
-    while ((e!=t) && isdigit(*e)) {
-      e++;
-    }
-    if (e!=t) {
-      *e = 0 ;
-    }
-  }
-
-  return number;
+  static char buf[BUFFERLEN];
+  strncpy(buf, REVISION, BUFFERLEN-1);
+  return buf;
 }
 
 char *
@@ -352,7 +362,7 @@ get_version_prepost () {
 char *
 get_version_complete () {
   static char buffer[BUFFERLEN];
-  snprintf (buffer,BUFFERLEN,"%i.%02i.%i%s-r%s",VERSION_MAJOR,VERSION_MINOR,VERSION_PATCH,
+  snprintf (buffer,BUFFERLEN,"%i.%02i.%i%s (%s)",VERSION_MAJOR,VERSION_MINOR,VERSION_PATCH,
 	    get_version_prepost(),get_revision_string());
   return buffer;
 }
@@ -391,3 +401,16 @@ dr_ntoh64 (uint64_t source) {
   return swap64(source);
 #endif
 }
+
+void
+dr_copy_path(char *pDest, const char *pSrc, int nLen)
+{
+#ifdef __CYGWIN
+  (void)nLen;
+
+  cygwin_conv_to_posix_path(pDest, pSrc);
+#else
+  strncpy(pDest,pSrc,nLen);
+#endif
+}
+

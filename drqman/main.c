@@ -18,23 +18,13 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
 
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#include <stdio.h>
-#include <signal.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <sys/sem.h>
-#include <errno.h>
-#include <sys/wait.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <string.h>
-#include <ctype.h>
+#endif
 
 #include "drqman.h"
+#include "drqm_common.h"
 #include "notebook.h"
 #include "libdrqueue.h"
 
@@ -55,8 +45,15 @@ int main (int argc, char *argv[]) {
   GtkWidget *window;
   GtkWidget *main_vbox;
   char rc_file[MAXCMDLEN];
+  int nRet = 0;
 
   gtk_init(&argc,&argv);
+  
+  if(network_initialize() != 0) {
+    fprintf (stderr,"Could not initialize the network: %s\n", drerrno_str());
+    nRet = 1;
+    goto cleanup;
+  }
   
   // fprintf (stderr,"drqman pid: %i\n",getpid());
   drqman_get_options(&argc,&argv);
@@ -77,8 +74,8 @@ int main (int argc, char *argv[]) {
   gtk_hbutton_box_set_layout_default (GTK_BUTTONBOX_SPREAD);
 
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title(GTK_WINDOW(window),"DrQueue Manager");
-  gtk_window_set_default_size(GTK_WINDOW(window),700,400);
+  gtk_window_set_title(GTK_WINDOW(window),DRQ_TITLE);
+  gtk_window_set_default_size(GTK_WINDOW(window),700,450);
   gtk_container_border_width(GTK_CONTAINER(window), 0);
   g_signal_connect(GTK_OBJECT(window),"delete_event",
                    G_CALLBACK(gtk_main_quit), NULL);
@@ -103,7 +100,10 @@ int main (int argc, char *argv[]) {
 
   gtk_main();
 
-  return (0);
+  cleanup:
+  network_shutdown();
+
+  return nRet;
 }
 
 void drqman_get_options (int *argc,char ***argv) {

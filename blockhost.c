@@ -1,5 +1,8 @@
 //
 // Copyright (C) 2001,2002,2003,2004 Jorge Daza Garcia-Blanes
+// Copyright (C) 2010 Andreas Schroeder
+//
+// This file is part of DrQueue
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,17 +19,12 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
 
 #include <stdio.h>
+
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#include <errno.h>
-#include <sys/wait.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <string.h>
-#include <ctype.h>
+#endif
 
 #include "libdrqueue.h"
 
@@ -39,13 +37,20 @@ void usage (void);
 
 int main (int argc,char *argv[]) {
   int opt;
-  uint32_t ijob = -1;
-  uint32_t icomp = -1;
+  int ijob = -1;
+  int icomp = -1;
   int action = ACTION_NONE;
   struct blocked_host *bh;
   uint16_t nblocked;
   int i;
-
+  int nRet = 0;
+  
+  if(network_initialize() != 0) {
+    fprintf (stderr,"Could not initialize the network: %s\n", drerrno_str());
+    nRet = 1;
+    goto cleanup;
+  }
+  
   while ((opt = getopt (argc,argv,"lj:a:d:vh")) != -1) {
     switch (opt) {
     case 'a':
@@ -64,50 +69,58 @@ int main (int argc,char *argv[]) {
       break;
     case 'v':
       show_version (argv);
-      exit (0);
+      goto cleanup;
     case '?':
     case 'h':
       usage();
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
   }
 
   if ((ijob == -1) || (action == ACTION_NONE)) {
     usage ();
-    exit (1);
+    nRet = 1;
+    goto cleanup;
   }
 
   set_default_env();
 
   if (!common_environment_check()) {
     fprintf (stderr,"Error checking the environment: %s\n",drerrno_str());
-    exit (1);
+    nRet = 1;
+    goto cleanup;
   }
 
   switch (action) {
   case ACTION_ADD:
-    if (!request_job_add_blocked_host (ijob,icomp,CLIENT)) {
+    if (!request_job_add_blocked_host ((uint32_t)ijob,(uint32_t)icomp,CLIENT)) {
       fprintf (stderr,"ERROR: While trying to add host to block list: %s\n",drerrno_str());
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
     printf ("Host blocked successfully\n");
     break;
   case ACTION_DEL:
-    if (!request_job_delete_blocked_host (ijob,icomp,CLIENT)) {
+    if (!request_job_delete_blocked_host ((uint32_t)ijob,(uint32_t)icomp,CLIENT)) {
       fprintf (stderr,"ERROR: While trying to delete host from block list: %s\n",drerrno_str());
-      exit (1);
+      nRet = 1;
+      goto cleanup;
     }
     printf ("Host unblocked successfully\n");
     break;
   case ACTION_LIST:
-    request_job_list_blocked_host (ijob,&bh,&nblocked,CLIENT);
+    request_job_list_blocked_host ((uint32_t)ijob,&bh,&nblocked,CLIENT);
     for (i=0;i<nblocked;i++) {
       printf ("%i\t%s\n",i,bh[i].name);
     }
     break;
   }
 
-  exit (0);
+cleanup:
+  network_shutdown();
+
+  return nRet;
 }
 
 void usage (void) {

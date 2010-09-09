@@ -1,6 +1,8 @@
 //
 // Copyright (C) 2006 Jorge Daza Garcia-Blanes
 //
+// This file is part of DrQueue
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -16,18 +18,18 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id: computer.c 1595 2006-10-07 07:12:47Z jorge $
-//
-
 
 #ifndef _COMPUTER_POOL_H_
 #define _COMPUTER_POOL_H_
 
+#ifdef HAVE_STDINT_H
 #include <stdint.h>
+#endif
 #include <sys/types.h>
 
 #include "computer.h"
 #include "logger.h"
+#include "constants.h"
 
 #pragma pack(push,1)
 struct pool {
@@ -42,7 +44,7 @@ void computer_pool_init (struct computer_limits *cl);
 int computer_pool_add (struct computer_limits *cl, char *pool);
 int computer_pool_remove (struct computer_limits *cl, char *pool);
 void computer_pool_list (struct computer_limits *cl);
-int computer_pool_exists (struct computer_limits *cl,char *pool);
+int computer_pool_exists (struct computer_limits *cl, char *pool);
 int computer_pool_free (struct computer_limits *cl);
 void computer_pool_set_from_environment (struct computer_limits *cl);
 void computer_pool_copy (struct computer_limits *cl_src, struct computer_limits *cl_dst);

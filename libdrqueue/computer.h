@@ -3,12 +3,12 @@
 //
 // This file is part of DrQueue
 //
-// DrQueue is free software; you can redistribute it and/or modify
+// This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 //
-// DrQueue is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -18,20 +18,26 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
 
 #ifndef _COMPUTER_H_
 #define _COMPUTER_H_
 
 #include <sys/types.h>
-#include <netinet/in.h>
+#ifndef _WIN32
+  #include <netinet/in.h>
+#else
+  #include <winsock2.h>
+#endif
 #include <time.h>
+
+#ifdef HAVE_STDINT_H
 #include <stdint.h>
+#endif
 
 #include "pointer.h"
 #include "computer_info.h"
 #include "computer_status.h"
+#include "constants.h"
 
 #pragma pack (push,1)
 
@@ -71,13 +77,13 @@ struct computer {
 
 #pragma pack(pop)
 
-int computer_index_addr (void *pwdb,struct in_addr addr); /* I use pointers to void instead to struct database */
-int computer_index_name (void *pwdb,char *name);     /* because if I did I would have to create a dependency loop */
+int computer_index_addr (void *pwdb, struct in_addr addr); /* I use pointers to void instead to struct database */
+int computer_index_name (void *pwdb, char *name);     /* because if I did I would have to create a dependency loop */
 int computer_index_free (void *pwdb);
 int computer_available (struct computer *computer);
 uint16_t computer_ntasks (struct computer *comp);
 uint16_t computer_nrunning (struct computer *comp);
-uint16_t computer_nrunning_job (struct computer *comp,uint32_t ijob);
+uint16_t computer_nrunning_job (struct computer *comp, uint32_t ijob);
 void computer_update_assigned (struct database *wdb, uint32_t ijob, uint32_t iframe, uint32_t icomp, uint16_t itask);
 void computer_init (struct computer *computer);
 int computer_free (struct computer *computer);

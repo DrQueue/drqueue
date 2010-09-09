@@ -18,20 +18,16 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-// $Id$
-//
 
 #ifndef _SLAVE_H_
 #define _SLAVE_H_
 
-#include "libdrqueue.h"
-#include "computer.h"
-#include "job.h"
-#include "constants.h"
-
-#include <limits.h>
-#include <signal.h>
+#ifdef HAVE_STDINT_H_
 #include <stdint.h>
+#endif
+
+#include "libdrqueue.h"
+#include "constants.h"
 
 void slave_get_options (int *argc,char ***argv, int *force, struct slave_database *sdb);
 void usage (void);
@@ -60,6 +56,6 @@ void *attach_shared_memory_slave (int64_t shmid);
 
 void zerocmd (char *cmd);
 
-void slave_exit (int rc);
+void slave_exit (int signal);
 
 #endif

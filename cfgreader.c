@@ -16,13 +16,14 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 // USA
 //
-//
-// $Id$
-//
 
 #include "libdrqueue.h"
 
-int main (int argc, char *argv[])
+// FIXME: complete this module
+
+int main (void)
 {
   config_read ("./sample.conf","config_reader");
+
+  return 0;
 }
