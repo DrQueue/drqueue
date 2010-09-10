@@ -5,6 +5,7 @@
 .sconf_temp
 config.log
 libdrqueue/git_rev.h
+libdrqueue_python/*.pyc
 DrQueueOnRails/db/schema.rb
 DrQueueOnRails/db/*.db
 DrQueueOnRails/db/*.sqlite3
