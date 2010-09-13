@@ -32,27 +32,36 @@
 #  struct task task[MAXTASKS];
 #};
 
+class computer_status:
+  """Computer status objects"""
 
+  def __init__(self):
+    self.loadavg = [0, 0, 0]
+    self.ntasks = 0
+    self.nrunning = 0
+    self.task = task()
 
-#void get_computer_status (struct computer_status *cstatus, int64_t semid);
-def get_computer_status(cstatus, semid):
-  return
-
-#void computer_status_init (struct computer_status *cstatus);
-def computer_status_init(cstatus):
-  return
-
-#void check_tasks (struct computer_status *cstatus, int64_t semid);
-def check_tasks(cstatus, semid):
-  return
-
-#void get_loadavg (uint16_t *loadavg);
-def get_loadavg(loadavg):
-  return
-
-#void report_computer_status (struct computer_status *cstatus);
-def report_computer_status(cstatus):
-  return
-
+  # FIXME: can be acced directly by computer object
+  #void get_computer_status (struct computer_status *cstatus, int64_t semid);
+  def get_computer_status(cstatus, semid):
+    return
+  
+  # FIXME: replaced by constructor
+  #void computer_status_init (struct computer_status *cstatus);
+  def computer_status_init(cstatus):
+    return
+  
+  #void check_tasks (struct computer_status *cstatus, int64_t semid);
+  def check_tasks(cstatus, semid):
+    return
+  
+  #void get_loadavg (uint16_t *loadavg);
+  def get_loadavg(loadavg):
+    return
+  
+  #void report_computer_status (struct computer_status *cstatus);
+  def report_computer_status(cstatus):
+    return
+  
 
 
