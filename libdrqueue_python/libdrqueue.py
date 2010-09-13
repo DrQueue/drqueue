@@ -26,7 +26,7 @@
 
 # might also use: generalsg, mayasg, mentalraysg, blendersg, pixiesg, 3delightsg, lightwavesg, aftereffectssg, shakesg, terragensg, nukesg, aqsissg, mantrasg, turtlesg, xsisg, cinema4dsg, luxrendersg, vraysg, 3dsmaxsg
 
-import common, communications
+import common, communications, computer
 
 ##if defined __CYGWIN32__ && !defined __CYGWIN__
 #/* For backwards compatibility with Cygwin b19 and
