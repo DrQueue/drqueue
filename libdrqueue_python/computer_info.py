@@ -82,53 +82,70 @@
 #};
 
 
+class info:
+  """Computer info objects"""
 
-#void get_hwinfo (struct computer_hwinfo *hwinfo);
-def get_hwinfo(hwinfo):
-  return
+  def __init__(self):
+    self.name = ""
+    self.address = ""
+    self.id = 0
+    self.arch = 0
+    self.os = 0
+    self.proctype = 0
+    self.procspeed = 0
+    self.ncpus = 0
+    self.speedindex = 0
+    self.memory = 0
+    self.nbits = 0
 
-#t_proctype get_proctype (void);
-def get_proctype():
-  return 0
-
-#uint32_t get_procspeed (void);
-def get_procspeed():
-  return 0
-
-#uint16_t get_numproc (void);
-def get_numproc():
-  return 0
-
-#uint32_t get_speedindex (struct computer_hwinfo *hwinfo);
-def get_speedindex(hwinfo):
-  return 0
-
-#uint32_t get_memory (void);
-def get_memory():
-  return 0
-
-#uint8_t computer_info_nnbits (void);
-def computer_info_nnbits():
-  return 0
-
-#void report_hwinfo (struct computer_hwinfo *hwinfo);
-def report_hwinfo(hwinfo):
-  return
-
-#char *bitsstring (uint8_t nnbits);
-def bitsstring(nnbits):
-  return ""
-
-#char *osstring (t_os os);
-def osstring(os):
-  return ""
-
-#char *archstring (t_arch arch);
-def archstring(arch):
-  return ""
-
-#char *proctypestring (t_proctype proctype);
-def proctypestring(proctype):
-  return ""
-
-
+  # FIXME: will be accessed diretly by computer class
+  #void get_hwinfo (struct computer_hwinfo *hwinfo);
+  def get_hwinfo(self, hwinfo):
+    return
+  
+  #t_proctype get_proctype (void);
+  def get_proctype(self):
+    return self.proctype
+  
+  #uint32_t get_procspeed (void);
+  def get_procspeed(self):
+    return self.procspeed
+  
+  #uint16_t get_numproc (void);
+  def get_numproc(self):
+    return self.numproc
+  
+  #uint32_t get_speedindex (struct computer_hwinfo *hwinfo);
+  def get_speedindex(self, hwinfo):
+    return self.speedindex
+  
+  #uint32_t get_memory (void);
+  def get_memory(self):
+    return self.memory
+  
+  #uint8_t computer_info_nnbits (void);
+  def computer_info_nnbits(self):
+    return self.nbits
+  
+  #void report_hwinfo (struct computer_hwinfo *hwinfo);
+  def report_hwinfo(self, hwinfo):
+    hwinfo = self
+    return hwinfo
+  
+  #char *bitsstring (uint8_t nnbits);
+  def bitsstring(nnbits):
+    return ""
+  
+  #char *osstring (t_os os);
+  def osstring(os):
+    return ""
+  
+  #char *archstring (t_arch arch);
+  def archstring(arch):
+    return ""
+  
+  #char *proctypestring (t_proctype proctype);
+  def proctypestring(proctype):
+    return ""
+  
+  

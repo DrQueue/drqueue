@@ -24,6 +24,7 @@
 
 # might use: constants, tasks
 
+from task import *
 
 #struct computer_status {
 #  uint16_t loadavg[3];  /* load average last minute, last 5, and last 15 */
@@ -32,7 +33,7 @@
 #  struct task task[MAXTASKS];
 #};
 
-class computer_status:
+class status:
   """Computer status objects"""
 
   def __init__(self):

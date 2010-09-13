@@ -44,21 +44,46 @@
 #  fptr_type (struct pool,local_pool);
 #};
 
+class autoenable:
+  """Computer autoenable objects"""
+  
+  def __init__(self):
+    self.last = 0
+    self.h = 0
+    self.m = 0
+    self.flags = 0
+    
 
+class limits:
+  """Computer limits objects"""
 
-#void computer_limits_init (struct computer_limits *cl); // This one should be used instead of the following
-def computer_limits_init(cl):
-  return
+  def __init__(self):
+    self.enabled = 0
+    self.nmaxcpus = 1
+    self.maxfreeloadcpu = 1
+    self.autoenable = autoenable()
+    self.npools = 0
+    self.poolshmid = 0
+    self.poolsemid = 0
+    self.npoolsattached = 0
+    self.pool = 0
+    self.local_pool = 0
 
-#void computer_limits_cpu_init (struct computer *comp);
-def computer_limits_cpu_init(comp):
-  return
-
-#void computer_limits_cleanup_received (struct computer_limits *cl);
-def computer_limits_cleanup_received(cl):
-  return
-
-#void computer_limits_cleanup_to_send (struct computer_limits *cl);
-def computer_limits_cleanup_to_send(cl):
-  return
-
+  #FIXME: would be constructor
+  #void computer_limits_init (struct computer_limits *cl); // This one should be used instead of the following
+  def computer_limits_init(cl):
+    return
+  
+  #FIXME: would be constructor
+  #void computer_limits_cpu_init (struct computer *comp);
+  def computer_limits_cpu_init(comp):
+    return
+  
+  #void computer_limits_cleanup_received (struct computer_limits *cl);
+  def computer_limits_cleanup_received(cl):
+    return
+  
+  #void computer_limits_cleanup_to_send (struct computer_limits *cl);
+  def computer_limits_cleanup_to_send(cl):
+    return
+  

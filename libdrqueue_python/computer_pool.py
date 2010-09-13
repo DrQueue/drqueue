@@ -30,62 +30,68 @@
 #};
 
 
+class pool:
+  """Computer pool objects"""
 
-#int64_t computer_pool_get_shared_memory (uint16_t npools);
-def computer_pool_get_shared_memory(npools):
-  return 0
+  def __init__(self):
+    self.name = ""
 
-#struct pool *computer_pool_attach_shared_memory (struct computer_limits *cl);
-def computer_pool_attach_shared_memory(cl):
-  return 0
-
-#int computer_pool_detach_shared_memory (struct computer_limits *cl);
-def computer_pool_detach_shared_memory(cl):
-  return 0
-
-#void computer_pool_init (struct computer_limits *cl);
-def computer_pool_init(cl):
-  return
-
-#int computer_pool_add (struct computer_limits *cl, char *pool);
-def computer_pool_add(cd, pool):
-  return 0
-
-#int computer_pool_remove (struct computer_limits *cl, char *pool);
-def computer_pool_remove(cl, pool):
-  return 0
-
-#void computer_pool_list (struct computer_limits *cl);
-def computer_pool_list(cl):
-  return
-
-#int computer_pool_exists (struct computer_limits *cl, char *pool);
-def computer_pool_exists(cl, pool):
-  return 0
-
-#int computer_pool_free (struct computer_limits *cl);
-def computer_pool_free(cl):
-  return 0
-
-#void computer_pool_set_from_environment (struct computer_limits *cl);
-def computer_pool_set_from_environment(cl):
-  return
-
-#void computer_pool_copy (struct computer_limits *cl_src, struct computer_limits *cl_dst);
-def computer_pool_copy(cl_src, cl_dst):
-  return
-
-#int computer_pool_lock_check (struct computer_limits *cl);
-def computer_pool_lock_check(cl):
-  return 0
-
-#int computer_pool_lock (struct computer_limits *cl);
-def computer_pool_lock(cl):
-  return 0
-
-#int computer_pool_release (struct computer_limits *cl);
-def computer_pool_release(cl):
-  return 0
-
-
+  #int64_t computer_pool_get_shared_memory (uint16_t npools);
+  def computer_pool_get_shared_memory(npools):
+    return 0
+  
+  #struct pool *computer_pool_attach_shared_memory (struct computer_limits *cl);
+  def computer_pool_attach_shared_memory(cl):
+    return 0
+  
+  #int computer_pool_detach_shared_memory (struct computer_limits *cl);
+  def computer_pool_detach_shared_memory(cl):
+    return 0
+  
+  #FIXME: would be constructor
+  #void computer_pool_init (struct computer_limits *cl);
+  def computer_pool_init(cl):
+    return
+  
+  #int computer_pool_add (struct computer_limits *cl, char *pool);
+  def computer_pool_add(cd, pool):
+    return 0
+  
+  #int computer_pool_remove (struct computer_limits *cl, char *pool);
+  def computer_pool_remove(cl, pool):
+    return 0
+  
+  #void computer_pool_list (struct computer_limits *cl);
+  def computer_pool_list(cl):
+    return
+  
+  #int computer_pool_exists (struct computer_limits *cl, char *pool);
+  def computer_pool_exists(cl, pool):
+    return 0
+  
+  #int computer_pool_free (struct computer_limits *cl);
+  def computer_pool_free(cl):
+    return 0
+  
+  #void computer_pool_set_from_environment (struct computer_limits *cl);
+  def computer_pool_set_from_environment(cl):
+    return
+  
+  #void computer_pool_copy (struct computer_limits *cl_src, struct computer_limits *cl_dst);
+  def computer_pool_copy(cl_src, cl_dst):
+    return
+  
+  #int computer_pool_lock_check (struct computer_limits *cl);
+  def computer_pool_lock_check(cl):
+    return 0
+  
+  #int computer_pool_lock (struct computer_limits *cl);
+  def computer_pool_lock(cl):
+    return 0
+  
+  #int computer_pool_release (struct computer_limits *cl);
+  def computer_pool_release(cl):
+    return 0
+  
+  
 

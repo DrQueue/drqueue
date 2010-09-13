@@ -24,10 +24,10 @@
 
 # might use: pointer, constants
 
-import computer_limits as limits
-import computer_info as info
-import computer_pool as pool
-import computer_status as status
+from computer_limits import *
+from computer_info import *
+from computer_pool import *
+from computer_status import *
 
 
 #struct computer {
