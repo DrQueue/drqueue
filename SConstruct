@@ -68,15 +68,18 @@ def copy_with_clean(src_files,dest_files,dest_path,env):
     return rlist
 
 def get_git_commit():
-	try:
-		gitlog = subprocess.Popen(["git", "show", "--abbrev-commit"], stdout=subprocess.PIPE)
-	except OSError:
-		print("Not a Git repository. Can't fetch commit id.")
-		commit_string = ""
-	else:
-		commit_string = gitlog.communicate()[0].split("\n")[0].split(" ")[1]
-		print("Current Git commit id is: "+commit_string)
-	return commit_string
+  try:
+    gitlog = subprocess.Popen(["git", "show", "--abbrev-commit"], stdout=subprocess.PIPE)
+  except OSError:
+    commit_string = ""
+  else:
+    if gitlog.poll() != "0":
+      print("Not a Git repository. Can't fetch commit id.")
+      commit_string = ""
+    else:
+      commit_string = gitlog.communicate()[0].split("\n")[0].split(" ")[1]
+      print("Current Git commit id is: "+commit_string)
+  return commit_string
 
 def write_git_rev(commit_id):
 	os.chdir("libdrqueue")
