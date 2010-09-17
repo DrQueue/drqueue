@@ -1,9 +1,0 @@
-<h2>New job</h2>
-
-<% form_tag({:action => 'create'}, :multipart => true) do %>
-  <%= render :partial => 'form' %>
-  <%= submit_tag "Create" %>
-<% end %>
-
-<br /><br />
-<%= link_to 'Back', :action => 'list' %>
