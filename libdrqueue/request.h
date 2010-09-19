@@ -50,6 +50,9 @@ extern "C" {
 
 #pragma pack(pop)
 
+  // Change this constant to enable more or less requeues when a job fails
+  #define MAX_REQUEUES 3
+
   void handle_request_master (int sfd, struct database *wdb, int icomp, struct sockaddr_in *addr);
   void handle_request_slave (int sfd, struct slave_database *sdb);
 

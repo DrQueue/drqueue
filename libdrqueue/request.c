@@ -1112,7 +1112,7 @@ handle_r_r_taskfini (int sfd, struct database *wdb, int icomp) {
     task.frame = job_frame_number_to_index (&wdb->job[task.ijob],task.frame);/* frame converted to index frame */
     /* Now we should check the exit code to act accordingly */
     if (DR_WIFEXITED(task.exitstatus)) {
-      if (fi[task.frame].flags & FF_REQUEUE) {
+      if ((fi[task.frame].flags & FF_REQUEUE) && (fi[task.frame].requeued < MAX_REQUEUES)) {
         fi[task.frame].status = FS_WAITING;
         fi[task.frame].start_time = 0;
         fi[task.frame].requeued++;
@@ -1135,7 +1135,7 @@ handle_r_r_taskfini (int sfd, struct database *wdb, int icomp) {
           case FS_WAITING:
             break;
           case FS_ASSIGNED:
-            if (wdb->job[task.ijob].autoRequeue) {
+            if (wdb->job[task.ijob].autoRequeue && (fi[task.frame].requeued < MAX_REQUEUES)) {
               fi[task.frame].status = FS_WAITING;
               fi[task.frame].start_time = 0;
               fi[task.frame].requeued++;
