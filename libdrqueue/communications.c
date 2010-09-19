@@ -184,6 +184,8 @@ connect_to_master (void) {
   char *master;
   struct sockaddr_in addr;
   struct hostent *hostinfo;
+  int i;
+  int conn_tries = MAX_CONNECT_ATTEMPTS;
 
   drerrno = DRE_NOERROR;
 
@@ -204,20 +206,31 @@ connect_to_master (void) {
   }
   addr.sin_addr = *(struct in_addr *) hostinfo->h_addr;
 
-  sfd = socket (PF_INET,SOCK_STREAM,0);
-  if (sfd == -1) {
-    drerrno_system = errno;
-    drerrno = DRE_NOSOCKET;
-    return -1;
+  /* open connection, try MAX_CONNECT_ATTEMPTS times */
+  for (i=1; i<=MAX_CONNECT_ATTEMPTS; i++) {
+
+    sfd = socket (PF_INET,SOCK_STREAM,0);
+    if (sfd == -1) {
+      drerrno_system = errno;
+      drerrno = DRE_NOSOCKET;
+      return -1;
+    }
+
+    if (connect(sfd, (struct sockaddr *)&addr, sizeof (addr)) == -1) {
+      if (i < MAX_CONNECT_ATTEMPTS) {
+        log_auto(L_ERROR, "connect(): communications problem. Could not connect to master (%s). Retry in 2 seconds.", strerror(errno));
+        sleep(2);
+      } else {
+        log_auto(L_ERROR, "connect(): communications problem. Could not connect to master (%s). Giving up after %i attempts.", strerror(errno), conn_tries);
+        drerrno_system = errno;
+        drerrno = DRE_NOCONNECT;
+        return -1;
+      }
+    } else {
+      return sfd;
+    }
   }
 
-  if (connect (sfd,(struct sockaddr *)&addr,sizeof (addr)) == -1) {
-    drerrno_system = errno;
-    drerrno = DRE_NOCONNECT;
-    return -1;
-  }
-
-  return sfd;
 }
 
 int 
@@ -226,6 +239,8 @@ connect_to_slave (char *slave) {
   int sfd;
   struct sockaddr_in addr;
   struct in_addr slave_addr;
+  int i;
+  int conn_tries = MAX_CONNECT_ATTEMPTS;
 
   /* check IP address */
   // FIXME: handle IPv4 and IPv6 with a regex */
@@ -246,20 +261,31 @@ connect_to_slave (char *slave) {
   addr.sin_port = htons(SLAVEPORT);
   addr.sin_addr = slave_addr;
 
-  sfd = socket (PF_INET,SOCK_STREAM,0);
-  if (sfd == -1) {
-    drerrno_system = errno;
-    drerrno = DRE_NOSOCKET;
-    return -1;
+  /* open connection, try MAX_CONNECT_ATTEMPTS times */
+  for (i=1; i<=MAX_CONNECT_ATTEMPTS; i++) {
+
+    sfd = socket (PF_INET,SOCK_STREAM,0);
+    if (sfd == -1) {
+      drerrno_system = errno;
+      drerrno = DRE_NOSOCKET;
+      return -1;
+    }
+
+    if (connect(sfd, (struct sockaddr *)&addr, sizeof (addr)) == -1) {
+      if (i < MAX_CONNECT_ATTEMPTS) {
+        log_auto(L_ERROR, "connect(): communications problem. Could not connect to master (%s). Retry in 2 seconds.", strerror(errno));
+        sleep(2);
+      } else {
+        log_auto(L_ERROR, "connect(): communications problem. Could not connect to slave (%s). Giving up after %i attempts.", strerror(errno), conn_tries);
+        drerrno_system = errno;
+        drerrno = DRE_NOCONNECT;
+        return -1;
+      }
+    } else {
+      return sfd;
+    }
   }
 
-  if (connect (sfd,(struct sockaddr *)&addr,sizeof (addr)) == -1) {
-    drerrno_system = errno;
-    drerrno = DRE_NOCONNECT;
-    return -1;
-  }
-
-  return sfd;
 }
 
 int

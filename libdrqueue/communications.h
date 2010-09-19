@@ -32,6 +32,8 @@ extern long int bsent;  /* Bytes sent */
 extern long int brecv;  /* Bytes received */
 #endif
 
+#define MAX_CONNECT_ATTEMPTS 3
+
 int get_socket (uint16_t port);
 int accept_socket_master (int sfd, struct database *wdb, struct sockaddr_in *addr);
 int accept_socket_slave (int sfd);
