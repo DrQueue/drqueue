@@ -73,7 +73,7 @@ def get_git_commit():
   except OSError:
     commit_string = ""
   else:
-    if gitlog.poll() != "0":
+    if gitlog.poll() != 0:
       print("Not a Git repository. Can't fetch commit id.")
       commit_string = ""
     else:
