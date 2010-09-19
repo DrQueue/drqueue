@@ -73,9 +73,9 @@ def get_git_commit():
   except OSError:
     commit_string = ""
   else:
-    if gitlog.poll() != 0:
-      print("Not a Git repository. Can't fetch commit id.")
+    if gitlog.wait() != 0:
       commit_string = ""
+      print("Not a Git repository. Can't fetch commit id.")
     else:
       commit_string = gitlog.communicate()[0].split("\n")[0].split(" ")[1]
       print("Current Git commit id is: "+commit_string)
