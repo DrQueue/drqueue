@@ -47,6 +47,8 @@
 #define L_ONSCREEN    1<<8
 
 #define MAXLOGLINELEN 16384
+#define MAX_MASTER_LOG_SIZE (10*1024*1024)
+#define MAX_SLAVE_LOG_SIZE (10*1024*1024)
 
 typedef enum {
   DRQ_LOG_TOOL_UNKNOWN,

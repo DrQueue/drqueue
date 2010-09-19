@@ -130,7 +130,9 @@ FILE *
 log_slave_open_computer (int level, char *name) {
   FILE *f;
   char filename[BUFFERLEN];
+  char oldfilename[BUFFERLEN];
   char *basedir;
+  struct stat info;
 
   // fix compiler warning
   (void)level;
@@ -148,6 +150,13 @@ log_slave_open_computer (int level, char *name) {
   }
 
   snprintf(filename,BUFFERLEN-1,"%s/%s.log",basedir,name);
+
+  // basic logrotation
+  if ((stat(filename, &info) == 0) && (info.st_size > MAX_SLAVE_LOG_SIZE)) {
+    snprintf(oldfilename,BUFFERLEN-1,"%s/%s.1.log",basedir,name);
+    unlink(oldfilename);
+    rename(filename, oldfilename);
+  }
 
   if ((f = fopen (filename,"a")) == NULL) {
     perror ("log_slave_open_computer: Couldn't open file for writing");
@@ -202,7 +211,9 @@ FILE *
 log_master_open (int level) {
   FILE *f;
   char filename[BUFFERLEN];
+  char oldfilename[BUFFERLEN];
   char *basedir;
+  struct stat info;
 
   // fix compiler warning
   (void)level;
@@ -221,8 +232,15 @@ log_master_open (int level) {
   }
 
   snprintf(filename,BUFFERLEN-1,"%s/master.log",basedir);
-#ifdef __LINUX
 
+  // basic logrotation
+  if ((stat(filename, &info) == 0) && (info.st_size > MAX_MASTER_LOG_SIZE)) {
+    snprintf(oldfilename,BUFFERLEN-1,"%s/master.1.log",basedir);
+    unlink(oldfilename);
+    rename(filename, oldfilename);
+  }
+
+#ifdef __LINUX
   if ((f = fopen (filename,"a")) == NULL) {
     perror ("log_master_open: Couldn't open file for writing");
     fprintf (stderr,"So... logging on screen.\n");
