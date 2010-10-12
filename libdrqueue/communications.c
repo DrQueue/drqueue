@@ -57,10 +57,6 @@ long int bsent;   /* Bytes sent */
 long int brecv;   /* Bytes received */
 #endif
 
-/* Forward Declares */
-static ssize_t dr_socket_write (int fd, char *buf, uint32_t len);
-static ssize_t dr_socket_read (int fd, char *buf, uint32_t len);
-
 
 // ONGOING:
 // * data size transmission
@@ -293,13 +289,15 @@ check_recv_datasize (int sfd, uint32_t datasize) {
   uint32_t remotesize = 0;
   uint32_t localsize;
 
-  if (!dr_socket_read(sfd,(char*)&remotesize,sizeof(uint32_t))) {
+  //if (!dr_socket_read(sfd,(char*)&remotesize,sizeof(uint32_t))) {
+  if (!dr_read(sfd, (char*)&remotesize, sizeof(uint32_t))) {
     log_auto (L_ERROR,"check_recv_datasize(): communications problem. Could not read from socket or file. (%s)",strerror(errno));
     return 0;
   }
   remotesize = ntohl(remotesize);
   localsize = htonl(datasize);
-  if (!dr_socket_write(sfd,(char*)&localsize,sizeof(uint32_t))) {
+  //if (!dr_socket_write(sfd,(char*)&localsize,sizeof(uint32_t))) {
+  if (!dr_write(sfd, (char*)&localsize, sizeof(uint32_t))) {
     log_auto (L_ERROR,"check_recv_datasize(): communications problem. Could not write to socket or file. (%s)",strerror(errno));
     return 0;
   }
@@ -324,11 +322,13 @@ check_send_datasize (int sfd, uint32_t datasize) {
   log_auto(L_DEBUG3,"check_send_datasize():> Entering...");
 
   localsize = htonl(datasize);
-  if (!dr_socket_write(sfd,(char*)&localsize,sizeof(uint32_t))) {
+  //if (!dr_socket_write(sfd,(char*)&localsize,sizeof(uint32_t))) {
+  if (!dr_write(sfd, (char*)&localsize, sizeof(uint32_t))) {
     log_auto (L_ERROR,"check_send_datasize(): communications problem. Could not write to socket or file. (%s)",strerror(errno));
     return 0;
   }
-  if (!dr_socket_read(sfd,(char*)&remotesize,sizeof(uint32_t))) {
+  //if (!dr_socket_read(sfd,(char*)&remotesize,sizeof(uint32_t))) {
+  if (!dr_read(sfd, (char*)&remotesize, sizeof(uint32_t))) {
     log_auto (L_ERROR,"check_send_datasize(): communications problem. Could not read from socket or file. (%s)",strerror(errno));
     return 0;
   }
@@ -358,7 +358,8 @@ recv_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo) {
   }
 
   buf = hwinfo;
-  if (!dr_socket_read (sfd,(char*)buf,datasize)) {
+  //if (!dr_socket_read (sfd,(char*)buf,datasize)) {
+  if (!dr_read (sfd,(char*)buf,datasize)) {
     log_auto (L_ERROR,"recv_computer_hwinfo(): could not read computer hardware information. (%s)",strerror(errno));
     return 0;
   }
@@ -397,7 +398,9 @@ send_computer_hwinfo (int sfd, struct computer_hwinfo *hwinfo) {
   bswapped.speedindex = htonl (bswapped.speedindex);
   bswapped.memory = htonl (bswapped.memory);
 
-  if (!dr_socket_write (sfd, (char *) buf, datasize)) {
+  //if (!dr_socket_write (sfd, (char *) buf, datasize)) {
+  if (!dr_write (sfd, (char *)buf, datasize)) {
+    log_auto(L_ERROR, "dr_socket_write(): unable to write %i bytes (%s)", datasize, strerror(drerrno_system));
     return 0;
   }
 
@@ -410,7 +413,8 @@ recv_request (int sfd, struct request *request) {
   /* Returns 0 on failure */
   void *buf = request;
 
-  if (!dr_socket_read(sfd,(char *)buf,sizeof(struct request))) {
+  //if (!dr_socket_read(sfd,(char *)buf,sizeof(struct request))) {
+  if (!dr_read(sfd, (char *)buf, sizeof(struct request))) {
     return 0;
   }
 
@@ -426,7 +430,9 @@ int send_request (int sfd, struct request *request, uint8_t who) {
   request->data = htonl (request->data);
   request->who = who;
 
-  if (!dr_socket_write (sfd,(char*)buf,sizeof(struct request))) {
+  //if (!dr_socket_write (sfd,(char*)buf,sizeof(struct request))) {
+  if (!dr_write (sfd, (char*)buf, sizeof(struct request))) {
+    log_auto(L_ERROR, "dr_socket_write(): unable to write %i bytes (%s)", sizeof(struct request), strerror(drerrno_system));
     return 0;
   }
 
@@ -481,7 +487,9 @@ send_computer_loadavg (int sfd, struct computer_status *status) {
   nbo_loadavg[0] = htons(status->loadavg[0]);
   nbo_loadavg[1] = htons(status->loadavg[1]);
   nbo_loadavg[2] = htons(status->loadavg[2]);
-  if (!dr_socket_write(sfd,(char*)nbo_loadavg,sizeof(uint16_t)*3)) {
+  //if (!dr_socket_write(sfd,(char*)nbo_loadavg,sizeof(uint16_t)*3)) {
+  if (!dr_write(sfd, (char*)nbo_loadavg, sizeof(uint16_t)*3)) {
+    log_auto(L_ERROR, "dr_socket_write(): unable to write %i bytes (%s)", sizeof(uint16_t)*3, strerror(drerrno_system));
     return 0;
   }
   return 1;
@@ -490,7 +498,8 @@ send_computer_loadavg (int sfd, struct computer_status *status) {
 int recv_computer_loadavg (int sfd, struct computer_status *status) {
   uint16_t nbo_loadavg[3];
 
-  if (!dr_socket_read(sfd,(char*)nbo_loadavg,sizeof(uint16_t)*3)) {
+  //if (!dr_socket_read(sfd,(char*)nbo_loadavg,sizeof(uint16_t)*3)) {
+  if (!dr_read(sfd, (char*)nbo_loadavg, sizeof(uint16_t)*3)) {
     return 0;
   }
   status->loadavg[0] = ntohs(nbo_loadavg[0]);
@@ -503,10 +512,12 @@ int
 recv_computer_ntasks (int sfd, struct computer_status *status) {
   uint16_t ntasks;
   uint16_t nrunning;
-  if (!dr_socket_read(sfd,(char*)&ntasks,sizeof(uint16_t))) {
+  //if (!dr_socket_read(sfd,(char*)&ntasks,sizeof(uint16_t))) {
+  if (!dr_read(sfd, (char*)&ntasks, sizeof(uint16_t))) {
     return 0;
   }
-  if (!dr_socket_read(sfd,(char*)&nrunning,sizeof(uint16_t))) {
+  //if (!dr_socket_read(sfd,(char*)&nrunning,sizeof(uint16_t))) {
+  if (!dr_read(sfd, (char*)&nrunning, sizeof(uint16_t))) {
     return 0;
   }
   status->ntasks = ntohs(ntasks);
@@ -522,10 +533,14 @@ send_computer_ntasks (int sfd, struct computer_status *status) {
   
   nbo_ntasks = htons(status->ntasks);
   nbo_nrunning = htons(status->nrunning);
-  if (!dr_socket_write(sfd,(char*)&nbo_ntasks,sizeof(uint16_t))) {
+  //if (!dr_socket_write(sfd,(char*)&nbo_ntasks,sizeof(uint16_t))) {
+  if (!dr_write(sfd, (char*)&nbo_ntasks, sizeof(uint16_t))) {
+    log_auto(L_ERROR, "dr_socket_write(): unable to write %i bytes (%s)", sizeof(uint16_t), strerror(drerrno_system));
     return 0;
   }
-  if (!dr_socket_write(sfd,(char*)&nbo_nrunning,sizeof(uint16_t))) {
+  //if (!dr_socket_write(sfd,(char*)&nbo_nrunning,sizeof(uint16_t))) {
+  if (!dr_write(sfd, (char*)&nbo_nrunning, sizeof(uint16_t))) {
+    log_auto(L_ERROR, "dr_socket_write(): unable to write %i bytes (%s)", sizeof(uint16_t), strerror(drerrno_system));
     return 0;
   }
   return 1;
@@ -572,11 +587,14 @@ recv_envvar (int sfd, struct envvar *var, int do_checksize) {
 
   datasize = sizeof (struct envvar);
   if (do_checksize && !check_recv_datasize(sfd, datasize)) {
+    log_auto(L_ERROR, "check_send_datasize(): datasize should be %i (%s)", datasize, strerror(drerrno_system));
     // FIXME: log it
     return 0;
   }
 
-  if (!dr_socket_read (sfd,(char *)var, datasize)) {
+  //if (!dr_socket_read (sfd,(char *)var, datasize)) {
+  if (!dr_read (sfd, (char *)var, datasize)) {
+    log_auto(L_ERROR, "dr_socket_read(): unable to read %i bytes (%s)", datasize, strerror(drerrno_system));
     drerrno = DRE_ERRORREADING;
     return 0;
   }
@@ -587,17 +605,19 @@ recv_envvar (int sfd, struct envvar *var, int do_checksize) {
 
 int
 send_envvar (int sfd, struct envvar *var, int do_checksize) {
+  log_auto(L_DEBUG, "send_envvar(): will send variable %s with value %s", var->name, var->value);
   // sends a single environment variable structure
   uint32_t datasize;
 
   datasize = sizeof (struct envvar);
   if (do_checksize && !check_send_datasize(sfd,datasize)) {
-    // FIXME: log it
+    log_auto(L_ERROR, "check_send_datasize(): datasize should be %i (%s)", datasize, strerror(drerrno_system));
     return 0;
   }
 
-  if (!dr_socket_write (sfd,(char *)var, datasize)) {
-    // FIXME: log it
+  //if (!dr_socket_write (sfd,(char *)var, datasize)) {
+  if (!dr_write (sfd, (char *)var, datasize)) {
+    log_auto(L_ERROR, "dr_socket_write(): unable to write %i bytes (%s)", datasize, strerror(drerrno_system));
     return 0;
   }
 
@@ -607,28 +627,34 @@ send_envvar (int sfd, struct envvar *var, int do_checksize) {
 
 int
 send_envvars (int sfd, struct envvars *envvars, int do_checksize) {
-  //fprintf (stderr,"DEBUG: send_envvars() we have %i environment variables available for the request\n",envvars->nvariables);
-  uint16_t nvariables;
+  log_auto(L_DEBUG, "send_envvars(): we have %i environment variables available for the request", envvars->nvariables);
 
+  uint16_t nvariables;
   nvariables = htons (envvars->nvariables);
-  if (!dr_socket_write (sfd,(char *)&nvariables,sizeof(nvariables))) {
+  //if (!dr_socket_write (sfd,(char *)&nvariables,sizeof(nvariables))) {
+  if (!dr_write (sfd, (char *)&nvariables, sizeof(nvariables))) {
+    log_auto(L_ERROR, "dr_socket_write(): unable to write %i bytes (%s)", sizeof(nvariables), strerror(drerrno_system));
     return 0;
   }
-
-  //fprintf (stderr,"DEBUG: send_envvars() and just informed the client about that\n");
+  log_auto(L_DEBUG, "send_envvars() and just informed the client about that");
 
   if (envvars->nvariables) {
     int i;
 
-    envvars_attach (envvars);
+    if (envvars_attach (envvars) == 0) {
+      log_auto(L_ERROR, "envvars_attach() failed");
+    }
 
     for (i = 0; i < envvars->nvariables; i++) {
       if (!send_envvar (sfd,&(envvars->variables.ptr[i]),do_checksize)) {
+        log_auto(L_ERROR, "send_envvar() failed");
         return 0;
       }
-      //fprintf (stderr,"DEBUG: send_envvars() just sent (%s,%s)\n",envvars->variables[i].name,envvars->variables[i].value);
+      log_auto(L_DEBUG, "send_envvars() just sent (%s,%s)", envvars->variables.ptr[i].name, envvars->variables.ptr[i].value);
     }
-    envvars_detach (envvars);
+    if (envvars_detach (envvars) == 0) {
+      log_auto(L_ERROR, "envvars_detach() failed");
+    }
   }
 
   drerrno = DRE_NOERROR;
@@ -647,27 +673,28 @@ recv_envvars (int sfd, struct envvars *envvars, int do_checksize) {
   }
 
   if (!envvars_free (envvars)) {
-    fprintf (stderr,"ERROR: recv_envvars() error calling envvars_free(). (%s)\n",drerrno_str());
+    log_auto(L_ERROR, "recv_envvars() error calling envvars_free(). (%s)", strerror(drerrno_system));
     return 0;
   }
 
-  if (!dr_socket_read(sfd,(char*)&nvariables,sizeof(nvariables))) {
-    fprintf (stderr,"ERROR: recv_envvars() while receiving nvariables. (%s)\n",drerrno_str());
+  //if (!dr_socket_read(sfd,(char*)&nvariables,sizeof(nvariables))) {
+  if (!dr_read(sfd, (char*)&nvariables, sizeof(nvariables))) {
+    log_auto(L_ERROR, "recv_envvars() while receiving nvariables. (%s)", strerror(drerrno_system));
     return 0;
   }
   nvariables = ntohs (nvariables);
 
   if (nvariables) {
-    //fprintf (stderr,"DEBUG: recv_envvars() we'll receive %i variables\n",nvariables);
+    log_auto(L_DEBUG, "recv_envvars() we'll receive %i variables", nvariables);
 
     for (i = 0; i < nvariables; i++) {
-      //fprintf (stderr,"DEBUG: recv_envvars() receive variable number %i\n",i);
+      log_auto(L_DEBUG, "recv_envvars() receive variable number %i", i);
 
       if (!recv_envvar (sfd, &var, do_checksize)) {
-        fprintf (stderr,"ERROR: recv_envvars() while receiving a single variable. (%s)\n",drerrno_str());
+        log_auto(L_ERROR, "recv_envvars() while receiving a single variable. (%s)", strerror(drerrno_system));
         return 0;
       }
-
+      log_auto(L_DEBUG, "recv_envvars() received variable %s with value %s", var.name, var.value);
       envvars_variable_add (envvars,var.name,var.value);
       memset (&var,0,sizeof(struct envvar));
     }
@@ -690,7 +717,8 @@ recv_job (int sfd, struct job *job) {
   // We should empty all locally reserved structures
   job_delete (job);
 
-  if (!dr_socket_read(sfd,(char*)job,datasize)) {
+  //if (!dr_socket_read(sfd,(char*)job,datasize)) {
+  if (!dr_read(sfd, (char*)job, datasize)) {
     return 0;
   }
   
@@ -711,6 +739,8 @@ recv_job (int sfd, struct job *job) {
 
 int
 send_job (int sfd, struct job *job) {
+  log_auto(L_DEBUG, "send_job(): Will send job \"%s\"", job->name);
+
   /* This function _sets_ frame_info = NULL before sending */
   struct job bswapped;
   void *buf = &bswapped;
@@ -718,6 +748,7 @@ send_job (int sfd, struct job *job) {
 
   datasize = sizeof(struct job);
   if (!check_send_datasize(sfd,datasize)) {
+    log_auto(L_ERROR, "check_send_datasize(): Failed to check for %i bytes.", datasize);
     // FIXME: log it
     fprintf (stderr,"datasize: %i",datasize);
     return 0;
@@ -726,14 +757,17 @@ send_job (int sfd, struct job *job) {
   /* Prepare for sending */
   job_bswap_to_network (job,&bswapped);
 
-  if (!dr_socket_write (sfd,(char*)buf,datasize)) {
-    fprintf (stderr,"ERROR: Failed to write job to sfd\n");
+  //if (!dr_socket_write (sfd,(char*)buf,datasize)) {
+  if (!dr_write (sfd, (char*)buf, datasize)) {
+    log_auto(L_ERROR, "dr_socket_write(): unable to write %i bytes (%s)", datasize, strerror(drerrno_system));
+    //fprintf (stderr,"ERROR: Failed to write job to sfd\n");
     return 0;
   }
 
   // Environment variables
   if (!send_envvars (sfd,&job->envvars,1)) {
-    fprintf (stderr,"ERROR: Failed to send Environment\n");
+    log_auto(L_ERROR, "send_envvars(): Failed to send environment.");
+    //fprintf (stderr,"ERROR: Failed to send Environment\n");
     return 0;
   }
 
@@ -749,12 +783,15 @@ recv_task (int sfd, struct task *task) {
 		   job */
   datasize = sizeof (*task);
   if (!check_recv_datasize(sfd,datasize)) {
+    log_auto(L_ERROR, "check_recv_datasize(): Failed to check for %i bytes.", datasize);
     // FIXME
     return 0;
   }
 
   task_init (task);
-  if (!dr_socket_read(sfd,(char*)buf,datasize)) {
+  //if (!dr_socket_read(sfd,(char*)buf,datasize)) {
+  if (!dr_read(sfd, (char*)buf, datasize)) {
+    log_auto(L_ERROR, "dr_socket_read(): Failed to read %i bytes.", datasize);
     return 0;
   }
 
@@ -782,6 +819,7 @@ send_task (int sfd, struct task *task) {
   uint32_t datasize = sizeof (*task);
 
   if (!check_send_datasize(sfd,datasize)) {
+    log_auto(L_ERROR, "check_send_datasize(): Failed to check for %i bytes.", datasize);
     // FIXME
     return 0;
   }
@@ -802,7 +840,9 @@ send_task (int sfd, struct task *task) {
   bswapped.exitstatus  = htonl (bswapped.exitstatus);
   bswapped.start_loading_time = dr_hton64 (bswapped.start_loading_time);
 
-  if (!dr_socket_write (sfd,(char*)buf,datasize)) {
+  //if (!dr_socket_write (sfd,(char*)buf,datasize)) {
+  if (!dr_write (sfd, (char*)buf, datasize)) {
+    log_auto(L_ERROR, "dr_socket_write(): unable to write %i bytes (%s)", datasize, strerror(drerrno_system));
     return 0;
   }
 
@@ -850,7 +890,8 @@ recv_frame_info (int sfd, struct frame_info *fi) {
   void *buf;
 
   buf = fi;
-  if (!dr_socket_read (sfd,(char*)buf,sizeof (struct frame_info))) {
+  //if (!dr_socket_read (sfd,(char*)buf,sizeof (struct frame_info))) {
+  if (!dr_read (sfd, (char*)buf, sizeof(struct frame_info))) {
     return 0;
   }
 
@@ -878,7 +919,9 @@ int send_frame_info (int sfd, struct frame_info *fi) {
   bswapped.requeued = htons (bswapped.requeued);
   bswapped.flags = htons (bswapped.flags);
 
-  if (!dr_socket_write (sfd,(char*)buf,sizeof (struct frame_info))) {
+  //if (!dr_socket_write (sfd,(char*)buf,sizeof (struct frame_info))) {
+  if (!dr_write (sfd, (char*)buf, sizeof(struct frame_info))) {
+    log_auto(L_ERROR, "dr_socket_write(): unable to write %i bytes (%s)", sizeof(struct frame_info), strerror(drerrno_system));
     return 0;
   }
 
@@ -896,14 +939,19 @@ send_string (int sfd, char *str) {
   if (!check_send_datasize(sfd,datasize)) {
     return 0;
   }
-  if (!dr_socket_write (sfd,(char*)&lensw,datasize))
+  //if (!dr_socket_write (sfd,(char*)&lensw,datasize)) {
+  if (!dr_write (sfd, (char*)&lensw, datasize)) {
+    log_auto(L_ERROR, "dr_socket_write(): unable to write %i bytes (%s)", datasize, strerror(drerrno_system));
     return 0;
+  }
 
   datasize = (uint32_t)len;
   if (!check_send_datasize(sfd,datasize)) {
     return 0;
   }
-  if (!dr_socket_write (sfd,(char*)str,len)) {
+  //if (!dr_socket_write (sfd,(char*)str,len)) {
+  if (!dr_write (sfd, (char*)str, len)) {
+    log_auto(L_ERROR, "dr_socket_write(): unable to write %i bytes (%s)", len, strerror(drerrno_system));
     return 0;
   }
 
@@ -919,7 +967,8 @@ recv_string (int sfd, char **str) {
   if (!check_recv_datasize(sfd,datasize)) {
     return 0;
   }
-  if (!dr_socket_read (sfd,(char*)&len,datasize)) {
+  //if (!dr_socket_read (sfd,(char*)&len,datasize)) {
+  if (!dr_read (sfd, (char*)&len, datasize)) {
     return 0;
   }
   len = ntohs (len);
@@ -929,7 +978,8 @@ recv_string (int sfd, char **str) {
     return 0;
   }
   *str = (char *) malloc (len);
-  if (!dr_socket_read (sfd,(char*)*str,len)) {
+  //if (!dr_socket_read (sfd,(char*)*str,len)) {
+  if (!dr_read (sfd, (char*)*str, len)) {
     return 0;
   }
 
@@ -954,7 +1004,8 @@ send_computer_pools (int sfd, struct computer_limits *cl, uint8_t use_local_pool
 
   log_auto (L_DEBUG3,"send_computer_pools() : going to send '%u' pools",cl->npools);
   npools = htons (cl->npools);
-  if (!dr_socket_write (sfd,(char*)&npools,datasize)) {
+  //if (!dr_socket_write (sfd,(char*)&npools,datasize)) {
+  if (!dr_write (sfd, (char*)&npools, datasize)) {
     log_auto (L_ERROR,"send_computer_pools(): could not send npools. (%s)",strerror(drerrno_system));
     return 0;
   }
@@ -980,7 +1031,8 @@ send_computer_pools (int sfd, struct computer_limits *cl, uint8_t use_local_pool
       }
       log_auto (L_DEBUG3,"send_computer_pools(): success. post check_send_datasize(struct pool).");
       log_auto (L_DEBUG3,"send_computer_pools(): previous send pool '%i' with name '%s'",i,pool[i].name);
-      if (!dr_socket_write(sfd,(char*)&pool[i],datasize)) { // write "sizeof(struct pool)" bytes
+      //if (!dr_socket_write(sfd,(char*)&pool[i],datasize)) { // write "sizeof(struct pool)" bytes
+      if (!dr_write(sfd, (char*)&pool[i], datasize)) { // write "sizeof(struct pool)" bytes
         log_auto (L_ERROR,"send_computer_pools() : error while sending pool number %i. (%s)",i,strerror(drerrno_system));
 	if (!use_local_pools) {
 	  computer_pool_detach_shared_memory (cl);
@@ -1019,7 +1071,8 @@ recv_computer_pools (int sfd, struct computer_limits *cl) {
   }
 
   log_auto (L_DEBUG3,"recv_computer_pools() : _before_ receiving the number of pools");
-  if (!dr_socket_read (sfd,(char*)&npools,datasize)) {
+  //if (!dr_socket_read (sfd,(char*)&npools,datasize)) {
+  if (!dr_read (sfd, (char*)&npools, datasize)) {
     log_auto (L_ERROR,"recv_computer_pools(): error reading from file or socket. (%s)",strerror(drerrno_system));
     return 0;
   }
@@ -1036,7 +1089,8 @@ recv_computer_pools (int sfd, struct computer_limits *cl) {
       return 0;
     }
     memset(&pool,0,sizeof(struct pool));
-    if (!dr_socket_read(sfd,(char*)&pool,datasize)) {
+    //if (!dr_socket_read(sfd,(char*)&pool,datasize)) {
+    if (!dr_read(sfd, (char*)&pool, datasize)) {
       log_auto (L_ERROR,"recv_computer_pools() : could not read pool from file or socket (pool number: %i). Msg: %s",
 		i,strerror(drerrno_system));
       // FIXME: if we return, old data is still there.
@@ -1071,7 +1125,8 @@ recv_computer_limits (int sfd, struct computer_limits *cl) {
   }
 
   // Receive limits struct
-  if (!dr_socket_read (sfd,(char*)buf,datasize)) {
+  //if (!dr_socket_read (sfd,(char*)buf,datasize)) {
+  if (!dr_read (sfd, (char*)buf, datasize)) {
     log_auto (L_ERROR,"recv_computer_limits(): error while receiving computer limits. (%s)",strerror(errno));
     return 0;
   }
@@ -1124,7 +1179,8 @@ send_computer_limits (int sfd, struct computer_limits *cl, uint8_t use_local_poo
     log_auto (L_ERROR,"send_computer_limits(): different data sizes for 'struct computer_limits'. Local size: %u",datasize);
     return 0;
   }
-  if (!dr_socket_write(sfd,(char*)buf,datasize)) {
+  //if (!dr_socket_write(sfd,(char*)buf,datasize)) {
+  if (!dr_write(sfd, (char*)buf, datasize)) {
     log_auto (L_ERROR,"send_computer_limits(): error while sending main computer limits data. Msg: %s",strerror(drerrno_system));
     return 0;
   }
@@ -1139,6 +1195,50 @@ send_computer_limits (int sfd, struct computer_limits *cl, uint8_t use_local_poo
 }
 
 int
+write_32b (int sfd, void *data) {
+  uint32_t bswapped;
+  void *buf = &bswapped;
+  bswapped = htonl (*(uint32_t *)data);
+  if (!dr_write (sfd,(char*)buf,sizeof (uint32_t))) {
+    return 0;
+  }
+  return 1;
+}
+
+int
+write_16b (int sfd, void *data) {
+  uint16_t bswapped;
+  void *buf = &bswapped;
+  bswapped = htons (*(uint16_t *)data);
+  if (!dr_write (sfd,(char*)buf,sizeof (uint16_t))) {
+    return 0;
+  }
+  return 1;
+}
+
+int
+read_32b (int sfd, void *data) {
+  void *buf;
+  buf = data;
+  if (!dr_read (sfd,(char*)buf,sizeof(uint32_t))) {
+    return 0;
+  }
+  *(uint32_t *)data = ntohl (*((uint32_t *)data));
+  return 1;
+}
+
+int
+read_16b (int sfd, void *data) {
+  void *buf;
+  buf = data;
+  if (!dr_read (sfd,(char*)buf,sizeof(uint16_t))) {
+    return 0;
+  }
+  *(uint16_t *)data = ntohs (*((uint16_t *)data));
+  return 1;
+}
+
+int
 send_autoenable (int sfd, struct autoenable *ae) {
   struct autoenable bswapped;
   void *buf = &bswapped;
@@ -1148,7 +1248,9 @@ send_autoenable (int sfd, struct autoenable *ae) {
   /* Prepare for sending */
   bswapped.last = htonl (bswapped.last);
 
-  if (!dr_socket_write(sfd,(char*)buf,sizeof(struct autoenable))) {
+  //if (!dr_socket_write(sfd,(char*)buf,sizeof(struct autoenable))) {
+  if (!dr_write(sfd, (char*)buf, sizeof(struct autoenable))) {
+    log_auto(L_ERROR, "dr_socket_write(): unable to write %i bytes (%s)", sizeof(struct autoenable), strerror(drerrno_system));
     return 0;
   }
 
@@ -1159,7 +1261,8 @@ int
 recv_autoenable (int sfd, struct autoenable *ae) {
 
   // FIXME: check size
-  if (!dr_socket_read(sfd,(char*)ae,sizeof(struct autoenable))) {
+  //if (!dr_socket_read(sfd,(char*)ae,sizeof(struct autoenable))) {
+  if (!dr_read(sfd, (char*)ae, sizeof(struct autoenable))) {
     return 0;
   }
 
@@ -1183,7 +1286,9 @@ send_blocked_host_list (int sfd, struct blocked_host *bh, uint32_t size, int do_
   }
 
   bssize = htonl(size);
-  if (!dr_socket_write(sfd,(char*)&bssize,datasize)) {
+  //if (!dr_socket_write(sfd,(char*)&bssize,datasize)) {
+  if (!dr_write(sfd, (char*)&bssize, datasize)) {
+    log_auto(L_ERROR, "dr_socket_write(): unable to write %i bytes (%s)", datasize, strerror(drerrno_system));
     return 0;
   }
 
@@ -1209,7 +1314,8 @@ recv_blocked_host_list (int sfd, struct blocked_host **bh, uint32_t *size, int d
     return 0;
   }
 
-  if (!dr_socket_read(sfd,(char*)size,datasize)) {
+  //if (!dr_socket_read(sfd,(char*)size,datasize)) {
+  if (!dr_read(sfd, (char*)size, datasize)) {
     return 0;
   }
   *size = ntohl(*size);
@@ -1244,7 +1350,9 @@ send_blocked_host (int sfd, struct blocked_host *bh, int do_checksize) {
     return 0;
   }
 
-  if (!dr_socket_write(sfd,(char*)bh,datasize)) {
+  //if (!dr_socket_write(sfd,(char*)bh,datasize)) {
+  if (!dr_write(sfd, (char*)bh, datasize)) {
+    log_auto(L_ERROR, "dr_socket_write(): unable to write %i bytes (%s)", datasize, strerror(drerrno_system));
     return 0;
   }
 
@@ -1261,11 +1369,64 @@ recv_blocked_host (int sfd, struct blocked_host *bh, int do_checksize) {
     return 0;
   }
 
-  if (!dr_socket_read (sfd,(char*)bh,datasize)) {
+  //if (!dr_socket_read (sfd,(char*)bh,datasize)) {
+  if (!dr_read (sfd, (char*)bh, datasize)) {
     return 0;
   }
 
   return 1;
+}
+
+int dr_read (int fd, char *buf, uint32_t len) {
+  int r;
+  int bleft;
+  int total = 0;
+
+  bleft = len;
+  while ((r = read (fd,buf,bleft)) < bleft) {
+    if ((r == -1) || ((r == 0) && (bleft > 0))) {
+      /* if r is error or if there are no more bytes left on the socket but there _SHOULD_ be */
+      drerrno_system = errno;
+      drerrno = DRE_ERRORREADING;
+      return 0;
+    }
+    bleft -= r;
+    buf += r;
+    total += r;
+#ifdef COMM_REPORT
+    brecv += r;
+#endif
+  }
+
+#ifdef COMM_REPORT
+  brecv += r;
+#endif
+
+  return len;
+}
+
+int dr_write (int fd, char *buf, uint32_t len) {
+  int w;
+  int bleft;
+
+  bleft = len;
+  while ((w = write(fd,buf,bleft)) < bleft) {
+    bleft -= w;
+    buf += w;
+    if ((w == -1) || ((w == 0) && (bleft > 0))) {
+      /* if w is error or if no more bytes are written but they _SHOULD_ be */
+      drerrno_system = errno;
+      drerrno = DRE_ERRORWRITING;
+      return 0;
+    }
+#ifdef COMM_REPORT
+    bsent += w;
+#endif
+  }
+#ifdef COMM_REPORT
+  bsent += w;
+#endif
+  return len;
 }
 
 static ssize_t
@@ -1299,8 +1460,11 @@ dr_socket_read (int fd, char *buf, uint32_t len) {
 
 static ssize_t
 dr_socket_write (int fd, char *buf, uint32_t len) {
+  log_auto(L_DEBUG, "will write %i bytes to fd %i\n", len, fd);
+  log_auto(L_DEBUG, "buf: %s\n", buf);
   int nSent;
   if( (nSent = send(fd,buf,len, 0)) == -1) {
+    log_auto(L_DEBUG, "send()\n", buf);
     return 0;
   }
 

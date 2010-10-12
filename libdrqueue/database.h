@@ -78,5 +78,12 @@ int database_job_save_blocked_hosts (int sfd, struct job *job);
 int database_job_load_envvars (int sfd, struct job *job);
 int database_job_save_envvars (int sfd, struct job *job);
 
+/* new but experimental */
+//static int write_32b (int sfd, void *data);
+//static int write_16b (int sfd, void *data);
+//static int read_32b (int sfd, void *data);
+//static int read_16b (int sfd, void *data);
+static int dr_file_read (int fd, char *buf, uint32_t len);
+static int dr_file_write (int fd, char *buf, uint32_t len);
 
 #endif /* _DATABASE_H_ */

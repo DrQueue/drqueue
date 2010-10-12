@@ -290,6 +290,7 @@ envvars_variable_add (struct envvars *envvars, char *name, char *value) {
   var = envvars_variable_find (envvars,name);
   if (var != NULL) {
     // If the variable already exists UPDATE the value
+    log_auto(L_DEBUG, "envvars_variable_add(): updating variable %s with value %s", name, value);
     strncpy (var->value,value,MAXNAMELEN);
     envvars_detach (envvars); // If found, we have to detach after
                               // the update.

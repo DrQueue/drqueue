@@ -52,7 +52,9 @@ computer_index_addr (void *pwdb, struct in_addr addr) {
   semaphore_lock(((struct database *)pwdb)->semid);
   /* search for address */
   for (i=0;((i<MAXCOMPUTERS)&&(index==-1)); i++) {
+    log_auto (L_DEBUG, "Comparing %s with %s.", inet_ntoa(addr), wdb->computer[i].hwinfo.address);
     if ((strcmp(inet_ntoa(addr),wdb->computer[i].hwinfo.address) == 0) && (wdb->computer[i].used))
+      log_auto (L_DEBUG, "Found! Index is %i.", i);
       index = i;
   }
   semaphore_release(((struct database *)pwdb)->semid);
@@ -69,7 +71,9 @@ computer_index_name (void *pwdb, char *name) {
   int i;
 
   for (i=0;((i<MAXCOMPUTERS)&&(index==-1)); i++) {
+    log_auto (L_DEBUG, "Comparing %s with %s.", name, wdb->computer[i].hwinfo.name);
     if ((strcmp(name,wdb->computer[i].hwinfo.name) == 0) && (wdb->computer[i].used))
+      log_auto (L_DEBUG, "Found! Index is %i.", i);
       index = i;
   }
 

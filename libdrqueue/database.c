@@ -35,13 +35,6 @@
 #include "logger.h"
 #include "semaphores.h"
 
-/* Foward declares */
-static int write_32b (int sfd, void *data);
-static int write_16b (int sfd, void *data);
-static int read_32b (int sfd, void *data);
-static int read_16b (int sfd, void *data);
-static int dr_file_read (int fd, char *buf, uint32_t len);
-static int dr_file_write (int fd, char *buf, uint32_t len);
 
 void
 database_init (struct database *wdb) {
@@ -74,14 +67,16 @@ database_job_save (int sfd, struct job *job) {
   
   datasize = sizeof (struct job);
   datasize = htonl (datasize);
-  if (!dr_file_write(sfd,(char*)&datasize,sizeof(datasize))) {
+  //if (!dr_file_write(sfd,(char*)&datasize,sizeof(datasize))) {
+  if (!dr_write(sfd, (char*)&datasize, sizeof(datasize))) {
     log_auto (L_ERROR,"database_job_save(): error saving job data size (%u). (%s)",ntohl(datasize),strerror(drerrno_system));
     return 0;
   }
   datasize = ntohl (datasize);
 
   job_bswap_to_network (job,&bswapped);
-  if (!dr_file_write(sfd,buf,datasize)) {
+  //if (!dr_file_write(sfd,buf,datasize)) {
+  if (!dr_write(sfd, buf, datasize)) {
     log_auto (L_ERROR,"database_job_save(): error saving job main information. (%s)",strerror(drerrno_system));
     return 0;
   }
@@ -109,7 +104,8 @@ int
 database_job_load (int sfd, struct job *job) {
   uint32_t datasize;
   
-  if (!dr_file_read(sfd,(char*)&datasize,sizeof(datasize))) {
+  //if (!dr_file_read(sfd,(char*)&datasize,sizeof(datasize))) {
+  if (!dr_read(sfd,(char*)&datasize,sizeof(datasize))) {
     log_auto (L_ERROR,"database_job_load(): error reading job data size (%u). (%s)",ntohl(datasize),strerror(drerrno_system));
     return 0;
   }
@@ -121,7 +117,8 @@ database_job_load (int sfd, struct job *job) {
   }
   
   job_delete(job);
-  if (!dr_file_read(sfd,(char*)job,datasize)) {
+  //if (!dr_file_read(sfd,(char*)job,datasize)) {
+  if (!dr_read(sfd, (char*)job, datasize)) {
     log_auto (L_ERROR,"database_job_load(): error reading job main information. (%s)",strerror(drerrno_system));
     return 0;
   }
@@ -255,8 +252,7 @@ database_save (struct database *wdb) {
 
   if (database_backup(wdb) == 0) {
     // FIXME: filename should be a value returned by a function
-    log_auto (L_ERROR,"database_save() : there was an error while backing up old database. NOT SAVING current one. (file: %s)",
-              filename);
+    log_auto (L_ERROR,"database_save() : there was an error while backing up old database. NOT SAVING current one. (file: %s)", filename);
   }
 
   // FIXME:
