@@ -69,15 +69,16 @@ def copy_with_clean(src_files,dest_files,dest_path,env):
 
 def get_git_commit():
   try:
-    gitlog = subprocess.Popen(["git", "show", "--abbrev-commit"], stdout=subprocess.PIPE)
+    gitlog = subprocess.Popen(["git", "log", "--oneline", "-1"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
   except OSError:
     commit_string = ""
   else:
-    if gitlog.wait() != 0:
+    output = gitlog.communicate()[0]
+    if gitlog.returncode > 0:
       commit_string = ""
       print("Not a Git repository. Can't fetch commit id.")
     else:
-      commit_string = gitlog.communicate()[0].split("\n")[0].split(" ")[1]
+      commit_string = output.split(" ")[0]
       print("Current Git commit id is: "+commit_string)
   return commit_string
 
