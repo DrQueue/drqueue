@@ -51,11 +51,14 @@ computer_index_addr (void *pwdb, struct in_addr addr) {
 
   semaphore_lock(((struct database *)pwdb)->semid);
   /* search for address */
-  for (i=0;((i<MAXCOMPUTERS)&&(index==-1)); i++) {
+  for (i=0;i<MAXCOMPUTERS; i++) {
     log_auto (L_DEBUG, "Comparing %s with %s.", inet_ntoa(addr), wdb->computer[i].hwinfo.address);
-    if ((strcmp(inet_ntoa(addr),wdb->computer[i].hwinfo.address) == 0) && (wdb->computer[i].used))
+    log_auto (L_DEBUG, "Used: %i.", (wdb->computer[i].used));
+    if ((strcmp(inet_ntoa(addr),wdb->computer[i].hwinfo.address) == 0) && (wdb->computer[i].used == 1)) {
       log_auto (L_DEBUG, "Found! Index is %i.", i);
       index = i;
+      break;
+    }
   }
   semaphore_release(((struct database *)pwdb)->semid);
 
@@ -70,12 +73,21 @@ computer_index_name (void *pwdb, char *name) {
   int index = -1;
   int i;
 
-  for (i=0;((i<MAXCOMPUTERS)&&(index==-1)); i++) {
+  log_auto (L_DEBUG,"Entering computer_index_name");
+
+  semaphore_lock(((struct database *)pwdb)->semid);
+  for (i=0;i<MAXCOMPUTERS; i++) {
     log_auto (L_DEBUG, "Comparing %s with %s.", name, wdb->computer[i].hwinfo.name);
-    if ((strcmp(name,wdb->computer[i].hwinfo.name) == 0) && (wdb->computer[i].used))
+    log_auto (L_DEBUG, "Used: %i.", (wdb->computer[i].used));
+    if ((strcmp(name,wdb->computer[i].hwinfo.name) == 0) && (wdb->computer[i].used)) {
       log_auto (L_DEBUG, "Found! Index is %i.", i);
       index = i;
+      break;
+    }
   }
+  semaphore_release(((struct database *)pwdb)->semid);
+
+  log_auto (L_DEBUG, "Exiting computer_index_name. Index of computer %s is %i.", name, index);
 
   return index;
 }
