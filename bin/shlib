@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 #
 # Copyright (C) 2001,2002,2003,2004,2005,2006 Jorge Daza Garcia-Blanes
 #
@@ -105,7 +105,7 @@ wrapper_cmd () {
   unset WRAP_CMD
   _full_unwrapped_tool_path="$( get_env_drqueue_bin )/$CMD_TO_WRAP"
   if [ ! -x "$_full_unwrapped_tool_path" ]; then
-    echo ERROR: Command "$_full_unwrapped_tool_path" does not exist. Cannot be wrapped.
+    echo ERROR: Command "\"$_full_unwrapped_tool_path\"" does not exist. Cannot be wrapped.
     return 1
   fi
 
