@@ -107,7 +107,8 @@ opts = Variables('scons.conf')
 opts.AddVariables(PathVariable('DESTDIR','Alternate root directory','',[]),
                   PathVariable('PREFIX','Directory to install under',pathprefix, PathVariable.PathAccept),
                   BoolVariable('universal_binary', 'Whether to build as an Universal Binary (MacOS X >= 10.3.9 only)', 0),
-                  BoolVariable('build_drqman','Build drqman',1),
+                  BoolVariable('build_drqman', 'Build drqman', 1),
+                  BoolVariable('build_ppc', 'When used with universal_binary, whether to build for the PPC architecture', 0),
                   BoolVariable('enable_warnings','Enable warnings for compiling',0),
                   BoolVariable('enable_debug','Enable debugging information for compiling',0))
 opts.Update(env_lib)
@@ -165,14 +166,16 @@ elif sys.platform == "darwin":
     env_lib.Append (CPPDEFINES = Split ('-D__OSX'))
     if env_lib.get('universal_binary'):
         print "Building as an MacOS X Universal Binary"
+        universal_archs = "-arch i386"
         if platform.architecture()[0] == '64bit':
-            universal_archs = "-arch i386 -arch x86_64"
+            universal_archs += " -arch x86_64"            
+        if env_lib.get('build_ppc'):
+            universal_archs += " -arch ppc"
+            env_lib.Append (CCFLAGS = Split('-isysroot /Developer/SDKs/MacOSX10.4u.sdk '+universal_archs+' -mmacosx-version-min=10.4'))
+            env_lib.Append (LINKFLAGS = Split('-isysroot /Developer/SDKs/MacOSX10.4u.sdk '+universal_archs+' -mmacosx-version-min=10.4'))
         else:
-            universal_archs = "-arch i386"
-        #env_lib.Append (CCFLAGS = Split('-isysroot /Developer/SDKs/MacOSX10.4u.sdk '+universal_archs+' -mmacosx-version-min=10.4'))
-        #env_lib.Append (LINKFLAGS = Split('-isysroot /Developer/SDKs/MacOSX10.4u.sdk '+universal_archs+' -mmacosx-version-min=10.4'))
-        env_lib.Append (CCFLAGS = Split(universal_archs+' -mmacosx-version-min=10.5'))
-        env_lib.Append (LINKFLAGS = Split(universal_archs+' -mmacosx-version-min=10.5'))
+            env_lib.Append (CCFLAGS = Split(universal_archs+' -mmacosx-version-min=10.5'))
+            env_lib.Append (LINKFLAGS = Split(universal_archs+' -mmacosx-version-min=10.5'))
         env_lib['CC'] = '/usr/bin/gcc-4.0'
         env_lib['CXX'] = '/usr/bin/g++-4.0'
 elif sys.platform == "irix6":
