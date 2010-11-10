@@ -102,6 +102,7 @@ int main (int argc,char *argv[]) {
   if(debug) { std::cerr << "set_default_env().\n"; }
   set_default_env();
 
+  if(debug) { std::cerr << "common_environment_check().\n"; }
   if (!common_environment_check()) {
     std::cerr << "Error checking the environment: " << drerrno_str() << std::endl;
     nRet = 1;
@@ -256,7 +257,7 @@ int RegisterGeneralJob (char* infile, int frameStart, int frameEnd, int frameSte
 
   uid_t uid;
   gid_t gid;
-  char *scriptdir;
+  char *scriptdir = NULL;
   std::string owner;
   char *pathToScript;
   char *tmpPath;
@@ -266,8 +267,7 @@ int RegisterGeneralJob (char* infile, int frameStart, int frameEnd, int frameSte
   uid = getuid();
   gid = getgid();
   // scriptDir = get_current_dir_name();
-  scriptdir = NULL;
-  getcwd(scriptdir, BUFFERLEN);
+  scriptdir = getcwd(scriptdir, BUFFERLEN);
   strncpy(generalSgi.script,infile,BUFFERLEN-1);
   // strncpy(generalSgi.scriptDir,scriptDir.c_str(),BUFFERLEN-1);
   //generalSgi.scriptdir = (char *)scriptdir;
@@ -326,17 +326,18 @@ int RegisterGeneralJob (char* infile, int frameStart, int frameEnd, int frameSte
   job.limits.memory = 0;
   strncpy (job.limits.pool,"Default",MAXNAMELEN-1);
 
-  /*
-   fprintf(stderr,"DEBUG: ----\n");
-   fprintf(stderr,"DEBUG: user_id: %d\n",uid);
-   fprintf(stderr,"DEBUG: group_id: %d\n",gid);
-   fprintf(stderr,"DEBUG: script: %s\n",generalSgi.script);
-   fprintf(stderr,"DEBUG: scriptDir: %s\n",generalSgi.scriptDir);
-   fprintf(stderr,"DEBUG: frame_start: %d\n",job.frame_start);
-   fprintf(stderr,"DEBUG:   frame_end: %d\n",job.frame_end);
-   fprintf(stderr,"DEBUG:  frame_step: %d\n",job.frame_step);
-   fprintf(stderr,"DEBUG: ----\n");
-  */
+
+  if(debug) {
+    fprintf(stderr,"DEBUG: ----\n");
+    fprintf(stderr,"DEBUG: user_id: %d\n",uid);
+    fprintf(stderr,"DEBUG: group_id: %d\n",gid);
+    fprintf(stderr,"DEBUG: script: %s\n",generalSgi.script);
+    fprintf(stderr,"DEBUG: scriptDir: %s\n",generalSgi.scriptdir);
+    fprintf(stderr,"DEBUG: frame_start: %d\n",job.frame_start);
+    fprintf(stderr,"DEBUG:   frame_end: %d\n",job.frame_end);
+    fprintf(stderr,"DEBUG:  frame_step: %d\n",job.frame_step);
+    fprintf(stderr,"DEBUG: ----\n");
+  }
 
   if (!register_job(&job)) {
     std::cerr << "Error sending General job to the queue\n";
