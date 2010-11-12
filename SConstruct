@@ -107,6 +107,8 @@ opts = Variables('scons.conf')
 opts.AddVariables(PathVariable('DESTDIR','Alternate root directory','',[]),
                   PathVariable('PREFIX','Directory to install under',pathprefix, PathVariable.PathAccept),
                   BoolVariable('universal_binary', 'Whether to build as an Universal Binary (MacOS X >= 10.3.9 only)', 0),
+                  BoolVariable('build_linux32', 'Whether to explicitly build 32 bit binaries (Linux only),', 0),
+                  BoolVariable('build_linux64', 'Whether to explicitly build 64 bit binaries (Linux only),', 0),
                   BoolVariable('build_drqman', 'Build drqman', 1),
                   BoolVariable('build_ppc', 'When used with universal_binary, whether to build for the PPC architecture', 0),
                   BoolVariable('enable_warnings','Enable warnings for compiling',0),
@@ -162,6 +164,12 @@ env_lib.Append (CPPDEFINES = Split ('COMM_REPORT _GNU_SOURCE ' \
 print "Platform is: ",sys.platform
 if sys.platform == "linux2":
     env_lib.Append (CPPDEFINES = Split ('-D__LINUX'))
+    if env_lib.get('build_linux32'):
+        env_lib.Append (CCFLAGS = Split('-m32'))
+        env_lib.Append (LINKFLAGS = Split('-m32'))
+    elif env_lib.get('build_linux64'):
+        env_lib.Append (CCFLAGS = Split('-m64'))
+        env_lib.Append (LINKFLAGS = Split('-m64'))
 elif sys.platform == "darwin":
     env_lib.Append (CPPDEFINES = Split ('-D__OSX'))
     if env_lib.get('universal_binary'):
