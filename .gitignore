@@ -6,11 +6,6 @@
 .sconf_temp
 config.log
 libdrqueue/git_rev.h
-DrQueueOnRails/db/schema.rb
-DrQueueOnRails/db/*.db
-DrQueueOnRails/db/*.sqlite3
-DrQueueOnRails/config/environment.rb
-DrQueueOnRails/log/*
 blockhost
 cfgreader
 cjob
@@ -29,8 +24,4 @@ python/ez_setup.pyc
 python/src/drqueue.egg-info/
 python/src/drqueue/base/libdrqueue.py
 python/src/drqueue/base/libdrqueue_wrap.c
-ruby/Makefile
-ruby/drqueue.bundle
-ruby/libdrqueue_ruby_wrap.c
-ruby/mkmf.log
 
