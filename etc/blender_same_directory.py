@@ -24,30 +24,64 @@
 # usage: curframe=N blender -b scene.blend -P blender_same_directory.py
 #
 
-import Blender
-from Blender import Scene, Get, Noise, Load, sys, BGL, Draw, Window, Camera
 import os
-import sys
+import subprocess
+
+def get_version():
+  try:
+    proc1 = subprocess.Popen(["blender", "-v"], stdout=subprocess.PIPE)
+    proc2 = subprocess.Popen(["grep", "Blender"], stdin=proc1.stdout, stdout=subprocess.PIPE)
+  except OSError:
+    version_string = "0"
+    print("Could not determine version.\n")
+    exit(1)
+  else:
+    output = proc2.communicate()[0]
+    if proc2.returncode > 0:
+      version_string = "0"
+      print("Could not determine version.\n")
+      exit(1)
+    else:
+      version_string = str(output).split(" ")[1]
+      print("Found version " + version_string + "\n")
+  return version_string
+
 
 print("\nThis Python script will render your scene and place the output in the same directory.\n")
 
-# get scene settings
-scn = Scene.GetCurrent()
-context = scn.getRenderingContext()
+print("Checking Blender version: ")
+version = get_version()
 
-# Set the start and end frame to the current frame.
-curframe = int(os.getenv("curframe"))
-context.startFrame(curframe)
-context.endFrame(curframe)
-print("curframe: " + str(curframe)) 
+if float(version) > 2.5:
+  print("load 2.5 env")
 
-# get scenefile from args
-scenefile = sys.argv[2]
-print("scenefile: " + scenefile)
+elif float(version) > 2.4:
+  # load libs
+  import Blender
+  from Blender import Scene, Get, Noise, Load, sys, BGL, Draw, Window, Camera
+  import sys
 
-# set output path and region
-context.setRenderPath(scenefile)
+  # get scene settings
+  scn = Scene.GetCurrent()
+  context = scn.getRenderingContext()
 
-# render desired frame of scene
-context.renderAnim()
+  # Set the start and end frame to the current frame.
+  curframe = int(os.getenv("curframe"))
+  context.startFrame(curframe)
+  context.endFrame(curframe)
+  print("curframe: " + str(curframe))
+
+  # get scenefile from args
+  scenefile = sys.argv[2]
+  print("scenefile: " + scenefile)
+
+  # set output path and region
+  context.setRenderPath(scenefile)
+
+  # render desired frame of scene
+  context.renderAnim()
+
+else:
+  print("Incompatible Blender version.")
+  exit(1)
 
