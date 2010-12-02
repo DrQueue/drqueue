@@ -53,7 +53,28 @@ print("Checking Blender version: ")
 version = get_version()
 
 if float(version) > 2.5:
-  print("load 2.5 env")
+  # load libs
+  import bpy
+  import sys
+
+  # get scene settings
+  scn = bpy.data.scenes[0]
+
+  # Set the start and end frame to the current frame.
+  curframe = int(os.getenv("curframe"))
+  scn.frame_start = curframe
+  scn.frame_end = curframe
+  print("curframe: " + str(curframe))
+
+  # get scenefile from args
+  scenefile = sys.argv[2]
+  print("scenefile: " + scenefile)
+
+  # set output path
+  scn.render.filepath = scenefile
+
+  # render desired frame of scene
+  bpy.ops.render.render(animation=True)
 
 elif float(version) > 2.4:
   # load libs
@@ -75,7 +96,7 @@ elif float(version) > 2.4:
   scenefile = sys.argv[2]
   print("scenefile: " + scenefile)
 
-  # set output path and region
+  # set output path
   context.setRenderPath(scenefile)
 
   # render desired frame of scene
