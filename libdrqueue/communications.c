@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2001,2002,2003,2004,2005,2006,2007 Jorge Daza Garcia-Blanes
+// Copyright (C) 2001-2010 Jorge Daza Garcia-Blanes
 //
 // This file is part of DrQueue
 //
@@ -19,6 +19,11 @@
 // USA
 //
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+
+
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -178,8 +183,8 @@ connect_to_master (void) {
   /* or -1 in case of error */
   int sfd;
   char *master;
-  struct sockaddr_in addr;
-  struct hostent *hostinfo;
+  struct addrinfo hints,*res,*res0;
+  struct sockaddr_in *sa;
   int i;
   int conn_tries = MAX_CONNECT_ATTEMPTS;
 
@@ -191,38 +196,46 @@ connect_to_master (void) {
     return -1;
   }
 
-  addr.sin_family = AF_INET;
-  addr.sin_port = htons(MASTERPORT);  /* Whatever */
-  hostinfo = gethostbyname (master);
+  memset(&hints,0,sizeof(hints));
+  hints.ai_family = PF_INET;
+  hints.ai_socktype = SOCK_STREAM;
   /* check if ip address of host could be resolved */
-  if ( (hostinfo == NULL) || (hostinfo->h_addr == NULL) ) {
+  if (getaddrinfo(master,NULL,&hints,&res0)) {
     drerrno_system = errno;
     drerrno = DRE_NOTRESOLVE;
     return -1;
   }
-  addr.sin_addr = *(struct in_addr *) hostinfo->h_addr;
+
+  // CHECK: other addresses might be useful 
+  for (res = res0; res; res = res->ai_next) {
+    sa =(struct sockaddr_in *)res->ai_addr;
+    sa->sin_port = htons(MASTERPORT);
+    break;
+  }
 
   /* open connection, try MAX_CONNECT_ATTEMPTS times */
   for (i=1; i<=MAX_CONNECT_ATTEMPTS; i++) {
-
     sfd = socket (PF_INET,SOCK_STREAM,0);
     if (sfd == -1) {
+      freeaddrinfo(res0);
       drerrno_system = errno;
       drerrno = DRE_NOSOCKET;
       return -1;
     }
 
-    if (connect(sfd, (struct sockaddr *)&addr, sizeof (addr)) == -1) {
+    if (connect(sfd, res->ai_addr, res->ai_addrlen) == -1) {
       if (i < MAX_CONNECT_ATTEMPTS) {
         log_auto(L_ERROR, "connect(): communications problem. Could not connect to master (%s). Retry in 2 seconds.", strerror(errno));
         sleep(2);
       } else {
+        freeaddrinfo(res0);
         log_auto(L_ERROR, "connect(): communications problem. Could not connect to master (%s). Giving up after %i attempts.", strerror(errno), conn_tries);
         drerrno_system = errno;
         drerrno = DRE_NOCONNECT;
         return -1;
       }
     } else {
+      freeaddrinfo(res0);
       return sfd;
     }
   }
