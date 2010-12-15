@@ -311,8 +311,18 @@ computer_limits_cleanup_to_send (struct computer_limits *cl) {
 void
 computer_limits_init (struct computer_limits *cl) {
   memset (cl,0,sizeof(struct computer_limits));
-  cl->enabled = 1;
-  cl->nmaxcpus = MAXTASKS;
+  
+  char *buf = NULL;
+  if ( (buf = getenv ("DRQUEUE_ENABLED")) == NULL) {
+    cl->enabled = 1;
+  } else {
+    cl->enabled = atoi(buf);
+  }
+  if ( (buf = getenv ("DRQUEUE_MAX_CPUS")) == NULL) {
+    cl->nmaxcpus = MAXTASKS;
+  } else {
+    cl->nmaxcpus = atoi(buf);
+  }
   cl->maxfreeloadcpu = MAXLOADAVG;
   cl->autoenable.h = AE_HOUR; /* At AE_HOUR:AE_MIN autoenable by default */
   cl->autoenable.m = AE_MIN;
