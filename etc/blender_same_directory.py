@@ -73,6 +73,9 @@ if float(version) > 2.5:
   # set output path
   scn.render.filepath = scenefile
 
+  # flush output
+  sys.stdout.flush()
+
   # render desired frame of scene
   bpy.ops.render.render(animation=True)
 
@@ -98,6 +101,9 @@ elif float(version) > 2.4:
 
   # set output path
   context.setRenderPath(scenefile)
+
+  # flush output
+  sys.stdout.flush()
 
   # render desired frame of scene
   context.renderAnim()
