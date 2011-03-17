@@ -57,7 +57,7 @@ char *aftereffectssg_create (struct aftereffectssgi *info) {
   if(ji) {
     jobscript_write_heading (ji);
     jobscript_set_variable (ji,"PROJECT",project);
-    jobscript_set_variable (ji,"COMP",comp);
+    jobscript_set_variable (ji,"COMP",info->comp);
     jobscript_template_write (ji,"aftereffects_sg.py");
     jobscript_close (ji);
   } else {
