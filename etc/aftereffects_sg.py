@@ -43,11 +43,13 @@ DRQUEUE_PADFRAMES = int(os.getenv("DRQUEUE_PADFRAMES"))
 DRQUEUE_STARTFRAME = int(os.getenv("DRQUEUE_STARTFRAME"))
 DRQUEUE_STEPFRAME = int(os.getenv("DRQUEUE_STEPFRAME"))
 
+PROJECT_DIR = os.path.dirname(PROJECT)
 
 if DRQUEUE_OS == "WINDOWS":
 	# convert to windows path with drive letter
 	PROJECT = subprocess.Popen(["cygpath.exe", "-w "+PROJECT], stdout=subprocess.PIPE).communicate()[0]
 	COMP = subprocess.Popen(["cygpath.exe", "-w "+COMP], stdout=subprocess.PIPE).communicate()[0]
+	PROJECT_DIR = subprocess.Popen(["cygpath.exe", "-w "+PROJECT_DIR], stdout=subprocess.PIPE).communicate()[0]
 
 BLOCK = DRQUEUE_FRAME + DRQUEUE_BLOCKSIZE - 1
 
@@ -56,7 +58,14 @@ if BLOCK > DRQUEUE_ENDFRAME:
 
 ENGINE_PATH="aerender"
 
-command = ENGINE_PATH+" -project "+PROJECT+" -comp "+COMP+" -OMtemplate \"Multi-Machine Sequence\" -s "+str(DRQUEUE_FRAME)+" -e "+str(BLOCK)
+# English template names
+omtemplate = "Multi-Machine Sequence"
+rstemplate = "Multi-Machine Settings"
+# German template names
+#omtemplate = "Sequenz für mehrere Rechner"
+#rstemplate = "Einstellungen für mehrere Rechner"
+
+command = ENGINE_PATH+" -project "+PROJECT+" -comp \""+COMP+"\" -OMtemplate \""+omtemplate+"\" -RStemplate \""+rstemplate+"\" -s "+str(DRQUEUE_FRAME)+" -e "+str(BLOCK)+" -output "+os.path.join(PROJECT_DIR, "frame_[####].psd")
 
 print(command)
 sys.stdout.flush()
